@@ -1,24 +1,40 @@
-# DEV_MWWSKILLSIM OCR Step 1.9
+# DEV_MWWSKILLSIM OCR Step 1.10
 
-Step 1.9 is a controlled experiment based on Step 1.8.
+## 目的
+Step 1.9を基準に、メイン武器OCRの候補検索を「少数固定辞書」から「MHDBの全武器DB」へ変更した検証版です。
 
-Changes:
-- OCR name-region default vertical position: ny 38% -> 40% where applicable.
-- Add 20px left/right and 10px top/bottom white padding to the final OCR canvas.
-- Restrict OCR whitelist so ordinary English lowercase a-z are not deliberately allowed.
-- Keep the existing character-confidence, OCR↔OCR consensus, dictionary matching, and early-exit logic.
-- Do not increase the maximum OCR pass count.
+## 重要な変更
+- `https://wilds.mhdb.io/ja/weapons` から武器データを全件取得。
+- 取得対象は `id / gameId / kind / name` のみ。候補照合用の軽量データです。
+- 端末の `localStorage` にキャッシュし、2回目以降の待ち時間を短縮。
+- 画像選択直後に武器DB取得をバックグラウンド開始。
+- OCR結果とDB名の全文類似だけでなく、長い部分一致を強く評価。
+- 2文字gramのインデックスで候補を先に絞り、全武器を毎回総当たりする負荷を抑制。
+- 十分な証拠がない場合は「該当候補なし」とし、最も近い武器名を無理に候補化しない。
+- 上段のメイン武器のみをOCR対象とし、下段のサブ武器は対象外。
+- Step 1.9のOCR前処理、文字信頼度、OCR間合意、早期終了ロジックは維持。
 
-Purpose:
-Test whether boundary noise and a slightly misaligned vertical crop are causing the low raw OCR confidence.
+## 今回の重要テストケース
+画像：メイン武器「亡国のクピドバイン」
 
-Please compare with the same test image:
-1. raw OCR strings
-2. overall OCR confidence
-3. character confidence
-4. DB similarity / row score
-5. OCR↔OCR consistency
-6. OCR count and elapsed time
-7. auto-confirm / hold
+OCR例：
+- `ーのクビドバイン`
+- `のクビドバイン`
 
-This is development-only. Do not use the beta repository.
+期待：
+- 全武器DBから「亡国のクピドバイン」を候補化
+- 「代償のネイディ・ギア」のような低一致候補を無理に表示しない
+
+## テスト手順
+1. `index.html` をGitHub Pages等で開く。
+2. 武器DBが「取得済み」になることを確認。
+3. `IMG_9061.jpeg` を読み込む。
+4. 赤枠が上段のメイン武器名だけを含んでいることを確認。
+5. 「この範囲だけOCR」を実行。
+6. 「亡国のクピドバイン」が候補になるか確認。
+7. OCR速度、DB取得時間、候補一致率、判定状態を記録する。
+
+## 注意
+- この版はまだシミュレーター本体には接続しません。
+- MHDBへの通信ができない環境では全武器候補検索を実行できません。取得済みキャッシュがあればオフライン相当で利用できます。
+- DB取得失敗時に固定の少数辞書へフォールバックする仕様にはしていません。誤候補防止を優先しています。

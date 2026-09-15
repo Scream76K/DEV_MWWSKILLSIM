@@ -34,11 +34,11 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.3：メイン武器・複数OCR統合検証</h1>
+<h1>MH Wilds OCR — Step 1.10：全武器DB候補照合</h1>
 <div class="note">
-今回のスクショ構成だけを対象にした診断用です。<br>
+全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
-まだシミュレータ本体には接続しません。まず「メイン武器の領域を正しく切り出せるか」と「その領域だけでOCRできるか」を確認します。
+まだシミュレータ本体には接続しません。メイン武器OCRと全武器DB候補照合の精度を確認します。
 </div>
 </div>
 
@@ -90,7 +90,17 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>4. OCR結果（複数OCR統合・辞書候補）</h2>
+<h2>4. 全武器DB</h2>
+<div class="note">MHDBの日本語版「武器」データを全件取得して候補検索に使用します。数件だけの固定辞書には戻しません。取得済みデータは端末内にキャッシュします。</div>
+<div id="dbStatus" class="status">武器DB：未取得</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+  <button id="loadDB">全武器DBを読み込む</button>
+  <button id="clearDB">武器DBキャッシュを削除</button>
+</div>
+</div>
+
+<div class="card">
+<h2>5. OCR結果（複数OCR統合・全武器DB候補）</h2>
 <div id="recognized" class="result">未実行</div>
 <div class="status" id="ocrStatus"></div>
 <pre id="raw"></pre>
@@ -102,12 +112,12 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>Step 1 の合格条件</h2>
+<h2>Step 1.10 の検証ポイント</h2>
 <div class="note">
 ① 赤枠が上段のメイン武器名だけを含む<br>
 ② 下段のサブ武器名を含まない<br>
 ③ 4方式のうち少なくとも1方式で、日本語の武器名が読める<br>
-④ ここを確認してから、防具認識へ進みます
+④ DBに十分近い候補がない場合は、無理に別の武器名を候補にしない<br>⑤ 「クビドバイン」→「亡国のクピドバイン」のような部分一致を正しく評価する
 </div>
 </div>
 </main>
@@ -172,6 +182,8 @@ $("file").onchange=()=>{
     imgW=$("img").naturalWidth;imgH=$("img").naturalHeight;
     $("fileStatus").textContent=`読込完了：${imgW} × ${imgH}`;
     defaultRegion(); drawBox(); updateCrop();
+    // 画像選択直後にDB取得を裏で開始し、OCR開始時の待ち時間を減らす。
+    ensureWeaponDB().catch(()=>{});
   };
   $("img").src=url;
 };
@@ -302,91 +314,194 @@ function updateNameCrop(){
 ['nx','ny','nw','nh'].forEach(id=>$(id).addEventListener('input',updateNameCrop));
 const oldUpdateCrop=updateCrop; updateCrop=function(){oldUpdateCrop();updateNameCrop()};
 
-// ---- DB / dictionary scoring ----
-const WEAPON_DICTIONARY=[
-  '代償のネイディ・ギア','護鎖刃笛ガルシュハド','炎角竜の大剣','雷顎竜の太刀'
-];
+// ---- 全武器DB / 候補照合 ----
+const WEAPON_API='https://wilds.mhdb.io/ja/weapons';
+const WEAPON_CACHE_KEY='DEV_MWWSKILLSIM_OCR_WEAPONS_V1';
+let weaponDB=[];
+let weaponDBReady=false;
+let weaponGramIndex=new Map();
+let weaponDBPromise=null;
+
+function setDBStatus(text, cls=''){
+  const el=$('dbStatus');
+  if(el) el.innerHTML=`武器DB：<span class="${cls}">${text}</span>`;
+}
+function normalizeWeaponRows(rows){
+  const seen=new Set();
+  return (Array.isArray(rows)?rows:[]).map(w=>({
+    id:w?.id ?? null,
+    gameId:w?.gameId ?? null,
+    kind:String(w?.kind||''),
+    name:String(w?.name||'').trim()
+  })).filter(w=>w.name).filter(w=>{
+    const key=`${w.kind}\u0000${w.gameId??''}\u0000${w.id??''}\u0000${w.name}`;
+    if(seen.has(key))return false;seen.add(key);return true;
+  });
+}
+function rebuildWeaponGramIndex(){
+  weaponGramIndex=new Map();
+  weaponDB.forEach((item,idx)=>{
+    const n=normJPLoose(item.name); const seen=new Set();
+    for(let i=0;i<n.length-1;i++){
+      const g=n.slice(i,i+2); if(seen.has(g))continue; seen.add(g);
+      if(!weaponGramIndex.has(g))weaponGramIndex.set(g,new Set());
+      weaponGramIndex.get(g).add(idx);
+    }
+  });
+}
+function searchWeaponItems(raw){
+  if(!weaponDB.length)return [];
+  const n=normJPLoose(raw); const counts=new Map();
+  for(let i=0;i<n.length-1;i++){
+    const g=n.slice(i,i+2); const set=weaponGramIndex.get(g); if(!set)continue;
+    for(const idx of set)counts.set(idx,(counts.get(idx)||0)+1);
+  }
+  if(!counts.size)return weaponDB;
+  // Keep a generous fallback pool so a single OCR error does not eliminate the correct weapon.
+  const ranked=[...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,80).map(x=>weaponDB[x[0]]);
+  return ranked.length?ranked:weaponDB;
+}
+async function fetchWeaponPage(offset){
+  const u=`${WEAPON_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true}))}`;
+  const r=await fetch(u,{cache:'no-store',mode:'cors'});
+  if(!r.ok)throw new Error(`武器DB HTTP ${r.status}`);
+  const data=await r.json();
+  if(!Array.isArray(data))throw new Error('武器DBの応答が配列ではありません');
+  return data;
+}
+async function loadWeaponDB(force=false){
+  if(weaponDBReady&&!force)return weaponDB;
+  if(weaponDBPromise&&!force)return weaponDBPromise;
+  weaponDBPromise=(async()=>{
+    if(!force){
+      try{
+        const cached=JSON.parse(localStorage.getItem(WEAPON_CACHE_KEY)||'null');
+        const rows=normalizeWeaponRows(cached?.rows||cached);
+        if(rows.length){
+          weaponDB=rows;rebuildWeaponGramIndex();weaponDBReady=true;
+          setDBStatus(`${rows.length.toLocaleString()}件（端末キャッシュ）`,'ok');
+          return weaponDB;
+        }
+      }catch(e){}
+    }
+    setDBStatus('全件取得中…','info');
+    const all=[];let offset=0;
+    for(let page=0;page<100;page++){
+      const part=await fetchWeaponPage(offset);
+      all.push(...part);setDBStatus(`全件取得中… ${all.length.toLocaleString()}件`,'info');
+      if(part.length<250)break;
+      offset+=250;
+    }
+    const rows=normalizeWeaponRows(all);
+    if(!rows.length)throw new Error('武器DBが0件でした');
+    weaponDB=rows;rebuildWeaponGramIndex();weaponDBReady=true;
+    try{localStorage.setItem(WEAPON_CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),rows}));}catch(e){}
+    setDBStatus(`${rows.length.toLocaleString()}件（最新取得）`,'ok');
+    return weaponDB;
+  })();
+  try{return await weaponDBPromise}catch(e){weaponDBPromise=null;weaponDBReady=false;setDBStatus('取得失敗：'+e.message,'bad');throw e}
+  finally{weaponDBPromise=null}
+}
+async function ensureWeaponDB(){
+  if(weaponDBReady&&weaponDB.length)return weaponDB;
+  return loadWeaponDB(false);
+}
+$('loadDB').onclick=async()=>{
+  $('loadDB').disabled=true;
+  try{await loadWeaponDB(true)}catch(e){}
+  finally{$('loadDB').disabled=false}
+};
+$('clearDB').onclick=()=>{
+  try{localStorage.removeItem(WEAPON_CACHE_KEY)}catch(e){}
+  weaponDB=[];weaponDBReady=false;weaponDBPromise=null;weaponGramIndex=new Map();setDBStatus('未取得');
+};
+
 function normJPStrict(v){
-  // Canonical comparison: keep meaningful game-name symbols such as ・, ー, αβγ.
   return String(v||'').normalize('NFKC').toLowerCase()
     .replace(/[\s\u3000]+/g,'')
     .replace(/[”“’'`「」『』（）()\[\]【】,，.。:：;；_|｜~～—–]+/g,'');
 }
 function normJPLoose(v){
-  // Secondary comparison only: tolerate OCR symbol omissions/variations.
   return normJPStrict(v).replace(/[・･·•ー\-]/g,'');
 }
 function lev(a,b){
-  const aa=Array.from(a),bb=Array.from(b),prev=Array(bb.length+1); for(let j=0;j<=bb.length;j++)prev[j]=j;
-  for(let i=1;i<=aa.length;i++){const cur=[i];for(let j=1;j<=bb.length;j++)cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(aa[i-1]===bb[j-1]?0:1));for(let j=0;j<cur.length;j++)prev[j]=cur[j];}
+  const aa=Array.from(a),bb=Array.from(b),prev=Array(bb.length+1);
+  for(let j=0;j<=bb.length;j++)prev[j]=j;
+  for(let i=1;i<=aa.length;i++){
+    const cur=[i];
+    for(let j=1;j<=bb.length;j++)cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(aa[i-1]===bb[j-1]?0:1));
+    for(let j=0;j<cur.length;j++)prev[j]=cur[j];
+  }
   return prev[bb.length];
 }
-function lcsLen(a,b){const aa=Array.from(a),bb=Array.from(b);let p=new Array(bb.length+1).fill(0);for(const ch of aa){let c=new Array(bb.length+1).fill(0);for(let j=1;j<=bb.length;j++)c[j]=ch===bb[j-1]?p[j-1]+1:Math.max(p[j],c[j-1]);p=c}return p[bb.length]}
-function dice(a,b){if(a===b)return 1;if(a.length<2||b.length<2)return 0;const m=new Map();for(let i=0;i<a.length-1;i++){const g=a.slice(i,i+2);m.set(g,(m.get(g)||0)+1)}let hit=0;for(let i=0;i<b.length-1;i++){const g=b.slice(i,i+2),n=m.get(g)||0;if(n>0){hit++;m.set(g,n-1)}}return 2*hit/(a.length+b.length-2)}
+function lcsLen(a,b){
+  const aa=Array.from(a),bb=Array.from(b);let p=new Array(bb.length+1).fill(0);
+  for(const ch of aa){let c=new Array(bb.length+1).fill(0);for(let j=1;j<=bb.length;j++)c[j]=ch===bb[j-1]?p[j-1]+1:Math.max(p[j],c[j-1]);p=c}
+  return p[bb.length]
+}
+function dice(a,b){
+  if(a===b)return 1;if(a.length<2||b.length<2)return 0;
+  const m=new Map();for(let i=0;i<a.length-1;i++){const g=a.slice(i,i+2);m.set(g,(m.get(g)||0)+1)}
+  let hit=0;for(let i=0;i<b.length-1;i++){const g=b.slice(i,i+2),n=m.get(g)||0;if(n>0){hit++;m.set(g,n-1)}}
+  return 2*hit/(a.length+b.length-2)
+}
 function commonSubstringLen(a,b){
-  const aa=Array.from(a),bb=Array.from(b); let prev=new Array(bb.length+1).fill(0),best=0;
-  for(let i=1;i<=aa.length;i++){
-    const cur=new Array(bb.length+1).fill(0);
-    for(let j=1;j<=bb.length;j++){
-      if(aa[i-1]===bb[j-1]){cur[j]=prev[j-1]+1;if(cur[j]>best)best=cur[j];}
-    }
-    prev=cur;
-  }
+  const aa=Array.from(a),bb=Array.from(b);let prev=new Array(bb.length+1).fill(0),best=0;
+  for(let i=1;i<=aa.length;i++){const cur=new Array(bb.length+1).fill(0);for(let j=1;j<=bb.length;j++){if(aa[i-1]===bb[j-1]){cur[j]=prev[j-1]+1;if(cur[j]>best)best=cur[j]}}prev=cur}
   return best;
 }
+function fuzzySubstringScore(a,b){
+  if(!a||!b)return {score:0,matched:0};
+  const aa=Array.from(a),bb=Array.from(b);
+  if(aa.length<4||bb.length<4)return {score:0,matched:0};
+  const short=aa.length<=bb.length?aa:bb, long=aa.length<=bb.length?bb:aa;
+  let best=0,bestLen=0;
+  const target=short.length;
+  const minLen=Math.max(3,target-2),maxLen=Math.min(long.length,target+2);
+  for(let len=minLen;len<=maxLen;len++){
+    for(let i=0;i+len<=long.length;i++){
+      const win=long.slice(i,i+len).join('');
+      const s=1-lev(short.join(''),win)/Math.max(short.length,win.length);
+      if(s>best){best=s;bestLen=len}
+    }
+  }
+  return {score:best,matched:bestLen};
+}
 function candidateScore(raw,item){
-  const a=normJPStrict(raw), b=normJPStrict(item), al=normJPLoose(raw), bl=normJPLoose(item);
-  if(!a||!b)return {score:0,lev:0,lcs:0,dice:0,strict:0,loose:0,common:0};
+  const a=normJPStrict(raw),b=normJPStrict(item),al=normJPLoose(raw),bl=normJPLoose(item);
+  if(!a||!b)return {score:0,lev:0,lcs:0,dice:0,strict:0,loose:0,common:0,substring:0,matched:0};
   const ld=1-lev(a,b)/Math.max(a.length,b.length);
   const lc=lcsLen(a,b)/Math.max(a.length,b.length);
   const dc=dice(a,b);
   const loose=1-lev(al,bl)/Math.max(al.length,bl.length);
-  const score=.34*ld+.26*lc+.18*dc+.22*loose;
-  return {score,lev:ld,lcs:lc,dice:dc,strict:(ld+lc+dc)/3,loose,common:commonSubstringLen(al,bl)/Math.max(1,Math.min(al.length,bl.length))};
+  const sub=fuzzySubstringScore(al,bl);
+  const common=commonSubstringLen(al,bl)/Math.max(1,Math.min(al.length,bl.length));
+  // 全文一致より「長い部分一致」を重視。画面OCRで前半/後半が欠けるケースを想定。
+  const score=.24*ld+.16*lc+.10*dc+.08*loose+.30*sub.score+.12*common;
+  return {score,lev:ld,lcs:lc,dice:dc,strict:(ld+lc+dc)/3,loose,common,substring:sub.score,matched:sub.matched};
 }
-function getDictionary(){
-  try{ if(Array.isArray(window.DB?.weapons)&&window.DB.weapons.length) return [...new Set(window.DB.weapons.map(w=>String(w?.name||'')).filter(Boolean))]; }catch(e){}
-  return WEAPON_DICTIONARY;
-}
-function confidenceWeight(conf){
-  if(conf>=85)return 1.00;
-  if(conf>=75)return .90;
-  if(conf>=65)return .78;
-  if(conf>=50)return .62;
-  if(conf>=35)return .45;
-  return .30;
-}
-function dynamicMarginRequired(name){
-  const n=Array.from(normJPStrict(name)).length;
-  if(n<=4)return .16;
-  if(n<=7)return .12;
-  if(n<=11)return .09;
-  return .07;
-}
+function getDictionary(){return weaponDB.map(w=>w.name)}
+function getWeaponItems(raw){return searchWeaponItems(raw)}
+function confidenceWeight(conf){if(conf>=85)return 1;if(conf>=75)return .90;if(conf>=65)return .78;if(conf>=50)return .62;if(conf>=35)return .45;return .30}
+function dynamicMarginRequired(name){const n=Array.from(normJPStrict(name)).length;if(n<=4)return .16;if(n<=7)return .12;if(n<=11)return .09;return .07}
 function partialEvidence(raw,item){
-  const a=normJPLoose(raw), b=normJPLoose(item);
-  if(!a||!b)return {common:0,grams:0};
-  const min=Math.min(a.length,b.length);
-  const common=commonSubstringLen(a,b)/Math.max(1,min);
-  let grams=0;
-  for(const n of [2,3,4]){
-    for(let i=0;i<=b.length-n;i++){
-      if(a.includes(b.slice(i,i+n))) grams += n>=3 ? 2 : 1;
-    }
-  }
-  return {common,grams:Math.min(1,grams/Math.max(6,b.length))};
+  const a=normJPLoose(raw),b=normJPLoose(item);if(!a||!b)return {common:0,grams:0,substring:0,matched:0};
+  const sub=fuzzySubstringScore(a,b);const common=commonSubstringLen(a,b)/Math.max(1,Math.min(a.length,b.length));
+  let grams=0;for(const n of [2,3,4])for(let i=0;i<=b.length-n;i++)if(a.includes(b.slice(i,i+n)))grams+=n>=3?2:1;
+  return {common,grams:Math.min(1,grams/Math.max(6,b.length)),substring:sub.score,matched:sub.matched};
 }
-function tokenEvidence(raw,item){
-  const p=partialEvidence(raw,item);
-  return Math.min(1,.55*p.common+.45*p.grams);
+function tokenEvidence(raw,item){const p=partialEvidence(raw,item);return Math.min(1,.35*p.common+.25*p.grams+.40*p.substring)}
+function candidateHasEnoughEvidence(c){
+  // 「一番近い名前」を必ず候補にしないための下限。
+  return !!c && ((c.similarity>=.55&&c.substring>=.58) || c.substring>=.72 || (c.similarity>=.68&&c.common>=.55));
 }
 function renderCandidates(cands,meta){
-  const out=$("candidateOut"); if(!cands.length){out.innerHTML='<div class="notice">候補を作れませんでした。</div>';return}
+  const out=$("candidateOut");
+  if(!cands.length){out.innerHTML='<div class="notice">該当する武器候補を確認できませんでした。無理に別の武器名へ置換していません。</div>';return}
   out.innerHTML=cands.slice(0,5).map((c,i)=>{
-    const pct=Math.round(c.final*100), cls=pct>=78?'background:#eef2e8':pct>=60?'background:#f6f1df':'background:#f5e8e4';
-    return `<div style="${cls};border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:7px"><b>${i+1}位　${c.name}</b><br><span class="note">総合 ${pct}%　／　支持 ${c.support}/${meta.total}回　／　OCR相互一致 ${Math.round(c.consensus*100)}%　／　辞書一致 ${Math.round(c.bestSimilarity*100)}%</span></div>`;
-  }).join('')+
-  `<div class="note" style="margin-top:8px">${meta.decision}</div>`;
+    const pct=Math.round(c.final*100),cls=pct>=78?'background:#eef2e8':pct>=60?'background:#f6f1df':'background:#f5e8e4';
+    return `<div style="${cls};border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:7px"><b>${i+1}位　${c.name}</b><br><span class="note">総合 ${pct}%　／　支持 ${c.support}/${meta.total}回　／　部分一致 ${Math.round(c.bestSubstring*100)}%　／　辞書一致 ${Math.round(c.bestSimilarity*100)}%</span></div>`;
+  }).join('')+`<div class="note" style="margin-top:8px">${meta.decision}</div>`;
 }
 function cleanOCR(raw){return String(raw||'').replace(/[\r\n]+/g,' ').replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim()}
 $('ocr').onclick=async()=>{
@@ -394,6 +509,7 @@ $('ocr').onclick=async()=>{
   updateCrop();updateNameCrop();$('ocr').disabled=true;
   const started=performance.now();
   try{
+    await ensureWeaponDB();
     const worker=await Tesseract.createWorker('jpn');
     const dict=getDictionary();
     const ocrWhitelist=buildOCRWhitelist(dict);
@@ -455,13 +571,13 @@ $('ocr').onclick=async()=>{
     };
 
     const rankRow=(raw,conf,symbols)=>{
-      return dict.map(item=>{
-        const s=candidateScore(raw,item);
-        const ev=tokenEvidence(raw,item);
+      return getWeaponItems(raw).map(item=>{
+        const s=candidateScore(raw,item.name);
+        const ev=tokenEvidence(raw,item.name);
         const cw=confidenceWeight(conf);
-        const char=charConfFor(raw,symbols,item);
-        const score=.52*s.score+.16*ev+.12*cw+.10*s.common+.10*char.score;
-        return {name:item,similarity:s.score,evidence:ev,confidenceWeight:cw,charConfidence:char.score,charCoverage:char.coverage,score,common:s.common};
+        const char=charConfFor(raw,symbols,item.name);
+        const score=.42*s.score+.18*ev+.10*cw+.08*s.common+.07*s.substring+.15*char.score;
+        return {id:item.id,gameId:item.gameId,kind:item.kind,name:item.name,similarity:s.score,substring:s.substring,evidence:ev,confidenceWeight:cw,charConfidence:char.score,charCoverage:char.coverage,score,common:s.common};
       }).sort((a,b)=>b.score-a.score);
     };
 
@@ -525,40 +641,28 @@ $('ocr').onclick=async()=>{
       const agg=new Map();
       for(const row of rows){
         const ranked=rankRow(row.raw,row.conf,row.symbols);
-        row.best=ranked[0]||null;
+        const bestAvailable=ranked[0]||null;
+        row.best=candidateHasEnoughEvidence(bestAvailable)?bestAvailable:null;
         row.second=ranked[1]||null;
         if(!row.best)continue;
-
         const evidence=row.best.score*(.35+.65*confidenceWeight(row.conf));
-        const old=agg.get(row.best.name)||{
-          name:row.best.name,support:0,weightedSupport:0,
-          bestRowScore:0,bestConf:0,sumScore:0,sumConf:0,
-          bestSimilarity:0,topRows:[]
-        };
-        old.support++;
-        old.weightedSupport+=evidence;
-        old.sumScore+=row.best.score;
-        old.sumConf+=row.conf;
-        old.bestRowScore=Math.max(old.bestRowScore,row.best.score);
-        old.bestConf=Math.max(old.bestConf,row.conf);
-        old.bestSimilarity=Math.max(old.bestSimilarity,row.best.similarity);
-        old.topRows.push({score:row.best.score,similarity:row.best.similarity,conf:row.conf,charConfidence:row.best.charConfidence||0,charCoverage:row.best.charCoverage||0});
+        const old=agg.get(row.best.name)||{name:row.best.name,id:row.best.id,gameId:row.best.gameId,kind:row.best.kind,support:0,weightedSupport:0,bestRowScore:0,bestConf:0,sumScore:0,sumConf:0,bestSimilarity:0,bestSubstring:0,topRows:[]};
+        old.support++;old.weightedSupport+=evidence;old.sumScore+=row.best.score;old.sumConf+=row.conf;
+        old.bestRowScore=Math.max(old.bestRowScore,row.best.score);old.bestConf=Math.max(old.bestConf,row.conf);
+        old.bestSimilarity=Math.max(old.bestSimilarity,row.best.similarity);old.bestSubstring=Math.max(old.bestSubstring,row.best.substring||0);
+        old.topRows.push({score:row.best.score,similarity:row.best.similarity,substring:row.best.substring||0,conf:row.conf,charConfidence:row.best.charConfidence||0,charCoverage:row.best.charCoverage||0});
         agg.set(row.best.name,old);
       }
-
       return [...agg.values()].map(x=>{
-        x.topRows.sort((a,b)=>b.score-a.score);
-        const top=x.topRows.slice(0,3);
+        x.topRows.sort((a,b)=>b.score-a.score);const top=x.topRows.slice(0,3);
         const avg=top.length?top.reduce((s,r)=>s+r.score,0)/top.length:0;
         const avgConf=top.length?top.reduce((s,r)=>s+r.conf,0)/top.length:0;
-        const share=x.support/Math.max(1,rows.length);
-        const consensus=consensusFor(x.name);
-        const confTerm=Math.min(1,avgConf/100);
         const avgChar=top.length?top.reduce((s,r)=>s+r.charConfidence,0)/top.length:0;
-        // Weak OCRs no longer drag down strong evidence as heavily:
-        // use top evidence, then add OCR↔OCR consensus as an independent signal.
-        const final=.34*avg+.15*share+.15*x.bestRowScore+.07*confTerm+.09*avgChar+.20*consensus.score;
-        return {...x,avg,avgConf,share,consensus:consensus.score,consensusCore:consensus.core,consensusSupport:consensus.support,final};
+        const avgSub=top.length?top.reduce((s,r)=>s+r.substring,0)/top.length:0;
+        const share=x.support/Math.max(1,rows.length);const consensus=consensusFor(x.name);
+        const confTerm=Math.min(1,avgConf/100);
+        const final=.28*avg+.15*share+.12*x.bestRowScore+.06*confTerm+.07*avgChar+.12*avgSub+.20*consensus.score;
+        return {...x,avg,avgConf,share,avgSub,consensus:consensus.score,consensusCore:consensus.core,consensusSupport:consensus.support,final};
       }).sort((a,b)=>b.final-a.final);
     };
 
@@ -625,31 +729,30 @@ $('ocr').onclick=async()=>{
     const margin=best?best.final-(second?.final||0):0;
     const direct=highConfidenceDirect(ranked);
     const consensus=multiEvidenceStrong(ranked);
-    const confirmed=direct||consensus;
+    const confirmed=!!best&&(direct||consensus);
     const elapsed=(performance.now()-started)/1000;
 
     if(best){
       const pct=Math.round(Math.min(99,best.final*100));
-      const mode=direct?'高信頼OCR＋辞書一致':consensus?'複数OCR合意':'判定保留';
+      const mode=direct?'高信頼OCR＋DB一致':consensus?'複数OCR合意':'判定保留';
       $('recognized').innerHTML=`${confirmed?best.name:`候補：${best.name}`} <span class="corrected-tag">${mode} ${pct}% / 支持 ${best.support}/${rows.length}</span>`;
     }else{
-      $('recognized').textContent='文字を認識できませんでした';
+      $('recognized').textContent='該当候補なし（OCR文字は取得できましたが、全武器DBに十分な一致がありません）';
     }
 
     $('raw').textContent=rows.map((r,i)=>{
       const b=r.best;
-      return `【${i+1} ${r.name} / OCR信頼度 ${Math.round(r.conf)}%】\n・生OCR：${r.raw}\n・DB候補：${b?.name||'(なし)'}（一致 ${Math.round((b?.similarity||0)*100)}% / 行スコア ${Math.round((b?.score||0)*100)}% / 文字信頼 ${Math.round((b?.charConfidence||0)*100)}%）`;
+      return `【${i+1} ${r.name} / OCR信頼度 ${Math.round(r.conf)}%】\n・生OCR：${r.raw}\n・DB候補：${b?.name||'(十分な一致なし)'}${b?`（一致 ${Math.round(b.similarity*100)}% / 部分一致 ${Math.round((b.substring||0)*100)}% / 行スコア ${Math.round(b.score*100)}% / 文字信頼 ${Math.round((b.charConfidence||0)*100)}%）`:''}`;
     }).join('\n\n');
     if(best){
-      const ctext=best.consensusCore ? ` / OCR共通核「${best.consensusCore}」` : '';
-      $('raw').textContent += `\n\n【OCR↔OCR一致性】\n・最有力候補：${best.name}\n・相互一致：${Math.round(best.consensus*100)}%\n・共通核：${best.consensusCore||'(なし)'}\n・共通核支持：${best.consensusSupport||0}組${ctext?'':''}`;
+      $('raw').textContent += `\n\n【OCR↔OCR一致性】\n・最有力候補：${best.name}\n・相互一致：${Math.round(best.consensus*100)}%\n・共通核：${best.consensusCore||'(なし)'}\n・共通核支持：${best.consensusSupport||0}組`;
     }
 
     renderCandidates(ranked,{
       total:rows.length,
       decision:confirmed
-        ?`${direct?'高信頼OCR＋辞書一致':'複数OCR合意'}で自動確定候補。候補差 ${Math.round(margin*100)}%。OCR↔OCR一致性も加味。`
-        :`OCR信頼度・OCR同士の一致・辞書一致・複数支持を統合しても差が不足。判定保留。`
+        ?`${direct?'高信頼OCR＋DB一致':'複数OCR合意'}で自動確定候補。候補差 ${Math.round(margin*100)}%。部分一致とOCR↔OCR一致性も加味。`
+        :`全武器DBの中で十分な一致を確認できないため判定保留。最も近い名前を無理に正解扱いしません。`
     });
 
     $('ocrStatus').textContent=`解析完了：${rows.length}回の有効OCR / ${elapsed.toFixed(1)}秒 / ${confirmed?'自動確定候補':'判定保留'}`;
