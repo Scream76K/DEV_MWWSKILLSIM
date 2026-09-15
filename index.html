@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1：メイン武器</h1>
+<h1>MH Wilds OCR — Step 1.1：メイン武器OCR改善</h1>
 <div class="note">
 今回のスクショ構成だけを対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -51,7 +51,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <div class="card">
 <h2>2. メイン武器領域</h2>
 <div class="note">
-赤枠が今回OCRする範囲です。まず初期値を試し、必要なら枠をドラッグして調整します。
+赤枠が今回OCRする範囲です。まず初期値を試し、必要なら枠をドラッグして調整します。OCRは元画像から直接3倍拡大して処理します。
 このStepでは「画面全体OCR」は行いません。
 </div>
 <div id="stage">
@@ -79,7 +79,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>4. OCR結果</h2>
+<h2>4. OCR結果（4方式比較）</h2>
 <div id="recognized" class="result">未実行</div>
 <div class="status" id="ocrStatus"></div>
 <pre id="raw"></pre>
@@ -90,8 +90,8 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <div class="note">
 ① 赤枠が上段のメイン武器名だけを含む<br>
 ② 下段のサブ武器名を含まない<br>
-③ OCR結果が多少崩れていても、次StepでMHDB候補検索に渡せる程度の情報が残る<br>
-④ この4条件を確認してから、防具認識へ進みます
+③ 4方式のうち少なくとも1方式で、日本語の武器名が読める<br>
+④ ここを確認してから、防具認識へ進みます
 </div>
 </div>
 </main>
@@ -192,18 +192,59 @@ document.querySelectorAll(".handle").forEach(handle=>{
   handle.addEventListener("pointerup",()=>drag=null);
 });
 
+function makeOCRCanvas(mode){
+  const v=vals();
+  const sx=Math.round(imgW*v.x/100), sy=Math.round(imgH*v.y/100);
+  const sw=Math.max(1,Math.round(imgW*v.w/100)), sh=Math.max(1,Math.round(imgH*v.h/100));
+  const scale=3;
+  const c=document.createElement("canvas");
+  c.width=sw*scale;c.height=sh*scale;
+  const ctx=c.getContext("2d",{willReadFrequently:true});
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality="high";
+  ctx.drawImage($("img"),sx,sy,sw,sh,0,0,c.width,c.height);
+  if(mode==="gray"||mode==="threshold"){
+    const d=ctx.getImageData(0,0,c.width,c.height);
+    for(let i=0;i<d.data.length;i+=4){
+      const y=0.299*d.data[i]+0.587*d.data[i+1]+0.114*d.data[i+2];
+      const v2=mode==="threshold"?(y>145?255:0):y;
+      d.data[i]=d.data[i+1]=d.data[i+2]=v2;
+    }
+    ctx.putImageData(d,0,0);
+  }
+  return c;
+}
+function cleanOCR(s){
+  return String(s||"").replace(/[\\t ]+/g," ").replace(/\\n{2,}/g,"\\n").trim();
+}
 $("ocr").onclick=async()=>{
   if(!$("img").src){$("ocrStatus").textContent="先に画像を選択してください。";return}
   updateCrop();
-  $("ocr").disabled=true;$("ocrStatus").textContent="メイン武器領域だけをOCR中…";
+  $("ocr").disabled=true;$("ocrStatus").textContent="高解像度の切り出しを4方式でOCR中…";
   try{
     const worker=await Tesseract.createWorker("jpn");
-    const result=await worker.recognize($("crop"),{tessedit_pageseg_mode:"7"});
-    const text=String(result?.data?.text||"").replace(/\s+/g," ").trim();
-    $("recognized").textContent=text||"文字を認識できませんでした";
-    $("raw").textContent=String(result?.data?.text||"");
-    $("ocrStatus").textContent=`OCR完了。信頼度：${Math.round(Number(result?.data?.confidence||0))}%`;
+    const passes=[
+      {name:"カラー・PSM6",mode:"color",psm:6},
+      {name:"カラー・PSM11",mode:"color",psm:11},
+      {name:"グレースケール・PSM6",mode:"gray",psm:6},
+      {name:"2値化・PSM6",mode:"threshold",psm:6}
+    ];
+    const results=[];
+    for(const p of passes){
+      $("ocrStatus").textContent=`OCR中：${p.name}`;
+      const c=makeOCRCanvas(p.mode);
+      const r=await worker.recognize(c,{tessedit_pageseg_mode:String(p.psm)});
+      const text=cleanOCR(r?.data?.text||"");
+      const confidence=Number(r?.data?.confidence||0);
+      results.push({name:p.name,text,confidence});
+    }
     await worker.terminate();
+
+    results.sort((a,b)=>b.confidence-a.confidence);
+    const best=results[0];
+    $("recognized").textContent=best.text||"文字を認識できませんでした";
+    $("raw").textContent=results.map((r,i)=>`【${i+1}位：${r.name} / 信頼度 ${Math.round(r.confidence)}%】\\n${r.text||"(空)"}`).join("\\n\\n");
+    $("ocrStatus").textContent=`4方式の比較完了。最高信頼度：${Math.round(best.confidence)}%（${best.name}）`;
   }catch(err){
     $("ocrStatus").textContent="OCRエラー："+String(err);
   }finally{$("ocr").disabled=false}
