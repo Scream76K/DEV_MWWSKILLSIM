@@ -392,7 +392,7 @@ $('ocr').onclick=async()=>{
     });
 
 
-    // Step 1.7:
+    // Step 1.8:
     // OCR信頼度を「表示値」から正式な判定根拠へ昇格。
     // 高信頼OCR + 高辞書一致なら即終了し、低信頼OCRは複数支持で補う。
     const fast=[
@@ -407,13 +407,49 @@ $('ocr').onclick=async()=>{
     ];
     const rows=[];
 
-    const rankRow=(raw,conf)=>{
+    // Step 1.8: Tesseractの文字単位信頼度を補助証拠として利用。
+    // 全体confidenceだけでなく、候補名の各文字がOCR結果のどこで高信頼に読まれたかを見る。
+    const symbolInfo=(r)=>{
+      const syms=Array.isArray(r?.data?.symbols)?r.data.symbols:[];
+      return syms.map(x=>({text:String(x?.text||''),conf:Number(x?.confidence||0)}))
+        .filter(x=>x.text);
+    };
+    const charConfFor=(raw, symbols, candidate)=>{
+      const rr=normJPLoose(raw||'');
+      const cc=normJPLoose(candidate||'');
+      if(!rr||!cc||!symbols?.length)return {score:0,coverage:0,matched:0};
+      const chars=Array.from(symbols).map(x=>({text:normJPLoose(x.text),conf:x.conf})).filter(x=>x.text);
+      const flat=chars.map(x=>Array.from(x.text).map(ch=>({ch,conf:x.conf}))).flat();
+      const rchars=Array.from(rr);
+      const cchars=Array.from(cc);
+      // Find the best ordered alignment of candidate characters inside OCR text.
+      let best={score:0,coverage:0,matched:0};
+      for(let start=0;start<rchars.length;start++){
+        let pos=start,total=0,matched=0,confSum=0;
+        for(const ch of cchars){
+          let found=-1;
+          for(let k=pos;k<Math.min(rchars.length,pos+4);k++) if(rchars[k]===ch){found=k;break;}
+          if(found<0)continue;
+          matched++; confSum+=flat[found]?.conf||0; total+=1; pos=found+1;
+        }
+        if(total){
+          const coverage=matched/cchars.length;
+          const avg=(confSum/matched)/100;
+          const score=.65*coverage+.35*avg;
+          if(score>best.score)best={score,coverage,matched};
+        }
+      }
+      return best;
+    };
+
+    const rankRow=(raw,conf,symbols)=>{
       return dict.map(item=>{
         const s=candidateScore(raw,item);
         const ev=tokenEvidence(raw,item);
         const cw=confidenceWeight(conf);
-        const score=.58*s.score+.18*ev+.16*cw+.08*s.common;
-        return {name:item,similarity:s.score,evidence:ev,confidenceWeight:cw,score,common:s.common};
+        const char=charConfFor(raw,symbols,item);
+        const score=.52*s.score+.16*ev+.12*cw+.10*s.common+.10*char.score;
+        return {name:item,similarity:s.score,evidence:ev,confidenceWeight:cw,charConfidence:char.score,charCoverage:char.coverage,score,common:s.common};
       }).sort((a,b)=>b.score-a.score);
     };
 
@@ -476,7 +512,7 @@ $('ocr').onclick=async()=>{
     const aggregate=()=>{
       const agg=new Map();
       for(const row of rows){
-        const ranked=rankRow(row.raw,row.conf);
+        const ranked=rankRow(row.raw,row.conf,row.symbols);
         row.best=ranked[0]||null;
         row.second=ranked[1]||null;
         if(!row.best)continue;
@@ -494,7 +530,7 @@ $('ocr').onclick=async()=>{
         old.bestRowScore=Math.max(old.bestRowScore,row.best.score);
         old.bestConf=Math.max(old.bestConf,row.conf);
         old.bestSimilarity=Math.max(old.bestSimilarity,row.best.similarity);
-        old.topRows.push({score:row.best.score,similarity:row.best.similarity,conf:row.conf});
+        old.topRows.push({score:row.best.score,similarity:row.best.similarity,conf:row.conf,charConfidence:row.best.charConfidence||0,charCoverage:row.best.charCoverage||0});
         agg.set(row.best.name,old);
       }
 
@@ -506,9 +542,10 @@ $('ocr').onclick=async()=>{
         const share=x.support/Math.max(1,rows.length);
         const consensus=consensusFor(x.name);
         const confTerm=Math.min(1,avgConf/100);
+        const avgChar=top.length?top.reduce((s,r)=>s+r.charConfidence,0)/top.length:0;
         // Weak OCRs no longer drag down strong evidence as heavily:
         // use top evidence, then add OCR↔OCR consensus as an independent signal.
-        const final=.36*avg+.16*share+.16*x.bestRowScore+.08*confTerm+.24*consensus.score;
+        const final=.34*avg+.15*share+.15*x.bestRowScore+.07*confTerm+.09*avgChar+.20*consensus.score;
         return {...x,avg,avgConf,share,consensus:consensus.score,consensusCore:consensus.core,consensusSupport:consensus.support,final};
       }).sort((a,b)=>b.final-a.final);
     };
@@ -550,7 +587,8 @@ $('ocr').onclick=async()=>{
       const r=await worker.recognize(c);
       const raw=cleanOCR(r?.data?.text||'');
       const conf=Number(r?.data?.confidence||0);
-      if(raw)rows.push({name:p.name,raw,conf});
+      const symbols=symbolInfo(r);
+      if(raw)rows.push({name:p.name,raw,conf,symbols});
     };
 
     for(const p of fast){
@@ -588,7 +626,7 @@ $('ocr').onclick=async()=>{
 
     $('raw').textContent=rows.map((r,i)=>{
       const b=r.best;
-      return `【${i+1} ${r.name} / OCR信頼度 ${Math.round(r.conf)}%】\n・生OCR：${r.raw}\n・DB候補：${b?.name||'(なし)'}（一致 ${Math.round((b?.similarity||0)*100)}% / 行スコア ${Math.round((b?.score||0)*100)}%）`;
+      return `【${i+1} ${r.name} / OCR信頼度 ${Math.round(r.conf)}%】\n・生OCR：${r.raw}\n・DB候補：${b?.name||'(なし)'}（一致 ${Math.round((b?.similarity||0)*100)}% / 行スコア ${Math.round((b?.score||0)*100)}% / 文字信頼 ${Math.round((b?.charConfidence||0)*100)}%）`;
     }).join('\n\n');
     if(best){
       const ctext=best.consensusCore ? ` / OCR共通核「${best.consensusCore}」` : '';
