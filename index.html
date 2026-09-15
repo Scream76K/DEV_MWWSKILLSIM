@@ -2375,4 +2375,116 @@ renderComboKinds();dataState=emptyDataState();App.data.set(DB,dataState);renderD
 
 
 try{const v=document.getElementById('appVersionText');if(v)v.textContent=App.version;}catch(e){}
-</script></body></html>
+
+/* v7.3.0 OCR confirmation UI: one initial best candidate, alternatives in dropdown. */
+(function(){
+  const SI = window.ScreenshotImporter;
+  if(!SI) return;
+
+  SI._v73Candidates = [];
+  SI.renderConfirmation = function(){
+    const panel=document.getElementById('ocrConfirmPanel');
+    const rows=document.getElementById('ocrConfirmRows');
+    if(!panel || !rows) return;
+    const cs=(this.candidates||[]).filter(c=>c && c.kind && c.item);
+    const order=['weapon','armor','charm','decoration'];
+    const armorOrder=['頭防具','胴防具','腕防具','腰防具','脚防具'];
+    const grouped=[];
+    const seen={};
+    for(const c of cs){
+      let key=c.kind==='armor' ? (c.label||'防具') : c.kind;
+      if(!seen[key]){ seen[key]=[]; grouped.push(key); }
+      if(seen[key].length<3) seen[key].push(c);
+    }
+    rows.innerHTML='';
+    const frag=document.createDocumentFragment();
+    for(const key of grouped){
+      const arr=seen[key];
+      if(!arr.length) continue;
+      const row=document.createElement('div');
+      row.className='ocr-confirm-row';
+      const label=document.createElement('div');
+      label.className='ocr-confirm-label';
+      label.textContent=key==='weapon'?'武器':key==='charm'?'護石':key==='decoration'?'装飾品':key;
+      const select=document.createElement('select');
+      select.className='ocr-confirm-select';
+      select.dataset.ocrKey=key;
+      arr.sort((a,b)=>(b.score||0)-(a.score||0));
+      arr.forEach((c,i)=>{
+        const op=document.createElement('option');
+        op.value=String(i);
+        op.textContent=(i+1)+'位：'+(c.item?.name||c.name||'不明');
+        select.appendChild(op);
+      });
+      const none=document.createElement('option');
+      none.value='none'; none.textContent='該当なし';
+      select.appendChild(none);
+      row.appendChild(label); row.appendChild(select); frag.appendChild(row);
+    }
+    rows.appendChild(frag);
+    panel.style.display=grouped.length?'block':'none';
+    this._v73Candidates=grouped.flatMap(k=>seen[k]);
+  };
+
+  const oldBuild=SI.buildCandidates;
+  if(typeof oldBuild==='function'){
+    SI.buildCandidates=function(text){
+      const r=oldBuild.call(this,text);
+      // Keep only top 3 per semantic slot/category for the confirmation UI.
+      this.candidates=(this.candidates||[]).filter(Boolean);
+      this.renderConfirmation();
+      return r;
+    };
+  }
+
+  const oldAnalyze=SI.analyze;
+  if(typeof oldAnalyze==='function'){
+    SI.analyze=async function(){
+      const r=await oldAnalyze.apply(this,arguments);
+      this.renderConfirmation();
+      return r;
+    };
+  }
+
+  // Make Apply honor the user's dropdown choice when possible.
+  const oldApply=SI.apply;
+  if(typeof oldApply==='function'){
+    SI.apply=function(){
+      const panel=document.getElementById('ocrConfirmPanel');
+      if(panel){
+        const selects=[...panel.querySelectorAll('select[data-ocr-key]')];
+        const chosen=[];
+        for(const s of selects){
+          if(s.value==='none') continue;
+          const idx=Number(s.value);
+          const key=s.dataset.ocrKey;
+          const pool=(this._v73Candidates||[]).filter(c=>{
+            const k=c.kind==='armor'?(c.label||'防具'):c.kind;
+            return k===key;
+          }).sort((a,b)=>(b.score||0)-(a.score||0));
+          if(pool[idx]) chosen.push(pool[idx]);
+        }
+        if(chosen.length) this.candidates=chosen;
+      }
+      return oldApply.apply(this,arguments);
+    };
+  }
+})();
+
+</script>
+<style id="ocrConfirmStyle">
+#ocrConfirmPanel{margin-top:12px;padding:12px;border:1px solid #bbb;border-radius:10px;background:#fafafa}
+#ocrConfirmPanel h4{margin:0 0 8px}
+.ocr-confirm-row{display:grid;grid-template-columns:64px 1fr;gap:6px 10px;align-items:center;padding:7px 0;border-bottom:1px solid #ddd}
+.ocr-confirm-row:last-child{border-bottom:0}
+.ocr-confirm-label{font-weight:700;font-size:13px}
+.ocr-confirm-select{width:100%;padding:7px;border-radius:7px}
+.ocr-confirm-note{font-size:11px;color:#666;margin-top:8px}
+</style>
+<div id="ocrConfirmPanel" style="display:none">
+  <h4>OCR確認</h4>
+  <div id="ocrConfirmRows"></div>
+  <div class="ocr-confirm-note">初期値はOCRで最も可能性が高い候補です。違う場合はプルダウンから2位・3位、または「該当なし」を選択してください。</div>
+</div>
+
+</body></html>
