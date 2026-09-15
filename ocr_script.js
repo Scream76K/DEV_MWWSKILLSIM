@@ -2045,6 +2045,41 @@ async function copyAIPayload(){const payload=makeAIPrompt();if(!payload)return;t
 
 /* ================= Screenshot Import Experiment ================= */
 const ScreenshotImporter={
+  async preprocess(file,preset){
+    const img=await createImageBitmap(file);
+    const w=img.width,h=img.height;
+    const make=(sx,sy,sw,sh,mode='color')=>{
+      const scale=Math.min(2.5,2200/Math.max(sw,sh));
+      const c=document.createElement('canvas');
+      c.width=Math.max(1,Math.round(sw*scale));
+      c.height=Math.max(1,Math.round(sh*scale));
+      const ctx=c.getContext('2d',{willReadFrequently:true});
+      ctx.imageSmoothingEnabled=true;
+      ctx.drawImage(img,sx,sy,sw,sh,0,0,c.width,c.height);
+      // Keep the original color image for the primary OCR path. Thresholding
+      // is only used for the legacy fixed landscape crop, where it can help
+      // separate UI text from dark backgrounds.
+      if(mode==='threshold'){
+        const d=ctx.getImageData(0,0,c.width,c.height);
+        for(let i=0;i<d.data.length;i+=4){
+          const y=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
+          const v=y>150?255:y<80?0:Math.round((y-80)*255/70);
+          d.data[i]=d.data[i+1]=d.data[i+2]=v;
+          d.data[i+3]=255;
+        }
+        ctx.putImageData(d,0,0);
+      }
+      return c;
+    };
+    if((preset==='equipment-landscape'||preset==='decoration-landscape')&&w/h>1.45){
+      return [{
+        label:preset==='decoration-landscape'?'装飾品画面左側':'装備画面左側',
+        canvas:make(0,Math.round(h*.06),Math.round(w*.25),Math.round(h*.84),'threshold'),
+        auto:true
+      }];
+    }
+    return [{label:'画面全体',canvas:make(0,0,w,h,'color'),auto:true}];
+  },
   files:[],results:[],candidates:[],worker:null,
   normalizeText(v){return String(v||'').normalize('NFKC').replace(/[\s　\u3000]/g,'').replace(/[「」『』【】\[\]()（）・･,，.。:：/／\\]/g,'').toLowerCase();},
   distance(a,b){a=this.normalizeText(a);b=this.normalizeText(b);if(!a||!b)return Math.max(a.length,b.length);let prev=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const cur=[i];for(let j=1;j<=b.length;j++)cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=cur;}return prev[b.length];},
