@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <html lang="ja"><head>
-<meta name="app-version" content="7.3.1">
+<meta name="app-version" content="7.4.0">
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#2b2118" name="theme-color"/><link href="manifest.webmanifest" rel="manifest"/>
 <title>MH Wilds 装備セット＆火力シミュレーター v7.3.2</title>
@@ -214,7 +214,7 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
   .card:not(.support-card):after,.support-card:after{inset:4px}
 }
 </style></head><body>
-<div class="notice"><b>v7.3.2 テスト版</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">VERSION <span id="appVersionText">7.3.1</span></div>
+<div class="notice"><b>v7.3.2 テスト版</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">VERSION <span id="appVersionText">7.4.0</span></div>
 <header><div class="wrap"><h1>⚔️ MH Wilds 装備セット＆火力シミュレーター v7.3.2</h1><div class="muted">①〜⑤ ハンターズノート：装備を作る・記録する　｜　⑥〜⑧ ハンターズサポート：分析・提案・相談</div></div></header>
 <main class="wrap"><div class="grid"><aside>
 
@@ -484,7 +484,7 @@ build.artia.parts=build.artia.parts.slice(0,3); while(build.artia.parts.length<3
  * access state through App.* APIs rather than DOM or raw API objects.
  */
 const App={
-  version:'7.3.1',
+  version:'7.4.0',
   state:{
     db:DB, dataState:null, build:build, calc:calcState,
     hunt:{monsterId:'',partId:''}, combo:{moves:[],uptime:85,uptimeMode:'1'},
@@ -2314,29 +2314,153 @@ const ScreenshotImporter={
   normalizeText(v){return String(v||'').normalize('NFKC').replace(/[\s　\u3000]/g,'').replace(/[「」『』【】\[\]()（）・･,，.。:：/／\\]/g,'').toLowerCase();},
   distance(a,b){a=this.normalizeText(a);b=this.normalizeText(b);if(!a||!b)return Math.max(a.length,b.length);let prev=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const cur=[i];for(let j=1;j<=b.length;j++)cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=cur;}return prev[b.length];},
   score(text,name){const a=this.normalizeText(text),b=this.normalizeText(name);if(!a||!b)return 0;if(a===b)return 1;if(a.includes(b)||b.includes(a))return .94;return Math.max(0,1-this.distance(a,b)/Math.max(a.length,b.length));},
-  allNamed(kind){const db=App.data.get()||{};if(kind==='weapon')return Array.isArray(db.weapons)?db.weapons:[];if(kind==='armor')return Array.isArray(db.armor)?db.armor:[];if(kind==='charm'){return (db.charms||[]).flatMap(c=>(c.ranks||[]).map(r=>({id:c.id+'|'+r.id,name:r.name,skills:r.skills,source:c})));}return [];},
-  best(text,kind,limit=3){return this.allNamed(kind).map(item=>({item,score:this.score(text,item.name)})).filter(x=>x.score>=.42).sort((a,b)=>b.score-a.score).slice(0,limit);},
-  async preprocess(file,preset){const img=await createImageBitmap(file);const w=img.width,h=img.height;
-    const make=(sx,sy,sw,sh,mode='normal')=>{const scale=Math.min(3,2600/Math.max(sw,sh));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(sw*scale));c.height=Math.max(1,Math.round(sh*scale));const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,sx,sy,sw,sh,0,0,c.width,c.height);const d=ctx.getImageData(0,0,c.width,c.height);for(let i=0;i<d.data.length;i+=4){const y=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];let v;if(mode==='soft')v=y>178?255:y<55?0:Math.round((y-55)*255/123);else v=y>150?255:y<80?0:Math.round((y-80)*255/70);d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}ctx.putImageData(d,0,0);return c;};
+  allNamed(kind){
+    const db=App.data.get()||{};
+    if(kind==='weapon') return Array.isArray(db.weapons)?db.weapons:[];
+    if(kind==='armor') return Array.isArray(db.armor)?db.armor:[];
+    if(kind==='charm') return (db.charms||[]).flatMap(c=>(c.ranks||[]).map(r=>({id:c.id+'|'+r.id,name:r.name,skills:r.skills,source:c})));
+    if(kind==='decoration') return Array.isArray(db.decorations)?db.decorations:[];
+    return [];
+  },
+  normalizeNameForOCR(v){
+    let s=this.normalizeText(v);
+    // Common game-UI OCR confusions. Keep this conservative: these are only
+    // used for comparison, never written back to the DB.
+    return s.replace(/[Ａ-Ｚａ-ｚ０-９]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xfee0))
+      .replace(/[αΑ]/g,'a').replace(/[βΒ]/g,'b').replace(/[γΓ]/g,'g')
+      .replace(/[△▽]/g,'').replace(/[—ーｰ―‐‑]/g,'');
+  },
+  score(text,name){
+    const a=this.normalizeNameForOCR(text), b=this.normalizeNameForOCR(name);
+    if(!a||!b)return 0;
+    if(a===b)return 1;
+    if(a.includes(b)||b.includes(a))return .965;
+    const dist=this.distance(a,b), edit=Math.max(0,1-dist/Math.max(a.length,b.length));
+    // Character bigram overlap is more stable than raw edit distance for
+    // Japanese OCR that inserts/removes spaces or one noisy character.
+    const grams=x=>{const z=[];for(let i=0;i<x.length-1;i++)z.push(x.slice(i,i+2));return z;};
+    const ga=new Set(grams(a)), gb=new Set(grams(b));
+    let inter=0;for(const g of ga)if(gb.has(g))inter++;
+    const union=new Set([...ga,...gb]).size||1;
+    const jac=inter/union;
+    return Math.min(1,.72*edit+.28*jac);
+  },
+  best(text,kind,limit=3,minScore=.52){
+    return this.allNamed(kind).map(item=>({item,score:this.score(text,item.name)}))
+      .filter(x=>x.score>=minScore).sort((a,b)=>b.score-a.score).slice(0,limit);
+  },
+  cleanOCRText(v){
+    return String(v||'').replace(/\[自動抽出[^\]]*\]/g,'').replace(/\[自動判定[^\]]*\]/g,'')
+      .replace(/^(メイン|サブ)?武器[：:]?/,'').replace(/^(頭防具|胴防具|腕防具|腰防具|脚防具|護石)[：:]?/,'')
+      .replace(/^[|｜]+/,'').trim();
+  },
+  isUsefulLine(text){
+    const t=this.cleanOCRText(text), n=this.normalizeNameForOCR(t);
+    if(n.length<3)return false;
+    if(!/[一-龥ぁ-んァ-ン]/.test(t))return false;
+    if(/^(ステータス|装備スキル|攻撃ステータス|属性|会心率|防御力|火耐性|水耐性|雷耐性|氷耐性|龍耐性|装飾品を外す|決定|戻る|メニュー|装備変更)$/.test(t))return false;
+    return true;
+  },
+  async preprocess(file,preset){
+    const img=await createImageBitmap(file);const w=img.width,h=img.height;
+    const make=(sx,sy,sw,sh,mode='normal')=>{const scale=Math.min(3,2800/Math.max(sw,sh));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(sw*scale));c.height=Math.max(1,Math.round(sh*scale));const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,sx,sy,sw,sh,0,0,c.width,c.height);const d=ctx.getImageData(0,0,c.width,c.height);for(let i=0;i<d.data.length;i+=4){const y=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];let v;if(mode==='soft')v=y>182?255:y<48?0:Math.round((y-48)*255/134);else v=y>152?255:y<72?0:Math.round((y-72)*255/80);d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}ctx.putImageData(d,0,0);return c;};
     if(preset==='auto') return [{label:'自動判定・画面全体',canvas:make(0,0,w,h,'soft'),auto:true,source:{w,h}}];
-    if((preset==='equipment-landscape'||preset==='decoration-landscape')&&w/h>1.45){return [{label:preset==='decoration-landscape'?'装飾品画面左側':'装備画面左側',canvas:make(0,Math.round(h*.06),Math.round(w*.25),Math.round(h*.84))}];}
-    return [{label:'画面全体',canvas:make(0,0,w,h)}];
+    if((preset==='equipment-landscape'||preset==='decoration-landscape')&&w/h>1.45) return [{label:preset==='decoration-landscape'?'装飾品画面左側':'装備画面左側',canvas:make(0,Math.round(h*.06),Math.round(w*.25),Math.round(h*.84),'soft'),auto:true,source:{w,h}}];
+    return [{label:'画面全体',canvas:make(0,0,w,h,'soft'),auto:true,source:{w,h}}];
   },
   async autoRecognize(worker,canvas){
     const first=await worker.recognize(canvas,{tessedit_pageseg_mode:'11'});
-    const lines=Array.isArray(first?.data?.lines)?first.data.lines:[];
-    const out=[]; const seen=new Set();
-    for(const ln of lines){const txt=String(ln.text||'').trim();const bb=ln.bbox||{};if(!txt||txt.length<2)continue;const key=txt+'|'+Math.round(Number(bb.y0||0)/8);if(seen.has(key))continue;seen.add(key);
-      const pad=18;const x=Math.max(0,Number(bb.x0||0)-pad),y=Math.max(0,Number(bb.y0||0)-pad),x2=Math.min(canvas.width,Number(bb.x1||canvas.width)+pad),y2=Math.min(canvas.height,Number(bb.y1||canvas.height)+pad);if(x2-x<25||y2-y<12)continue;
-      const c=document.createElement('canvas');c.width=Math.min(2400,Math.max(300,Math.round((x2-x)*2.2)));c.height=Math.max(80,Math.round((y2-y)*2.2));const ctx=c.getContext('2d');ctx.drawImage(canvas,x,y,x2-x,y2-y,0,0,c.width,c.height);
-      try{const r=await worker.recognize(c,{tessedit_pageseg_mode:'7'});const t=String(r?.data?.text||'').trim();out.push({text:t||txt,y:Number(bb.y0||0),x:Number(bb.x0||0),bbox:bb});}catch(_){out.push({text:txt,y:Number(bb.y0||0),x:Number(bb.x0||0),bbox:bb});}
+    const lines=Array.isArray(first?.data?.lines)?first.data.lines:[]; const out=[]; const seen=new Set();
+    for(const ln of lines){
+      const txt=String(ln.text||'').trim(),bb=ln.bbox||{};if(!txt||txt.length<2)continue;
+      const x0=Number(bb.x0||0),y0=Number(bb.y0||0),x1=Number(bb.x1||canvas.width),y1=Number(bb.y1||canvas.height);
+      const key=this.normalizeNameForOCR(txt)+'|'+Math.round(y0/10);if(seen.has(key))continue;seen.add(key);
+      const pad=14,x=Math.max(0,x0-pad),y=Math.max(0,y0-pad),x2=Math.min(canvas.width,x1+pad),y2=Math.min(canvas.height,y1+pad);if(x2-x<28||y2-y<12)continue;
+      const c=document.createElement('canvas');c.width=Math.min(2600,Math.max(320,Math.round((x2-x)*2.4)));c.height=Math.min(400,Math.max(80,Math.round((y2-y)*2.4)));const ctx=c.getContext('2d');ctx.drawImage(canvas,x,y,x2-x,y2-y,0,0,c.width,c.height);
+      try{const r=await worker.recognize(c,{tessedit_pageseg_mode:'7'});const t=String(r?.data?.text||'').trim();out.push({text:t||txt,x:x0,y:y0,bbox:bb,conf:Number(r?.data?.confidence||0)});}catch(_){out.push({text:txt,x:x0,y:y0,bbox:bb,conf:0});}
     }
     return {full:first?.data?.text||'',lines:out};
   },
-  classifyLines(text){return String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(x=>x.length>=2&&/[一-龥ぁ-んァ-ン]/.test(x));},
-  buildCandidates(text){const lines=this.classifyLines(text),out=[],seen=new Set();const kinds=['weapon','armor','charm','decoration'];for(const line of lines){const cleaned=line.replace(/^(メイン|サブ)?武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石/,'').trim();if(cleaned.length<2)continue;let best=[];for(const kind of kinds){const b=this.best(cleaned,kind,3);if(b.length)best.push({...b[0],kind});}best.sort((a,b)=>b.score-a.score);const top=best[0];if(!top||top.score<.48)continue;const key=top.kind+':'+String(top.item.id);if(seen.has(key))continue;seen.add(key);out.push({label:top.kind==='weapon'?'武器':top.kind==='armor'?'防具':top.kind==='charm'?'護石':'装飾品',kind:top.kind,ocr:line,best:best.filter(x=>x.kind===top.kind),score:top.score});}let armorIndex=0;for(const c of out){if(c.kind==='armor')c.label=['頭防具','胴防具','腕防具','腰防具','脚防具'][armorIndex++]||'防具';}return out.slice(0,30);},
+  classifyLines(text){return String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(x=>this.isUsefulLine(x));},
+  anchorLines(lines){
+    const defs=[
+      ['head',/頭防具/],['chest',/胴防具/],['arms',/腕防具/],['waist',/腰防具/],['legs',/脚防具/],
+      ['weapon',/メイン武器|サブ武器/],['charm',/護石/],['decoration',/装飾品|珠/]
+    ];
+    const out={}; for(const [k,re] of defs){out[k]=lines.filter(l=>re.test(String(l.text||''))).sort((a,b)=>(a.y||0)-(b.y||0));} return out;
+  },
+  rankedForRegion(lines,kind,anchor=null){
+    const scored=[];
+    for(const l of lines){
+      const raw=this.cleanOCRText(l.text); if(!this.isUsefulLine(raw))continue;
+      const base=this.best(raw,kind,3,.40); if(!base.length)continue;
+      const dy=anchor?Math.abs(Number(l.y||0)-Number(anchor.y||0)):99999;
+      const dx=anchor?Math.abs(Number(l.x||0)-Number(anchor.x||0)):99999;
+      const proximity=anchor?Math.max(0,Math.min(.18,.18*(1-dy/180))):0;
+      for(const b of base) scored.push({...b,raw,y:Number(l.y||0),x:Number(l.x||0),regionScore:Math.min(1,b.score+proximity),dy,dx});
+    }
+    scored.sort((a,b)=>b.regionScore-a.regionScore || a.dy-b.dy || b.score-a.score);
+    const out=[],seen=new Set();for(const x of scored){const id=String(x.item?.id);if(seen.has(id))continue;seen.add(id);out.push(x);if(out.length>=3)break;}return out;
+  },
+  buildLayoutCandidates(results){
+    const all=[];for(const r of (results||[]))for(const l of (r.layoutLines||[]))all.push({...l,file:r.file});
+    const anchors=this.anchorLines(all),out=[];
+    const add=(label,kind,cands,ocr,meta={})=>{if(!cands?.length)return;const top=cands[0];if(!top||top.regionScore<.56)return;out.push({label,kind,ocr:ocr||top.raw,best:cands.slice(0,3),score:top.regionScore,...meta});};
+    const armor=[['頭防具','head'],['胴防具','chest'],['腕防具','arms'],['腰防具','waist'],['脚防具','legs']];
+    const usedArmor=new Set();
+    for(const [label,key] of armor){
+      const a=anchors[key]?.[0]||null; let c=[];
+      const pool=a?all.filter(l=>Math.abs(Number(l.y||0)-Number(a.y||0))<240):all;
+      c=this.rankedForRegion(pool,'armor',a);
+      c=c.filter(x=>!usedArmor.has(String(x.item?.id)));
+      if(!c.length && !a){
+        const fallback=this.rankedForRegion(all,'armor',null).filter(x=>!usedArmor.has(String(x.item?.id)));
+        c=fallback;
+      }
+      if(c.length)usedArmor.add(String(c[0].item?.id));
+      add(label,'armor',c,a?.text||'');
+    }
+    const wa=anchors.weapon?.[0]||null; add('武器','weapon',this.rankedForRegion(all,'weapon',wa),wa?.text||'');
+    const ch=anchors.charm?.[0]||null; add('護石','charm',this.rankedForRegion(all,'charm',ch),ch?.text||'');
+    // Decorations are detected by the name itself (珠【Lv】), and are searched only in the decoration DB.
+    const decoLines=all.filter(l=>{const t=String(l.text||'');return /珠/.test(t)||/【?\s*[123４５６]/.test(t);});
+    const decoSeen=new Set();let di=0;
+    for(const l of decoLines){const c=this.rankedForRegion([l],'decoration',null);if(!c.length||c[0].regionScore<.62)continue;const id=String(c[0].item.id);if(decoSeen.has(id))continue;decoSeen.add(id);out.push({label:'装飾品 '+(++di),kind:'decoration',ocr:l.text,best:c.slice(0,3),score:c[0].regionScore});}
+    // Never emit the same equipment record twice.
+    const seen=new Set(),clean=[];for(const c of out){const key=c.kind+':'+String(c.best?.[0]?.item?.id||'');if(!key.endsWith(':')&&!seen.has(key)){seen.add(key);clean.push(c);}}
+    return clean;
+  },
+  buildCandidates(text){
+    // Compatibility path for the manual "再照合" button. The main path uses layoutLines.
+    const pseudo=String(text||'').split(/\r?\n/).map((x,i)=>({text:x,x:0,y:i*30}));
+    return this.buildLayoutCandidates([{file:'',layoutLines:pseudo}]);
+  },
   renderCandidates(){const box=$('screenshotCandidates');if(!box)return;if(!this.candidates.length){box.classList.remove('hidden');box.innerHTML='<span class="warn">自動照合候補を作れませんでした。OCR結果を確認してください。</span>';return;}box.classList.remove('hidden');box.innerHTML='<b>認識候補（確認後に反映）</b>'+this.candidates.map((c,i)=>{const pct=Math.round(c.score*100),cls=pct>=85?'si-high':pct>=65?'si-mid':'si-low';return `<div class="si-candidate"><span>${esc(c.label)}</span><select data-si-choice="${i}">${c.best.map((x,j)=>`<option value="${j}">${esc(x.item.name)}</option>`).join('')}</select><span class="si-confidence ${cls}">${pct}%</span></div>`}).join('');},
-  async analyze(){if(!window.Tesseract){$('screenshotStatus').innerHTML='<span class="bad">OCRエンジンを読み込めませんでした。ネットワーク接続を確認してください。</span>';return;}if(!this.files.length){$('screenshotStatus').innerHTML='<span class="warn">先にスクショを選択してください。</span>';return;}if(!App.data.requiredReady()){$('screenshotStatus').innerHTML='<span class="warn">先に①データ取得でゲームデータを取得してください。</span>';return;}const prog=$('screenshotProgress');prog.style.display='block';prog.value=0;$('screenshotAnalyze').disabled=true;$('screenshotApply').disabled=true;this.results=[];try{this.worker=await Tesseract.createWorker('jpn',1,{logger:m=>{if(m.status==='recognizing text')prog.value=Math.round((m.progress||0)*100);}});for(let i=0;i<this.files.length;i++){const f=this.files[i];$('screenshotStatus').textContent=`解析中 ${i+1}/${this.files.length}：${f.name}`;const regions=await this.preprocess(f,$('screenshotPreset').value);let text='';for(const region of regions){if(region.auto){const ar=await this.autoRecognize(this.worker,region.canvas);text+=`\n[${region.label}]\n${ar.full||''}`;for(const ln of ar.lines){if(ln.text)text+=`\n[自動抽出 y=${Math.round(ln.y)}]\n${ln.text}`;}}else{const r=await this.worker.recognize(region.canvas,{tessedit_pageseg_mode:'6'});text+=`\n[${region.label}]\n${r.data.text||''}`;}}this.results.push({file:f.name,text});prog.value=Math.round((i+1)/this.files.length*100);}await this.worker.terminate();this.worker=null;$('screenshotRawText').classList.remove('hidden');$('screenshotRawText').textContent=this.results.map((r,i)=>`【${i+1} ${r.file}】\n${r.text}`).join('\n\n')||'OCR結果なし';this.candidates=this.buildCandidates(this.results.map(r=>r.text).join('\n'));this.renderCandidates();$('screenshotApply').disabled=!this.candidates.length;$('screenshotStatus').innerHTML='<span class="ok">✓ OCR解析とMHDB候補照合が完了しました。候補を確認してから反映してください。</span>';}catch(e){try{if(this.worker)await this.worker.terminate();}catch(_){}this.worker=null;$('screenshotStatus').innerHTML='<span class="bad">解析に失敗しました：'+esc(e.message||e)+'</span>';}finally{$('screenshotAnalyze').disabled=false;setTimeout(()=>prog.style.display='none',500);}},
+  async analyze(){
+    if(!window.Tesseract){$('screenshotStatus').innerHTML='<span class="bad">OCRエンジンを読み込めませんでした。ネットワーク接続を確認してください。</span>';return;}
+    if(!this.files.length){$('screenshotStatus').innerHTML='<span class="warn">先にスクショを選択してください。</span>';return;}
+    if(!App.data.requiredReady()){$('screenshotStatus').innerHTML='<span class="warn">先に①データ取得でゲームデータを取得してください。</span>';return;}
+    const prog=$('screenshotProgress');prog.style.display='block';prog.value=0;$('screenshotAnalyze').disabled=true;$('screenshotApply').disabled=true;this.results=[];
+    try{
+      this.worker=await Tesseract.createWorker('jpn',1,{logger:m=>{if(m.status==='recognizing text')prog.value=Math.round((m.progress||0)*100);}});
+      for(let i=0;i<this.files.length;i++){
+        const f=this.files[i];$('screenshotStatus').textContent=`解析中 ${i+1}/${this.files.length}：${f.name}`;
+        const regions=await this.preprocess(f,$('screenshotPreset').value);let text='',layoutLines=[];
+        for(const region of regions){
+          const ar=region.auto?await this.autoRecognize(this.worker,region.canvas):null;
+          if(ar){text+=`\n[${region.label}]\n${ar.full||''}`;layoutLines.push(...ar.lines.map(x=>({...x,region:region.label,sourceWidth:region.canvas.width,sourceHeight:region.canvas.height})));}
+          else{const r=await this.worker.recognize(region.canvas,{tessedit_pageseg_mode:'6'});text+=`\n[${region.label}]\n${r.data.text||''}`;}
+        }
+        this.results.push({file:f.name,text,layoutLines});prog.value=Math.round((i+1)/this.files.length*100);
+      }
+      await this.worker.terminate();this.worker=null;
+      $('screenshotRawText').classList.remove('hidden');$('screenshotRawText').textContent=this.results.map((r,i)=>`【${i+1} ${r.file}】\n${r.text}`).join('\n\n')||'OCR結果なし';
+      this.candidates=this.buildLayoutCandidates(this.results);
+      this.renderCandidates();
+      $('screenshotApply').disabled=!this.candidates.some(c=>c?.best?.length);
+      $('screenshotStatus').innerHTML='<span class="ok">✓ 画面構造を検出し、カテゴリ別OCRとMHDB候補照合が完了しました。候補を確認してから反映してください。</span>';
+    }catch(e){try{if(this.worker)await this.worker.terminate();}catch(_){}this.worker=null;$('screenshotStatus').innerHTML='<span class="bad">解析に失敗しました：'+esc(e.message||e)+'</span>';}finally{$('screenshotAnalyze').disabled=false;setTimeout(()=>prog.style.display='none',500);}
+  },
   apply(){if(!this.candidates.length)return;const armorMap={'頭防具':'head','胴防具':'chest','腕防具':'arms','腰防具':'waist','脚防具':'legs'};for(let i=0;i<this.candidates.length;i++){const c=this.candidates[i],sel=document.querySelector(`[data-si-choice="${i}"]`),idx=Number(sel?.value||0),item=c.best[idx]?.item;if(!item)continue;if(c.kind==='weapon'){const k=canonicalWeaponKind(item);if(k){setWeaponKindSelection(k);setWeaponSelectionById(item.id);}}else if(c.kind==='armor'){const slot=armorMap[c.label];if(slot)App.build.setArmor(slot,item);}else if(c.kind==='charm'){const skills=(item.skills||[]).map(x=>({name:x?.skill?.name||x?.name||'',level:Number(x?.level)||1,type:x?.skill?.kind==='weapon'?'weapon':'armor'})).filter(x=>x.name).slice(0,3);build.charmCustom.skills=skills;while(build.charmCustom.skills.length<3)build.charmCustom.skills.push({name:'',level:1,type:'armor'});build.charmCustom.slots=[0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;}else if(c.kind==='decoration'){} }renderArmor();renderCharmEditor();calcBuild();const hasDeco=this.candidates.some(c=>c.kind==='decoration');$('screenshotStatus').innerHTML='<span class="ok">✓ 確認した候補を現在の装備セットへ反映しました。'+(hasDeco?' 装飾品は今回の実験版では認識候補の表示までです。':'')+'</span>';},
   clear(){this.files=[];this.results=[];this.candidates=[];$('screenshotFiles').value='';$('screenshotPreview').innerHTML='';$('screenshotRawText').classList.add('hidden');$('screenshotCandidates').classList.add('hidden');$('screenshotApply').disabled=true;$('screenshotStatus').textContent='スクショを選択してください。';}
 };
@@ -2383,174 +2507,44 @@ renderComboKinds();dataState=emptyDataState();App.data.set(DB,dataState);renderD
 try{const v=document.getElementById('appVersionText');if(v)v.textContent=App.version;}catch(e){}
 
 
-/* v7.3.2 OCR confirmation UI */
+/* v7.4.0 OCR confirmation UI */
 (function(SI){
-  if(!SI) return;
-
-  const oldApply = SI.apply.bind(SI);
-
-  SI.renderConfirmation = function(){
-    const panel=document.getElementById('ocrConfirmPanel');
-    const rows=document.getElementById('ocrConfirmRows');
-    if(!panel || !rows) return;
-
-    const src=(this.candidates||[]).filter(c=>c && c.kind && Array.isArray(c.best) && c.best.length);
-    const groups=[];
-    const used=new Set();
-
-    // Armor: exactly one row per armor slot.
-    const armorLabels=['頭防具','胴防具','腕防具','腰防具','脚防具'];
-    for(const label of armorLabels){
-      const arr=src.filter(c=>c.kind==='armor' && c.label===label)
-                   .sort((a,b)=>(b.score||0)-(a.score||0));
-      if(arr.length) groups.push({key:label,type:'single',items:arr});
-      else groups.push({key:label,type:'empty',items:[]});
-    }
-
-    // Weapon / charm: one row each, top 3 candidate records.
-    for(const kind of ['weapon','charm']){
-      const arr=src.filter(c=>c.kind===kind)
-                   .sort((a,b)=>(b.score||0)-(a.score||0));
-      if(arr.length) groups.push({key:kind,type:'single',items:arr.slice(0,3)});
-      else groups.push({key:kind,type:'empty',items:[]});
-    }
-
-    // Decorations: one row per detected decoration, with its own top 3 DB matches.
-    src.filter(c=>c.kind==='decoration').forEach((c,i)=>{
-      groups.push({key:'decoration-'+i,type:'decoration',items:[c]});
-    });
-
+  if(!SI)return;
+  SI.renderCandidates=function(){
+    const panel=document.getElementById('ocrConfirmPanel'),rows=document.getElementById('ocrConfirmRows');if(!panel||!rows)return;
+    const src=(this.candidates||[]).filter(c=>c&&c.kind&&Array.isArray(c.best)&&c.best.length);
     rows.innerHTML='';
-    this._v731Groups=groups;
     const frag=document.createDocumentFragment();
-
-    const labelText=k=>k==='weapon'?'武器':k==='charm'?'護石':
-      k.startsWith('decoration-')?'装飾品':k;
-
-    groups.forEach((g,gi)=>{
-      const row=document.createElement('div');
-      row.className='ocr-confirm-row';
-
-      const label=document.createElement('div');
-      label.className='ocr-confirm-label';
-      label.textContent=labelText(g.key);
-      row.appendChild(label);
-
-      const select=document.createElement('select');
-      select.className='ocr-confirm-select';
-      select.dataset.ocrGroup=String(gi);
-
-      let options=[];
-      if(g.type==='empty'){
-        options=[{value:'none',text:'該当なし'}];
-      }else{
-        // For armor, g.items are candidate records; each record has its own best[0..].
-        // Flatten unique item choices and keep top 3 by score.
-        const flat=[];
-        for(const rec of g.items){
-          (rec.best||[]).slice(0,3).forEach((b,rank)=>{
-            if(!b?.item) return;
-            const id=String(b.item.id);
-            if(!flat.some(x=>String(x.item.id)===id))
-              flat.push({item:b.item,score:b.score||0,rank});
-          });
-        }
-        flat.sort((a,b)=>b.score-a.score);
-        options=flat.slice(0,3).map((x,i)=>({
-          value:String(i),
-          text:(i+1)+'位：'+(x.item.name||'不明')
-        }));
-        if(!options.length) options=[{value:'none',text:'該当なし'}];
-        options.push({value:'none',text:'該当なし'});
-        g._flat=flat.slice(0,3);
-      }
-
-      options.forEach(o=>{
-        const op=document.createElement('option');
-        op.value=o.value; op.textContent=o.text;
-        select.appendChild(op);
-      });
-      row.appendChild(select);
+    src.forEach((c,gi)=>{
+      const row=document.createElement('div');row.className='ocr-confirm-row';
+      const label=document.createElement('div');label.className='ocr-confirm-label';label.textContent=c.label||'候補';row.appendChild(label);
+      const select=document.createElement('select');select.className='ocr-confirm-select';select.dataset.ocrGroup=String(gi);
+      c.best.slice(0,3).forEach((b,i)=>{const op=document.createElement('option');op.value=String(i);op.textContent=`${i+1}位：${b.item?.name||'不明'}（${Math.round((b.regionScore??b.score??0)*100)}%）`;select.appendChild(op);});
+      const none=document.createElement('option');none.value='none';none.textContent='該当なし';select.appendChild(none);row.appendChild(select);
+      if(c.ocr){const sub=document.createElement('div');sub.className='ocr-confirm-ocr';sub.textContent='OCR: '+String(c.ocr);row.appendChild(sub);}
       frag.appendChild(row);
     });
-
-    rows.appendChild(frag);
-    panel.style.display='block';
+    if(!src.length){const d=document.createElement('div');d.className='muted';d.textContent='十分な確度の候補を検出できませんでした。スクショを変えるか「再照合」を試してください。';frag.appendChild(d);}
+    rows.appendChild(frag);panel.style.display='block';this._v740Groups=src;
   };
-
-  SI.apply = function(){
-    const panel=document.getElementById('ocrConfirmPanel');
-    if(!panel || !this._v731Groups) return oldApply();
-
+  const oldApply=SI.apply.bind(SI);
+  SI.apply=function(){
+    const groups=this._v740Groups||[];if(!groups.length)return oldApply();
     const armorMap={'頭防具':'head','胴防具':'chest','腕防具':'arms','腰防具':'waist','脚防具':'legs'};
-    const selects=[...panel.querySelectorAll('select[data-ocr-group]')];
-    let applied=0, hasDeco=false;
-
-    selects.forEach(sel=>{
-      const gi=Number(sel.dataset.ocrGroup);
-      const g=this._v731Groups[gi];
-      if(!g || sel.value==='none' || !g._flat) return;
-      const item=g._flat[Number(sel.value)]?.item;
-      if(!item) return;
-
-      if(g.key==='weapon'){
-        const k=canonicalWeaponKind(item);
-        if(k){setWeaponKindSelection(k);setWeaponSelectionById(item.id);applied++;}
-      }else if(armorMap[g.key]){
-        App.build.setArmor(armorMap[g.key],item); applied++;
-      }else if(g.key==='charm'){
-        const skills=(item.skills||[]).map(x=>({
-          name:x?.skill?.name||x?.name||'',
-          level:Number(x?.level)||1,
-          type:x?.skill?.kind==='weapon'?'weapon':'armor'
-        })).filter(x=>x.name).slice(0,3);
-        build.charmCustom.skills=skills;
-        while(build.charmCustom.skills.length<3)
-          build.charmCustom.skills.push({name:'',level:1,type:'armor'});
-        build.charmCustom.slots=[0,0];
-        build.charmCustom.weaponSlots=[];
-        build.charmCustom.weaponSlot=false;
-        applied++;
-      }else if(g.key.startsWith('decoration-')){
-        hasDeco=true;
-        // Decoration auto-equip remains intentionally deferred in this experiment.
-      }
+    const selects=[...document.querySelectorAll('#ocrConfirmPanel select[data-ocr-group]')];let applied=0,hasDeco=false;
+    selects.forEach(sel=>{const g=groups[Number(sel.dataset.ocrGroup)];if(!g||sel.value==='none')return;const item=g.best[Number(sel.value)]?.item;if(!item)return;
+      if(g.kind==='weapon'){const k=canonicalWeaponKind(item);if(k){setWeaponKindSelection(k);setWeaponSelectionById(item.id);applied++;}}
+      else if(armorMap[g.label]){App.build.setArmor(armorMap[g.label],item);applied++;}
+      else if(g.kind==='charm'){const skills=(item.skills||[]).map(x=>({name:x?.skill?.name||x?.name||'',level:Number(x?.level)||1,type:x?.skill?.kind==='weapon'?'weapon':'armor'})).filter(x=>x.name).slice(0,3);build.charmCustom.skills=skills;while(build.charmCustom.skills.length<3)build.charmCustom.skills.push({name:'',level:1,type:'armor'});build.charmCustom.slots=[0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;applied++;}
+      else if(g.kind==='decoration')hasDeco=true;
     });
-
-    renderArmor(); renderCharmEditor(); calcBuild();
-    const st=document.getElementById('screenshotStatus');
-    if(st) st.innerHTML='<span class="ok">✓ 確認した候補を現在の装備セットへ反映しました。'+
-      (hasDeco?' 装飾品は候補確認までです。':'')+'</span>';
+    renderArmor();renderCharmEditor();calcBuild();const st=document.getElementById('screenshotStatus');if(st)st.innerHTML='<span class="ok">✓ '+applied+'件を装備セットへ反映しました。'+(hasDeco?' 装飾品は候補確認までです。':'')+'</span>';
   };
-
   const oldAnalyze=SI.analyze;
-  SI.analyze=async function(){
-    const r=await oldAnalyze.apply(this,arguments);
-    this.renderConfirmation();
-    // Hide the old noisy candidate list; raw OCR remains available for debugging.
-    const oldBox=document.getElementById('screenshotCandidates');
-    if(oldBox) oldBox.style.display='none';
-    const applyBtn=document.getElementById('screenshotApply');
-    if(applyBtn) applyBtn.disabled=!(this.candidates||[]).some(c=>c && c.kind && Array.isArray(c.best) && c.best.length);
-    return r;
-  };
-
-  const oldClear=SI.clear;
-  SI.clear=function(){
-    oldClear.call(this);
-    const p=document.getElementById('ocrConfirmPanel');
-    if(p) p.style.display='none';
-  };
-
-  // Recheck should refresh the confirmation UI too.
-  const oldBuildCandidates=SI.buildCandidates;
-  SI.buildCandidates=function(text){
-    const r=oldBuildCandidates.call(this,text);
-    return r;
-  };
-
+  SI.analyze=async function(){const r=await oldAnalyze.apply(this,arguments);const oldBox=document.getElementById('screenshotCandidates');if(oldBox)oldBox.style.display='none';this.renderCandidates();return r;};
+  const oldClear=SI.clear;SI.clear=function(){oldClear.call(this);const p=document.getElementById('ocrConfirmPanel');if(p)p.style.display='none';};
+  const recheck=document.getElementById('screenshotRecheck');if(recheck)recheck.onclick=()=>{if(SI.results?.length){SI.candidates=SI.buildLayoutCandidates(SI.results);SI.renderCandidates();document.getElementById('screenshotStatus').textContent='候補を再照合しました。';}};
 })(ScreenshotImporter);
-
 </script>
 <style id="ocrConfirmStyle">
 #ocrConfirmPanel{margin-top:12px;padding:12px;border:1px solid #bbb;border-radius:10px;background:#fafafa}
@@ -2560,6 +2554,9 @@ try{const v=document.getElementById('appVersionText');if(v)v.textContent=App.ver
 .ocr-confirm-label{font-weight:700;font-size:13px}
 .ocr-confirm-select{width:100%;padding:7px;border-radius:7px}
 .ocr-confirm-note{font-size:11px;color:#666;margin-top:8px}
+
+.ocr-confirm-ocr{grid-column:2;font-size:10px;color:#777;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:600px){.ocr-confirm-row{grid-template-columns:58px 1fr;gap:5px 8px}.ocr-confirm-select{min-width:0;font-size:14px}.ocr-confirm-ocr{grid-column:1 / -1}}
 </style>
 
 </body></html>
