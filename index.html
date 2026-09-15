@@ -4,7 +4,7 @@
 <meta name="app-version" content="7.7.0">
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#2b2118" name="theme-color"/><link href="manifest.webmanifest" rel="manifest"/>
-<title>MH Wilds 装備セット＆火力シミュレーター v8.0.1</title>
+<title>MH Wilds 装備セット＆火力シミュレーター v8.0.2</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#0a0f1e;color:#eef2ff;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}header{padding:18px;background:#111827;border-bottom:1px solid #334155}.wrap{max-width:1100px;margin:auto;padding:12px}h1{font-size:22px;margin:0 0 5px}.muted{color:#94a3b8;font-size:12px}.grid{display:grid;grid-template-columns:300px 1fr;gap:12px}.card{background:#151d33;border:1px solid #334155;border-radius:14px;padding:14px;margin-bottom:12px}h2{font-size:17px;margin:0 0 10px}h3{font-size:14px;margin:12px 0 7px}label{font-size:12px;color:#cbd5e1;display:block;margin:7px 0 4px}select,input,button{width:100%;min-height:42px;padding:8px 10px;border:1px solid #475569;border-radius:9px;background:#0b1020;color:#fff;font:inherit}button{cursor:pointer}button.primary{background:#2563eb;border-color:#2563eb}button.good{background:#166534;border-color:#166534}button.danger{background:#7f1d1d;border-color:#7f1d1d}.two{display:grid;grid-template-columns:1fr 1fr;gap:7px}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}.slotgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.slot{border:1px solid #475569;border-radius:8px;padding:6px;background:#0b1020}.equip{border:1px solid #334155;border-radius:10px;padding:9px;margin:8px 0;background:#0b1020}.equip b{font-size:13px}.tag{display:inline-block;padding:3px 7px;border:1px solid #475569;border-radius:999px;margin:2px;font-size:11px}.notice{padding:9px;border:1px solid #475569;border-radius:9px;background:#0f172a;margin-top:8px}.ok{color:#86efac}.warn{color:#fbbf24}.bad{color:#fca5a5}.info{color:#93c5fd}.sticky{position:sticky;bottom:10px;z-index:5}.summarygrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.metric{border:1px solid #334155;border-radius:9px;padding:10px;background:#0b1020}.metric b{display:block;font-size:19px;margin-top:3px}.affline{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:12px}.affline span{font-size:12px;color:#cbd5e1}.affline b{font-size:19px;margin-top:0}.game-status{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid #475569;border-radius:10px;overflow:hidden;background:#0b1020}.game-status .gs-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #334155}.game-status .gs-row:nth-child(odd){border-right:1px solid #334155}.game-status .gs-label{font-size:13px;color:#cbd5e1}.game-status .gs-value{font-size:20px;font-weight:700}.game-status .gs-sub{font-size:11px;color:#94a3b8;margin-left:5px;font-weight:400}.skill-order-note{font-size:11px;color:#94a3b8;margin-top:5px}.skill-game-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.skill-bucket{margin-top:9px}.skill-bucket-title{font-size:13px;font-weight:800;border-left:4px solid #64748b;padding:5px 8px;background:#0f172a;border-radius:4px}.skill-game{border:1px solid #475569;border-radius:8px;padding:8px 9px;background:#0b1020}.skill-game-name{font-size:13px;font-weight:700;margin-bottom:6px}.skill-game-binary .skill-game-name{margin-bottom:0}.skill-blocks{display:flex;gap:3px;flex-wrap:wrap}.skill-block{width:13px;height:13px;border:1px solid #64748b;border-radius:2px;background:#111827}.skill-block.on{background:#facc15;border-color:#fde047;box-shadow:0 0 5px rgba(250,204,21,.35)} .equip-title{font-size:16px;font-weight:800;letter-spacing:.02em;margin-bottom:7px}.equip-inline{border:1px solid #334155;border-radius:10px;padding:9px;margin:7px 0;background:#0b1020}.equip-inline .equip-title{margin-bottom:6px}.inline-slot-list{display:grid;gap:4px;margin-top:6px}.inline-slot{display:grid;grid-template-columns:42px minmax(0,1fr);gap:5px;align-items:center}.inline-slot .slot-num{font-weight:800;text-align:center}.inline-slot .slot-size{font-weight:800;text-align:center;border:1px solid #475569;border-radius:6px;padding:5px 2px;background:#111827}.inline-slot select{min-height:36px;padding:6px 8px}.inline-skill{font-size:12px;color:#cbd5e1;margin:4px 0 6px}.armor-equip-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.armor-equip-grid .equip-inline{margin:0}.section-title{font-size:16px;font-weight:800;margin:12px 0 6px}@media(max-width:760px){.armor-equip-grid{grid-template-columns:1fr 1fr}.inline-slot{grid-template-columns:22px 38px minmax(0,1fr)}}.slot-lines{display:grid;gap:4px;margin:4px 0 8px}.slot-line{font-size:14px;font-weight:700;padding:5px 8px;border:1px solid #334155;border-radius:7px;background:#0b1020}.slot-line{display:grid;grid-template-columns:48px minmax(0,1fr);gap:7px;align-items:center}.slot-line .slot-num{font-size:20px;font-weight:800;text-align:center}.slot-line select{min-height:36px;padding:6px 8px}.equip-skill-preview{font-size:12px;color:#cbd5e1;margin-top:6px}@media(max-width:760px){.slot-line{grid-template-columns:44px minmax(0,1fr)}.game-status{grid-template-columns:1fr}.game-status .gs-row:nth-child(odd){border-right:0}}table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:7px;border-bottom:1px solid #334155;text-align:left;vertical-align:top}.hidden{display:none}progress{width:100%;height:10px}.small{font-size:11px}.dangerText{color:#fca5a5}.searchbox{margin-bottom:6px}.save-build-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:end}.save-build-row button{min-width:78px}.saved-build-list{display:grid;gap:5px;margin-top:7px}.compare-list{display:grid;gap:6px;margin-top:8px}.compare-item{display:grid;grid-template-columns:28px minmax(0,1fr);gap:7px;align-items:center;border:1px solid #334155;border-radius:8px;padding:7px 9px;background:#0b1020}.compare-item input{width:18px;min-height:18px}.compare-item .compare-meta{font-size:11px;color:#94a3b8;margin-top:2px}.compare-table{overflow:auto;margin-top:9px}.compare-table table{min-width:680px}.compare-table th{background:#0f172a;white-space:nowrap}.compare-best{font-weight:800}.compare-note{font-size:11px;color:#94a3b8;margin-top:6px}
@@ -12,7 +12,7 @@
 .charm-slot-list,.charm-deco-list{display:grid;gap:5px}.charm-slot-row{display:grid;grid-template-columns:1fr 90px;gap:7px;align-items:center;border:1px solid #334155;border-radius:7px;padding:6px 8px}.charm-slot-row span{font-size:13px;font-weight:700}.charm-slot-row select{min-height:36px}.charm-deco-row{display:grid;grid-template-columns:110px 50px minmax(0,1fr);gap:6px;align-items:center;border:1px solid #334155;border-radius:7px;padding:6px 8px}.charm-deco-row .slot-size{text-align:center;font-weight:800}.charm-deco-row select{min-height:36px}@media(max-width:760px){.charm-deco-row{grid-template-columns:90px 48px minmax(0,1fr)}}
 textarea:focus,select:focus,input:focus,button:focus{outline:2px solid #3b82f6;outline-offset:1px}#aiAdvisorCard .aiQuick{font-size:12px}#aiAdvisorCard pre{margin:0;background:#0b1020;border-color:#334155}
 
-/* v8.0.0 UI: collapsible step cards */
+/* v8.0.2 UI: collapsible step cards */
 .card-details>summary.card-summary{list-style:none;cursor:pointer;font-size:17px;font-weight:800;display:flex;align-items:center;gap:7px;user-select:none;}
 .card-details>summary.card-summary::-webkit-details-marker{display:none}
 .card-details>summary.card-summary::before{content:'▾';font-size:15px;line-height:1;color:#cbd5e1;transition:transform .15s}
@@ -27,7 +27,7 @@ textarea:focus,select:focus,input:focus,button:focus{outline:2px solid #3b82f6;o
 .ai-quick-row .aiQuick{width:auto!important;min-height:36px;padding:6px 12px;white-space:nowrap;flex:0 0 auto}
 @media(max-width:760px){.ai-quick-row{justify-content:flex-start;overflow-x:auto}.ai-quick-row .aiQuick{font-size:12px}}
 
-/* v8.0.0: screenshot import lab */
+/* v8.0.2: screenshot import lab */
 .screenshot-import{margin:9px 0 12px;padding:10px;border:1px solid rgba(94,70,40,.45);border-radius:10px;background:rgba(244,236,217,.72)}
 .screenshot-import .si-title{font-weight:800;font-size:14px;margin-bottom:5px}
 .screenshot-import .si-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
@@ -45,7 +45,7 @@ textarea:focus,select:focus,input:focus,button:focus{outline:2px solid #3b82f6;o
 .si-high{color:#166534}
 @media(max-width:760px){.screenshot-import .si-grid{grid-template-columns:1fr}.screenshot-import .si-preview{grid-template-columns:1fr 1fr}.si-candidate{grid-template-columns:62px minmax(0,1fr)}}
 </style><style>.inline-slot-list .inline-slot{grid-template-columns:minmax(88px,auto) 44px minmax(0,1fr);gap:6px}.slot-size-label{font-weight:800;white-space:nowrap}.inline-slot-list .inline-slot:has(>select.chSlot){grid-template-columns:minmax(88px,1fr) 56px}
-/* v8.0.0 Hunter's Note visual theme: parchment + ink, optimized for mobile readability */
+/* v8.0.2 Hunter's Note visual theme: parchment + ink, optimized for mobile readability */
 :root{
   --paper:#e9dfc8;--paper2:#f4ecd9;--paper3:#d8c8a8;--ink:#2f271f;--ink2:#5a4a38;
   --line:#8c7656;--accent:#7a4b22;--accent2:#a56d2d;--deep:#241b15;
@@ -110,7 +110,7 @@ button.danger{background:linear-gradient(180deg,#9b4638,#6f2d25)!important;color
 #appVersionBadge{background:rgba(44,32,22,.94)!important;color:#eadfc9!important;border-color:#7e5d3a!important}
 #groupProposalNushi{accent-color:#7a4b22}
 .ai-quick-row .aiQuick{border-radius:7px!important}
-/* v8.0.0: comparison table readability */
+/* v8.0.2: comparison table readability */
 .compare-table{border:1px solid var(--line);border-radius:9px;overflow:auto;background:var(--paper2)}
 .compare-table table{min-width:680px;color:var(--ink)}
 .compare-table th{background:#3f3022!important;color:#fff!important;border-bottom:2px solid var(--accent2)!important;font-weight:800}
@@ -126,7 +126,7 @@ button.danger{background:linear-gradient(180deg,#9b4638,#6f2d25)!important;color
   h1{font-size:20px}
 }
 
-/* v8.0.0: original weapon icon UI based on the approved concept sheet */
+/* v8.0.2: original weapon icon UI based on the approved concept sheet */
 .weapon-kind-icons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:7px}
 .weapon-kind-icon{border:1px solid var(--line);border-radius:9px;background:rgba(244,236,217,.82);padding:5px 3px 4px;min-height:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform .08s,box-shadow .08s,border-color .08s,background .08s}
 .weapon-kind-icon:active{transform:scale(.98)}
@@ -136,7 +136,7 @@ button.danger{background:linear-gradient(180deg,#9b4638,#6f2d25)!important;color
 .weapon-kind-icon.is-selected span{color:var(--accent);font-weight:900}
 @media(max-width:760px){.weapon-kind-icons{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.weapon-kind-icon{min-height:70px}.weapon-kind-icon img{width:44px;height:44px}.weapon-kind-icon span{font-size:9px}}
 
-/* v8.0.0 visual direction: Hunter's Note for build creation, modern support for analysis */
+/* v8.0.2 visual direction: Hunter's Note for build creation, modern support for analysis */
 body{
   background:
     radial-gradient(ellipse at 50% -10%,rgba(120,82,44,.26),transparent 48%),
@@ -214,8 +214,8 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
   .card:not(.support-card):after,.support-card:after{inset:4px}
 }
 </style></head><body>
-<div class="notice"><b>v8.0.1 テスト版</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">VERSION <span id="appVersionText">8.0.1</span></div>
-<header><div class="wrap"><h1>⚔️ MH Wilds 装備セット＆火力シミュレーター v8.0.1</h1><div class="muted">①〜⑤ ハンターズノート：装備を作る・記録する　｜　⑥〜⑧ ハンターズサポート：分析・提案・相談</div></div></header>
+<div class="notice"><b>v8.0.2 テスト版</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">VERSION <span id="appVersionText">8.0.2</span></div>
+<header><div class="wrap"><h1>⚔️ MH Wilds 装備セット＆火力シミュレーター v8.0.2</h1><div class="muted">①〜⑤ ハンターズノート：装備を作る・記録する　｜　⑥〜⑧ ハンターズサポート：分析・提案・相談</div></div></header>
 <main class="wrap"><div class="grid"><aside>
 
  
@@ -262,11 +262,11 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
 <div class="notice small" id="techniqueEditorStatus" style="margin-top:7px">登録した技はこの端末に保存されます。</div>
 <div id="techniqueCustomList" style="margin-top:7px"></div>
 </details>
-<div id="combo"></div><button id="addCombo">＋選択した技を追加</button><button class="primary" id="calcDps" style="margin-top:7px">📈 コンボDPSを計算</button><div class="two" style="margin-top:10px"><div><label>攻撃稼働率 (%)</label><input id="uptime" type="number" value="85"/></div><div><label>非攻撃時間を含める</label><select id="uptimeMode"><option value="1">含める（実戦DPS）</option><option value="0">含めない（理論DPS）</option></select></div></div><div class="notice" id="dpsOut">未計算</div><div style="display:none"><input id="dAttack" value="300"/><input id="dAff" value="0"/><input id="dElem" value="0"/><input id="dMV" value="100"/><input id="dHZ" value="80"/><input id="dEHZ" value="30"/><input id="dSharp" value="1.32"/><input id="dESharp" value="1.15"/><input id="dCB" value="0"/><select id="dECrit"><option value="0">なし</option></select></div></div></details></section><section class="card support-card" id="groupProposalCard"><details class="card-details"><summary class="card-summary">⑦ シリーズスキルから装備を提案 v8.0.1</summary><div class="card-details-body"><div class="muted">「このシリーズスキルを採用したい」を起点に、全防具から候補を探索し、目的スキルとの相性・武器種適性・装飾品スロット・現在装備の維持度を推論して複数案を作ります。<b>巨戟アーティアのシリーズ/グループスキルも武器1部位として考慮</b>します。<b>ヌシの魂</b>は重要なグループスキルとして、必要な場合だけ別途指定できます。候補の決定・採用はユーザーが行います。</div><div class="two" style="margin-top:8px"><div><label for="groupProposalSkill">採用したいシリーズスキル</label><select id="groupProposalSkill"><option value="">データ取得後に選択</option></select></div><div><label for="groupProposalLevel">目標Lv</label><select id="groupProposalLevel"><option value="1">Lv1</option><option value="2">Lv2</option><option value="3">Lv3</option></select></div></div><div class="notice small" style="margin-top:7px"><label style="display:flex;align-items:center;gap:8px;margin:0"><input id="groupProposalNushi" type="checkbox"/> <span><b>ヌシの魂を採用する</b></span></label><div class="muted" style="margin-top:4px">ONにすると、シリーズスキルに加えて「ヌシの魂」の発動条件も満たす候補だけを提示します。</div></div><div class="two" style="margin-top:7px"><div><label for="groupProposalMode">提案の考え方</label><select id="groupProposalMode"><option value="balance">バランス</option><option value="dps">火力重視</option><option value="flex">スキル自由度重視</option></select></div><div><label for="groupProposalCount">候補数</label><select id="groupProposalCount"><option selected="" value="3">3案</option><option value="5">5案</option></select></div></div><button class="primary" id="groupProposalRun" style="margin-top:8px">🔎 この条件で装備候補を作る</button><div class="notice" id="groupProposalOut" style="margin-top:8px">例：「無尽蔵 Lv1」を選んで、必要なら「ヌシの魂」をONにして試してください。</div></div></details></section><section class="card support-card" id="aiAdvisorCard"><details class="card-details"><summary class="card-summary">⑧ AI装備相談</summary><div class="card-details-body"><div class="muted">現在の装備・スキル・⑤の火力条件をAIに渡して、装備構築を相談できる機能です。現在の装備セットをAI相談用データに変換します。AIは候補提示・比較・評価を行い、最終的な装備セットはユーザーが決定します。</div><div class="ai-quick-row" style="margin-top:6px"><button class="aiQuick" data-ai="この武器で火力重視の装備を組んでください。" type="button">🔥 火力重視</button><button class="aiQuick" data-ai="この武器で属性火力を重視した装備を組んでください。" type="button">🧊 属性重視</button></div><div class="ai-quick-row" style="margin-top:6px"><button class="aiQuick" data-ai="この装備をベースに、DPSを上げる方法を提案してください。" type="button">📈 DPS改善</button><button class="aiQuick" data-ai="現在の装備について、改善できる点を教えてください。" type="button">🔎 装備診断</button></div><label for="aiPrompt" style="margin-top:9px">相談内容</label><textarea id="aiPrompt" placeholder="例：この武器でDPS最大の装備を作って。会心率100%は維持したい。" rows="4" style="width:100%;padding:9px;border:1px solid #475569;border-radius:9px;background:#0b1020;color:#fff;font:inherit;resize:vertical"></textarea><div class="two" style="margin-top:7px"><button class="primary" id="aiPrepare" type="button">🤖 AI相談データを作成</button><button id="aiCopy" type="button">📋 送信用データをコピー</button></div><div class="notice" id="aiOut">相談内容を入力して「AI相談データを作成」を押してください。</div><details style="margin-top:7px"><summary class="small">AIに送る現在の装備セットデータを確認</summary><pre class="notice small" id="aiPayload" style="white-space:pre-wrap;overflow:auto;max-height:360px"></pre></details></div></details></section></section></div></main>
+<div id="combo"></div><button id="addCombo">＋選択した技を追加</button><button class="primary" id="calcDps" style="margin-top:7px">📈 コンボDPSを計算</button><div class="two" style="margin-top:10px"><div><label>攻撃稼働率 (%)</label><input id="uptime" type="number" value="85"/></div><div><label>非攻撃時間を含める</label><select id="uptimeMode"><option value="1">含める（実戦DPS）</option><option value="0">含めない（理論DPS）</option></select></div></div><div class="notice" id="dpsOut">未計算</div><div style="display:none"><input id="dAttack" value="300"/><input id="dAff" value="0"/><input id="dElem" value="0"/><input id="dMV" value="100"/><input id="dHZ" value="80"/><input id="dEHZ" value="30"/><input id="dSharp" value="1.32"/><input id="dESharp" value="1.15"/><input id="dCB" value="0"/><select id="dECrit"><option value="0">なし</option></select></div></div></details></section><section class="card support-card" id="groupProposalCard"><details class="card-details"><summary class="card-summary">⑦ シリーズスキルから装備を提案 v8.0.2</summary><div class="card-details-body"><div class="muted">「このシリーズスキルを採用したい」を起点に、全防具から候補を探索し、目的スキルとの相性・武器種適性・装飾品スロット・現在装備の維持度を推論して複数案を作ります。<b>巨戟アーティアのシリーズ/グループスキルも武器1部位として考慮</b>します。<b>ヌシの魂</b>は重要なグループスキルとして、必要な場合だけ別途指定できます。候補の決定・採用はユーザーが行います。</div><div class="two" style="margin-top:8px"><div><label for="groupProposalSkill">採用したいシリーズスキル</label><select id="groupProposalSkill"><option value="">データ取得後に選択</option></select></div><div><label for="groupProposalLevel">目標Lv</label><select id="groupProposalLevel"><option value="1">Lv1</option><option value="2">Lv2</option><option value="3">Lv3</option></select></div></div><div class="notice small" style="margin-top:7px"><label style="display:flex;align-items:center;gap:8px;margin:0"><input id="groupProposalNushi" type="checkbox"/> <span><b>ヌシの魂を採用する</b></span></label><div class="muted" style="margin-top:4px">ONにすると、シリーズスキルに加えて「ヌシの魂」の発動条件も満たす候補だけを提示します。</div></div><div class="two" style="margin-top:7px"><div><label for="groupProposalMode">提案の考え方</label><select id="groupProposalMode"><option value="balance">バランス</option><option value="dps">火力重視</option><option value="flex">スキル自由度重視</option></select></div><div><label for="groupProposalCount">候補数</label><select id="groupProposalCount"><option selected="" value="3">3案</option><option value="5">5案</option></select></div></div><button class="primary" id="groupProposalRun" style="margin-top:8px">🔎 この条件で装備候補を作る</button><div class="notice" id="groupProposalOut" style="margin-top:8px">例：「無尽蔵 Lv1」を選んで、必要なら「ヌシの魂」をONにして試してください。</div></div></details></section><section class="card support-card" id="aiAdvisorCard"><details class="card-details"><summary class="card-summary">⑧ AI装備相談</summary><div class="card-details-body"><div class="muted">現在の装備・スキル・⑤の火力条件をAIに渡して、装備構築を相談できる機能です。現在の装備セットをAI相談用データに変換します。AIは候補提示・比較・評価を行い、最終的な装備セットはユーザーが決定します。</div><div class="ai-quick-row" style="margin-top:6px"><button class="aiQuick" data-ai="この武器で火力重視の装備を組んでください。" type="button">🔥 火力重視</button><button class="aiQuick" data-ai="この武器で属性火力を重視した装備を組んでください。" type="button">🧊 属性重視</button></div><div class="ai-quick-row" style="margin-top:6px"><button class="aiQuick" data-ai="この装備をベースに、DPSを上げる方法を提案してください。" type="button">📈 DPS改善</button><button class="aiQuick" data-ai="現在の装備について、改善できる点を教えてください。" type="button">🔎 装備診断</button></div><label for="aiPrompt" style="margin-top:9px">相談内容</label><textarea id="aiPrompt" placeholder="例：この武器でDPS最大の装備を作って。会心率100%は維持したい。" rows="4" style="width:100%;padding:9px;border:1px solid #475569;border-radius:9px;background:#0b1020;color:#fff;font:inherit;resize:vertical"></textarea><div class="two" style="margin-top:7px"><button class="primary" id="aiPrepare" type="button">🤖 AI相談データを作成</button><button id="aiCopy" type="button">📋 送信用データをコピー</button></div><div class="notice" id="aiOut">相談内容を入力して「AI相談データを作成」を押してください。</div><details style="margin-top:7px"><summary class="small">AIに送る現在の装備セットデータを確認</summary><pre class="notice small" id="aiPayload" style="white-space:pre-wrap;overflow:auto;max-height:360px"></pre></details></div></details></section></section></div></main>
 <script>
 const API='https://wilds.mhdb.io/ja';
 const DATA_CACHE='mhwilds-data-v700';
-// v8.0.0 intentionally keeps v7.0.0 storage/cache keys for compatibility. Previous versions could
+// v8.0.2 intentionally keeps v7.0.0 storage/cache keys for compatibility. Previous versions could
 // have classified weapons locally; the app obtains weapon type from MHDB's official kind filter.
 const LEGACY_DATA_CACHES=[];
 const WEAPON_CACHE_VERSION='mhwilds-weapons-v700';
@@ -2310,41 +2310,6 @@ async function copyAIPayload(){const payload=makeAIPrompt();if(!payload)return;t
 
 /* ================= Screenshot Import Experiment ================= */
 const ScreenshotImporter={
-  async preprocess(file,preset){
-    const img=await createImageBitmap(file);
-    const w=img.width,h=img.height;
-    const make=(sx,sy,sw,sh,mode='color')=>{
-      const scale=Math.min(2.5,2200/Math.max(sw,sh));
-      const c=document.createElement('canvas');
-      c.width=Math.max(1,Math.round(sw*scale));
-      c.height=Math.max(1,Math.round(sh*scale));
-      const ctx=c.getContext('2d',{willReadFrequently:true});
-      ctx.imageSmoothingEnabled=true;
-      ctx.drawImage(img,sx,sy,sw,sh,0,0,c.width,c.height);
-      // Keep the original color image for the primary OCR path. Thresholding
-      // is only used for the legacy fixed landscape crop, where it can help
-      // separate UI text from dark backgrounds.
-      if(mode==='threshold'){
-        const d=ctx.getImageData(0,0,c.width,c.height);
-        for(let i=0;i<d.data.length;i+=4){
-          const y=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
-          const v=y>150?255:y<80?0:Math.round((y-80)*255/70);
-          d.data[i]=d.data[i+1]=d.data[i+2]=v;
-          d.data[i+3]=255;
-        }
-        ctx.putImageData(d,0,0);
-      }
-      return c;
-    };
-    if((preset==='equipment-landscape'||preset==='decoration-landscape')&&w/h>1.45){
-      return [{
-        label:preset==='decoration-landscape'?'装飾品画面左側':'装備画面左側',
-        canvas:make(0,Math.round(h*.06),Math.round(w*.25),Math.round(h*.84),'threshold'),
-        auto:true
-      }];
-    }
-    return [{label:'画面全体',canvas:make(0,0,w,h,'color'),auto:true}];
-  },
   files:[],results:[],candidates:[],worker:null,
   normalizeText(v){return String(v||'').normalize('NFKC').replace(/[\s　\u3000]/g,'').replace(/[「」『』【】\[\]()（）・･,，.。:：/／\\]/g,'').toLowerCase();},
   distance(a,b){a=this.normalizeText(a);b=this.normalizeText(b);if(!a||!b)return Math.max(a.length,b.length);let prev=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const cur=[i];for(let j=1;j<=b.length;j++)cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=cur;}return prev[b.length];},
@@ -2359,113 +2324,259 @@ const ScreenshotImporter={
   },
   normalizeNameForOCR(v){
     let s=this.normalizeText(v);
-    // OCR comparison normalization.  The goal is not to make Tesseract
-    // perfect; it is to make small OCR errors harmless when the true answer
-    // is known to exist in MHDB.
+    // OCR comparison only: normalize common Japanese game-UI confusions.
     s=s.replace(/[Ａ-Ｚａ-ｚ０-９]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xfee0))
       .replace(/[αΑ]/g,'a').replace(/[βΒ]/g,'b').replace(/[γΓ]/g,'g')
       .replace(/[Ａａ]/g,'a').replace(/[Ｂｂ]/g,'b').replace(/[Ｇｇ]/g,'g')
       .replace(/[△▽]/g,'')
       .replace(/[—ーｰ―‐‑]/g,'')
-      .replace(/ペルム/g,'へルム').replace(/ベルム/g,'へルム')
-      .replace(/ヘルム/g,'へルム')
-      .replace(/メイル/g,'めいる').replace(/メイル/g,'めいる')
-      .replace(/メール/g,'めいる')
-      .replace(/アーム/g,'あーむ').replace(/ガントレット/g,'がんとれっと')
-      .replace(/グリーヴ/g,'ぐりーぶ').replace(/グリーブ/g,'ぐりーぶ');
+      // Helmet names are frequently read as ペルム/ベルム instead of ヘルム.
+      .replace(/ペルム/g,'へルム').replace(/ベルム/g,'へルム');
     return s;
   },
-  stripNoise(v){
-    return this.normalizeNameForOCR(v)
-      .replace(/(?:lv|レベル)\d+/g,'')
-      .replace(/\d+[%％]/g,'')
-      .replace(/[0-9]/g,'')
-      .replace(/[^一-龥ぁ-んァ-ンa-z]/g,'');
-  },
   nameVariants(name){
-    const n=this.normalizeNameForOCR(name),v=new Set([n]);
+    const n=this.normalizeNameForOCR(name);
+    const v=new Set([n]);
+    // Treat Greek/Latin suffixes as equivalent for comparison, while
+    // retaining a suffix hint for alpha/beta/gamma ranking.
     v.add(n.replace(/(a|b|g)$/,''));
     return [...v];
   },
   suffixHint(text){
-    const raw=String(text||''),n=this.normalizeNameForOCR(raw);
-    if(/(?:a|b|g)$/.test(n))return n.slice(-1);
-    if(/[βＢb]$/.test(raw))return 'b';
-    if(/[αＡa]$/.test(raw))return 'a';
-    if(/[γＧg]$/.test(raw))return 'g';
+    const n=this.normalizeNameForOCR(text);
+    if(/(?:^|[^a-z])b$/.test(n)||/β$/.test(String(text||''))||/[Ｂb]$/.test(String(text||'')))return 'b';
+    if(/(?:^|[^a-z])a$/.test(n)||/α$/.test(String(text||''))||/[Ａa]$/.test(String(text||'')))return 'a';
+    if(/(?:^|[^a-z])g$/.test(n)||/γ$/.test(String(text||''))||/[Ｇg]$/.test(String(text||'')))return 'g';
     return '';
   },
-  lcsRatio(a,b){
-    if(!a||!b)return 0;
-    // Small strings are typical for Japanese equipment names; a compact
-    // dynamic-programming LCS gives robustness to inserted/deleted OCR chars.
-    const A=Array.from(a),B=Array.from(b),prev=new Array(B.length+1).fill(0);
-    for(let i=1;i<=A.length;i++){
-      let diag=0;
-      for(let j=1;j<=B.length;j++){
-        const old=prev[j];
-        if(A[i-1]===B[j-1])prev[j]=diag+1;
-        else prev[j]=Math.max(prev[j],prev[j-1]);
-        diag=old;
-      }
-    }
-    return prev[B.length]/Math.max(A.length,B.length);
-  },
   score(text,name){
-    const a=this.normalizeNameForOCR(text),b=this.normalizeNameForOCR(name);
+    const a=this.normalizeNameForOCR(text), b=this.normalizeNameForOCR(name);
     if(!a||!b)return 0;
     if(a===b)return 1;
-    const aa=this.stripNoise(a),bb=this.stripNoise(b);
-    if(a.includes(b)||b.includes(a))return .975;
-    const dist=this.distance(aa||a,bb||b);
-    const edit=Math.max(0,1-dist/Math.max((aa||a).length,(bb||b).length));
-    const lcs=this.lcsRatio(aa||a,bb||b);
+    if(a.includes(b)||b.includes(a))return .965;
+    const dist=this.distance(a,b), edit=Math.max(0,1-dist/Math.max(a.length,b.length));
     const grams=x=>{const z=[];for(let i=0;i<x.length-1;i++)z.push(x.slice(i,i+2));return z;};
-    const ga=new Set(grams(aa||a)),gb=new Set(grams(bb||b));
+    const ga=new Set(grams(a)), gb=new Set(grams(b));
     let inter=0;for(const g of ga)if(gb.has(g))inter++;
     const union=new Set([...ga,...gb]).size||1;
     const jac=inter/union;
-    let score=.28*edit+.42*lcs+.30*jac;
-    const hint=this.suffixHint(text),bn=b.slice(-1);
-    if(hint && /^[abg]$/.test(bn))score += hint===bn?.15:-.10;
-    // A very short OCR fragment should not be allowed to win merely through
-    // common characters.
-    if((aa||a).length<5 && !a.includes(b) && !b.includes(a))score*=.82;
-    return Math.max(0,Math.min(1,score));
-  },
-  categoryPenalty(text,item,kind){
-    const t=this.normalizeText(text),name=this.normalizeText(item?.name||'');
-    if(kind==='decoration' && !/珠/.test(t))return -1;
-    if(kind!=='decoration' && /珠/.test(t))return -.45;
-    if(/(?:攻撃力|防御力|会心率|属性|耐性|ステータス|装備スキル|体力|スタミナ|ビン|弾|装飾品を外す)/.test(t))return -.55;
-    // Equipment names usually contain at least one kanji/kana character and
-    // should not look like a bare numeric status row.
-    if(!/[一-龥ぁ-んァ-ン]/.test(String(text||'')))return -.35;
-    return 0;
-  },
-  best(text,kind,limit=3,minScore=.40){
-    const pool=this.allNamed(kind),rows=[];
-    for(const item of pool){
-      const raw=this.score(text,item.name),pen=this.categoryPenalty(text,item,kind);
-      if(pen<=-.9)continue;
-      const score=Math.max(0,Math.min(1,raw+pen));
-      if(score>=minScore)rows.push({item,score});
+    let score=Math.min(1,.68*edit+.32*jac);
+
+    // If OCR contains a likely equipment suffix, strongly prefer the
+    // corresponding alpha/beta/gamma record.
+    const hint=this.suffixHint(text);
+    const bn=b.slice(-1);
+    if(hint && /^[abg]$/.test(bn)){
+      if(hint===bn)score=Math.min(1,score+.16);
+      else score=Math.max(0,score-.12);
     }
-    rows.sort((a,b)=>b.score-a.score);
-    return rows.slice(0,limit);
+    return score;
+  },
+  best(text,kind,limit=3,minScore=.44){
+    return this.allNamed(kind).map(item=>({item,score:this.score(text,item.name)}))
+      .filter(x=>x.score>=minScore).sort((a,b)=>b.score-a.score).slice(0,limit);
   },
   cleanOCRText(v){
     return String(v||'').replace(/\[自動抽出[^\]]*\]/g,'').replace(/\[自動判定[^\]]*\]/g,'')
       .replace(/^(メイン|サブ)?武器[：:]?/,'').replace(/^(頭防具|胴防具|腕防具|腰防具|脚防具|護石)[：:]?/,'')
-      .replace(/^[|｜]+/,'').replace(/\s+/g,' ').trim();
+      .replace(/^[|｜]+/,'').trim();
   },
   isUsefulLine(text){
-    const t=this.cleanOCRText(text),n=this.normalizeNameForOCR(t);
+    const t=this.cleanOCRText(text), n=this.normalizeNameForOCR(t);
     if(n.length<3)return false;
     if(!/[一-龥ぁ-んァ-ン]/.test(t))return false;
     if(/^(ステータス|装備スキル|攻撃ステータス|属性|会心率|防御力|火耐性|水耐性|雷耐性|氷耐性|龍耐性|装飾品を外す|決定|戻る|メニュー|装備変更)$/.test(t))return false;
-    if(/(?:攻撃力|防御力|会心率|火耐性|水耐性|雷耐性|氷耐性|龍耐性)\s*[-+]?\d/.test(t))return false;
     return true;
+  },
+  async preprocess(file,preset){
+    const img=await createImageBitmap(file);const w=img.width,h=img.height;
+    const make=(sx,sy,sw,sh,mode='normal')=>{const scale=Math.min(3,2800/Math.max(sw,sh));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(sw*scale));c.height=Math.max(1,Math.round(sh*scale));const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,sx,sy,sw,sh,0,0,c.width,c.height);if(mode==='color')return c;const d=ctx.getImageData(0,0,c.width,c.height);for(let i=0;i<d.data.length;i+=4){const y=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];let v;if(mode==='soft')v=y>182?255:y<48?0:Math.round((y-48)*255/134);else v=y>152?255:y<72?0:Math.round((y-72)*255/80);d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}ctx.putImageData(d,0,0);return c;};
+    if(preset==='auto') return [{label:'自動判定・画面全体',canvas:make(0,0,w,h,'color'),auto:true,source:{w,h}}];
+    if((preset==='equipment-landscape'||preset==='decoration-landscape')&&w/h>1.45) return [{label:preset==='decoration-landscape'?'装飾品画面左側':'装備画面左側',canvas:make(0,Math.round(h*.06),Math.round(w*.25),Math.round(h*.84),'soft'),auto:true,source:{w,h}}];
+    return [{label:'画面全体',canvas:make(0,0,w,h,'soft'),auto:true,source:{w,h}}];
+  },
+  async autoRecognize(worker,canvas){
+    const first=await worker.recognize(canvas,{tessedit_pageseg_mode:'11'});
+    const rawLines=Array.isArray(first?.data?.lines)?first.data.lines:[];
+
+    // Tesseract sparse-text mode often splits one Japanese UI row into
+    // several fragments. First cluster fragments by vertical position,
+    // then re-OCR the combined horizontal row. This is the key improvement
+    // over v7.4.0.
+    const boxes=rawLines.map(ln=>{
+      const bb=ln.bbox||{};
+      return {
+        text:String(ln.text||'').trim(),
+        x0:Number(bb.x0||0), y0:Number(bb.y0||0),
+        x1:Number(bb.x1||canvas.width), y1:Number(bb.y1||canvas.height),
+        conf:Number(ln.confidence??ln.conf??0)
+      };
+    }).filter(x=>x.text.length>=2 && x.x1>x.x0 && x.y1>x.y0);
+
+    boxes.sort((p,q)=>(p.y0+p.y1)/2-(q.y0+q.y1)/2 || p.x0-q.x0);
+
+    const clusters=[];
+    for(const box of boxes){
+      const cy=(box.y0+box.y1)/2, h=box.y1-box.y0;
+      let best=null,bestDy=999;
+      for(const c of clusters){
+        const dy=Math.abs(c.cy-cy);
+        const tolerance=Math.max(18,Math.min(34,Math.max(c.h,h)*0.8));
+        if(dy<=tolerance && dy<bestDy){best=c;bestDy=dy;}
+      }
+      if(!best){
+        clusters.push({cy,h,items:[box],x0:box.x0,y0:box.y0,x1:box.x1,y1:box.y1});
+      }else{
+        best.items.push(box);
+        best.cy=best.items.reduce((v,x)=>v+(x.y0+x.y1)/2,0)/best.items.length;
+        best.h=Math.max(best.h,h);
+        best.x0=Math.min(best.x0,box.x0); best.y0=Math.min(best.y0,box.y0);
+        best.x1=Math.max(best.x1,box.x1); best.y1=Math.max(best.y1,box.y1);
+      }
+    }
+
+    const out=[];
+    for(const c0 of clusters){
+      const items=[...c0.items].sort((p,q)=>p.x0-q.x0);
+      const sourceText=items.map(x=>x.text).join(' ').trim();
+      if(!sourceText)continue;
+
+      // Re-OCR the whole row, but don't let an enormous row span the entire
+      // screen. A moderate horizontal expansion handles Japanese UI labels
+      // while avoiding unrelated columns.
+      const padX=24,padY=12;
+      const x=Math.max(0,c0.x0-padX), y=Math.max(0,c0.y0-padY);
+      const x2=Math.min(canvas.width,c0.x1+padX), y2=Math.min(canvas.height,c0.y1+padY);
+      if(x2-x<40||y2-y<12)continue;
+
+      const c=document.createElement('canvas');
+      c.width=Math.min(3000,Math.max(420,Math.round((x2-x)*2.8)));
+      c.height=Math.min(260,Math.max(72,Math.round((y2-y)*2.8)));
+      const ctx=c.getContext('2d');
+      ctx.drawImage(canvas,x,y,x2-x,y2-y,0,0,c.width,c.height);
+
+      let text=sourceText,conf=0;
+      try{
+        const r=await worker.recognize(c,{tessedit_pageseg_mode:'7'});
+        const t=String(r?.data?.text||'').replace(/\s+/g,' ').trim();
+        if(t)text=t;
+        conf=Number(r?.data?.confidence||0);
+      }catch(_){}
+
+      out.push({
+        text,x:c0.x0,y:c0.y0,
+        bbox:{x0:c0.x0,y0:c0.y0,x1:c0.x1,y1:c0.y1},
+        conf,sourceText,clusterSize:items.length
+      });
+    }
+
+    // Keep a small number of original lines too. They can contain an anchor
+    // ("頭防具" etc.) that a merged row OCR may lose.
+    for(const box of boxes){
+      if(/頭防具|胴防具|腕防具|腰防具|脚防具|メイン武器|サブ武器|護石|装飾品/.test(box.text)){
+        out.push({
+          text:box.text,x:box.x0,y:box.y0,
+          bbox:{x0:box.x0,y0:box.y0,x1:box.x1,y1:box.y1},
+          conf:box.conf,sourceText:box.text,anchorOnly:true
+        });
+      }
+    }
+
+    out.sort((p,q)=>Number(p.y||0)-Number(q.y||0)||Number(p.x||0)-Number(q.x||0));
+    return {full:first?.data?.text||'',lines:out};
+  },
+
+  classifyLines(text){return String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(x=>this.isUsefulLine(x));},
+  anchorLines(lines){
+    const defs=[
+      ['head',/頭防具/],['chest',/胴防具/],['arms',/腕防具/],['waist',/腰防具/],['legs',/脚防具/],
+      ['weapon',/メイン武器|サブ武器/],['charm',/護石/],['decoration',/装飾品|珠/]
+    ];
+    const out={}; for(const [k,re] of defs){out[k]=lines.filter(l=>re.test(String(l.text||''))).sort((a,b)=>(a.y||0)-(b.y||0));} return out;
+  },
+  rankedForRegion(lines,kind,anchor=null){
+    const scored=[];
+    for(const l of lines){
+      const raw=this.cleanOCRText(l.text); if(!this.isUsefulLine(raw))continue;
+      const base=this.strongBest(raw,kind,3); if(!base.length)continue;
+      const dy=anchor?Math.abs(Number(l.y||0)-Number(anchor.y||0)):99999;
+      const dx=anchor?Math.abs(Number(l.x||0)-Number(anchor.x||0)):99999;
+      const proximity=anchor?Math.max(0,Math.min(.18,.18*(1-dy/180))):0;
+      for(const b of base) scored.push({...b,raw,y:Number(l.y||0),x:Number(l.x||0),regionScore:Math.min(1,b.score+proximity),dy,dx});
+    }
+    scored.sort((a,b)=>b.regionScore-a.regionScore || a.dy-b.dy || b.score-a.score);
+    const out=[],seen=new Set();for(const x of scored){const id=String(x.item?.id);if(seen.has(id))continue;seen.add(id);out.push(x);if(out.length>=3)break;}return out;
+  },
+  armorSegmentCandidates(text,slotKind){
+    // Legacy/raw-text fallback.  Do not pick the globally best string in the
+    // whole section: UI labels and skill names can be deceptively close to an
+    // armor name.  Prefer short name-like rows and adjacent fragments.
+    const labels=[['head','頭防具'],['chest','胴防具'],['arms','腕防具'],['waist','腰防具'],['legs','脚防具']];
+    const lines=String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    const a=lines.findIndex(x=>x.includes(labels.find(v=>v[0]===slotKind)?.[1]||''));
+    if(a<0)return null;
+    const next=labels.map(v=>lines.findIndex((x,i)=>i>a&&x.includes(v[1]))).filter(i=>i>=0).sort((x,y)=>x-y)[0];
+    const end=next??Math.min(lines.length,a+14),seg=lines.slice(a+1,end);
+    const pool=this.allNamed('armor').filter(item=>String(item?.kind||'')===slotKind);
+    const rows=[];
+    const add=(raw,bonus=0,span=1)=>{
+      const t=this.cleanOCRText(raw);if(!this.isUsefulLine(t))return;
+      const n=this.normalizeNameForOCR(t);
+      // Skip obvious UI/status rows.  Armor names tend to be longer and do not
+      // contain a level/percentage/status keyword.
+      if(/lv\s*\d|攻撃力|会心率|属性|耐性|装備スキル|ステータス|ビン|防御力/.test(n))return;
+      const scored=pool.map(item=>({item,score:this.score(t,item.name)+bonus})).sort((x,y)=>y.score-x.score);
+      if(scored[0])rows.push({raw:t,base:scored.slice(0,3),span});
+    };
+    for(let i=0;i<seg.length;i++){
+      add(seg[i],0,1);
+      if(i+1<seg.length)add(seg[i]+' '+seg[i+1],.035,2);
+      if(i+2<seg.length)add(seg[i]+' '+seg[i+1]+' '+seg[i+2],.018,3);
+    }
+    rows.sort((a,b)=>b.base[0].score-a.base[0].score);
+    return rows[0]?{best:rows[0].base,ocr:rows[0].raw}:null;
+  },
+
+  armorLayoutCandidates(results,slotKind){
+    const labels={head:'頭防具',chest:'胴防具',arms:'腕防具',waist:'腰防具',legs:'脚防具'};
+    const pool=this.allNamed('armor').filter(a=>String(a?.kind||'')===slotKind);
+    const all=[];
+    for(const r of (results||[])){
+      const lines=(r.layoutLines||[]).filter(l=>!l.anchorOnly&&this.isUsefulLine(l.text));
+      const anchors=(r.layoutLines||[]).filter(l=>l.anchorOnly&&String(l.text||'').includes(labels[slotKind]));
+      for(const anchor of anchors){
+        const ay=Number(anchor.y||0), ax=Number(anchor.x||0);
+        const region=lines.filter(l=>{
+          const y=Number(l.y||0),x=Number(l.x||0);
+          // Name row is normally immediately below the part header. Keep a
+          // generous window so cropped/YouTube screenshots still work.
+          return y>ay+12 && y<ay+125 && Math.abs(x-ax)<Math.max(900,Number(r?.layoutWidth||2000));
+        });
+        const candidates=[];
+        const push=(raw,y,span,baseBonus=0)=>{
+          const t=this.cleanOCRText(raw);if(!this.isUsefulLine(t))return;
+          const n=this.normalizeNameForOCR(t);
+          if(n.length<4||/lv\s*\d|攻撃力|会心率|属性|耐性|装備スキル|ステータス|ビン|防御力/.test(n))return;
+          const dy=Math.abs(Number(y)-ay);
+          // Strong preference for the typical equipment-name band (roughly
+          // 25-80px below the header), but never override a much better match.
+          const yBonus=Math.max(0,.14-Math.abs(dy-48)/420);
+          for(const b of pool.map(item=>({item,score:this.score(t,item.name)+baseBonus+yBonus,raw:t,dy})).sort((a,b)=>b.score-a.score).slice(0,3)) candidates.push(b);
+        };
+        const sorted=[...region].sort((a,b)=>Number(a.y||0)-Number(b.y||0));
+        for(let i=0;i<sorted.length;i++){
+          const a=sorted[i];push(a.text,a.y,1,0);
+          if(i+1<sorted.length && Number(sorted[i+1].y||0)-Number(a.y||0)<42)
+            push(a.text+' '+sorted[i+1].text,(Number(a.y||0)+Number(sorted[i+1].y||0))/2,2,.025);
+        }
+        candidates.sort((a,b)=>b.score-a.score || a.dy-b.dy);
+        if(candidates[0])all.push({...candidates[0],file:r.file,anchorY:ay});
+      }
+    }
+    all.sort((a,b)=>b.score-a.score||a.dy-b.dy);
+    const out=[],seen=new Set();
+    for(const x of all){const id=String(x.item?.id);if(seen.has(id))continue;seen.add(id);out.push(x);if(out.length>=3)break;}
+    return out;
   },
   looksLikeEquipmentName(text,kind){
     const t=this.cleanOCRText(text), n=this.normalizeNameForOCR(t);
@@ -2478,119 +2589,75 @@ const ScreenshotImporter={
   },
   strongBest(text,kind,limit=3){
     if(!this.looksLikeEquipmentName(text,kind))return [];
-    return this.best(text,kind,limit,.40);
+    return this.best(text,kind,limit,.52);
   },
   buildLayoutCandidates(results){
-    const all=[];
-    for(const r of (results||[])) for(const l of (r.layoutLines||[])) all.push({...l,file:r.file,sourceWidth:r.sourceWidth||r.layoutWidth||0});
-    const out=[];
+    const all=[];for(const r of (results||[]))for(const l of (r.layoutLines||[]))all.push({...l,file:r.file});
+    const anchors=this.anchorLines(all),out=[];
     const add=(label,kind,cands,ocr,meta={})=>{
-      const filtered=(cands||[]).filter(x=>x&&x.score>=.45).slice(0,3);
-      out.push({label,kind,ocr:ocr||filtered[0]?.raw||'',best:filtered,score:filtered[0]?.score||0,...meta});
-    };
-    const labels={head:'頭防具',chest:'胴防具',arms:'腕防具',waist:'腰防具',legs:'脚防具'};
-    const slotKeys=Object.keys(labels);
-
-    // Anchor matching is fuzzy after OCR normalization, so "頭 防 具" and
-    // small OCR punctuation errors still create the correct section.
-    const isAnchor=(l,label)=>this.normalizeText(l?.text||'').includes(this.normalizeText(label));
-    const anchorFor=(r,label)=>{
-      const ls=(r.layoutLines||[]).filter(l=>isAnchor(l,label));
-      ls.sort((a,b)=>Number(a.y||0)-Number(b.y||0));
-      return ls[0]||null;
+      if(!cands?.length){out.push({label,kind,ocr:ocr||'',best:[],score:0,...meta});return;}
+      const top=cands[0];
+      if(!top||top.score<.42){out.push({label,kind,ocr:ocr||top?.raw||'',best:[],score:0,...meta});return;}
+      out.push({label,kind,ocr:ocr||top.raw,best:cands.slice(0,3),score:Math.min(1,top.score),...meta});
     };
 
-    const armorCandidatesFor=(r,key)=>{
-      const anchor=anchorFor(r,labels[key]);
-      if(!anchor)return [];
-      const pool=this.allNamed('armor').filter(a=>String(a?.kind||'')===key);
-      const lines=(r.layoutLines||[]).filter(l=>!l.anchorOnly&&this.isUsefulLine(l.text));
-      const ay=Number(anchor.y||0),ax=Number(anchor.x||0);
-      const region=lines.filter(l=>{
-        const y=Number(l.y||0),x=Number(l.x||0);
-        return y>ay+8 && y<ay+180 && x>ax-100 && x<ax+Math.max(700,Number(r.sourceWidth||1800)*.85);
-      }).sort((a,b)=>Number(a.y||0)-Number(b.y||0));
-      const generated=[];
-      const push=(txt,y,bonus=0)=>{
-        const t=this.cleanOCRText(txt);if(!this.isUsefulLine(t))return;
-        if(/(?:攻撃力|防御力|会心率|耐性|装備スキル|ステータス|Lv\s*\d)/.test(t))return;
-        const dy=Math.abs(Number(y)-ay), ybonus=Math.max(0,.14-Math.abs(dy-48)/380);
-        for(const z of pool.map(item=>({item,score:this.score(t,item.name)+bonus+ybonus,raw:t,dy})).sort((a,b)=>b.score-a.score).slice(0,5))generated.push(z);
-      };
-      for(let i=0;i<region.length;i++){
-        push(region[i].text,region[i].y,0);
-        if(i+1<region.length && Number(region[i+1].y)-Number(region[i].y)<50)
-          push(region[i].text+' '+region[i+1].text,(Number(region[i].y)+Number(region[i+1].y))/2,.035);
+    // IMPORTANT: armor recognition is based on the raw OCR's section between
+    // each explicit part label. This avoids using a nearby skill row such as
+    // "達人芸" or another armor's name just because its bbox is close.
+    // Slot is a hard DB constraint only AFTER the correct text section is found.
+    const armor=[['頭防具','head'],['胴防具','chest'],['腕防具','arms'],['腰防具','waist'],['脚防具','legs']];
+    const rawByFile=(results||[]).map(r=>String(r.text||'')).join('\n');
+    for(const [label,key] of armor){
+      // Primary path: coordinate-aware section matching.  Each screenshot is
+      // evaluated independently so a second screenshot cannot overwrite the
+      // first screenshot's armor slots simply because it contains the same UI.
+      let c=this.armorLayoutCandidates(results,key);
+      if(!c.length){
+        const seg=this.armorSegmentCandidates(rawByFile,key);
+        c=seg?.best||[];
+        if(c.length)add(label,'armor',c,seg.ocr,{source:'raw-section-fallback'});
+        else add(label,'armor',[],({'head':'頭防具','chest':'胴防具','arms':'腕防具','waist':'腰防具','legs':'脚防具'}[key]||''),{source:'none'});
+      }else{
+        add(label,'armor',c,c[0]?.raw||'',{source:'layout-section'});
       }
-      generated.sort((a,b)=>b.score-a.score||a.dy-b.dy);
-      const seen=new Set(),res=[];
-      for(const z of generated){const id=String(z.item?.id);if(seen.has(id))continue;seen.add(id);res.push(z);if(res.length>=3)break;}
-      return res;
-    };
-
-    // Evaluate each screenshot independently. Never let a decoration
-    // screenshot overwrite armor inferred from an equipment screenshot.
-    for(const [key,label] of slotKeys.map(k=>[k,labels[k]])){
-      let best=[];
-      for(const r of (results||[])){
-        const c=armorCandidatesFor(r,key);
-        if(c.length && (!best.length || c[0].score>best[0].score))best=c;
-      }
-      if(!best.length){
-        // Raw fallback still obeys the armor DB category constraint.
-        const raw=String((results||[]).map(r=>r.text||'').join('\n'));
-        const seg=this.armorSegmentCandidates(raw,key);
-        best=(seg?.best||[]).map(x=>({...x,score:x.score}));
-        add(label,'armor',best,seg?.ocr||label,{source:seg?'raw-section-fallback':'none'});
-      }else add(label,'armor',best,best[0]?.raw||label,{source:'layout-db-ranking'});
     }
 
-    const nearestAfter=(label,kind)=>{
-      let rows=[];
-      for(const r of (results||[])){
-        const a=anchorFor(r,label);if(!a)continue;
-        const ay=Number(a.y||0),ax=Number(a.x||0);
-        for(const l of (r.layoutLines||[])){
-          if(l.anchorOnly||!this.isUsefulLine(l.text))continue;
-          const y=Number(l.y||0);if(y<=ay+8||y>ay+260)continue;
-          if(Math.abs(Number(l.x||0)-ax)>Math.max(900,Number(r.sourceWidth||1800)))continue;
-          const c=this.strongBest(l.text,kind,3);if(!c.length)continue;
-          const dy=Math.abs(y-ay),bonus=Math.max(0,.12-dy/220);
-          rows.push(...c.map(z=>({...z,raw:l.text,score:z.score+bonus,dy})));
-        }
-      }
-      rows.sort((a,b)=>b.score-a.score||a.dy-b.dy);
-      const seen=new Set(),res=[];for(const z of rows){const id=String(z.item?.id);if(seen.has(id))continue;seen.add(id);res.push(z);if(res.length>=3)break;}return res;
-    };
-
-    let wc=nearestAfter('メイン武器','weapon');
-    if(!wc.length)wc=nearestAfter('サブ武器','weapon');
+    // Weapon/charm: use layout proximity first, then raw OCR as fallback.
+    const wa=anchors.weapon?.[0]||null;
+    let wp=wa?all.filter(l=>!l.anchorOnly&&Number(l.y||0)>Number(wa.y||0)+8&&Number(l.y||0)<Number(wa.y||0)+260):all.filter(l=>!l.anchorOnly);
+    let wc=this.rankedForRegion(wp,'weapon',wa);
     if(!wc.length){
-      const raw=String((results||[]).map(r=>r.text||'').join('\n')).split(/\r?\n/).find(x=>/護鎖|ガルシュ|武器/.test(x));
-      if(raw)wc=this.best(raw,'weapon',3,.38).map(x=>({...x,raw}));
+      const raw=rawByFile.split(/\r?\n/).find(x=>/護鎖|ガルシュ|武器/.test(x));
+      if(raw)wc=this.best(raw,'weapon',3,.40);
     }
-    add('武器','weapon',wc,wc[0]?.raw||'');
+    add('武器','weapon',wc,wa?.text||'');
 
-    let cc=nearestAfter('護石','charm');
-    add('護石','charm',cc,cc[0]?.raw||'');
+    const ch=anchors.charm?.[0]||null;
+    let cp=ch?all.filter(l=>!l.anchorOnly&&Number(l.y||0)>Number(ch.y||0)+8&&Number(l.y||0)<Number(ch.y||0)+220):all.filter(l=>!l.anchorOnly);
+    let cc=this.rankedForRegion(cp,'charm',ch);
+    add('護石','charm',cc,ch?.text||'');
 
-    const decoLines=all.filter(l=>!l.anchorOnly&&/珠/.test(String(l.text||''))&&this.isUsefulLine(l.text));
+    // Decorations remain layout-driven because decoration screens are dense
+    // lists; only strong "珠" evidence is accepted.
+    const decoLines=all.filter(l=>{const t=String(l.text||'');return !l.anchorOnly&&/珠/.test(t)&&this.isUsefulLine(t);});
     const decoSeen=new Set();let di=0;
     for(const l of decoLines){
-      const c=this.strongBest(l.text,'decoration',3).map(z=>({...z,raw:l.text}));
-      if(!c.length||c[0].score<.58)continue;
+      const c=this.rankedForRegion([l],'decoration',null);
+      if(!c.length||c[0].score<.62)continue;
       const id=String(c[0].item.id);if(decoSeen.has(id))continue;decoSeen.add(id);
-      out.push({label:'装飾品 '+(++di),kind:'decoration',ocr:l.text,best:c,score:c[0].score});
+      out.push({label:'装飾品 '+(++di),kind:'decoration',ocr:l.text,best:c.slice(0,3),score:c[0].score});
     }
     return out;
   },
+
   buildCandidates(text){
     // Compatibility path for the manual "再照合" button. The main path uses layoutLines.
     const pseudo=String(text||'').split(/\r?\n/).map((x,i)=>({text:x,x:0,y:i*30}));
     return this.buildLayoutCandidates([{file:'',layoutLines:pseudo}]);
   },
-  renderCandidates(){const box=$('screenshotCandidates');if(!box)return;if(!this.candidates.length){box.classList.remove('hidden');box.innerHTML='<span class="warn">候補を生成できませんでした。OCR結果を確認してください。</span>';return;}box.classList.remove('hidden');box.innerHTML='<b>認識候補（確認後に反映）</b>'+this.candidates.map((c,i)=>{const pct=Math.round((c.score||0)*100),cls=pct>=85?'si-high':pct>=65?'si-mid':'si-low';const opts=c.best.length?c.best.map((x,j)=>`<option value="${j}">${esc(x.item.name)}</option>`).join(''):'<option value="-1">該当なし</option>';return `<div class="si-candidate"><span>${esc(c.label)}</span><select data-si-choice="${i}">${opts}</select><span class="si-confidence ${cls}">${c.best.length?pct+'%':'—'}</span></div>`}).join('');},
+  renderCandidates(){const box=$('screenshotCandidates');if(!box)return;if(!this.candidates.length){box.classList.remove('hidden');box.innerHTML='<span class="warn">自動照合候補を作れませんでした。OCR結果を確認してください。</span>';return;}box.classList.remove('hidden');box.innerHTML='<b>認識候補（確認後に反映）</b>'+this.candidates.map((c,i)=>{const pct=Math.round(c.score*100),cls=pct>=85?'si-high':pct>=65?'si-mid':'si-low';return `<div class="si-candidate"><span>${esc(c.label)}</span><select data-si-choice="${i}">${c.best.map((x,j)=>`<option value="${j}">${esc(x.item.name)}</option>`).join('')}</select><span class="si-confidence ${cls}">${pct}%</span></div>`}).join('');},
   async analyze(){
+    if(!OCR_MODULE_OK) throw new Error('OCRモジュールの整合性チェックに失敗しました');
     if(!window.Tesseract){$('screenshotStatus').innerHTML='<span class="bad">OCRエンジンを読み込めませんでした。ネットワーク接続を確認してください。</span>';return;}
     if(!this.files.length){$('screenshotStatus').innerHTML='<span class="warn">先にスクショを選択してください。</span>';return;}
     if(!App.data.requiredReady()){$('screenshotStatus').innerHTML='<span class="warn">先に①データ取得でゲームデータを取得してください。</span>';return;}
@@ -2618,6 +2685,23 @@ const ScreenshotImporter={
   apply(){if(!this.candidates.length)return;const armorMap={'頭防具':'head','胴防具':'chest','腕防具':'arms','腰防具':'waist','脚防具':'legs'};for(let i=0;i<this.candidates.length;i++){const c=this.candidates[i],sel=document.querySelector(`[data-si-choice="${i}"]`),idx=Number(sel?.value||0),item=c.best[idx]?.item;if(!item)continue;if(c.kind==='weapon'){const k=canonicalWeaponKind(item);if(k){setWeaponKindSelection(k);setWeaponSelectionById(item.id);}}else if(c.kind==='armor'){const slot=armorMap[c.label];if(slot)App.build.setArmor(slot,item);}else if(c.kind==='charm'){const skills=(item.skills||[]).map(x=>({name:x?.skill?.name||x?.name||'',level:Number(x?.level)||1,type:x?.skill?.kind==='weapon'?'weapon':'armor'})).filter(x=>x.name).slice(0,3);build.charmCustom.skills=skills;while(build.charmCustom.skills.length<3)build.charmCustom.skills.push({name:'',level:1,type:'armor'});build.charmCustom.slots=[0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;}else if(c.kind==='decoration'){} }renderArmor();renderCharmEditor();calcBuild();const hasDeco=this.candidates.some(c=>c.kind==='decoration');$('screenshotStatus').innerHTML='<span class="ok">✓ 確認した候補を現在の装備セットへ反映しました。'+(hasDeco?' 装飾品は今回の実験版では認識候補の表示までです。':'')+'</span>';},
   clear(){this.files=[];this.results=[];this.candidates=[];$('screenshotFiles').value='';$('screenshotPreview').innerHTML='';$('screenshotRawText').classList.add('hidden');$('screenshotCandidates').classList.add('hidden');$('screenshotApply').disabled=true;$('screenshotStatus').textContent='スクショを選択してください。';}
 };
+
+/* v8.0.2 OCR module integrity guard.
+   The OCR pipeline is deliberately kept as one coherent module. This check
+   catches accidental method loss (e.g. preprocess/autoRecognize) at build time
+   and gives a clear diagnostic instead of a late 'this.xxx is not a function'. */
+const OCR_REQUIRED_METHODS=[
+  'preprocess','autoRecognize','classifyLines','anchorLines','rankedForRegion',
+  'armorSegmentCandidates','armorLayoutCandidates','strongBest','buildLayoutCandidates',
+  'buildCandidates','renderCandidates','analyze','apply','clear'
+];
+const OCR_MODULE_OK=OCR_REQUIRED_METHODS.every(k=>typeof ScreenshotImporter[k]==='function');
+if(!OCR_MODULE_OK){
+  const missing=OCR_REQUIRED_METHODS.filter(k=>typeof ScreenshotImporter[k]!=='function');
+  console.error('[OCR v8.0.2] ScreenshotImporter methods missing:',missing);
+  const st=document.getElementById('screenshotStatus');
+  if(st) st.innerHTML='<span class=\"bad\">OCRモジュール構成エラー：'+esc(missing.join(', '))+' が見つかりません。ビルドを確認してください。</span>';
+}
 $('screenshotFiles')?.addEventListener('change',e=>{ScreenshotImporter.files=[...(e.target.files||[])];const box=$('screenshotPreview');box.innerHTML='';ScreenshotImporter.files.slice(0,6).forEach(f=>{const u=URL.createObjectURL(f),im=document.createElement('img');im.src=u;im.alt=f.name;box.appendChild(im);});$('screenshotStatus').textContent=`${ScreenshotImporter.files.length}枚のスクショを選択しました。`});
 $('screenshotAnalyze')?.addEventListener('click',()=>ScreenshotImporter.analyze());
 $('screenshotApply')?.addEventListener('click',()=>ScreenshotImporter.apply());
@@ -2661,7 +2745,7 @@ renderComboKinds();dataState=emptyDataState();App.data.set(DB,dataState);renderD
 try{const v=document.getElementById('appVersionText');if(v)v.textContent=App.version;}catch(e){}
 
 
-/* v8.0.0 OCR confirmation UI */
+/* v8.0.2 OCR confirmation UI */
 (function(SI){
   if(!SI)return;
   SI.renderCandidates=function(){
