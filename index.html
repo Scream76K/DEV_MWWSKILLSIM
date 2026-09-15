@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR Step 1 - メイン武器</title>
+<title>MH Wilds OCR Step 1 - メイン武器（高精度辞書補正版）</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -27,6 +27,7 @@ label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}
 input[type=number]{width:100%;padding:8px;border:1px solid #b9a98b;border-radius:8px;background:white}
 pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;padding:12px;border-radius:10px;min-height:90px}
 .result{font-size:18px;font-weight:700;padding:12px;background:#eef2e8;border-radius:10px}
+.corrected-tag{display:inline-block;margin-left:8px;padding:2px 8px;font-size:12px;background:#536b3f;color:white;border-radius:4px}
 .status{font-size:13px;margin-top:8px}
 @media(max-width:700px){.grid{grid-template-columns:1fr 1fr}main{padding:10px}}
 </style>
@@ -34,11 +35,9 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.2：メイン武器・名前領域OCR検証</h1>
+<h1>MH Wilds OCR — Step 1.2：メイン武器・名前領域OCR検証（高精度辞書補正付き）</h1>
 <div class="note">
-今回のスクショ構成だけを対象にした診断用です。<br>
-<strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
-まだシミュレータ本体には接続しません。まず「メイン武器の領域を正しく切り出せるか」と「その領域だけでOCRできるか」を確認します。
+OCR認識結果をモンハンワイルズの装備データベースと自動照合し、類似度計算（レーベンシュタイン距離）によって正確な名称へ後処理補正を行います。
 </div>
 </div>
 
@@ -51,8 +50,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <div class="card">
 <h2>2. メイン武器領域</h2>
 <div class="note">
-赤枠が今回OCRする範囲です。まず初期値を試し、必要なら枠をドラッグして調整します。OCRは元画像から直接3倍拡大して処理します。
-このStepでは「画面全体OCR」は行いません。
+赤枠が今回OCRする範囲です。枠の調整でノイズを取り除きます。
 </div>
 <div id="stage">
   <img id="img" alt="">
@@ -77,12 +75,12 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <h2>3. 切り出した画像</h2>
 <canvas id="crop" style="max-width:100%;display:block;border-radius:8px;background:#222"></canvas>
 <div style="margin-top:14px;padding-top:12px;border-top:1px solid #c8baa0">
-  <div style="font-weight:700;margin-bottom:5px">武器名だけのOCR領域</div>
-  <div class="note">上段の「メイン武器」というラベルや右側のスロット・アイコンを除き、武器名の行だけを自動で切り出します。ここも必要なら数値で微調整できます。</div>
+  <div style="font-weight:700;margin-bottom:5px">武器名だけのOCR領域（推奨：上% 48 / 幅% 48）</div>
+  <div class="note">「メイン武器」ラベルやスロットアイコンが入らないよう枠を調整してください。</div>
   <div class="grid" style="margin-top:8px">
     <div><label>領域内 左 %</label><input id="nx" type="number" step="0.5" value="12"></div>
-    <div><label>領域内 上 %</label><input id="ny" type="number" step="0.5" value="38"></div>
-    <div><label>領域内 幅 %</label><input id="nw" type="number" step="0.5" value="58"></div>
+    <div><label>領域内 上 %</label><input id="ny" type="number" step="0.5" value="48"></div>
+    <div><label>領域内 幅 %</label><input id="nw" type="number" step="0.5" value="48"></div>
     <div><label>領域内 高さ %</label><input id="nh" type="number" step="0.5" value="48"></div>
   </div>
   <canvas id="nameCrop" style="max-width:100%;display:block;margin-top:8px;border-radius:8px;background:#222"></canvas>
@@ -90,20 +88,10 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>4. OCR結果（武器名行・6方式比較）</h2>
+<h2>4. OCR結果（辞書補正後）</h2>
 <div id="recognized" class="result">未実行</div>
 <div class="status" id="ocrStatus"></div>
 <pre id="raw"></pre>
-</div>
-
-<div class="card">
-<h2>Step 1 の合格条件</h2>
-<div class="note">
-① 赤枠が上段のメイン武器名だけを含む<br>
-② 下段のサブ武器名を含まない<br>
-③ 4方式のうち少なくとも1方式で、日本語の武器名が読める<br>
-④ ここを確認してから、防具認識へ進みます
-</div>
 </div>
 </main>
 
@@ -112,6 +100,62 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 const $=id=>document.getElementById(id);
 let imgW=1,imgH=1,drag=null;
 
+// ==========================================
+// 1. 武器データベース（辞書）
+// ==========================================
+// 実装時にはここにMH Wildsの全武器名配列を入れてください
+const WEAPON_DICTIONARY = [
+  "代償のネイディ・ギア",
+  "護鎖刃笛ガルシュハド",
+  "炎角竜の大剣",
+  "雷顎竜の太刀"
+];
+
+// ==========================================
+// 2. あいまい検索アルゴリズム（レーベンシュタイン距離）
+// ==========================================
+function getLevenshteinDistance(a, b) {
+  const matrix = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+  for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,       // 削除
+        matrix[i][j - 1] + 1,       // 挿入
+        matrix[i - 1][j - 1] + cost // 置換
+      );
+    }
+  }
+  return matrix[a.length][b.length];
+}
+
+// 辞書の中から最も文字の近い名称を探す関数
+function findBestMatch(rawText, dictionary) {
+  if (!rawText) return { name: "", distance: 999, similarity: 0 };
+  
+  // ゴミ記号や空白の除去
+  const cleaned = rawText.replace(/[^a-zA-Z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF・α-γ]/g, "");
+  
+  let bestMatch = "";
+  let minDistance = Infinity;
+
+  for (const item of dictionary) {
+    const dist = getLevenshteinDistance(cleaned, item);
+    if (dist < minDistance) {
+      minDistance = dist;
+      bestMatch = item;
+    }
+  }
+
+  const maxLen = Math.max(cleaned.length, bestMatch.length);
+  const similarity = maxLen > 0 ? (1 - minDistance / maxLen) : 0;
+
+  return { name: bestMatch, distance: minDistance, similarity: similarity, rawCleaned: cleaned };
+}
+
+// UI 関連処理
 function setVals(x,y,w,h){
   $("x").value=x.toFixed(2);$("y").value=y.toFixed(2);
   $("w").value=w.toFixed(2);$("h").value=h.toFixed(2);
@@ -127,7 +171,6 @@ function vals(){
 }
 function drawBox(){
   const v=vals(), rect=$("img").getBoundingClientRect(), stage=$("stage").getBoundingClientRect();
-  const sx=rect.width/imgW, sy=rect.height/imgH;
   const left=(v.x/100)*rect.width+(rect.left-stage.left);
   const top=(v.y/100)*rect.height+(rect.top-stage.top);
   const width=(v.w/100)*rect.width, height=(v.h/100)*rect.height;
@@ -144,8 +187,6 @@ function updateCrop(){
   ctx.drawImage($("img"),sx,sy,sw,sh,0,0,c.width,c.height);
 }
 function defaultRegion(){
-  // First calibration range. It is intentionally adjustable in this Step.
-  // The lower/sub weapon is excluded by keeping the vertical range shallow.
   setVals(0, 8, 30, 12);
 }
 $("file").onchange=()=>{
@@ -212,6 +253,8 @@ function sourceCropCanvas(){
   ctx.drawImage($("img"),sx,sy,sw,sh,0,0,sw,sh);
   return c;
 }
+
+// 前処理の最適化（白黒反転オプション追加）
 function makeNameOCRCanvas(mode){
   const base=sourceCropCanvas();
   const x=Math.max(0,Math.min(99,Number($("nx").value)||0));
@@ -225,18 +268,21 @@ function makeNameOCRCanvas(mode){
   const ctx=c.getContext("2d",{willReadFrequently:true});
   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
   ctx.drawImage(base,sx,sy,sw,sh,0,0,c.width,c.height);
-  if(mode==="gray"||mode==="threshold"){
+  
+  if(mode !== "color") {
     const d=ctx.getImageData(0,0,c.width,c.height);
     for(let i=0;i<d.data.length;i+=4){
-      const yy=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
-      let z=yy;
-      if(mode==="threshold")z=yy>150?255:0;
-      d.data[i]=d.data[i+1]=d.data[i+2]=z;
+      const gray=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
+      let val = gray;
+      if(mode==="threshold") val = gray > 140 ? 255 : 0;
+      if(mode==="invert") val = gray > 140 ? 0 : 255; // 白黒反転（Tesseractが得意な「黒文字白背景」を作る）
+      d.data[i]=d.data[i+1]=d.data[i+2]=val;
     }
     ctx.putImageData(d,0,0);
   }
   return c;
 }
+
 function updateNameCrop(){
   if(!$("img").src)return;
   const c=makeNameOCRCanvas("color");
@@ -247,6 +293,9 @@ function updateNameCrop(){
 const oldUpdateCrop=updateCrop;
 updateCrop=function(){oldUpdateCrop();updateNameCrop()};
 
+// ==========================================
+// 3. OCR実行と辞書補正の組み込み
+// ==========================================
 $("ocr").onclick=async()=>{
   if(!$("img").src){$("ocrStatus").textContent="先に画像を選択してください。";return}
   updateCrop(); updateNameCrop();
@@ -255,12 +304,11 @@ $("ocr").onclick=async()=>{
   try{
     const worker=await Tesseract.createWorker("jpn");
     const passes=[
+      {name:"白黒反転・PSM7",mode:"invert",psm:7},
       {name:"カラー・PSM7",mode:"color",psm:7},
-      {name:"カラー・PSM13",mode:"color",psm:13},
       {name:"カラー・PSM6",mode:"color",psm:6},
-      {name:"カラー・PSM11",mode:"color",psm:11},
-      {name:"グレースケール・PSM7",mode:"gray",psm:7},
-      {name:"2値化・PSM7",mode:"threshold",psm:7}
+      {name:"2値化・PSM7",mode:"threshold",psm:7},
+      {name:"グレースケール・PSM7",mode:"gray",psm:7}
     ];
     const results=[];
     for(const p of passes){
@@ -270,24 +318,40 @@ $("ocr").onclick=async()=>{
         tessedit_pageseg_mode:String(p.psm),
         preserve_interword_spaces:"1"
       });
+      
+      const rawText = String(r?.data?.text||"").replace(/\s+/g," ").trim();
+      const match = findBestMatch(rawText, WEAPON_DICTIONARY);
+
       results.push({
-        name:p.name,
-        text:String(r?.data?.text||"").replace(/\s+/g," ").trim(),
-        confidence:Number(r?.data?.confidence||0)
+        name: p.name,
+        rawText: rawText,
+        correctedName: match.name,
+        similarity: match.similarity,
+        confidence: Number(r?.data?.confidence||0)
       });
     }
     await worker.terminate();
-    results.sort((a,b)=>b.confidence-a.confidence);
+    
+    // 辞書との類似度優先でソート（同じならOCR信頼度でソート）
+    results.sort((a,b)=> b.similarity - a.similarity || b.confidence - a.confidence);
     const best=results[0];
-    $("recognized").textContent=best.text||"文字を認識できませんでした";
-    $("raw").textContent=results.map((r,i)=>`【${i+1}位：${r.name} / 信頼度 ${Math.round(r.confidence)}%】\n${r.text||"(空)"}`).join("\n\n");
-    $("ocrStatus").textContent=`武器名行だけの6方式比較完了。最高信頼度：${Math.round(best.confidence)}%（${best.name}）`;
+
+    // 結果の表示
+    if (best.similarity > 0.4) {
+      $("recognized").innerHTML = `${best.correctedName} <span class="corrected-tag">自動補正済み (類似度:${Math.round(best.similarity*100)}%)</span>`;
+    } else {
+      $("recognized").textContent = best.rawText || "文字を認識できませんでした";
+    }
+
+    $("raw").textContent = results.map((r,i)=>
+      `【${i+1}位：${r.name}】\n・生OCR出力：${r.rawText || "(空)"}\n・辞書補正結果：${r.correctedName} (一致率: ${Math.round(r.similarity*100)}% / OCR信頼度: ${Math.round(r.confidence)}%)`
+    ).join("\n\n");
+
+    $("ocrStatus").textContent=`解析完了。判定結果: ${best.correctedName}`;
   }catch(err){
     $("ocrStatus").textContent="OCRエラー："+String(err);
   }finally{$("ocr").disabled=false}
 };
-
-const originalFileOnloadMessage=$("fileStatus");
 </script>
 </body>
 </html>
