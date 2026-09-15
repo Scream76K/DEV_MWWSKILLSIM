@@ -260,10 +260,15 @@ const oldUpdateCrop=updateCrop; updateCrop=function(){oldUpdateCrop();updateName
 const WEAPON_DICTIONARY=[
   '代償のネイディ・ギア','護鎖刃笛ガルシュハド','炎角竜の大剣','雷顎竜の太刀'
 ];
-function normJP(v){
+function normJPStrict(v){
+  // Canonical comparison: keep meaningful game-name symbols such as ・, ー, αβγ.
   return String(v||'').normalize('NFKC').toLowerCase()
-    .replace(/[\s\u3000・･·•,，.。:：;；「」『』（）()\[\]【】_\-—–ー~～]+/g,'')
-    .replace(/[”“’'`]/g,'');
+    .replace(/[\s\u3000]+/g,'')
+    .replace(/[”“’'`「」『』（）()\[\]【】,，.。:：;；_|｜~～—–]+/g,'');
+}
+function normJPLoose(v){
+  // Secondary comparison only: tolerate OCR symbol omissions/variations.
+  return normJPStrict(v).replace(/[・･·•ー\-]/g,'');
 }
 function lev(a,b){
   const aa=Array.from(a),bb=Array.from(b),prev=Array(bb.length+1); for(let j=0;j<=bb.length;j++)prev[j]=j;
@@ -272,12 +277,70 @@ function lev(a,b){
 }
 function lcsLen(a,b){const aa=Array.from(a),bb=Array.from(b);let p=new Array(bb.length+1).fill(0);for(const ch of aa){let c=new Array(bb.length+1).fill(0);for(let j=1;j<=bb.length;j++)c[j]=ch===bb[j-1]?p[j-1]+1:Math.max(p[j],c[j-1]);p=c}return p[bb.length]}
 function dice(a,b){if(a===b)return 1;if(a.length<2||b.length<2)return 0;const m=new Map();for(let i=0;i<a.length-1;i++){const g=a.slice(i,i+2);m.set(g,(m.get(g)||0)+1)}let hit=0;for(let i=0;i<b.length-1;i++){const g=b.slice(i,i+2),n=m.get(g)||0;if(n>0){hit++;m.set(g,n-1)}}return 2*hit/(a.length+b.length-2)}
+function commonSubstringLen(a,b){
+  const aa=Array.from(a),bb=Array.from(b); let prev=new Array(bb.length+1).fill(0),best=0;
+  for(let i=1;i<=aa.length;i++){
+    const cur=new Array(bb.length+1).fill(0);
+    for(let j=1;j<=bb.length;j++){
+      if(aa[i-1]===bb[j-1]){cur[j]=prev[j-1]+1;if(cur[j]>best)best=cur[j];}
+    }
+    prev=cur;
+  }
+  return best;
+}
 function candidateScore(raw,item){
-  const a=normJP(raw),b=normJP(item); if(!a||!b)return {score:0,lev:0,lcs:0,dice:0};
-  const ld=1-lev(a,b)/Math.max(a.length,b.length), lc=lcsLen(a,b)/Math.max(a.length,b.length), dc=dice(a,b);
-  // OCRが余計な文字を含む場合に強すぎるペナルティを避け、共通部分を重視。
-  const score=.42*ld+.33*lc+.25*dc;
-  return {score,lev:ld,lcs:lc,dice:dc};
+  const a=normJPStrict(raw), b=normJPStrict(item), al=normJPLoose(raw), bl=normJPLoose(item);
+  if(!a||!b)return {score:0,lev:0,lcs:0,dice:0,strict:0,loose:0,common:0};
+  const ld=1-lev(a,b)/Math.max(a.length,b.length);
+  const lc=lcsLen(a,b)/Math.max(a.length,b.length);
+  const dc=dice(a,b);
+  const loose=1-lev(al,bl)/Math.max(al.length,bl.length);
+  const score=.34*ld+.26*lc+.18*dc+.22*loose;
+  return {score,lev:ld,lcs:lc,dice:dc,strict:(ld+lc+dc)/3,loose,common:commonSubstringLen(al,bl)/Math.max(1,Math.min(al.length,bl.length))};
+}
+function getDictionary(){
+  try{ if(Array.isArray(window.DB?.weapons)&&window.DB.weapons.length) return [...new Set(window.DB.weapons.map(w=>String(w?.name||'')).filter(Boolean))]; }catch(e){}
+  return WEAPON_DICTIONARY;
+}
+function confidenceWeight(conf){
+  if(conf>=85)return 1.00;
+  if(conf>=75)return .90;
+  if(conf>=65)return .78;
+  if(conf>=50)return .62;
+  if(conf>=35)return .45;
+  return .30;
+}
+function dynamicMarginRequired(name){
+  const n=Array.from(normJPStrict(name)).length;
+  if(n<=4)return .16;
+  if(n<=7)return .12;
+  if(n<=11)return .09;
+  return .07;
+}
+function partialEvidence(raw,item){
+  const a=normJPLoose(raw), b=normJPLoose(item);
+  if(!a||!b)return {common:0,grams:0};
+  const min=Math.min(a.length,b.length);
+  const common=commonSubstringLen(a,b)/Math.max(1,min);
+  let grams=0;
+  for(const n of [2,3,4]){
+    for(let i=0;i<=b.length-n;i++){
+      if(a.includes(b.slice(i,i+n))) grams += n>=3 ? 2 : 1;
+    }
+  }
+  return {common,grams:Math.min(1,grams/Math.max(6,b.length))};
+}
+function tokenEvidence(raw,item){
+  const p=partialEvidence(raw,item);
+  return Math.min(1,.55*p.common+.45*p.grams);
+}
+function renderCandidates(cands,meta){
+  const out=$("candidateOut"); if(!cands.length){out.innerHTML='<div class="notice">候補を作れませんでした。</div>';return}
+  out.innerHTML=cands.slice(0,5).map((c,i)=>{
+    const pct=Math.round(c.final*100), cls=pct>=78?'background:#eef2e8':pct>=60?'background:#f6f1df':'background:#f5e8e4';
+    return `<div style="${cls};border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:7px"><b>${i+1}位　${c.name}</b><br><span class="note">総合 ${pct}%　／　支持 ${c.support}/${meta.total}回　／　OCR相互一致 ${Math.round(c.consensus*100)}%　／　辞書一致 ${Math.round(c.bestSimilarity*100)}%</span></div>`;
+  }).join('')+
+  `<div class="note" style="margin-top:8px">${meta.decision}</div>`;
 }
 function cleanOCR(raw){return String(raw||'').replace(/[\r\n]+/g,' ').replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim()}
 function tokenEvidence(raw,item){
@@ -307,7 +370,7 @@ $('ocr').onclick=async()=>{
     const worker=await Tesseract.createWorker('jpn');
     const dict=getDictionary();
 
-    // Step 1.5:
+    // Step 1.6:
     // OCR信頼度を「表示値」から正式な判定根拠へ昇格。
     // 高信頼OCR + 高辞書一致なら即終了し、低信頼OCRは複数支持で補う。
     const fast=[
@@ -322,25 +385,70 @@ $('ocr').onclick=async()=>{
     ];
     const rows=[];
 
-    const confidenceWeight=conf=>{
-      // Tesseract confidence is useful evidence, but never allowed to dominate alone.
-      if(conf>=85)return 1.00;
-      if(conf>=75)return .90;
-      if(conf>=65)return .78;
-      if(conf>=50)return .62;
-      if(conf>=35)return .45;
-      return .30;
-    };
-
     const rankRow=(raw,conf)=>{
       return dict.map(item=>{
         const s=candidateScore(raw,item);
         const ev=tokenEvidence(raw,item);
-        // OCR信頼度を「候補の正しさ」ではなく「このOCR結果をどれだけ信用するか」に利用。
         const cw=confidenceWeight(conf);
-        const score=.60*s.score+.20*ev+.20*cw;
-        return {name:item,similarity:s.score,evidence:ev,confidenceWeight:cw,score};
+        const score=.58*s.score+.18*ev+.16*cw+.08*s.common;
+        return {name:item,similarity:s.score,evidence:ev,confidenceWeight:cw,score,common:s.common};
       }).sort((a,b)=>b.score-a.score);
+    };
+
+    // Additive OCR↔OCR consensus:
+    // 1) each OCR is still independently matched against the dictionary;
+    // 2) OCR outputs are compared with each other to find stable character spans;
+    // 3) that consensus is then matched back against the dictionary.
+    const consensusFor=(candidateName)=>{
+      const relevant=rows.map(r=>({raw:r.raw,conf:r.conf,weight:.35+.65*confidenceWeight(r.conf)}));
+      if(relevant.length<2)return {score:0,core:'',support:0};
+
+      const candLoose=normJPLoose(candidateName);
+      let pairScores=[], coreHits=new Map();
+
+      for(let i=0;i<relevant.length;i++){
+        for(let j=i+1;j<relevant.length;j++){
+          const a=normJPLoose(relevant[i].raw), b=normJPLoose(relevant[j].raw);
+          if(!a||!b)continue;
+          const common=commonSubstringLen(a,b)/Math.max(1,Math.min(a.length,b.length));
+          const pairWeight=(relevant[i].weight+relevant[j].weight)/2;
+          pairScores.push({score:common,weight:pairWeight});
+          // Collect meaningful common substrings (length >= 3) and test them
+          // against the candidate. This avoids letting one noisy full-string
+          // match dominate the result.
+          const aa=Array.from(a), bb=Array.from(b);
+          for(let x=0;x<aa.length;x++){
+            for(let len=3;len<=Math.min(8,aa.length-x);len++){
+              const sub=aa.slice(x,x+len).join('');
+              if(!b.includes(sub))continue;
+              const hit=normJPLoose(sub);
+              if(hit.length<3 || !candLoose.includes(hit))continue;
+              const key=hit;
+              const val=coreHits.get(key)||{support:0,weight:0};
+              val.support++;
+              val.weight+=pairWeight*(len>=5?1.2:1);
+              coreHits.set(key,val);
+            }
+          }
+        }
+      }
+
+      const topPairs=pairScores.sort((a,b)=>b.score-a.score).slice(0,4);
+      const pairConsensus=topPairs.length ? topPairs.reduce((s,x)=>s+x.score*x.weight,0)/Math.max(.001,topPairs.reduce((s,x)=>s+x.weight,0)) : 0;
+      const cores=[...coreHits.entries()].map(([core,v])=>({
+        core,support:v.support,weight:v.weight,
+        dict:1-lev(normJPLoose(core),candLoose)/Math.max(1,Math.max(core.length,candLoose.length))
+      })).sort((a,b)=>(b.weight*b.dict)-(a.weight*a.dict));
+
+      const bestCore=cores[0]||{core:'',support:0,weight:0,dict:0};
+      const coreStrength=Math.min(1,(bestCore.weight/3))*Math.max(0,bestCore.dict);
+      const support=bestCore.support;
+      return {
+        score:.62*pairConsensus+.38*coreStrength,
+        pairConsensus,
+        core:bestCore.core,
+        support
+      };
     };
 
     const aggregate=()=>{
@@ -351,12 +459,11 @@ $('ocr').onclick=async()=>{
         row.second=ranked[1]||null;
         if(!row.best)continue;
 
-        // 一つのOCRが高信頼なら重く、低信頼なら複数支持を必要とする。
-        const evidence=row.best.score*confidenceWeight(row.conf);
+        const evidence=row.best.score*(.35+.65*confidenceWeight(row.conf));
         const old=agg.get(row.best.name)||{
           name:row.best.name,support:0,weightedSupport:0,
           bestRowScore:0,bestConf:0,sumScore:0,sumConf:0,
-          bestSimilarity:0
+          bestSimilarity:0,topRows:[]
         };
         old.support++;
         old.weightedSupport+=evidence;
@@ -365,18 +472,22 @@ $('ocr').onclick=async()=>{
         old.bestRowScore=Math.max(old.bestRowScore,row.best.score);
         old.bestConf=Math.max(old.bestConf,row.conf);
         old.bestSimilarity=Math.max(old.bestSimilarity,row.best.similarity);
+        old.topRows.push({score:row.best.score,similarity:row.best.similarity,conf:row.conf});
         agg.set(row.best.name,old);
       }
 
       return [...agg.values()].map(x=>{
-        const avg=x.support?x.sumScore/x.support:0;
-        const avgConf=x.support?x.sumConf/x.support:0;
+        x.topRows.sort((a,b)=>b.score-a.score);
+        const top=x.topRows.slice(0,3);
+        const avg=top.length?top.reduce((s,r)=>s+r.score,0)/top.length:0;
+        const avgConf=top.length?top.reduce((s,r)=>s+r.conf,0)/top.length:0;
         const share=x.support/Math.max(1,rows.length);
-        // Confidence is intentionally capped so 88% confidence cannot overpower
-        // a poor dictionary match.
+        const consensus=consensusFor(x.name);
         const confTerm=Math.min(1,avgConf/100);
-        const final=.42*avg+.25*share+.18*x.bestRowScore+.10*confTerm+.05*Math.min(1,x.weightedSupport);
-        return {...x,avg,avgConf,share,final};
+        // Weak OCRs no longer drag down strong evidence as heavily:
+        // use top evidence, then add OCR↔OCR consensus as an independent signal.
+        const final=.36*avg+.16*share+.16*x.bestRowScore+.08*confTerm+.24*consensus.score;
+        return {...x,avg,avgConf,share,consensus:consensus.score,consensusCore:consensus.core,consensusSupport:consensus.support,final};
       }).sort((a,b)=>b.final-a.final);
     };
 
@@ -384,22 +495,23 @@ $('ocr').onclick=async()=>{
       const a=ranked[0],b=ranked[1];
       if(!a)return false;
       const margin=a.final-(b?.final||0);
-      // Gemini-like strong evidence: one very good OCR can finish early,
-      // but only when dictionary match is also strong.
       return a.bestConf>=80 &&
              a.bestSimilarity>=.85 &&
              a.bestRowScore>=.78 &&
-             margin>=.08;
+             margin>=dynamicMarginRequired(a.name);
     };
 
     const multiEvidenceStrong=(ranked)=>{
       const a=ranked[0],b=ranked[1];
       if(!a)return false;
       const margin=a.final-(b?.final||0);
-      return a.support>=2 &&
-             a.avg>=.68 &&
-             a.final>=.63 &&
-             margin>=.08;
+      const marginReq=dynamicMarginRequired(a.name);
+      const consensusStrong=a.consensus>=.52 && a.consensusSupport>=1;
+      return margin>=marginReq && (
+        (a.support>=2 && a.avg>=.62 && a.final>=.60) ||
+        (consensusStrong && a.bestSimilarity>=.70 && a.final>=.60) ||
+        (a.bestSimilarity>=.82 && a.bestConf>=60 && a.final>=.60)
+      );
     };
 
     const runPass=async(p)=>{
@@ -456,12 +568,16 @@ $('ocr').onclick=async()=>{
       const b=r.best;
       return `【${i+1} ${r.name} / OCR信頼度 ${Math.round(r.conf)}%】\n・生OCR：${r.raw}\n・DB候補：${b?.name||'(なし)'}（一致 ${Math.round((b?.similarity||0)*100)}% / 行スコア ${Math.round((b?.score||0)*100)}%）`;
     }).join('\n\n');
+    if(best){
+      const ctext=best.consensusCore ? ` / OCR共通核「${best.consensusCore}」` : '';
+      $('raw').textContent += `\n\n【OCR↔OCR一致性】\n・最有力候補：${best.name}\n・相互一致：${Math.round(best.consensus*100)}%\n・共通核：${best.consensusCore||'(なし)'}\n・共通核支持：${best.consensusSupport||0}組${ctext?'':''}`;
+    }
 
     renderCandidates(ranked,{
       total:rows.length,
       decision:confirmed
-        ?`${direct?'高信頼OCR＋辞書一致':'複数OCR合意'}で自動確定候補。候補差 ${Math.round(margin*100)}%。`
-        :`OCR信頼度・辞書一致・複数支持を統合しても差が不足。判定保留。`
+        ?`${direct?'高信頼OCR＋辞書一致':'複数OCR合意'}で自動確定候補。候補差 ${Math.round(margin*100)}%。OCR↔OCR一致性も加味。`
+        :`OCR信頼度・OCR同士の一致・辞書一致・複数支持を統合しても差が不足。判定保留。`
     });
 
     $('ocrStatus').textContent=`解析完了：${rows.length}回の有効OCR / ${elapsed.toFixed(1)}秒 / ${confirmed?'自動確定候補':'判定保留'}`;
