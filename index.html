@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.1：メイン武器OCR改善</h1>
+<h1>MH Wilds OCR — Step 1.2：メイン武器・名前領域OCR検証</h1>
 <div class="note">
 今回のスクショ構成だけを対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -76,10 +76,21 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <div class="card">
 <h2>3. 切り出した画像</h2>
 <canvas id="crop" style="max-width:100%;display:block;border-radius:8px;background:#222"></canvas>
+<div style="margin-top:14px;padding-top:12px;border-top:1px solid #c8baa0">
+  <div style="font-weight:700;margin-bottom:5px">武器名だけのOCR領域</div>
+  <div class="note">上段の「メイン武器」というラベルや右側のスロット・アイコンを除き、武器名の行だけを自動で切り出します。ここも必要なら数値で微調整できます。</div>
+  <div class="grid" style="margin-top:8px">
+    <div><label>領域内 左 %</label><input id="nx" type="number" step="0.5" value="12"></div>
+    <div><label>領域内 上 %</label><input id="ny" type="number" step="0.5" value="38"></div>
+    <div><label>領域内 幅 %</label><input id="nw" type="number" step="0.5" value="58"></div>
+    <div><label>領域内 高さ %</label><input id="nh" type="number" step="0.5" value="48"></div>
+  </div>
+  <canvas id="nameCrop" style="max-width:100%;display:block;margin-top:8px;border-radius:8px;background:#222"></canvas>
+</div>
 </div>
 
 <div class="card">
-<h2>4. OCR結果（4方式比較）</h2>
+<h2>4. OCR結果（武器名行・6方式比較）</h2>
 <div id="recognized" class="result">未実行</div>
 <div class="status" id="ocrStatus"></div>
 <pre id="raw"></pre>
@@ -192,63 +203,91 @@ document.querySelectorAll(".handle").forEach(handle=>{
   handle.addEventListener("pointerup",()=>drag=null);
 });
 
-function makeOCRCanvas(mode){
+function sourceCropCanvas(){
   const v=vals();
   const sx=Math.round(imgW*v.x/100), sy=Math.round(imgH*v.y/100);
   const sw=Math.max(1,Math.round(imgW*v.w/100)), sh=Math.max(1,Math.round(imgH*v.h/100));
-  const scale=3;
-  const c=document.createElement("canvas");
-  c.width=sw*scale;c.height=sh*scale;
+  const c=document.createElement("canvas"); c.width=sw; c.height=sh;
+  const ctx=c.getContext("2d");
+  ctx.drawImage($("img"),sx,sy,sw,sh,0,0,sw,sh);
+  return c;
+}
+function makeNameOCRCanvas(mode){
+  const base=sourceCropCanvas();
+  const x=Math.max(0,Math.min(99,Number($("nx").value)||0));
+  const y=Math.max(0,Math.min(99,Number($("ny").value)||0));
+  const w=Math.max(1,Math.min(100-x,Number($("nw").value)||1));
+  const h=Math.max(1,Math.min(100-y,Number($("nh").value)||1));
+  const sx=Math.round(base.width*x/100), sy=Math.round(base.height*y/100);
+  const sw=Math.max(1,Math.round(base.width*w/100)), sh=Math.max(1,Math.round(base.height*h/100));
+  const scale=4;
+  const c=document.createElement("canvas"); c.width=sw*scale;c.height=sh*scale;
   const ctx=c.getContext("2d",{willReadFrequently:true});
-  ctx.imageSmoothingEnabled=true;
-  ctx.imageSmoothingQuality="high";
-  ctx.drawImage($("img"),sx,sy,sw,sh,0,0,c.width,c.height);
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
+  ctx.drawImage(base,sx,sy,sw,sh,0,0,c.width,c.height);
   if(mode==="gray"||mode==="threshold"){
     const d=ctx.getImageData(0,0,c.width,c.height);
     for(let i=0;i<d.data.length;i+=4){
-      const y=0.299*d.data[i]+0.587*d.data[i+1]+0.114*d.data[i+2];
-      const v2=mode==="threshold"?(y>145?255:0):y;
-      d.data[i]=d.data[i+1]=d.data[i+2]=v2;
+      const yy=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
+      let z=yy;
+      if(mode==="threshold")z=yy>150?255:0;
+      d.data[i]=d.data[i+1]=d.data[i+2]=z;
     }
     ctx.putImageData(d,0,0);
   }
   return c;
 }
-function cleanOCR(s){
-  return String(s||"").replace(/[\\t ]+/g," ").replace(/\\n{2,}/g,"\\n").trim();
+function updateNameCrop(){
+  if(!$("img").src)return;
+  const c=makeNameOCRCanvas("color");
+  const out=$("nameCrop"),ctx=out.getContext("2d");
+  out.width=c.width;out.height=c.height;ctx.drawImage(c,0,0);
 }
+["nx","ny","nw","nh"].forEach(id=>$(id).addEventListener("input",updateNameCrop));
+const oldUpdateCrop=updateCrop;
+updateCrop=function(){oldUpdateCrop();updateNameCrop()};
+
 $("ocr").onclick=async()=>{
   if(!$("img").src){$("ocrStatus").textContent="先に画像を選択してください。";return}
-  updateCrop();
-  $("ocr").disabled=true;$("ocrStatus").textContent="高解像度の切り出しを4方式でOCR中…";
+  updateCrop(); updateNameCrop();
+  $("ocr").disabled=true;
+  $("ocrStatus").textContent="武器名の文字行だけを高解像度OCR中…";
   try{
     const worker=await Tesseract.createWorker("jpn");
     const passes=[
+      {name:"カラー・PSM7",mode:"color",psm:7},
+      {name:"カラー・PSM13",mode:"color",psm:13},
       {name:"カラー・PSM6",mode:"color",psm:6},
       {name:"カラー・PSM11",mode:"color",psm:11},
-      {name:"グレースケール・PSM6",mode:"gray",psm:6},
-      {name:"2値化・PSM6",mode:"threshold",psm:6}
+      {name:"グレースケール・PSM7",mode:"gray",psm:7},
+      {name:"2値化・PSM7",mode:"threshold",psm:7}
     ];
     const results=[];
     for(const p of passes){
       $("ocrStatus").textContent=`OCR中：${p.name}`;
-      const c=makeOCRCanvas(p.mode);
-      const r=await worker.recognize(c,{tessedit_pageseg_mode:String(p.psm)});
-      const text=cleanOCR(r?.data?.text||"");
-      const confidence=Number(r?.data?.confidence||0);
-      results.push({name:p.name,text,confidence});
+      const c=makeNameOCRCanvas(p.mode);
+      const r=await worker.recognize(c,{
+        tessedit_pageseg_mode:String(p.psm),
+        preserve_interword_spaces:"1"
+      });
+      results.push({
+        name:p.name,
+        text:String(r?.data?.text||"").replace(/\s+/g," ").trim(),
+        confidence:Number(r?.data?.confidence||0)
+      });
     }
     await worker.terminate();
-
     results.sort((a,b)=>b.confidence-a.confidence);
     const best=results[0];
     $("recognized").textContent=best.text||"文字を認識できませんでした";
-    $("raw").textContent=results.map((r,i)=>`【${i+1}位：${r.name} / 信頼度 ${Math.round(r.confidence)}%】\\n${r.text||"(空)"}`).join("\\n\\n");
-    $("ocrStatus").textContent=`4方式の比較完了。最高信頼度：${Math.round(best.confidence)}%（${best.name}）`;
+    $("raw").textContent=results.map((r,i)=>`【${i+1}位：${r.name} / 信頼度 ${Math.round(r.confidence)}%】\n${r.text||"(空)"}`).join("\n\n");
+    $("ocrStatus").textContent=`武器名行だけの6方式比較完了。最高信頼度：${Math.round(best.confidence)}%（${best.name}）`;
   }catch(err){
     $("ocrStatus").textContent="OCRエラー："+String(err);
   }finally{$("ocr").disabled=false}
 };
+
+const originalFileOnloadMessage=$("fileStatus");
 </script>
 </body>
 </html>
