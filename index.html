@@ -306,53 +306,113 @@ $('ocr').onclick=async()=>{
   try{
     const worker=await Tesseract.createWorker('jpn');
     const dict=getDictionary();
-    // まず「過去テストで強かった方式」だけを実行。
-    // 早期確定できなければ、追加方式を最大2回だけ実行する。
+
+    // Step 1.5:
+    // OCR信頼度を「表示値」から正式な判定根拠へ昇格。
+    // 高信頼OCR + 高辞書一致なら即終了し、低信頼OCRは複数支持で補う。
     const fast=[
-      {name:'base・2値化155・PSM7',mode:'threshold155',cr:{id:'base',dx:0,dy:0,dw:0,dh:0}},
-      {name:'base・白黒反転・PSM7',mode:'invert',cr:{id:'base',dx:0,dy:0,dw:0,dh:0}},
-      {name:'y+2・2値化155・PSM7',mode:'threshold155',cr:{id:'y+2',dx:0,dy:2,dw:0,dh:-2}},
-      {name:'tight・2値化155・PSM7',mode:'threshold155',cr:{id:'tight',dx:2,dy:2,dw:-4,dh:-2}}
+      {name:'base・2値化155・PSM7',mode:'threshold155',dx:0,dy:0,dw:0,dh:0},
+      {name:'base・白黒反転・PSM7',mode:'invert',dx:0,dy:0,dw:0,dh:0},
+      {name:'y+2・2値化155・PSM7',mode:'threshold155',dx:0,dy:2,dw:0,dh:-2},
+      {name:'tight・2値化155・PSM7',mode:'threshold155',dx:2,dy:2,dw:-4,dh:-2}
     ];
     const extra=[
-      {name:'y+2・2値化140・PSM7',mode:'threshold',cr:{id:'y+2',dx:0,dy:2,dw:0,dh:-2}},
-      {name:'base・2値化125・PSM7',mode:'threshold125',cr:{id:'base',dx:0,dy:0,dw:0,dh:0}}
+      {name:'y+2・2値化140・PSM7',mode:'threshold',threshold:140,dx:0,dy:2,dw:0,dh:-2},
+      {name:'base・2値化125・PSM7',mode:'threshold',threshold:125,dx:0,dy:0,dw:0,dh:0}
     ];
     const rows=[];
+
+    const confidenceWeight=conf=>{
+      // Tesseract confidence is useful evidence, but never allowed to dominate alone.
+      if(conf>=85)return 1.00;
+      if(conf>=75)return .90;
+      if(conf>=65)return .78;
+      if(conf>=50)return .62;
+      if(conf>=35)return .45;
+      return .30;
+    };
+
+    const rankRow=(raw,conf)=>{
+      return dict.map(item=>{
+        const s=candidateScore(raw,item);
+        const ev=tokenEvidence(raw,item);
+        // OCR信頼度を「候補の正しさ」ではなく「このOCR結果をどれだけ信用するか」に利用。
+        const cw=confidenceWeight(conf);
+        const score=.60*s.score+.20*ev+.20*cw;
+        return {name:item,similarity:s.score,evidence:ev,confidenceWeight:cw,score};
+      }).sort((a,b)=>b.score-a.score);
+    };
+
     const aggregate=()=>{
       const agg=new Map();
       for(const row of rows){
-        for(const item of dict){
-          const s=candidateScore(row.raw,item),ev=tokenEvidence(row.raw,item);
-          const evidence=.78*s.score+.22*ev;
-          const e=agg.get(item)||{name:item,support:0,sum:0,sumConf:0,best:0};
-          if(evidence>=.46){
-            e.support++;
-            e.sum+=evidence;
-            e.sumConf+=row.conf;
-            e.best=Math.max(e.best,evidence);
-          }
-          agg.set(item,e);
-        }
+        const ranked=rankRow(row.raw,row.conf);
+        row.best=ranked[0]||null;
+        row.second=ranked[1]||null;
+        if(!row.best)continue;
+
+        // 一つのOCRが高信頼なら重く、低信頼なら複数支持を必要とする。
+        const evidence=row.best.score*confidenceWeight(row.conf);
+        const old=agg.get(row.best.name)||{
+          name:row.best.name,support:0,weightedSupport:0,
+          bestRowScore:0,bestConf:0,sumScore:0,sumConf:0,
+          bestSimilarity:0
+        };
+        old.support++;
+        old.weightedSupport+=evidence;
+        old.sumScore+=row.best.score;
+        old.sumConf+=row.conf;
+        old.bestRowScore=Math.max(old.bestRowScore,row.best.score);
+        old.bestConf=Math.max(old.bestConf,row.conf);
+        old.bestSimilarity=Math.max(old.bestSimilarity,row.best.similarity);
+        agg.set(row.best.name,old);
       }
-      return [...agg.values()].map(e=>{
-        const avg=e.support?e.sum/e.support:0;
-        const conf=e.support?e.sumConf/e.support:0;
-        const ratio=e.support/Math.max(1,rows.length);
-        const final=.42*avg+.28*ratio+.18*e.best+.12*(conf/100);
-        return {...e,avg,conf,final};
+
+      return [...agg.values()].map(x=>{
+        const avg=x.support?x.sumScore/x.support:0;
+        const avgConf=x.support?x.sumConf/x.support:0;
+        const share=x.support/Math.max(1,rows.length);
+        // Confidence is intentionally capped so 88% confidence cannot overpower
+        // a poor dictionary match.
+        const confTerm=Math.min(1,avgConf/100);
+        const final=.42*avg+.25*share+.18*x.bestRowScore+.10*confTerm+.05*Math.min(1,x.weightedSupport);
+        return {...x,avg,avgConf,share,final};
       }).sort((a,b)=>b.final-a.final);
     };
-    const isStrong=(ranked)=>{
+
+    const highConfidenceDirect=(ranked)=>{
       const a=ranked[0],b=ranked[1];
       if(!a)return false;
       const margin=a.final-(b?.final||0);
-      return a.support>=2 && a.avg>=.72 && a.final>=.64 && margin>=.10;
+      // Gemini-like strong evidence: one very good OCR can finish early,
+      // but only when dictionary match is also strong.
+      return a.bestConf>=80 &&
+             a.bestSimilarity>=.85 &&
+             a.bestRowScore>=.78 &&
+             margin>=.08;
     };
+
+    const multiEvidenceStrong=(ranked)=>{
+      const a=ranked[0],b=ranked[1];
+      if(!a)return false;
+      const margin=a.final-(b?.final||0);
+      return a.support>=2 &&
+             a.avg>=.68 &&
+             a.final>=.63 &&
+             margin>=.08;
+    };
+
     const runPass=async(p)=>{
-      const n=rows.length+1;
-      $('ocrStatus').textContent=`高速OCR ${n}回目：${p.name}`;
-      const c=makeNameOCRCanvas(p.mode,p.cr.dx,p.cr.dy,p.cr.dw,p.cr.dh);
+      $('ocrStatus').textContent=`OCR ${rows.length+1}回目：${p.name}`;
+      const c=makeNameOCRCanvas(p.mode,p.dx,p.dy,p.dw,p.dh);
+      if(p.mode==='threshold'){
+        const ctx=c.getContext('2d',{willReadFrequently:true}),d=ctx.getImageData(0,0,c.width,c.height);
+        for(let i=0;i<d.data.length;i+=4){
+          const y=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2],z=y>p.threshold?255:0;
+          d.data[i]=d.data[i+1]=d.data[i+2]=z;
+        }
+        ctx.putImageData(d,0,0);
+      }
       const r=await worker.recognize(c,{tessedit_pageseg_mode:'7',preserve_interword_spaces:'1'});
       const raw=cleanOCR(r?.data?.text||'');
       const conf=Number(r?.data?.confidence||0);
@@ -361,46 +421,54 @@ $('ocr').onclick=async()=>{
 
     for(const p of fast){
       await runPass(p);
-      if(rows.length>=2 && isStrong(aggregate())) break;
+      const ranked=aggregate();
+      if(highConfidenceDirect(ranked)||multiEvidenceStrong(ranked))break;
     }
+
     let ranked=aggregate();
-    if(!isStrong(ranked)){
+    if(!highConfidenceDirect(ranked)&&!multiEvidenceStrong(ranked)){
       for(const p of extra){
         await runPass(p);
         ranked=aggregate();
-        if(isStrong(ranked)) break;
+        if(highConfidenceDirect(ranked)||multiEvidenceStrong(ranked))break;
       }
     }
-    await worker.terminate();
 
+    await worker.terminate();
     ranked=aggregate();
+
     const best=ranked[0],second=ranked[1];
     const margin=best?best.final-(second?.final||0):0;
-    const strong=isStrong(ranked);
+    const direct=highConfidenceDirect(ranked);
+    const consensus=multiEvidenceStrong(ranked);
+    const confirmed=direct||consensus;
+    const elapsed=(performance.now()-started)/1000;
+
     if(best){
       const pct=Math.round(Math.min(99,best.final*100));
-      $('recognized').innerHTML=`${strong?best.name:`候補：${best.name}`} <span class="corrected-tag">${strong?'自動確定候補':'判定保留'} ${pct}% / 支持 ${best.support}/${rows.length}</span>`;
+      const mode=direct?'高信頼OCR＋辞書一致':consensus?'複数OCR合意':'判定保留';
+      $('recognized').innerHTML=`${confirmed?best.name:`候補：${best.name}`} <span class="corrected-tag">${mode} ${pct}% / 支持 ${best.support}/${rows.length}</span>`;
     }else{
       $('recognized').textContent='文字を認識できませんでした';
     }
 
-    $('raw').textContent=rows.map((r,i)=>
-      `【${i+1} ${r.name} / OCR信頼度 ${Math.round(r.conf)}%】\n・生OCR：${r.raw}`
-    ).join('\n\n');
+    $('raw').textContent=rows.map((r,i)=>{
+      const b=r.best;
+      return `【${i+1} ${r.name} / OCR信頼度 ${Math.round(r.conf)}%】\n・生OCR：${r.raw}\n・DB候補：${b?.name||'(なし)'}（一致 ${Math.round((b?.similarity||0)*100)}% / 行スコア ${Math.round((b?.score||0)*100)}%）`;
+    }).join('\n\n');
 
     renderCandidates(ranked,{
       total:rows.length,
-      decision:strong
-        ?`同一候補への複数支持＋辞書類似度＋OCR信頼度で自動確定候補になりました。候補差 ${Math.round(margin*100)}%。`
-        :`まだ自動確定には不十分です。候補は表示しますが、確認UIで確定する設計です。`
+      decision:confirmed
+        ?`${direct?'高信頼OCR＋辞書一致':'複数OCR合意'}で自動確定候補。候補差 ${Math.round(margin*100)}%。`
+        :`OCR信頼度・辞書一致・複数支持を統合しても差が不足。判定保留。`
     });
 
-    const elapsed=(performance.now()-started)/1000;
-    $('ocrStatus').textContent=`解析完了：${rows.length}回の有効OCR / ${elapsed.toFixed(1)}秒 / ${strong?'自動確定候補':'判定保留'}`;
+    $('ocrStatus').textContent=`解析完了：${rows.length}回の有効OCR / ${elapsed.toFixed(1)}秒 / ${confirmed?'自動確定候補':'判定保留'}`;
   }catch(err){
     $('ocrStatus').textContent='OCRエラー：'+String(err);
   }finally{$('ocr').disabled=false}
-};
+};;
 
 const originalFileOnloadMessage=$("fileStatus");
 </script>
