@@ -343,25 +343,6 @@ function renderCandidates(cands,meta){
   `<div class="note" style="margin-top:8px">${meta.decision}</div>`;
 }
 function cleanOCR(raw){return String(raw||'').replace(/[\r\n]+/g,' ').replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim()}
-function tokenEvidence(raw,item){
-  const a=normJP(raw),b=normJP(item); let hits=0;
-  for(const n of [2,3,4]){for(let i=0;i<=b.length-n;i++){if(a.includes(b.slice(i,i+n)))hits+=n>=3?2:1}}
-  return Math.min(1,hits/Math.max(6,b.length));
-}
-function getDictionary(){
-  // 将来のMHDB接続点。現在の診断版では固定の小辞書を使い、実DBが利用可能なら優先する。
-  try{ if(Array.isArray(window.DB?.weapons)&&window.DB.weapons.length) return [...new Set(window.DB.weapons.map(w=>String(w?.name||'')).filter(Boolean))]; }catch(e){}
-  return WEAPON_DICTIONARY;
-}
-function renderCandidates(cands,meta){
-  const out=$("candidateOut"); if(!cands.length){out.innerHTML='<div class="notice">候補を作れませんでした。</div>';return}
-  out.innerHTML=cands.slice(0,5).map((c,i)=>{
-    const pct=Math.round(c.final*100), cls=pct>=78?'background:#eef2e8':pct>=60?'background:#f6f1df':'background:#f5e8e4';
-    return `<div style="${cls};border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:7px"><b>${i+1}位　${c.name}</b><br><span class="note">総合 ${pct}%　／　支持 ${c.support}/${meta.total}回　／　平均類似 ${Math.round(c.avg*100)}%　／　平均OCR信頼度 ${Math.round(c.conf)}%</span></div>`;
-  }).join('')+
-  `<div class="note" style="margin-top:8px">${meta.decision}</div>`;
-}
-
 $('ocr').onclick=async()=>{
   if(!$('img').src){$('ocrStatus').textContent='先に画像を選択してください。';return}
   updateCrop();updateNameCrop();$('ocr').disabled=true;
