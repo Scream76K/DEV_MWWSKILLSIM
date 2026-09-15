@@ -117,6 +117,18 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 const $=id=>document.getElementById(id);
 let imgW=1,imgH=1,drag=null;
 
+
+function addPadding(sourceCanvas, padX = 20, padY = 10) {
+  const c = document.createElement('canvas');
+  c.width = sourceCanvas.width + padX * 2;
+  c.height = sourceCanvas.height + padY * 2;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, c.width, c.height);
+  ctx.drawImage(sourceCanvas, padX, padY);
+  return c;
+}
+
 function setVals(x,y,w,h){
   $("x").value=x.toFixed(2);$("y").value=y.toFixed(2);
   $("w").value=w.toFixed(2);$("h").value=h.toFixed(2);
@@ -280,7 +292,7 @@ function makeNameOCRCanvas(mode,dx=0,dy=0,dw=0,dh=0){
     }
     ctx.putImageData(d,0,0);
   }
-  return c;
+  return addPadding(c, 20, 10);
 }
 function updateNameCrop(){
   if(!$('img').src)return;
@@ -392,7 +404,7 @@ $('ocr').onclick=async()=>{
     });
 
 
-    // Step 1.8:
+    // Step 1.9:
     // OCR信頼度を「表示値」から正式な判定根拠へ昇格。
     // 高信頼OCR + 高辞書一致なら即終了し、低信頼OCRは複数支持で補う。
     const fast=[
@@ -407,7 +419,7 @@ $('ocr').onclick=async()=>{
     ];
     const rows=[];
 
-    // Step 1.8: Tesseractの文字単位信頼度を補助証拠として利用。
+    // Step 1.9: Tesseractの文字単位信頼度を補助証拠として利用。
     // 全体confidenceだけでなく、候補名の各文字がOCR結果のどこで高信頼に読まれたかを見る。
     const symbolInfo=(r)=>{
       const syms=Array.isArray(r?.data?.symbols)?r.data.symbols:[];
