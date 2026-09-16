@@ -1,11 +1,12 @@
-# DEV_MWWSKILLSIM OCR Step 1.17
+# DEV_MWWSKILLSIM OCR Step 1.18
 
-DB candidate integration score display/aggregation fix.
+Step 1.17をベースに、DB候補の最終判定を4段階化。
 
-- OCR processing remains unchanged.
-- `平均文字評価` is now the true arithmetic mean across every OCR pass that selected the candidate as its #1 DB candidate.
-- `最高文字評価` remains the maximum #1-candidate character score.
-- If a candidate has no #1 support rows, the average falls back to its available candidate evidence rows.
-- Strong multi-OCR convergence can still auto-confirm even when one OCR pass is poor; the strong average threshold is 55 points plus support/best-score requirements.
-- Candidate margin is still `1st final score - 2nd final score` in percentage points; no second candidate is displayed as `—`.
-- OCR-to-OCR agreement is not used for final decision.
+- 最終スコア = 平均文字評価55% + DB候補支持率25% + OCR信頼度平均15% + 最高文字評価5%
+- 候補差は「5pt = 5 percentage points」で評価
+- OCR↔OCR一致率は最終判定に使用しない
+- 自動確定候補 / ユーザー確認 / 候補選択 / 手動入力を表示
+- 上位候補は引き続き最大5件表示
+- OCR処理（高速3～4回＋早期終了）は変更しない
+
+自動確定条件：支持率67%以上、最終スコア72%以上、候補差5pt以上、平均文字評価50%以上。
