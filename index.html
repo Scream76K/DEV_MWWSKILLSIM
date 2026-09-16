@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-B v2.1 - MH Wilds OCR — 装備名1行OCR・部位限定DB候補</title>
+<title>Step 1.25-B v2.2 - MH Wilds OCR — 装備名1行OCR・部位限定DB候補</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v2.1：装備名1行OCR・部位限定DB候補</h1>
+<h1>MH Wilds OCR — Step 1.25-B v2.2：装備名1行OCR・部位限定DB候補</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -939,8 +939,30 @@ function charMismatchWeight(a,b){
 function normalizeForNameScore(v){
   return Array.from(String(v||'').normalize('NFKC')).filter(ch=>!/[\s\u3000・･·•\-‐‑‒–—―＿_.,，。！？!?、:：;；/／\\|｜()[\]{}「」『』【】〈〉《》<>＋+＝=＊*#＃%％&＆@＠]/.test(ch));
 }
+function normalizeSubtypeSymbols(raw){
+  let s=String(raw||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim();
+  // Only interpret common OCR confusions when they occur at the very end of an equipment name.
+  // This avoids corrupting ordinary letters that happen to look like subtype symbols.
+  s=s.replace(/\s*[vVν𝛾γ](?:\s*[一ー―昌1-9]*)$/u,'γ');
+  s=s.replace(/\s*(?:aq|a|𝛂α)(?:\s*[一ー―1-9]*)$/iu,'α');
+  s=s.replace(/\s*(?:bq|b|𝛽β)(?:\s*[一ー―1-9]*)$/iu,'β');
+  return s;
+}
+function splitEquipmentSubtype(raw){
+  const s=normalizeSubtypeSymbols(raw);
+  const m=s.match(/^(.*?)[\s]*([αβγ])$/u);
+  return m?{base:m[1].trim(),subtype:m[2]}:{base:s.trim(),subtype:null};
+}
+function equipmentSubtypeScore(raw,item){
+  const r=splitEquipmentSubtype(raw), d=splitEquipmentSubtype(item);
+  if(!d.subtype)return 0;
+  if(r.subtype&&r.subtype===d.subtype)return 1;
+  if(r.subtype&&r.subtype!==d.subtype)return 0;
+  return 0.5;
+}
 function weightedNameDistance(raw,item){
-  const a=normalizeForNameScore(raw),b=normalizeForNameScore(item);
+  const normalizedRaw=normalizeSubtypeSymbols(raw);
+  const a=normalizeForNameScore(normalizedRaw),b=normalizeForNameScore(item);
   if(!b.length)return {score:0,cost:1,matched:0,basePoints:0,details:{normal:0,light:0,dakuten:0,missing:0,extra:0}};
   const n=b.length,unit=100/n;
   const prev=new Array(a.length+1).fill(0);
@@ -966,9 +988,14 @@ function weightedNameDistance(raw,item){
   const cost=rows[a.length],d=detail[a.length];
   // The denominator is the DB name length. Extra non-space OCR characters are
   // penalized, while spaces/separators were removed before alignment and cost 0.
-  const score=Math.max(0,1-(cost/n));
+  let score=Math.max(0,1-(cost/n));
+  const subtype=equipmentSubtypeScore(normalizedRaw,item);
+  // Alpha/beta/gamma are different database items. A clearly read subtype must
+  // therefore outweigh a one-character edit-distance advantage.
+  if(subtype===1) score=Math.min(1,score+0.15);
+  else if(subtype===0) score=Math.max(0,score-0.35);
   const matched=Math.max(0,n-d.normal-d.light-d.dakuten-d.missing);
-  return {score,cost,matched,basePoints:unit,details:d};
+  return {score,cost,matched,basePoints:unit,details:d,subtype};
 }
 function getDictionary(){return weaponDB.map(w=>w.name)}
 function getWeaponItems(raw){return searchWeaponItems(raw)}

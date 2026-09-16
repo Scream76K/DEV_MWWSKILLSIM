@@ -2,8 +2,8 @@ const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
 const html = fs.readFileSync('index.html','utf8');
-assert(html.includes('<title>Step 1.25-B v2.1'), 'title must be Step 1.25-B v2.1');
-assert(html.includes('MH Wilds OCR — Step 1.25-B v2.1'), 'visible h1 must be Step 1.25-B v2.1');
+assert(html.includes('<title>Step 1.25-B v2.2'), 'title must be Step 1.25-B v2.2');
+assert(html.includes('MH Wilds OCR — Step 1.25-B v2.2'), 'visible h1 must be Step 1.25-B v2.1');
 const mStart = html.indexOf('function detectEquipmentRegions(');
 const mEnd = html.indexOf('\nfunction addPadding', mStart);
 const lmStart = html.indexOf('function extractEquipmentOCRLines(');
@@ -303,3 +303,24 @@ const leftAligned = ns.crop({x:79,y:264,width:338,height:76,labelY:264,labelHeig
 assert(leftAligned.x <= 82, 'name crop must preserve the first equipment-name character');
 assert(leftAligned.width > 190 && leftAligned.width <= 220, 'name crop should stay inside the text column without reaching slot icons');
 console.log('step125b v2.1 name-column alignment regression passed');
+
+
+// Step 1.25-B v2.2 RED: subtype-aware scoring must distinguish alpha/beta/gamma
+// when the OCR has common suffix confusions such as v/V, a/aq, b/bq.
+const subStart = html.indexOf('function normalizeSubtypeSymbols(');
+assert(subStart >= 0, 'v2.2 subtype normalization helper must exist');
+const subEnd = html.indexOf('\nfunction getDictionary', subStart);
+assert(subEnd > subStart, 'v2.2 subtype helper boundary must exist');
+const subCode = html.slice(subStart, subEnd);
+const ss = {Math, Number, String, Object, Array};
+vm.createContext(ss);
+vm.runInContext(subCode + '\nthis.normSubtype=normalizeSubtypeSymbols;this.splitSubtype=splitEquipmentSubtype;this.subScore=equipmentSubtypeScore;', ss);
+assert.strictEqual(ss.normSubtype('シュバルカメイルv'), 'シュバルカメイルγ');
+assert.strictEqual(ss.normSubtype('ドシャグマコイルaq'), 'ドシャグマコイルα');
+assert.strictEqual(ss.normSubtype('護雷顎竜ヘルムBQ'), '護雷顎竜ヘルムβ');
+const gammaParts=ss.splitSubtype('シュバルカメイルv');
+assert.strictEqual(gammaParts.base,'シュバルカメイル');
+assert.strictEqual(gammaParts.subtype,'γ');
+assert(ss.subScore('シュバルカメイルv','シュバルカメイルγ') > ss.subScore('シュバルカメイルv','シュバルカメイルα'));
+assert(ss.subScore('ドシャグマコイルaq','ドシャグマコイルα') > ss.subScore('ドシャグマコイルaq','ドシャグマコイルβ'));
+console.log('step125b v2.2 subtype RED tests passed');
