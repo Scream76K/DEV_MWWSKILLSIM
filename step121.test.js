@@ -12,6 +12,7 @@ assert.equal(supportBonus(3,3),.12);
 assert.equal(supportBonus(5,6),.10);
 assert.equal(supportBonus(1,3),0);
 assert(Math.abs(finalCandidateScore({avgNameScore:.63,confAvg:50,bestNameScore:.90,support:1,total:1,supportRatio:1})-.691)<.001);
+assert.doesNotThrow(()=>finalCandidateScore({avgNameScore:.63,confAvg:50,bestNameScore:.90,support:1,supportRatio:1}),'finalCandidateScore must not depend on out-of-scope rows');
 assert(Math.abs(finalCandidateScore({avgNameScore:.63,confAvg:50,bestNameScore:.90,support:2,total:3,supportRatio:2/3})-.711)<.001);
 assert(Math.abs(finalCandidateScore({avgNameScore:.63,confAvg:50,bestNameScore:.90,support:1,total:3,supportRatio:1/3})-.651)<.001);
 assert(candidateDecision({final:.81,avgNameScore:.60,supportRatio:1,confAvg:30},null).level==='confirm');

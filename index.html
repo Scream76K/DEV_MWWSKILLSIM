@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.19：候補統合スコア・候補差</h1>
+<h1>MH Wilds OCR — Step 1.21：支持補正・候補統合スコア</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -537,7 +537,7 @@ function supportBonus(supportOrRatio,total){
 }
 function finalCandidateScore(x){
   const base=.70*Number(x.avgNameScore||0)+.15*(Number(x.confAvg||0)/100)+.15*Number(x.bestNameScore||0);
-  return Math.min(1,base+supportBonus(x.support,x.total||rows.length));
+  return Math.min(1,base+supportBonus(x.support,x.total||0));
 }
 function candidateDecision(x,secondFinal=null){
   if(!x)return {level:'manual',label:'手動入力',reason:'DB候補を形成できませんでした。'};
