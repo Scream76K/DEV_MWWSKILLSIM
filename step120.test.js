@@ -1,0 +1,16 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const html=fs.readFileSync('index.html','utf8');
+assert(html.includes('Step 1.20'),'title must be Step 1.20');
+const a=html.indexOf('function supportBonus'); const b=html.indexOf('function cleanOCR',a);
+assert(a>=0&&b>0,'Step 1.20 scoring functions missing');
+const ctx={};vm.createContext(ctx);vm.runInContext(html.slice(a,b)+';this.supportBonus=supportBonus;this.finalCandidateScore=finalCandidateScore;this.candidateDecision=candidateDecision;',ctx);
+const {supportBonus,finalCandidateScore,candidateDecision}=ctx;
+assert.equal(supportBonus(1),.12);
+assert.equal(supportBonus(2/3),.07);
+assert.equal(supportBonus(1/3),0);
+assert(Math.abs(finalCandidateScore({avgNameScore:.63,confAvg:50,bestNameScore:.90,supportRatio:1})-.771)<.001);
+assert(Math.abs(finalCandidateScore({avgNameScore:.63,confAvg:50,bestNameScore:.90,supportRatio:2/3})-.721)<.001);
+assert(Math.abs(finalCandidateScore({avgNameScore:.63,confAvg:50,bestNameScore:.90,supportRatio:1/3})-.651)<.001);
+assert(candidateDecision({final:.81,avgNameScore:.60,supportRatio:1,confAvg:30},null).level==='confirm');
+assert(candidateDecision({final:.81,avgNameScore:.60,supportRatio:1,confAvg:60},null).level==='auto');
+console.log('Step 1.20 support-bonus tests: passed');
