@@ -281,12 +281,26 @@ function buildOCRWhitelist(dict){
   return [...chars].join('');
 }
 function smoothOCRCanvas(canvas, radius=1){
+  // Safari/iOSでは CanvasRenderingContext2D.filter への代入がreadonly/未対応の場合があるため、
+  // ctx.filter を使用せず、3x3の軽量ボックス平滑化をImageData上で行う。
   const c=document.createElement('canvas'); c.width=canvas.width; c.height=canvas.height;
-  const ctx=c.getContext('2d',{willReadFrequently:true});
-  ctx.imageSmoothingEnabled=true;
-  ctx.filter=`blur(${radius}px)`;
-  ctx.drawImage(canvas,0,0);
-  ctx.filter='none';
+  const srcCtx=c.getContext('2d',{willReadFrequently:true});
+  srcCtx.drawImage(canvas,0,0);
+  const src=srcCtx.getImageData(0,0,c.width,c.height);
+  const out=new ImageData(c.width,c.height);
+  const sd=src.data, od=out.data, w=c.width, h=c.height;
+  for(let y=0;y<h;y++){
+    for(let x=0;x<w;x++){
+      let rs=0,gs=0,bs=0,as=0,n=0;
+      for(let yy=Math.max(0,y-1);yy<=Math.min(h-1,y+1);yy++){
+        for(let xx=Math.max(0,x-1);xx<=Math.min(w-1,x+1);xx++){
+          const i=(yy*w+xx)*4; rs+=sd[i];gs+=sd[i+1];bs+=sd[i+2];as+=sd[i+3];n++;
+        }
+      }
+      const i=(y*w+x)*4; od[i]=Math.round(rs/n);od[i+1]=Math.round(gs/n);od[i+2]=Math.round(bs/n);od[i+3]=Math.round(as/n);
+    }
+  }
+  srcCtx.putImageData(out,0,0);
   return c;
 }
 function otsuThresholdValue(imageData){
