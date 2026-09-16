@@ -635,10 +635,13 @@ $('ocr').onclick=async()=>{
       const ranked=[...agg.values()].map(x=>{
         const top=x.topRows.slice().sort((a,b)=>b.nameScore-a.nameScore);
         const support=x.support;
-        const topNameScores=top.slice(0,3).map(r=>r.nameScore);
-        const avgNameScore=topNameScores.length?topNameScores.reduce((s,v)=>s+v,0)/topNameScores.length:0;
-        const avgRowScore=top.length?top.slice(0,3).reduce((s,r)=>s+r.score,0)/Math.min(3,top.length):0;
-        const confAvg=top.length?top.slice(0,3).reduce((s,r)=>s+r.conf,0)/Math.min(3,top.length):0;
+        // Displayed average is the true mean across every OCR pass that selected this
+        // DB candidate as its #1 candidate. Do not silently discard low-scoring OCR rows.
+        const supportingRows=x.topRows.filter(r=>r.rank===0);
+        const avgNameSource=supportingRows.length?supportingRows:top;
+        const avgNameScore=avgNameSource.length?avgNameSource.reduce((s,r)=>s+r.nameScore,0)/avgNameSource.length:0;
+        const avgRowScore=avgNameSource.length?avgNameSource.reduce((s,r)=>s+r.score,0)/avgNameSource.length:0;
+        const confAvg=avgNameSource.length?avgNameSource.reduce((s,r)=>s+r.conf,0)/avgNameSource.length:0;
         // Convergence bonus is based on repeated DB identity, not OCR↔OCR text similarity.
         const supportRatio=support/Math.max(1,rows.length);
         const convergence=.55*supportRatio+.45*Math.min(1,x.rankSum/Math.max(1,rows.length));
@@ -660,7 +663,7 @@ $('ocr').onclick=async()=>{
       const margin=a.final-(b?.final||0);
       const marginPoints=marginPointsFor(ranked);
       const passes=a.support||0;
-      const strong=passes>=2 && a.avgNameScore>=.78 && a.bestNameScore>=.82;
+      const strong=passes>=2 && a.avgNameScore>=.55 && a.bestNameScore>=.82;
       const clearGap=!b || margin>=dynamicMarginRequired(a.name);
       if(strong && clearGap)return {state:'auto',marginPoints};
       if(a.score>=.45 || a.avgNameScore>=.55)return {state:'confirm',marginPoints};
