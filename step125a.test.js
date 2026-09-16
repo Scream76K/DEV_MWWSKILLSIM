@@ -48,6 +48,30 @@ for (const key of ['head','chest','arms','waist','legs']) {
   const r=out.find(x=>x.key===key); assert(r && r.y2>r.y1 && r.x2>r.x1);
 }
 console.log('step125a layout tests passed');
+// Regression: UI frame noise such as a high-confidence '|' must not become a label
+// or expand a part region to nearly the full screen width.
+const noise = [
+  {text:'|', x:0, y:100, width:1198, height:40, confidence:96},
+  {text:'メイン武器', x:80, y:140, width:240, height:34, confidence:92},
+  {text:'代償のネイディ・ギア', x:80, y:185, width:360, height:38, confidence:90},
+  {text:'頭防具', x:80, y:300, width:210, height:34, confidence:90},
+  {text:'胴防具', x:80, y:430, width:210, height:34, confidence:90},
+  {text:'腕防具', x:80, y:560, width:210, height:34, confidence:90},
+  {text:'腰防具', x:80, y:690, width:210, height:34, confidence:90},
+  {text:'脚防具', x:80, y:820, width:210, height:34, confidence:90},
+  {text:'護石', x:80, y:950, width:120, height:34, confidence:90}
+];
+const noiseOut = detect({width:1200,height:1100}, noise);
+assert.deepStrictEqual(Array.from(noiseOut.map(x=>x.key)), ['mainWeapon','head','chest','arms','waist','legs','charm']);
+assert(noiseOut.find(x=>x.key==='mainWeapon').width <= 1200*0.70, 'main weapon region must be width-limited');
+assert(noiseOut.find(x=>x.key==='head').width <= 1200*0.70, 'head region must be width-limited');
+const onlyNoise = detect({width:1200,height:1100}, [
+  {text:'|', x:0, y:500, width:1198, height:40, confidence:96},
+  {text:'I', x:0, y:650, width:1198, height:40, confidence:95}
+]);
+assert.strictEqual(onlyNoise.length, 0, 'single-character OCR noise must not create equipment regions');
+
+
 
 const extracted=extract({lines:[{text:'頭防具',confidence:90,bbox:{x0:10,y0:20,x1:100,y1:50}},{text:'胴防具',confidence:80,bbox:{x0:10,y0:80,x1:100,y1:110}}]});
 assert.strictEqual(extracted.length,2);
