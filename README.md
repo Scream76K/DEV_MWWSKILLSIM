@@ -1,34 +1,46 @@
-# DEV_MWWSKILLSIM OCR Step 1.25-A v6
+# MH Wilds OCR — Step 1.25-B v1
 
-Step 1.25-A v6 adds screenshot-relative equipment-row scale/pitch inference before later equipment-name OCR.
+## 目的
+Step 1.25-A v6 で自動検出した装備9領域から、メイン武器・5防具・護石の装備名を個別OCRし、部位限定DB候補を提示する。
 
-## Scope
-- OCR the whole uploaded screenshot once with Japanese Tesseract PSM 11.
-- Restrict structural detection to the left equipment column.
-- Detect main weapon, sub weapon, five armor parts, charm, and mantle.
-- Sub weapon and mantle are structurally detected but excluded from simulator reflection.
-- Produce per-part regions for later equipment-name OCR.
+- メイン武器：武器DBのみ
+- 頭・胴・腕・腰・脚：MHDB防具DBを部位（kind）で限定
+- 護石：MHDB護石DB（ranks内の名称）
+- サブ武器：検出対象だがシミュレーター反映対象外
+- 装衣：検出対象だがシミュレーター反映対象外
+- この段階ではシミュレーター本体へ自動適用しない
 
-## v6: screenshot-relative scale inference
-- No fixed `198px` pitch is used.
-- Every successfully recognized equipment label becomes a semantic Y anchor.
-- Pairwise `dy / semantic-row-distance` values are combined with a median to estimate the screenshot's equipment pitch.
-- Two anchors are sufficient; for example main weapon + sub weapon directly define the one-row distance.
-- Three or more anchors improve robustness and allow outlier rejection through the fitted grid residual.
-- Missing rows are placed from the fitted grid in both directions.
-- X position is derived from the detected left-column anchors; width remains proportional to the screenshot (`22%`).
-- Region height follows the inferred pitch, so different capture scales/resolutions are supported.
-- The UI reports anchor count, inferred pitch, and pitch source.
+## Step 1.25-A v6からの引き継ぎ
+装備ピッチは固定値を使わず、画面内のOCRアンカーから推定された値を利用する。解像度・表示倍率が違うスクリーンショットでも各カード領域を生成できる。
 
-## Label robustness
-- Single-character noise such as `|` is excluded.
-- Only observed UI OCR aliases are normalized (`腰防四`, `脚防思`, etc.).
-- Short labels such as `頭` are not accepted as standalone structural evidence.
+## Step 1.25-B の認識フロー
+1. 画面構造検出
+2. 9領域生成
+3. 7対象（メイン武器、5防具、護石）を個別OCR
+4. OCR結果から既知のUIラベルを除去
+5. 対応部位のDBだけで候補検索
+6. 上位候補を複数保持
+7. 文字評価・OCR信頼度・複数OCR支持を統合
+8. 自動確定候補／ユーザー確認／候補選択／手動入力を表示
 
-## Verification
-- `node step125a.test.js`
-- Inline JavaScript syntax is checked.
-- Tests cover normal labels, noisy labels, observed aliases, frame-line noise, five-armor inference, two-anchor pitch inference, and non-adjacent semantic anchors.
+## DB
+MHDB Wilds APIの日本語エンドポイントを使用する。防具は `/ja/armor`、護石は `/ja/charms`。護石名はトップレベルではなく `ranks[].name` を使用するため、ranksを取得するAPI projectionを明示している。
 
-## Next step
-After v6 is validated on both a high-resolution screenshot and a smaller/differently scaled screenshot, proceed to Step 1.25-B: per-region equipment-name OCR and part-restricted MHDB candidate search.
+## 処理時間対策
+各装備につき最大3種類の前処理を使用するが、2回目までで高信頼・候補差が十分な場合は3回目を省略する早期終了を入れている。
+
+## テスト
+`node step125b.test.js`
+
+- Step 1.25-A 回帰テスト
+- OCR行抽出
+- 5防具グリッド推定
+- スケール自動推定
+- 部位限定DBフィルタ
+- 候補集約
+- 護石DB projection
+- OCR早期終了条件
+- JavaScript構文チェック
+
+## 注意
+まだ装飾品・スキルの認識、装備への自動適用、シミュレーター本体接続は行わない。
