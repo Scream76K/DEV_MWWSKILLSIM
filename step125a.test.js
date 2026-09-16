@@ -24,9 +24,9 @@ const lines = [
   {text:'護石', x:80, y:1170, width:120, height:34, confidence:90}
 ];
 const out = detect({width:1200,height:1400}, lines);
-assert.deepStrictEqual(Array.from(out.map(x=>x.key)), ['mainWeapon','head','chest','arms','waist','legs','charm']);
-assert(out.find(x=>x.key==='mainWeapon').y2 < out.find(x=>x.key==='head').y1);
-assert(!out.some(x=>x.key==='subWeapon'));
+assert.deepStrictEqual(Array.from(out.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm']);
+assert(out.find(x=>x.key==='mainWeapon').y2 <= out.find(x=>x.key==='head').y1);
+assert(out.find(x=>x.key==='subWeapon').excludedFromReflection === true);
 
 // Labels may be split by OCR spaces/punctuation; they should still map to the same part.
 const noisy = [
@@ -41,13 +41,54 @@ const noisy = [
   {text:'護 石', x:60, y:1070, width:120, height:30, confidence:90}
 ];
 const noisyOut=detect({width:1000,height:1200}, noisy);
-assert.deepStrictEqual(Array.from(noisyOut.map(x=>x.key)), ['mainWeapon','head','chest','arms','waist','legs','charm']);
-assert(!noisyOut.some(x=>x.key==='subWeapon'));
+assert.deepStrictEqual(Array.from(noisyOut.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm']);
+assert(noisyOut.find(x=>x.key==='subWeapon').excludedFromReflection === true);
 assert(noisyOut.every(x=>x.confidence>=0 && x.confidence<=100));
 for (const key of ['head','chest','arms','waist','legs']) {
   const r=out.find(x=>x.key===key); assert(r && r.y2>r.y1 && r.x2>r.x1);
 }
 console.log('step125a layout tests passed');
+
+// Step 1.25-A v3 design tests: use left equipment column, retain sub/mantle structurally,
+// but mark subWeapon as excluded from reflection. Short labels must not match arbitrary text.
+const structured = [
+  {text:'メイン武器', x:80, y:100, width:220, height:30, confidence:92},
+  {text:'代償のネイディ・ギア', x:80, y:140, width:360, height:34, confidence:90},
+  {text:'サブ武器', x:80, y:300, width:220, height:30, confidence:91},
+  {text:'頭防具', x:80, y:500, width:220, height:30, confidence:90},
+  {text:'胴防具', x:80, y:700, width:220, height:30, confidence:90},
+  {text:'腕防具', x:80, y:900, width:220, height:30, confidence:90},
+  {text:'腰防具', x:80, y:1100, width:220, height:30, confidence:90},
+  {text:'脚防具', x:80, y:1300, width:220, height:30, confidence:90},
+  {text:'護石', x:80, y:1500, width:140, height:30, confidence:90},
+  {text:'装衣', x:80, y:1700, width:140, height:30, confidence:90},
+  {text:'頭', x:900, y:510, width:80, height:30, confidence:99}
+];
+const structuredOut=detect({width:3840,height:2160}, structured);
+assert.deepStrictEqual(Array.from(structuredOut.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm','mantle']);
+assert(structuredOut.every(x=>x.x < 3840*0.25), 'regions must stay inside left equipment column');
+assert(structuredOut.every(x=>x.width <= 3840*0.22 + 5), 'regions should use equipment-card width');
+assert(structuredOut.find(x=>x.key==='subWeapon').excludedFromReflection === true, 'sub weapon must be detected but excluded from reflection');
+assert(!structuredOut.some(x=>x.label === '頭' && x.key === 'head'), 'short label must not win over full label');
+
+const garbledLabels = [
+  {text:'メイン武器', x:50, y:100, width:220, height:30, confidence:90},
+  {text:'サブ武器', x:50, y:220, width:220, height:30, confidence:90},
+  {text:'頭防具', x:50, y:340, width:220, height:30, confidence:90},
+  {text:'胴防具', x:50, y:460, width:220, height:30, confidence:90},
+  {text:'腕防具', x:50, y:580, width:220, height:30, confidence:90},
+  {text:'腰防四', x:50, y:700, width:220, height:30, confidence:90},
+  {text:'脚防思', x:50, y:820, width:220, height:30, confidence:90},
+  {text:'護石', x:50, y:940, width:140, height:30, confidence:90},
+  {text:'装衣', x:50, y:1060, width:140, height:30, confidence:90}
+];
+const garbledOut=detect({width:3840,height:1200}, garbledLabels);
+assert.deepStrictEqual(Array.from(garbledOut.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm','mantle']);
+assert(garbledOut.find(x=>x.key==='subWeapon').excludedFromReflection === true);
+assert(garbledOut.find(x=>x.key==='mantle').excludedFromReflection === true);
+assert(garbledOut.every(x=>x.width <= 3840*0.22 + 1), 'region width should be approximately 22% of screen');
+
+
 // Regression: UI frame noise such as a high-confidence '|' must not become a label
 // or expand a part region to nearly the full screen width.
 const noise = [
