@@ -1,12 +1,7 @@
-# DEV_MWWSKILLSIM OCR Step 1.16
+# DEV_MWWSKILLSIM OCR Step 1.16 v2
 
-Step 1.15 を基準に、OCR処理そのものは変更せず、DB候補の最終判定表示を整理。
+Step 1.16 candidate-decision fix. OCR processing remains unchanged.
 
-- OCR↔OCR一致率は最終判定に使用しない
-- 1位候補と2位候補の差を「ポイント差」として表示
-- 2位候補がない場合は `—（2位候補なし）` と表示し、存在しない差を捏造しない
-- 判定状態を `自動確定 / 確認 / 曖昧` に整理
-- 上位候補表示は維持
-- 3～4回の高速OCRパスは変更しない
-
-検証: Node.js による Step 1.16 判定ロジックテスト PASS / JavaScript syntax check PASS
+- A strong candidate with no second DB candidate can auto-confirm.
+- Candidate margin is shown only when a second candidate exists.
+- OCR-to-OCR agreement is not used for final decision.

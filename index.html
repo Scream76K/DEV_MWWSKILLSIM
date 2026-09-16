@@ -661,7 +661,7 @@ $('ocr').onclick=async()=>{
       const marginPoints=marginPointsFor(ranked);
       const passes=a.support||0;
       const strong=passes>=2 && a.avgNameScore>=.78 && a.bestNameScore>=.82;
-      const clearGap=!!b && margin>=dynamicMarginRequired(a.name);
+      const clearGap=!b || margin>=dynamicMarginRequired(a.name);
       if(strong && clearGap)return {state:'auto',marginPoints};
       if(a.score>=.45 || a.avgNameScore>=.55)return {state:'confirm',marginPoints};
       return {state:'ambiguous',marginPoints};
