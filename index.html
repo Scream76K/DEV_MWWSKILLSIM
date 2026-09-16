@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-A v5 - MH Wilds OCR — 画面構造・領域自動検出</title>
+<title>Step 1.25-A v6 - MH Wilds OCR — 画面構造・領域自動検出</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-A v5：画面構造・領域自動検出</h1>
+<h1>MH Wilds OCR — Step 1.25-A v6：画面構造・領域自動検出</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -152,7 +152,7 @@ function detectEquipmentRegions(screen, lines) {
   const width = Math.max(1, Number(screen?.width) || 1);
   const height = Math.max(1, Number(screen?.height) || 1);
 
-  // The equipment list is a left-side UI column.  Keep the detector out of the
+  // The equipment list is a left-side UI column. Keep the detector out of the
   // character/status area and reject OCR boxes that look like frame lines.
   const leftLimit = width * 0.25;
   const cardWidth = width * 0.22;
@@ -170,6 +170,8 @@ function detectEquipmentRegions(screen, lines) {
     ['charm',      '護石'],
     ['mantle',     '装衣']
   ];
+  const orderedKeys = labelDefs.map(x => x[0]);
+  const keyIndex = new Map(orderedKeys.map((key, i) => [key, i]));
 
   const levenshtein = (a, b) => {
     const aa = String(a), bb = String(b);
@@ -189,7 +191,6 @@ function detectEquipmentRegions(screen, lines) {
     }
     return prev[bb.length];
   };
-
   const similarity = (a, b) => {
     const aa = clean(a), bb = clean(b);
     if (!aa || !bb) return 0;
@@ -213,8 +214,7 @@ function detectEquipmentRegions(screen, lines) {
     l.x < leftLimit && l.width <= leftLimit
   ).sort((a, b) => a.y - b.y);
 
-  // Only normalize aliases that have been observed in this game's UI.
-  // Do not globally replace arbitrary characters inside equipment names.
+  // Only normalize aliases that have actually been observed in this game's UI.
   const normalizeEquipmentLabel = text => {
     const n = clean(text);
     const aliases = {
@@ -231,14 +231,10 @@ function detectEquipmentRegions(screen, lines) {
     const want = normalizeEquipmentLabel(expected);
     if (!got || !want) return 0;
     if (got === want) return 1;
-
-    // Prefix matching is restricted to the three-character equipment labels
-    // and only used after normalization; short labels never qualify.
     if (want.length >= 3 && got.length >= 3 && got.slice(0, 2) === want.slice(0, 2)) {
       const suffixScore = similarity(got.slice(2), want.slice(2));
       if (got.length === want.length) return 0.72 + 0.20 * suffixScore;
     }
-
     const sim = similarity(got, want);
     return sim >= 0.72 ? sim * 0.88 : 0;
   };
@@ -258,8 +254,6 @@ function detectEquipmentRegions(screen, lines) {
     return best;
   };
 
-  // The menu has a fixed semantic order.  Search from top to bottom so a noisy
-  // occurrence on the right/status area cannot steal a later equipment label.
   const found = [];
   let cursor = 0;
   for (const [key, expected] of labelDefs) {
@@ -269,42 +263,124 @@ function detectEquipmentRegions(screen, lines) {
     cursor = hit.index + 1;
   }
 
-  // Real game screenshots can lose the weapon/charm labels entirely.  When
-  // all five armor anchors are present on a stable vertical grid, use that
-  // grid as the structural source of truth and infer the missing rows.  This
-  // avoids requiring every label to survive full-screen OCR.
-  const armorKeys = ['head','chest','arms','waist','legs'];
-  const armorFound = armorKeys.map(key => found.find(f => f.key === key));
-  const canInferGrid = armorFound.every(Boolean);
+  // -------------------------------------------------------------------------
+  // v6: infer the vertical scale/pitch from the screenshot itself.
+  // No fixed 198px value is used. Every OCR-confirmed label is an anchor with
+  // a semantic row index. Pairwise slopes (dy / row-distance) give candidate
+  // pitches; the median is robust to a single bad anchor. The fitted intercept
+  // then places every row, including rows whose label OCR failed.
+  // -------------------------------------------------------------------------
+  const anchors = found.map(f => ({
+    key: f.key,
+    index: keyIndex.get(f.key),
+    y: Number(f.label.y),
+    x: Number(f.label.x),
+    confidence: Number(f.label.confidence) || 0,
+    matchScore: Number(f.matchScore) || 0,
+    label: f.label,
+    canonicalLabel: f.canonicalLabel || f.label.text
+  })).filter(a => Number.isFinite(a.index) && Number.isFinite(a.y));
+
+  const median = values => {
+    const a = values.filter(Number.isFinite).slice().sort((x, y) => x - y);
+    if (!a.length) return null;
+    const m = Math.floor(a.length / 2);
+    return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+  };
+
+  let pitch = null;
+  let pitchSource = 'none';
+  let pitchConfidence = 0;
+  if (anchors.length >= 2) {
+    const slopes = [];
+    for (let i = 0; i < anchors.length; i++) {
+      for (let j = i + 1; j < anchors.length; j++) {
+        const di = anchors[j].index - anchors[i].index;
+        if (di <= 0) continue;
+        const dy = anchors[j].y - anchors[i].y;
+        if (dy > 0) slopes.push(dy / di);
+      }
+    }
+
+    // Choose the slope with the strongest consensus instead of blindly taking
+    // the median. A single bad OCR anchor can create several large pairwise
+    // slopes; the densest cluster remains representative of the real UI pitch.
+    if (slopes.length) {
+      let best = null;
+      for (const candidate of slopes) {
+        const tolerance = Math.max(8, candidate * 0.12);
+        const cluster = slopes.filter(v => Math.abs(v - candidate) <= tolerance);
+        const clusterMedian = median(cluster) || candidate;
+        const spread = cluster.reduce((sum, v) => sum + Math.abs(v - clusterMedian), 0);
+        const score = cluster.length * 1000 - spread;
+        if (!best || score > best.score) best = {candidate, cluster, score};
+      }
+      pitch = median(best.cluster);
+      if (pitch && pitch > 10 && pitch < height * 0.5) {
+        pitchSource = anchors.length >= 3 ? 'multi-anchor' : 'two-anchor';
+        const consensusRatio = best.cluster.length / slopes.length;
+        pitchConfidence = Math.min(100, Math.round(55 + consensusRatio * 40));
+      } else {
+        pitch = null;
+      }
+    }
+  }
+
   let grid = null;
-  if (canInferGrid) {
-    const ys = armorFound.map(f => Number(f.label.y)).sort((a,b) => a-b);
-    const gaps = ys.slice(1).map((y,i) => y - ys[i]);
-    const pitch = gaps.slice().sort((a,b)=>a-b)[Math.floor(gaps.length/2)];
-    const maxGapError = gaps.reduce((m,g)=>Math.max(m, Math.abs(g-pitch)), 0);
-    if (pitch > 20 && maxGapError <= pitch * 0.12) {
-      const byKey = new Map(found.map(f => [f.key, f]));
-      const orderedKeys = ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm','mantle'];
-      const headY = Number(armorFound[0].label.y);
-      grid = orderedKeys.map((key, index) => {
-        const expectedY = headY + (index - 2) * pitch;
-        const actual = byKey.get(key);
-        const useActual = actual && Math.abs(Number(actual.label.y) - expectedY) <= pitch * 0.35;
-        return {
-          key,
-          y: expectedY,
-          label: useActual ? actual.label : null,
-          confidence: useActual ? actual.label.confidence : 0,
-          matchScore: useActual ? (actual.matchScore || 0) : 0,
-          canonicalLabel: useActual ? (actual.canonicalLabel || actual.label.text) : null,
-          inferred: !useActual
-        };
-      });
+  let xAnchor = null;
+  let medianGridResidual = null;
+  if (pitch) {
+    // Robust intercept: median(y - rowIndex*pitch). This makes the grid
+    // independent of image resolution and UI scale.
+    let intercept = median(anchors.map(a => a.y - a.index * pitch));
+    let inliers = anchors.filter(a => Math.abs(a.y - (intercept + a.index * pitch)) <= Math.max(8, pitch * 0.25));
+
+    // One bad OCR label must not invalidate an otherwise coherent grid.
+    // Refit the intercept from inliers, then evaluate the residual again.
+    if (inliers.length >= 2) {
+      intercept = median(inliers.map(a => a.y - a.index * pitch));
+      inliers = anchors.filter(a => Math.abs(a.y - (intercept + a.index * pitch)) <= Math.max(8, pitch * 0.25));
+    }
+    const anchorResiduals = inliers.map(a => Math.abs(a.y - (intercept + a.index * pitch)));
+    const medianResidual = median(anchorResiduals) || 0;
+    medianGridResidual = medianResidual;
+    const tolerance = Math.max(8, pitch * 0.35);
+
+    // Use a stable left-column X anchor instead of a fixed pixel coordinate.
+    xAnchor = median((inliers.length ? inliers : anchors).map(a => a.x));
+    const byKey = new Map(found.map(f => [f.key, f]));
+    grid = orderedKeys.map(key => {
+      const index = keyIndex.get(key);
+      const expectedY = intercept + index * pitch;
+      const actual = byKey.get(key);
+      const actualY = actual ? Number(actual.label.y) : NaN;
+      const useActual = Boolean(actual && Math.abs(actualY - expectedY) <= tolerance);
+      return {
+        key,
+        index,
+        y: useActual ? actualY : expectedY,
+        label: useActual ? actual.label : null,
+        confidence: useActual ? actual.label.confidence : 0,
+        matchScore: useActual ? (actual.matchScore || 0) : 0,
+        canonicalLabel: useActual ? (actual.canonicalLabel || actual.label.text) : null,
+        inferred: !useActual
+      };
+    });
+
+    // If fewer than two anchors survive the robust fit, do not pretend the
+    // scale is reliable. Otherwise isolated OCR outliers are simply replaced
+    // by the fitted grid position.
+    if (inliers.length < 2 || medianResidual > pitch * 0.20) {
+      grid = null;
+      pitchSource = 'rejected';
+      pitchConfidence = 0;
+      xAnchor = null;
     }
   }
 
   const specs = grid || found.map(f => ({
     key: f.key,
+    index: keyIndex.get(f.key),
     y: f.label.y,
     label: f.label,
     confidence: f.label.confidence,
@@ -313,21 +389,21 @@ function detectEquipmentRegions(screen, lines) {
     inferred: false
   }));
 
+  const columnX = Number.isFinite(xAnchor)
+    ? Math.max(0, Math.min(width * 0.25 - 1, xAnchor))
+    : Math.max(0, Math.min(width * 0.25 - 1, width * 0.05));
+
   const out = [];
   for (let i = 0; i < specs.length; i++) {
     const f = specs[i];
-    const next = specs[i + 1];
-    const labelHeight = f.label?.height || (grid ? Math.max(24, (next?.y ?? f.y + 40) - f.y) * 0.18 : 30);
-    const xAnchor = f.label?.x ?? (armorFound[0]?.label?.x ?? width * 0.05);
-    const x1 = Math.max(0, Math.min(width - 1, xAnchor));
+    const centerY = Number(f.y);
+    const rowPitch = pitch || Math.max(40, Number(f.label?.height || 30) * 3.5);
+    const half = Math.max(12, rowPitch * 0.48);
+    const x1 = columnX;
     const x2 = Math.min(width, x1 + cardWidth);
-    let y1 = Math.max(0, f.y - Math.max(4, labelHeight * 0.25));
-    let y2 = next
-      ? Math.min(height, Math.max(y1 + 1, next.y - Math.max(4, labelHeight * 0.25)))
-      : Math.min(height, f.y + Math.max(labelHeight * 3.5, 80));
-
-    const maxRegionHeight = Math.max(120, height * 0.18);
-    if (y2 - y1 > maxRegionHeight) y2 = Math.min(height, y1 + maxRegionHeight);
+    let y1 = Math.max(0, centerY - half);
+    let y2 = Math.min(height, centerY + half);
+    if (y2 <= y1) y2 = Math.min(height, y1 + Math.max(20, rowPitch * 0.8));
 
     out.push({
       key: f.key,
@@ -341,10 +417,22 @@ function detectEquipmentRegions(screen, lines) {
       label: f.label ? f.canonicalLabel || f.label.text : '構造推定',
       sourceType: f.inferred ? 'inferred' : 'ocr',
       inferred: Boolean(f.inferred),
-      excludedFromReflection: f.key === 'subWeapon' || f.key === 'mantle'
+      excludedFromReflection: f.key === 'subWeapon' || f.key === 'mantle',
+      pitch: pitch || null,
+      pitchSource,
+      pitchConfidence
     });
   }
 
+  // Attach layout metadata without changing the existing array contract.
+  out.layoutMeta = {
+    anchorCount: anchors.length,
+    pitch: pitch || null,
+    pitchSource,
+    pitchConfidence,
+    scaledFromImage: Boolean(pitch),
+    medianResidual: medianGridResidual
+  };
   return out;
 }
 
@@ -825,7 +913,9 @@ async function detectLayoutFromImage(){
     const found=new Set(regions.map(x=>x.key));
     const labels={mainWeapon:'メイン武器',subWeapon:'サブ武器',head:'頭防具',chest:'胴防具',arms:'腕防具',waist:'腰防具',legs:'脚防具',charm:'護石',mantle:'装衣'};
     const missing=Object.keys(labels).filter(k=>!found.has(k));
-    $('layoutOut').innerHTML=regions.map(r=>{
+    const lm=regions.layoutMeta||{};
+    const scaleNote=lm.pitch ? `装備ピッチ自動推定：${Math.round(lm.pitch)}px／アンカー${lm.anchorCount}個／${lm.pitchSource}` : '装備ピッチ：推定できず（検出ラベルのみ使用）';
+    $('layoutOut').innerHTML=`<div class="note" style="margin-top:6px">${scaleNote}</div>` + regions.map(r=>{
       const pct=Math.round(r.confidence);
       const matchPct=Math.round(r.labelConfidence||0);
       const confidenceText=r.inferred?'構造推定':`OCR信頼度 ${pct}%／ラベル一致 ${matchPct}%`;

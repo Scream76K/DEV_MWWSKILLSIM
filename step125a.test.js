@@ -166,3 +166,51 @@ assert(aliasOut.find(x=>x.key==='legs').labelConfidence > 0);
 assert.strictEqual(aliasOut.find(x=>x.key==='head').sourceType, 'ocr');
 assert.strictEqual(aliasOut.find(x=>x.key==='mainWeapon').sourceType, 'inferred');
 console.log('step125a v5 alias/structure tests passed');
+
+
+// Step 1.25-A v6: scale/pitch must be inferred from OCR anchors, not a fixed 198px value.
+// Main+sub anchors alone should establish the per-item pitch and infer the remaining rows.
+const scaledTwoAnchors = [
+  {text:'メイン武器', x:80, y:120, width:180, height:26, confidence:92},
+  {text:'サブ武器', x:80, y:220, width:180, height:26, confidence:91},
+  {text:'頭防具', x:80, y:320, width:170, height:26, confidence:90},
+  {text:'胴防具', x:80, y:420, width:170, height:26, confidence:90},
+  {text:'腕防具', x:80, y:520, width:170, height:26, confidence:90},
+  {text:'腰防具', x:80, y:620, width:170, height:26, confidence:90},
+  {text:'脚防具', x:80, y:720, width:170, height:26, confidence:90},
+  {text:'護石', x:80, y:820, width:120, height:26, confidence:90},
+  {text:'装衣', x:80, y:920, width:120, height:26, confidence:90}
+];
+const scaledOut=detect({width:1536,height:706}, scaledTwoAnchors);
+assert.deepStrictEqual(Array.from(scaledOut.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm','mantle']);
+const sHead=scaledOut.find(x=>x.key==='head');
+const sChest=scaledOut.find(x=>x.key==='chest');
+assert(Math.abs((sChest.y1-sHead.y1)-100)<5, 'pitch should be inferred as ~100px from anchors, not fixed 198px');
+assert(sHead.height < 160, 'scaled layout should not use a fixed 198px region height');
+assert(scaledOut.find(x=>x.key==='subWeapon').excludedFromReflection===true);
+assert(scaledOut.find(x=>x.key==='mantle').excludedFromReflection===true);
+
+// Only main+sub labels are available: use their two-item distance as the scale anchor.
+const onlyWeaponAnchors = [
+  {text:'メイン武器', x:100, y:200, width:180, height:26, confidence:95},
+  {text:'サブ武器', x:100, y:350, width:180, height:26, confidence:94}
+];
+const twoOut=detect({width:2000,height:1500}, onlyWeaponAnchors);
+assert.deepStrictEqual(Array.from(twoOut.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm','mantle']);
+const tMain=twoOut.find(x=>x.key==='mainWeapon'), tSub=twoOut.find(x=>x.key==='subWeapon'), tHead=twoOut.find(x=>x.key==='head');
+assert(Math.abs((tSub.y1-tMain.y1)-150)<8, 'main/sub distance should define pitch');
+assert(Math.abs((tHead.y1-tSub.y1)-150)<8, 'remaining rows should follow inferred pitch');
+
+// Three non-adjacent anchors should also infer pitch using index distance.
+const sparseAnchors = [
+  {text:'メイン武器', x:90, y:100, width:180, height:26, confidence:92},
+  {text:'頭防具', x:90, y:300, width:170, height:26, confidence:90},
+  {text:'腕防具', x:90, y:500, width:170, height:26, confidence:90},
+  {text:'脚防具', x:90, y:900, width:170, height:26, confidence:90}
+];
+const sparseOut=detect({width:1800,height:1200}, sparseAnchors);
+assert.deepStrictEqual(Array.from(sparseOut.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm','mantle']);
+const spHead=sparseOut.find(x=>x.key==='head'), spArm=sparseOut.find(x=>x.key==='arms');
+assert(Math.abs((spArm.y1-spHead.y1)-200)<12, 'non-adjacent anchors should infer pitch from semantic index distance');
+
+console.log('step125a v6 scale/pitch tests passed');
