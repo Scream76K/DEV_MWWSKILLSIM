@@ -526,7 +526,7 @@ function renderCandidates(cands,meta){
   out.innerHTML=cands.slice(0,5).map((c,i)=>{
     const pct=Math.round(c.final*100),cls=pct>=80?'background:#eef2e8':pct>=65?'background:#f6f1df':'background:#f5e8e4';
     const ev=c.integration||{};
-    return `<div style="${cls};border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:7px"><b>${i+1}位　${c.name}</b><br><span class="note">統合 ${pct}%　／　支持 ${c.support}/${meta.total}回　／　平均文字評価 ${Math.round(c.avgNameScore*100)}%　／　最高文字評価 ${Math.round(c.bestNameScore*100)}%　／　1位差 ${Math.round((c.margin||0)*100)}pt</span></div>`;
+    return `<div style="${cls};border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:7px"><b>${i+1}位　${c.name}</b><br><span class="note">統合 ${pct}%　／　支持 ${c.support}/${meta.total}回　／　平均文字評価 ${Math.round(c.avgNameScore*100)}%　／　最高文字評価 ${Math.round(c.bestNameScore*100)}%　／　1位差 ${c.margin==null?'—':Math.round(c.margin*100)+'pt'}</span></div>`;
   }).join('')+`<div class="note" style="margin-top:8px">${meta.decision}</div>`;
 }
 function cleanOCR(raw){return String(raw||'').replace(/[\r\n]+/g,' ').replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim()}
@@ -649,14 +649,24 @@ $('ocr').onclick=async()=>{
       return ranked;
     };
 
-    const autoConfirm=ranked=>{
-      const a=ranked[0],b=ranked[1];if(!a)return false;
-      const margin=a.final-(b?.final||0);
-      const passes=a.support;
-      // Strong DB convergence: at least two independent OCR passes put the same
-      // DB weapon at rank 1, with a healthy character-level score and a clear gap.
-      return passes>=2 && a.avgNameScore>=.78 && a.bestNameScore>=.82 && margin>=dynamicMarginRequired(a.name);
+    const marginPointsFor=(ranked)=>{
+      const a=ranked?.[0],b=ranked?.[1];
+      if(!a||!b)return null;
+      return Math.round(Math.max(0,a.final-b.final)*100);
     };
+    const decisionForRanked=(ranked)=>{
+      const a=ranked?.[0],b=ranked?.[1];
+      if(!a)return {state:'none',marginPoints:null};
+      const margin=a.final-(b?.final||0);
+      const marginPoints=marginPointsFor(ranked);
+      const passes=a.support||0;
+      const strong=passes>=2 && a.avgNameScore>=.78 && a.bestNameScore>=.82;
+      const clearGap=!!b && margin>=dynamicMarginRequired(a.name);
+      if(strong && clearGap)return {state:'auto',marginPoints};
+      if(a.score>=.45 || a.avgNameScore>=.55)return {state:'confirm',marginPoints};
+      return {state:'ambiguous',marginPoints};
+    };
+    const autoConfirm=ranked=>decisionForRanked(ranked).state==='auto';
 
     const runPass=async(p)=>{
       $('ocrStatus').textContent=`OCR ${rows.length+1}回目：${p.name}`;
@@ -719,15 +729,19 @@ $('ocr').onclick=async()=>{
       return `【${i+1} ${r.name} / OCR信頼度 ${Math.round(r.conf)}%】\n・生OCR：${r.raw}\n・1位DB候補：${b?.name||'(なし)'}${b?`（文字評価 ${Math.round(b.nameScore*100)}点 / 行総合 ${Math.round(b.score*100)}%）`:''}\n・減点内訳：通常 ${d.normal||0} / 軽微 ${d.light||0} / 濁点 ${d.dakuten||0} / 欠落 ${d.missing||0} / 余分文字 ${d.extra||0}`;
     }).join('\n\n');
     if(best){
-      const second=ranked[1];
-      $('raw').textContent += `\n\n【DB候補統合（新方式）】\n・最有力候補：${best.name}\n・DB候補支持：${best.support}/${rows.length}回\n・平均文字評価：${Math.round(best.avgNameScore*100)}点\n・最高文字評価：${Math.round(best.bestNameScore*100)}点\n・候補差：${Math.round((best.margin||0)*100)}pt\n・OCR間一致：最終判定には使用しない`;
+      const decision=decisionForRanked(ranked);
+      const marginLabel=decision.marginPoints==null?'—（2位候補なし）':`${decision.marginPoints}pt`;
+      $('raw').textContent += `\n\n【DB候補統合（新方式）】\n・最有力候補：${best.name}\n・DB候補支持：${best.support}/${rows.length}回\n・平均文字評価：${Math.round(best.avgNameScore*100)}点\n・最高文字評価：${Math.round(best.bestNameScore*100)}点\n・候補差（1位−2位）：${marginLabel}\n・OCR間一致：最終判定には使用しない`;
     }
 
+    const decision=decisionForRanked(ranked);
     renderCandidates(ranked,{
       total:rows.length,
-      decision:confirmed
+      decision:decision.state==='auto'
         ?`DB候補が複数OCRで収束し、文字評価と候補差が基準を満たしたため自動確定候補。`
-        :`自動確定条件を満たさないため判定保留。上位候補を選択できます。`
+        :decision.state==='confirm'
+          ?`候補は有力ですが自動確定条件を満たさないため確認してください。上位候補から選択できます。`
+          :`候補が十分に絞り込めないため判定保留。上位候補から選択するか手動入力してください。`
     });
 
     $('ocrStatus').textContent=`解析完了：${rows.length}回の有効OCR / ${elapsed.toFixed(1)}秒 / ${confirmed?'自動確定候補':'判定保留'}`;
