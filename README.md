@@ -1,7 +1,24 @@
-# DEV_MWWSKILLSIM OCR Step 1.10 Safe Const
+# DEV_MWWSKILLSIM OCR Step 1.10 + Safe Early Exit
 
-Step 1.10 full-weapon-DB build, with one safety fix only:
-`makeNameOCRCanvas` uses `let c` because the canvas variable is reassigned later.
+Step 1.10 の既知の正常動作をベースに、OCRの追加実行を早期終了する条件だけを変更した実験版です。
 
-OCR behavior is otherwise unchanged from Step 1.10.
-Otsu, smoothing, and PSM6 are not included.
+## 今回の変更
+- 同一DB候補が少なくとも2回のOCRで支持されるまで、早期終了しない安全条件に変更。
+- 1回だけ強く一致した候補で追加OCRを打ち切らない。
+- 早期終了した場合、画面のOCRステータスに「追加OCRを省略」と表示。
+- Otsu、平滑化、PSM6などのStep 1.11処理は追加していません。
+- OCR候補照合・DB・スコアリングはStep 1.10から変更していません。
+
+## 目的
+精度を変えずに、同一候補が複数OCRで確認できたケースの処理時間を短縮できるか検証します。
+
+## テスト
+Step 1.10 と同じ画像で比較してください。
+- 代償のネイディ・ギア
+- 亡国のクピドバイン
+
+確認したい項目：
+1. 最終候補が正しいか
+2. 複数OCR合意率・支持数が悪化していないか
+3. OCR回数
+4. 処理時間

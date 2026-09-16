@@ -681,11 +681,15 @@ $('ocr').onclick=async()=>{
       if(!a)return false;
       const margin=a.final-(b?.final||0);
       const marginReq=dynamicMarginRequired(a.name);
+      // Early-exit safety rule: require the same DB candidate to be supported
+      // by at least two independent OCR passes.  A single noisy pass must not
+      // terminate the ensemble early.
+      const twoPassSupport=a.support>=2;
       const consensusStrong=a.consensus>=.52 && a.consensusSupport>=1;
       return margin>=marginReq && (
-        (a.support>=2 && a.avg>=.62 && a.final>=.60) ||
-        (consensusStrong && a.bestSimilarity>=.70 && a.final>=.60) ||
-        (a.bestSimilarity>=.82 && a.bestConf>=60 && a.final>=.60)
+        (twoPassSupport && a.avg>=.62 && a.final>=.60) ||
+        (twoPassSupport && consensusStrong && a.bestSimilarity>=.70 && a.final>=.60) ||
+        (twoPassSupport && a.bestSimilarity>=.82 && a.bestConf>=60 && a.final>=.60)
       );
     };
 
@@ -710,7 +714,10 @@ $('ocr').onclick=async()=>{
     for(const p of fast){
       await runPass(p);
       const ranked=aggregate();
-      if(highConfidenceDirect(ranked)||multiEvidenceStrong(ranked))break;
+      if(highConfidenceDirect(ranked)||multiEvidenceStrong(ranked)){
+        $('ocrStatus').textContent=`OCR ${rows.length}回で十分な一致を確認：追加OCRを省略`;
+        break;
+      }
     }
 
     let ranked=aggregate();
@@ -718,7 +725,10 @@ $('ocr').onclick=async()=>{
       for(const p of extra){
         await runPass(p);
         ranked=aggregate();
-        if(highConfidenceDirect(ranked)||multiEvidenceStrong(ranked))break;
+        if(highConfidenceDirect(ranked)||multiEvidenceStrong(ranked)){
+          $('ocrStatus').textContent=`OCR ${rows.length}回で十分な一致を確認：追加OCRを省略`;
+          break;
+        }
       }
     }
 
