@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.18：最終候補判定</title>
+<title>MH Wilds OCR — Step 1.19：候補統合スコア・候補差</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.18：最終候補判定</h1>
+<h1>MH Wilds OCR — Step 1.19：候補統合スコア・候補差</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -112,7 +112,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>Step 1.18 の検証ポイント</h2>
+<h2>Step 1.19 の検証ポイント</h2>
 <div class="note">
 ① 赤枠が上段のメイン武器名だけを含む<br>
 ② 下段のサブ武器名を含まない<br>
@@ -520,17 +520,19 @@ function getWeaponItems(raw){return searchWeaponItems(raw)}
 function confidenceWeight(conf){if(conf>=85)return 1;if(conf>=75)return .90;if(conf>=65)return .78;if(conf>=50)return .62;if(conf>=35)return .45;return .30}
 function dynamicMarginRequired(name){const n=normalizeForNameScore(name).length;if(n<=4)return .16;if(n<=7)return .12;if(n<=11)return .09;return .07}
 function candidateHasEnoughEvidence(c){return !!c && c.score>=.45}
-// Step 1.18: 文字評価＋DB候補支持率＋OCR信頼度で最終判定する。
+// Step 1.19: 候補統合スコアと1位-2位候補差で最終判定する。
 // OCR↔OCR一致率は最終判定に使わない。
 function finalCandidateScore(x){
   return .55*Number(x.avgNameScore||0)+.25*Number(x.supportRatio||0)+.15*(Number(x.confAvg||0)/100)+.05*Number(x.bestNameScore||0);
 }
-function candidateDecision(x,secondFinal=0){
+function candidateDecision(x,secondFinal=null){
   if(!x)return {level:'manual',label:'手動入力',reason:'DB候補を形成できませんでした。'};
-  const margin=Number(x.final||0)-Number(secondFinal||0), support=Number(x.supportRatio||0);
-  if(support>=.67 && x.final>=.72 && margin>=.05 && x.avgNameScore>=.50)
-    return {level:'auto',label:'自動確定候補',reason:'複数OCRで同じDB候補に収束し、統合スコアと候補差が基準を満たしました。'};
-  if(x.final>=.60 && margin>=.05)
+  const hasSecond=Number.isFinite(Number(secondFinal));
+  const margin=hasSecond?Number(x.final||0)-Number(secondFinal):null, support=Number(x.supportRatio||0);
+  const marginOK=!hasSecond || margin>=.05;
+  if(support>=.67 && x.final>=.72 && marginOK && x.avgNameScore>=.50)
+    return {level:'auto',label:'自動確定候補',reason:'DB候補の統合スコアと支持率が基準を満たしました。2位候補がある場合は5pt以上の差も確認しています。'};
+  if(x.final>=.60 && marginOK)
     return {level:'confirm',label:'ユーザー確認',reason:'有力候補ですが、自動確定条件を満たしていません。'};
   if(x.final>=.45)
     return {level:'ambiguous',label:'候補選択',reason:'候補差が小さいため、上位候補から選択してください。'};
@@ -542,7 +544,7 @@ function renderCandidates(cands,meta){
   out.innerHTML=cands.slice(0,5).map((c,i)=>{
     const pct=Math.round(c.final*100),cls=pct>=80?'background:#eef2e8':pct>=65?'background:#f6f1df':'background:#f5e8e4';
     const ev=c.integration||{};
-    const d=c.decision||candidateDecision(c,cands[i+1]?.final||0);
+    const d=c.decision||candidateDecision(c,cands[i+1]?.final ?? null);
     return `<div style="${cls};border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:7px"><b>${i+1}位　${c.name}</b> <span class="corrected-tag">${d.label}</span><br><span class="note">最終 ${pct}%　／　支持 ${c.support}/${meta.total}回　／　平均文字評価 ${Math.round(c.avgNameScore*100)}%　／　OCR信頼度平均 ${Math.round(c.confAvg)}%　／　1位差 ${Math.round((c.margin||0)*100)}pt</span></div>`;
   }).join('')+`<div class="note" style="margin-top:8px">${meta.decision}</div>`;
 }
@@ -666,7 +668,7 @@ $('ocr').onclick=async()=>{
       return ranked;
     };
 
-    const autoConfirm=ranked=>candidateDecision(ranked[0],ranked[1]?.final||0).level==='auto';
+    const autoConfirm=ranked=>candidateDecision(ranked[0],ranked[1]?.final ?? null).level==='auto';
 
     const runPass=async(p)=>{
       $('ocrStatus').textContent=`OCR ${rows.length+1}回目：${p.name}`;
@@ -711,14 +713,15 @@ $('ocr').onclick=async()=>{
     ranked=aggregate();
 
     const best=ranked[0],second=ranked[1];
-    const margin=best?best.final-(second?.final||0):0;
-    if(best)best.decision=candidateDecision(best,second?.final||0);
+    const margin=best&&second?best.final-second.final:null;
+    if(best)best.decision=candidateDecision(best,second?.final ?? null);
+    if(best)best.margin=margin;
     const confirmed=!!best&&best.decision.level==='auto';
     const elapsed=(performance.now()-started)/1000;
 
     if(best){
       const pct=Math.round(Math.min(99,best.final*100));
-      const mode=confirmed?'DB候補収束':'判定保留';
+      const mode=confirmed?'DB候補確定':'判定保留';
       $('recognized').innerHTML=`${confirmed?best.name:`候補：${best.name}`} <span class="corrected-tag">${mode} ${pct}% / 支持 ${best.support}/${rows.length}</span>`;
     }else{
       $('recognized').textContent='該当候補なし（OCR文字は取得できましたが、全武器DBに十分な一致がありません）';
@@ -731,7 +734,7 @@ $('ocr').onclick=async()=>{
     }).join('\n\n');
     if(best){
       const second=ranked[1];
-      $('raw').textContent += `\n\n【DB候補統合（新方式）】\n・最有力候補：${best.name}\n・DB候補支持：${best.support}/${rows.length}回\n・平均文字評価：${Math.round(best.avgNameScore*100)}点\n・最高文字評価：${Math.round(best.bestNameScore*100)}点\n・候補差：${Math.round((best.margin||0)*100)}pt\n・OCR間一致：最終判定には使用しない`;
+      $('raw').textContent += `\n\n【DB候補統合（新方式）】\n・最有力候補：${best.name}\n・DB候補支持：${best.support}/${rows.length}回\n・平均文字評価：${Math.round(best.avgNameScore*100)}点\n・最高文字評価：${Math.round(best.bestNameScore*100)}点\n・候補差：${best.margin==null?'—（2位候補なし）':Math.round(best.margin*100)+'pt'}\n・OCR間一致：最終判定には使用しない`;
     }
 
     renderCandidates(ranked,{
