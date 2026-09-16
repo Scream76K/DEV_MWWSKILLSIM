@@ -586,54 +586,50 @@ $('ocr').onclick=async()=>{
     // 2) OCR outputs are compared with each other to find stable character spans;
     // 3) that consensus is then matched back against the dictionary.
     const consensusFor=(candidateName)=>{
-      const relevant=rows.map(r=>({raw:r.raw,conf:r.conf,weight:.35+.65*confidenceWeight(r.conf)}));
-      if(relevant.length<2)return {score:0,core:'',support:0};
+      // Step 1.12: post-processing only. OCR/canvas/Tesseract are untouched.
+      const normalizeConsensus=(v)=>String(v||'').normalize('NFKC').toLowerCase()
+        .replace(/[\s　・･·•\-‐‑‒–—―ー＿_.,，。！？!?、:：;；/／\\|｜()[\]{}「」『』【】〈〉《》<>＋+＝=＊*#＃%％&＆@＠]/g,'');
+      const ngrams=(v,n)=>{const a=normalizeConsensus(v);if(a.length<n)return [];const out=[];for(let i=0;i<=a.length-n;i++)out.push(a.slice(i,i+n));return out};
+      const ngramSimilarity=(x,y)=>{
+        const score=(n)=>{const a=ngrams(x,n),b=ngrams(y,n);if(!a.length||!b.length)return 0;const ca=new Map(),cb=new Map();a.forEach(g=>ca.set(g,(ca.get(g)||0)+1));b.forEach(g=>cb.set(g,(cb.get(g)||0)+1));let common=0;for(const [g,v] of ca)common+=Math.min(v,cb.get(g)||0);return 2*common/(a.length+b.length)};
+        return .45*score(2)+.55*score(3);
+      };
+      const relevant=rows.filter(r=>r&&r.raw).map(r=>({raw:r.raw,conf:r.conf,weight:.35+.65*confidenceWeight(r.conf)}));
+      if(relevant.length<2)return {score:0,pairConsensus:0,core:'',support:0,ocrAgreement:0,dbSupport:0,dbSimilarity:0};
 
-      const candLoose=normJPLoose(candidateName);
-      let pairScores=[], coreHits=new Map();
-
-      for(let i=0;i<relevant.length;i++){
-        for(let j=i+1;j<relevant.length;j++){
-          const a=normJPLoose(relevant[i].raw), b=normJPLoose(relevant[j].raw);
-          if(!a||!b)continue;
-          const common=commonSubstringLen(a,b)/Math.max(1,Math.min(a.length,b.length));
-          const pairWeight=(relevant[i].weight+relevant[j].weight)/2;
-          pairScores.push({score:common,weight:pairWeight});
-          // Collect meaningful common substrings (length >= 3) and test them
-          // against the candidate. This avoids letting one noisy full-string
-          // match dominate the result.
-          const aa=Array.from(a), bb=Array.from(b);
-          for(let x=0;x<aa.length;x++){
-            for(let len=3;len<=Math.min(8,aa.length-x);len++){
-              const sub=aa.slice(x,x+len).join('');
-              if(!b.includes(sub))continue;
-              const hit=normJPLoose(sub);
-              if(hit.length<3 || !candLoose.includes(hit))continue;
-              const key=hit;
-              const val=coreHits.get(key)||{support:0,weight:0};
-              val.support++;
-              val.weight+=pairWeight*(len>=5?1.2:1);
-              coreHits.set(key,val);
-            }
-          }
+      const candLoose=normalizeConsensus(candidateName);
+      let pairScores=[],coreHits=new Map();
+      for(let i=0;i<relevant.length;i++)for(let j=i+1;j<relevant.length;j++){
+        const a=normalizeConsensus(relevant[i].raw),b=normalizeConsensus(relevant[j].raw);if(!a||!b)continue;
+        const sim=ngramSimilarity(a,b),w=(relevant[i].weight+relevant[j].weight)/2;
+        pairScores.push({score:sim,weight:w});
+        // Candidate-supported common n-grams (2/3-gram), not raw position-only overlap.
+        for(const n of [2,3]){
+          const aa=new Set(ngrams(a,n)),bb=new Set(ngrams(b,n));
+          for(const g of aa){if(bb.has(g)&&candLoose.includes(g)){const v=coreHits.get(g)||{support:0,weight:0};v.support++;v.weight+=w*(n===3?1.2:1);coreHits.set(g,v)}}
         }
       }
-
-      const topPairs=pairScores.sort((a,b)=>b.score-a.score).slice(0,4);
-      const pairConsensus=topPairs.length ? topPairs.reduce((s,x)=>s+x.score*x.weight,0)/Math.max(.001,topPairs.reduce((s,x)=>s+x.weight,0)) : 0;
-      const cores=[...coreHits.entries()].map(([core,v])=>({
-        core,support:v.support,weight:v.weight,
-        dict:1-lev(normJPLoose(core),candLoose)/Math.max(1,Math.max(core.length,candLoose.length))
-      })).sort((a,b)=>(b.weight*b.dict)-(a.weight*a.dict));
-
-      const bestCore=cores[0]||{core:'',support:0,weight:0,dict:0};
-      const coreStrength=Math.min(1,(bestCore.weight/3))*Math.max(0,bestCore.dict);
+      const pairConsensus=pairScores.length?pairScores.reduce((a,x)=>a+x.score*x.weight,0)/Math.max(.001,pairScores.reduce((a,x)=>a+x.weight,0)):0;
+      const cores=[...coreHits.entries()].map(([core,v])=>({core,support:v.support,weight:v.weight})).sort((a,b)=>(b.weight*b.core.length)-(a.weight*a.core.length));
+      const bestCore=cores[0]||{core:'',support:0,weight:0};
+      const coreStrength=Math.min(1,bestCore.weight/3);
       const support=bestCore.support;
+
+      // DB candidate support remains a separate signal. It is calculated from the
+      // already-produced row.best values; no OCR or candidate generation changes.
+      const dbRows=rows.filter(r=>r&&r.best&&normalizeConsensus(r.best.name)===candLoose);
+      const dbSupport=dbRows.length/Math.max(1,relevant.length);
+      const dbSimilarity=dbRows.length?Math.max(...dbRows.map(r=>Number(r.best.similarity)||0)):0;
+      const ocrAgreement=pairConsensus;
       return {
+        // Legacy consensus score retained for existing confirmation thresholds.
         score:.62*pairConsensus+.38*coreStrength,
         pairConsensus,
         core:bestCore.core,
-        support
+        support,
+        ocrAgreement,
+        dbSupport,
+        dbSimilarity
       };
     };
 
@@ -662,7 +658,7 @@ $('ocr').onclick=async()=>{
         const share=x.support/Math.max(1,rows.length);const consensus=consensusFor(x.name);
         const confTerm=Math.min(1,avgConf/100);
         const final=.28*avg+.15*share+.12*x.bestRowScore+.06*confTerm+.07*avgChar+.12*avgSub+.20*consensus.score;
-        return {...x,avg,avgConf,share,avgSub,consensus:consensus.score,consensusCore:consensus.core,consensusSupport:consensus.support,final};
+        return {...x,avg,avgConf,share,avgSub,consensus:consensus.score,consensusCore:consensus.core,consensusSupport:consensus.support,ocrAgreement:consensus.ocrAgreement,dbSupport:consensus.dbSupport,dbSimilarity:consensus.dbSimilarity,final};
       }).sort((a,b)=>b.final-a.final);
     };
 
@@ -755,7 +751,7 @@ $('ocr').onclick=async()=>{
       return `【${i+1} ${r.name} / OCR信頼度 ${Math.round(r.conf)}%】\n・生OCR：${r.raw}\n・DB候補：${b?.name||'(十分な一致なし)'}${b?`（一致 ${Math.round(b.similarity*100)}% / 部分一致 ${Math.round((b.substring||0)*100)}% / 行スコア ${Math.round(b.score*100)}% / 文字信頼 ${Math.round((b.charConfidence||0)*100)}%）`:''}`;
     }).join('\n\n');
     if(best){
-      $('raw').textContent += `\n\n【OCR↔OCR一致性】\n・最有力候補：${best.name}\n・相互一致：${Math.round(best.consensus*100)}%\n・共通核：${best.consensusCore||'(なし)'}\n・共通核支持：${best.consensusSupport||0}組`;
+      $('raw').textContent += `\n\n【OCR統合スコア（Step 1.12）】\n・最有力候補：${best.name}\n・① OCR間一致：${Math.round((best.ocrAgreement||0)*100)}%\n・② DB候補支持：${best.support}/${rows.length}（${Math.round((best.dbSupport||0)*100)}%）\n・③ DB類似度：${Math.round((best.dbSimilarity||0)*100)}%\n・共通核：${best.consensusCore||'(なし)'}\n・共通核支持：${best.consensusSupport||0}組`;
     }
 
     renderCandidates(ranked,{
