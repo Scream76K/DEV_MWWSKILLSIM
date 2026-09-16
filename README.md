@@ -1,17 +1,24 @@
-# DEV_MWWSKILLSIM OCR Step 1.22
+# DEV_MWWSKILLSIM OCR Step 1.23
 
-Step 1.22では、DB候補統合の総合スコアに「支持補正（収束ボーナス）」を独立加点として追加。
+Step 1.23 fixes the DB-candidate evidence aggregation used after OCR.
 
-- 1/1回支持: +4pt
-- 2/2回支持: +8pt
-- 2/3回支持: +6pt
-- 3/3回以上の同一DB候補支持: +12pt
-- 5/6回支持: +10pt
-- その他: 0〜6pt
-- OCR↔OCR生文字列一致率は最終判定に使用しない
-- 支持補正だけで自動確定せず、OCR平均信頼度50%以上など既存の安全条件を維持
-- UIに支持補正値を表示
-- Step 1.22のユニットテスト付き
+## Changes
+- Average character score uses **all OCR passes that ranked the candidate #1**.
+- Average OCR confidence uses the same supporting OCR passes.
+- Top-3 rows are still retained for candidate discovery, but rank-2/3 appearances do not contaminate the candidate's supporting averages.
+- Support bonus is calculated from the actual `support / total` pair and is included in the final score.
+- Final score, displayed score, support bonus, and evidence averages all use the same summarized evidence.
+- OCR↔OCR raw-string agreement remains informational only and is not used for final candidate selection.
+- Page title, heading, and README are all marked Step 1.23.
 
-- 1位−2位候補差を総合スコアの差分（pt）として表示
-- 最終判定は総合スコア、候補差、OCR信頼度を使用し、OCR↔OCR生文字列一致率は使用しない
+## Support bonus
+- 1/1: +4pt
+- 2/2: +8pt
+- 2/3: +6pt
+- 3/3: +12pt
+- 4/4: +12pt
+- 5/6: +10pt
+- 6/6: +12pt
+
+## Verification
+`step123.test.js` is retained as the regression test file for the candidate-score contract; it now includes Step 1.23 aggregation tests.

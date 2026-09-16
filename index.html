@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.22：候補統合スコア・候補差</title>
+<title>Step 1.23 - MH Wilds OCR — Step 1.23：候補統合スコア・候補差</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.22：支持補正・候補統合スコア</h1>
+<h1>MH Wilds OCR — Step 1.23：支持補正・候補統合スコア</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -520,7 +520,7 @@ function getWeaponItems(raw){return searchWeaponItems(raw)}
 function confidenceWeight(conf){if(conf>=85)return 1;if(conf>=75)return .90;if(conf>=65)return .78;if(conf>=50)return .62;if(conf>=35)return .45;return .30}
 function dynamicMarginRequired(name){const n=normalizeForNameScore(name).length;if(n<=4)return .16;if(n<=7)return .12;if(n<=11)return .09;return .07}
 function candidateHasEnoughEvidence(c){return !!c && c.score>=.45}
-// Step 1.22: DB候補の総合スコア。OCR↔OCR一致率は最終判定に使わない。
+// Step 1.23: DB候補の総合スコア。OCR↔OCR一致率は最終判定に使わない。
 // 支持補正は文字評価とは独立した加点要素として扱う。
 function supportBonus(supportOrRatio,total){
   const t=Number(total||0);
@@ -545,6 +545,20 @@ function finalCandidateScore(x){
 function totalCandidateScore(x){
   const r=finalCandidateScore(x);
   return typeof r==='number'?r:r.totalScore;
+}
+// Step 1.23: aggregate only OCR passes that ranked this DB candidate #1.
+// This keeps averages consistent with the support count and prevents a candidate
+// that merely appeared in another pass's top-3 from contaminating its evidence.
+function summarizeCandidateEvidence(x){
+  const rows=Array.isArray(x?.topRows)?x.topRows:[];
+  const supporting=rows.filter(r=>Number(r?.rank)===0);
+  const source=supporting.length?supporting:[];
+  const avgNameScore=source.length?source.reduce((s,r)=>s+Number(r.nameScore||0),0)/source.length:0;
+  const avgRowScore=source.length?source.reduce((s,r)=>s+Number(r.score||0),0)/source.length:0;
+  const confAvg=source.length?source.reduce((s,r)=>s+Number(r.conf||0),0)/source.length:0;
+  const bestNameScore=source.length?Math.max(...source.map(r=>Number(r.nameScore||0))):0;
+  const score=finalCandidateScore({...x,avgNameScore,avgRowScore,confAvg,bestNameScore});
+  return {avgNameScore,avgRowScore,confAvg,bestNameScore,supportBonus:score.supportBonus,charScore:score.charScore,ocrConfidence:score.ocrConfidence,totalScore:score.totalScore};
 }
 function candidateDecision(x,secondFinal=null){
   if(!x)return {level:'manual',label:'手動入力',reason:'DB候補を形成できませんでした。'};
@@ -676,18 +690,14 @@ $('ocr').onclick=async()=>{
         });
       }
       const ranked=[...agg.values()].map(x=>{
-        const top=x.topRows.slice().sort((a,b)=>b.nameScore-a.nameScore);
         const support=x.support;
-        const topNameScores=top.slice(0,3).map(r=>r.nameScore);
-        const avgNameScore=topNameScores.length?topNameScores.reduce((s,v)=>s+v,0)/topNameScores.length:0;
-        const avgRowScore=top.length?top.slice(0,3).reduce((s,r)=>s+r.score,0)/Math.min(3,top.length):0;
-        const confAvg=top.length?top.slice(0,3).reduce((s,r)=>s+r.conf,0)/Math.min(3,top.length):0;
-        // Convergence bonus is based on repeated DB identity, not OCR↔OCR text similarity.
+        // Step 1.23: use every OCR pass that selected this candidate as #1.
+        // Do not average only the top three rows and do not mix rank-2/3 evidence.
         const supportRatio=support/Math.max(1,rows.length);
         const convergence=.55*supportRatio+.45*Math.min(1,x.rankSum/Math.max(1,rows.length));
-        const score=finalCandidateScore({...x,avgNameScore,avgRowScore,confAvg,bestNameScore:x.bestNameScore,supportRatio});
-        const bonus=score.supportBonus;
-        return {...x,total:rows.length,avgNameScore,avgRowScore,confAvg,convergence,totalScore:score.totalScore,charScore:score.charScore,ocrConfidence:score.ocrConfidence,final:score.totalScore,supportRatio,supportBonus:bonus,integration:{supportRatio,convergence,supportBonus:bonus,charScore:score.charScore,ocrConfidence:score.ocrConfidence,totalScore:score.totalScore}};
+        const evidence=summarizeCandidateEvidence({...x,supportRatio,total:rows.length});
+        const bonus=evidence.supportBonus;
+        return {...x,total:rows.length,avgNameScore:evidence.avgNameScore,avgRowScore:evidence.avgRowScore,confAvg:evidence.confAvg,bestNameScore:evidence.bestNameScore,convergence,totalScore:evidence.totalScore,charScore:evidence.charScore,ocrConfidence:evidence.ocrConfidence,final:evidence.totalScore,supportRatio,supportBonus:bonus,integration:{supportRatio,convergence,supportBonus:bonus,charScore:evidence.charScore,ocrConfidence:evidence.ocrConfidence,totalScore:evidence.totalScore}};
       }).sort((a,b)=>(b.totalScore??b.final)-(a.totalScore??a.final));
       for(let i=0;i<ranked.length;i++)ranked[i].margin=(ranked[i].totalScore??ranked[i].final)-(ranked[i+1]?.totalScore??ranked[i+1]?.final??0);
       return ranked;
