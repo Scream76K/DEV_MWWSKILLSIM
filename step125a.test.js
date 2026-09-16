@@ -2,13 +2,17 @@ const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
 const html = fs.readFileSync('index.html','utf8');
-const m = html.match(/function detectEquipmentRegions\(screen, lines\)\s*\{[\s\S]*?\n\}/);
-const lm = html.match(/function extractEquipmentOCRLines\(data\)\s*\{[\s\S]*?\n\}/);
-assert(lm, 'extractEquipmentOCRLines must exist');
-assert(m, 'detectEquipmentRegions must exist');
+const mStart = html.indexOf('function detectEquipmentRegions(');
+const mEnd = html.indexOf('\nfunction addPadding', mStart);
+const lmStart = html.indexOf('function extractEquipmentOCRLines(');
+const lmEnd = html.indexOf('\nfunction detectEquipmentRegions', lmStart);
+assert(mStart >= 0 && mEnd > mStart, 'detectEquipmentRegions must exist');
+assert(lmStart >= 0 && lmEnd > lmStart, 'extractEquipmentOCRLines must exist');
+const m = html.slice(mStart, mEnd);
+const lm = html.slice(lmStart, lmEnd);
 const sandbox = {console, Math, Set, Map, Array, Number, String, Object};
 vm.createContext(sandbox);
-vm.runInContext(m[0] + '\n' + lm[0] + '\nthis.detect=detectEquipmentRegions; this.extract=extractEquipmentOCRLines;', sandbox);
+vm.runInContext(m + '\n' + lm + '\nthis.detect=detectEquipmentRegions; this.extract=extractEquipmentOCRLines;', sandbox);
 const detect = sandbox.detect;
 const extract = sandbox.extract;
 
@@ -24,7 +28,7 @@ const lines = [
   {text:'護石', x:80, y:1170, width:120, height:34, confidence:90}
 ];
 const out = detect({width:1200,height:1400}, lines);
-assert.deepStrictEqual(Array.from(out.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm']);
+assert.deepStrictEqual(Array.from(out.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm','mantle']);
 assert(out.find(x=>x.key==='mainWeapon').y2 <= out.find(x=>x.key==='head').y1);
 assert(out.find(x=>x.key==='subWeapon').excludedFromReflection === true);
 
@@ -41,7 +45,7 @@ const noisy = [
   {text:'護 石', x:60, y:1070, width:120, height:30, confidence:90}
 ];
 const noisyOut=detect({width:1000,height:1200}, noisy);
-assert.deepStrictEqual(Array.from(noisyOut.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm']);
+assert.deepStrictEqual(Array.from(noisyOut.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm','mantle']);
 assert(noisyOut.find(x=>x.key==='subWeapon').excludedFromReflection === true);
 assert(noisyOut.every(x=>x.confidence>=0 && x.confidence<=100));
 for (const key of ['head','chest','arms','waist','legs']) {
@@ -103,7 +107,7 @@ const noise = [
   {text:'護石', x:80, y:950, width:120, height:34, confidence:90}
 ];
 const noiseOut = detect({width:1200,height:1100}, noise);
-assert.deepStrictEqual(Array.from(noiseOut.map(x=>x.key)), ['mainWeapon','head','chest','arms','waist','legs','charm']);
+assert.deepStrictEqual(Array.from(noiseOut.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm','mantle']);
 assert(noiseOut.find(x=>x.key==='mainWeapon').width <= 1200*0.70, 'main weapon region must be width-limited');
 assert(noiseOut.find(x=>x.key==='head').width <= 1200*0.70, 'head region must be width-limited');
 const onlyNoise = detect({width:1200,height:1100}, [
@@ -120,3 +124,45 @@ assert.strictEqual(extracted[0].text,'頭防具');
 assert.strictEqual(extracted[0].x,10);
 assert.strictEqual(extracted[0].width,90);
 console.log('step125a OCR-line extraction tests passed');
+
+// Regression for real IMG_9324 behavior: all five armor labels are found at a
+// stable ~198px pitch, while main/sub/charm/mantle labels may be missed. The
+// detector should infer the missing rows from the stable armor grid.
+const realLike = [
+  {text:'頭防具', x:197, y:648, width:260, height:34, confidence:90},
+  {text:'胴防具', x:197, y:846, width:260, height:34, confidence:92},
+  {text:'腕防具', x:197, y:1044, width:260, height:34, confidence:69},
+  {text:'腰防四', x:197, y:1242, width:260, height:34, confidence:0},
+  {text:'脚防思', x:197, y:1440, width:260, height:34, confidence:0}
+];
+const realLikeOut = detect({width:3840,height:2160}, realLike);
+assert.deepStrictEqual(Array.from(realLikeOut.map(x=>x.key)), ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm','mantle'],
+  'stable five-armor grid should infer missing main/sub/charm/mantle rows');
+assert(realLikeOut.find(x=>x.key==='mainWeapon').inferred === true, 'main weapon should be inferred');
+assert(realLikeOut.find(x=>x.key==='subWeapon').excludedFromReflection === true, 'inferred sub weapon must be excluded');
+assert(realLikeOut.find(x=>x.key==='charm').inferred === true, 'charm should be inferred');
+assert(realLikeOut.find(x=>x.key==='mantle').inferred === true, 'mantle should be inferred');
+const headR=realLikeOut.find(x=>x.key==='head');
+const chestR=realLikeOut.find(x=>x.key==='chest');
+assert(Math.abs((chestR.y1-headR.y1)-198)<8, 'inferred grid pitch should follow armor anchors');
+assert(realLikeOut.every(x=>x.x < 3840*0.25 && x.width <= 3840*0.22 + 1), 'inferred regions must remain in left column');
+console.log('real-like five-armor inference tests passed');
+
+
+// Step 1.25-A v5: known OCR aliases should canonicalize without global character replacement.
+const aliasInput = [
+  {text:'頭防具', x:197, y:648, width:260, height:34, confidence:90},
+  {text:'胴防具', x:197, y:846, width:260, height:34, confidence:92},
+  {text:'腕防具', x:197, y:1044, width:260, height:34, confidence:69},
+  {text:'腰防四', x:197, y:1242, width:260, height:34, confidence:0},
+  {text:'脚防思', x:197, y:1440, width:260, height:34, confidence:0}
+];
+const aliasOut = detect({width:3840,height:2160}, aliasInput);
+assert.strictEqual(aliasOut.length, 9);
+assert.strictEqual(aliasOut.find(x=>x.key==='waist').label, '腰防具');
+assert.strictEqual(aliasOut.find(x=>x.key==='legs').label, '脚防具');
+assert(aliasOut.find(x=>x.key==='waist').labelConfidence > 0);
+assert(aliasOut.find(x=>x.key==='legs').labelConfidence > 0);
+assert.strictEqual(aliasOut.find(x=>x.key==='head').sourceType, 'ocr');
+assert.strictEqual(aliasOut.find(x=>x.key==='mainWeapon').sourceType, 'inferred');
+console.log('step125a v5 alias/structure tests passed');

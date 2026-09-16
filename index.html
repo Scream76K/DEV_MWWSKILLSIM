@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-A v3 - MH Wilds OCR — 画面構造・領域自動検出</title>
+<title>Step 1.25-A v5 - MH Wilds OCR — 画面構造・領域自動検出</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-A v3：画面構造・領域自動検出</h1>
+<h1>MH Wilds OCR — Step 1.25-A v5：画面構造・領域自動検出</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -213,14 +213,27 @@ function detectEquipmentRegions(screen, lines) {
     l.x < leftLimit && l.width <= leftLimit
   ).sort((a, b) => a.y - b.y);
 
+  // Only normalize aliases that have been observed in this game's UI.
+  // Do not globally replace arbitrary characters inside equipment names.
+  const normalizeEquipmentLabel = text => {
+    const n = clean(text);
+    const aliases = {
+      '腰防四': '腰防具',
+      '脚防思': '脚防具',
+      '腰防貝': '腰防具',
+      '脚防所': '脚防具'
+    };
+    return aliases[n] || n;
+  };
+
   const scoreLabel = (line, expected) => {
-    const got = line.norm;
-    const want = clean(expected);
+    const got = normalizeEquipmentLabel(line.norm);
+    const want = normalizeEquipmentLabel(expected);
     if (!got || !want) return 0;
     if (got === want) return 1;
 
-    // Allow the common split/garbled suffix seen in the game UI, e.g.
-    // 腰防四 / 脚防思, but do not fall back to one-character labels.
+    // Prefix matching is restricted to the three-character equipment labels
+    // and only used after normalization; short labels never qualify.
     if (want.length >= 3 && got.length >= 3 && got.slice(0, 2) === want.slice(0, 2)) {
       const suffixScore = similarity(got.slice(2), want.slice(2));
       if (got.length === want.length) return 0.72 + 0.20 * suffixScore;
@@ -236,9 +249,11 @@ function detectEquipmentRegions(screen, lines) {
       const line = source[i];
       const s = scoreLabel(line, expected);
       if (!s) continue;
-      const exactBonus = line.norm === clean(expected) ? 0.25 : 0;
+      const exactBonus = normalizeEquipmentLabel(line.norm) === normalizeEquipmentLabel(expected) ? 0.25 : 0;
       const score = s + exactBonus + line.confidence / 1000;
-      if (!best || score > best.score) best = {line, index: i, score};
+      if (!best || score > best.score) {
+        best = {line, index: i, score, matchScore: s, canonicalLabel: normalizeEquipmentLabel(expected)};
+      }
     }
     return best;
   };
@@ -250,23 +265,67 @@ function detectEquipmentRegions(screen, lines) {
   for (const [key, expected] of labelDefs) {
     const hit = findLabel(expected, cursor);
     if (!hit) continue;
-    found.push({key, label: hit.line, index: hit.index});
+    found.push({key, label: hit.line, index: hit.index, matchScore: hit.matchScore || 0, canonicalLabel: hit.canonicalLabel || hit.line.text});
     cursor = hit.index + 1;
   }
 
-  const out = [];
-  for (let i = 0; i < found.length; i++) {
-    const f = found[i];
-    const l = f.label;
-    const next = found[i + 1];
-    const x1 = Math.max(0, Math.min(width - 1, l.x));
-    const x2 = Math.min(width, x1 + cardWidth);
-    let y1 = Math.max(0, l.y - Math.max(4, l.height * 0.25));
-    let y2 = next
-      ? Math.min(height, Math.max(y1 + 1, next.label.y - Math.max(4, next.label.height * 0.25)))
-      : Math.min(height, l.y + Math.max(l.height * 3.5, 80));
+  // Real game screenshots can lose the weapon/charm labels entirely.  When
+  // all five armor anchors are present on a stable vertical grid, use that
+  // grid as the structural source of truth and infer the missing rows.  This
+  // avoids requiring every label to survive full-screen OCR.
+  const armorKeys = ['head','chest','arms','waist','legs'];
+  const armorFound = armorKeys.map(key => found.find(f => f.key === key));
+  const canInferGrid = armorFound.every(Boolean);
+  let grid = null;
+  if (canInferGrid) {
+    const ys = armorFound.map(f => Number(f.label.y)).sort((a,b) => a-b);
+    const gaps = ys.slice(1).map((y,i) => y - ys[i]);
+    const pitch = gaps.slice().sort((a,b)=>a-b)[Math.floor(gaps.length/2)];
+    const maxGapError = gaps.reduce((m,g)=>Math.max(m, Math.abs(g-pitch)), 0);
+    if (pitch > 20 && maxGapError <= pitch * 0.12) {
+      const byKey = new Map(found.map(f => [f.key, f]));
+      const orderedKeys = ['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm','mantle'];
+      const headY = Number(armorFound[0].label.y);
+      grid = orderedKeys.map((key, index) => {
+        const expectedY = headY + (index - 2) * pitch;
+        const actual = byKey.get(key);
+        const useActual = actual && Math.abs(Number(actual.label.y) - expectedY) <= pitch * 0.35;
+        return {
+          key,
+          y: expectedY,
+          label: useActual ? actual.label : null,
+          confidence: useActual ? actual.label.confidence : 0,
+          matchScore: useActual ? (actual.matchScore || 0) : 0,
+          canonicalLabel: useActual ? (actual.canonicalLabel || actual.label.text) : null,
+          inferred: !useActual
+        };
+      });
+    }
+  }
 
-    // Never allow a single noisy label to create an enormous catch-all region.
+  const specs = grid || found.map(f => ({
+    key: f.key,
+    y: f.label.y,
+    label: f.label,
+    confidence: f.label.confidence,
+    matchScore: f.matchScore || 0,
+    canonicalLabel: f.canonicalLabel || f.label.text,
+    inferred: false
+  }));
+
+  const out = [];
+  for (let i = 0; i < specs.length; i++) {
+    const f = specs[i];
+    const next = specs[i + 1];
+    const labelHeight = f.label?.height || (grid ? Math.max(24, (next?.y ?? f.y + 40) - f.y) * 0.18 : 30);
+    const xAnchor = f.label?.x ?? (armorFound[0]?.label?.x ?? width * 0.05);
+    const x1 = Math.max(0, Math.min(width - 1, xAnchor));
+    const x2 = Math.min(width, x1 + cardWidth);
+    let y1 = Math.max(0, f.y - Math.max(4, labelHeight * 0.25));
+    let y2 = next
+      ? Math.min(height, Math.max(y1 + 1, next.y - Math.max(4, labelHeight * 0.25)))
+      : Math.min(height, f.y + Math.max(labelHeight * 3.5, 80));
+
     const maxRegionHeight = Math.max(120, height * 0.18);
     if (y2 - y1 > maxRegionHeight) y2 = Math.min(height, y1 + maxRegionHeight);
 
@@ -277,8 +336,11 @@ function detectEquipmentRegions(screen, lines) {
       width: x2 - x1,
       height: Math.max(1, y2 - y1),
       x1, y1, x2, y2,
-      confidence: l.confidence,
-      label: l.text,
+      confidence: f.confidence,
+      labelConfidence: f.inferred ? 0 : Math.round((f.matchScore || 0) * 100),
+      label: f.label ? f.canonicalLabel || f.label.text : '構造推定',
+      sourceType: f.inferred ? 'inferred' : 'ocr',
+      inferred: Boolean(f.inferred),
       excludedFromReflection: f.key === 'subWeapon' || f.key === 'mantle'
     });
   }
@@ -765,8 +827,10 @@ async function detectLayoutFromImage(){
     const missing=Object.keys(labels).filter(k=>!found.has(k));
     $('layoutOut').innerHTML=regions.map(r=>{
       const pct=Math.round(r.confidence);
+      const matchPct=Math.round(r.labelConfidence||0);
+      const confidenceText=r.inferred?'構造推定':`OCR信頼度 ${pct}%／ラベル一致 ${matchPct}%`;
       const subNote=r.key==='mainWeapon'?' <span class="corrected-tag">認識対象</span>':(r.excludedFromReflection?' <span class="corrected-tag">反映対象外</span>':'');
-      return `<div style="border:1px solid #c8baa0;border-radius:9px;padding:8px;margin-top:6px"><b>${labels[r.key]||r.key}</b>${subNote}<br><span class="note">検出ラベル「${r.label}」／信頼度 ${pct}%／領域 x:${Math.round(r.x1)}, y:${Math.round(r.y1)}, 幅:${Math.round(r.width)}, 高さ:${Math.round(r.height)}</span></div>`;
+      return `<div style="border:1px solid #c8baa0;border-radius:9px;padding:8px;margin-top:6px"><b>${labels[r.key]||r.key}</b>${subNote}<br><span class="note">検出ラベル「${r.label}」／${confidenceText}／領域 x:${Math.round(r.x1)}, y:${Math.round(r.y1)}, 幅:${Math.round(r.width)}, 高さ:${Math.round(r.height)}</span></div>`;
     }).join('') + (missing.length?`<div class="note" style="margin-top:8px">未検出：${missing.map(k=>labels[k]).join('、')}。この段階では手動入力は行いません。</div>`:'<div class="note" style="margin-top:8px">必要な主要領域を検出しました。サブ武器・装衣は構造検出のみ行い、シミュレーターへの反映対象から除外します。</div>');
     $('layoutStatus').textContent=`自動検出完了：${regions.length}領域 / ${lines.length} OCR行 / ${(performance.now()-started)/1000|0}秒`;
     window.lastEquipmentRegions=regions;
