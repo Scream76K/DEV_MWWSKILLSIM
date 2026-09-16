@@ -585,57 +585,53 @@ $('ocr').onclick=async()=>{
     // 1) each OCR is still independently matched against the dictionary;
     // 2) OCR outputs are compared with each other to find stable character spans;
     // 3) that consensus is then matched back against the dictionary.
-    const consensusFor=(candidateName)=>{
-  const norm=(s)=>String(s||"").normalize("NFKC")
-    .replace(/[\s　・･·'’"“”`´\-‐‑‒–—―ー＿_.,，。！？!?、:：;；/／\\|｜()[\]{}「」『』【】〈〉《》<>＋+＝=＊*#＃%％&＆@＠]/g,"")
-    .toLowerCase();
-  const grams=(s,n)=>{
-    const a=norm(s);
-    if(a.length<n)return a?[a]:[];
-    const out=[]; for(let i=0;i<=a.length-n;i++)out.push(a.slice(i,i+n));
-    return out;
-  };
-  const ngramSim=(a,b)=>{
-    const A=norm(a),B=norm(b); if(!A||!B)return 0;
-    const score=(n)=>{
-      const ga=grams(A,n),gb=grams(B,n); if(!ga.length||!gb.length)return 0;
-      const ca=new Map(),cb=new Map();
-      ga.forEach(x=>ca.set(x,(ca.get(x)||0)+1)); gb.forEach(x=>cb.set(x,(cb.get(x)||0)+1));
-      let common=0; for(const [g,v] of ca)common+=Math.min(v,cb.get(g)||0);
-      return (2*common)/(ga.length+gb.length);
+    const consensusFor=(candidateName, rows)=>{
+      // Step 1.12: post-processing only. OCR/canvas/Tesseract are untouched.
+      const normalizeConsensus=(v)=>String(v||'').normalize('NFKC').toLowerCase()
+        .replace(/[\s　・･·•\-‐‑‒–—―ー＿_.,，。！？!?、:：;；/／\\|｜()[\]{}「」『』【】〈〉《》<>＋+＝=＊*#＃%％&＆@＠]/g,'');
+      const ngrams=(v,n)=>{const a=normalizeConsensus(v);if(a.length<n)return [];const out=[];for(let i=0;i<=a.length-n;i++)out.push(a.slice(i,i+n));return out};
+      const ngramSimilarity=(x,y)=>{
+        const score=(n)=>{const a=ngrams(x,n),b=ngrams(y,n);if(!a.length||!b.length)return 0;const ca=new Map(),cb=new Map();a.forEach(g=>ca.set(g,(ca.get(g)||0)+1));b.forEach(g=>cb.set(g,(cb.get(g)||0)+1));let common=0;for(const [g,v] of ca)common+=Math.min(v,cb.get(g)||0);return 2*common/(a.length+b.length)};
+        return .45*score(2)+.55*score(3);
+      };
+      const relevant=rows.filter(r=>r&&r.raw).map(r=>({raw:r.raw,conf:r.conf,weight:.35+.65*confidenceWeight(r.conf)}));
+      if(relevant.length<2)return {score:0,pairConsensus:0,core:'',support:0,ocrAgreement:0,dbSupport:0,dbSimilarity:0};
+
+      const candLoose=normalizeConsensus(candidateName);
+      let pairScores=[],coreHits=new Map();
+      for(let i=0;i<relevant.length;i++)for(let j=i+1;j<relevant.length;j++){
+        const a=normalizeConsensus(relevant[i].raw),b=normalizeConsensus(relevant[j].raw);if(!a||!b)continue;
+        const sim=ngramSimilarity(a,b),w=(relevant[i].weight+relevant[j].weight)/2;
+        pairScores.push({score:sim,weight:w});
+        // Candidate-supported common n-grams (2/3-gram), not raw position-only overlap.
+        for(const n of [2,3]){
+          const aa=new Set(ngrams(a,n)),bb=new Set(ngrams(b,n));
+          for(const g of aa){if(bb.has(g)&&candLoose.includes(g)){const v=coreHits.get(g)||{support:0,weight:0};v.support++;v.weight+=w*(n===3?1.2:1);coreHits.set(g,v)}}
+        }
+      }
+      const pairConsensus=pairScores.length?pairScores.reduce((a,x)=>a+x.score*x.weight,0)/Math.max(.001,pairScores.reduce((a,x)=>a+x.weight,0)):0;
+      const cores=[...coreHits.entries()].map(([core,v])=>({core,support:v.support,weight:v.weight})).sort((a,b)=>(b.weight*b.core.length)-(a.weight*a.core.length));
+      const bestCore=cores[0]||{core:'',support:0,weight:0};
+      const coreStrength=Math.min(1,bestCore.weight/3);
+      const support=bestCore.support;
+
+      // DB candidate support remains a separate signal. It is calculated from the
+      // already-produced row.best values; no OCR or candidate generation changes.
+      const dbRows=rows.filter(r=>r&&r.best&&normalizeConsensus(r.best.name)===candLoose);
+      const dbSupport=dbRows.length/Math.max(1,relevant.length);
+      const dbSimilarity=dbRows.length?Math.max(...dbRows.map(r=>Number(r.best.similarity)||0)):0;
+      const ocrAgreement=pairConsensus;
+      return {
+        // Legacy consensus score retained for existing confirmation thresholds.
+        score:.62*pairConsensus+.38*coreStrength,
+        pairConsensus,
+        core:bestCore.core,
+        support,
+        ocrAgreement,
+        dbSupport,
+        dbSimilarity
+      };
     };
-    return .45*score(2)+.55*score(3);
-  };
-  const valid=(results||[]).filter(r=>r&&r.text);
-  if(!valid.length)return {agreement:0,support:0,best:null,commonCore:"",pairSupport:0,ocrAgreement:0,dbSupport:0,dbSimilarity:0,decision:"hold",decisionLabel:"確認待ち"};
-
-  let pairSum=0,pairs=0;
-  for(let i=0;i<valid.length;i++)for(let j=i+1;j<valid.length;j++){pairSum+=ngramSim(valid[i].text,valid[j].text);pairs++;}
-  const ocrAgreement=pairs?Math.round(pairSum/pairs*100):0;
-
-  const candMap=new Map();
-  valid.forEach(r=>{
-    const b=r.best, name=b&&(b.name||b.label); if(!name)return;
-    const key=norm(name);
-    if(!candMap.has(key))candMap.set(key,{name,count:0,scores:[]});
-    const x=candMap.get(key); x.count++;
-    if(Number.isFinite(b.score))x.scores.push(b.score);
-  });
-  let best=null;
-  for(const x of candMap.values()){
-    const avg=x.scores.length?x.scores.reduce((a,b)=>a+b,0)/x.scores.length:0;
-    if(!best||x.count>best.count||(x.count===best.count&&avg>best.avg))best={name:x.name,count:x.count,avg};
-  }
-  const dbSupport=best?Math.round(best.count/valid.length*100):0;
-  const dbSimilarity=best?Math.round(best.avg*100):0;
-
-  let decision="hold",decisionLabel="確認待ち";
-  if(best&&best.count>=2&&dbSimilarity>=70){decision="auto";decisionLabel="自動確定候補";}
-  else if(best&&dbSimilarity>=60){decision="review";decisionLabel="要確認候補";}
-
-  const agreement=Math.round(.25*ocrAgreement+.50*dbSupport+.25*dbSimilarity);
-  return {agreement,support:best?best.count:0,best:best?best.name:null,commonCore:"",pairSupport:pairs,ocrAgreement,dbSupport,dbSimilarity,coreSupport:0,decision,decisionLabel};
-};
 
     const aggregate=()=>{
       const agg=new Map();
@@ -659,7 +655,7 @@ $('ocr').onclick=async()=>{
         const avgConf=top.length?top.reduce((s,r)=>s+r.conf,0)/top.length:0;
         const avgChar=top.length?top.reduce((s,r)=>s+r.charConfidence,0)/top.length:0;
         const avgSub=top.length?top.reduce((s,r)=>s+r.substring,0)/top.length:0;
-        const share=x.support/Math.max(1,rows.length);const consensus=consensusFor(x.name);
+        const share=x.support/Math.max(1,rows.length);const consensus=consensusFor(x.name, rows);
         const confTerm=Math.min(1,avgConf/100);
         const final=.28*avg+.15*share+.12*x.bestRowScore+.06*confTerm+.07*avgChar+.12*avgSub+.20*consensus.score;
         return {...x,avg,avgConf,share,avgSub,consensus:consensus.score,consensusCore:consensus.core,consensusSupport:consensus.support,ocrAgreement:consensus.ocrAgreement,dbSupport:consensus.dbSupport,dbSimilarity:consensus.dbSimilarity,final};
