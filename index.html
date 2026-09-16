@@ -467,40 +467,66 @@ function fuzzySubstringScore(a,b){
   }
   return {score:best,matched:bestLen};
 }
-function candidateScore(raw,item){
-  const a=normJPStrict(raw),b=normJPStrict(item),al=normJPLoose(raw),bl=normJPLoose(item);
-  if(!a||!b)return {score:0,lev:0,lcs:0,dice:0,strict:0,loose:0,common:0,substring:0,matched:0};
-  const ld=1-lev(a,b)/Math.max(a.length,b.length);
-  const lc=lcsLen(a,b)/Math.max(a.length,b.length);
-  const dc=dice(a,b);
-  const loose=1-lev(al,bl)/Math.max(al.length,bl.length);
-  const sub=fuzzySubstringScore(al,bl);
-  const common=commonSubstringLen(al,bl)/Math.max(1,Math.min(al.length,bl.length));
-  // 全文一致より「長い部分一致」を重視。画面OCRで前半/後半が欠けるケースを想定。
-  const score=.24*ld+.16*lc+.10*dc+.08*loose+.30*sub.score+.12*common;
-  return {score,lev:ld,lcs:lc,dice:dc,strict:(ld+lc+dc)/3,loose,common,substring:sub.score,matched:sub.matched};
+function kanaSmallBase(ch){
+  const map={ァ:'ア',ィ:'イ',ゥ:'ウ',ェ:'エ',ォ:'オ',ッ:'ツ',ャ:'ヤ',ュ:'ユ',ョ:'ヨ',ヮ:'ワ',ｧ:'ア',ｨ:'イ',ｩ:'ウ',ｪ:'エ',ｫ:'オ',ｯ:'ツ',ｬ:'ヤ',ｭ:'ユ',ｮ:'ヨ'};
+  return map[ch]||ch;
+}
+function stripDakuten(ch){
+  return String(ch||'').normalize('NFD').replace(/[\u3099\u309A]/g,'').normalize('NFC');
+}
+function charMismatchWeight(a,b){
+  if(a===b)return 0;
+  if(a.toLowerCase()===b.toLowerCase())return .25;
+  if(kanaSmallBase(a)===kanaSmallBase(b))return .25;
+  if(stripDakuten(a)===stripDakuten(b))return .50;
+  return 1;
+}
+function normalizeForNameScore(v){
+  return Array.from(String(v||'').normalize('NFKC')).filter(ch=>!/[\s\u3000・･·•\-‐‑‒–—―＿_.,，。！？!?、:：;；/／\\|｜()[\]{}「」『』【】〈〉《》<>＋+＝=＊*#＃%％&＆@＠]/.test(ch));
+}
+function weightedNameDistance(raw,item){
+  const a=normalizeForNameScore(raw),b=normalizeForNameScore(item);
+  if(!b.length)return {score:0,cost:1,matched:0,basePoints:0,details:{normal:0,light:0,dakuten:0,missing:0,extra:0}};
+  const n=b.length,unit=100/n;
+  const prev=new Array(a.length+1).fill(0);
+  const prevD=Array.from({length:a.length+1},()=>({normal:0,light:0,dakuten:0,missing:0,extra:0}));
+  for(let j=1;j<=a.length;j++){prev[j]=j;prevD[j]={normal:0,light:0,dakuten:0,missing:0,extra:j};}
+  let rows=prev,detail=prevD;
+  for(let i=1;i<=b.length;i++){
+    const cur=new Array(a.length+1).fill(0),curD=Array.from({length:a.length+1},()=>({normal:0,light:0,dakuten:0,missing:0,extra:0}));
+    cur[0]=i;curD[0]={normal:0,light:0,dakuten:0,missing:i,extra:0};
+    for(let j=1;j<=a.length;j++){
+      const w=charMismatchWeight(b[i-1],a[j-1]);
+      const type=w===0?'match':w===.25?'light':w===.5?'dakuten':'normal';
+      const sub=rows[j-1]+w, del=rows[j]+1, ins=cur[j-1]+1;
+      let best=sub,base=detail[j-1],op=type;
+      if(del<best){best=del;base=detail[j];op='missing';}
+      if(ins<best){best=ins;base=curD[j-1];op='extra';}
+      const d={...base};
+      if(op==='light')d.light++; else if(op==='dakuten')d.dakuten++; else if(op==='normal')d.normal++; else if(op==='missing')d.missing++; else if(op==='extra')d.extra++;
+      cur[j]=best;curD[j]=d;
+    }
+    rows=cur;detail=curD;
+  }
+  const cost=rows[a.length],d=detail[a.length];
+  // The denominator is the DB name length. Extra non-space OCR characters are
+  // penalized, while spaces/separators were removed before alignment and cost 0.
+  const score=Math.max(0,1-(cost/n));
+  const matched=Math.max(0,n-d.normal-d.light-d.dakuten-d.missing);
+  return {score,cost,matched,basePoints:unit,details:d};
 }
 function getDictionary(){return weaponDB.map(w=>w.name)}
 function getWeaponItems(raw){return searchWeaponItems(raw)}
 function confidenceWeight(conf){if(conf>=85)return 1;if(conf>=75)return .90;if(conf>=65)return .78;if(conf>=50)return .62;if(conf>=35)return .45;return .30}
-function dynamicMarginRequired(name){const n=Array.from(normJPStrict(name)).length;if(n<=4)return .16;if(n<=7)return .12;if(n<=11)return .09;return .07}
-function partialEvidence(raw,item){
-  const a=normJPLoose(raw),b=normJPLoose(item);if(!a||!b)return {common:0,grams:0,substring:0,matched:0};
-  const sub=fuzzySubstringScore(a,b);const common=commonSubstringLen(a,b)/Math.max(1,Math.min(a.length,b.length));
-  let grams=0;for(const n of [2,3,4])for(let i=0;i<=b.length-n;i++)if(a.includes(b.slice(i,i+n)))grams+=n>=3?2:1;
-  return {common,grams:Math.min(1,grams/Math.max(6,b.length)),substring:sub.score,matched:sub.matched};
-}
-function tokenEvidence(raw,item){const p=partialEvidence(raw,item);return Math.min(1,.35*p.common+.25*p.grams+.40*p.substring)}
-function candidateHasEnoughEvidence(c){
-  // 「一番近い名前」を必ず候補にしないための下限。
-  return !!c && ((c.similarity>=.55&&c.substring>=.58) || c.substring>=.72 || (c.similarity>=.68&&c.common>=.55));
-}
+function dynamicMarginRequired(name){const n=normalizeForNameScore(name).length;if(n<=4)return .16;if(n<=7)return .12;if(n<=11)return .09;return .07}
+function candidateHasEnoughEvidence(c){return !!c && c.score>=.45}
 function renderCandidates(cands,meta){
   const out=$("candidateOut");
-  if(!cands.length){out.innerHTML='<div class="notice">該当する武器候補を確認できませんでした。無理に別の武器名へ置換していません。</div>';return}
+  if(!cands.length){out.innerHTML='<div class="notice">該当する武器候補を確認できませんでした。上位候補を十分に形成できませんでした。</div>';return}
   out.innerHTML=cands.slice(0,5).map((c,i)=>{
-    const pct=Math.round(c.final*100),cls=pct>=78?'background:#eef2e8':pct>=60?'background:#f6f1df':'background:#f5e8e4';
-    return `<div style="${cls};border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:7px"><b>${i+1}位　${c.name}</b><br><span class="note">総合 ${pct}%　／　支持 ${c.support}/${meta.total}回　／　部分一致 ${Math.round(c.bestSubstring*100)}%　／　辞書一致 ${Math.round(c.bestSimilarity*100)}%</span></div>`;
+    const pct=Math.round(c.final*100),cls=pct>=80?'background:#eef2e8':pct>=65?'background:#f6f1df':'background:#f5e8e4';
+    const ev=c.integration||{};
+    return `<div style="${cls};border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:7px"><b>${i+1}位　${c.name}</b><br><span class="note">統合 ${pct}%　／　支持 ${c.support}/${meta.total}回　／　平均文字評価 ${Math.round(c.avgNameScore*100)}%　／　最高文字評価 ${Math.round(c.bestNameScore*100)}%　／　1位差 ${Math.round((c.margin||0)*100)}pt</span></div>`;
   }).join('')+`<div class="note" style="margin-top:8px">${meta.decision}</div>`;
 }
 function cleanOCR(raw){return String(raw||'').replace(/[\r\n]+/g,' ').replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim()}
@@ -572,121 +598,64 @@ $('ocr').onclick=async()=>{
 
     const rankRow=(raw,conf,symbols)=>{
       return getWeaponItems(raw).map(item=>{
-        const s=candidateScore(raw,item.name);
-        const ev=tokenEvidence(raw,item.name);
+        const w=weightedNameDistance(raw,item.name);
         const cw=confidenceWeight(conf);
         const char=charConfFor(raw,symbols,item.name);
-        const score=.42*s.score+.18*ev+.10*cw+.08*s.common+.07*s.substring+.15*char.score;
-        return {id:item.id,gameId:item.gameId,kind:item.kind,name:item.name,similarity:s.score,substring:s.substring,evidence:ev,confidenceWeight:cw,charConfidence:char.score,charCoverage:char.coverage,score,common:s.common};
+        // OCR confidence is a secondary signal; the main score is the explicit
+        // 100-point DB-name error model.
+        const score=.78*w.score+.12*cw+.10*char.score;
+        return {id:item.id,gameId:item.gameId,kind:item.kind,name:item.name,nameScore:w.score,score,confidenceWeight:cw,charConfidence:char.score,charCoverage:char.coverage,details:w.details,matched:w.matched,basePoints:w.basePoints};
       }).sort((a,b)=>b.score-a.score);
     };
 
-    // Additive OCR↔OCR consensus:
-    // 1) each OCR is still independently matched against the dictionary;
-    // 2) OCR outputs are compared with each other to find stable character spans;
-    // 3) that consensus is then matched back against the dictionary.
-    const consensusFor=(candidateName, rows)=>{
-      // Step 1.12: post-processing only. OCR/canvas/Tesseract are untouched.
-      const normalizeConsensus=(v)=>String(v||'').normalize('NFKC').toLowerCase()
-        .replace(/[\s　・･·•\-‐‑‒–—―ー＿_.,，。！？!?、:：;；/／\\|｜()[\]{}「」『』【】〈〉《》<>＋+＝=＊*#＃%％&＆@＠]/g,'');
-      const ngrams=(v,n)=>{const a=normalizeConsensus(v);if(a.length<n)return [];const out=[];for(let i=0;i<=a.length-n;i++)out.push(a.slice(i,i+n));return out};
-      const ngramSimilarity=(x,y)=>{
-        const score=(n)=>{const a=ngrams(x,n),b=ngrams(y,n);if(!a.length||!b.length)return 0;const ca=new Map(),cb=new Map();a.forEach(g=>ca.set(g,(ca.get(g)||0)+1));b.forEach(g=>cb.set(g,(cb.get(g)||0)+1));let common=0;for(const [g,v] of ca)common+=Math.min(v,cb.get(g)||0);return 2*common/(a.length+b.length)};
-        return .45*score(2)+.55*score(3);
-      };
-      const relevant=rows.filter(r=>r&&r.raw).map(r=>({raw:r.raw,conf:r.conf,weight:.35+.65*confidenceWeight(r.conf)}));
-      if(relevant.length<2)return {score:0,pairConsensus:0,core:'',support:0,ocrAgreement:0,dbSupport:0,dbSimilarity:0};
-
-      const candLoose=normalizeConsensus(candidateName);
-      let pairScores=[],coreHits=new Map();
-      for(let i=0;i<relevant.length;i++)for(let j=i+1;j<relevant.length;j++){
-        const a=normalizeConsensus(relevant[i].raw),b=normalizeConsensus(relevant[j].raw);if(!a||!b)continue;
-        const sim=ngramSimilarity(a,b),w=(relevant[i].weight+relevant[j].weight)/2;
-        pairScores.push({score:sim,weight:w});
-        // Candidate-supported common n-grams (2/3-gram), not raw position-only overlap.
-        for(const n of [2,3]){
-          const aa=new Set(ngrams(a,n)),bb=new Set(ngrams(b,n));
-          for(const g of aa){if(bb.has(g)&&candLoose.includes(g)){const v=coreHits.get(g)||{support:0,weight:0};v.support++;v.weight+=w*(n===3?1.2:1);coreHits.set(g,v)}}
-        }
-      }
-      const pairConsensus=pairScores.length?pairScores.reduce((a,x)=>a+x.score*x.weight,0)/Math.max(.001,pairScores.reduce((a,x)=>a+x.weight,0)):0;
-      const cores=[...coreHits.entries()].map(([core,v])=>({core,support:v.support,weight:v.weight})).sort((a,b)=>(b.weight*b.core.length)-(a.weight*a.core.length));
-      const bestCore=cores[0]||{core:'',support:0,weight:0};
-      const coreStrength=Math.min(1,bestCore.weight/3);
-      const support=bestCore.support;
-
-      // DB candidate support remains a separate signal. It is calculated from the
-      // already-produced row.best values; no OCR or candidate generation changes.
-      const dbRows=rows.filter(r=>r&&r.best&&normalizeConsensus(r.best.name)===candLoose);
-      const dbSupport=dbRows.length/Math.max(1,relevant.length);
-      const dbSimilarity=dbRows.length?Math.max(...dbRows.map(r=>Number(r.best.similarity)||0)):0;
-      const ocrAgreement=pairConsensus;
-      return {
-        // Legacy consensus score retained for existing confirmation thresholds.
-        score:.62*pairConsensus+.38*coreStrength,
-        pairConsensus,
-        core:bestCore.core,
-        support,
-        ocrAgreement,
-        dbSupport,
-        dbSimilarity
-      };
-    };
-
+    // DB candidate integration: do not require OCR strings to resemble each
+    // other. Each OCR independently votes for DB candidates; the same DB name
+    // appearing repeatedly is the main evidence. Top-3 candidates from every
+    // pass are retained so a noisy pass cannot erase a good candidate.
     const aggregate=()=>{
       const agg=new Map();
       for(const row of rows){
         const ranked=rankRow(row.raw,row.conf,row.symbols);
-        const bestAvailable=ranked[0]||null;
-        row.best=candidateHasEnoughEvidence(bestAvailable)?bestAvailable:null;
+        row.ranked=ranked.slice(0,3);
+        row.best=ranked[0]||null;
         row.second=ranked[1]||null;
-        if(!row.best)continue;
-        const evidence=row.best.score*(.35+.65*confidenceWeight(row.conf));
-        const old=agg.get(row.best.name)||{name:row.best.name,id:row.best.id,gameId:row.best.gameId,kind:row.best.kind,support:0,weightedSupport:0,bestRowScore:0,bestConf:0,sumScore:0,sumConf:0,bestSimilarity:0,bestSubstring:0,topRows:[]};
-        old.support++;old.weightedSupport+=evidence;old.sumScore+=row.best.score;old.sumConf+=row.conf;
-        old.bestRowScore=Math.max(old.bestRowScore,row.best.score);old.bestConf=Math.max(old.bestConf,row.conf);
-        old.bestSimilarity=Math.max(old.bestSimilarity,row.best.similarity);old.bestSubstring=Math.max(old.bestSubstring,row.best.substring||0);
-        old.topRows.push({score:row.best.score,similarity:row.best.similarity,substring:row.best.substring||0,conf:row.conf,charConfidence:row.best.charConfidence||0,charCoverage:row.best.charCoverage||0});
-        agg.set(row.best.name,old);
+        row.candidates=row.ranked;
+        row.ranked.forEach((cand,rank)=>{
+          const rankWeight=rank===0?1:rank===1?.70:.45;
+          const evidence=cand.score*rankWeight*(.70+.30*confidenceWeight(row.conf));
+          const old=agg.get(cand.name)||{name:cand.name,id:cand.id,gameId:cand.gameId,kind:cand.kind,support:0,weightedSupport:0,bestRowScore:0,bestConf:0,sumScore:0,sumNameScore:0,bestNameScore:0,topRows:[],rankSum:0};
+          if(rank===0)old.support++;
+          old.weightedSupport+=evidence;old.sumScore+=cand.score*rankWeight;old.sumNameScore+=cand.nameScore*rankWeight;
+          old.bestRowScore=Math.max(old.bestRowScore,cand.score);old.bestConf=Math.max(old.bestConf,row.conf);old.bestNameScore=Math.max(old.bestNameScore,cand.nameScore);
+          old.rankSum+=rankWeight;
+          old.topRows.push({rank,score:cand.score,nameScore:cand.nameScore,conf:row.conf,details:cand.details});
+          agg.set(cand.name,old);
+        });
       }
-      return [...agg.values()].map(x=>{
-        x.topRows.sort((a,b)=>b.score-a.score);const top=x.topRows.slice(0,3);
-        const avg=top.length?top.reduce((s,r)=>s+r.score,0)/top.length:0;
-        const avgConf=top.length?top.reduce((s,r)=>s+r.conf,0)/top.length:0;
-        const avgChar=top.length?top.reduce((s,r)=>s+r.charConfidence,0)/top.length:0;
-        const avgSub=top.length?top.reduce((s,r)=>s+r.substring,0)/top.length:0;
-        const share=x.support/Math.max(1,rows.length);const consensus=consensusFor(x.name, rows);
-        const confTerm=Math.min(1,avgConf/100);
-        const final=.28*avg+.15*share+.12*x.bestRowScore+.06*confTerm+.07*avgChar+.12*avgSub+.20*consensus.score;
-        return {...x,avg,avgConf,share,avgSub,consensus:consensus.score,consensusCore:consensus.core,consensusSupport:consensus.support,ocrAgreement:consensus.ocrAgreement,dbSupport:consensus.dbSupport,dbSimilarity:consensus.dbSimilarity,final};
+      const ranked=[...agg.values()].map(x=>{
+        const top=x.topRows.slice().sort((a,b)=>b.nameScore-a.nameScore);
+        const support=x.support;
+        const topNameScores=top.slice(0,3).map(r=>r.nameScore);
+        const avgNameScore=topNameScores.length?topNameScores.reduce((s,v)=>s+v,0)/topNameScores.length:0;
+        const avgRowScore=top.length?top.slice(0,3).reduce((s,r)=>s+r.score,0)/Math.min(3,top.length):0;
+        const confAvg=top.length?top.slice(0,3).reduce((s,r)=>s+r.conf,0)/Math.min(3,top.length):0;
+        // Convergence bonus is based on repeated DB identity, not OCR↔OCR text similarity.
+        const supportRatio=support/Math.max(1,rows.length);
+        const convergence=.55*supportRatio+.45*Math.min(1,x.rankSum/Math.max(1,rows.length));
+        const final=.62*avgNameScore+.16*avgRowScore+.10*convergence+.07*(confAvg/100)+.05*(x.bestNameScore);
+        return {...x,avgNameScore,avgRowScore,confAvg,convergence,final,integration:{supportRatio,convergence}};
       }).sort((a,b)=>b.final-a.final);
+      for(let i=0;i<ranked.length;i++)ranked[i].margin=ranked[i].final-(ranked[i+1]?.final||0);
+      return ranked;
     };
 
-    const highConfidenceDirect=(ranked)=>{
-      const a=ranked[0],b=ranked[1];
-      if(!a)return false;
+    const autoConfirm=ranked=>{
+      const a=ranked[0],b=ranked[1];if(!a)return false;
       const margin=a.final-(b?.final||0);
-      return a.bestConf>=80 &&
-             a.bestSimilarity>=.85 &&
-             a.bestRowScore>=.78 &&
-             margin>=dynamicMarginRequired(a.name);
-    };
-
-    const multiEvidenceStrong=(ranked)=>{
-      const a=ranked[0],b=ranked[1];
-      if(!a)return false;
-      const margin=a.final-(b?.final||0);
-      const marginReq=dynamicMarginRequired(a.name);
-      // Early-exit safety rule: require the same DB candidate to be supported
-      // by at least two independent OCR passes.  A single noisy pass must not
-      // terminate the ensemble early.
-      const twoPassSupport=a.support>=2;
-      const consensusStrong=a.consensus>=.52 && a.consensusSupport>=1;
-      return margin>=marginReq && (
-        (twoPassSupport && a.avg>=.62 && a.final>=.60) ||
-        (twoPassSupport && consensusStrong && a.bestSimilarity>=.70 && a.final>=.60) ||
-        (twoPassSupport && a.bestSimilarity>=.82 && a.bestConf>=60 && a.final>=.60)
-      );
+      const passes=a.support;
+      // Strong DB convergence: at least two independent OCR passes put the same
+      // DB weapon at rank 1, with a healthy character-level score and a clear gap.
+      return passes>=2 && a.avgNameScore>=.78 && a.bestNameScore>=.82 && margin>=dynamicMarginRequired(a.name);
     };
 
     const runPass=async(p)=>{
@@ -710,18 +679,18 @@ $('ocr').onclick=async()=>{
     for(const p of fast){
       await runPass(p);
       const ranked=aggregate();
-      if(highConfidenceDirect(ranked)||multiEvidenceStrong(ranked)){
+      if(autoConfirm(ranked)){
         $('ocrStatus').textContent=`OCR ${rows.length}回で十分な一致を確認：追加OCRを省略`;
         break;
       }
     }
 
     let ranked=aggregate();
-    if(!highConfidenceDirect(ranked)&&!multiEvidenceStrong(ranked)){
+    if(!autoConfirm(ranked)){
       for(const p of extra){
         await runPass(p);
         ranked=aggregate();
-        if(highConfidenceDirect(ranked)||multiEvidenceStrong(ranked)){
+        if(autoConfirm(ranked)){
           $('ocrStatus').textContent=`OCR ${rows.length}回で十分な一致を確認：追加OCRを省略`;
           break;
         }
@@ -733,14 +702,12 @@ $('ocr').onclick=async()=>{
 
     const best=ranked[0],second=ranked[1];
     const margin=best?best.final-(second?.final||0):0;
-    const direct=highConfidenceDirect(ranked);
-    const consensus=multiEvidenceStrong(ranked);
-    const confirmed=!!best&&(direct||consensus);
+    const confirmed=!!best&&autoConfirm(ranked);
     const elapsed=(performance.now()-started)/1000;
 
     if(best){
       const pct=Math.round(Math.min(99,best.final*100));
-      const mode=direct?'高信頼OCR＋DB一致':consensus?'複数OCR合意':'判定保留';
+      const mode=confirmed?'DB候補収束':'判定保留';
       $('recognized').innerHTML=`${confirmed?best.name:`候補：${best.name}`} <span class="corrected-tag">${mode} ${pct}% / 支持 ${best.support}/${rows.length}</span>`;
     }else{
       $('recognized').textContent='該当候補なし（OCR文字は取得できましたが、全武器DBに十分な一致がありません）';
@@ -748,17 +715,19 @@ $('ocr').onclick=async()=>{
 
     $('raw').textContent=rows.map((r,i)=>{
       const b=r.best;
-      return `【${i+1} ${r.name} / OCR信頼度 ${Math.round(r.conf)}%】\n・生OCR：${r.raw}\n・DB候補：${b?.name||'(十分な一致なし)'}${b?`（一致 ${Math.round(b.similarity*100)}% / 部分一致 ${Math.round((b.substring||0)*100)}% / 行スコア ${Math.round(b.score*100)}% / 文字信頼 ${Math.round((b.charConfidence||0)*100)}%）`:''}`;
+      const d=b?.details||{};
+      return `【${i+1} ${r.name} / OCR信頼度 ${Math.round(r.conf)}%】\n・生OCR：${r.raw}\n・1位DB候補：${b?.name||'(なし)'}${b?`（文字評価 ${Math.round(b.nameScore*100)}点 / 行総合 ${Math.round(b.score*100)}%）`:''}\n・減点内訳：通常 ${d.normal||0} / 軽微 ${d.light||0} / 濁点 ${d.dakuten||0} / 欠落 ${d.missing||0} / 余分文字 ${d.extra||0}`;
     }).join('\n\n');
     if(best){
-      $('raw').textContent += `\n\n【OCR統合スコア（Step 1.12）】\n・最有力候補：${best.name}\n・① OCR間一致：${Math.round((best.ocrAgreement||0)*100)}%\n・② DB候補支持：${best.support}/${rows.length}（${Math.round((best.dbSupport||0)*100)}%）\n・③ DB類似度：${Math.round((best.dbSimilarity||0)*100)}%\n・共通核：${best.consensusCore||'(なし)'}\n・共通核支持：${best.consensusSupport||0}組`;
+      const second=ranked[1];
+      $('raw').textContent += `\n\n【DB候補統合（新方式）】\n・最有力候補：${best.name}\n・DB候補支持：${best.support}/${rows.length}回\n・平均文字評価：${Math.round(best.avgNameScore*100)}点\n・最高文字評価：${Math.round(best.bestNameScore*100)}点\n・候補差：${Math.round((best.margin||0)*100)}pt\n・OCR間一致：最終判定には使用しない`;
     }
 
     renderCandidates(ranked,{
       total:rows.length,
       decision:confirmed
-        ?`${direct?'高信頼OCR＋DB一致':'複数OCR合意'}で自動確定候補。候補差 ${Math.round(margin*100)}%。部分一致とOCR↔OCR一致性も加味。`
-        :`全武器DBの中で十分な一致を確認できないため判定保留。最も近い名前を無理に正解扱いしません。`
+        ?`DB候補が複数OCRで収束し、文字評価と候補差が基準を満たしたため自動確定候補。`
+        :`自動確定条件を満たさないため判定保留。上位候補を選択できます。`
     });
 
     $('ocrStatus').textContent=`解析完了：${rows.length}回の有効OCR / ${elapsed.toFixed(1)}秒 / ${confirmed?'自動確定候補':'判定保留'}`;
