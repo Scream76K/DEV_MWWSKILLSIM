@@ -1,24 +1,21 @@
-# DEV_MWWSKILLSIM OCR Step 1.24
+# DEV_MWWSKILLSIM OCR Step 1.25-A
 
-Step 1.24 fixes the DB-candidate evidence aggregation used after OCR.
+Step 1.25-A adds automatic screen-structure detection before equipment OCR.
 
-## Changes
-- Average character score uses **all OCR passes that ranked the candidate #1**.
-- Average OCR confidence uses the same supporting OCR passes.
-- Top-3 rows are still retained for candidate discovery, but rank-2/3 appearances do not contaminate the candidate's supporting averages.
-- Support bonus is calculated from the actual `support / total` pair and is included in the final score.
-- Final score, displayed score, support bonus, and evidence averages all use the same summarized evidence.
-- OCR↔OCR raw-string agreement remains informational only and is not used for final candidate selection.
-- Page title, heading, and README are all marked Step 1.24.
+## Scope
+- OCR the whole uploaded screenshot once with Japanese Tesseract PSM 11.
+- Extract OCR lines and their bounding boxes.
+- Detect the main weapon, sub weapon, five armor parts, and charm from labels.
+- The sub weapon is detected only as a boundary/reference and is excluded from the equipment-recognition target.
+- Produce generous per-part regions; later steps can tighten them for name OCR.
+- Existing weapon DB candidate scoring and the existing manual main-weapon crop flow are not changed by this step.
 
-## Support bonus
-- 1/1: +4pt
-- 2/2: +8pt
-- 2/3: +6pt
-- 3/3: +12pt
-- 4/4: +12pt
-- 5/6: +10pt
-- 6/6: +12pt
+## Important behavior
+- No fixed camera framing is required by the detector.
+- Missing labels are reported instead of inventing an equipment region.
+- Label matching tolerates spaces and common OCR punctuation differences.
+- Main weapon and armor regions are ordered by screen position.
 
 ## Verification
-`step124.test.js` is retained as the regression test file for the candidate-score contract; it now includes Step 1.24 aggregation tests.
+- `node step125a.test.js`
+- The test covers normal labels, noisy/split labels, sub-weapon exclusion, valid region geometry, and OCR-line extraction.
