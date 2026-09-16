@@ -324,3 +324,33 @@ assert.strictEqual(gammaParts.subtype,'γ');
 assert(ss.subScore('シュバルカメイルv','シュバルカメイルγ') > ss.subScore('シュバルカメイルv','シュバルカメイルα'));
 assert(ss.subScore('ドシャグマコイルaq','ドシャグマコイルα') > ss.subScore('ドシャグマコイルaq','ドシャグマコイルβ'));
 console.log('step125b v2.2 subtype RED tests passed');
+
+// Step 1.25-B v2.3 RED: armor recognition must be hierarchical — series first,
+// then alpha/beta/gamma only inside the selected series.
+const hStart = html.indexOf('function armorBaseName(');
+assert(hStart >= 0, 'v2.3 hierarchical armor ranking helper must exist');
+const hEnd = html.indexOf('\nfunction rankGenericEquipmentCandidates(', hStart);
+const hCode = html.slice(hStart, hEnd);
+const hs = {Math, Number, String, Object, Array, Map, Set,
+  normalizeForNameScore:v=>Array.from(String(v||'').normalize('NFKC')).filter(ch=>!/[\s\u3000・･·•\-‐‑‒–—―＿_.,，。！？!?、:：;；/／\\|｜()[\]{}「」『』【】〈〉《》<>＋+＝=＊*#＃%％&＆@＠]/.test(ch)),
+  splitEquipmentSubtype:raw=>{const s=String(raw||'').replace(/\s+/g,'').replace(/(?:v|V|ν)$/u,'γ').replace(/(?:aq|a)$/iu,'α').replace(/(?:bq|b|BQ)$/iu,'β');const m=s.match(/^(.*?)([αβγ])$/u);return m?{base:m[1],subtype:m[2]}:{base:s,subtype:null};},
+  weightedNameDistance:(raw,name)=>({score:String(raw).replace(/\s/g,'')===String(name).replace(/\s/g,'')?1:.4}),
+  equipmentSubtypeScore:(raw,item)=>hs.splitEquipmentSubtype(raw).subtype===hs.splitEquipmentSubtype(item).subtype?1:0,
+  confidenceWeight:()=>1};
+vm.createContext(hs);
+vm.runInContext(hCode+'\nthis.rank=rankHierarchicalArmorCandidates;this.agg=aggregateHierarchicalArmorCandidates;',hs);
+const armorItems=[
+  {id:1,kind:'chest',name:'シュバルカメイルα'},
+  {id:2,kind:'chest',name:'シュバルカメイルβ'},
+  {id:3,kind:'chest',name:'シュバルカメイルγ'},
+  {id:4,kind:'chest',name:'ドシャグマメイルα'}
+];
+const hr=hs.rank('シュバルカメイルv',90,armorItems);
+assert.strictEqual(hr[0].seriesName,'シュバルカメイル');
+assert.strictEqual(hr[0].name,'シュバルカメイルγ');
+assert(hr[0].seriesScore>hr.find(x=>x.name==='ドシャグマメイルα').seriesScore);
+const ha=hs.agg([{raw:'シュバルカメイルv',conf:80},{raw:'シュバルカメイルγ',conf:90}],armorItems);
+assert.strictEqual(ha[0].name,'シュバルカメイルγ');
+assert.strictEqual(ha[0].support,2);
+assert.strictEqual(ha[0].hierarchy.seriesScore,ha[0].avgSeriesScore);
+console.log('step125b v2.3 hierarchical armor tests passed');

@@ -1154,6 +1154,78 @@ function equipmentRegionCanvas(region, mode='color', band='full'){
 }
 
 
+// Step 1.25-B v2.3: hierarchical armor recognition.
+// Stage 1 compares only the armor series/base name. Alpha/beta/gamma are ignored.
+// Stage 2 compares variants only inside the winning series family.
+function armorBaseName(name){ return splitEquipmentSubtype(name).base; }
+function armorSeriesKey(name){ return normalizeForNameScore(armorBaseName(name)).join(''); }
+function armorSeriesScore(raw,itemName){
+  const rawBase=armorBaseName(raw), itemBase=armorBaseName(itemName);
+  return weightedNameDistance(rawBase,itemBase).score;
+}
+function rankHierarchicalArmorCandidates(raw,conf,items){
+  const pool=Array.isArray(items)?items:[];
+  const families=new Map();
+  for(const item of pool){
+    const key=armorSeriesKey(item.name); if(!key)continue;
+    if(!families.has(key))families.set(key,{key,baseName:armorBaseName(item.name),items:[]});
+    families.get(key).items.push(item);
+  }
+  const familyRank=[...families.values()].map(f=>({
+    ...f,
+    seriesScore:armorSeriesScore(raw,f.baseName),
+    seriesRaw:f.baseName
+  })).sort((a,b)=>b.seriesScore-a.seriesScore);
+  if(!familyRank.length)return [];
+  const topFamilies=familyRank.slice(0,3);
+  const cw=confidenceWeight(conf);
+  const variants=[];
+  for(const family of topFamilies){
+    for(const item of family.items){
+      const parts=splitEquipmentSubtype(item.name);
+      const sub=equipmentSubtypeScore(raw,item.name);
+      const base=family.seriesScore;
+      // Stage 2 is deliberately bounded: subtype can resolve variants but cannot
+      // rescue a poor series match. OCR confidence remains secondary evidence.
+      const subtypeContribution=parts.subtype ? (.12*sub) : 0;
+      const score=.78*base+.12*cw+.10*Math.min(1,base)+subtypeContribution;
+      variants.push({...item,nameScore:base,seriesScore:base,subtypeScore:sub,score,confidenceWeight:cw,
+        seriesName:family.baseName,subtype:parts.subtype,stage:'series→subtype'});
+    }
+  }
+  return variants.sort((a,b)=>b.score-a.score);
+}
+function aggregateHierarchicalArmorCandidates(rows,items){
+  const agg=new Map();
+  for(const row of (Array.isArray(rows)?rows:[])){
+    const ranked=rankHierarchicalArmorCandidates(row.raw,row.conf,items).slice(0,3);
+    row.ranked=ranked;
+    ranked.forEach((cand,rank)=>{
+      const w=rank===0?1:rank===1?.65:.4;
+      const old=agg.get(cand.name)||{...cand,support:0,sumSeries:0,sumScore:0,bestSeries:0,confSum:0,topRows:[],total:rows.length};
+      if(rank===0)old.support++;
+      old.sumSeries+=cand.seriesScore*w; old.sumScore+=cand.score*w; old.bestSeries=Math.max(old.bestSeries,cand.seriesScore);
+      if(rank===0)old.confSum+=row.conf;
+      old.topRows.push({rank,score:cand.score,nameScore:cand.seriesScore,conf:row.conf,seriesScore:cand.seriesScore,subtypeScore:cand.subtypeScore});
+      old.id=cand.id;old.gameId=cand.gameId;old.kind=cand.kind;old.seriesName=cand.seriesName;old.subtype=cand.subtype;
+      agg.set(cand.name,old);
+    });
+  }
+  return [...agg.values()].map(x=>{
+    const supportRows=x.topRows.filter(r=>r.rank===0);
+    const n=Math.max(1,supportRows.length);
+    const avgSeries=supportRows.length?supportRows.reduce((s,r)=>s+r.seriesScore,0)/n:0;
+    const avgScore=supportRows.length?supportRows.reduce((s,r)=>s+r.score,0)/n:0;
+    const confAvg=supportRows.length?supportRows.reduce((s,r)=>s+r.conf,0)/n:0;
+    const subtypeValues=supportRows.map(r=>r.subtypeScore).filter(v=>Number.isFinite(v));
+    const subtypeAvg=subtypeValues.length?subtypeValues.reduce((s,v)=>s+v,0)/subtypeValues.length:0;
+    // Final score keeps series recognition dominant; subtype only resolves variants
+    // after the family has converged.
+    const totalScore=Math.min(1,.78*avgSeries+.12*(confAvg/100)+.10*avgSeries+.12*subtypeAvg);
+    return {...x,avgNameScore:avgSeries,avgSeriesScore:avgSeries,avgRowScore:avgScore,confAvg,subtypeAvg,totalScore,final:totalScore,
+      hierarchy:{seriesScore:avgSeries,subtypeScore:subtypeAvg,totalScore}};
+  }).sort((a,b)=>b.totalScore-a.totalScore);
+}
 function rankGenericEquipmentCandidates(raw,conf,items){
   const pool=Array.isArray(items)?items:[];
   return pool.map(item=>{const w=weightedNameDistance(raw,item.name);const cw=confidenceWeight(conf);return {...item,nameScore:w.score,score:.85*w.score+.15*cw,confidenceWeight:cw,details:w.details,matched:w.matched};}).sort((a,b)=>b.score-a.score);
@@ -1200,10 +1272,10 @@ async function recognizeEquipmentAll(){
       for(const [mode,label] of passes){
         $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}をOCR中… ${label}`;
         const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c);let raw=cleanOCR(r?.data?.text||'');raw=raw.replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石|装衣)/g,' ').replace(/\s+/g,' ').trim();const conf=Number(r?.data?.confidence||0);if(raw)rows.push({raw,conf,mode:label});
-        const interim=aggregateGenericEquipmentCandidates(rows,items);
+        const interim=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : aggregateHierarchicalArmorCandidates(rows,items);
         if(equipmentOCRShouldStop(interim,rows)) break;
       }
-      const ranked=aggregateGenericEquipmentCandidates(rows,items);const best=ranked[0],second=ranked[1];if(best)best.decision=equipmentDecision(best,second);if(best)best.gap=second?best.totalScore-second.totalScore:null;
+      const ranked=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : aggregateHierarchicalArmorCandidates(rows,items);const best=ranked[0],second=ranked[1];if(best)best.decision=equipmentDecision(best,second);if(best)best.gap=second?best.totalScore-second.totalScore:null;
       output.push({key,rows,ranked:ranked.slice(0,3),best,region});
       const pct=best?Math.round(best.totalScore*100):0;
       $('equipmentResults').innerHTML=output.map(renderEquipmentResult).join('');
@@ -1219,7 +1291,7 @@ async function recognizeEquipmentAll(){
 function renderEquipmentResult(x){
   const title=equipmentSlotLabel(x.key);const b=x.best;const label=b?.decision?.label||'候補なし';
   const raw=x.rows.map(r=>`${r.mode}: ${r.raw} (${Math.round(r.conf)}%)`).join(' / ')||'OCR文字なし';
-  const candidates=(x.ranked||[]).map((c,i)=>`<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${i+1}位 ${c.name}</b> ${i===0?`<span class="corrected-tag">${label}</span>`:''}<br><span class="note">総合 ${Math.round(c.totalScore*100)}pt / 文字 ${Math.round(c.avgNameScore*100)}% / OCR ${Math.round(c.confAvg)}% / 支持 ${c.support}/${x.rows.length}${c.gap!=null?` / 候補差 ${Math.round(c.gap*100)}pt`:''}</span></div>`).join('');
+  const candidates=(x.ranked||[]).map((c,i)=>{const hierarchy=c.hierarchy?` / シリーズ ${Math.round(c.hierarchy.seriesScore*100)}% / 型式 ${Math.round(c.hierarchy.subtypeScore*100)}%`:'';return `<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${i+1}位 ${c.name}</b> ${i===0?`<span class="corrected-tag">${label}</span>`:''}<br><span class="note">総合 ${Math.round(c.totalScore*100)}pt / 文字 ${Math.round(c.avgNameScore*100)}% / OCR ${Math.round(c.confAvg)}% / 支持 ${c.support}/${x.rows.length}${c.gap!=null?` / 候補差 ${Math.round(c.gap*100)}pt`:''}${hierarchy}</span></div>`}).join('');
   return `<div class="card" style="margin:8px 0;padding:10px"><b>${title}</b><div class="note">${x.region?.inferred?'領域：構造推定':'領域：OCRアンカー'} / 装備名1行をPSM7でOCR / 生OCR：${raw}</div>${candidates||'<div class="note">該当候補なし</div>'}</div>`;
 }
 $('recognizeEquipment').onclick=recognizeEquipmentAll;
