@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-B v1 - MH Wilds OCR — 装備名OCR・部位限定DB候補</title>
+<title>Step 1.25-B v2.1 - MH Wilds OCR — 装備名1行OCR・部位限定DB候補</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v1：装備名OCR・部位限定DB候補</h1>
+<h1>MH Wilds OCR — Step 1.25-B v2.1：装備名1行OCR・部位限定DB候補</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -426,6 +426,13 @@ function detectEquipmentRegions(screen, lines) {
       confidence: f.confidence,
       labelConfidence: f.inferred ? 0 : Math.round((f.matchScore || 0) * 100),
       label: f.label ? f.canonicalLabel || f.label.text : '構造推定',
+      // Preserve the semantic label geometry so the OCR stage can crop the
+      // actual equipment-name line instead of OCRing the whole card.
+      anchorY: centerY,
+      labelY: f.label ? Number(f.label.y) : centerY,
+      labelHeight: f.label ? Math.max(1, Number(f.label.height) || 1) : Math.max(12, rowPitch * 0.28),
+      labelX: f.label ? Number(f.label.x) : x1,
+      labelWidth: f.label ? Math.max(1, Number(f.label.width) || 1) : Math.max(20, cardWidth * 0.5),
       sourceType: f.inferred ? 'inferred' : 'ocr',
       inferred: Boolean(f.inferred),
       excludedFromReflection: f.key === 'subWeapon' || f.key === 'mantle',
@@ -447,6 +454,37 @@ function detectEquipmentRegions(screen, lines) {
   return out;
 }
 
+
+// Step 1.25-B v2.1: derive a single-line equipment-name crop from the semantic
+// row anchor. The crop follows the inferred pitch and label geometry, so it
+// scales with screenshots instead of using fixed pixel coordinates.
+function equipmentNameCropRect(region, imageWidth, imageHeight) {
+  if (!region) return null;
+  const iw = Math.max(1, Number(imageWidth) || 1);
+  const ih = Math.max(1, Number(imageHeight) || 1);
+  const rx = Math.max(0, Number(region.x) || 0);
+  const ry = Math.max(0, Number(region.y) || 0);
+  const rw = Math.max(1, Number(region.width) || 1);
+  const rh = Math.max(1, Number(region.height) || 1);
+  const pitch = Math.max(20, Number(region.pitch) || rh / 0.96);
+  const labelY = Number.isFinite(Number(region.labelY)) ? Number(region.labelY) : (Number.isFinite(Number(region.anchorY)) ? Number(region.anchorY) : ry + rh * 0.48);
+  const labelH = Math.max(10, Number(region.labelHeight) || Math.min(34, pitch * 0.28));
+  // The leftmost part of the card contains the equipment icon and the
+  // rightmost part contains slot/status icons. Keep the OCR band inside the
+  // name column while retaining enough width for long Japanese equipment names.
+  // The detected region already starts near the left edge of the text
+  // column. Do not add another 12% inset here: that would cut the first
+  // characters on the actual MH Wilds layout (e.g. `代償の...`).
+  const labelX = Number.isFinite(Number(region.labelX)) ? Number(region.labelX) : rx;
+  const x = Math.max(0, Math.min(iw - 1, Math.min(rx, labelX)));
+  // Keep the crop in the name column; the right side of the card contains
+  // decoration/slot icons that otherwise become OCR noise.
+  const rightInset = Math.max(8, rw * 0.02);
+  const maxW = Math.max(1, Math.min(rw * 0.62, rw - (x-rx) - rightInset, iw - x));
+  const y = Math.max(0, labelY + labelH + Math.max(1, pitch * 0.01));
+  const h = Math.max(14, Math.min(pitch * 0.40, labelH * 1.70, ih - y));
+  return {x, y, width:maxW, height:h, pitch, source:region.inferred ? 'inferred' : 'label-anchor'};
+}
 
 // Step 1.25-B: normalize/filter DB rows by equipment slot. This is deliberately
 // independent from OCR so slot mistakes can be tested without running Tesseract.
@@ -481,6 +519,20 @@ function addPadding(sourceCanvas, padX = 20, padY = 10) {
   c.height = sourceCanvas.height + padY * 2;
   const ctx = c.getContext('2d');
   ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, c.width, c.height);
+  ctx.drawImage(sourceCanvas, padX, padY);
+  return c;
+}
+
+// Step 1.25-B v2.1: configurable padding preserves character edges at the
+// OCR boundary. Dark-background modes keep a dark margin; inverted mode keeps
+// the conventional white margin around black text.
+function addPaddingCustom(sourceCanvas, padX = 30, padY = 20, color = '#FFFFFF') {
+  const c = document.createElement('canvas');
+  c.width = sourceCanvas.width + padX * 2;
+  c.height = sourceCanvas.height + padY * 2;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = color;
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.drawImage(sourceCanvas, padX, padY);
   return c;
@@ -1034,21 +1086,46 @@ function equipmentRegionCanvas(region, mode='color', band='full'){
   const sw=Math.max(1,Math.min(imgW-sx,Math.round(region.width))), sh=Math.max(1,Math.min(imgH-sy,Math.round(region.height)));
   const base=document.createElement('canvas'); base.width=sw; base.height=sh;
   base.getContext('2d').drawImage($('img'),sx,sy,sw,sh,0,0,sw,sh);
-  // Use the whole inferred card rather than a fixed name-line percentage.
-  // The card scale differs between screenshots, and the label/name vertical
-  // relationship is not identical for every equipment row.
-  const y0=band==='name'?0.08:0.02, y1=band==='name'?0.94:0.98;
-  const by=Math.round(sh*y0), bh=Math.max(1,Math.round(sh*(y1-y0)));
-  const c=document.createElement('canvas'), scale=4; c.width=sw*scale; c.height=bh*scale;
-  const ctx=c.getContext('2d',{willReadFrequently:true}); ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-  ctx.drawImage(base,0,by,sw,bh,0,0,c.width,c.height);
-  if(mode!=='color'){
+
+  let crop={x:0,y:0,width:sw,height:sh};
+  if(band==='name'){
+    const r=equipmentNameCropRect(region,imgW,imgH);
+    if(r){
+      const cx=Math.max(0,Math.min(sw-1,Math.round(r.x-sx)));
+      const cy=Math.max(0,Math.min(sh-1,Math.round(r.y-sy)));
+      crop={x:cx,y:cy,width:Math.max(1,Math.min(sw-cx,Math.round(r.width))),height:Math.max(1,Math.min(sh-cy,Math.round(r.height)))};
+    }
+  } else {
+    crop={x:0,y:Math.round(sh*0.02),width:sw,height:Math.max(1,Math.round(sh*0.96))};
+  }
+
+  // v2.1: 2.5x is enough to enlarge the game font without introducing the
+  // excessive interpolation/noise produced by the former 4x/high setting.
+  const scale=2.5;
+  const c=document.createElement('canvas');
+  c.width=Math.max(1,Math.round(crop.width*scale));
+  c.height=Math.max(1,Math.round(crop.height*scale));
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality='medium';
+  ctx.drawImage(base,crop.x,crop.y,crop.width,crop.height,0,0,c.width,c.height);
+
+  if(mode==='white_extract' || mode==='invert' || mode==='grayscale'){
     const d=ctx.getImageData(0,0,c.width,c.height);
-    for(let i=0;i<d.data.length;i+=4){const g=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];let z=mode==='invert'?(g>140?0:255):(g>155?255:0);d.data[i]=d.data[i+1]=d.data[i+2]=z;}
+    for(let i=0;i<d.data.length;i+=4){
+      const g=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
+      let z=g;
+      if(mode==='white_extract') z=g<130?0:Math.min(255,(g-130)*2);
+      else if(mode==='invert') z=g<120?255:Math.max(0,255-(g-120)*2);
+      d.data[i]=d.data[i+1]=d.data[i+2]=Math.round(z);
+    }
     ctx.putImageData(d,0,0);
   }
-  return addPadding(c,20,10);
+
+  const padColor=mode==='invert' ? '#FFFFFF' : '#000000';
+  return addPaddingCustom(c,30,20,padColor);
 }
+
 
 function rankGenericEquipmentCandidates(raw,conf,items){
   const pool=Array.isArray(items)?items:[];
@@ -1088,11 +1165,11 @@ async function recognizeEquipmentAll(){
     await Promise.all([ensureWeaponDB(),loadArmorDB(false),loadCharmDB(false)]);
     setEquipmentDBStatus(`武器 ${weaponDB.length.toLocaleString()}件 / 防具 ${armorDB.length.toLocaleString()}件 / 護石 ${charmDB.length.toLocaleString()}件`,'ok');
     const worker=await Tesseract.createWorker('jpn');
-    await worker.setParameters({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'});
+    await worker.setParameters({tessedit_pageseg_mode:'7',preserve_interword_spaces:'1'});
     const output=[];
     for(const key of targets){
       const region=regions.find(r=>r.key===key); const items=equipmentRowsForSlot(key); const rows=[];
-      const passes=[['color','color'],['threshold155','二値化'],['invert','反転']];
+      const passes=[['white_extract','白文字強調'],['invert','白背景反転'],['grayscale','グレースケール']];
       for(const [mode,label] of passes){
         $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}をOCR中… ${label}`;
         const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c);let raw=cleanOCR(r?.data?.text||'');raw=raw.replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石|装衣)/g,' ').replace(/\s+/g,' ').trim();const conf=Number(r?.data?.confidence||0);if(raw)rows.push({raw,conf,mode:label});
@@ -1116,7 +1193,7 @@ function renderEquipmentResult(x){
   const title=equipmentSlotLabel(x.key);const b=x.best;const label=b?.decision?.label||'候補なし';
   const raw=x.rows.map(r=>`${r.mode}: ${r.raw} (${Math.round(r.conf)}%)`).join(' / ')||'OCR文字なし';
   const candidates=(x.ranked||[]).map((c,i)=>`<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${i+1}位 ${c.name}</b> ${i===0?`<span class="corrected-tag">${label}</span>`:''}<br><span class="note">総合 ${Math.round(c.totalScore*100)}pt / 文字 ${Math.round(c.avgNameScore*100)}% / OCR ${Math.round(c.confAvg)}% / 支持 ${c.support}/${x.rows.length}${c.gap!=null?` / 候補差 ${Math.round(c.gap*100)}pt`:''}</span></div>`).join('');
-  return `<div class="card" style="margin:8px 0;padding:10px"><b>${title}</b><div class="note">${x.region?.inferred?'領域：構造推定':'領域：OCRアンカー'} / 生OCR：${raw}</div>${candidates||'<div class="note">該当候補なし</div>'}</div>`;
+  return `<div class="card" style="margin:8px 0;padding:10px"><b>${title}</b><div class="note">${x.region?.inferred?'領域：構造推定':'領域：OCRアンカー'} / 装備名1行をPSM7でOCR / 生OCR：${raw}</div>${candidates||'<div class="note">該当候補なし</div>'}</div>`;
 }
 $('recognizeEquipment').onclick=recognizeEquipmentAll;
 $('ocr').onclick=async()=>{

@@ -2,6 +2,8 @@ const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
 const html = fs.readFileSync('index.html','utf8');
+assert(html.includes('<title>Step 1.25-B v2.1'), 'title must be Step 1.25-B v2.1');
+assert(html.includes('MH Wilds OCR — Step 1.25-B v2.1'), 'visible h1 must be Step 1.25-B v2.1');
 const mStart = html.indexOf('function detectEquipmentRegions(');
 const mEnd = html.indexOf('\nfunction addPadding', mStart);
 const lmStart = html.indexOf('function extractEquipmentOCRLines(');
@@ -263,3 +265,41 @@ assert(html.includes("const CHARM_API='https://wilds.mhdb.io/ja/charms';"));
 assert(html.includes("JSON.stringify({id:true,gameId:true,ranks:true})"), 'charm API must project ranks');
 assert(html.includes('function equipmentOCRShouldStop('), 'B OCR should support staged early exit');
 console.log('step125b DB projection/early-exit tests passed');
+
+// Step 1.25-B v2.1 RED: equipment OCR must crop the single name line below the
+// semantic label instead of feeding the whole card/background to Tesseract.
+const nameCropStart = html.indexOf('function equipmentNameCropRect(');
+assert(nameCropStart >= 0, 'v2 name crop helper must exist');
+const nameCropEnd = html.indexOf('\nfunction normalizeEquipmentCandidateRows', nameCropStart);
+assert(nameCropEnd > nameCropStart, 'v2 name crop helper boundary must exist');
+const nameCrop = html.slice(nameCropStart, nameCropEnd);
+const ns = {Math, Number, String, Object};
+vm.createContext(ns);
+vm.runInContext(nameCrop + '\nthis.crop=equipmentNameCropRect;', ns);
+const anchored = ns.crop({x:100,y:200,width:500,height:100,labelY:200,labelHeight:26,pitch:100}, 2000, 1200);
+assert(anchored, 'anchored crop should exist');
+assert(anchored.x >= 100 && anchored.x < 130, 'anchored crop should stay near the detected text-column anchor');
+assert(anchored.y > 200 && anchored.y < 260, 'name crop should be below the label');
+assert(anchored.height < 70, 'name crop should be a single text-line band');
+const inferred = ns.crop({x:100,y:300,width:500,height:100,inferred:true,pitch:100,anchorY:300}, 2000, 1200);
+assert(inferred.y > 300 && inferred.y < 360, 'inferred row should place name band below row anchor');
+console.log('step125b v2 name-line crop RED tests passed');
+
+// Step 1.25-B v2.1.1 RED: equipment OCR preprocessing must use gentle
+// grayscale/white extraction rather than destructive threshold155, with 2.5x
+// enlargement and wider explicit padding.
+assert(html.includes("function addPaddingCustom(sourceCanvas, padX = 30, padY = 20, color = '#FFFFFF')"),
+  'v2.1 must provide configurable OCR padding');
+assert(html.includes('const scale=2.5'), 'v2.1 equipment OCR canvas should use 2.5x scaling');
+assert(html.includes("mode==='white_extract'"), 'v2.1 must include white-text extraction');
+assert(html.includes("mode==='grayscale'"), 'v2.1 must include grayscale mode');
+assert(html.includes("const passes=[['white_extract','白文字強調'],['invert','白背景反転'],['grayscale','グレースケール']];"),
+  'v2.1 equipment OCR passes must avoid destructive thresholding');
+console.log('step125b v2.1 preprocessing RED tests passed');
+
+// Step 1.25-B v2.1 regression: the detected region already begins at the text
+// column, so the name crop must not add a second large left inset.
+const leftAligned = ns.crop({x:79,y:264,width:338,height:76,labelY:264,labelHeight:14,pitch:79,labelX:79}, 1536, 864);
+assert(leftAligned.x <= 82, 'name crop must preserve the first equipment-name character');
+assert(leftAligned.width > 190 && leftAligned.width <= 220, 'name crop should stay inside the text column without reaching slot icons');
+console.log('step125b v2.1 name-column alignment regression passed');
