@@ -1,6 +1,6 @@
-# DEV_MWWSKILLSIM OCR Step 1.23
+# DEV_MWWSKILLSIM OCR Step 1.24
 
-Step 1.23 fixes the DB-candidate evidence aggregation used after OCR.
+Step 1.24 fixes the DB-candidate evidence aggregation used after OCR.
 
 ## Changes
 - Average character score uses **all OCR passes that ranked the candidate #1**.
@@ -9,7 +9,7 @@ Step 1.23 fixes the DB-candidate evidence aggregation used after OCR.
 - Support bonus is calculated from the actual `support / total` pair and is included in the final score.
 - Final score, displayed score, support bonus, and evidence averages all use the same summarized evidence.
 - OCR↔OCR raw-string agreement remains informational only and is not used for final candidate selection.
-- Page title, heading, and README are all marked Step 1.23.
+- Page title, heading, and README are all marked Step 1.24.
 
 ## Support bonus
 - 1/1: +4pt
@@ -21,4 +21,4 @@ Step 1.23 fixes the DB-candidate evidence aggregation used after OCR.
 - 6/6: +12pt
 
 ## Verification
-`step123.test.js` is retained as the regression test file for the candidate-score contract; it now includes Step 1.23 aggregation tests.
+`step124.test.js` is retained as the regression test file for the candidate-score contract; it now includes Step 1.24 aggregation tests.

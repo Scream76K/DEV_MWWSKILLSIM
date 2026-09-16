@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.23 - MH Wilds OCR — Step 1.23：候補統合スコア・候補差</title>
+<title>Step 1.24 - MH Wilds OCR — Step 1.24：候補統合計算の整合性修正</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.23：支持補正・候補統合スコア</h1>
+<h1>MH Wilds OCR — Step 1.24：候補統合計算の整合性修正</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -520,7 +520,7 @@ function getWeaponItems(raw){return searchWeaponItems(raw)}
 function confidenceWeight(conf){if(conf>=85)return 1;if(conf>=75)return .90;if(conf>=65)return .78;if(conf>=50)return .62;if(conf>=35)return .45;return .30}
 function dynamicMarginRequired(name){const n=normalizeForNameScore(name).length;if(n<=4)return .16;if(n<=7)return .12;if(n<=11)return .09;return .07}
 function candidateHasEnoughEvidence(c){return !!c && c.score>=.45}
-// Step 1.23: DB候補の総合スコア。OCR↔OCR一致率は最終判定に使わない。
+// Step 1.24: DB候補の総合スコア。OCR↔OCR一致率は最終判定に使わない。
 // 支持補正は文字評価とは独立した加点要素として扱う。
 function supportBonus(supportOrRatio,total){
   const t=Number(total||0);
@@ -546,7 +546,7 @@ function totalCandidateScore(x){
   const r=finalCandidateScore(x);
   return typeof r==='number'?r:r.totalScore;
 }
-// Step 1.23: aggregate only OCR passes that ranked this DB candidate #1.
+// Step 1.24: aggregate only OCR passes that ranked this DB candidate #1.
 // This keeps averages consistent with the support count and prevents a candidate
 // that merely appeared in another pass's top-3 from contaminating its evidence.
 function summarizeCandidateEvidence(x){
@@ -579,11 +579,14 @@ function candidateDecision(x,secondFinal=null){
 function renderCandidates(cands,meta){
   const out=$("candidateOut");
   if(!cands.length){out.innerHTML='<div class="notice">該当する武器候補を確認できませんでした。上位候補を十分に形成できませんでした。</div>';return}
+  const topFinal=Number(cands[0].totalScore??cands[0].final??0);
+  const topSecondFinal=cands[1]?Number(cands[1].totalScore??cands[1].final??0):null;
+  const topMargin=topSecondFinal==null?null:topFinal-topSecondFinal;
   out.innerHTML=cands.slice(0,5).map((c,i)=>{
     const pct=Math.round((c.totalScore??c.final)*100),cls=pct>=80?'background:#eef2e8':pct>=65?'background:#f6f1df':'background:#f5e8e4';
-    const ev=c.integration||{};
-    const d=c.decision||candidateDecision(c,cands[i+1]?.final ?? null);
-    return `<div style="${cls};border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:7px"><b>${i+1}位　${c.name}</b> <span class="corrected-tag">${d.label}</span><br><span class="note">最終 ${pct}%　／　支持 ${c.support}/${meta.total}回　／　平均文字評価 ${Math.round(c.avgNameScore*100)}%　／　OCR信頼度平均 ${Math.round(c.confAvg)}%　／　支持補正 +${Math.round((c.supportBonus||0)*100)}pt　／　1位差 ${Math.round((c.margin||0)*100)}pt</span></div>`;
+    const d=i===0 ? (c.decision||candidateDecision(c,topSecondFinal)) : (c.decision||candidateDecision(c,null));
+    const marginText=i===0 ? (topMargin==null?'1位差 —（2位候補なし）':`1位差 ${Math.round(topMargin*100)}pt`) : '1位差 —';
+    return `<div style="${cls};border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:7px"><b>${i+1}位　${c.name}</b> <span class="corrected-tag">${d.label}</span><br><span class="note">最終 ${pct}%　／　支持 ${c.support}/${meta.total}回　／　平均文字評価 ${Math.round(c.avgNameScore*100)}%　／　OCR信頼度平均 ${Math.round(c.confAvg)}%　／　支持補正 +${Math.round((c.supportBonus||0)*100)}pt　／　${marginText}</span></div>`;
   }).join('')+`<div class="note" style="margin-top:8px">${meta.decision}</div>`;
 }
 function cleanOCR(raw){return String(raw||'').replace(/[\r\n]+/g,' ').replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim()}
@@ -691,7 +694,7 @@ $('ocr').onclick=async()=>{
       }
       const ranked=[...agg.values()].map(x=>{
         const support=x.support;
-        // Step 1.23: use every OCR pass that selected this candidate as #1.
+        // Step 1.24: use every OCR pass that selected this candidate as #1.
         // Do not average only the top three rows and do not mix rank-2/3 evidence.
         const supportRatio=support/Math.max(1,rows.length);
         const convergence=.55*supportRatio+.45*Math.min(1,x.rankSum/Math.max(1,rows.length));
@@ -769,7 +772,7 @@ $('ocr').onclick=async()=>{
     }).join('\n\n');
     if(best){
       const second=ranked[1];
-      $('raw').textContent += `\n\n【DB候補統合（新方式）】\n・最有力候補：${best.name}\n・総合スコア：${Math.round((best.totalScore??best.final)*100)}pt\n・DB候補支持：${best.support}/${rows.length}回\n・文字評価：${Math.round((best.charScore||0)*100)}pt\n・支持補正：+${Math.round((best.supportBonus||0)*100)}pt\n・OCR信頼度補正：+${Math.round((best.ocrConfidence||0)*100)}pt\n・候補差：${best.margin==null?'—（2位候補なし）':Math.round(best.margin*100)+'pt'}\n・OCR間一致：最終判定には使用しない`;
+      $('raw').textContent += `\n\n【DB候補統合（新方式）】\n・最有力候補：${best.name}\n・総合スコア：${Math.round((best.totalScore??best.final)*100)}pt\n・DB候補支持：${best.support}/${rows.length}回\n・文字評価（統合寄与）：${Math.round((best.charScore||0)*100)}pt\n・支持補正：+${Math.round((best.supportBonus||0)*100)}pt\n・OCR信頼度補正：+${Math.round((best.ocrConfidence||0)*100)}pt\n・候補差：${best.margin==null?'—（2位候補なし）':Math.round(best.margin*100)+'pt'}\n・OCR間一致：最終判定には使用しない`;
     }
 
     renderCandidates(ranked,{
