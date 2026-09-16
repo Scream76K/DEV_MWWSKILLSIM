@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.20：候補統合スコア・候補差</title>
+<title>MH Wilds OCR — Step 1.21：候補統合スコア・候補差</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -520,17 +520,24 @@ function getWeaponItems(raw){return searchWeaponItems(raw)}
 function confidenceWeight(conf){if(conf>=85)return 1;if(conf>=75)return .90;if(conf>=65)return .78;if(conf>=50)return .62;if(conf>=35)return .45;return .30}
 function dynamicMarginRequired(name){const n=normalizeForNameScore(name).length;if(n<=4)return .16;if(n<=7)return .12;if(n<=11)return .09;return .07}
 function candidateHasEnoughEvidence(c){return !!c && c.score>=.45}
-// Step 1.20: DB候補の総合スコア。OCR↔OCR一致率は最終判定に使わない。
+// Step 1.21: DB候補の総合スコア。OCR↔OCR一致率は最終判定に使わない。
 // 支持補正は文字評価とは独立した加点要素として扱う。
-function supportBonus(supportRatio){
-  const r=Number(supportRatio||0);
-  if(r>=.999)return .12; // 3/3, 4/4...
-  if(r>=.666)return .07; // 2/3
-  return .00;              // 1/3以下
+function supportBonus(supportOrRatio,total){
+  const t=Number(total||0);
+  const r=t>0 ? Number(supportOrRatio||0)/t : Number(supportOrRatio||0);
+  const s=t>0 ? Number(supportOrRatio||0) : Math.round(r*3);
+  if(t<=0 || s<=0)return 0;
+  if(s===1 && t===1)return .04;
+  if(s===2 && t===2)return .08;
+  if(s===2 && t===3)return .06;
+  if(s>=3 && s===t)return .12;
+  if(s>=5 && t===6)return .10;
+  if(r>=.666)return .06;
+  return 0;
 }
 function finalCandidateScore(x){
   const base=.70*Number(x.avgNameScore||0)+.15*(Number(x.confAvg||0)/100)+.15*Number(x.bestNameScore||0);
-  return Math.min(1,base+supportBonus(x.supportRatio));
+  return Math.min(1,base+supportBonus(x.support,x.total||rows.length));
 }
 function candidateDecision(x,secondFinal=null){
   if(!x)return {level:'manual',label:'手動入力',reason:'DB候補を形成できませんでした。'};
@@ -671,8 +678,8 @@ $('ocr').onclick=async()=>{
         const supportRatio=support/Math.max(1,rows.length);
         const convergence=.55*supportRatio+.45*Math.min(1,x.rankSum/Math.max(1,rows.length));
         const final=finalCandidateScore({...x,avgNameScore,avgRowScore,confAvg,bestNameScore:x.bestNameScore,supportRatio});
-        const bonus=supportBonus(supportRatio);
-        return {...x,avgNameScore,avgRowScore,confAvg,convergence,final,supportRatio,supportBonus:bonus,integration:{supportRatio,convergence,supportBonus:bonus}};
+        const bonus=supportBonus(support,rows.length);
+        return {...x,total:rows.length,avgNameScore,avgRowScore,confAvg,convergence,final,supportRatio,supportBonus:bonus,integration:{supportRatio,convergence,supportBonus:bonus}};
       }).sort((a,b)=>b.final-a.final);
       for(let i=0;i<ranked.length;i++)ranked[i].margin=ranked[i].final-(ranked[i+1]?.final||0);
       return ranked;
