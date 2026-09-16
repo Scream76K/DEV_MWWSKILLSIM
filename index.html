@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.21：候補統合スコア・候補差</title>
+<title>MH Wilds OCR — Step 1.22：候補統合スコア・候補差</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.21：支持補正・候補統合スコア</h1>
+<h1>MH Wilds OCR — Step 1.22：支持補正・候補統合スコア</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -520,7 +520,7 @@ function getWeaponItems(raw){return searchWeaponItems(raw)}
 function confidenceWeight(conf){if(conf>=85)return 1;if(conf>=75)return .90;if(conf>=65)return .78;if(conf>=50)return .62;if(conf>=35)return .45;return .30}
 function dynamicMarginRequired(name){const n=normalizeForNameScore(name).length;if(n<=4)return .16;if(n<=7)return .12;if(n<=11)return .09;return .07}
 function candidateHasEnoughEvidence(c){return !!c && c.score>=.45}
-// Step 1.21: DB候補の総合スコア。OCR↔OCR一致率は最終判定に使わない。
+// Step 1.22: DB候補の総合スコア。OCR↔OCR一致率は最終判定に使わない。
 // 支持補正は文字評価とは独立した加点要素として扱う。
 function supportBonus(supportOrRatio,total){
   const t=Number(total||0);
@@ -536,21 +536,29 @@ function supportBonus(supportOrRatio,total){
   return 0;
 }
 function finalCandidateScore(x){
-  const base=.70*Number(x.avgNameScore||0)+.15*(Number(x.confAvg||0)/100)+.15*Number(x.bestNameScore||0);
-  return Math.min(1,base+supportBonus(x.support,x.total||0));
+  const charScore=.70*Number(x.avgNameScore||0)+.15*Number(x.bestNameScore||0);
+  const ocrConfidence=.15*(Number(x.confAvg||0)/100);
+  const support= supportBonus(x.support,x.total||0);
+  const totalScore=Math.min(1,charScore+ocrConfidence+support);
+  return {charScore,ocrConfidence,supportBonus:support,totalScore};
+}
+function totalCandidateScore(x){
+  const r=finalCandidateScore(x);
+  return typeof r==='number'?r:r.totalScore;
 }
 function candidateDecision(x,secondFinal=null){
   if(!x)return {level:'manual',label:'手動入力',reason:'DB候補を形成できませんでした。'};
   const hasSecond=Number.isFinite(Number(secondFinal));
-  const margin=hasSecond?Number(x.final||0)-Number(secondFinal):null, support=Number(x.supportRatio||0);
+  const currentFinal=Number.isFinite(Number(x.totalScore))?Number(x.totalScore):totalCandidateScore(x);
+  const margin=hasSecond?currentFinal-Number(secondFinal):null, support=Number(x.supportRatio||0);
   const conf=Number(x.confAvg||0);
   const marginOK=!hasSecond || margin>=.05;
   // 高い支持補正だけでは自動確定させず、OCR信頼度50%以上も要求する。
-  if(x.final>=.72 && marginOK && x.avgNameScore>=.50 && conf>=50)
+  if(currentFinal>=.72 && marginOK && x.avgNameScore>=.50 && conf>=50)
     return {level:'auto',label:'自動確定候補',reason:'DB統合スコア、支持補正、OCR信頼度、候補差が基準を満たしました。'};
-  if(x.final>=.60 && marginOK)
+  if(currentFinal>=.60 && marginOK)
     return {level:'confirm',label:'ユーザー確認',reason:'有力候補ですが、自動確定条件を満たしていません。'};
-  if(x.final>=.45)
+  if(currentFinal>=.45)
     return {level:'ambiguous',label:'候補選択',reason:'候補差が小さいため、上位候補から選択してください。'};
   return {level:'manual',label:'手動入力',reason:'DB候補の確度が不足しています。'};
 }
@@ -558,7 +566,7 @@ function renderCandidates(cands,meta){
   const out=$("candidateOut");
   if(!cands.length){out.innerHTML='<div class="notice">該当する武器候補を確認できませんでした。上位候補を十分に形成できませんでした。</div>';return}
   out.innerHTML=cands.slice(0,5).map((c,i)=>{
-    const pct=Math.round(c.final*100),cls=pct>=80?'background:#eef2e8':pct>=65?'background:#f6f1df':'background:#f5e8e4';
+    const pct=Math.round((c.totalScore??c.final)*100),cls=pct>=80?'background:#eef2e8':pct>=65?'background:#f6f1df':'background:#f5e8e4';
     const ev=c.integration||{};
     const d=c.decision||candidateDecision(c,cands[i+1]?.final ?? null);
     return `<div style="${cls};border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:7px"><b>${i+1}位　${c.name}</b> <span class="corrected-tag">${d.label}</span><br><span class="note">最終 ${pct}%　／　支持 ${c.support}/${meta.total}回　／　平均文字評価 ${Math.round(c.avgNameScore*100)}%　／　OCR信頼度平均 ${Math.round(c.confAvg)}%　／　支持補正 +${Math.round((c.supportBonus||0)*100)}pt　／　1位差 ${Math.round((c.margin||0)*100)}pt</span></div>`;
@@ -677,11 +685,11 @@ $('ocr').onclick=async()=>{
         // Convergence bonus is based on repeated DB identity, not OCR↔OCR text similarity.
         const supportRatio=support/Math.max(1,rows.length);
         const convergence=.55*supportRatio+.45*Math.min(1,x.rankSum/Math.max(1,rows.length));
-        const final=finalCandidateScore({...x,avgNameScore,avgRowScore,confAvg,bestNameScore:x.bestNameScore,supportRatio});
-        const bonus=supportBonus(support,rows.length);
-        return {...x,total:rows.length,avgNameScore,avgRowScore,confAvg,convergence,final,supportRatio,supportBonus:bonus,integration:{supportRatio,convergence,supportBonus:bonus}};
-      }).sort((a,b)=>b.final-a.final);
-      for(let i=0;i<ranked.length;i++)ranked[i].margin=ranked[i].final-(ranked[i+1]?.final||0);
+        const score=finalCandidateScore({...x,avgNameScore,avgRowScore,confAvg,bestNameScore:x.bestNameScore,supportRatio});
+        const bonus=score.supportBonus;
+        return {...x,total:rows.length,avgNameScore,avgRowScore,confAvg,convergence,totalScore:score.totalScore,charScore:score.charScore,ocrConfidence:score.ocrConfidence,final:score.totalScore,supportRatio,supportBonus:bonus,integration:{supportRatio,convergence,supportBonus:bonus,charScore:score.charScore,ocrConfidence:score.ocrConfidence,totalScore:score.totalScore}};
+      }).sort((a,b)=>(b.totalScore??b.final)-(a.totalScore??a.final));
+      for(let i=0;i<ranked.length;i++)ranked[i].margin=(ranked[i].totalScore??ranked[i].final)-(ranked[i+1]?.totalScore??ranked[i+1]?.final??0);
       return ranked;
     };
 
@@ -751,7 +759,7 @@ $('ocr').onclick=async()=>{
     }).join('\n\n');
     if(best){
       const second=ranked[1];
-      $('raw').textContent += `\n\n【DB候補統合（新方式）】\n・最有力候補：${best.name}\n・DB候補支持：${best.support}/${rows.length}回\n・平均文字評価：${Math.round(best.avgNameScore*100)}点\n・最高文字評価：${Math.round(best.bestNameScore*100)}点\n・支持補正：+${Math.round((best.supportBonus||0)*100)}pt\n・候補差：${best.margin==null?'—（2位候補なし）':Math.round(best.margin*100)+'pt'}\n・OCR間一致：最終判定には使用しない`;
+      $('raw').textContent += `\n\n【DB候補統合（新方式）】\n・最有力候補：${best.name}\n・総合スコア：${Math.round((best.totalScore??best.final)*100)}pt\n・DB候補支持：${best.support}/${rows.length}回\n・文字評価：${Math.round((best.charScore||0)*100)}pt\n・支持補正：+${Math.round((best.supportBonus||0)*100)}pt\n・OCR信頼度補正：+${Math.round((best.ocrConfidence||0)*100)}pt\n・候補差：${best.margin==null?'—（2位候補なし）':Math.round(best.margin*100)+'pt'}\n・OCR間一致：最終判定には使用しない`;
     }
 
     renderCandidates(ranked,{
