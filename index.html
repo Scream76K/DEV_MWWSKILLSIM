@@ -266,10 +266,10 @@ function addOCRPadding(canvas,pad=12){
   const ctx=c.getContext('2d');
   ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height);
   ctx.drawImage(canvas,pad,pad);
-  return addOCRPadding(c,12);
+  return c;
 }
 function buildOCRWhitelist(dict){
-  const chars=new Set('・ーαβγΑΒΓ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+  const chars=new Set('・ーαβγΑΒΓ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
   for(const name of dict||[]) for(const ch of Array.from(String(name))) chars.add(ch);
   // Keep Japanese kana generally available even when a diagnostic dictionary is small.
   for(const s of ['あいうえおかきくけこがぎぐげござしすせそざじずぜぞたちつてとだぢづでど',
@@ -279,6 +279,33 @@ function buildOCRWhitelist(dict){
                    'バビブベボパピプペポマミムメモヤユヨラリルレロワヲンァィゥェォヴ'])
     for(const ch of Array.from(s)) chars.add(ch);
   return [...chars].join('');
+}
+function smoothOCRCanvas(canvas, radius=1){
+  const c=document.createElement('canvas'); c.width=canvas.width; c.height=canvas.height;
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  ctx.imageSmoothingEnabled=true;
+  ctx.filter=`blur(${radius}px)`;
+  ctx.drawImage(canvas,0,0);
+  ctx.filter='none';
+  return c;
+}
+function otsuThresholdValue(imageData){
+  const d=imageData.data, hist=new Array(256).fill(0);
+  for(let i=0;i<d.length;i+=4){
+    const y=Math.round(.299*d[i]+.587*d[i+1]+.114*d[i+2]); hist[y]++;
+  }
+  const total=d.length/4; let sum=0;
+  for(let t=0;t<256;t++) sum+=t*hist[t];
+  let sumB=0,wB=0,maxVar=-1,threshold=140;
+  for(let t=0;t<256;t++){
+    wB+=hist[t]; if(wB===0) continue;
+    const wF=total-wB; if(wF===0) break;
+    sumB+=t*hist[t];
+    const mB=sumB/wB, mF=(sum-sumB)/wF;
+    const v=wB*wF*(mB-mF)*(mB-mF);
+    if(v>maxVar){maxVar=v; threshold=t;}
+  }
+  return threshold;
 }
 function makeNameOCRCanvas(mode,dx=0,dy=0,dw=0,dh=0){
   const q=nameRegion(),base=q.base;
@@ -292,17 +319,24 @@ function makeNameOCRCanvas(mode,dx=0,dy=0,dw=0,dh=0){
   if(mode==="contrast155") contrastStretchCanvas(c,55,215);
 
   if(mode!=="color"){
-    const d=ctx.getImageData(0,0,c.width,c.height);
+    // Step 1.11: 2値化前に1px平滑化してアンチエイリアス由来の細かなノイズを抑える。
+    const smoothed=smoothOCRCanvas(c,1);
+    const sctx=smoothed.getContext('2d',{willReadFrequently:true});
+    const d=sctx.getImageData(0,0,smoothed.width,smoothed.height);
+    const otsu=otsuThresholdValue(d);
     for(let i=0;i<d.data.length;i+=4){
       const gray=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
       let z=gray;
-      if(mode==="contrast155") z=gray>155?255:0;if(mode==="threshold") z=gray>140?255:0;
+      if(mode==="contrast155") z=gray>155?255:0;
+      if(mode==="threshold") z=gray>140?255:0;
       if(mode==="threshold155") z=gray>155?255:0;
       if(mode==="threshold125") z=gray>125?255:0;
+      if(mode==="otsu") z=gray>otsu?255:0;
       if(mode==="invert") z=gray>140?0:255;
       d.data[i]=d.data[i+1]=d.data[i+2]=z;
     }
-    ctx.putImageData(d,0,0);
+    sctx.putImageData(d,0,0);
+    c=smoothed;
   }
   return addPadding(c, 20, 10);
 }
@@ -520,22 +554,22 @@ $('ocr').onclick=async()=>{
     });
 
 
-    // Step 1.9:
+    // Step 1.11:
     // OCR信頼度を「表示値」から正式な判定根拠へ昇格。
     // 高信頼OCR + 高辞書一致なら即終了し、低信頼OCRは複数支持で補う。
     const fast=[
-      {name:'base・2値化155・PSM7',mode:'threshold155',dx:0,dy:0,dw:0,dh:0},
-      {name:'base・白黒反転・PSM7',mode:'invert',dx:0,dy:0,dw:0,dh:0},
-      {name:'y+2・2値化155・PSM7',mode:'threshold155',dx:0,dy:2,dw:0,dh:-2},
-      {name:'tight・2値化155・PSM7',mode:'threshold155',dx:2,dy:2,dw:-4,dh:-2}
+      {name:'base・Otsu＋平滑化・PSM7',mode:'otsu',psm:'7',dx:0,dy:0,dw:0,dh:0},
+      {name:'base・2値化155＋平滑化・PSM6',mode:'threshold155',psm:'6',dx:0,dy:0,dw:0,dh:0},
+      {name:'base・2値化155＋平滑化・PSM7',mode:'threshold155',psm:'7',dx:0,dy:0,dw:0,dh:0},
+      {name:'y+2・2値化155＋平滑化・PSM7',mode:'threshold155',psm:'7',dx:0,dy:2,dw:0,dh:-2}
     ];
     const extra=[
-      {name:'base・コントラスト強調155・PSM7',mode:'contrast155',dx:0,dy:0,dw:0,dh:0},
-      {name:'y+2・2値化140・PSM7',mode:'threshold',threshold:140,dx:0,dy:2,dw:0,dh:-2}
+      {name:'tight・2値化155＋平滑化・PSM7',mode:'threshold155',psm:'7',dx:2,dy:2,dw:-4,dh:-2},
+      {name:'base・白黒反転＋平滑化・PSM7',mode:'invert',psm:'7',dx:0,dy:0,dw:0,dh:0}
     ];
     const rows=[];
 
-    // Step 1.9: Tesseractの文字単位信頼度を補助証拠として利用。
+    // Step 1.11: Tesseractの文字単位信頼度を補助証拠として利用。
     // 全体confidenceだけでなく、候補名の各文字がOCR結果のどこで高信頼に読まれたかを見る。
     const symbolInfo=(r)=>{
       const syms=Array.isArray(r?.data?.symbols)?r.data.symbols:[];
@@ -700,6 +734,7 @@ $('ocr').onclick=async()=>{
         }
         ctx.putImageData(d,0,0);
       }
+      await worker.setParameters({tessedit_pageseg_mode:p.psm||'7'});
       const r=await worker.recognize(c);
       const raw=cleanOCR(r?.data?.text||'');
       const conf=Number(r?.data?.confidence||0);
