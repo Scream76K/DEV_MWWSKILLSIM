@@ -327,7 +327,7 @@ function makeNameOCRCanvas(mode,dx=0,dy=0,dw=0,dh=0){
   const w=Math.max(1,Math.min(100-x,q.w+dw)), h=Math.max(1,Math.min(100-y,q.h+dh));
   const sx=Math.round(base.width*x/100), sy=Math.round(base.height*y/100);
   const sw=Math.max(1,Math.round(base.width*w/100)), sh=Math.max(1,Math.round(base.height*h/100));
-  const scale=4, c=document.createElement("canvas"); c.width=sw*scale;c.height=sh*scale;
+  let scale=4, c=document.createElement("canvas"); c.width=sw*scale;c.height=sh*scale;
   const ctx=c.getContext("2d",{willReadFrequently:true}); ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
   ctx.drawImage(base,sx,sy,sw,sh,0,0,c.width,c.height);
   if(mode==="contrast155") contrastStretchCanvas(c,55,215);
