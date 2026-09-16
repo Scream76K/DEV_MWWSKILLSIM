@@ -266,10 +266,10 @@ function addOCRPadding(canvas,pad=12){
   const ctx=c.getContext('2d');
   ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height);
   ctx.drawImage(canvas,pad,pad);
-  return c;
+  return addOCRPadding(c,12);
 }
 function buildOCRWhitelist(dict){
-  const chars=new Set('・ーαβγΑΒΓ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+  const chars=new Set('・ーαβγΑΒΓ0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
   for(const name of dict||[]) for(const ch of Array.from(String(name))) chars.add(ch);
   // Keep Japanese kana generally available even when a diagnostic dictionary is small.
   for(const s of ['あいうえおかきくけこがぎぐげござしすせそざじずぜぞたちつてとだぢづでど',
@@ -280,77 +280,29 @@ function buildOCRWhitelist(dict){
     for(const ch of Array.from(s)) chars.add(ch);
   return [...chars].join('');
 }
-function smoothOCRCanvas(canvas, radius=1){
-  // Safari/iOSでは CanvasRenderingContext2D.filter への代入がreadonly/未対応の場合があるため、
-  // ctx.filter を使用せず、3x3の軽量ボックス平滑化をImageData上で行う。
-  const c=document.createElement('canvas'); c.width=canvas.width; c.height=canvas.height;
-  const srcCtx=c.getContext('2d',{willReadFrequently:true});
-  srcCtx.drawImage(canvas,0,0);
-  const src=srcCtx.getImageData(0,0,c.width,c.height);
-  const out=new ImageData(c.width,c.height);
-  const sd=src.data, od=out.data, w=c.width, h=c.height;
-  for(let y=0;y<h;y++){
-    for(let x=0;x<w;x++){
-      let rs=0,gs=0,bs=0,as=0,n=0;
-      for(let yy=Math.max(0,y-1);yy<=Math.min(h-1,y+1);yy++){
-        for(let xx=Math.max(0,x-1);xx<=Math.min(w-1,x+1);xx++){
-          const i=(yy*w+xx)*4; rs+=sd[i];gs+=sd[i+1];bs+=sd[i+2];as+=sd[i+3];n++;
-        }
-      }
-      const i=(y*w+x)*4; od[i]=Math.round(rs/n);od[i+1]=Math.round(gs/n);od[i+2]=Math.round(bs/n);od[i+3]=Math.round(as/n);
-    }
-  }
-  srcCtx.putImageData(out,0,0);
-  return c;
-}
-function otsuThresholdValue(imageData){
-  const d=imageData.data, hist=new Array(256).fill(0);
-  for(let i=0;i<d.length;i+=4){
-    const y=Math.round(.299*d[i]+.587*d[i+1]+.114*d[i+2]); hist[y]++;
-  }
-  const total=d.length/4; let sum=0;
-  for(let t=0;t<256;t++) sum+=t*hist[t];
-  let sumB=0,wB=0,maxVar=-1,threshold=140;
-  for(let t=0;t<256;t++){
-    wB+=hist[t]; if(wB===0) continue;
-    const wF=total-wB; if(wF===0) break;
-    sumB+=t*hist[t];
-    const mB=sumB/wB, mF=(sum-sumB)/wF;
-    const v=wB*wF*(mB-mF)*(mB-mF);
-    if(v>maxVar){maxVar=v; threshold=t;}
-  }
-  return threshold;
-}
 function makeNameOCRCanvas(mode,dx=0,dy=0,dw=0,dh=0){
   const q=nameRegion(),base=q.base;
   const x=Math.max(0,Math.min(99,q.x+dx)), y=Math.max(0,Math.min(99,q.y+dy));
   const w=Math.max(1,Math.min(100-x,q.w+dw)), h=Math.max(1,Math.min(100-y,q.h+dh));
   const sx=Math.round(base.width*x/100), sy=Math.round(base.height*y/100);
   const sw=Math.max(1,Math.round(base.width*w/100)), sh=Math.max(1,Math.round(base.height*h/100));
-  let scale=4, c=document.createElement("canvas"); c.width=sw*scale;c.height=sh*scale;
+  const scale=4; let c=document.createElement("canvas"); c.width=sw*scale;c.height=sh*scale;
   const ctx=c.getContext("2d",{willReadFrequently:true}); ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
   ctx.drawImage(base,sx,sy,sw,sh,0,0,c.width,c.height);
   if(mode==="contrast155") contrastStretchCanvas(c,55,215);
 
   if(mode!=="color"){
-    // Step 1.11: 2値化前に1px平滑化してアンチエイリアス由来の細かなノイズを抑える。
-    const smoothed=smoothOCRCanvas(c,1);
-    const sctx=smoothed.getContext('2d',{willReadFrequently:true});
-    const d=sctx.getImageData(0,0,smoothed.width,smoothed.height);
-    const otsu=otsuThresholdValue(d);
+    const d=ctx.getImageData(0,0,c.width,c.height);
     for(let i=0;i<d.data.length;i+=4){
       const gray=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
       let z=gray;
-      if(mode==="contrast155") z=gray>155?255:0;
-      if(mode==="threshold") z=gray>140?255:0;
+      if(mode==="contrast155") z=gray>155?255:0;if(mode==="threshold") z=gray>140?255:0;
       if(mode==="threshold155") z=gray>155?255:0;
       if(mode==="threshold125") z=gray>125?255:0;
-      if(mode==="otsu") z=gray>otsu?255:0;
       if(mode==="invert") z=gray>140?0:255;
       d.data[i]=d.data[i+1]=d.data[i+2]=z;
     }
-    sctx.putImageData(d,0,0);
-    c=smoothed;
+    ctx.putImageData(d,0,0);
   }
   return addPadding(c, 20, 10);
 }
@@ -568,22 +520,22 @@ $('ocr').onclick=async()=>{
     });
 
 
-    // Step 1.11:
+    // Step 1.9:
     // OCR信頼度を「表示値」から正式な判定根拠へ昇格。
     // 高信頼OCR + 高辞書一致なら即終了し、低信頼OCRは複数支持で補う。
     const fast=[
-      {name:'base・Otsu＋平滑化・PSM7',mode:'otsu',psm:'7',dx:0,dy:0,dw:0,dh:0},
-      {name:'base・2値化155＋平滑化・PSM6',mode:'threshold155',psm:'6',dx:0,dy:0,dw:0,dh:0},
-      {name:'base・2値化155＋平滑化・PSM7',mode:'threshold155',psm:'7',dx:0,dy:0,dw:0,dh:0},
-      {name:'y+2・2値化155＋平滑化・PSM7',mode:'threshold155',psm:'7',dx:0,dy:2,dw:0,dh:-2}
+      {name:'base・2値化155・PSM7',mode:'threshold155',dx:0,dy:0,dw:0,dh:0},
+      {name:'base・白黒反転・PSM7',mode:'invert',dx:0,dy:0,dw:0,dh:0},
+      {name:'y+2・2値化155・PSM7',mode:'threshold155',dx:0,dy:2,dw:0,dh:-2},
+      {name:'tight・2値化155・PSM7',mode:'threshold155',dx:2,dy:2,dw:-4,dh:-2}
     ];
     const extra=[
-      {name:'tight・2値化155＋平滑化・PSM7',mode:'threshold155',psm:'7',dx:2,dy:2,dw:-4,dh:-2},
-      {name:'base・白黒反転＋平滑化・PSM7',mode:'invert',psm:'7',dx:0,dy:0,dw:0,dh:0}
+      {name:'base・コントラスト強調155・PSM7',mode:'contrast155',dx:0,dy:0,dw:0,dh:0},
+      {name:'y+2・2値化140・PSM7',mode:'threshold',threshold:140,dx:0,dy:2,dw:0,dh:-2}
     ];
     const rows=[];
 
-    // Step 1.11: Tesseractの文字単位信頼度を補助証拠として利用。
+    // Step 1.9: Tesseractの文字単位信頼度を補助証拠として利用。
     // 全体confidenceだけでなく、候補名の各文字がOCR結果のどこで高信頼に読まれたかを見る。
     const symbolInfo=(r)=>{
       const syms=Array.isArray(r?.data?.symbols)?r.data.symbols:[];
@@ -748,7 +700,6 @@ $('ocr').onclick=async()=>{
         }
         ctx.putImageData(d,0,0);
       }
-      await worker.setParameters({tessedit_pageseg_mode:p.psm||'7'});
       const r=await worker.recognize(c);
       const raw=cleanOCR(r?.data?.text||'');
       const conf=Number(r?.data?.confidence||0);
