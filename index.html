@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-B v3.1.1 Crop Spike - MH Wilds OCR — 適応型OCR</title>
+<title>Step 1.25-B v3.1.2 Name Crop - MH Wilds OCR — 適応型OCR</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v3.1.1：切り出し検証：適応型OCR</h1>
+<h1>MH Wilds OCR — Step 1.25-B v3.1.2：装備名切り出し検証：適応型OCR</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -286,6 +286,33 @@ function detectEquipmentRegions(screen, lines) {
     cursor = hit.index + 1;
   }
 
+  // v3.1.2: retain the geometry of the actual equipment-name OCR line.
+  // The text itself may be wrong; only its bounding box is used downstream.
+  // Search only between this semantic label and the next semantic label so a
+  // neighbouring row cannot become the name anchor.
+  const labelIndices = new Set(found.map(f => f.index));
+  for (const f of found) {
+    const label = f.label;
+    const nextLabelIndex = found.find(g => g.index > f.index)?.index ?? source.length;
+    const labelY = Number(label.y) || 0;
+    const labelH = Math.max(1, Number(label.height) || 1);
+    const rowPitchHint = Math.max(40, labelH * 3.5);
+    const maxY = labelY + Math.max(labelH * 2.2, rowPitchHint * 0.55);
+    const candidates = source.slice(f.index + 1, nextLabelIndex)
+      .filter(line => line.y >= labelY + labelH * 0.35 && line.y <= maxY)
+      .filter(line => line.x >= label.x - Math.max(24, labelH * 1.5))
+      .filter(line => normalizeEquipmentLabel(line.norm) !== f.canonicalLabel)
+      .filter(line => line.norm.length >= 3 && line.width >= Math.max(24, label.width * 0.55));
+    if (candidates.length) {
+      candidates.sort((a,b) => {
+        const da=Math.abs(a.y-(labelY+labelH));
+        const db=Math.abs(b.y-(labelY+labelH));
+        return da-db || b.confidence-a.confidence || b.width-a.width;
+      });
+      f.nameAnchor = candidates[0];
+    }
+  }
+
   // -------------------------------------------------------------------------
   // v6: infer the vertical scale/pitch from the screenshot itself.
   // No fixed 198px value is used. Every OCR-confirmed label is an anchor with
@@ -386,6 +413,7 @@ function detectEquipmentRegions(screen, lines) {
         confidence: useActual ? actual.label.confidence : 0,
         matchScore: useActual ? (actual.matchScore || 0) : 0,
         canonicalLabel: useActual ? (actual.canonicalLabel || actual.label.text) : null,
+        nameAnchor: useActual ? (actual.nameAnchor || null) : null,
         inferred: !useActual
       };
     });
@@ -445,6 +473,12 @@ function detectEquipmentRegions(screen, lines) {
       labelHeight: f.label ? Math.max(1, Number(f.label.height) || 1) : Math.max(12, rowPitch * 0.28),
       labelX: f.label ? Number(f.label.x) : x1,
       labelWidth: f.label ? Math.max(1, Number(f.label.width) || 1) : Math.max(20, cardWidth * 0.5),
+      nameAnchor: f.nameAnchor ? {
+        x: Number(f.nameAnchor.x), y: Number(f.nameAnchor.y),
+        width: Math.max(1, Number(f.nameAnchor.width) || 1),
+        height: Math.max(1, Number(f.nameAnchor.height) || 1),
+        confidence: Math.max(0, Math.min(100, Number(f.nameAnchor.confidence) || 0))
+      } : null,
       sourceType: f.inferred ? 'inferred' : 'ocr',
       inferred: Boolean(f.inferred),
       excludedFromReflection: f.key === 'subWeapon' || f.key === 'mantle',
@@ -470,7 +504,7 @@ function detectEquipmentRegions(screen, lines) {
 // Step 1.25-B v2.1: derive a single-line equipment-name crop from the semantic
 // row anchor. The crop follows the inferred pitch and label geometry, so it
 // scales with screenshots instead of using fixed pixel coordinates.
-function equipmentNameCropRect(region, imageWidth, imageHeight) {
+function equipmentNameCropRectV312(region, imageWidth, imageHeight) {
   if (!region) return null;
   const iw = Math.max(1, Number(imageWidth) || 1);
   const ih = Math.max(1, Number(imageHeight) || 1);
@@ -479,56 +513,67 @@ function equipmentNameCropRect(region, imageWidth, imageHeight) {
   const rw = Math.max(1, Number(region.width) || 1);
   const rh = Math.max(1, Number(region.height) || 1);
   const pitch = Math.max(20, Number(region.pitch) || rh / 0.96);
+  const name = region.nameAnchor;
+  const lineH = Math.max(10, Number(name?.height) || Number(region.labelHeight) || Math.min(34, pitch * 0.28));
+
+  // v3.1.2: if the first layout OCR found the equipment-name line, use only
+  // that line's geometry. OCR text is intentionally ignored here.
+  if (name && Number(name.width) > 0 && Number.isFinite(Number(name.x)) && Number.isFinite(Number(name.y))) {
+    const leftPad = Math.max(6, lineH * 0.30);
+    const rightPad = Math.max(10, lineH * 1.00);
+    const topPad = Math.max(3, lineH * 0.18);
+    const bottomPad = Math.max(3, lineH * 0.18);
+    const cardRight = Math.min(iw, rx + rw);
+    const slotLeft = Number.isFinite(Number(region.slotX)) ? Number(region.slotX) : cardRight;
+    const rightLimit = Math.max(Number(name.x) + Number(name.width), Math.min(cardRight, slotLeft));
+    const x = Math.max(rx, Number(name.x) - leftPad);
+    const desiredRight = Number(name.x) + Number(name.width) + rightPad;
+    const right = Math.min(iw, rightLimit, desiredRight);
+    const y = Math.max(0, Number(name.y) - topPad);
+    const bottom = Math.min(ih, Number(name.y) + lineH + bottomPad);
+    return {
+      x, y,
+      width: Math.max(1, right - x),
+      height: Math.max(1, bottom - y),
+      pitch, source: 'name-bbox',
+      nameAnchor: {x:Number(name.x), y:Number(name.y), width:Number(name.width), height:lineH}
+    };
+  }
+
+  // Fallback when the layout OCR did not produce a usable name bbox. Keep the
+  // card geometry, but never resurrect the old 62% hard width limit.
   const labelY = Number.isFinite(Number(region.labelY)) ? Number(region.labelY) : (Number.isFinite(Number(region.anchorY)) ? Number(region.anchorY) : ry + rh * 0.48);
   const labelH = Math.max(10, Number(region.labelHeight) || Math.min(34, pitch * 0.28));
-  // The leftmost part of the card contains the equipment icon and the
-  // rightmost part contains slot/status icons. Keep the OCR band inside the
-  // name column while retaining enough width for long Japanese equipment names.
-  // The detected region already starts near the left edge of the text
-  // column. Do not add another 12% inset here: that would cut the first
-  // characters on the actual MH Wilds layout (e.g. `代償の...`).
-  const hasLabelX = Number.isFinite(Number(region.labelX));
-  // If the semantic anchor exists, its x is the actual text-column start.
-  // When it does not, keep a modest inset so the equipment icon is not fed to OCR.
-  const labelX = hasLabelX ? Number(region.labelX) : (rx + Math.min(18, rw * 0.04));
-  const x = Math.max(rx, Math.min(iw - 1, labelX));
-  // v2.8: labelWidth belongs to the category label (e.g. `頭防具`), not the
-  // equipment-name string. It is therefore a lower-bound hint, never an upper
-  // bound. The previous upper bound could truncate names such as
-  // `護雷顎竜ヘルムβ` before OCR saw the full string.
-  const rightInset = Math.max(8, rw * 0.04);
-  const available = Math.max(1, Math.min(rw - (x-rx) - rightInset, iw - x));
-  const nameColumnWidth = Math.max(140, rw * 0.62);
-  const maxW = Math.max(1, Math.min(available, nameColumnWidth));
-  const y = Math.max(0, labelY + labelH + Math.max(1, pitch * 0.01));
-  const h = Math.max(14, Math.min(pitch * 0.40, labelH * 1.70, ih - y));
-  return {x, y, width:maxW, height:h, pitch, source:region.inferred ? 'inferred' : 'label-anchor'};
+  const labelX = Number.isFinite(Number(region.labelX)) ? Number(region.labelX) : (rx + Math.min(18, rw * 0.04));
+  const leftPad = Math.max(6, labelH * 0.30);
+  const x = Math.max(rx, labelX - leftPad);
+  const cardRight = Math.min(iw, rx + rw);
+  const right = Math.min(cardRight, iw);
+  const y = Math.max(0, labelY + labelH + Math.max(1, pitch * 0.01) - labelH * 0.18);
+  const h = Math.max(14, Math.min(pitch * 0.44, labelH * 1.95, ih - y));
+  return {x, y, width:Math.max(1, right-x), height:h, pitch, source:'card-fallback'};
 }
 
-// Step 1.25-B: normalize/filter DB rows by equipment slot. This is deliberately
-// independent from OCR so slot mistakes can be tested without running Tesseract.
-// Step 1.25-B v3.1.1: crop-only spike. Do not OCR here; compare geometry first.
-function clampRectToImage(rect,imageWidth,imageHeight){
-  const iw=Math.max(1,Number(imageWidth)||1), ih=Math.max(1,Number(imageHeight)||1);
-  let x=Math.round(Number(rect?.x)||0), y=Math.round(Number(rect?.y)||0);
-  let width=Math.round(Number(rect?.width)||1), height=Math.round(Number(rect?.height)||1);
-  x=Math.max(0,Math.min(iw-1,x)); y=Math.max(0,Math.min(ih-1,y));
-  width=Math.max(1,Math.min(iw-x,width)); height=Math.max(1,Math.min(ih-y,height));
-  return {x,y,width,height};
+// Keep the existing public helper name so all OCR callers use the v3.1.2
+// geometry without requiring a second production path.
+function equipmentNameCropRect(region, imageWidth, imageHeight) {
+  return equipmentNameCropRectV312(region, imageWidth, imageHeight);
 }
+
+// v3.1.2 crop variants are retained only for visual regression comparison.
 function buildEquipmentNameCropVariantsV311(region,imageWidth,imageHeight){
-  const base=equipmentNameCropRect(region,imageWidth,imageHeight);
+  const base=equipmentNameCropRectV312(region,imageWidth,imageHeight);
   if(!base)return [];
   const iw=Math.max(1,Number(imageWidth)||1), ih=Math.max(1,Number(imageHeight)||1);
   const rx=Number(region?.x)||0, rw=Math.max(1,Number(region?.width)||1);
   const rightEdge=Math.min(iw,rx+rw);
   const rightGuard=Math.max(6,Math.round(rw*.03));
   const wideWidth=Math.max(base.width,Math.round(rightEdge-base.x-rightGuard));
-  const padX=Math.max(8,Math.round(rw*.025));
-  const padY=Math.max(8,Math.round((Number(region?.pitch)||base.height)*.06));
+  const padX=Math.max(8,Math.round((Number(region?.nameAnchor?.height)||base.height)*.30));
+  const padY=Math.max(8,Math.round((Number(region?.nameAnchor?.height)||base.height)*.20));
   const wide={x:base.x,y:base.y,width:wideWidth,height:base.height};
   const widePadding={x:base.x-padX,y:base.y-padY,width:wideWidth+padX*2,height:base.height+padY*2};
-  const tallPadY=Math.max(padY,Math.round((Number(region?.pitch)||base.height)*.10));
+  const tallPadY=Math.max(padY,Math.round((Number(region?.nameAnchor?.height)||base.height)*.30));
   const widePaddingTall={x:base.x-padX,y:base.y-tallPadY,width:wideWidth+padX*2,height:base.height+tallPadY*2};
   return [
     {id:'current',label:'現在方式',rect:clampRectToImage(base,iw,ih)},
@@ -537,37 +582,17 @@ function buildEquipmentNameCropVariantsV311(region,imageWidth,imageHeight){
     {id:'wide_padding_tall',label:'広幅＋余白多め',rect:clampRectToImage(widePaddingTall,iw,ih)}
   ];
 }
-function cropCanvasFromRectV311(rect){
-  const c=document.createElement('canvas');
-  c.width=Math.max(1,Math.round(rect.width)); c.height=Math.max(1,Math.round(rect.height));
-  const ctx=c.getContext('2d');
-  ctx.drawImage($('img'),rect.x,rect.y,rect.width,rect.height,0,0,c.width,c.height);
-  return c;
-}
-function renderCropOnlySpike(){
-  const host=$('preprocessPreview'),status=$('preprocessStatus');
-  const regions=Array.isArray(window.lastEquipmentRegions)?window.lastEquipmentRegions:[];
-  if(!$('img').src){status.textContent='先に画像を選択してください。';return;}
-  if(regions.length!==9){status.textContent='先に「画面構造を自動検出」を実行してください。';return;}
-  const labels={mainWeapon:'メイン武器',head:'頭防具',chest:'胴防具',arms:'腕防具',waist:'腰防具',legs:'脚防具',charm:'護石'};
-  host.innerHTML=''; const started=performance.now(); const records=[];
-  for(const key of PREPROCESS_TARGETS){
-    const region=regions.find(r=>r.key===key); if(!region)continue;
-    const card=document.createElement('div');
-    card.style='border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:8px';
-    const variants=buildEquipmentNameCropVariantsV311(region,imgW,imgH);
-    card.innerHTML=`<b>${labels[key]||key}</b><div class="note" style="margin-top:4px">OCR未実行。境界・末尾・上下余白だけを比較します。</div>`;
-    const row=document.createElement('div'); row.style='display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px';
-    for(const v of variants){
-      const wrap=document.createElement('div');
-      const lab=document.createElement('div'); lab.className='note'; lab.textContent=`${v.label} / ${v.rect.width}×${v.rect.height}px`;
-      const c=cropCanvasFromRectV311(v.rect); c.style='width:100%;height:auto;display:block;background:#111;border-radius:6px;margin-top:4px';
-      wrap.appendChild(lab); wrap.appendChild(c); row.appendChild(wrap);
-    }
-    card.appendChild(row); host.appendChild(card); records.push({key,variants});
-  }
-  window.lastCropOnlySpike=records;
-  status.textContent=`切り出しSpike完了：${records.length}部位 × 4方式 / OCR未実行 / ${(performance.now()-started).toFixed(1)}ms`;
+
+// Step 1.25-B: normalize/filter DB rows by equipment slot. This is deliberately
+// independent from OCR so slot mistakes can be tested without running Tesseract.
+// v3.1.2: shared rectangle clamp for crop visual regression and production previews.
+function clampRectToImage(rect,imageWidth,imageHeight){
+  const iw=Math.max(1,Number(imageWidth)||1), ih=Math.max(1,Number(imageHeight)||1);
+  let x=Math.round(Number(rect?.x)||0), y=Math.round(Number(rect?.y)||0);
+  let width=Math.round(Number(rect?.width)||1), height=Math.round(Number(rect?.height)||1);
+  x=Math.max(0,Math.min(iw-1,x)); y=Math.max(0,Math.min(ih-1,y));
+  width=Math.max(1,Math.min(iw-x,width)); height=Math.max(1,Math.min(ih-y,height));
+  return {x,y,width,height,source:rect?.source};
 }
 
 function normalizeEquipmentCandidateRows(rows, slot) {

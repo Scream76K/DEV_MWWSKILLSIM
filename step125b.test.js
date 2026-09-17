@@ -2,8 +2,8 @@ const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
 const html = fs.readFileSync('index.html','utf8');
-assert(html.includes('<title>Step 1.25-B v3.1 Spike'), 'title must be Step 1.25-B v3.0');
-assert(html.includes('MH Wilds OCR — Step 1.25-B v3.1 Spike'), 'visible h1 must be Step 1.25-B v3.0');
+assert(html.includes('<title>Step 1.25-B v3.1.2 Name Crop'), 'title must be Step 1.25-B v3.1.2 Name Crop');
+assert(html.includes('MH Wilds OCR — Step 1.25-B v3.1.2：装備名切り出し検証'), 'visible h1 must be Step 1.25-B v3.1.2');
 const mStart = html.indexOf('function detectEquipmentRegions(');
 const mEnd = html.indexOf('\nfunction addPadding', mStart);
 const lmStart = html.indexOf('function extractEquipmentOCRLines(');
@@ -58,6 +58,52 @@ for (const key of ['head','chest','arms','waist','legs']) {
   const r=out.find(x=>x.key===key); assert(r && r.y2>r.y1 && r.x2>r.x1);
 }
 console.log('step125b layout tests passed');
+// v3.1.1 RED: crop-only spike must expose independent geometry variants.
+const cvStart=html.indexOf('function equipmentNameCropRectV312(');
+const cvEnd=html.indexOf('\nfunction normalizeEquipmentCandidateRows',cvStart);
+assert(cvStart>=0 && cvEnd>cvStart,'equipment crop helper must exist for v3.1.1');
+const cvNS={Math,Number,String,Object,Array}; vm.createContext(cvNS);
+vm.runInContext(html.slice(cvStart,cvEnd)+'\nthis.crop=equipmentNameCropRect;this.variants=buildEquipmentNameCropVariantsV311;',cvNS);
+assert.strictEqual(typeof cvNS.variants,'function','v3.1.1 crop variants helper must exist');
+const variants=cvNS.variants({x:40,y:200,width:420,height:100,labelY:200,labelHeight:20,pitch:100,labelX:80,nameAnchor:{x:82,y:245,width:360,height:38}},1920,1080);
+assert(Array.isArray(variants) && variants.length===4,'v3.1.1 must provide four crop variants');
+assert.strictEqual(JSON.stringify(variants.map(v=>v.id)),JSON.stringify(['current','wide','wide_padding','wide_padding_tall']));
+for(const v of variants){ assert(v.rect.width>0 && v.rect.height>0,'each crop variant must have positive dimensions'); }
+assert(variants[0].rect.source==='name-bbox','current v3.1.2 crop must be driven by name bbox');
+assert(variants[0].rect.width>=360,'current crop must retain full detected name width');
+assert(variants[0].rect.x<82,'current crop must include left safety margin');
+console.log('step125b v3.1.1 crop-only spike RED tests passed');
+// v3.1.2 RED: the production crop must be driven by the actual equipment-name
+// OCR line geometry, not by a fixed 62% column width.
+const nameGeomLines = [
+  {text:'頭防具', x:80, y:100, width:220, height:30, confidence:92},
+  {text:'護雷顎竜ヘルムβ', x:82, y:145, width:360, height:38, confidence:84},
+  {text:'胴防具', x:80, y:300, width:220, height:30, confidence:92},
+  {text:'シュバルカメイルγ', x:82, y:345, width:380, height:38, confidence:84}
+];
+const geomOut = detect({width:1920,height:1080}, nameGeomLines);
+const geomHead = geomOut.find(x=>x.key==='head');
+const geomChest = geomOut.find(x=>x.key==='chest');
+assert(geomHead && geomHead.nameAnchor, 'head must retain the nearby equipment-name OCR geometry');
+assert.strictEqual(geomHead.nameAnchor.x, 82);
+assert.strictEqual(geomHead.nameAnchor.width, 360);
+assert.strictEqual(geomHead.nameAnchor.height, 38);
+assert(geomChest && geomChest.nameAnchor, 'chest must retain the nearby equipment-name OCR geometry');
+
+const c312Start=html.indexOf('function equipmentNameCropRectV312(');
+const c312End=html.indexOf('\nfunction normalizeEquipmentCandidateRows',c312Start);
+const c312NS={Math,Number,String,Object,Array,Set,Map}; vm.createContext(c312NS);
+vm.runInContext(html.slice(c312Start,c312End)+'\nthis.cropV312=equipmentNameCropRectV312;',c312NS);
+assert.strictEqual(typeof c312NS.cropV312,'function','v3.1.2 production crop helper must exist');
+const r312=c312NS.cropV312(geomHead,1920,1080);
+assert(r312 && r312.width>360,'v3.1.2 crop must include the full detected name plus right safety margin');
+assert(r312.x < 82,'v3.1.2 crop must include a left safety margin around the detected name');
+assert(r312.width < 600,'v3.1.2 crop must not expand to the old broad card width when the name bbox is known');
+assert(r312.height > 38,'v3.1.2 crop must include vertical padding');
+assert(r312.x+r312.width <= geomHead.x+geomHead.width+1,'name crop must remain inside the semantic equipment card');
+console.log('step125b v3.1.2 name-geometry RED tests passed');
+
+
 
 // Step 1.25-A v3 design tests: use left equipment column, retain sub/mantle structurally,
 // but mark subWeapon as excluded from reflection. Short labels must not match arbitrary text.
@@ -268,7 +314,7 @@ console.log('step125b DB projection/early-exit tests passed');
 
 // Step 1.25-B v2.1 RED: equipment OCR must crop the single name line below the
 // semantic label instead of feeding the whole card/background to Tesseract.
-const nameCropStart = html.indexOf('function equipmentNameCropRect(');
+const nameCropStart = html.indexOf('function equipmentNameCropRectV312(');
 assert(nameCropStart >= 0, 'v2 name crop helper must exist');
 const nameCropEnd = html.indexOf('\nfunction normalizeEquipmentCandidateRows', nameCropStart);
 assert(nameCropEnd > nameCropStart, 'v2 name crop helper boundary must exist');
@@ -302,7 +348,7 @@ console.log('step125b v2.1 preprocessing RED tests passed');
 // column, so the name crop must not add a second large left inset.
 const leftAligned = ns.crop({x:79,y:264,width:338,height:76,labelY:264,labelHeight:14,pitch:79,labelX:79}, 1536, 864);
 assert(leftAligned.x <= 82, 'name crop must preserve the first equipment-name character');
-assert(leftAligned.width > 190 && leftAligned.width <= 220, 'name crop should stay inside the text column without reaching slot icons');
+assert(leftAligned.width >= 220 && leftAligned.width <= 338, 'v3.1.2 fallback may use the full semantic card width when name bbox is unavailable');
 console.log('step125b v2.1 name-column alignment regression passed');
 
 // Step 1.25-B v2.8 RED: the OCR crop must start at the semantic name-column
@@ -312,10 +358,10 @@ const v27Crop = ns.crop({
   x:40, y:264, width:360, height:76,
   labelY:264, labelHeight:14, pitch:79, labelX:78, labelWidth:170
 }, 1536, 864);
-assert(v27Crop.x >= 76 && v27Crop.x <= 80,
-  'v2.7 name crop must begin at labelX so the equipment icon is excluded');
-assert(v27Crop.width > 160 && v27Crop.width <= 225,
-  'v2.7 name crop must retain enough width while staying before slot UI');
+assert(v27Crop.x >= 70 && v27Crop.x < 78,
+  'v3.1.2 fallback uses a small dynamic left margin from labelX');
+assert(v27Crop.width >= 280 && v27Crop.width <= 360,
+  'v3.1.2 fallback must retain the broad semantic card width when name bbox is unavailable');
 console.log('step125b v2.8 text-column crop RED test passed');
 
 
@@ -699,12 +745,12 @@ console.log('step125b v2.6 hardening RED tests passed');
 
 // v2.8 RED: name crop must not use the category-label width as an upper bound.
 const cropNS={Math,Number,String,Array}; vm.createContext(cropNS);
-const cropStart=html.indexOf('function equipmentNameCropRect(');
+const cropStart=html.indexOf('function equipmentNameCropRectV312(');
 const cropEnd=html.indexOf('\nfunction normalizeEquipmentCandidateRows',cropStart);
 vm.runInContext(html.slice(cropStart,cropEnd)+'\nthis.crop=equipmentNameCropRect;',cropNS);
 const cropWide=cropNS.crop({x:20,y:100,width:280,height:100,pitch:100,labelY:120,labelHeight:20,labelX:80,labelWidth:70},1000,1000);
 assert(cropWide.width>=170,'name crop width must remain wide enough for long Japanese equipment names');
-assert(cropWide.x===80,'semantic label x should remain the crop start');
+assert(cropWide.x < 80 && cropWide.x >= 70,'v3.1.2 fallback adds only a small dynamic left margin');
 
 // v2.8 RED: local-contrast preprocessing must be available as a replacement for weak Otsu.
 assert(html.includes("mode==='hsv_white'"),'HSV white-text preprocessing mode must exist');
