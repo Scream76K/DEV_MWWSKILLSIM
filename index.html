@@ -1227,6 +1227,17 @@ function matchArmorV25(ocrText,category,armorDb){
   }
   return best;
 }
+function parseTalismanLevel(value){
+  const raw=String(value||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
+  if(!raw)return '';
+  const upper=raw.toUpperCase();
+  if(/(?:IV|4)$/.test(upper))return 'Ⅳ';
+  if(/(?:III|3)$/.test(upper))return 'Ⅲ';
+  if(/(?:II|2)$/.test(upper))return 'Ⅱ';
+  if(/(?:I|1)$/.test(upper))return 'Ⅰ';
+  if(/(?:V|5)$/.test(upper))return 'Ⅴ';
+  return '';
+}
 function parseTalismanStructure(rawOcrText){
   const clean=String(rawOcrText||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/[\s\._|｜]+/g,'').trim();
   if(!clean)return {anchorFound:false,prefixCandidate:'',suffixCandidate:'',anchor:'',level:''};
@@ -1270,13 +1281,17 @@ function armorSeriesScore(raw,itemName){
   return robustArmorSeriesSimilarity(rawBase,itemBase);
 }
 function parseSubtypeFromTail(tailStr){
+  // Tail OCR often includes UI punctuation/noise after the subtype token.
+  // Keep the parser tail-only, but tolerate trailing dashes/digits/noise.
   const clean=String(tailStr||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim().toLowerCase();
   if(!clean)return '';
-  if(/^(?:α|a|q|aq|𝛂)$/iu.test(clean))return 'α';
-  if(/^(?:β|b|6|bq|80q|𝛽)$/iu.test(clean))return 'β';
-  if(/^(?:γ|y|v|ν|𝛾)$/iu.test(clean))return 'γ';
+  const token=clean.replace(/[^a-zαβγν𝛂𝛽𝛾0-9]+$/iu,'').trim();
+  if(/^(?:80q|bq|β|b|6|𝛽)$/iu.test(token))return 'β';
+  if(/^(?:aq|α|a|q|𝛂)$/iu.test(token))return 'α';
+  if(/^(?:γ|y|v|ν|𝛾)$/iu.test(token))return 'γ';
   return '';
 }
+
 function stripTailSubtypeToken(raw){
   const s=String(raw||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
   const m=s.match(/^(.*?)(?:\s*(α|β|γ|a|aq|b|bq|6|80q|v|V|ν|y|Y))\s*[一ー―昌1-9]*$/iu);

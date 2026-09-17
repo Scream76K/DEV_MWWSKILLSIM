@@ -483,6 +483,31 @@ assert.strictEqual(ac.anchorPart,'メイル');
 assert.strictEqual(ac.seriesPart,'シュバパルカ');
 assert.strictEqual(ac.tailPart,'v');
 
+// v2.5 regression: noisy OCR tails must still resolve armor subtype.
+const subtypeStart = html.indexOf('function parseSubtypeFromTail(');
+assert(subtypeStart >= 0, 'v2.5 parseSubtypeFromTail helper must exist');
+const subtypeEnd = html.indexOf('\nfunction stripTailSubtypeToken', subtypeStart);
+assert(subtypeEnd > subtypeStart, 'v2.5 subtype parser boundary must exist');
+const subtypeCode = html.slice(subtypeStart, subtypeEnd);
+const subtypeSandbox = {String};
+vm.createContext(subtypeSandbox);
+vm.runInContext(subtypeCode+'\nthis.parseSubtypeFromTail=parseSubtypeFromTail;', subtypeSandbox);
+assert.strictEqual(subtypeSandbox.parseSubtypeFromTail('vーー'),'γ');
+assert.strictEqual(subtypeSandbox.parseSubtypeFromTail('aq 一'),'α');
+assert.strictEqual(subtypeSandbox.parseSubtypeFromTail('BQ 央'),'β');
+
+// v2.5 regression: production must define talisman level parsing; tests must not mask a missing helper.
+const levelStart = html.indexOf('function parseTalismanLevel(');
+assert(levelStart >= 0, 'v2.5 production parseTalismanLevel helper must exist');
+const levelEnd = html.indexOf('\nfunction ', levelStart + 10);
+assert(levelEnd > levelStart, 'v2.5 talisman level helper boundary must exist');
+const levelCode = html.slice(levelStart, levelEnd);
+const ls = {String};
+vm.createContext(ls);
+vm.runInContext(levelCode+'\nthis.parseTalismanLevel=parseTalismanLevel;', ls);
+assert.strictEqual(ls.parseTalismanLevel('護引 ニⅣ'),'Ⅳ');
+assert.strictEqual(ls.parseTalismanLevel('護石 IV'),'Ⅳ');
+
 // v2.5 RED: talisman structure must isolate the prefix before 「の」 and preserve level parsing.
 const talStart = html.indexOf('function parseTalismanStructure(');
 assert(talStart >= 0, 'v2.5 parseTalismanStructure helper must exist');
