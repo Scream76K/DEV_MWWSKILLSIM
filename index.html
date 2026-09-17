@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-B v2.6 - MH Wilds OCR — 多段OCR統合・シリーズ先行認識</title>
+<title>Step 1.25-B v2.6.1 - MH Wilds OCR — 防具候補生成ハードニング</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v2.6：多段OCR統合・シリーズ先行認識</h1>
+<h1>MH Wilds OCR — Step 1.25-B v2.6.1：防具候補生成ハードニング</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -941,11 +941,14 @@ function normalizeForNameScore(v){
 }
 function normalizeSubtypeSymbols(raw){
   let s=String(raw||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim();
-  // Only interpret common OCR confusions when they occur at the very end of an equipment name.
-  // This avoids corrupting ordinary letters that happen to look like subtype symbols.
-  s=s.replace(/\s*[vVν𝛾γ](?:\s*[一ー―昌1-9]*)$/u,'γ');
-  s=s.replace(/\s*(?:aq|a|𝛂α)(?:\s*[一ー―1-9]*)$/iu,'α');
-  s=s.replace(/\s*(?:80q|bq|b|6|𝛽β)(?:\s*[一ー―1-9]*)$/iu,'β');
+  // Strip only terminal OCR noise before interpreting the subtype token. This keeps
+  // ordinary name characters intact while handling tails such as "v 一", "aq 一"
+  // and "BQ 央" seen in real equipment screenshots.
+  s=s.replace(/[\s一ー―＿_.]+$/u,'').trim();
+  s=s.replace(/\s*(?:v|V|ν|𝛾|γ)(?:\s*[一ー―昌央1-9]*)$/u,'γ');
+  // Check beta before alpha because the alpha "q" alias would otherwise turn BQ/bq into Bα.
+  s=s.replace(/\s*(?:80q|bq|b|B|6|8|𝛽|β)(?:\s*[一ー―昌央1-9]*)$/iu,'β');
+  s=s.replace(/\s*(?:aq|nq|a|A|q|𝛂|α)(?:\s*[一ー―1-9]*)$/iu,'α');
   return s;
 }
 function splitEquipmentSubtype(raw){
@@ -1294,7 +1297,7 @@ function parseSubtypeFromTail(tailStr){
 
 function stripTailSubtypeToken(raw){
   const s=String(raw||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
-  const m=s.match(/^(.*?)(?:\s*(α|β|γ|a|aq|b|bq|6|80q|v|V|ν|y|Y))\s*[一ー―昌1-9]*$/iu);
+  const m=s.match(/^(.*?)(?:\s*(α|β|γ|a|aq|b|bq|6|80q|v|V|ν|y|Y))\s*[一ー―昌央1-9]*$/iu);
   return m?m[1].trim():s;
 }
 function armorEditSimilarity(a,b){
@@ -1318,11 +1321,11 @@ function matchArmorV24(ocrRawText,category,dbItems){
   const target=(Array.isArray(dbItems)?dbItems:[]).filter(item=>String(item?.category||item?.kind||'')===String(category));
   let best=null;
   for(const item of target){
-    const dbMatch=String(item.name||'').match(/^(.*?)([αβγ])?$/u); const dbParts={base:(dbMatch?dbMatch[1]:String(item.name||'')).trim(),subtype:dbMatch&&dbMatch[2]?dbMatch[2]:null}; const rawText=String(ocrRawText||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim(); const rawBase=rawText.replace(/(?:\s*(?:α|β|γ|a|aq|b|bq|6|80q|v|V|ν|y|Y))\s*[一ー―昌1-9]*$/iu,'').trim();
+    const dbMatch=String(item.name||'').match(/^(.*?)([αβγ])?$/u); const dbParts={base:(dbMatch?dbMatch[1]:String(item.name||'')).trim(),subtype:dbMatch&&dbMatch[2]?dbMatch[2]:null}; const rawText=String(ocrRawText||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim(); const rawBase=rawText.replace(/(?:\s*(?:α|β|γ|a|aq|b|bq|6|80q|v|V|ν|y|Y))\s*[一ー―昌央1-9]*$/iu,'').trim();
     const series=robustArmorSeriesSimilarity(rawBase,dbParts.base);
     if(series<.35)continue;
     const rawClean=String(ocrRawText||'').normalize('NFKC').replace(/\s+/g,' ').trim();
-    const rawTailMatch=rawClean.match(/(?:α|β|γ|aq|a|bq|b|80q|6|v|V|ν|y|Y)\s*[一ー―昌1-9]*$/iu);
+    const rawTailMatch=rawClean.match(/(?:α|β|γ|aq|a|bq|b|80q|6|v|V|ν|y|Y)\s*[一ー―昌央1-9]*$/iu);
     const tail=rawTailMatch?rawTailMatch[0].replace(/[一ー―昌]+$/u,'').trim():'';
     const detected=parseSubtypeFromTail(tail);
     let score=.88*series;
@@ -1441,8 +1444,27 @@ function aggregateHierarchicalArmorCandidatesV26(rows,items,category,allArmorIte
   const searchPool=Array.isArray(allArmorItems)&&allArmorItems.length?allArmorItems:items;
   for(const row of list){
     const ranked=rankArmorSeriesV26(row.raw,row.conf,searchPool,category); if(!ranked.length)continue;
-    const topFamily=ranked[0];
-    const categoryVariants=topFamily.items.filter(item=>String(item?.category||item?.kind||'')===String(category));
+    const wantKind=armorCategoryKey(category);
+    // DB rows are normalized with kind=head/chest/arms/waist/legs. Never compare
+    // that internal kind directly with the Japanese display category.
+    const familyWithCategory=ranked.find(f=>f.items.some(item=>String(item?.category||item?.kind||'')===String(category)||String(item?.kind||'')===wantKind));
+    if(!familyWithCategory){
+      // Series-first retrieval can legitimately fail on very noisy OCR. Recover
+      // candidates with the generic matcher rather than returning an empty result.
+      const fallback=aggregateGenericEquipmentCandidates(list,[...searchPool].filter(item=>String(item?.kind||'')===wantKind||String(item?.category||'')===String(category)));
+      if(fallback.length){
+        row.ranked=fallback.slice(0,3);
+        for(const cand of fallback.slice(0,3)){
+          const key=cand.name; const old=agg.get(key)||{...cand,support:0,seriesRows:[],subtypeMatches:0,subtypeObserved:0,confSum:0,topRows:[],total:list.length,seriesName:armorBaseName(cand.name),subtype:splitEquipmentSubtype(cand.name).subtype};
+          old.support+=1; old.confSum+=Number(row.conf||0); old.seriesRows.push(Number(cand.nameScore||0));
+          old.topRows.push({rank:0,score:Number(cand.score||0),seriesScore:Number(cand.nameScore||0),subtypeScore:null,conf:Number(row.conf||0),raw:row.raw,anchorMatched:false});
+          agg.set(key,old);
+        }
+      }
+      continue;
+    }
+    const topFamily=familyWithCategory;
+    const categoryVariants=topFamily.items.filter(item=>String(item?.category||item?.kind||'')===String(category)||String(item?.kind||'')===wantKind);
     if(!categoryVariants.length)continue;
     row.ranked=categoryVariants.map(item=>({item,seriesName:topFamily.seriesName}));
     const detected=parseSubtypeFromTail(parseArmorStructure(row.raw,category).tailPart);

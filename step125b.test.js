@@ -622,6 +622,7 @@ assert(allPart[0].seriesName==='護雷顎竜ヘルム','all-part series fallback
 const v26AggEnd=html.indexOf('\nfunction equipmentDecisionV26',v26AggStart);
 const aggCode=html.slice(v26AggStart,v26AggEnd);
 const aggNS={Math,Number,String,Array,Map,Object,Set,
+ armorCategoryKey:c=>({'頭防具':'head','胴防具':'chest','腕防具':'arms','腰防具':'waist','脚防具':'legs'}[c]||c||''),
  parseArmorStructure:(raw,cat)=>({hasAnchor:true,seriesPart:'シュバルカ',anchorPart:'メイル',tailPart:String(raw).includes('γ')?'γ':''}),
  armorDbStructure:n=>({hasAnchor:true,seriesPart:'シュバルカ',anchorPart:'メイル'}),
  splitEquipmentSubtype:s=>{const m=String(s).match(/^(.*?)([αβγ])$/u);return m?{base:m[1],subtype:m[2]}:{base:String(s),subtype:null};},
@@ -640,3 +641,42 @@ const ar=aggNS.agg([{raw:'シュバルカメイルγ',conf:80}], [
 assert(ar[0].name==='シュバルカメイルγ','OCR-supported subtype must rank first');
 assert(ar[0].support===1,'supported subtype must receive support');
 console.log('step125b v2.6 tests passed');
+
+// Step 1.25-B v2.6 hardening RED tests: subtype-tail noise and kind/category projection.
+const hardNS={Math,Number,String,Array,Map,Object,Set};
+vm.createContext(hardNS);
+function evalFnPair(startName,endName,extra=''){
+  const a=html.indexOf('function '+startName+'('), b=html.indexOf('\nfunction '+endName+'(',a);
+  assert(a>=0&&b>a, startName+' source must exist');
+  vm.runInContext(html.slice(a,b)+extra,hardNS);
+}
+evalFnPair('normalizeSubtypeSymbols','splitEquipmentSubtype','\nthis.norm=normalizeSubtypeSymbols;');
+assert.strictEqual(hardNS.norm('シュバパルカメイルv 一'),'シュバパルカメイルγ','trailing OCR noise must not block gamma normalization');
+assert.strictEqual(hardNS.norm('ドシャタクマコイルaq 一'),'ドシャタクマコイルα','trailing OCR noise must not block alpha normalization');
+assert.strictEqual(hardNS.norm('ヘルムBQ 央'),'ヘルムβ','beta tail OCR noise must be normalized');
+const tailNS={Math,Number,String,Array,Map,Object,Set}; vm.createContext(tailNS);
+function evalFn(ns,startName,endName,extra=''){const a=html.indexOf('function '+startName+'('),b=html.indexOf('\nfunction '+endName+'(',a);assert(a>=0&&b>a,startName+' source must exist');vm.runInContext(html.slice(a,b)+extra,ns);}
+evalFn(tailNS,'parseSubtypeFromTail','stripTailSubtypeToken','\nthis.parse=parseSubtypeFromTail;');
+evalFn(tailNS,'stripTailSubtypeToken','armorEditSimilarity','\nthis.strip=stripTailSubtypeToken;');
+assert.strictEqual(tailNS.parse('v 一'),'γ','gamma tail parser must tolerate trailing noise');
+assert.strictEqual(tailNS.parse('aq 一'),'α','alpha tail parser must tolerate trailing noise');
+assert.strictEqual(tailNS.parse('BQ 央'),'β','beta tail parser must tolerate trailing OCR noise');
+assert.strictEqual(tailNS.strip('シュバパルカメイルv 一'),'シュバパルカメイル','tail subtype and trailing noise must be stripped together');
+// Regression: production DB rows use kind=head/chest/etc; aggregation must not require Japanese category strings.
+const kindNS={Math,Number,String,Array,Map,Object,Set,
+  armorCategoryKey:c=>({'頭防具':'head','胴防具':'chest','腕防具':'arms','腰防具':'waist','脚防具':'legs'}[c]||c||''),
+  v26FamilyKey:i=>String(i.name).replace(/[αβγ]$/u,''),
+  v26SeriesPassScore:()=>.90,
+  rankArmorSeriesV26:()=>[{seriesName:'シュバルカメイル',seriesScore:.90,anchorMatched:true,items:[{name:'シュバルカメイルγ',kind:'chest'}]}],
+  parseArmorStructure:()=>({hasAnchor:true,seriesPart:'シュバルカ',anchorPart:'メイル',tailPart:'γ'}),
+  armorDbStructure:()=>({hasAnchor:true,seriesPart:'シュバルカ',anchorPart:'メイル'}),
+  splitEquipmentSubtype:s=>({base:String(s).replace(/[αβγ]$/u,''),subtype:String(s).slice(-1)}),
+  parseSubtypeFromTail:s=>String(s)==='γ'?'γ':'',
+};
+vm.createContext(kindNS);
+const kindAggStart=html.indexOf('function aggregateHierarchicalArmorCandidatesV26(');
+const kindAggEnd=html.indexOf('\nfunction equipmentDecisionV26',kindAggStart);
+vm.runInContext(html.slice(kindAggStart,kindAggEnd)+'\nthis.agg=aggregateHierarchicalArmorCandidatesV26;',kindNS);
+const kindResult=kindNS.agg([{raw:'シュバルカメイルv',conf:80}],[], '胴防具',[{name:'シュバルカメイルγ',kind:'chest'}]);
+assert(kindResult.length>0,'armor aggregation must retain kind=chest DB rows');
+console.log('step125b v2.6 hardening RED tests passed');
