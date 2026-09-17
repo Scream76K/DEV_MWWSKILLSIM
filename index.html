@@ -1889,6 +1889,75 @@ function renderPreprocessPreview(){
   window.lastPreprocessPreview=records;
   status.textContent=`前処理確認完了：${records.length}部位 × ${PREPROCESS_PASSES.length}方式 / OCR未実行 / ${(performance.now()-started).toFixed(1)}ms`;
 }
+
+function renderCropOnlySpike(){
+  const host=$('preprocessPreview');
+  const status=$('preprocessStatus');
+  const regions=Array.isArray(window.lastEquipmentRegions)?window.lastEquipmentRegions:[];
+  if(!$('img').src){status.textContent='先に画像を選択してください。';return;}
+  if(regions.length!==9){status.textContent='先に「画面構造を自動検出」を実行してください。';return;}
+
+  const labels={
+    mainWeapon:'メイン武器',head:'頭防具',chest:'胴防具',arms:'腕防具',
+    waist:'腰防具',legs:'脚防具',charm:'護石'
+  };
+  const started=performance.now();
+  host.innerHTML='';
+
+  const intro=document.createElement('div');
+  intro.className='note';
+  intro.textContent='OCRは実行せず、検出した装備名の切り出し範囲だけを確認します。各部位は「現在方式」を基準に、比較用の広幅・余白付き範囲も表示します。';
+  host.appendChild(intro);
+
+  const records=[];
+  for(const key of PREPROCESS_TARGETS){
+    const region=regions.find(r=>r.key===key);
+    if(!region)continue;
+
+    const card=document.createElement('div');
+    card.style='border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:8px';
+
+    const title=document.createElement('div');
+    title.innerHTML=`<b>${labels[key]||key}</b> <span class="note">切り出し境界のみ</span>`;
+    card.appendChild(title);
+
+    const variants=buildEquipmentNameCropVariantsV311(region,imgW,imgH);
+    const row=document.createElement('div');
+    row.style='display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px';
+
+    const variantRecords=[];
+    for(const variant of variants){
+      const wrap=document.createElement('div');
+      const lab=document.createElement('div');
+      lab.className='note';
+      lab.textContent=variant.label;
+      wrap.appendChild(lab);
+
+      const rect=clampRectToImage(variant.rect,imgW,imgH);
+      const c=document.createElement('canvas');
+      const sx=Math.max(0,Math.round(rect.x));
+      const sy=Math.max(0,Math.round(rect.y));
+      const sw=Math.max(1,Math.min(imgW-sx,Math.round(rect.width)));
+      const sh=Math.max(1,Math.min(imgH-sy,Math.round(rect.height)));
+      const scale=Math.min(3,1200/Math.max(sw,sh));
+      c.width=Math.max(1,Math.round(sw*scale));
+      c.height=Math.max(1,Math.round(sh*scale));
+      c.getContext('2d').drawImage($('img'),sx,sy,sw,sh,0,0,c.width,c.height);
+      c.style='width:100%;height:auto;display:block;background:#111;border-radius:6px;margin-top:4px';
+      wrap.appendChild(c);
+      row.appendChild(wrap);
+      variantRecords.push({id:variant.id,label:variant.label,rect,canvas:c});
+    }
+
+    card.appendChild(row);
+    host.appendChild(card);
+    records.push({key,variants:variantRecords});
+  }
+
+  window.lastCropOnlyPreview=records;
+  status.textContent=`切り出し確認完了：${records.length}部位 × 4方式 / OCR未実行 / ${(performance.now()-started).toFixed(1)}ms`;
+}
+
 if(typeof renderCropOnlySpike==='function') $('previewCropOnly').onclick=renderCropOnlySpike;
 $('previewPreprocess').onclick=renderPreprocessPreview;
 
