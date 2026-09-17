@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-B v2.4 - MH Wilds OCR — 環境耐性・階層型装備OCR</title>
+<title>Step 1.25-B v2.5 - MH Wilds OCR — 環境耐性・階層型装備OCR</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v2.4：環境耐性・階層型装備OCR</h1>
+<h1>MH Wilds OCR — Step 1.25-B v2.5：環境耐性・階層型装備OCR</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -1178,7 +1178,89 @@ function equipmentRegionCanvas(region, mode='color', band='full'){
 }
 
 
-// Step 1.25-B v2.4: hierarchical armor recognition.
+// Step 1.25-B v2.5: domain-structure parsing for armor and talismans.
+// OCR is still limited to the existing three image passes; these helpers only
+// reinterpret the resulting text using Monster Hunter UI grammar.
+const CATEGORY_ANCHORS={
+  head:['ヘルム','キャップ','クラウン','ピアス','ヘッド'],
+  chest:['メイル','ベスト','スーツ','ジャケット','ボディ'],
+  arms:['アーム','グラブ','アームズ','カフス','バンテージ'],
+  waist:['コイル','フォールド','ウエスト','ベルト','ループ'],
+  legs:['グリーヴ','ブーツ','パンツ','トラウザー','レギンス']
+};
+function armorCategoryKey(category){
+  const map={'頭防具':'head','胴防具':'chest','腕防具':'arms','腰防具':'waist','脚防具':'legs'};
+  return map[category]||category||'';
+}
+function parseArmorStructure(rawOcrText,category){
+  const anchors=CATEGORY_ANCHORS[armorCategoryKey(category)]||[];
+  const clean=String(rawOcrText||'').normalize('NFKC').replace(/[\s\._|｜]+/g,'');
+  let foundAnchor='',anchorIdx=-1;
+  for(const anchor of anchors){const idx=clean.indexOf(anchor);if(idx!==-1&&(anchorIdx===-1||idx<anchorIdx)){foundAnchor=anchor;anchorIdx=idx;}}
+  if(anchorIdx!==-1)return {hasAnchor:true,seriesPart:clean.substring(0,anchorIdx),anchorPart:foundAnchor,tailPart:clean.substring(anchorIdx+foundAnchor.length)};
+  return {hasAnchor:false,seriesPart:clean,anchorPart:'',tailPart:''};
+}
+function armorDbStructure(itemName,category){
+  const parsed=parseArmorStructure(itemName,category);
+  if(parsed.hasAnchor)return parsed;
+  const base=armorBaseName(itemName);
+  return parseArmorStructure(base,category);
+}
+function matchArmorV25(ocrText,category,armorDb){
+  const target=(Array.isArray(armorDb)?armorDb:[]).filter(item=>String(item?.category||item?.kind||'')===String(category));
+  const parsed=parseArmorStructure(ocrText,category);
+  const detectedSubtype=parseSubtypeFromTail(parsed.tailPart);
+  let best=null;
+  for(const item of target){
+    const db=armorDbStructure(item.name,category);
+    if(!db.seriesPart)continue;
+    const seriesScore=robustArmorSeriesSimilarity(parsed.seriesPart,db.seriesPart);
+    if(seriesScore<.20)continue;
+    const anchorMatch=parsed.hasAnchor&&db.hasAnchor&&parsed.anchorPart===db.anchorPart;
+    const anchorBonus=anchorMatch?.22:0;
+    const subtype=splitEquipmentSubtype(item.name).subtype;
+    const subtypeBonus=subtype&&detectedSubtype===subtype?.18:0;
+    const subtypePenalty=subtype&&detectedSubtype&&detectedSubtype!==subtype?.18:0;
+    const score=Math.min(1,.78*seriesScore+anchorBonus+subtypeBonus-subtypePenalty);
+    const candidate={item,score,seriesScore,anchorPart:db.anchorPart,hasAnchorMatch:anchorMatch,detectedSubtype,subtype};
+    if(!best||candidate.score>best.score)best=candidate;
+  }
+  return best;
+}
+function parseTalismanStructure(rawOcrText){
+  const clean=String(rawOcrText||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/[\s\._|｜]+/g,'').trim();
+  if(!clean)return {anchorFound:false,prefixCandidate:'',suffixCandidate:'',anchor:'',level:''};
+  const noIndex=clean.indexOf('の');
+  if(noIndex>0)return {anchorFound:true,prefixCandidate:clean.substring(0,noIndex),suffixCandidate:clean.substring(noIndex+1),anchor:'の',level:parseTalismanLevel(clean.substring(noIndex+1))};
+  const m=clean.match(/^(.*?)(護石|護|石|引)(.*)$/u);
+  if(m&&m[1])return {anchorFound:true,prefixCandidate:m[1],suffixCandidate:m[2]+m[3],anchor:m[2],level:parseTalismanLevel(m[2]+m[3])};
+  return {anchorFound:false,prefixCandidate:clean,suffixCandidate:'',anchor:'',level:''};
+}
+function talismanDbStructure(itemName){
+  const clean=String(itemName||'').normalize('NFKC').replace(/[\s\._|｜]+/g,'');
+  const m=clean.match(/^(.*?)の護石([ⅠⅡⅢⅣⅤ]*)$/u);
+  if(m)return {prefix:m[1],level:m[2]||'',hasAnchor:true};
+  const fallback=clean.match(/^(.*?)(?:護石)([ⅠⅡⅢⅣⅤ]*)$/u);
+  return fallback?{prefix:fallback[1],level:fallback[2]||'',hasAnchor:true}:{prefix:clean,level:'',hasAnchor:false};
+}
+function matchTalismanV25(rawOcrText,talismanDb){
+  const parsed=parseTalismanStructure(rawOcrText);
+  const target=Array.isArray(talismanDb)?talismanDb:[];
+  let best=null;
+  for(const item of target){
+    const db=talismanDbStructure(item.name); if(!db.prefix)continue;
+    const prefixScore=robustArmorSeriesSimilarity(parsed.prefixCandidate,db.prefix);
+    const anchorBonus=parsed.anchorFound&&db.hasAnchor?.15:0;
+    const levelBonus=parsed.level&&db.level&&parsed.level===db.level?.15:0;
+    const levelPenalty=parsed.level&&db.level&&parsed.level!==db.level?.10:0;
+    const score=Math.min(1,.70*prefixScore+anchorBonus+levelBonus-levelPenalty);
+    const candidate={item,score,prefixScore,anchorFound:parsed.anchorFound,level:db.level,detectedLevel:parsed.level};
+    if(!best||candidate.score>best.score)best=candidate;
+  }
+  return best;
+}
+
+// Step 1.25-B v2.5: hierarchical armor recognition.
 // Stage 1 compares only the armor series/base name. Alpha/beta/gamma are ignored.
 // Stage 2 compares variants only inside the winning series family.
 function armorBaseName(name){ return splitEquipmentSubtype(name).base; }
@@ -1251,80 +1333,88 @@ function armorSeriesEvidence(rows,candidateName){
 }
 function rankHierarchicalArmorCandidates(raw,conf,items){
   const pool=Array.isArray(items)?items:[];
+  const category=pool.length?String(pool[0]?.category||''):'';
+  const structure=parseArmorStructure(raw,category);
   const families=new Map();
   for(const item of pool){
     const key=armorSeriesKey(item.name); if(!key)continue;
     if(!families.has(key))families.set(key,{key,baseName:armorBaseName(item.name),items:[]});
     families.get(key).items.push(item);
   }
-  const familyRank=[...families.values()].map(f=>({
-    ...f,
-    seriesScore:armorSeriesScore(raw,f.baseName),
-    seriesRaw:f.baseName
-  })).sort((a,b)=>b.seriesScore-a.seriesScore);
+  const familyRank=[...families.values()].map(f=>{
+    const db=armorDbStructure(f.baseName,category);
+    let seriesScore=armorSeriesScore(raw,f.baseName);
+    if(structure.hasAnchor&&db.hasAnchor&&structure.anchorPart===db.anchorPart){
+      seriesScore=Math.min(1,Math.max(seriesScore,robustArmorSeriesSimilarity(structure.seriesPart,db.seriesPart))+.18);
+    }
+    return {...f,seriesScore:Math.min(1,seriesScore),seriesRaw:f.baseName,structure:db};
+  }).sort((a,b)=>b.seriesScore-a.seriesScore);
   if(!familyRank.length)return [];
-  const topFamilies=familyRank.slice(0,3);
-  const cw=confidenceWeight(conf);
-  const variants=[];
+  const topFamilies=familyRank.slice(0,3),cw=confidenceWeight(conf),variants=[];
+  const detectedSubtype=parseSubtypeFromTail(structure.tailPart);
   for(const family of topFamilies){
     for(const item of family.items){
       const parts=splitEquipmentSubtype(item.name);
-      const sub=equipmentSubtypeScore(raw,item.name);
+      const subtype=parts.subtype;
+      const sub=detectedSubtype&&subtype?(detectedSubtype===subtype?1:0):equipmentSubtypeScore(raw,item.name);
+      const subtypeContribution=subtype?(detectedSubtype===subtype?.18:(detectedSubtype?- .18:0)):0;
+      const anchorContribution=structure.hasAnchor&&family.structure.hasAnchor&&structure.anchorPart===family.structure.anchorPart?.10:0;
       const base=family.seriesScore;
-      // Stage 2 is deliberately bounded: subtype can resolve variants but cannot
-      // rescue a poor series match. OCR confidence remains secondary evidence.
-      const subtypeContribution=parts.subtype ? (.12*sub) : 0;
-      const score=.78*base+.12*cw+.10*Math.min(1,base)+subtypeContribution;
+      const score=Math.min(1,.72*base+.10*cw+.10*base+subtypeContribution+anchorContribution);
       variants.push({...item,nameScore:base,seriesScore:base,subtypeScore:sub,score,confidenceWeight:cw,
-        seriesName:family.baseName,subtype:parts.subtype,stage:'series→subtype'});
+        seriesName:family.baseName,subtype,stage:'シリーズ→部位→型式',anchorPart:family.structure.anchorPart,anchorMatched:anchorContribution>0});
     }
   }
   return variants.sort((a,b)=>b.score-a.score);
 }
 function aggregateHierarchicalArmorCandidates(rows,items){
-  // Hierarchical aggregation is intentionally family-first:
-  // 1) each OCR pass chooses its best series family;
-  // 2) all alpha/beta/gamma variants inside that winning family are retained;
-  // 3) subtype support is counted separately, so a missing/garbled suffix does
-  //    not make the other variants disappear from the candidate list.
   const agg=new Map();
-  for(const row of (Array.isArray(rows)?rows:[])){
+  const list=Array.isArray(rows)?rows:[];
+  for(const row of list){
     const familyCandidates=rankHierarchicalArmorCandidates(row.raw,row.conf,items);
     if(!familyCandidates.length)continue;
     const winningFamily=familyCandidates[0].seriesName;
-    const familyVariants=familyCandidates
-      .filter(c=>c.seriesName===winningFamily)
-      .sort((a,b)=>b.score-a.score);
-    const subtypeWinner=familyVariants[0];
-    row.ranked=familyVariants.slice(0,3);
+    const familyVariants=familyCandidates.filter(c=>c.seriesName===winningFamily).sort((a,b)=>b.score-a.score);
+    const subtypeWinner=familyVariants[0]; row.ranked=familyVariants.slice(0,3);
     familyVariants.forEach((cand,rank)=>{
-      const old=agg.get(cand.name)||{...cand,support:0,sumSeries:0,sumScore:0,bestSeries:0,confSum:0,topRows:[],total:rows.length,seriesSupport:0};
-      // Every variant gets evidence from every OCR pass whose winning series is
-      // this family. Only the best subtype for that pass receives subtype support.
+      const old=agg.get(cand.name)||{...cand,support:0,sumSeries:0,sumScore:0,bestSeries:0,confSum:0,topRows:[],total:list.length,seriesSupport:0,subtypeSum:0,subtypeEvidenceCount:0};
+      old.sumSeries+=cand.seriesScore; old.sumScore+=cand.score; old.bestSeries=Math.max(old.bestSeries,cand.seriesScore); old.seriesSupport++;
       const isSubtypeWinner=cand.name===subtypeWinner.name;
-      const w=isSubtypeWinner?1:.85;
-      old.sumSeries+=cand.seriesScore;
-      old.sumScore+=cand.score*w;
-      old.bestSeries=Math.max(old.bestSeries,cand.seriesScore);
-      old.seriesSupport++;
-      if(isSubtypeWinner){ old.support++; old.confSum+=row.conf; }
-      old.topRows.push({rank:isSubtypeWinner?0:rank+1,score:cand.score,nameScore:cand.seriesScore,conf:row.conf,seriesScore:cand.seriesScore,subtypeScore:cand.subtypeScore,seriesWinner:true});
-      old.id=cand.id;old.gameId=cand.gameId;old.kind=cand.kind;old.seriesName=cand.seriesName;old.subtype=cand.subtype;
+      if(isSubtypeWinner){old.support++;old.confSum+=row.conf;}
+      old.subtypeSum+=Number(cand.subtypeScore||0);old.subtypeEvidenceCount++;
+      old.topRows.push({rank:isSubtypeWinner?0:rank+1,score:cand.score,nameScore:cand.seriesScore,conf:row.conf,seriesScore:cand.seriesScore,subtypeScore:cand.subtypeScore,seriesWinner:true,anchorMatched:cand.anchorMatched});
+      old.id=cand.id;old.gameId=cand.gameId;old.kind=cand.kind;old.seriesName=cand.seriesName;old.subtype=cand.subtype;old.anchorPart=cand.anchorPart;old.anchorMatched=old.anchorMatched||cand.anchorMatched;
       agg.set(cand.name,old);
     });
   }
   return [...agg.values()].map(x=>{
-    const familyRows=x.topRows.filter(r=>r.seriesWinner===true);
-    const n=Math.max(1,familyRows.length);
-    const avgSeries=familyRows.length?familyRows.reduce((s,r)=>s+Number(r.seriesScore||0),0)/n:0;
-    const subtypeSupportRows=x.topRows.filter(r=>Number(r.rank)===0);
-    const confAvg=subtypeSupportRows.length?subtypeSupportRows.reduce((s,r)=>s+Number(r.conf||0),0)/subtypeSupportRows.length:0;
-    const subtypeValues=familyRows.map(r=>Number(r.subtypeScore)).filter(v=>Number.isFinite(v));
-    const subtypeAvg=subtypeValues.length?subtypeValues.reduce((s,v)=>s+v,0)/subtypeValues.length:0;
-    const avgScore=familyRows.length?familyRows.reduce((s,r)=>s+Number(r.score||0),0)/n:0;
-    const totalScore=Math.min(1,.78*avgSeries+.12*(confAvg/100)+.10*avgSeries+.12*subtypeAvg);
-    return {...x,avgNameScore:avgSeries,avgSeriesScore:avgSeries,avgRowScore:avgScore,confAvg,subtypeAvg,totalScore,final:totalScore,
-      hierarchy:{seriesScore:avgSeries,subtypeScore:subtypeAvg,totalScore}};
+    const familyRows=x.topRows||[];
+    const avgSeries=familyRows.length?familyRows.reduce((s,r)=>s+Number(r.seriesScore||0),0)/familyRows.length:0;
+    const subtypeAvg=x.subtypeEvidenceCount?x.subtypeSum/x.subtypeEvidenceCount:0;
+    const confAvg=x.support?x.confSum/x.support:0;
+    const supportRatio=x.support/Math.max(1,list.length);
+    const supportBonus=supportRatio>=.66?.08:supportRatio>0?.04:0;
+    const anchorBonus=x.anchorMatched?.06:0;
+    const totalScore=Math.min(1,.72*avgSeries+.10*avgSeries+.10*(confAvg/100)+.12*subtypeAvg+supportBonus+anchorBonus);
+    return {...x,avgNameScore:avgSeries,avgSeriesScore:avgSeries,confAvg,subtypeAvg,totalScore,final:totalScore,
+      hierarchy:{seriesScore:avgSeries,subtypeScore:subtypeAvg,totalScore,anchorMatched:x.anchorMatched}};
+  }).sort((a,b)=>b.totalScore-a.totalScore);
+}
+function aggregateTalismanCandidates(rows,items){
+  const agg=new Map(); const list=Array.isArray(rows)?rows:[];
+  for(const row of list){
+    const ranked=matchTalismanV25(row.raw,items);
+    if(!ranked)continue;
+    const key=ranked.item.name;
+    const old=agg.get(key)||{...ranked.item,support:0,sumScore:0,sumPrefix:0,confSum:0,total:list.length,rows:[]};
+    old.support++;old.sumScore+=ranked.score;old.sumPrefix+=ranked.prefixScore;old.confSum+=row.conf;old.rows.push(row);
+    old.id=ranked.item.id;old.gameId=ranked.item.gameId;old.kind=ranked.item.kind;agg.set(key,old);
+  }
+  return [...agg.values()].map(x=>{
+    const n=Math.max(1,x.support),avgScore=x.sumScore/n,avgPrefix=x.sumPrefix/n,confAvg=x.confSum/n;
+    const supportBonus=x.support===list.length&&list.length>=2?.08:x.support>=2?.04:x.support===1&&list.length===1?.04:0;
+    const totalScore=Math.min(1,.72*avgPrefix+.13*avgScore+.15*(confAvg/100)+supportBonus);
+    return {...x,avgNameScore:avgPrefix,confAvg,totalScore,final:totalScore,hierarchy:{seriesScore:avgPrefix,subtypeScore:0,totalScore}};
   }).sort((a,b)=>b.totalScore-a.totalScore);
 }
 function rankGenericEquipmentCandidates(raw,conf,items){
@@ -1373,10 +1463,10 @@ async function recognizeEquipmentAll(){
       for(const [mode,label] of passes){
         $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}をOCR中… ${label}`;
         const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c);let raw=cleanOCR(r?.data?.text||'');raw=raw.replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石|装衣)/g,' ').replace(/\s+/g,' ').trim();const conf=Number(r?.data?.confidence||0);if(raw)rows.push({raw,conf,mode:label});
-        const interim=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : aggregateHierarchicalArmorCandidates(rows,items);
+        const interim=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : (key==='charm' ? aggregateTalismanCandidates(rows,items) : aggregateHierarchicalArmorCandidates(rows,items));
         if(equipmentOCRShouldStop(interim,rows)) break;
       }
-      const ranked=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : aggregateHierarchicalArmorCandidates(rows,items);const best=ranked[0],second=ranked[1];if(best)best.decision=equipmentDecision(best,second);if(best)best.gap=second?best.totalScore-second.totalScore:null;
+      const ranked=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : (key==='charm' ? aggregateTalismanCandidates(rows,items) : aggregateHierarchicalArmorCandidates(rows,items));const best=ranked[0],second=ranked[1];if(best)best.decision=equipmentDecision(best,second);if(best)best.gap=second?best.totalScore-second.totalScore:null;
       output.push({key,rows,ranked:ranked.slice(0,3),best,region});
       const pct=best?Math.round(best.totalScore*100):0;
       $('equipmentResults').innerHTML=output.map(renderEquipmentResult).join('');

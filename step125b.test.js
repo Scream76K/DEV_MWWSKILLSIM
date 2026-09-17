@@ -2,8 +2,8 @@ const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
 const html = fs.readFileSync('index.html','utf8');
-assert(html.includes('<title>Step 1.25-B v2.4'), 'title must be Step 1.25-B v2.4');
-assert(html.includes('MH Wilds OCR — Step 1.25-B v2.4'), 'visible h1 must be Step 1.25-B v2.4');
+assert(html.includes('<title>Step 1.25-B v2.5'), 'title must be Step 1.25-B v2.5');
+assert(html.includes('MH Wilds OCR — Step 1.25-B v2.5'), 'visible h1 must be Step 1.25-B v2.5');
 const mStart = html.indexOf('function detectEquipmentRegions(');
 const mEnd = html.indexOf('\nfunction addPadding', mStart);
 const lmStart = html.indexOf('function extractEquipmentOCRLines(');
@@ -251,7 +251,7 @@ vm.runInContext(gm+'\nthis.rank=rankGenericEquipmentCandidates;this.aggregate=ag
 const genericItems=[
   {id:1,kind:'head',name:'クイーンピアスα'},
   {id:2,kind:'head',name:'クイーンピアスβ'},
-  {id:3,kind:'chest',name:'シュバルカメイルγ'}
+  {id:3,kind:'chest',category:'chest',name:'シュバルカメイルγ'}
 ];
 const rankedHead=gs.rank('クイーンピアスα',90,genericItems.filter(x=>x.kind==='head'));
 assert.strictEqual(rankedHead[0].name,'クイーンピアスα');
@@ -332,6 +332,11 @@ assert(hStart >= 0, 'v2.3 hierarchical armor ranking helper must exist');
 const hEnd = html.indexOf('\nfunction rankGenericEquipmentCandidates(', hStart);
 const hCode = html.slice(hStart, hEnd);
 const hs = {Math, Number, String, Object, Array, Map, Set,
+  CATEGORY_ANCHORS:{head:['ヘルム'],chest:['メイル'],arms:['アーム'],waist:['コイル'],legs:['グリーヴ']},
+  armorCategoryKey:c=>({'頭防具':'head','胴防具':'chest','腕防具':'arms','腰防具':'waist','脚防具':'legs'}[c]||c||''),
+  parseArmorStructure:(raw,cat)=>{const clean=String(raw||'').replace(/[\s\._|｜]+/g,'');const anchors=hs.CATEGORY_ANCHORS[hs.armorCategoryKey(cat)]||[];for(const a of anchors){const i=clean.indexOf(a);if(i>=0)return {hasAnchor:true,seriesPart:clean.substring(0,i),anchorPart:a,tailPart:clean.substring(i+a.length)}}return {hasAnchor:false,seriesPart:clean,anchorPart:'',tailPart:''};},
+  armorDbStructure:(name,cat)=>hs.parseArmorStructure(name,cat),
+  parseSubtypeFromTail:s=>/^(?:v|γ)$/i.test(String(s||''))?'γ':/^(?:6|b|BQ|β)$/i.test(String(s||''))?'β':/^(?:a|aq|α)$/i.test(String(s||''))?'α':'',
   normalizeForNameScore:v=>Array.from(String(v||'').normalize('NFKC')).filter(ch=>!/[\s\u3000・･·•\-‐‑‒–—―＿_.,，。！？!?、:：;；/／\\|｜()[\]{}「」『』【】〈〉《》<>＋+＝=＊*#＃%％&＆@＠]/.test(ch)),
   splitEquipmentSubtype:raw=>{const s=String(raw||'').replace(/\s+/g,'').replace(/(?:v|V|ν)$/u,'γ').replace(/(?:aq|a)$/iu,'α').replace(/(?:bq|b|BQ)$/iu,'β');const m=s.match(/^(.*?)([αβγ])$/u);return m?{base:m[1],subtype:m[2]}:{base:s,subtype:null};},
   weightedNameDistance:(raw,name)=>({score:String(raw).replace(/\s/g,'')===String(name).replace(/\s/g,'')?1:.4}),
@@ -340,10 +345,10 @@ const hs = {Math, Number, String, Object, Array, Map, Set,
 vm.createContext(hs);
 vm.runInContext(hCode+'\nthis.rank=rankHierarchicalArmorCandidates;this.agg=aggregateHierarchicalArmorCandidates;',hs);
 const armorItems=[
-  {id:1,kind:'chest',name:'シュバルカメイルα'},
-  {id:2,kind:'chest',name:'シュバルカメイルβ'},
-  {id:3,kind:'chest',name:'シュバルカメイルγ'},
-  {id:4,kind:'chest',name:'ドシャグマメイルα'}
+  {id:1,kind:'chest',category:'chest',name:'シュバルカメイルα'},
+  {id:2,kind:'chest',category:'chest',name:'シュバルカメイルβ'},
+  {id:3,kind:'chest',category:'chest',name:'シュバルカメイルγ'},
+  {id:4,kind:'chest',category:'chest',name:'ドシャグマメイルα'}
 ];
 const hr=hs.rank('シュバルカメイルv',90,armorItems);
 assert.strictEqual(hr[0].seriesName,'シュバルカメイル');
@@ -356,9 +361,9 @@ assert(ha.some(x=>x.name==='シュバルカメイルα'), 'all variants in the w
 assert(ha.some(x=>x.name==='シュバルカメイルβ'), 'all variants in the winning series must remain comparable');
 assert(ha.filter(x=>x.seriesName==='シュバルカメイル').length===3, 'stage 2 must compare all alpha/beta/gamma variants within the winning series');
 const noisyArmorItems=[
-  {id:1,kind:'chest',name:'シュバルカメイルα'},
-  {id:2,kind:'chest',name:'シュバルカメイルβ'},
-  {id:3,kind:'chest',name:'シュバルカメイルγ'},
+  {id:1,kind:'chest',category:'chest',name:'シュバルカメイルα'},
+  {id:2,kind:'chest',category:'chest',name:'シュバルカメイルβ'},
+  {id:3,kind:'chest',category:'chest',name:'シュバルカメイルγ'},
   {id:4,kind:'chest',name:'コンガメイルα'},
   {id:5,kind:'chest',name:'コンガメイルβ'},
   {id:6,kind:'chest',name:'コンガメイルγ'},
@@ -370,7 +375,7 @@ assert.strictEqual(ha[0].hierarchy.seriesScore,ha[0].avgSeriesScore);
 console.log('step125b v2.3 hierarchical armor tests passed');
 
 
-// Step 1.25-B v2.4 RED: adaptive preprocessing and contextual subtype normalization.
+// Step 1.25-B v2.5 RED: adaptive preprocessing and contextual subtype normalization.
 // Otsu must be available as a standalone canvas transform without changing OCR pass count.
 const otsuStart = html.indexOf('function otsuThreshold(');
 assert(otsuStart >= 0, 'v2.4 Otsu helper must exist');
@@ -457,3 +462,87 @@ const m2 = ms.matchArmorV24('ゴアグリーヴ80Q','脚防具',[{name:'ゴア�
 assert(m2 && m2.item.name==='ゴアグリーヴβ', 'part-limited series matching should resolve ゴアグリーヴβ');
 
 console.log('step125b v2.4 adaptive preprocessing/series evidence RED tests passed');
+
+
+// Step 1.25-B v2.5 RED: armor structure anchors isolate the series from the part suffix.
+const v25AnchorStart = html.indexOf('function parseArmorStructure(');
+assert(v25AnchorStart >= 0, 'v2.5 parseArmorStructure helper must exist');
+const v25AnchorEnd = html.indexOf('\nfunction matchArmorV25', v25AnchorStart);
+assert(v25AnchorEnd > v25AnchorStart, 'v2.5 armor matcher must follow structure parser');
+const v25AnchorCode = "const CATEGORY_ANCHORS={head:['ヘルム','キャップ','クラウン','ピアス','ヘッド'],chest:['メイル','ベスト','スーツ','ジャケット','ボディ'],arms:['アーム','グラブ','アームズ','カフス','バンテージ'],waist:['コイル','フォールド','ウエスト','ベルト','ループ'],legs:['グリーヴ','ブーツ','パンツ','トラウザー','レギンス']};\nfunction armorCategoryKey(c){return ({'頭防具':'head','胴防具':'chest','腕防具':'arms','腰防具':'waist','脚防具':'legs'}[c]||c||'');}\n"+html.slice(v25AnchorStart, v25AnchorEnd);
+const a25 = {Math, Number, String, Object, Array};
+vm.createContext(a25);
+vm.runInContext(v25AnchorCode+'\nthis.parseArmorStructure=parseArmorStructure;', a25);
+const ah = a25.parseArmorStructure('謀電器音ヘルムBQ','頭防具');
+assert.strictEqual(ah.hasAnchor,true);
+assert.strictEqual(ah.seriesPart,'謀電器音');
+assert.strictEqual(ah.anchorPart,'ヘルム');
+assert.strictEqual(ah.tailPart,'BQ');
+const ac = a25.parseArmorStructure('シュバパルカメイルv','胴防具');
+assert.strictEqual(ac.anchorPart,'メイル');
+assert.strictEqual(ac.seriesPart,'シュバパルカ');
+assert.strictEqual(ac.tailPart,'v');
+
+// v2.5 RED: talisman structure must isolate the prefix before 「の」 and preserve level parsing.
+const talStart = html.indexOf('function parseTalismanStructure(');
+assert(talStart >= 0, 'v2.5 parseTalismanStructure helper must exist');
+const talEnd = html.indexOf('\nfunction matchTalismanV25', talStart);
+assert(talEnd > talStart, 'v2.5 talisman matcher must follow structure parser');
+const talCode = html.slice(talStart, talEnd);
+const ts = {Math, Number, String, Object, Array};
+vm.createContext(ts);
+vm.runInContext("function parseTalismanLevel(s){return String(s||'').includes('Ⅳ')?'Ⅳ':'';}\n"+talCode+'\nthis.parseTalismanStructure=parseTalismanStructure;', ts);
+const tp = ts.parseTalismanStructure('由由の護引 ニ');
+assert.strictEqual(tp.anchorFound,true);
+assert.strictEqual(tp.prefixCandidate,'由由');
+assert.strictEqual(tp.suffixCandidate,'護引ニ');
+const tp2 = ts.parseTalismanStructure('栄世護石Ⅳ');
+assert.strictEqual(tp2.anchorFound,true);
+assert.strictEqual(tp2.prefixCandidate,'栄世');
+
+// v2.5 RED: matching must use anchor structure before full-name similarity.
+const m25Start = html.indexOf('function matchArmorV25(');
+const m25End = html.indexOf('\nfunction parseTalismanStructure', m25Start);
+assert(m25Start >= 0 && m25End > m25Start, 'v2.5 armor matcher helper must exist');
+const m25Code = "const CATEGORY_ANCHORS={head:['ヘルム'],chest:['メイル'],arms:['アーム'],waist:['コイル'],legs:['グリーヴ']};function armorCategoryKey(c){return ({'頭防具':'head','胴防具':'chest','腕防具':'arms','腰防具':'waist','脚防具':'legs'}[c]||c||'');}\n"+html.slice(v25AnchorStart, m25End);
+const m25 = {Math, Number, String, Object, Array, Map,
+  robustArmorSeriesSimilarity:(a,b)=>{a=String(a||'').replace(/\s/g,'');b=String(b||'').replace(/\s/g,'');if(a===b)return 1;if(a.includes(b)||b.includes(a))return .92;return .25;},
+  armorBaseName:s=>String(s||'').replace(/[αβγ]$/u,''),
+  splitEquipmentSubtype:s=>{const m=String(s||'').match(/^(.*?)([αβγ])$/u);return m?{base:m[1],subtype:m[2]}:{base:String(s||''),subtype:null};},
+  calculateSimilarity:(a,b)=>{
+    a=String(a||''); b=String(b||'');
+    if(a==='謀電器音'&&b==='護雷顎竜') return 0.25;
+    return a===b?1:0.1;
+  },
+  parseSubtypeFromTail:s=>String(s)==='BQ'?'β':'',
+};
+vm.createContext(m25);
+vm.runInContext(m25Code+'\nthis.matchArmorV25=matchArmorV25;', m25);
+const armor25db=[
+ {name:'護雷顎竜ヘルムα',category:'頭防具'},
+ {name:'護雷顎竜ヘルムβ',category:'頭防具'},
+ {name:'コンガヘルムβ',category:'頭防具'}
+];
+const am25=m25.matchArmorV25('謀電器音ヘルムBQ','頭防具',armor25db);
+assert(am25 && am25.item.name==='護雷顎竜ヘルムβ', 'anchor-separated matching should prefer the correct armor family');
+
+// v2.5 RED: talisman matching must not let suffix OCR noise contaminate prefix matching.
+const tm25Start = html.indexOf('function matchTalismanV25(');
+assert(tm25Start >= 0, 'v2.5 matchTalismanV25 helper must exist');
+const tm25End = html.indexOf('\nfunction ', tm25Start + 10);
+const tm25Code = html.slice(talStart, tm25End > tm25Start ? tm25End : tm25Start + 5000);
+const tm = {Math, Number, String, Object, Array,
+  robustArmorSeriesSimilarity:(a,b)=>{a=String(a||'').replace(/\s/g,'');b=String(b||'').replace(/\s/g,'');return (a==='由由'&&b==='栄世')?.8:(a===b?1:0);},
+  calculateSimilarity:(a,b)=>{
+    a=String(a||''); b=String(b||'');
+    if(a==='由由'&&b==='栄世') return 0.8;
+    return a===b?1:0;
+  },
+  parseTalismanLevel:s=>String(s).includes('Ⅳ')?'Ⅳ':''
+};
+vm.createContext(tm);
+vm.runInContext(tm25Code+'\nthis.matchTalismanV25=matchTalismanV25;', tm);
+const talDb=[{name:'栄世の護石',category:'護石'},{name:'整備の護石Ⅳ',category:'護石'}];
+const tmres=tm.matchTalismanV25('由由の護引 ニ',talDb);
+assert(tmres && tmres.item.name==='栄世の護石', 'talisman prefix matching should ignore suffix OCR noise');
+console.log('step125b v2.5 RED tests passed');
