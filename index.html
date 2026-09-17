@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-B v2.6.1 - MH Wilds OCR — 防具候補生成ハードニング</title>
+<title>Step 1.25-B v2.8 - MH Wilds OCR — OCR入力画像改善</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v2.6.1：防具候補生成ハードニング</h1>
+<h1>MH Wilds OCR — Step 1.25-B v2.8：OCR入力画像改善</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -475,12 +475,19 @@ function equipmentNameCropRect(region, imageWidth, imageHeight) {
   // The detected region already starts near the left edge of the text
   // column. Do not add another 12% inset here: that would cut the first
   // characters on the actual MH Wilds layout (e.g. `代償の...`).
-  const labelX = Number.isFinite(Number(region.labelX)) ? Number(region.labelX) : rx;
-  const x = Math.max(0, Math.min(iw - 1, Math.min(rx, labelX)));
-  // Keep the crop in the name column; the right side of the card contains
-  // decoration/slot icons that otherwise become OCR noise.
-  const rightInset = Math.max(8, rw * 0.02);
-  const maxW = Math.max(1, Math.min(rw * 0.62, rw - (x-rx) - rightInset, iw - x));
+  const hasLabelX = Number.isFinite(Number(region.labelX));
+  // If the semantic anchor exists, its x is the actual text-column start.
+  // When it does not, keep a modest inset so the equipment icon is not fed to OCR.
+  const labelX = hasLabelX ? Number(region.labelX) : (rx + Math.min(18, rw * 0.04));
+  const x = Math.max(rx, Math.min(iw - 1, labelX));
+  // v2.8: labelWidth belongs to the category label (e.g. `頭防具`), not the
+  // equipment-name string. It is therefore a lower-bound hint, never an upper
+  // bound. The previous upper bound could truncate names such as
+  // `護雷顎竜ヘルムβ` before OCR saw the full string.
+  const rightInset = Math.max(8, rw * 0.04);
+  const available = Math.max(1, Math.min(rw - (x-rx) - rightInset, iw - x));
+  const nameColumnWidth = Math.max(140, rw * 0.62);
+  const maxW = Math.max(1, Math.min(available, nameColumnWidth));
   const y = Math.max(0, labelY + labelH + Math.max(1, pitch * 0.01));
   const h = Math.max(14, Math.min(pitch * 0.40, labelH * 1.70, ih - y));
   return {x, y, width:maxW, height:h, pitch, source:region.inferred ? 'inferred' : 'label-anchor'};
@@ -1135,6 +1142,29 @@ function otsuThreshold(ctx,width,height){
   ctx.putImageData(img,0,0); return threshold;
 }
 
+function whiteTextHSV(ctx,w,h){
+  const img=ctx.getImageData(0,0,w,h), d=img.data;
+  let sum=0; const vals=[];
+  for(let i=0;i<d.length;i+=4){
+    const r=d[i],g=d[i+1],b=d[i+2];
+    const mx=Math.max(r,g,b), mn=Math.min(r,g,b);
+    sum+=mx; vals.push(mx);
+  }
+  vals.sort((a,b)=>a-b);
+  const p85=vals[Math.min(vals.length-1,Math.floor(vals.length*.85))]||160;
+  const vCut=Math.max(135,Math.min(190,p85));
+  const sCut=72;
+  for(let i=0;i<d.length;i+=4){
+    const r=d[i],g=d[i+1],b=d[i+2];
+    const mx=Math.max(r,g,b), mn=Math.min(r,g,b);
+    const sat=mx===0?0:Math.round(((mx-mn)/mx)*255);
+    const keep=mx>=vCut && sat<=sCut;
+    const z=keep?255:0;
+    d[i]=d[i+1]=d[i+2]=z;
+  }
+  ctx.putImageData(img,0,0);
+}
+
 function equipmentRegionCanvas(region, mode='color', band='full'){
   const sx=Math.max(0,Math.round(region.x)), sy=Math.max(0,Math.round(region.y));
   const sw=Math.max(1,Math.min(imgW-sx,Math.round(region.width))), sh=Math.max(1,Math.min(imgH-sy,Math.round(region.height)));
@@ -1164,7 +1194,7 @@ function equipmentRegionCanvas(region, mode='color', band='full'){
   ctx.imageSmoothingQuality='medium';
   ctx.drawImage(base,crop.x,crop.y,crop.width,crop.height,0,0,c.width,c.height);
 
-  if(mode==='otsu'){ otsuThreshold(ctx,c.width,c.height); } else if(mode==='white_extract' || mode==='invert' || mode==='grayscale'){
+  if(mode==='hsv_white'){ whiteTextHSV(ctx,c.width,c.height); } else if(mode==='otsu'){ otsuThreshold(ctx,c.width,c.height); } else if(mode==='white_extract' || mode==='invert' || mode==='grayscale'){
     const d=ctx.getImageData(0,0,c.width,c.height);
     for(let i=0;i<d.data.length;i+=4){
       const g=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
@@ -1181,7 +1211,7 @@ function equipmentRegionCanvas(region, mode='color', band='full'){
 }
 
 
-// Step 1.25-B v2.6: domain-structure parsing for armor and talismans.
+// Step 1.25-B v2.8: domain-structure parsing for armor and talismans.
 // OCR is still limited to the existing three image passes; these helpers only
 // reinterpret the resulting text using Monster Hunter UI grammar.
 const CATEGORY_ANCHORS={
@@ -1274,7 +1304,7 @@ function matchTalismanV25(rawOcrText,talismanDb){
   return best;
 }
 
-// Step 1.25-B v2.6: hierarchical armor recognition.
+// Step 1.25-B v2.8: hierarchical armor recognition.
 // Stage 1 compares only the armor series/base name. Alpha/beta/gamma are ignored.
 // Stage 2 compares variants only inside the winning series family.
 function armorBaseName(name){ return splitEquipmentSubtype(name).base; }
@@ -1386,7 +1416,7 @@ function rankHierarchicalArmorCandidates(raw,conf,items){
   return variants.sort((a,b)=>b.score-a.score);
 }
 
-// Step 1.25-B v2.6: robust series-first recognition.
+// Step 1.25-B v2.8: robust series-first recognition.
 // Each OCR pass is scored independently; no concatenation of noisy OCR strings.
 function v26NormalizeArmorText(value){
   return Array.from(String(value||'').normalize('NFKC')).filter(ch=>!/[\s・･·•\-‐‑‒–—―＿_.,，。！？!?、:：;；/／\\|｜()[\]{}「」『』【】〈〉《》<>＋+＝=＊*#＃%％&＆@＠]/.test(ch)).join('');
@@ -1595,7 +1625,7 @@ async function recognizeEquipmentAll(){
     const output=[];
     for(const key of targets){
       const region=regions.find(r=>r.key===key); const items=equipmentRowsForSlot(key); const rows=[];
-      const passes=[['white_extract','白文字強調'],['otsu','大津二値化'],['grayscale','グレースケール']];
+      const passes=[['white_extract','白文字強調'],['hsv_white','白文字・色除去'],['grayscale','グレースケール']];
       for(const [mode,label] of passes){
         $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}をOCR中… ${label}`;
         const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c);let raw=cleanOCR(r?.data?.text||'');raw=raw.replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石|装衣)/g,' ').replace(/\s+/g,' ').trim();const conf=Number(r?.data?.confidence||0);if(raw)rows.push({raw,conf,mode:label});

@@ -2,8 +2,8 @@ const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
 const html = fs.readFileSync('index.html','utf8');
-assert(html.includes('<title>Step 1.25-B v2.6'), 'title must be Step 1.25-B v2.6');
-assert(html.includes('MH Wilds OCR — Step 1.25-B v2.6'), 'visible h1 must be Step 1.25-B v2.6');
+assert(html.includes('<title>Step 1.25-B v2.8'), 'title must be Step 1.25-B v2.8');
+assert(html.includes('MH Wilds OCR — Step 1.25-B v2.8'), 'visible h1 must be Step 1.25-B v2.8');
 const mStart = html.indexOf('function detectEquipmentRegions(');
 const mEnd = html.indexOf('\nfunction addPadding', mStart);
 const lmStart = html.indexOf('function extractEquipmentOCRLines(');
@@ -293,8 +293,8 @@ assert(html.includes("function addPaddingCustom(sourceCanvas, padX = 30, padY = 
 assert(html.includes('const scale=2.5'), 'v2.1 equipment OCR canvas should use 2.5x scaling');
 assert(html.includes("mode==='white_extract'"), 'v2.1 must include white-text extraction');
 assert(html.includes("mode==='grayscale'"), 'v2.1 must include grayscale mode');
-assert(html.includes("const passes=[['white_extract','白文字強調'],['otsu','大津二値化'],['grayscale','グレースケール']];"),
-  'v2.4 equipment OCR passes must include adaptive preprocessing');
+assert(html.includes("const passes=[['white_extract','白文字強調'],['hsv_white','白文字・色除去'],['grayscale','グレースケール']];"),
+  'v2.8 equipment OCR passes must include local adaptive preprocessing');
 console.log('step125b v2.1 preprocessing RED tests passed');
 
 // Step 1.25-B v2.1 regression: the detected region already begins at the text
@@ -303,6 +303,20 @@ const leftAligned = ns.crop({x:79,y:264,width:338,height:76,labelY:264,labelHeig
 assert(leftAligned.x <= 82, 'name crop must preserve the first equipment-name character');
 assert(leftAligned.width > 190 && leftAligned.width <= 220, 'name crop should stay inside the text column without reaching slot icons');
 console.log('step125b v2.1 name-column alignment regression passed');
+
+// Step 1.25-B v2.8 RED: the OCR crop must start at the semantic name-column
+// anchor, not the wider equipment-card x coordinate. This excludes the armor
+// icon from OCR when the detected card region begins farther left than the text.
+const v27Crop = ns.crop({
+  x:40, y:264, width:360, height:76,
+  labelY:264, labelHeight:14, pitch:79, labelX:78, labelWidth:170
+}, 1536, 864);
+assert(v27Crop.x >= 76 && v27Crop.x <= 80,
+  'v2.7 name crop must begin at labelX so the equipment icon is excluded');
+assert(v27Crop.width > 160 && v27Crop.width <= 225,
+  'v2.7 name crop must retain enough width while staying before slot UI');
+console.log('step125b v2.8 text-column crop RED test passed');
+
 
 
 // Step 1.25-B v2.2 RED: subtype-aware scoring must distinguish alpha/beta/gamma
@@ -390,7 +404,7 @@ vm.createContext(os);
 vm.runInContext(otsuCode+'\nthis.otsu=otsuThreshold;', os);
 os.otsu(otsuCtx,2,1);
 assert(os.otsu && otsuCtx.last && otsuCtx.last.data[0]===0 && otsuCtx.last.data[4]===255, 'Otsu should binarize a simple bimodal image');
-assert(html.includes("const passes=[['white_extract','白文字強調'],['otsu','大津二値化'],['grayscale','グレースケール']];"), 'v2.4 equipment OCR must use adaptive three-pass preprocessing');
+assert(html.includes("const passes=[['white_extract','白文字強調'],['hsv_white','白文字・色除去'],['grayscale','グレースケール']];"), 'v2.4 equipment OCR must use adaptive three-pass preprocessing');
 
 // Contextual suffix normalization: only the terminal subtype-like token is rewritten.
 const sub24Start = html.indexOf('function normalizeSubtypeSymbols(');
@@ -424,7 +438,7 @@ assert(ev.score>=0.8, 'repeated strong OCR should raise series evidence');
 assert(ev.support===2, 'series evidence support should count matching OCR passes');
 
 // v2.4 RED: adaptive preprocessing helper must exist and use local Otsu threshold.
-assert(html.includes("const passes=[['white_extract','白文字強調'],['otsu','大津二値化'],['grayscale','グレースケール']];"), 'v2.4 equipment OCR must use adaptive three-pass preprocessing');
+assert(html.includes("const passes=[['white_extract','白文字強調'],['hsv_white','白文字・色除去'],['grayscale','グレースケール']];"), 'v2.4 equipment OCR must use adaptive three-pass preprocessing');
 
 // v2.4 RED: subtype parsing must be tail-only, while the series matcher must tolerate OCR insertions/deletions.
 const parseStart = html.indexOf('function parseSubtypeFromTail(');
@@ -680,3 +694,18 @@ vm.runInContext(html.slice(kindAggStart,kindAggEnd)+'\nthis.agg=aggregateHierarc
 const kindResult=kindNS.agg([{raw:'シュバルカメイルv',conf:80}],[], '胴防具',[{name:'シュバルカメイルγ',kind:'chest'}]);
 assert(kindResult.length>0,'armor aggregation must retain kind=chest DB rows');
 console.log('step125b v2.6 hardening RED tests passed');
+
+
+// v2.8 RED: name crop must not use the category-label width as an upper bound.
+const cropNS={Math,Number,String,Array}; vm.createContext(cropNS);
+const cropStart=html.indexOf('function equipmentNameCropRect(');
+const cropEnd=html.indexOf('\nfunction normalizeEquipmentCandidateRows',cropStart);
+vm.runInContext(html.slice(cropStart,cropEnd)+'\nthis.crop=equipmentNameCropRect;',cropNS);
+const cropWide=cropNS.crop({x:20,y:100,width:280,height:100,pitch:100,labelY:120,labelHeight:20,labelX:80,labelWidth:70},1000,1000);
+assert(cropWide.width>=170,'name crop width must remain wide enough for long Japanese equipment names');
+assert(cropWide.x===80,'semantic label x should remain the crop start');
+
+// v2.8 RED: local-contrast preprocessing must be available as a replacement for weak Otsu.
+assert(html.includes("mode==='hsv_white'"),'HSV white-text preprocessing mode must exist');
+assert(html.includes('whiteTextHSV'),'HSV preprocessing helper must exist');
+console.log('step125b v2.8 preprocessing RED tests passed');
