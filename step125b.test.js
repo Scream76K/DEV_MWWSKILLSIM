@@ -2,8 +2,8 @@ const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
 const html = fs.readFileSync('index.html','utf8');
-assert(html.includes('<title>Step 1.25-B v2.2'), 'title must be Step 1.25-B v2.2');
-assert(html.includes('MH Wilds OCR — Step 1.25-B v2.2'), 'visible h1 must be Step 1.25-B v2.1');
+assert(html.includes('<title>Step 1.25-B v2.4'), 'title must be Step 1.25-B v2.4');
+assert(html.includes('MH Wilds OCR — Step 1.25-B v2.4'), 'visible h1 must be Step 1.25-B v2.4');
 const mStart = html.indexOf('function detectEquipmentRegions(');
 const mEnd = html.indexOf('\nfunction addPadding', mStart);
 const lmStart = html.indexOf('function extractEquipmentOCRLines(');
@@ -293,8 +293,8 @@ assert(html.includes("function addPaddingCustom(sourceCanvas, padX = 30, padY = 
 assert(html.includes('const scale=2.5'), 'v2.1 equipment OCR canvas should use 2.5x scaling');
 assert(html.includes("mode==='white_extract'"), 'v2.1 must include white-text extraction');
 assert(html.includes("mode==='grayscale'"), 'v2.1 must include grayscale mode');
-assert(html.includes("const passes=[['white_extract','白文字強調'],['invert','白背景反転'],['grayscale','グレースケール']];"),
-  'v2.1 equipment OCR passes must avoid destructive thresholding');
+assert(html.includes("const passes=[['white_extract','白文字強調'],['otsu','大津二値化'],['grayscale','グレースケール']];"),
+  'v2.4 equipment OCR passes must include adaptive preprocessing');
 console.log('step125b v2.1 preprocessing RED tests passed');
 
 // Step 1.25-B v2.1 regression: the detected region already begins at the text
@@ -368,3 +368,92 @@ assert.strictEqual(hn.filter(x=>x.seriesName==='シュバルカメイル').lengt
 assert.strictEqual(hn[0].name,'シュバルカメイルγ');
 assert.strictEqual(ha[0].hierarchy.seriesScore,ha[0].avgSeriesScore);
 console.log('step125b v2.3 hierarchical armor tests passed');
+
+
+// Step 1.25-B v2.4 RED: adaptive preprocessing and contextual subtype normalization.
+// Otsu must be available as a standalone canvas transform without changing OCR pass count.
+const otsuStart = html.indexOf('function otsuThreshold(');
+assert(otsuStart >= 0, 'v2.4 Otsu helper must exist');
+const otsuEnd = html.indexOf('\nfunction ', otsuStart + 10);
+const otsuCode = html.slice(otsuStart, otsuEnd > otsuStart ? otsuEnd : otsuStart + 2500);
+const otsuCtx = {
+  getImageData:()=>({data:new Uint8ClampedArray([0,0,0,255, 255,255,255,255]), width:2, height:1}),
+  putImageData:img=>{otsuCtx.last=img;}
+};
+const os = {Math, Array, Uint8ClampedArray};
+vm.createContext(os);
+vm.runInContext(otsuCode+'\nthis.otsu=otsuThreshold;', os);
+os.otsu(otsuCtx,2,1);
+assert(os.otsu && otsuCtx.last && otsuCtx.last.data[0]===0 && otsuCtx.last.data[4]===255, 'Otsu should binarize a simple bimodal image');
+assert(html.includes("const passes=[['white_extract','白文字強調'],['otsu','大津二値化'],['grayscale','グレースケール']];"), 'v2.4 equipment OCR must use adaptive three-pass preprocessing');
+
+// Contextual suffix normalization: only the terminal subtype-like token is rewritten.
+const sub24Start = html.indexOf('function normalizeSubtypeSymbols(');
+const sub24End = html.indexOf('\nfunction getDictionary', sub24Start);
+const sub24Code = html.slice(sub24Start, sub24End);
+const s24 = {Math, Number, String, Object, Array};
+vm.createContext(s24);
+vm.runInContext(sub24Code+'\nthis.norm=normalizeSubtypeSymbols;', s24);
+assert.strictEqual(s24.norm('シュバルカメイル80Q'), 'シュバルカメイルβ');
+assert.strictEqual(s24.norm('護火竜アーム6'), '護火竜アームβ');
+assert.strictEqual(s24.norm('クイーンピアスaq'), 'クイーンピアスα');
+assert.strictEqual(s24.norm('シュバルカメイルv'), 'シュバルカメイルγ');
+assert.strictEqual(s24.norm('ゴアグリーヴ80Q し'), 'ゴアグリーヴ80Q し', 'non-terminal noise must not be globally rewritten');
+
+// v2.4 RED: series evidence must be exposed independently from subtype evidence.
+const seriesCodeStart = html.indexOf('function armorSeriesEvidence(');
+assert(seriesCodeStart >= 0, 'v2.4 armorSeriesEvidence helper must exist');
+const seriesCodeEnd = html.indexOf('\nfunction rankHierarchicalArmorCandidates(', seriesCodeStart);
+const seriesCode = html.slice(seriesCodeStart, seriesCodeEnd);
+const se = {Math, Number, String, Object, Array, Map,
+  armorBaseName:raw=>String(raw||'').replace(/[αβγ]$/u,''),
+  armorSeriesScore:(raw,name)=>{
+    const a=String(raw||'').replace(/[αβγ]$/u,'').replace(/\s/g,'');
+    const b=String(name||'').replace(/[αβγ]$/u,'').replace(/\s/g,'');
+    return a.includes(b)||b.includes(a)?0.9:0.2;
+  }};
+vm.createContext(se);
+vm.runInContext(seriesCode+'\nthis.ev=armorSeriesEvidence;', se);
+const ev=se.ev([{raw:'シュバルカメイルv',conf:72},{raw:'シュバルカメイルv',conf:70},{raw:'ノイズ',conf:20}], 'シュバルカメイル');
+assert(ev.score>=0.8, 'repeated strong OCR should raise series evidence');
+assert(ev.support===2, 'series evidence support should count matching OCR passes');
+
+// v2.4 RED: adaptive preprocessing helper must exist and use local Otsu threshold.
+assert(html.includes("const passes=[['white_extract','白文字強調'],['otsu','大津二値化'],['grayscale','グレースケール']];"), 'v2.4 equipment OCR must use adaptive three-pass preprocessing');
+
+// v2.4 RED: subtype parsing must be tail-only, while the series matcher must tolerate OCR insertions/deletions.
+const parseStart = html.indexOf('function parseSubtypeFromTail(');
+assert(parseStart >= 0, 'v2.4 parseSubtypeFromTail helper must exist');
+const parseEnd = html.indexOf('\nfunction matchArmorV24', parseStart);
+assert(parseEnd > parseStart, 'v2.4 matchArmorV24 must follow subtype parser');
+const parseCode = html.slice(parseStart, parseEnd);
+const ps = {Math, Number, String, Object, Array};
+vm.createContext(ps);
+vm.runInContext(parseCode+'\nthis.parseSubtypeFromTail=parseSubtypeFromTail;', ps);
+assert.strictEqual(ps.parseSubtypeFromTail('v'), 'γ');
+assert.strictEqual(ps.parseSubtypeFromTail('6'), 'β');
+assert.strictEqual(ps.parseSubtypeFromTail('aq'), 'α');
+assert.strictEqual(ps.parseSubtypeFromTail('80Q'), 'β');
+assert.strictEqual(ps.parseSubtypeFromTail('ゴア80Q'), '', 'tail parser must not reinterpret multi-character non-tail text');
+
+// v2.4 RED: series matching must be part-limited and resilient to common OCR corruption.
+const matchStart = html.indexOf('function matchArmorV24(');
+const matchEnd = html.indexOf('\nfunction rankHierarchicalArmorCandidates', matchStart);
+assert(matchStart >= 0 && matchEnd > matchStart, 'v2.4 matchArmorV24 helper must exist');
+const helperStart = html.indexOf('function armorEditSimilarity(');
+const matchCode = html.slice(parseStart, matchEnd);
+const ms = {Math, Number, String, Object, Array, Map};
+vm.createContext(ms);
+vm.runInContext(matchCode+'\nthis.matchArmorV24=matchArmorV24;', ms);
+const db = [
+  {name:'護火竜アームα',category:'腕防具'},
+  {name:'護火竜アームβ',category:'腕防具'},
+  {name:'護火竜アームγ',category:'腕防具'},
+  {name:'コンガアームα',category:'腕防具'}
+];
+const m1 = ms.matchArmorV24('護火音アーム6','腕防具',db);
+assert(m1 && m1.item.name==='護火竜アームβ', 'corrupted series + tail 6 should resolve to 護火竜アームβ');
+const m2 = ms.matchArmorV24('ゴアグリーヴ80Q','脚防具',[{name:'ゴアグリーヴα',category:'脚防具'},{name:'ゴアグリーヴβ',category:'脚防具'},{name:'コンガグリーヴα',category:'脚防具'}]);
+assert(m2 && m2.item.name==='ゴアグリーヴβ', 'part-limited series matching should resolve ゴアグリーヴβ');
+
+console.log('step125b v2.4 adaptive preprocessing/series evidence RED tests passed');

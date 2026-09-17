@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-B v2.2 - MH Wilds OCR — 装備名1行OCR・部位限定DB候補</title>
+<title>Step 1.25-B v2.4 - MH Wilds OCR — 環境耐性・階層型装備OCR</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v2.2：装備名1行OCR・部位限定DB候補</h1>
+<h1>MH Wilds OCR — Step 1.25-B v2.4：環境耐性・階層型装備OCR</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -945,7 +945,7 @@ function normalizeSubtypeSymbols(raw){
   // This avoids corrupting ordinary letters that happen to look like subtype symbols.
   s=s.replace(/\s*[vVν𝛾γ](?:\s*[一ー―昌1-9]*)$/u,'γ');
   s=s.replace(/\s*(?:aq|a|𝛂α)(?:\s*[一ー―1-9]*)$/iu,'α');
-  s=s.replace(/\s*(?:bq|b|𝛽β)(?:\s*[一ー―1-9]*)$/iu,'β');
+  s=s.replace(/\s*(?:80q|bq|b|6|𝛽β)(?:\s*[一ー―1-9]*)$/iu,'β');
   return s;
 }
 function splitEquipmentSubtype(raw){
@@ -1108,6 +1108,30 @@ async function detectLayoutFromImage(){
 $('detectLayout').onclick=detectLayoutFromImage;
 
 
+function otsuThreshold(ctx,width,height){
+  const img=ctx.getImageData(0,0,width,height), d=img.data;
+  const histogram=new Array(256).fill(0);
+  for(let i=0;i<d.length;i+=4){
+    const g=Math.round(.299*d[i]+.587*d[i+1]+.114*d[i+2]); histogram[g]++;
+  }
+  const total=Math.max(1,width*height); let sum=0;
+  for(let t=0;t<256;t++)sum+=t*histogram[t];
+  let sumB=0,wB=0,bestVar=-1,threshold=128;
+  for(let t=0;t<256;t++){
+    wB+=histogram[t]; if(!wB)continue;
+    const wF=total-wB; if(!wF)break;
+    sumB+=t*histogram[t];
+    const mB=sumB/wB,mF=(sum-sumB)/wF;
+    const between=wB*wF*(mB-mF)*(mB-mF);
+    if(between>bestVar){bestVar=between;threshold=t;}
+  }
+  for(let i=0;i<d.length;i+=4){
+    const g=.299*d[i]+.587*d[i+1]+.114*d[i+2], z=g>threshold?255:0;
+    d[i]=d[i+1]=d[i+2]=z;
+  }
+  ctx.putImageData(img,0,0); return threshold;
+}
+
 function equipmentRegionCanvas(region, mode='color', band='full'){
   const sx=Math.max(0,Math.round(region.x)), sy=Math.max(0,Math.round(region.y));
   const sw=Math.max(1,Math.min(imgW-sx,Math.round(region.width))), sh=Math.max(1,Math.min(imgH-sy,Math.round(region.height)));
@@ -1137,7 +1161,7 @@ function equipmentRegionCanvas(region, mode='color', band='full'){
   ctx.imageSmoothingQuality='medium';
   ctx.drawImage(base,crop.x,crop.y,crop.width,crop.height,0,0,c.width,c.height);
 
-  if(mode==='white_extract' || mode==='invert' || mode==='grayscale'){
+  if(mode==='otsu'){ otsuThreshold(ctx,c.width,c.height); } else if(mode==='white_extract' || mode==='invert' || mode==='grayscale'){
     const d=ctx.getImageData(0,0,c.width,c.height);
     for(let i=0;i<d.data.length;i+=4){
       const g=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
@@ -1149,19 +1173,81 @@ function equipmentRegionCanvas(region, mode='color', band='full'){
     ctx.putImageData(d,0,0);
   }
 
-  const padColor=mode==='invert' ? '#FFFFFF' : '#000000';
+  const padColor=(mode==='invert'||mode==='otsu') ? '#FFFFFF' : '#000000';
   return addPaddingCustom(c,30,20,padColor);
 }
 
 
-// Step 1.25-B v2.3.1: hierarchical armor recognition.
+// Step 1.25-B v2.4: hierarchical armor recognition.
 // Stage 1 compares only the armor series/base name. Alpha/beta/gamma are ignored.
 // Stage 2 compares variants only inside the winning series family.
 function armorBaseName(name){ return splitEquipmentSubtype(name).base; }
 function armorSeriesKey(name){ return normalizeForNameScore(armorBaseName(name)).join(''); }
 function armorSeriesScore(raw,itemName){
   const rawBase=armorBaseName(raw), itemBase=armorBaseName(itemName);
-  return weightedNameDistance(rawBase,itemBase).score;
+  return robustArmorSeriesSimilarity(rawBase,itemBase);
+}
+function parseSubtypeFromTail(tailStr){
+  const clean=String(tailStr||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim().toLowerCase();
+  if(!clean)return '';
+  if(/^(?:α|a|q|aq|𝛂)$/iu.test(clean))return 'α';
+  if(/^(?:β|b|6|bq|80q|𝛽)$/iu.test(clean))return 'β';
+  if(/^(?:γ|y|v|ν|𝛾)$/iu.test(clean))return 'γ';
+  return '';
+}
+function stripTailSubtypeToken(raw){
+  const s=String(raw||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
+  const m=s.match(/^(.*?)(?:\s*(α|β|γ|a|aq|b|bq|6|80q|v|V|ν|y|Y))\s*[一ー―昌1-9]*$/iu);
+  return m?m[1].trim():s;
+}
+function armorEditSimilarity(a,b){
+  const aa=Array.from(a),bb=Array.from(b); let prev=Array.from({length:bb.length+1},(_,i)=>i);
+  for(let i=1;i<=aa.length;i++){const cur=new Array(bb.length+1);cur[0]=i;for(let j=1;j<=bb.length;j++){cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(aa[i-1]===bb[j-1]?0:1));}prev=cur;}
+  return prev[bb.length];
+}
+function robustArmorSeriesSimilarity(rawBase,itemBase){
+  const norm=v=>Array.from(String(v||'').normalize('NFKC')).filter(ch=>!/[\s・･·•\-‐‑‒–—―＿_.,，。！？!?、:：;；/／\\|｜()[\]{}「」『』【】〈〉《》<>＋+＝=＊*#＃%％&＆@＠]/.test(ch));
+  const a=norm(rawBase).join(''),b=norm(itemBase).join('');
+  if(!a||!b)return 0;
+  if(a===b)return 1;
+  const edit=1-armorEditSimilarity(a,b)/Math.max(a.length,b.length);
+  let lcsBest=0, prev=new Array(b.length+1).fill(0);
+  for(let i=1;i<=a.length;i++){const cur=new Array(b.length+1).fill(0);for(let j=1;j<=b.length;j++){if(a[i-1]===b[j-1])cur[j]=prev[j-1]+1;else cur[j]=Math.max(prev[j],cur[j-1]);}lcsBest=Math.max(lcsBest,cur[b.length]);prev=cur;}
+  const lcs=lcsBest/Math.max(a.length,b.length);
+  const containment=a.includes(b)||b.includes(a)?0.92:0;
+  return Math.max(0,Math.min(1,Math.max(edit,lcs*.90,containment)));
+}
+function matchArmorV24(ocrRawText,category,dbItems){
+  const target=(Array.isArray(dbItems)?dbItems:[]).filter(item=>String(item?.category||item?.kind||'')===String(category));
+  let best=null;
+  for(const item of target){
+    const dbMatch=String(item.name||'').match(/^(.*?)([αβγ])?$/u); const dbParts={base:(dbMatch?dbMatch[1]:String(item.name||'')).trim(),subtype:dbMatch&&dbMatch[2]?dbMatch[2]:null}; const rawText=String(ocrRawText||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim(); const rawBase=rawText.replace(/(?:\s*(?:α|β|γ|a|aq|b|bq|6|80q|v|V|ν|y|Y))\s*[一ー―昌1-9]*$/iu,'').trim();
+    const series=robustArmorSeriesSimilarity(rawBase,dbParts.base);
+    if(series<.35)continue;
+    const rawClean=String(ocrRawText||'').normalize('NFKC').replace(/\s+/g,' ').trim();
+    const rawTailMatch=rawClean.match(/(?:α|β|γ|aq|a|bq|b|80q|6|v|V|ν|y|Y)\s*[一ー―昌1-9]*$/iu);
+    const tail=rawTailMatch?rawTailMatch[0].replace(/[一ー―昌]+$/u,'').trim():'';
+    const detected=parseSubtypeFromTail(tail);
+    let score=.88*series;
+    if(dbParts.subtype){
+      if(detected===dbParts.subtype)score+=.12;
+      else if(detected && detected!==dbParts.subtype)score-=.18;
+    }
+    const candidate={item,baseName:dbParts.base,subtype:dbParts.subtype,seriesScore:series,subtypeScore:detected?(detected===dbParts.subtype?1:0):.5,score,detectedSubtype:detected};
+    if(!best||candidate.score>best.score)best=candidate;
+  }
+  return best;
+}
+
+function armorSeriesEvidence(rows,candidateName){
+  const list=Array.isArray(rows)?rows:[]; if(!list.length)return {score:0,support:0,confAvg:0};
+  const scores=list.map(r=>{const score=armorSeriesScore(r?.raw||'',candidateName);return {score,conf:Number(r?.conf||0)};});
+  const supporting=scores.filter(x=>x.score>=.60);
+  const confAvg=supporting.length?supporting.reduce((s,x)=>s+x.conf,0)/supporting.length:0;
+  const avg=supporting.length?supporting.reduce((s,x)=>s+x.score,0)/supporting.length:0;
+  const supportRatio=supporting.length/list.length;
+  const supportBoost=supportRatio>=.66?.08:supportRatio>0?.04:0;
+  return {score:Math.min(1,.82*avg+.18*supportRatio+supportBoost),support:supporting.length,confAvg};
 }
 function rankHierarchicalArmorCandidates(raw,conf,items){
   const pool=Array.isArray(items)?items:[];
@@ -1283,7 +1369,7 @@ async function recognizeEquipmentAll(){
     const output=[];
     for(const key of targets){
       const region=regions.find(r=>r.key===key); const items=equipmentRowsForSlot(key); const rows=[];
-      const passes=[['white_extract','白文字強調'],['invert','白背景反転'],['grayscale','グレースケール']];
+      const passes=[['white_extract','白文字強調'],['otsu','大津二値化'],['grayscale','グレースケール']];
       for(const [mode,label] of passes){
         $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}をOCR中… ${label}`;
         const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c);let raw=cleanOCR(r?.data?.text||'');raw=raw.replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石|装衣)/g,' ').replace(/\s+/g,' ').trim();const conf=Number(r?.data?.confidence||0);if(raw)rows.push({raw,conf,mode:label});
