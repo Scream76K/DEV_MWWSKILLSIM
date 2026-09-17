@@ -1154,7 +1154,7 @@ function equipmentRegionCanvas(region, mode='color', band='full'){
 }
 
 
-// Step 1.25-B v2.3: hierarchical armor recognition.
+// Step 1.25-B v2.3.1: hierarchical armor recognition.
 // Stage 1 compares only the armor series/base name. Alpha/beta/gamma are ignored.
 // Stage 2 compares variants only inside the winning series family.
 function armorBaseName(name){ return splitEquipmentSubtype(name).base; }
@@ -1196,31 +1196,46 @@ function rankHierarchicalArmorCandidates(raw,conf,items){
   return variants.sort((a,b)=>b.score-a.score);
 }
 function aggregateHierarchicalArmorCandidates(rows,items){
+  // Hierarchical aggregation is intentionally family-first:
+  // 1) each OCR pass chooses its best series family;
+  // 2) all alpha/beta/gamma variants inside that winning family are retained;
+  // 3) subtype support is counted separately, so a missing/garbled suffix does
+  //    not make the other variants disappear from the candidate list.
   const agg=new Map();
   for(const row of (Array.isArray(rows)?rows:[])){
-    const ranked=rankHierarchicalArmorCandidates(row.raw,row.conf,items).slice(0,3);
-    row.ranked=ranked;
-    ranked.forEach((cand,rank)=>{
-      const w=rank===0?1:rank===1?.65:.4;
-      const old=agg.get(cand.name)||{...cand,support:0,sumSeries:0,sumScore:0,bestSeries:0,confSum:0,topRows:[],total:rows.length};
-      if(rank===0)old.support++;
-      old.sumSeries+=cand.seriesScore*w; old.sumScore+=cand.score*w; old.bestSeries=Math.max(old.bestSeries,cand.seriesScore);
-      if(rank===0)old.confSum+=row.conf;
-      old.topRows.push({rank,score:cand.score,nameScore:cand.seriesScore,conf:row.conf,seriesScore:cand.seriesScore,subtypeScore:cand.subtypeScore});
+    const familyCandidates=rankHierarchicalArmorCandidates(row.raw,row.conf,items);
+    if(!familyCandidates.length)continue;
+    const winningFamily=familyCandidates[0].seriesName;
+    const familyVariants=familyCandidates
+      .filter(c=>c.seriesName===winningFamily)
+      .sort((a,b)=>b.score-a.score);
+    const subtypeWinner=familyVariants[0];
+    row.ranked=familyVariants.slice(0,3);
+    familyVariants.forEach((cand,rank)=>{
+      const old=agg.get(cand.name)||{...cand,support:0,sumSeries:0,sumScore:0,bestSeries:0,confSum:0,topRows:[],total:rows.length,seriesSupport:0};
+      // Every variant gets evidence from every OCR pass whose winning series is
+      // this family. Only the best subtype for that pass receives subtype support.
+      const isSubtypeWinner=cand.name===subtypeWinner.name;
+      const w=isSubtypeWinner?1:.85;
+      old.sumSeries+=cand.seriesScore;
+      old.sumScore+=cand.score*w;
+      old.bestSeries=Math.max(old.bestSeries,cand.seriesScore);
+      old.seriesSupport++;
+      if(isSubtypeWinner){ old.support++; old.confSum+=row.conf; }
+      old.topRows.push({rank:isSubtypeWinner?0:rank+1,score:cand.score,nameScore:cand.seriesScore,conf:row.conf,seriesScore:cand.seriesScore,subtypeScore:cand.subtypeScore,seriesWinner:true});
       old.id=cand.id;old.gameId=cand.gameId;old.kind=cand.kind;old.seriesName=cand.seriesName;old.subtype=cand.subtype;
       agg.set(cand.name,old);
     });
   }
   return [...agg.values()].map(x=>{
-    const supportRows=x.topRows.filter(r=>r.rank===0);
-    const n=Math.max(1,supportRows.length);
-    const avgSeries=supportRows.length?supportRows.reduce((s,r)=>s+r.seriesScore,0)/n:0;
-    const avgScore=supportRows.length?supportRows.reduce((s,r)=>s+r.score,0)/n:0;
-    const confAvg=supportRows.length?supportRows.reduce((s,r)=>s+r.conf,0)/n:0;
-    const subtypeValues=supportRows.map(r=>r.subtypeScore).filter(v=>Number.isFinite(v));
+    const familyRows=x.topRows.filter(r=>r.seriesWinner===true);
+    const n=Math.max(1,familyRows.length);
+    const avgSeries=familyRows.length?familyRows.reduce((s,r)=>s+Number(r.seriesScore||0),0)/n:0;
+    const subtypeSupportRows=x.topRows.filter(r=>Number(r.rank)===0);
+    const confAvg=subtypeSupportRows.length?subtypeSupportRows.reduce((s,r)=>s+Number(r.conf||0),0)/subtypeSupportRows.length:0;
+    const subtypeValues=familyRows.map(r=>Number(r.subtypeScore)).filter(v=>Number.isFinite(v));
     const subtypeAvg=subtypeValues.length?subtypeValues.reduce((s,v)=>s+v,0)/subtypeValues.length:0;
-    // Final score keeps series recognition dominant; subtype only resolves variants
-    // after the family has converged.
+    const avgScore=familyRows.length?familyRows.reduce((s,r)=>s+Number(r.score||0),0)/n:0;
     const totalScore=Math.min(1,.78*avgSeries+.12*(confAvg/100)+.10*avgSeries+.12*subtypeAvg);
     return {...x,avgNameScore:avgSeries,avgSeriesScore:avgSeries,avgRowScore:avgScore,confAvg,subtypeAvg,totalScore,final:totalScore,
       hierarchy:{seriesScore:avgSeries,subtypeScore:subtypeAvg,totalScore}};

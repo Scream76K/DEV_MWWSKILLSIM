@@ -352,5 +352,19 @@ assert(hr[0].seriesScore>hr.find(x=>x.name==='ドシャグマメイルα').serie
 const ha=hs.agg([{raw:'シュバルカメイルv',conf:80},{raw:'シュバルカメイルγ',conf:90}],armorItems);
 assert.strictEqual(ha[0].name,'シュバルカメイルγ');
 assert.strictEqual(ha[0].support,2);
+assert(ha.some(x=>x.name==='シュバルカメイルα'), 'all variants in the winning series must remain comparable');
+assert(ha.some(x=>x.name==='シュバルカメイルβ'), 'all variants in the winning series must remain comparable');
+assert(ha.filter(x=>x.seriesName==='シュバルカメイル').length===3, 'stage 2 must compare all alpha/beta/gamma variants within the winning series');
+const noisyArmorItems=[
+  {id:1,kind:'chest',name:'シュバルカメイルα'},
+  {id:2,kind:'chest',name:'シュバルカメイルβ'},
+  {id:3,kind:'chest',name:'シュバルカメイルγ'},
+  {id:4,kind:'chest',name:'コンガメイルα'},
+  {id:5,kind:'chest',name:'コンガメイルβ'},
+  {id:6,kind:'chest',name:'コンガメイルγ'},
+];
+const hn=hs.agg([{raw:'シュバルカメイルv',conf:80},{raw:'シュバルカメイルγ',conf:90},{raw:'シュバルカメイルv',conf:85}],noisyArmorItems);
+assert.strictEqual(hn.filter(x=>x.seriesName==='シュバルカメイル').length,3, 'winning series must keep all subtype variants even when other series compete');
+assert.strictEqual(hn[0].name,'シュバルカメイルγ');
 assert.strictEqual(ha[0].hierarchy.seriesScore,ha[0].avgSeriesScore);
 console.log('step125b v2.3 hierarchical armor tests passed');
