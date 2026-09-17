@@ -1878,8 +1878,11 @@ function renderPreprocessPreview(){
       const wrap=document.createElement('div');
       const lab=document.createElement('div'); lab.className='note'; lab.textContent=label; wrap.appendChild(lab);
       const c=equipmentRegionCanvas(region,mode,'name');
-      c.style='width:100%;height:auto;display:block;background:#111;border-radius:6px;margin-top:4px';
-      wrap.appendChild(c); row.appendChild(wrap);
+      const frame=document.createElement('div');
+      frame.style='height:72px;display:flex;align-items:center;justify-content:center;background:#111;border-radius:6px;margin-top:4px;overflow:hidden';
+      c.style='width:auto;height:auto;max-width:100%;max-height:100%;display:block';
+      frame.appendChild(c);
+      wrap.appendChild(frame); row.appendChild(wrap);
       passRecords.push({mode,label,canvas:c});
     }
     card.appendChild(row);
