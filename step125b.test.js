@@ -2,8 +2,8 @@ const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
 const html = fs.readFileSync('index.html','utf8');
-assert(html.includes('<title>Step 1.25-B v2.5'), 'title must be Step 1.25-B v2.5');
-assert(html.includes('MH Wilds OCR — Step 1.25-B v2.5'), 'visible h1 must be Step 1.25-B v2.5');
+assert(html.includes('<title>Step 1.25-B v2.6'), 'title must be Step 1.25-B v2.6');
+assert(html.includes('MH Wilds OCR — Step 1.25-B v2.6'), 'visible h1 must be Step 1.25-B v2.6');
 const mStart = html.indexOf('function detectEquipmentRegions(');
 const mEnd = html.indexOf('\nfunction addPadding', mStart);
 const lmStart = html.indexOf('function extractEquipmentOCRLines(');
@@ -375,7 +375,7 @@ assert.strictEqual(ha[0].hierarchy.seriesScore,ha[0].avgSeriesScore);
 console.log('step125b v2.3 hierarchical armor tests passed');
 
 
-// Step 1.25-B v2.5 RED: adaptive preprocessing and contextual subtype normalization.
+// Step 1.25-B v2.6 RED: adaptive preprocessing and contextual subtype normalization.
 // Otsu must be available as a standalone canvas transform without changing OCR pass count.
 const otsuStart = html.indexOf('function otsuThreshold(');
 assert(otsuStart >= 0, 'v2.4 Otsu helper must exist');
@@ -464,7 +464,7 @@ assert(m2 && m2.item.name==='ゴアグリーヴβ', 'part-limited series matchin
 console.log('step125b v2.4 adaptive preprocessing/series evidence RED tests passed');
 
 
-// Step 1.25-B v2.5 RED: armor structure anchors isolate the series from the part suffix.
+// Step 1.25-B v2.6 RED: armor structure anchors isolate the series from the part suffix.
 const v25AnchorStart = html.indexOf('function parseArmorStructure(');
 assert(v25AnchorStart >= 0, 'v2.5 parseArmorStructure helper must exist');
 const v25AnchorEnd = html.indexOf('\nfunction matchArmorV25', v25AnchorStart);
@@ -571,3 +571,72 @@ const talDb=[{name:'栄世の護石',category:'護石'},{name:'整備の護石�
 const tmres=tm.matchTalismanV25('由由の護引 ニ',talDb);
 assert(tmres && tmres.item.name==='栄世の護石', 'talisman prefix matching should ignore suffix OCR noise');
 console.log('step125b v2.5 RED tests passed');
+
+
+// Step 1.25-B v2.6: multi-pass weighted series evidence and all-part fallback.
+const v26SeriesStart = html.indexOf('function v26NormalizeArmorText(');
+assert(v26SeriesStart >= 0, 'v2.6 weighted multi-pass series evidence helper must exist');
+const v26FallbackStart = html.indexOf('function rankArmorSeriesV26(');
+const recognizeV26=html.slice(html.indexOf('async function recognizeEquipmentAll'), html.indexOf('function renderEquipmentResult')) ; assert(/aggregateHierarchicalArmorCandidatesV26\(rows,items,[^)]*armorDB/.test(recognizeV26),'production armor aggregation must receive the all-armor DB for fallback');
+
+assert(v26FallbackStart >= 0, 'v2.6 all-part armor series fallback helper must exist');
+const v26AggStart = html.indexOf('function aggregateHierarchicalArmorCandidatesV26(');
+assert(v26AggStart >= 0, 'v2.6 candidate-specific aggregation helper must exist');
+const v26DecisionStart = html.indexOf('function equipmentDecisionV26(');
+assert(v26DecisionStart >= 0, 'v2.6 strict subtype auto-confirm decision helper must exist');
+
+const v26ns={Math,Number,String,Array,Map,Object,Set,parseArmorStructure:(raw,cat)=>({hasAnchor:String(raw).includes('ヘルム'),seriesPart:String(raw).split('ヘルム')[0],anchorPart:'ヘルム',tailPart:String(raw).split('ヘルム')[1]||''}),armorDbStructure:n=>({hasAnchor:true,seriesPart:String(n).replace(/[αβγ]$/u,''),anchorPart:'ヘルム'}),robustArmorSeriesSimilarity:(a,b)=>String(a)===String(b)?1:(String(a).includes('電')&&String(b).includes('護')?.4:.2),stripTailSubtypeToken:s=>String(s).replace(/(?:α|β|γ|BQ|6|v)$/u,'')};
+vm.createContext(v26ns);
+const v26SeriesEnd=html.indexOf('\nfunction aggregateHierarchicalArmorCandidates(',v26SeriesStart);
+vm.runInContext(html.slice(v26SeriesStart,v26SeriesEnd)+'\nthis.fn=armorSeriesEvidenceV26;',v26ns);
+const ev26=v26ns.fn([
+ {raw:'謀電器音ヘルムBQ',conf:80,category:'頭防具'},
+ {raw:'呈記自音ヘルム6',conf:70,category:'頭防具'},
+ {raw:'於電器盲ヘルムv',conf:75,category:'頭防具'}
+ ], '護雷顎竜ヘルムβ');
+assert(ev26 && ev26.score>0.30, 'multi-pass evidence should retain partial series signal');
+assert(ev26.best>0, 'multi-pass evidence should expose best-pass signal');
+
+const v26decisionEnd=html.indexOf('\nfunction equipmentDecision(',v26DecisionStart);
+vm.runInContext(html.slice(v26DecisionStart,v26decisionEnd)+'\nthis.dec=equipmentDecisionV26;',v26ns);
+const dNoSubtype=v26ns.dec({totalScore:.95,avgSeriesScore:.90,subtypeConfidence:0,subtype:'β',confAvg:80},{totalScore:.80});
+assert.strictEqual(dNoSubtype.level,'confirm','weak subtype evidence must never auto-confirm');
+const dStrongSubtype=v26ns.dec({totalScore:.95,avgSeriesScore:.90,subtypeConfidence:.80,subtype:'β',confAvg:80},{totalScore:.70});
+assert.strictEqual(dStrongSubtype.level,'auto','strong series + subtype evidence may auto-confirm');
+
+// v2.6 all-part fallback regression: a family must be discoverable from a different armor kind.
+const fallbackNS={Math,Number,String,Array,Map,Object,Set,
+  v26FamilyKey:i=>String(i.name).replace(/[αβγ]$/u,''),
+  v26SeriesPassScore:(raw,name)=>String(raw).includes('護雷顎竜')&&String(name).includes('護雷顎竜')?.88:.10,
+  parseArmorStructure:()=>({hasAnchor:false,seriesPart:'護雷顎竜',anchorPart:'',tailPart:''}),
+  armorDbStructure:n=>({hasAnchor:false,seriesPart:String(n).replace(/[αβγ]$/u,''),anchorPart:''}),
+  splitEquipmentSubtype:s=>{const m=String(s).match(/^(.*?)([αβγ])$/u);return m?{base:m[1],subtype:m[2]}:{base:String(s),subtype:null};}
+};
+vm.createContext(fallbackNS);
+const rankCode=html.slice(v26FallbackStart, html.indexOf('\nfunction aggregateHierarchicalArmorCandidatesV26',v26FallbackStart));
+vm.runInContext(rankCode+'\nthis.rank=rankArmorSeriesV26;',fallbackNS);
+const allPart=fallbackNS.rank('護雷顎竜ヘルムBQ',80,[{name:'護雷顎竜ヘルムβ',category:'頭防具'},{name:'護雷顎竜メイルβ',category:'胴防具'},{name:'コンガヘルムβ',category:'頭防具'}],'頭防具');
+assert(allPart[0].seriesName==='護雷顎竜ヘルム','all-part series fallback must retain the correct family');
+
+// Candidate-specific subtype regression: OCR-supported gamma must outrank unsupported alpha.
+const v26AggEnd=html.indexOf('\nfunction equipmentDecisionV26',v26AggStart);
+const aggCode=html.slice(v26AggStart,v26AggEnd);
+const aggNS={Math,Number,String,Array,Map,Object,Set,
+ parseArmorStructure:(raw,cat)=>({hasAnchor:true,seriesPart:'シュバルカ',anchorPart:'メイル',tailPart:String(raw).includes('γ')?'γ':''}),
+ armorDbStructure:n=>({hasAnchor:true,seriesPart:'シュバルカ',anchorPart:'メイル'}),
+ splitEquipmentSubtype:s=>{const m=String(s).match(/^(.*?)([αβγ])$/u);return m?{base:m[1],subtype:m[2]}:{base:String(s),subtype:null};},
+ v26FamilyKey:i=>String(i.name).replace(/[αβγ]$/u,''),
+ v26SeriesPassScore:()=>.90,
+ rankArmorSeriesV26:()=>[{seriesName:'シュバルカメイル',seriesScore:.90,anchorMatched:true,items:[{name:'シュバルカメイルα',category:'胴防具'},{name:'シュバルカメイルβ',category:'胴防具'},{name:'シュバルカメイルγ',category:'胴防具'}]}],
+ parseSubtypeFromTail:s=>String(s)==='γ'?'γ':'',
+};
+vm.createContext(aggNS);
+vm.runInContext(aggCode+'\nthis.agg=aggregateHierarchicalArmorCandidatesV26;',aggNS);
+const ar=aggNS.agg([{raw:'シュバルカメイルγ',conf:80}], [
+ {name:'シュバルカメイルα',category:'胴防具'},
+ {name:'シュバルカメイルβ',category:'胴防具'},
+ {name:'シュバルカメイルγ',category:'胴防具'}
+ ], '胴防具');
+assert(ar[0].name==='シュバルカメイルγ','OCR-supported subtype must rank first');
+assert(ar[0].support===1,'supported subtype must receive support');
+console.log('step125b v2.6 tests passed');

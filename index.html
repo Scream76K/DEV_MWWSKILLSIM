@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-B v2.5 - MH Wilds OCR — 環境耐性・階層型装備OCR</title>
+<title>Step 1.25-B v2.6 - MH Wilds OCR — 多段OCR統合・シリーズ先行認識</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v2.5：環境耐性・階層型装備OCR</h1>
+<h1>MH Wilds OCR — Step 1.25-B v2.6：多段OCR統合・シリーズ先行認識</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -1178,7 +1178,7 @@ function equipmentRegionCanvas(region, mode='color', band='full'){
 }
 
 
-// Step 1.25-B v2.5: domain-structure parsing for armor and talismans.
+// Step 1.25-B v2.6: domain-structure parsing for armor and talismans.
 // OCR is still limited to the existing three image passes; these helpers only
 // reinterpret the resulting text using Monster Hunter UI grammar.
 const CATEGORY_ANCHORS={
@@ -1271,7 +1271,7 @@ function matchTalismanV25(rawOcrText,talismanDb){
   return best;
 }
 
-// Step 1.25-B v2.5: hierarchical armor recognition.
+// Step 1.25-B v2.6: hierarchical armor recognition.
 // Stage 1 compares only the armor series/base name. Alpha/beta/gamma are ignored.
 // Stage 2 compares variants only inside the winning series family.
 function armorBaseName(name){ return splitEquipmentSubtype(name).base; }
@@ -1382,6 +1382,105 @@ function rankHierarchicalArmorCandidates(raw,conf,items){
   }
   return variants.sort((a,b)=>b.score-a.score);
 }
+
+// Step 1.25-B v2.6: robust series-first recognition.
+// Each OCR pass is scored independently; no concatenation of noisy OCR strings.
+function v26NormalizeArmorText(value){
+  return Array.from(String(value||'').normalize('NFKC')).filter(ch=>!/[\s・･·•\-‐‑‒–—―＿_.,，。！？!?、:：;；/／\\|｜()[\]{}「」『』【】〈〉《》<>＋+＝=＊*#＃%％&＆@＠]/.test(ch)).join('');
+}
+function v26Ngrams(value,n=2){
+  const a=Array.from(v26NormalizeArmorText(value)); const out=[]; for(let i=0;i<=a.length-n;i++)out.push(a.slice(i,i+n).join('')); return out;
+}
+function v26NgramSimilarity(a,b){
+  const aa=v26Ngrams(a),bb=v26Ngrams(b); if(!aa.length||!bb.length)return 0;
+  const setB=new Set(bb); let hit=0; for(const x of aa)if(setB.has(x))hit++;
+  return hit/Math.max(aa.length,bb.length);
+}
+function v26SeriesPassScore(raw,itemName,category){
+  const structure=parseArmorStructure(raw,category);
+  const db=armorDbStructure(itemName,category);
+  const seriesRaw=structure.seriesPart||v26NormalizeArmorText(raw);
+  const seriesDb=db.seriesPart||v26NormalizeArmorText(itemName);
+  const seriesRobust=robustArmorSeriesSimilarity(seriesRaw,seriesDb);
+  const seriesNgram=v26NgramSimilarity(seriesRaw,seriesDb);
+  const fullRaw=stripTailSubtypeToken(String(raw||''));
+  const fullDb=stripTailSubtypeToken(String(itemName||''));
+  const fullRobust=robustArmorSeriesSimilarity(fullRaw,fullDb);
+  const fullNgram=v26NgramSimilarity(fullRaw,fullDb);
+  const anchor=structure.hasAnchor&&db.hasAnchor&&structure.anchorPart===db.anchorPart?1:0;
+  return Math.min(1,.50*seriesRobust+.15*seriesNgram+.25*fullRobust+.05*fullNgram+.05*anchor);
+}
+function armorSeriesEvidenceV26(rows,candidateName){
+  const list=Array.isArray(rows)?rows:[]; if(!list.length)return {score:0,best:0,passes:[]};
+  const category=String(list[0]?.category||'頭防具');
+  const passes=list.map(r=>({score:v26SeriesPassScore(r.raw,candidateName,category),conf:Number(r.conf||0),raw:r.raw}));
+  const sorted=passes.map(x=>x.score).sort((a,b)=>b-a);
+  const best=sorted[0]||0;
+  const weighted=passes.reduce((sum,x,i)=>sum+x.score*(i===0?1.0:i===1?.85:.70),0)/passes.reduce((sum,_,i)=>sum+(i===0?1.0:i===1?.85:.70),0);
+  return {score:Math.min(1,.78*weighted+.22*best),best,passes};
+}
+function v26FamilyKey(item){return v26NormalizeArmorText(splitEquipmentSubtype(item.name).base);}
+function rankArmorSeriesV26(raw,conf,items,category){
+  const pool=Array.isArray(items)?items:[]; const families=new Map();
+  for(const item of pool){
+    const key=v26FamilyKey(item); if(!key)continue;
+    if(!families.has(key))families.set(key,{key,seriesName:splitEquipmentSubtype(item.name).base,items:[]});
+    families.get(key).items.push(item);
+  }
+  const scored=[...families.values()].map(f=>{
+    const score=v26SeriesPassScore(raw,f.seriesName,category);
+    const structure=parseArmorStructure(raw,category);
+    const db=armorDbStructure(f.seriesName,category);
+    const anchorMatched=!!(structure.hasAnchor&&db.hasAnchor&&structure.anchorPart===db.anchorPart);
+    return {...f,seriesScore:score,anchorMatched};
+  }).sort((a,b)=>b.seriesScore-a.seriesScore);
+  return scored.slice(0,5);
+}
+function aggregateHierarchicalArmorCandidatesV26(rows,items,category,allArmorItems){
+  const list=Array.isArray(rows)?rows:[]; const agg=new Map();
+  const searchPool=Array.isArray(allArmorItems)&&allArmorItems.length?allArmorItems:items;
+  for(const row of list){
+    const ranked=rankArmorSeriesV26(row.raw,row.conf,searchPool,category); if(!ranked.length)continue;
+    const topFamily=ranked[0];
+    const categoryVariants=topFamily.items.filter(item=>String(item?.category||item?.kind||'')===String(category));
+    if(!categoryVariants.length)continue;
+    row.ranked=categoryVariants.map(item=>({item,seriesName:topFamily.seriesName}));
+    const detected=parseSubtypeFromTail(parseArmorStructure(row.raw,category).tailPart);
+    for(const item of categoryVariants){
+      const parts=splitEquipmentSubtype(item.name); const subtype=parts.subtype;
+      const subtypeEvidence=subtype&&detected?(detected===subtype?1:0):-1;
+      const key=item.name;
+      const old=agg.get(key)||{...item,support:0,seriesRows:[],subtypeMatches:0,subtypeObserved:0,confSum:0,topRows:[],total:list.length,seriesName:topFamily.seriesName,subtype};
+      old.seriesRows.push(topFamily.seriesScore);
+      if(subtype && detected){old.subtypeObserved++; if(subtypeEvidence===1){old.subtypeMatches++;old.support++;old.confSum+=Number(row.conf||0);}}
+      old.topRows.push({rank:subtypeEvidence===1?0:1,score:topFamily.seriesScore,seriesScore:topFamily.seriesScore,subtypeScore:subtypeEvidence===1?1:(subtypeEvidence===0?0:null),conf:Number(row.conf||0),raw:row.raw,anchorMatched:topFamily.anchorMatched});
+      old.anchorMatched=old.anchorMatched||topFamily.anchorMatched; agg.set(key,old);
+    }
+  }
+  return [...agg.values()].map(x=>{
+    const seriesAvg=x.seriesRows.length?x.seriesRows.reduce((a,b)=>a+b,0)/x.seriesRows.length:0;
+    const subtypeConf=x.subtypeObserved?x.subtypeMatches/x.subtypeObserved:0;
+    const confAvg=x.support?x.confSum/x.support:0;
+    const supportRatio=x.support/Math.max(1,list.length);
+    const supportBonus=supportRatio>=.66?.06:supportRatio>0?.03:0;
+    const anchorBonus=x.anchorMatched?.03:0;
+    const subtypeComponent=x.subtypeObserved?(0.18*subtypeConf):0;
+    const total=Math.min(1,.67*seriesAvg+.10*seriesAvg+.10*(confAvg/100)+subtypeComponent+supportBonus+anchorBonus);
+    return {...x,avgNameScore:seriesAvg,avgSeriesScore:seriesAvg,confAvg,subtypeAvg:subtypeConf,subtypeConfidence:subtypeConf,totalScore:total,final:total,
+      hierarchy:{seriesScore:seriesAvg,subtypeScore:subtypeConf,totalScore:total,anchorMatched:x.anchorMatched}};
+  }).sort((a,b)=>b.totalScore-a.totalScore);
+}
+function equipmentDecisionV26(top,second){
+  if(!top)return {level:'manual',label:'手動入力'};
+  const gap=second?top.totalScore-second.totalScore:null;
+  const series=Number(top.avgSeriesScore||0), subtype=Number(top.subtypeConfidence||0);
+  const subtypeRequired=!!top.subtype;
+  if(series>=.80 && (!subtypeRequired || subtype>=.70) && top.confAvg>=45 && (gap==null||gap>=.05))return {level:'auto',label:'自動確定候補'};
+  if(series>=.55 && (gap==null||gap>=.03))return {level:'confirm',label:'ユーザー確認'};
+  if(series>=.40)return {level:'ambiguous',label:'候補選択'};
+  return {level:'manual',label:'手動入力'};
+}
+
 function aggregateHierarchicalArmorCandidates(rows,items){
   const agg=new Map();
   const list=Array.isArray(rows)?rows:[];
@@ -1478,10 +1577,10 @@ async function recognizeEquipmentAll(){
       for(const [mode,label] of passes){
         $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}をOCR中… ${label}`;
         const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c);let raw=cleanOCR(r?.data?.text||'');raw=raw.replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石|装衣)/g,' ').replace(/\s+/g,' ').trim();const conf=Number(r?.data?.confidence||0);if(raw)rows.push({raw,conf,mode:label});
-        const interim=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : (key==='charm' ? aggregateTalismanCandidates(rows,items) : aggregateHierarchicalArmorCandidates(rows,items));
+        const interim=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : (key==='charm' ? aggregateTalismanCandidates(rows,items) : aggregateHierarchicalArmorCandidatesV26(rows,items,key==='head'?'頭防具':key==='chest'?'胴防具':key==='arms'?'腕防具':key==='waist'?'腰防具':'脚防具',armorDB));
         if(equipmentOCRShouldStop(interim,rows)) break;
       }
-      const ranked=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : (key==='charm' ? aggregateTalismanCandidates(rows,items) : aggregateHierarchicalArmorCandidates(rows,items));const best=ranked[0],second=ranked[1];if(best)best.decision=equipmentDecision(best,second);if(best)best.gap=second?best.totalScore-second.totalScore:null;
+      const ranked=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : (key==='charm' ? aggregateTalismanCandidates(rows,items) : aggregateHierarchicalArmorCandidatesV26(rows,items,key==='head'?'頭防具':key==='chest'?'胴防具':key==='arms'?'腕防具':key==='waist'?'腰防具':'脚防具',armorDB));const best=ranked[0],second=ranked[1];if(best)best.decision=(key==='mainWeapon'||key==='charm')?equipmentDecision(best,second):equipmentDecisionV26(best,second);if(best)best.gap=second?best.totalScore-second.totalScore:null;
       output.push({key,rows,ranked:ranked.slice(0,3),best,region});
       const pct=best?Math.round(best.totalScore*100):0;
       $('equipmentResults').innerHTML=output.map(renderEquipmentResult).join('');
