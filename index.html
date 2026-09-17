@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-B v3.1 Spike - MH Wilds OCR — 適応型OCR</title>
+<title>Step 1.25-B v3.1.1 Crop Spike - MH Wilds OCR — 適応型OCR</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v3.1 Spike：適応型OCR</h1>
+<h1>MH Wilds OCR — Step 1.25-B v3.1.1：切り出し検証：適応型OCR</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -60,8 +60,9 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 
 <div class="card">
 <h2>3. OCR前処理を確認</h2>
-<div class="note">ここではOCRを実行せず、実際にOCRへ渡す「装備名だけの画像」を確認します。従来3方式に加え、Spike用ソフト白文字抽出を比較できます。</div>
+<div class="note">まずOCRを実行せず、装備名の切り出し境界だけを検証します。切り出しを確定してから前処理比較へ進みます。</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button id="previewCropOnly" class="primary">✂️ 切り出しだけ確認</button>
   <button id="previewPreprocess" class="primary">🖼️ 前処理画像を確認</button>
   <button id="runPreprocessSpike" class="primary">🧪 前処理Spikeを実行</button>
 </div>
@@ -506,6 +507,69 @@ function equipmentNameCropRect(region, imageWidth, imageHeight) {
 
 // Step 1.25-B: normalize/filter DB rows by equipment slot. This is deliberately
 // independent from OCR so slot mistakes can be tested without running Tesseract.
+// Step 1.25-B v3.1.1: crop-only spike. Do not OCR here; compare geometry first.
+function clampRectToImage(rect,imageWidth,imageHeight){
+  const iw=Math.max(1,Number(imageWidth)||1), ih=Math.max(1,Number(imageHeight)||1);
+  let x=Math.round(Number(rect?.x)||0), y=Math.round(Number(rect?.y)||0);
+  let width=Math.round(Number(rect?.width)||1), height=Math.round(Number(rect?.height)||1);
+  x=Math.max(0,Math.min(iw-1,x)); y=Math.max(0,Math.min(ih-1,y));
+  width=Math.max(1,Math.min(iw-x,width)); height=Math.max(1,Math.min(ih-y,height));
+  return {x,y,width,height};
+}
+function buildEquipmentNameCropVariantsV311(region,imageWidth,imageHeight){
+  const base=equipmentNameCropRect(region,imageWidth,imageHeight);
+  if(!base)return [];
+  const iw=Math.max(1,Number(imageWidth)||1), ih=Math.max(1,Number(imageHeight)||1);
+  const rx=Number(region?.x)||0, rw=Math.max(1,Number(region?.width)||1);
+  const rightEdge=Math.min(iw,rx+rw);
+  const rightGuard=Math.max(6,Math.round(rw*.03));
+  const wideWidth=Math.max(base.width,Math.round(rightEdge-base.x-rightGuard));
+  const padX=Math.max(8,Math.round(rw*.025));
+  const padY=Math.max(8,Math.round((Number(region?.pitch)||base.height)*.06));
+  const wide={x:base.x,y:base.y,width:wideWidth,height:base.height};
+  const widePadding={x:base.x-padX,y:base.y-padY,width:wideWidth+padX*2,height:base.height+padY*2};
+  const tallPadY=Math.max(padY,Math.round((Number(region?.pitch)||base.height)*.10));
+  const widePaddingTall={x:base.x-padX,y:base.y-tallPadY,width:wideWidth+padX*2,height:base.height+tallPadY*2};
+  return [
+    {id:'current',label:'現在方式',rect:clampRectToImage(base,iw,ih)},
+    {id:'wide',label:'広幅',rect:clampRectToImage(wide,iw,ih)},
+    {id:'wide_padding',label:'広幅＋左右上下余白',rect:clampRectToImage(widePadding,iw,ih)},
+    {id:'wide_padding_tall',label:'広幅＋余白多め',rect:clampRectToImage(widePaddingTall,iw,ih)}
+  ];
+}
+function cropCanvasFromRectV311(rect){
+  const c=document.createElement('canvas');
+  c.width=Math.max(1,Math.round(rect.width)); c.height=Math.max(1,Math.round(rect.height));
+  const ctx=c.getContext('2d');
+  ctx.drawImage($('img'),rect.x,rect.y,rect.width,rect.height,0,0,c.width,c.height);
+  return c;
+}
+function renderCropOnlySpike(){
+  const host=$('preprocessPreview'),status=$('preprocessStatus');
+  const regions=Array.isArray(window.lastEquipmentRegions)?window.lastEquipmentRegions:[];
+  if(!$('img').src){status.textContent='先に画像を選択してください。';return;}
+  if(regions.length!==9){status.textContent='先に「画面構造を自動検出」を実行してください。';return;}
+  const labels={mainWeapon:'メイン武器',head:'頭防具',chest:'胴防具',arms:'腕防具',waist:'腰防具',legs:'脚防具',charm:'護石'};
+  host.innerHTML=''; const started=performance.now(); const records=[];
+  for(const key of PREPROCESS_TARGETS){
+    const region=regions.find(r=>r.key===key); if(!region)continue;
+    const card=document.createElement('div');
+    card.style='border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:8px';
+    const variants=buildEquipmentNameCropVariantsV311(region,imgW,imgH);
+    card.innerHTML=`<b>${labels[key]||key}</b><div class="note" style="margin-top:4px">OCR未実行。境界・末尾・上下余白だけを比較します。</div>`;
+    const row=document.createElement('div'); row.style='display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px';
+    for(const v of variants){
+      const wrap=document.createElement('div');
+      const lab=document.createElement('div'); lab.className='note'; lab.textContent=`${v.label} / ${v.rect.width}×${v.rect.height}px`;
+      const c=cropCanvasFromRectV311(v.rect); c.style='width:100%;height:auto;display:block;background:#111;border-radius:6px;margin-top:4px';
+      wrap.appendChild(lab); wrap.appendChild(c); row.appendChild(wrap);
+    }
+    card.appendChild(row); host.appendChild(card); records.push({key,variants});
+  }
+  window.lastCropOnlySpike=records;
+  status.textContent=`切り出しSpike完了：${records.length}部位 × 4方式 / OCR未実行 / ${(performance.now()-started).toFixed(1)}ms`;
+}
+
 function normalizeEquipmentCandidateRows(rows, slot) {
   const allowed = {
     mainWeapon: 'weapon', head: 'head', chest: 'chest', arms: 'arms',
@@ -1800,6 +1864,7 @@ function renderPreprocessPreview(){
   window.lastPreprocessPreview=records;
   status.textContent=`前処理確認完了：${records.length}部位 × ${PREPROCESS_PASSES.length}方式 / OCR未実行 / ${(performance.now()-started).toFixed(1)}ms`;
 }
+if(typeof renderCropOnlySpike==='function') $('previewCropOnly').onclick=renderCropOnlySpike;
 $('previewPreprocess').onclick=renderPreprocessPreview;
 
 async function recognizeEquipmentAll(){
