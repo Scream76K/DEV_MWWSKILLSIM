@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-B v2.8 - MH Wilds OCR — OCR入力画像改善</title>
+<title>Step 1.25-B v3.1 Spike - MH Wilds OCR — 適応型OCR</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v2.8：OCR入力画像改善</h1>
+<h1>MH Wilds OCR — Step 1.25-B v3.1 Spike：適応型OCR</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -59,7 +59,18 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>3. 装備名を一括OCR</h2>
+<h2>3. OCR前処理を確認</h2>
+<div class="note">ここではOCRを実行せず、実際にOCRへ渡す「装備名だけの画像」を確認します。従来3方式に加え、Spike用ソフト白文字抽出を比較できます。</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button id="previewPreprocess" class="primary">🖼️ 前処理画像を確認</button>
+  <button id="runPreprocessSpike" class="primary">🧪 前処理Spikeを実行</button>
+</div>
+<div id="preprocessStatus" class="status">未実行</div>
+<div id="preprocessPreview" style="margin-top:10px"></div>
+</div>
+
+<div class="card">
+<h2>4. 装備名を一括OCR</h2>
 <div class="note">Step 1.25-Aで得た9領域を使い、メイン武器・5防具・護石を個別OCRします。サブ武器と装衣はOCR結果を取得してもシミュレーターには反映しません。各部位は対応するDBだけを候補検索対象にします。</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
   <button id="recognizeEquipment" class="primary">🔎 装備名を一括認識</button>
@@ -70,7 +81,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>4. メイン武器領域（従来診断）</h2>
+<h2>5. メイン武器領域（従来診断）</h2>
 <div class="note">
 赤枠が今回OCRする範囲です。まず初期値を試し、必要なら枠をドラッグして調整します。OCRは元画像から直接3倍拡大して処理します。
 このStepでは「画面全体OCR」は行いません。
@@ -95,7 +106,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>5. 切り出した画像</h2>
+<h2>6. 切り出した画像</h2>
 <canvas id="crop" style="max-width:100%;display:block;border-radius:8px;background:#222"></canvas>
 <div style="margin-top:14px;padding-top:12px;border-top:1px solid #c8baa0">
   <div style="font-weight:700;margin-bottom:5px">武器名だけのOCR領域</div>
@@ -111,7 +122,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>6. 全武器DB（従来診断）</h2>
+<h2>7. 全武器DB（従来診断）</h2>
 <div class="note">MHDBの日本語版「武器」データを全件取得して候補検索に使用します。数件だけの固定辞書には戻しません。取得済みデータは端末内にキャッシュします。</div>
 <div id="dbStatus" class="status">武器DB：未取得</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
@@ -121,7 +132,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>7. OCR結果（従来のメイン武器診断）</h2>
+<h2>8. OCR結果（従来のメイン武器診断）</h2>
 <div id="recognized" class="result">未実行</div>
 <div class="status" id="ocrStatus"></div>
 <pre id="raw"></pre>
@@ -1165,49 +1176,134 @@ function whiteTextHSV(ctx,w,h){
   ctx.putImageData(img,0,0);
 }
 
-function equipmentRegionCanvas(region, mode='color', band='full'){
-  const sx=Math.max(0,Math.round(region.x)), sy=Math.max(0,Math.round(region.y));
-  const sw=Math.max(1,Math.min(imgW-sx,Math.round(region.width))), sh=Math.max(1,Math.min(imgH-sy,Math.round(region.height)));
-  const base=document.createElement('canvas'); base.width=sw; base.height=sh;
-  base.getContext('2d').drawImage($('img'),sx,sy,sw,sh,0,0,sw,sh);
 
-  let crop={x:0,y:0,width:sw,height:sh};
+// Spike-only soft white extraction. Unlike hard thresholding, this keeps a
+// continuous luminance mask so anti-aliased glyph edges are not discarded.
+function softWhiteText(ctx,w,h){
+  const img=ctx.getImageData(0,0,w,h),d=img.data;
+  const values=[];
+  for(let i=0;i<d.length;i+=4){
+    const r=d[i],g=d[i+1],b=d[i+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b);
+    const sat=mx===0?0:((mx-mn)/mx)*255;
+    values.push(mx);
+  }
+  values.sort((a,b)=>a-b);
+  const p75=values[Math.min(values.length-1,Math.floor(values.length*.75))]||160;
+  const v0=Math.max(100,Math.min(175,p75-20));
+  const smooth=(x,a,b)=>{if(b<=a)return x>=b?1:0;const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t)};
+  for(let i=0;i<d.length;i+=4){
+    const r=d[i],g=d[i+1],b=d[i+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b);
+    const gray=.299*r+.587*g+.114*b;
+    const sat=mx===0?0:((mx-mn)/mx)*255;
+    const whiteScore=smooth(mx,v0,v0+55)*smooth(sat,105,25);
+    const z=Math.max(0,Math.min(255,Math.round(gray*.22+255*whiteScore*.78)));
+    d[i]=d[i+1]=d[i+2]=z;
+  }
+  ctx.putImageData(img,0,0);
+}
+
+// Step 1.25-B v3.0: adaptive OCR preprocessing.
+// Keep the source glyph anti-aliasing intact; thresholding/Otsu are rescue-only.
+function clampNumber(v,min,max){ return Math.max(min,Math.min(max,Number(v)||0)); }
+function dynamicOCRScale(region,cropHeight){
+  const pitch=Math.max(20,Number(region?.pitch)||Number(cropHeight)||80);
+  const labelHeight=Math.max(8,Number(region?.labelHeight)||pitch*0.20);
+  const estimatedTextHeight=Math.max(8,Math.min(labelHeight,Number(cropHeight||pitch)*0.55));
+  // Aim for a glyph height around 40px while bounding the scale to avoid blur/noise.
+  return clampNumber(40/estimatedTextHeight,1.5,4.5);
+}
+function applyLocalContrast(ctx,w,h){
+  // Lightweight CLAHE-like local contrast: local mean/variance are approximated
+  // with a small box window so this stays practical on iPhone Safari.
+  const img=ctx.getImageData(0,0,w,h),src=img.data,out=new Uint8ClampedArray(src);
+  const gray=new Uint8Array(w*h), integral=new Float64Array((w+1)*(h+1));
+  for(let y=0;y<h;y++){
+    let row=0;
+    for(let x=0;x<w;x++){
+      const i=(y*w+x)*4,g=Math.round(.299*src[i]+.587*src[i+1]+.114*src[i+2]);
+      gray[y*w+x]=g; row+=g; integral[(y+1)*(w+1)+(x+1)]=integral[y*(w+1)+(x+1)]+row;
+    }
+  }
+  const radius=Math.max(2,Math.min(7,Math.round(Math.min(w,h)/80)));
+  const areaFor=(x0,y0,x1,y1)=>{
+    const A=integral[y0*(w+1)+x0],B=integral[y0*(w+1)+(x1+1)],C=integral[(y1+1)*(w+1)+x0],D=integral[(y1+1)*(w+1)+(x1+1)];
+    return [Math.max(1,(x1-x0+1)*(y1-y0+1)),D-B-C+A];
+  };
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const x0=Math.max(0,x-radius),x1=Math.min(w-1,x+radius),y0=Math.max(0,y-radius),y1=Math.min(h-1,y+radius);
+    const ar=areaFor(x0,y0,x1,y1),mean=ar[1]/ar[0],g=gray[y*w+x];
+    const z=clampNumber(128+(g-mean)*1.65+(mean-128)*0.10,0,255);
+    const i=(y*w+x)*4;out[i]=out[i+1]=out[i+2]=Math.round(z);out[i+3]=src[i+3];
+  }
+  img.data.set(out);ctx.putImageData(img,0,0);
+}
+function applyMildUnsharp(ctx,w,h){
+  const img=ctx.getImageData(0,0,w,h),src=img.data,out=new Uint8ClampedArray(src);
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+    const i=(y*w+x)*4; const g=.299*src[i]+.587*src[i+1]+.114*src[i+2];
+    let sum=0; for(let yy=-1;yy<=1;yy++)for(let xx=-1;xx<=1;xx++){const j=((y+yy)*w+(x+xx))*4;sum+=.299*src[j]+.587*src[j+1]+.114*src[j+2];}
+    const blur=sum/9, z=clampNumber(g+(g-blur)*0.35,0,255),v=Math.round(z);out[i]=out[i+1]=out[i+2]=v;
+  }
+  img.data.set(out);ctx.putImageData(img,0,0);
+}
+function extractSubtypeTail(raw){
+  const s=String(raw||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim();
+  // Noise after the subtype is common in the Wilds UI OCR crop.
+  const m=s.match(/(?:^|[^A-Za-z])(80q|bq|Bq|BQ|b|B|6|8|aq|nq|a|A|q|v|V|y|Y|ν|α|β|γ|𝛂|𝛽|𝛾)(?=\s*(?:[^A-Za-z0-9]*)$)/iu);
+  return m?m[1]:'';
+}
+function subtypeTailRect(region,imageWidth,imageHeight){
+  const name=equipmentNameCropRect(region,imageWidth,imageHeight); if(!name)return null;
+  // The subtype is the rightmost short token; reserve a quarter of the name band.
+  const width=Math.max(36,Math.round(name.width*0.24));
+  return {x:Math.max(0,Math.round(name.x+name.width-width)),y:Math.max(0,Math.round(name.y)),width:Math.min(width,imageWidth-Math.round(name.x+name.width-width)),height:Math.min(Math.round(name.height),imageHeight-Math.round(name.y))};
+}
+async function recognizeSubtypeTail(worker,region){
+  const rect=subtypeTailRect(region,imgW,imgH); if(!rect)return {raw:'',subtype:'',confidence:0};
+  const c=document.createElement('canvas');
+  const scale=dynamicOCRScale(region,rect.height);
+  c.width=Math.max(1,Math.round(rect.width*scale));c.height=Math.max(1,Math.round(rect.height*scale));
+  const ctx=c.getContext('2d',{willReadFrequently:true});ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  ctx.drawImage($('img'),rect.x,rect.y,rect.width,rect.height,0,0,c.width,c.height);
+  whiteTextHSV(ctx,c.width,c.height);
+  const padded=addPaddingCustom(c,Math.max(15,Math.round(c.width*.10)),Math.max(15,Math.round(c.height*.20)),'#000000');
+  const oldWhitelist='';
+  await worker.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:'αβγΑΒΓabqvvyYBQ0689'});
+  const r=await worker.recognize(padded);
+  await worker.setParameters({tessedit_pageseg_mode:'7',preserve_interword_spaces:'1',tessedit_char_whitelist:oldWhitelist});
+  const raw=String(r?.data?.text||'').normalize('NFKC').replace(/[\r\n\s]+/g,'').trim();
+  const subtype=parseSubtypeFromTail(raw);
+  return {raw,subtype,confidence:Number(r?.data?.confidence||0)};
+}
+
+function prepareEquipmentOCRCanvas(region,mode='grayscale',band='name'){
+  const sx=Math.max(0,Math.round(region.x)),sy=Math.max(0,Math.round(region.y));
+  const sw=Math.max(1,Math.min(imgW-sx,Math.round(region.width))),sh=Math.max(1,Math.min(imgH-sy,Math.round(region.height)));
+  const base=document.createElement('canvas');base.width=sw;base.height=sh;
+  base.getContext('2d').drawImage($('img'),sx,sy,sw,sh,0,0,sw,sh);
+  let crop={x:0,y:Math.round(sh*0.02),width:sw,height:Math.max(1,Math.round(sh*0.96))};
   if(band==='name'){
     const r=equipmentNameCropRect(region,imgW,imgH);
-    if(r){
-      const cx=Math.max(0,Math.min(sw-1,Math.round(r.x-sx)));
-      const cy=Math.max(0,Math.min(sh-1,Math.round(r.y-sy)));
-      crop={x:cx,y:cy,width:Math.max(1,Math.min(sw-cx,Math.round(r.width))),height:Math.max(1,Math.min(sh-cy,Math.round(r.height)))};
-    }
-  } else {
-    crop={x:0,y:Math.round(sh*0.02),width:sw,height:Math.max(1,Math.round(sh*0.96))};
+    if(r){const cx=Math.max(0,Math.min(sw-1,Math.round(r.x-sx))),cy=Math.max(0,Math.min(sh-1,Math.round(r.y-sy)));crop={x:cx,y:cy,width:Math.max(1,Math.min(sw-cx,Math.round(r.width))),height:Math.max(1,Math.min(sh-cy,Math.round(r.height)))};}
   }
-
-  // v2.1: 2.5x is enough to enlarge the game font without introducing the
-  // excessive interpolation/noise produced by the former 4x/high setting.
-  const scale=2.5;
-  const c=document.createElement('canvas');
-  c.width=Math.max(1,Math.round(crop.width*scale));
-  c.height=Math.max(1,Math.round(crop.height*scale));
-  const ctx=c.getContext('2d',{willReadFrequently:true});
-  ctx.imageSmoothingEnabled=true;
-  ctx.imageSmoothingQuality='medium';
-  ctx.drawImage(base,crop.x,crop.y,crop.width,crop.height,0,0,c.width,c.height);
-
-  if(mode==='hsv_white'){ whiteTextHSV(ctx,c.width,c.height); } else if(mode==='otsu'){ otsuThreshold(ctx,c.width,c.height); } else if(mode==='white_extract' || mode==='invert' || mode==='grayscale'){
-    const d=ctx.getImageData(0,0,c.width,c.height);
-    for(let i=0;i<d.data.length;i+=4){
-      const g=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
-      let z=g;
-      if(mode==='white_extract') z=g<130?0:Math.min(255,(g-130)*2);
-      else if(mode==='invert') z=g<120?255:Math.max(0,255-(g-120)*2);
-      d.data[i]=d.data[i+1]=d.data[i+2]=Math.round(z);
-    }
-    ctx.putImageData(d,0,0);
+  const scale=dynamicOCRScale(region,crop.height);
+  const c=document.createElement('canvas');c.width=Math.max(1,Math.round(crop.width*scale));c.height=Math.max(1,Math.round(crop.height*scale));
+  const ctx=c.getContext('2d',{willReadFrequently:true});ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(base,crop.x,crop.y,crop.width,crop.height,0,0,c.width,c.height);
+  if(mode==='hsv_white') whiteTextHSV(ctx,c.width,c.height);
+  else if(mode==='local_contrast'){applyLocalContrast(ctx,c.width,c.height);applyMildUnsharp(ctx,c.width,c.height);}
+  else if(mode==='grayscale'){
+    const d=ctx.getImageData(0,0,c.width,c.height);for(let i=0;i<d.data.length;i+=4){const g=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];const z=clampNumber(128+(g-128)*1.20,0,255);d.data[i]=d.data[i+1]=d.data[i+2]=Math.round(z);}ctx.putImageData(d,0,0);
+  } else if(mode==='otsu') otsuThreshold(ctx,c.width,c.height);
+  else if(mode==='white_extract'){
+    const d=ctx.getImageData(0,0,c.width,c.height);for(let i=0;i<d.data.length;i+=4){const g=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];const z=g<130?0:Math.min(255,(g-130)*2);d.data[i]=d.data[i+1]=d.data[i+2]=Math.round(z);}ctx.putImageData(d,0,0);
   }
+  const pad=(mode==='white_extract'||mode==='hsv_white'||mode==='local_contrast'||mode==='grayscale')?'#000000':'#FFFFFF';
+  return addPaddingCustom(c,Math.max(15,Math.round(c.width*0.04)),Math.max(15,Math.round(c.height*0.10)),pad);
+}
 
-  const padColor=(mode==='invert'||mode==='otsu') ? '#FFFFFF' : '#000000';
-  return addPaddingCustom(c,30,20,padColor);
+function equipmentRegionCanvas(region, mode='color', band='full'){
+  if(mode==='color') return prepareEquipmentOCRCanvas(region,'grayscale',band);
+  return prepareEquipmentOCRCanvas(region,mode,band);
 }
 
 
@@ -1497,7 +1593,7 @@ function aggregateHierarchicalArmorCandidatesV26(rows,items,category,allArmorIte
     const categoryVariants=topFamily.items.filter(item=>String(item?.category||item?.kind||'')===String(category)||String(item?.kind||'')===wantKind);
     if(!categoryVariants.length)continue;
     row.ranked=categoryVariants.map(item=>({item,seriesName:topFamily.seriesName}));
-    const detected=parseSubtypeFromTail(parseArmorStructure(row.raw,category).tailPart);
+    const detected=row.subtypeDetected||parseSubtypeFromTail(parseArmorStructure(row.raw,category).tailPart);
     for(const item of categoryVariants){
       const parts=splitEquipmentSubtype(item.name); const subtype=parts.subtype;
       const subtypeEvidence=subtype&&detected?(detected===subtype?1:0):-1;
@@ -1609,6 +1705,103 @@ function equipmentOCRShouldStop(ranked, rows) {
   const gap=second ? top.totalScore-second.totalScore : 1;
   return top.totalScore>=0.78 && top.avgNameScore>=0.60 && top.confAvg>=55 && gap>=0.07;
 }
+const EQUIPMENT_OCR_STANDARD_PASSES=[
+  ['white_extract','白文字強調'],
+  ['hsv_white','白文字・色除去'],
+  ['grayscale','グレースケール']
+];
+const EQUIPMENT_OCR_RESCUE_PASSES=[
+  ['local_contrast','局所コントラスト救済'],
+  ['otsu','Otsu救済']
+];
+const PREPROCESS_PASSES=EQUIPMENT_OCR_STANDARD_PASSES;
+const PREPROCESS_TARGETS=['mainWeapon','head','chest','arms','waist','legs','charm'];
+
+// v3.1 is an evaluation-only Spike. These passes are intentionally separate
+// from the production standard passes so their OCR cost/results can be compared
+// on real screenshots before changing the default pipeline.
+const SPIKE_PREPROCESS_PASSES=[
+  ['soft_white','ソフト白文字抽出'],
+  ['grayscale','グレースケール'],
+  ['local_contrast','CLAHE比較'],
+  ['otsu','Otsu救済比較']
+];
+const SPIKE_TARGETS=['mainWeapon','head','chest','arms','waist','legs','charm'];
+async function renderPreprocessSpike(){
+  if(!$('img').src){$('preprocessStatus').textContent='先に画像を選択してください。';return}
+  const regions=Array.isArray(window.lastEquipmentRegions)?window.lastEquipmentRegions:[];
+  if(regions.length!==9){$('preprocessStatus').textContent='先に「画面構造を自動検出」を実行してください。';return}
+  const btn=$('runPreprocessSpike');btn.disabled=true;
+  const started=performance.now(); const rows=[];
+  let worker=null;
+  try{
+    worker=await Tesseract.createWorker('jpn');
+    await worker.setParameters({tessedit_pageseg_mode:'7',preserve_interword_spaces:'1'});
+    for(const key of SPIKE_TARGETS){
+      const region=regions.find(r=>r.key===key); if(!region)continue;
+      const slotStarted=performance.now();
+      for(const [mode,label] of SPIKE_PREPROCESS_PASSES){
+        $('preprocessStatus').textContent=`Spike：${equipmentSlotLabel(key)} / ${label}`;
+        const t0=performance.now();
+        const c=equipmentRegionCanvas(region,mode,'name');
+        const r=await worker.recognize(c);
+        const raw=cleanOCR(r?.data?.text||'').replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石|装衣)/g,' ').replace(/\s+/g,' ').trim();
+        rows.push({key,mode,label,raw,confidence:Number(r?.data?.confidence||0),ms:performance.now()-t0});
+      }
+      rows.push({key,mode:'__slot__',label:'部位合計',raw:'',confidence:0,ms:performance.now()-slotStarted});
+    }
+    window.lastPreprocessSpike=rows;
+    const total=(performance.now()-started)/1000;
+    const cards=SPIKE_TARGETS.map(key=>{
+      const slot=rows.filter(r=>r.key===key&&r.mode!=='__slot__');
+      const sum=rows.find(r=>r.key===key&&r.mode==='__slot__');
+      const cells=slot.map(r=>`<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${r.label}</b><br><span class="note">OCR: ${r.raw||'（空）'} / Confidence ${Math.round(r.confidence)}% / ${Math.round(r.ms)}ms</span></div>`).join('');
+      return `<div class="card" style="margin:8px 0;padding:10px"><b>${equipmentSlotLabel(key)}</b>${cells}<div class="note" style="margin-top:6px">部位合計 ${Math.round(sum?.ms||0)}ms</div></div>`;
+    }).join('');
+    $('preprocessPreview').innerHTML=`<div class="note"><b>Spike結果</b>：4方式 × 7部位 / 合計 ${total.toFixed(1)}秒。これは比較専用で、本番OCRの方式は変更していません。</div>`+cards;
+    $('preprocessStatus').textContent=`前処理Spike完了：${SPIKE_PREPROCESS_PASSES.length}方式 × ${SPIKE_TARGETS.length}部位 / ${total.toFixed(1)}秒`;
+  }catch(err){$('preprocessStatus').textContent='前処理Spikeエラー：'+String(err)}
+  finally{if(worker)await worker.terminate();btn.disabled=false}
+}
+$('runPreprocessSpike').onclick=renderPreprocessSpike;
+function renderPreprocessPreview(){
+  const host=$('preprocessPreview');
+  const status=$('preprocessStatus');
+  const regions=Array.isArray(window.lastEquipmentRegions)?window.lastEquipmentRegions:[];
+  if(!$('img').src){status.textContent='先に画像を選択してください。';return;}
+  if(regions.length!==9){status.textContent='先に「画面構造を自動検出」を実行してください。';return;}
+  const labels={mainWeapon:'メイン武器',head:'頭防具',chest:'胴防具',arms:'腕防具',waist:'腰防具',legs:'脚防具',charm:'護石'};
+  const started=performance.now();
+  host.innerHTML='';
+  const records=[];
+  for(const key of PREPROCESS_TARGETS){
+    const region=regions.find(r=>r.key===key);
+    if(!region)continue;
+    const card=document.createElement('div');
+    card.style='border:1px solid #c8baa0;border-radius:9px;padding:9px;margin-top:8px';
+    const title=document.createElement('div');
+    title.innerHTML=`<b>${labels[key]||key}</b> <span class="note">装備名OCR領域</span>`;
+    card.appendChild(title);
+    const row=document.createElement('div');
+    row.style='display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px';
+    const passRecords=[];
+    for(const [mode,label] of PREPROCESS_PASSES){
+      const wrap=document.createElement('div');
+      const lab=document.createElement('div'); lab.className='note'; lab.textContent=label; wrap.appendChild(lab);
+      const c=equipmentRegionCanvas(region,mode,'name');
+      c.style='width:100%;height:auto;display:block;background:#111;border-radius:6px;margin-top:4px';
+      wrap.appendChild(c); row.appendChild(wrap);
+      passRecords.push({mode,label,canvas:c});
+    }
+    card.appendChild(row);
+    host.appendChild(card);
+    records.push({key,passes:passRecords});
+  }
+  window.lastPreprocessPreview=records;
+  status.textContent=`前処理確認完了：${records.length}部位 × ${PREPROCESS_PASSES.length}方式 / OCR未実行 / ${(performance.now()-started).toFixed(1)}ms`;
+}
+$('previewPreprocess').onclick=renderPreprocessPreview;
+
 async function recognizeEquipmentAll(){
   if(!$('img').src){$('equipmentOCRStatus').textContent='先に画像を選択してください。';return}
   const regions=Array.isArray(window.lastEquipmentRegions)?window.lastEquipmentRegions:[];
@@ -1625,14 +1818,31 @@ async function recognizeEquipmentAll(){
     const output=[];
     for(const key of targets){
       const region=regions.find(r=>r.key===key); const items=equipmentRowsForSlot(key); const rows=[];
-      const passes=[['white_extract','白文字強調'],['hsv_white','白文字・色除去'],['grayscale','グレースケール']];
+      const passes=EQUIPMENT_OCR_STANDARD_PASSES;
       for(const [mode,label] of passes){
         $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}をOCR中… ${label}`;
         const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c);let raw=cleanOCR(r?.data?.text||'');raw=raw.replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石|装衣)/g,' ').replace(/\s+/g,' ').trim();const conf=Number(r?.data?.confidence||0);if(raw)rows.push({raw,conf,mode:label});
         const interim=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : (key==='charm' ? aggregateTalismanCandidates(rows,items) : aggregateHierarchicalArmorCandidatesV26(rows,items,key==='head'?'頭防具':key==='chest'?'胴防具':key==='arms'?'腕防具':key==='waist'?'腰防具':'脚防具',armorDB));
         if(equipmentOCRShouldStop(interim,rows)) break;
       }
-      const ranked=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : (key==='charm' ? aggregateTalismanCandidates(rows,items) : aggregateHierarchicalArmorCandidatesV26(rows,items,key==='head'?'頭防具':key==='chest'?'胴防具':key==='arms'?'腕防具':key==='waist'?'腰防具':'脚防具',armorDB));const best=ranked[0],second=ranked[1];if(best)best.decision=(key==='mainWeapon'||key==='charm')?equipmentDecision(best,second):equipmentDecisionV26(best,second);if(best)best.gap=second?best.totalScore-second.totalScore:null;
+      if(key!=='mainWeapon'&&key!=='charm'&&rows.length){
+        const subtype=await recognizeSubtypeTail(worker,region);
+        if(subtype.subtype) rows[0].subtypeDetected=subtype.subtype;
+        rows.subtypeEvidence=subtype;
+      }
+      let ranked=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : (key==='charm' ? aggregateTalismanCandidates(rows,items) : aggregateHierarchicalArmorCandidatesV26(rows,items,key==='head'?'頭防具':key==='chest'?'胴防具':key==='arms'?'腕防具':key==='waist'?'腰防具':'脚防具',armorDB));
+      // Otsu is a rescue path only. It is intentionally skipped when the standard
+      // adaptive passes already produced a usable candidate set.
+      if(key!=='mainWeapon'&&key!=='charm'&&(!ranked.length || ranked[0].avgSeriesScore<.40)){
+        for(const [mode,label] of EQUIPMENT_OCR_RESCUE_PASSES){
+          $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}を救済OCR中… ${label}`;
+          const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c); const raw=cleanOCR(r?.data?.text||''); const conf=Number(r?.data?.confidence||0);
+          if(raw)rows.push({mode:label,raw,conf});
+          ranked=aggregateHierarchicalArmorCandidatesV26(rows,items,key==='head'?'頭防具':key==='chest'?'胴防具':key==='arms'?'腕防具':key==='waist'?'腰防具':'脚防具',armorDB);
+          if(ranked.length&&ranked[0].avgSeriesScore>=.40)break;
+        }
+      }
+      const best=ranked[0],second=ranked[1];if(best)best.decision=(key==='mainWeapon'||key==='charm')?equipmentDecision(best,second):equipmentDecisionV26(best,second);if(best)best.gap=second?best.totalScore-second.totalScore:null;
       output.push({key,rows,ranked:ranked.slice(0,3),best,region});
       const pct=best?Math.round(best.totalScore*100):0;
       $('equipmentResults').innerHTML=output.map(renderEquipmentResult).join('');

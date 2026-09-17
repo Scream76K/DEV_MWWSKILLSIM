@@ -2,8 +2,8 @@ const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
 const html = fs.readFileSync('index.html','utf8');
-assert(html.includes('<title>Step 1.25-B v2.8'), 'title must be Step 1.25-B v2.8');
-assert(html.includes('MH Wilds OCR — Step 1.25-B v2.8'), 'visible h1 must be Step 1.25-B v2.8');
+assert(html.includes('<title>Step 1.25-B v3.1 Spike'), 'title must be Step 1.25-B v3.0');
+assert(html.includes('MH Wilds OCR — Step 1.25-B v3.1 Spike'), 'visible h1 must be Step 1.25-B v3.0');
 const mStart = html.indexOf('function detectEquipmentRegions(');
 const mEnd = html.indexOf('\nfunction addPadding', mStart);
 const lmStart = html.indexOf('function extractEquipmentOCRLines(');
@@ -16,9 +16,9 @@ const bStart = html.indexOf('function normalizeEquipmentCandidateRows(');
 const bEnd = html.indexOf('\nfunction addPadding', bStart);
 assert(bStart >= 0 && bEnd > bStart, 'Step 1.25-B helpers must exist');
 const b = html.slice(bStart, bEnd);
-const sandbox = {console, Math, Set, Map, Array, Number, String, Object};
+const sandbox = {console, Math, Set, Map, Array, Number, String, Object, $:()=>({onclick:null})};
 vm.createContext(sandbox);
-vm.runInContext(m + '\n' + lm + '\n' + b + '\nthis.detect=detectEquipmentRegions; this.extract=extractEquipmentOCRLines; this.normalizeEquipmentCandidateRows=normalizeEquipmentCandidateRows;', sandbox);
+vm.runInContext(m + '\n' + lm + '\n' + b.replace(/\n\$\('previewPreprocess'\)\.onclick=renderPreprocessPreview;\n/, '\n') + '\nthis.detect=detectEquipmentRegions; this.extract=extractEquipmentOCRLines; this.normalizeEquipmentCandidateRows=normalizeEquipmentCandidateRows;', sandbox);
 const detect = sandbox.detect;
 const extract = sandbox.extract;
 
@@ -243,7 +243,7 @@ const gmStart = html.indexOf('function rankGenericEquipmentCandidates(');
 const gmEnd = html.indexOf('\nasync function recognizeEquipmentAll', gmStart);
 assert(gmStart >= 0 && gmEnd > gmStart, 'generic equipment ranking helpers must exist');
 const gm = html.slice(gmStart, gmEnd);
-const gs = {console, Math, Set, Map, Array, Number, String, Object,
+const gs = {console, Math, Set, Map, Array, Number, String, Object, $:()=>({onclick:null}),
   weightedNameDistance:(raw,name)=>({score:String(raw).replace(/\\s/g,'')===String(name).replace(/\\s/g,'')?1:.5,details:{},matched:String(name).length}),
   confidenceWeight:()=>1};
 vm.createContext(gs);
@@ -290,11 +290,12 @@ console.log('step125b v2 name-line crop RED tests passed');
 // enlargement and wider explicit padding.
 assert(html.includes("function addPaddingCustom(sourceCanvas, padX = 30, padY = 20, color = '#FFFFFF')"),
   'v2.1 must provide configurable OCR padding');
-assert(html.includes('const scale=2.5'), 'v2.1 equipment OCR canvas should use 2.5x scaling');
+assert(html.includes('function dynamicOCRScale('), 'v3.0 equipment OCR canvas should use dynamic scaling');
+assert(!html.includes('const scale=2.5'), 'v3.0 must not hard-code 2.5x scaling');
 assert(html.includes("mode==='white_extract'"), 'v2.1 must include white-text extraction');
 assert(html.includes("mode==='grayscale'"), 'v2.1 must include grayscale mode');
-assert(html.includes("const passes=[['white_extract','白文字強調'],['hsv_white','白文字・色除去'],['grayscale','グレースケール']];"),
-  'v2.8 equipment OCR passes must include local adaptive preprocessing');
+assert(html.includes('EQUIPMENT_OCR_STANDARD_PASSES'),
+  'v3.0 equipment OCR passes must use the standard preprocessing list');
 console.log('step125b v2.1 preprocessing RED tests passed');
 
 // Step 1.25-B v2.1 regression: the detected region already begins at the text
@@ -404,7 +405,7 @@ vm.createContext(os);
 vm.runInContext(otsuCode+'\nthis.otsu=otsuThreshold;', os);
 os.otsu(otsuCtx,2,1);
 assert(os.otsu && otsuCtx.last && otsuCtx.last.data[0]===0 && otsuCtx.last.data[4]===255, 'Otsu should binarize a simple bimodal image');
-assert(html.includes("const passes=[['white_extract','白文字強調'],['hsv_white','白文字・色除去'],['grayscale','グレースケール']];"), 'v2.4 equipment OCR must use adaptive three-pass preprocessing');
+assert(html.includes('EQUIPMENT_OCR_STANDARD_PASSES'), 'v3.0 equipment OCR must use the adaptive standard pass list');
 
 // Contextual suffix normalization: only the terminal subtype-like token is rewritten.
 const sub24Start = html.indexOf('function normalizeSubtypeSymbols(');
@@ -438,7 +439,7 @@ assert(ev.score>=0.8, 'repeated strong OCR should raise series evidence');
 assert(ev.support===2, 'series evidence support should count matching OCR passes');
 
 // v2.4 RED: adaptive preprocessing helper must exist and use local Otsu threshold.
-assert(html.includes("const passes=[['white_extract','白文字強調'],['hsv_white','白文字・色除去'],['grayscale','グレースケール']];"), 'v2.4 equipment OCR must use adaptive three-pass preprocessing');
+assert(html.includes('EQUIPMENT_OCR_STANDARD_PASSES'), 'v3.0 equipment OCR must use the adaptive standard pass list');
 
 // v2.4 RED: subtype parsing must be tail-only, while the series matcher must tolerate OCR insertions/deletions.
 const parseStart = html.indexOf('function parseSubtypeFromTail(');
@@ -709,3 +710,113 @@ assert(cropWide.x===80,'semantic label x should remain the crop start');
 assert(html.includes("mode==='hsv_white'"),'HSV white-text preprocessing mode must exist');
 assert(html.includes('whiteTextHSV'),'HSV preprocessing helper must exist');
 console.log('step125b v2.8 preprocessing RED tests passed');
+
+// v2.9 RED: preprocessing inspection UI must expose a deterministic three-pass preview without running OCR.
+assert(html.includes('id="previewPreprocess"'), 'preprocessing preview button must exist');
+assert(html.includes('id="preprocessPreview"'), 'preprocessing preview container must exist');
+assert(html.includes('function renderPreprocessPreview('), 'renderPreprocessPreview must exist');
+assert(html.includes('const EQUIPMENT_OCR_STANDARD_PASSES='), 'standard preprocessing pass list must exist');
+const passBlock = html.slice(html.indexOf('const EQUIPMENT_OCR_STANDARD_PASSES='), html.indexOf(';', html.indexOf('const EQUIPMENT_OCR_STANDARD_PASSES='))+1);
+assert(passBlock.includes('white_extract') && passBlock.includes('hsv_white') && passBlock.includes('grayscale'), 'preview must use the production standard preprocessing passes');
+assert(!passBlock.includes('local_contrast'), 'preview standard passes must not force local contrast');
+assert(!passBlock.includes('otsu'), 'v3.0 standard preview must not add rescue Otsu');
+console.log('step125b v2.9 preprocessing preview RED tests passed');
+
+// Load v3.0 helper functions directly from the HTML for isolated unit tests.
+function extractFunctionSource(src,name){
+  const start=src.indexOf('function '+name+'(');
+  assert(start>=0,'missing function '+name);
+  const brace=src.indexOf('{',start); let depth=0;
+  for(let i=brace;i<src.length;i++){
+    if(src[i]==='{')depth++; else if(src[i]==='}' && --depth===0)return src.slice(start,i+1);
+  }
+  throw new Error('unterminated function '+name);
+}
+const v30HelperSandbox={console,Math,Array,Number,String,Object,Set,Map,Uint8Array,Float64Array,Uint8ClampedArray};
+vm.createContext(v30HelperSandbox);
+vm.runInContext([
+  extractFunctionSource(html,'clampNumber'),
+  extractFunctionSource(html,'dynamicOCRScale'),
+  extractFunctionSource(html,'extractSubtypeTail'),
+  extractFunctionSource(html,'parseSubtypeFromTail'),
+  extractFunctionSource(html,'prepareEquipmentOCRCanvas')
+].join('\n'),v30HelperSandbox);
+sandbox.dynamicOCRScale=v30HelperSandbox.dynamicOCRScale;
+sandbox.extractSubtypeTail=v30HelperSandbox.extractSubtypeTail;
+sandbox.parseSubtypeFromTail=v30HelperSandbox.parseSubtypeFromTail;
+sandbox.prepareEquipmentOCRCanvas=v30HelperSandbox.prepareEquipmentOCRCanvas;
+
+// Step 1.25-B v3.0 RED: preprocessing should be adaptive and preserve anti-aliased glyphs.
+assert.strictEqual(typeof sandbox.dynamicOCRScale, 'function', 'v3.0 dynamicOCRScale must exist');
+assert.strictEqual(typeof sandbox.prepareEquipmentOCRCanvas, 'function', 'v3.0 prepareEquipmentOCRCanvas must exist');
+assert.strictEqual(typeof sandbox.extractSubtypeTail, 'function', 'v3.0 extractSubtypeTail must exist');
+assert.strictEqual(typeof sandbox.parseSubtypeFromTail, 'function', 'parseSubtypeFromTail must remain available');
+
+const smallScale=sandbox.dynamicOCRScale({labelHeight:12,pitch:80});
+const largeScale=sandbox.dynamicOCRScale({labelHeight:28,pitch:180});
+assert(smallScale>largeScale, 'smaller source text should receive a larger scale');
+assert(smallScale>=1.5 && smallScale<=4.5, 'dynamic scale must stay bounded');
+assert(largeScale>=1.5 && largeScale<=4.5, 'dynamic scale must stay bounded');
+
+// Standard equipment passes must not contain fixed thresholding/Otsu; rescue is separate.
+const stdPassStart=html.indexOf('const EQUIPMENT_OCR_STANDARD_PASSES');
+const stdPassEnd=html.indexOf(';',stdPassStart);
+assert(stdPassStart>=0,'v3.0 standard preprocessing pass list must exist');
+const stdPass=html.slice(stdPassStart,stdPassEnd+1);
+assert(!/otsu|threshold/i.test(stdPass),'Otsu/fixed threshold must not be a standard OCR pass');
+assert(/white_extract|hsv_white/.test(stdPass),'white extraction should remain in standard passes');
+assert(/grayscale/.test(stdPass),'grayscale should remain in standard passes');
+assert(!/local_contrast/.test(stdPass),'local contrast should be a conditional rescue pass');
+
+const rescueStart=html.indexOf('const EQUIPMENT_OCR_RESCUE_PASSES');
+const rescueEnd=html.indexOf(';',rescueStart);
+assert(rescueStart>=0,'v3.0 rescue preprocessing pass list must exist');
+const rescuePass=html.slice(rescueStart,rescueEnd+1);
+assert(/local_contrast/.test(rescuePass),'local contrast should be available as rescue');
+assert(/otsu/i.test(rescuePass),'Otsu should remain only as rescue');
+
+// Tail extraction must ignore punctuation/noise after the subtype and return only the tail token.
+assert.strictEqual(sandbox.extractSubtypeTail('謀電器音ヘルムBQ 央'),'BQ');
+assert.strictEqual(sandbox.extractSubtypeTail('シュパルカメイルv 一'),'v');
+assert.strictEqual(sandbox.extractSubtypeTail('ゴグアームq に'),'q');
+assert.strictEqual(sandbox.extractSubtypeTail('ドシャタクマコイルaq 一'),'aq');
+assert.strictEqual(sandbox.extractSubtypeTail('シュバルカグリーヴv ーー'),'v');
+assert.strictEqual(sandbox.parseSubtypeFromTail(sandbox.extractSubtypeTail('謀電器音ヘルムBQ 央')),'β');
+assert.strictEqual(sandbox.parseSubtypeFromTail(sandbox.extractSubtypeTail('シュパルカメイルv 一')),'γ');
+assert.strictEqual(sandbox.parseSubtypeFromTail(sandbox.extractSubtypeTail('ゴグアームq に')),'α');
+
+// The subtype parser must not treat a normal final digit as alpha/beta/gamma by itself.
+assert.strictEqual(sandbox.parseSubtypeFromTail('1'),'');
+
+// v3.0 series matching must remain usable without forcing a category-anchor dependency.
+assert(html.includes('function rankArmorSeriesV26('),'series-first armor ranking helper must remain available');
+const rankStart=html.indexOf('function rankArmorSeriesV26('),rankEnd=html.indexOf('\nfunction aggregateHierarchicalArmorCandidatesV26',rankStart);
+const v30RankCode=html.slice(rankStart,rankEnd);
+assert(v30RankCode.includes('v26SeriesPassScore'),'series ranking must score the series independently');
+
+console.log('step125b v3.0 adaptive preprocessing RED tests passed');
+
+// Step 1.25-B v3.0 RED: armor subtype should have a dedicated, tail-only OCR path.
+assert(html.includes('function recognizeSubtypeTail('), 'dedicated subtype OCR helper must exist');
+assert(html.includes('tessedit_char_whitelist'), 'dedicated subtype OCR must use a whitelist');
+assert(/αβγ/.test(html), 'subtype whitelist must include alpha/beta/gamma');
+assert(html.includes('subtypeTailRect'), 'dedicated subtype OCR must use a tail crop');
+const recogStart=html.indexOf('async function recognizeEquipmentAll(');
+const recogEnd=html.indexOf("\nfunction renderEquipmentResult",recogStart);
+const recogCode=html.slice(recogStart,recogEnd);
+assert(recogCode.includes('recognizeSubtypeTail'), 'equipment OCR flow must call the dedicated subtype OCR');
+assert(recogCode.includes('EQUIPMENT_OCR_RESCUE_PASSES'), 'equipment OCR flow must keep rescue passes separate from standard passes');
+console.log('step125b v3.0 dedicated subtype/rescue RED tests passed');
+
+
+// Step 1.25-B v3.1 Spike: preprocessing comparison must expose a bounded,
+// reproducible set of standard candidates without changing production OCR yet.
+const spikeStart = html.indexOf('const SPIKE_PREPROCESS_PASSES=');
+assert(spikeStart >= 0, 'SPIKE_PREPROCESS_PASSES must exist');
+assert(html.includes("['soft_white','ソフト白文字抽出']"), 'soft white preprocessing must be included');
+assert(html.includes("['grayscale','グレースケール']"), 'grayscale preprocessing must be included');
+assert(html.includes("['local_contrast','CLAHE比較']"), 'CLAHE comparison pass must be exposed');
+assert(html.includes("['otsu','Otsu救済比較']"), 'Otsu comparison pass must be exposed');
+assert(html.includes('function softWhiteText'), 'softWhiteText must exist');
+assert(html.includes('function renderPreprocessSpike'), 'renderPreprocessSpike must exist');
+console.log('step125b v3.1 spike structure tests passed');
