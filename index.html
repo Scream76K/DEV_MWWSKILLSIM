@@ -1,16 +1,20 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — DBアイコン照合検証 v0.1</title>
+<title>MH Wilds OCR — DBアイコン照合検証 v0.3</title>
 <style>
 body{margin:0;background:#f4efe1;color:#302b23;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}main{max-width:1100px;margin:auto;padding:14px}.card{background:#fffaf0;border:1px solid #b9a98b;border-radius:14px;padding:14px;margin-bottom:14px}h1{font-size:21px;margin:0 0 8px}h2{font-size:17px;margin:0 0 8px}.note{font-size:13px;line-height:1.6;color:#625b50}button{font:inherit;border:1px solid #88775c;border-radius:9px;background:#fffaf0;padding:9px 13px}button.primary{background:#536b3f;color:#fff;border-color:#435631;font-weight:700}input{font:inherit}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.status{font-size:13px;margin-top:8px}#stage{position:relative;overflow:auto;background:#222;border-radius:10px;padding:6px}#stage canvas{display:block;max-width:100%;height:auto}.row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}.result{padding:9px;border:1px solid #c9bda5;border-radius:9px;margin-top:8px;background:#fff}.dbicon{display:flex;gap:8px;align-items:center;margin:5px 0}.dbicon img{width:48px;height:48px;object-fit:contain;background:#222;border-radius:5px}.mono{font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap}@media(max-width:700px){.grid,.row{grid-template-columns:1fr}}
 </style></head>
 <body><main>
-<div class="card"><h1>MH Wilds OCR — DBアイコン照合検証 v0.1</h1><div class="note"><b>目的：</b>「DBアイコン → スクショ照合 → 検出サイズでDBアイコンを重ねる → 右下角 → H/2上下のOCR帯」という方式だけを検証します。装備カテゴリ文字やOCR結果には依存しません。</div></div>
+<div class="card"><h1>MH Wilds OCR — DBアイコン照合検証 v0.3</h1><div class="note"><b>目的：</b>「DBアイコン → スクショ照合 → 検出サイズでDBアイコンを重ねる → 右下角 → H/2上下のOCR帯」という方式だけを検証します。装備カテゴリ文字やOCR結果には依存しません。</div></div>
 <div class="card"><h2>1. スクショ</h2><input id="shot" type="file" accept="image/*"><button id="sampleShot" style="margin-top:8px">🧪 サンプル実キャプチャを読み込む</button><div id="shotStatus" class="status">未選択</div></div>
 <div class="card"><h2>2. DBアイコン</h2><div class="note">最終的にはここへクリーンな透過PNG等を登録します。現在の3枚は方式検証用サンプルです。</div><input id="db" type="file" accept="image/*" multiple><div id="dbList"></div></div>
 <div class="card"><h2>3. マッチング条件</h2><div class="grid"><div><label>最小倍率 <input id="smin" type="number" value="0.70" step="0.05"></label></div><div><label>最大倍率 <input id="smax" type="number" value="1.30" step="0.05"></label></div><div><label>倍率刻み <input id="sstep" type="number" value="0.05" step="0.01"></label></div><div><label>判定閾値 <input id="thr" type="number" value="0.85" step="0.01"></label></div></div><button id="run" class="primary" style="margin-top:10px">🔎 DBアイコン照合を実行</button><div id="status" class="status">OpenCV.js待機中…</div></div>
 <div class="card"><h2>4. 結果</h2><div id="stage"><canvas id="view"></canvas></div><div id="results"></div></div>
-<script src="https://docs.opencv.org/4.x/opencv.js"></script>
+<script>
+// OpenCV.js MUST see Module before the script is loaded.
+window.Module = { onRuntimeInitialized: function(){ window.__opencvRuntimeReady = true; } };
+</script>
+<script async src="https://docs.opencv.org/4.x/opencv.js"></script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id); let cvReady=false, shotImg=null, dbItems=[];
@@ -51,7 +55,14 @@ $('shot').onchange=async()=>{const f=$('shot').files?.[0];if(f){shotImg=await lo
 $('db').onchange=async()=>{dbItems=[];for(const f of $('db').files||[]){await addDB(f,f.name)};renderDB()};
 function renderDB(){ $('dbList').innerHTML=dbItems.map(x=>`<div class="dbicon"><img src="${URL.createObjectURL(x.file)}"><span>${x.name}</span></div>`).join('') }
 function bundled(){return Promise.all([['db_icons/main_weapon_sample.png','メイン武器アイコン'],['db_icons/head_armor_sample.png','頭防具アイコン'],['db_icons/chest_armor_sample.png','胴防具アイコン']].map(async([p,n])=>{const r=await fetch(p);const b=await r.blob();return addDB(new File([b],p.split('/').pop(),{type:b.type||'image/png'}),n)})).then(renderDB).catch(()=>{})}
-window.Module=window.Module||{};window.Module.onRuntimeInitialized=()=>{cvReady=true;$('status').textContent='OpenCV.js準備完了。';bundled()};
+// Module is initialized before OpenCV.js is loaded. Keep a small fallback poll for CDN/browser timing.
+(function waitForOpenCV(){
+  if(cvReady) return;
+  if(window.cv && typeof cv.Mat === 'function'){
+    cvReady=true; $('status').textContent='OpenCV.js準備完了。'; bundled(); return;
+  }
+  setTimeout(waitForOpenCV, 200);
+})();
 $('sampleShot').onclick=async()=>{try{const r=await fetch('sample_game.png',{cache:'no-store'});if(!r.ok)throw new Error('sample_game.png HTTP '+r.status);const b=await r.blob();shotImg=await loadImage(new File([b],'sample_game.png',{type:b.type||'image/png'}));$('shotStatus').textContent=`サンプル読み込み：${shotImg.naturalWidth}×${shotImg.naturalHeight}px`;}catch(e){$('shotStatus').textContent='サンプル読み込み失敗：'+e.message;}};
 $('run').onclick=async()=>{if(!cvReady){$('status').textContent='OpenCV.jsがまだ準備できていません。';return}if(!shotImg){$('status').textContent='スクショを選択してください。';return}if(!dbItems.length){$('status').textContent='DBアイコンがありません。';return}const scene=matFromImage(shotImg);const minS=Number($('smin').value),maxS=Number($('smax').value),step=Number($('sstep').value);const thr=Number($('thr').value);const results=[];const t=performance.now();for(const d of dbItems){const tm=matFromImage(d.im);const r=matchOne(scene,tm,minS,maxS,step);tm.delete();if(r&&r.score>=thr)results.push({...r,name:d.name,dbImage:d.im})}drawResults(scene,results);scene.delete();$('status').textContent=`照合完了：${results.length}/${dbItems.length}件 / ${(performance.now()-t).toFixed(0)}ms`;$('results').innerHTML=results.map(r=>`<div class="result"><b>${r.name}</b><div class="mono">score=${r.score.toFixed(3)} scale=${r.scale.toFixed(2)} x=${r.x} y=${r.y} w=${r.w} h=${r.h}\n右下角 anchor=(${r.anchor.x}, ${r.anchor.y})\nOCR帯 x=${r.ocr.x} y=${r.ocr.y} w=${r.ocr.w} h=${r.ocr.h}</div></div>`).join('')||'<div class="note">閾値以上の一致がありません。</div>'};
 </script></main></body></html>
