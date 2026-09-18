@@ -111,7 +111,7 @@ function detect(){
   }
  }
  // RARE判定を検出直後に実行してから描画する。
- // v0.8ではこの呼び出しが抜けていたため、常に「未判定」になっていた。
+ // v0.9ではこの呼び出しが抜けていたため、常に「未判定」になっていた。
  enrichRare();
  render();
  $('detectStatus').textContent=`既知対象 ${results.length}件を検査 / ${imgW}×${imgH}px / 全画面総当たりなし / OCR未使用`;
@@ -148,20 +148,25 @@ function colorDist(a,b){
  const dr=a[0]-b[0],dg=a[1]-b[1],db=a[2]-b[2];
  return Math.sqrt(dr*dr+dg*dg+db*db);
 }
+function detectColorROI(r){
+  // Candidate boxes are intentionally a little larger than the icon.
+  // Keep only the central body of the dark icon tile, avoiding the outer
+  // border, rarity "+" marker, text and background.
+  const marginX=.14, marginY=.12;
+  return {
+    x:Math.max(0,Math.round(r.x+r.w*marginX)),
+    y:Math.max(0,Math.round(r.y+r.h*marginY)),
+    w:Math.max(1,Math.round(r.w*.62)),
+    h:Math.max(1,Math.round(r.h*.70))
+  };
+}
 function rareFromCrop(r){
-  // The crop may contain the icon plus a little UI/text. Use the left/central
-  // portion as the icon ROI and judge chromatic pixels primarily by hue.
-  const x0=Math.max(0,Math.floor(r.x+r.w*.05));
-  const y0=Math.max(0,Math.floor(r.y+r.h*.08));
-  const x1=Math.min(imgW,Math.ceil(r.x+r.w*.78));
-  const y1=Math.min(imgH,Math.ceil(r.y+r.h*.92));
-
+  const roi=detectColorROI(r);
   const c=document.createElement('canvas');
-  const w=Math.max(1,x1-x0), h=Math.max(1,y1-y0);
-  c.width=w;c.height=h;
+  c.width=roi.w;c.height=roi.h;
   const ctx=c.getContext('2d',{willReadFrequently:true});
-  ctx.drawImage(sourceImage,x0,y0,w,h,0,0,w,h);
-  const d=ctx.getImageData(0,0,w,h).data;
+  ctx.drawImage(sourceImage,roi.x,roi.y,roi.w,roi.h,0,0,roi.w,roi.h);
+  const d=ctx.getImageData(0,0,roi.w,roi.h).data;
 
   const chroma=[];
   const gray=[];
@@ -169,71 +174,71 @@ function rareFromCrop(r){
     const rgb=[d[i],d[i+1],d[i+2]];
     const hsv=rgbToHsv(...rgb);
     if(hsv.v<.16) continue;
-    if(hsv.s>=.28) chroma.push({rgb,hsv});
-    else if(hsv.s<.10 && hsv.v>.35) gray.push({rgb,hsv});
+    if(hsv.s>=.24) chroma.push({rgb,hsv});
+    else if(hsv.s<.11 && hsv.v>.32) gray.push({rgb,hsv});
   }
 
-  const masters=RARE_COLORS.map(m=>{
-    const hsv=rgbToHsv(...m.rgb);
-    return {...m,hsv};
-  });
+  const masters=RARE_COLORS.map(m=>({...m,hsv:rgbToHsv(...m.rgb)}));
 
-  // For colored rarity icons, hue is deliberately the dominant feature.
-  // Saturation and value are allowed to drift because the screenshot is
-  // affected by scaling, compression, glow, lighting and display capture.
-  if(chroma.length>=12){
+  if(chroma.length>=10){
+    // Build a weighted hue histogram. The dominant hue cluster is more useful
+    // than an average RGB when the icon contains dark outlines/highlights.
+    const bins=36, hist=Array(bins).fill(0);
+    for(const s of chroma){
+      const bin=Math.floor(s.hsv.h/360*bins)%bins;
+      hist[bin]+=.35+s.hsv.s;
+    }
+    let bestBin=0;
+    for(let i=1;i<bins;i++) if(hist[i]>hist[bestBin]) bestBin=i;
+
+    // Circularly gather pixels around the dominant hue.
+    const centerHue=(bestBin+.5)*360/bins;
+    const dominant=chroma.filter(s=>{
+      let dh=Math.abs(s.hsv.h-centerHue); dh=Math.min(dh,360-dh);
+      return dh<=18;
+    });
+    const samples=dominant.length>=6?dominant:chroma;
+
     const scores=masters.filter(m=>m.rare>=3).map(m=>{
-      let total=0, weight=0;
-      for(const s of chroma){
-        let dh=Math.abs(s.hsv.h-m.hsv.h);
-        dh=Math.min(dh,360-dh);
-        const hueNorm=dh/180;
+      let total=0,weight=0;
+      for(const s of samples){
+        let dh=Math.abs(s.hsv.h-m.hsv.h); dh=Math.min(dh,360-dh);
         const satDiff=Math.abs(s.hsv.s-m.hsv.s);
-        // Value is intentionally weak: large brightness changes are expected.
         const valueDiff=Math.abs(s.hsv.v-m.hsv.v);
-        const score=1.00*hueNorm + 0.18*satDiff + 0.06*valueDiff;
-        const wt=0.5+s.hsv.s;
-        total+=score*wt; weight+=wt;
+        const score=(dh/180)*1.0 + satDiff*.16 + valueDiff*.04;
+        const wt=.5+s.hsv.s;
+        total+=score*wt;weight+=wt;
       }
       return {m,score:total/weight};
     }).sort((a,b)=>a.score-b.score);
 
-    const best=scores[0], second=scores[1];
-    const margin=second.score-best.score;
-
-    // Deliberately avoid overclaiming for the two visually close pairs.
+    const best=scores[0],second=scores[1],margin=second.score-best.score;
     const closePair =
-      ((best.m.rare===3||best.m.rare===4) && (second.m.rare===3||second.m.rare===4)) ||
-      ((best.m.rare===6||best.m.rare===7) && (second.m.rare===6||second.m.rare===7));
-
-    // Hue is reliable, but if the two candidates are close, keep it ambiguous.
-    const ambiguous=closePair && margin<0.045;
-
+      ((best.m.rare===3||best.m.rare===4)&&(second.m.rare===3||second.m.rare===4)) ||
+      ((best.m.rare===6||best.m.rare===7)&&(second.m.rare===6||second.m.rare===7));
+    const ambiguous=closePair && margin<.045;
+    const avg=samples.reduce((a,s)=>a.map((v,i)=>v+s.rgb[i]),[0,0,0]).map(v=>v/samples.length);
     return {
       label:ambiguous?`${Math.min(best.m.rare,second.m.rare)}/${Math.max(best.m.rare,second.m.rare)}候補`:String(best.m.rare),
       rare:ambiguous?null:best.m.rare,
-      confidence:ambiguous?'曖昧':(margin<0.08?'中':'高'),
-      avg:chroma.reduce((a,s)=>a.map((v,i)=>v+s.rgb[i]),[0,0,0]).map(v=>v/chroma.length),
+      confidence:ambiguous?'曖昧':(margin<.08?'中':'高'),
+      avg,
+      roi,
+      sampleCount:samples.length,
+      dominantHue:+centerHue.toFixed(1),
       scores:scores.slice(0,3).map(x=>({rare:x.m.rare,score:+x.score.toFixed(3)}))
     };
   }
 
-  // RARE 1/2 are grayscale. Judge luminance, with a wide tolerance.
-  if(gray.length>=12){
+  if(gray.length>=10){
     const avg=gray.reduce((a,s)=>a+s.hsv.v,0)/gray.length;
-    const d1=Math.abs(avg-masters[0].hsv.v);
-    const d2=Math.abs(avg-masters[1].hsv.v);
+    const d1=Math.abs(avg-masters[0].hsv.v),d2=Math.abs(avg-masters[1].hsv.v);
     const ambiguous=Math.abs(d1-d2)<.09;
-    const best=d1<=d2?1:2, second=best===1?2:1;
-    return {
-      label:ambiguous?`${Math.min(best,second)}/${Math.max(best,second)}候補`:String(best),
-      rare:ambiguous?null:best,
-      confidence:ambiguous?'曖昧':'中',
-      avg:[Math.round(avg*255),Math.round(avg*255),Math.round(avg*255)]
-    };
+    const best=d1<=d2?1:2,second=best===1?2:1;
+    return {label:ambiguous?`${best}/${second}候補`:String(best),rare:ambiguous?null:best,
+      confidence:ambiguous?'曖昧':'中',avg:[avg*255,avg*255,avg*255],roi,sampleCount:gray.length};
   }
-
-  return {label:'判定不能',rare:null,confidence:'色サンプル不足'};
+  return {label:'判定不能',rare:null,confidence:'色サンプル不足',roi,sampleCount:0};
 }
 
 function enrichRare(){
@@ -244,7 +249,7 @@ function renderRarePalette(){
  host.innerHTML=RARE_COLORS.map(m=>`<span><i style="border-color:${m.hex};background:${m.hex}"></i>RARE ${m.rare} <span class="small">${m.hex}</span></span>`).join('');
 }
 
-function renderTargets(){const host=$('targets');host.innerHTML=results.map((r,i)=>`<div class="target ${r.accept?'ok':'bad'}"><div class="targetTitle"><span>${r.label}</span><span class="pill">${r.kind}</span></div><div class="small">候補：x:${Math.round(r.x)} y:${Math.round(r.y)} w:${Math.round(r.w)} h:${Math.round(r.h)}</div><div class="small">探索：x:${Math.round(r.zone.x)} y:${Math.round(r.zone.y)} w:${Math.round(r.zone.w)} h:${Math.round(r.zone.h)}</div><div class="small">相対スコア：${r.score.toFixed(3)} ${r.accept?'採用候補':'要調整'}</div><div class="small"><strong>RARE色：</strong>${r.rareInfo?.label||'未判定'} / 信頼度：${r.rareInfo?.confidence||'—'}${r.rareInfo?.avg?` / RGB ${r.rareInfo.avg.map(v=>Math.round(v)).join(',')}`:''}</div></div>`).join('')||'<div class="note">まだ検出していません。</div>';}
+function renderTargets(){const host=$('targets');host.innerHTML=results.map((r,i)=>`<div class="target ${r.accept?'ok':'bad'}"><div class="targetTitle"><span>${r.label}</span><span class="pill">${r.kind}</span></div><div class="small">候補：x:${Math.round(r.x)} y:${Math.round(r.y)} w:${Math.round(r.w)} h:${Math.round(r.h)}</div><div class="small">探索：x:${Math.round(r.zone.x)} y:${Math.round(r.zone.y)} w:${Math.round(r.zone.w)} h:${Math.round(r.zone.h)}</div><div class="small">相対スコア：${r.score.toFixed(3)} ${r.accept?'採用候補':'要調整'}</div><div class="small"><strong>RARE色：</strong>${r.rareInfo?.label||'未判定'} / 信頼度：${r.rareInfo?.confidence||'—'}${r.rareInfo?.avg?` / RGB ${r.rareInfo.avg.map(v=>Math.round(v)).join(',')}`:''}</div><div class="small"><strong>色ROI：</strong>${r.rareInfo?.roi?`x:${r.rareInfo.roi.x} y:${r.rareInfo.roi.y} w:${r.rareInfo.roi.w} h:${r.rareInfo.roi.h}`:'—'} / サンプル ${r.rareInfo?.sampleCount??'—'}${r.rareInfo?.dominantHue!=null?` / H ${r.rareInfo.dominantHue}°`:''}</div></div>`).join('')||'<div class="note">まだ検出していません。</div>';}
 function renderCrops(){const host=$('crops');host.innerHTML='';for(const r of results){const d=document.createElement('div');d.className='cropCard';d.innerHTML=`<b>${r.label}</b><span class="small"> / ${r.score.toFixed(2)} / RARE ${r.rareInfo?.label||'—'}</span>`;const im=document.createElement('img');im.src=cropData(r);d.appendChild(im);host.appendChild(d);}}
 function renderAnchor(){const wf=clamp(Number($('ocrFactor').value)||7,1,20),hf=clamp(Number($('ocrHFactor').value)||1.3,.5,4);const rows=[];for(const r of results){const x=Math.max(0,Math.round(r.x+r.w)),y=Math.max(0,Math.round(r.y+r.h*(1-hf)/2)),w=Math.max(1,Math.min(imgW-x,Math.round(r.w*wf))),h=Math.max(1,Math.min(imgH-y,Math.round(r.h*hf)));rows.push({key:r.key,label:r.label,icon:{x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.w),h:Math.round(r.h)},ocr:{x,y,w,h}})}$('anchorStatus').textContent=`アイコン ${rows.length}件から右側OCR領域を生成`;$('anchorCode').textContent=rows.map(r=>`${r.label}: ICON x=${r.icon.x} y=${r.icon.y} w=${r.icon.w} h=${r.icon.h} → OCR x=${r.ocr.x} y=${r.ocr.y} w=${r.ocr.w} h=${r.ocr.h}`).join('\n')||'未実行';return rows;}
 function render(){draw();renderTargets();renderCrops();const rows=renderAnchor();$('json').textContent=JSON.stringify(rows,null,2);}
