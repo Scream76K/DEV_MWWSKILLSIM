@@ -3,232 +3,118 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — アイコン起点テスト v0.2</title>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<title>MH Wilds OCR — アイコン起点テスト v0.3</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#f4efe1;color:#302b23;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}
-main{max-width:980px;margin:auto;padding:16px}
-h1{font-size:22px;margin:0 0 8px}
-h2{font-size:18px;margin:20px 0 10px}
-.card{background:#fffaf0;border:1px solid #b9a98b;border-radius:14px;padding:14px;margin-bottom:14px}
-.note{font-size:13px;line-height:1.6;color:#625b50}
-button,input{font:inherit}
-button{border:1px solid #88775c;border-radius:10px;background:#fffaf0;padding:10px 14px}
-button.primary{background:#536b3f;color:white;border-color:#435631;font-weight:700}
-input[type=file]{width:100%}
-#stage{position:relative;overflow:auto;background:#222;border-radius:10px;padding:8px}
-#img{display:block;max-width:none;width:100%;height:auto}
-#box{position:absolute;border:3px solid #e64b2f;background:rgba(230,75,47,.12);touch-action:none;cursor:move}
-.handle{position:absolute;width:18px;height:18px;background:#e64b2f;border-radius:50%}
-.tl{left:-9px;top:-9px}.tr{right:-9px;top:-9px}.bl{left:-9px;bottom:-9px}.br{right:-9px;bottom:-9px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}
-input[type=number]{width:100%;padding:8px;border:1px solid #b9a98b;border-radius:8px;background:white}
-pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;padding:12px;border-radius:10px;min-height:90px}
-.result{font-size:18px;font-weight:700;padding:12px;background:#eef2e8;border-radius:10px}
-.status{font-size:13px;margin-top:8px}
-@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}main{padding:10px}}
-
-.stageNote{font-size:13px}.zoomGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.zoomCard{border:1px solid #c8baa0;border-radius:9px;padding:8px;background:#fffaf0;cursor:pointer}.zoomCard.selected{outline:3px solid #00a8c8}.zoomImg{width:100%;height:120px;object-fit:contain;background:#111;border-radius:6px;margin-top:5px}.candidateBtn{display:block;width:100%;text-align:left;margin-top:5px;background:white}.candidateBtn.selected{outline:2px solid #00a8c8}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+*{box-sizing:border-box}body{margin:0;background:#f4efe1;color:#302b23;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}main{max-width:1000px;margin:auto;padding:16px}h1{font-size:22px;margin:0 0 8px}h2{font-size:18px;margin:20px 0 10px}.card{background:#fffaf0;border:1px solid #b9a98b;border-radius:14px;padding:14px;margin-bottom:14px}.note{font-size:13px;line-height:1.6;color:#625b50}button,input,select{font:inherit}button{border:1px solid #88775c;border-radius:10px;background:#fffaf0;padding:10px 14px}button.primary{background:#536b3f;color:#fff;border-color:#435631;font-weight:700}button:disabled{opacity:.55}input[type=file]{width:100%}input[type=number],select{width:100%;padding:8px;border:1px solid #b9a98b;border-radius:8px;background:#fff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.layoutGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}.status{font-size:13px;margin-top:8px}.pill{display:inline-block;border-radius:999px;padding:3px 8px;background:#e8eadf;font-size:12px}.stage{position:relative;overflow:auto;background:#222;border-radius:10px;padding:8px}.stage img{display:block;max-width:none;width:100%;height:auto}.overlay{position:absolute;left:8px;top:8px;pointer-events:none}.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;margin-top:8px}.legend i{display:inline-block;width:12px;height:12px;border:2px solid;border-radius:3px;vertical-align:-2px;margin-right:3px}.targetList{display:grid;grid-template-columns:1fr 1fr;gap:8px}.target{border:1px solid #c8baa0;border-radius:10px;padding:9px;background:#fff}.target.ok{outline:2px solid #5b7d43}.target.warn{outline:2px solid #c58b37}.target.bad{outline:2px solid #b94b3b}.targetTitle{display:flex;justify-content:space-between;gap:8px;font-weight:700}.small{font-size:12px;color:#665e53}.cropGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.cropCard{border:1px solid #c8baa0;border-radius:9px;padding:7px;background:#fff;cursor:pointer}.cropCard img{width:100%;height:110px;object-fit:contain;background:#111;border-radius:6px;margin-top:5px}.code{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;padding:12px;border-radius:10px;min-height:90px;font-family:ui-monospace,monospace;font-size:12px}.danger{color:#9a3024;font-weight:700}@media(max-width:700px){main{padding:10px}.targetList{grid-template-columns:1fr}.layoutGrid{grid-template-columns:1fr 1fr}.cropGrid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
-<body>
-<main>
-<div class="card">
-<h1>MH Wilds OCR — アイコン起点テスト v0.2</h1>
-<div class="note">
-<strong>目的：</strong>OCRを使わず、ゲーム画面そのものから「装備・珠のアイコン候補」を検出します。<br>
-この版では<strong>色→RARE、形状→部位/武器種、DB照合はまだ行いません。</strong><br>
-アイコンをアンカーとして確定できたら、その右側を次段階のOCR領域にします。
-</div>
-</div>
+<body><main>
+<div class="card"><h1>MH Wilds OCR — アイコン起点テスト v0.3</h1><div class="note"><strong>今回の方式：</strong>画面全体を総当たりしません。装備画面のレイアウトが既知であることを利用し、<strong>対象行ごとの狭いアイコン探索領域</strong>だけを解析します。<br>RAREの色判定と最終的なアイコン形状マスターは次段階です。まず「既知の種類＋既知の場所」で、本物のアイコンだけを安定して拾えるか確認します。</div></div>
 
-<div class="card">
-<h2>1. スクリーンショット</h2>
-<input id="file" type="file" accept="image/*">
-<div id="fileStatus" class="status">画像未選択</div>
-</div>
+<div class="card"><h2>1. スクリーンショット</h2><input id="file" type="file" accept="image/*"><div id="fileStatus" class="status">画像未選択</div></div>
 
-<div class="card">
-<h2>2. アイコン候補検出</h2>
-<div class="note">
-まず画像を縮小して候補を走査します。文字認識は行いません。暗いUIカード内の「小さくまとまった形状」を中心に候補化し、横長の文字列は除外します。
+<div class="card"><h2>2. 既知の対象を設定</h2><div class="note">ワイルズの装備変更画面では、左側の装備リストの行構造が分かっています。v0.3ではその情報を使います。行名はOCRで推測せず、あらかじめ固定します。</div>
+<div class="layoutGrid" style="margin-top:10px">
+<div><label>探索X（画面幅比）</label><input id="zoneX" type="number" value="0.015" min="0" max="0.5" step="0.001"></div>
+<div><label>探索幅（画面幅比）</label><input id="zoneW" type="number" value="0.075" min="0.01" max="0.3" step="0.001"></div>
+<div><label>アイコン幅（画面幅比）</label><input id="iconW" type="number" value="0.024" min="0.005" max="0.1" step="0.001"></div>
+<div><label>アイコン高さ（画面高比）</label><input id="iconH" type="number" value="0.040" min="0.01" max="0.1" step="0.001"></div>
 </div>
-<div class="grid" style="margin-top:10px">
-  <div><label>最小アイコン幅（元画像px）</label><input id="minSize" type="number" value="42" step="1"></div>
-  <div><label>最大アイコン幅（元画像px）</label><input id="maxSize" type="number" value="110" step="1"></div>
-  <div><label>候補上限</label><input id="maxCandidates" type="number" value="80" step="5"></div>
-  <div><label>検出感度</label><input id="sensitivity" type="number" value="0.55" min="0.2" max="0.9" step="0.05"></div>
+<div class="layoutGrid" style="margin-top:10px">
+<div><label>先頭行Y（画面高比）</label><input id="firstY" type="number" value="0.175" min="0" max="1" step="0.001"></div>
+<div><label>行間隔（画面高比）</label><input id="rowStep" type="number" value="0.087" min="0.01" max="0.2" step="0.001"></div>
+<div><label>行数</label><input id="rowCount" type="number" value="8" min="1" max="12" step="1"></div>
+<div><label>検出余裕（倍率）</label><input id="searchPad" type="number" value="0.55" min="0" max="2" step="0.05"></div>
 </div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-  <button id="detectIcons" class="primary">🔎 アイコン候補を検出</button>
-  <button id="clearOverlay">候補を消す</button>
-</div>
-<div id="detectStatus" class="status">未実行</div>
-</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button id="detect" class="primary">🎯 既知アイコンだけ検出</button><button id="clear">候補を消す</button></div><div id="detectStatus" class="status">未実行</div></div>
 
-<div class="card">
-<h2>3. 検出結果</h2>
-<div id="stage"><img id="img" alt=""><canvas id="overlay"></canvas></div>
-<div id="candidateList" style="margin-top:10px"></div>
-</div>
+<div class="card"><h2>3. 検出結果</h2><div class="stage"><img id="img" alt=""><canvas id="overlay" class="overlay"></canvas></div><div class="legend"><span><i style="border-color:#00b7ff"></i>探索領域</span><span><i style="border-color:#ff4d35"></i>検出アイコン</span><span><i style="border-color:#39d353"></i>採用候補</span></div></div>
 
-<div class="card">
-<h2>4. アイコン拡大</h2>
-<div class="note">候補をタップすると、その候補だけを拡大表示します。ここでは「本当にアイコンを拾えているか」を人間が確認します。</div>
-<div id="zoomHost" class="zoomGrid"></div>
-</div>
+<div class="card"><h2>4. 対象ごとの判定</h2><div id="targets" class="targetList"></div></div>
 
-<div class="card">
-<h2>5. アイコン起点OCR領域（次段階の確認）</h2>
-<div class="note">v0.2ではまだOCRしません。選択したアイコンを起点に「右側へ文字が続く」と仮定した領域だけを可視化します。実際のUIに合わせてこの比率を調整していきます。</div>
-<div class="grid" style="margin-top:10px">
-  <div><label>右側OCR幅（アイコン幅×）</label><input id="ocrWidthFactor" type="number" value="7" min="1" max="15" step="0.5"></div>
-  <div><label>OCR高さ（アイコン高さ×）</label><input id="ocrHeightFactor" type="number" value="1.15" min="0.5" max="3" step="0.05"></div>
-</div>
-<div id="anchorOut" class="status">候補を選択してください。</div>
-</div>
+<div class="card"><h2>5. アイコン拡大</h2><div class="note">各行の候補を拡大します。ここで「本当に対象アイコンを拾えているか」を確認します。</div><div id="crops" class="cropGrid" style="margin-top:10px"></div></div>
 
-<div class="card">
-<h2>6. 今回の判定</h2>
-<pre id="debugOut">まだ検出していません。</pre>
-</div>
+<div class="card"><h2>6. アイコン起点OCR領域</h2><div class="grid"><div><label>右側OCR幅（アイコン幅×）</label><input id="ocrFactor" type="number" value="7" min="1" max="20" step="0.5"></div><div><label>OCR高さ（アイコン高さ×）</label><input id="ocrHFactor" type="number" value="1.3" min="0.5" max="4" step="0.05"></div></div><div id="anchorStatus" class="status">検出後に表示します。</div><div id="anchorCode" class="code" style="margin-top:8px">未実行</div></div>
+
+<div class="card"><h2>7. 次段階へ渡すデータ</h2><div class="note">ここではDB照合を行いません。後で <span class="pill">形状</span> <span class="pill">色/RARE</span> <span class="pill">OCR文字列</span> を追加できるよう、アイコン位置を共通形式で保存します。</div><pre id="json" class="code" style="margin-top:8px">[]</pre></div>
 </main>
-
 <script>
-"use strict";
+'use strict';
 const $=id=>document.getElementById(id);
-let sourceImage=null, imgW=0, imgH=0, candidates=[], selectedIndex=-1;
-
+let sourceImage=null,imgW=0,imgH=0,results=[];
+const TARGETS=[
+ {key:'weapon',label:'メイン武器',kind:'weapon',y:0},
+ {key:'head',label:'頭防具',kind:'armor-head',y:1},
+ {key:'chest',label:'胴防具',kind:'armor-chest',y:2},
+ {key:'arms',label:'腕防具',kind:'armor-arms',y:3},
+ {key:'waist',label:'腰防具',kind:'armor-waist',y:4},
+ {key:'legs',label:'脚防具',kind:'armor-legs',y:5},
+ {key:'talisman',label:'護石',kind:'talisman',y:6},
+ {key:'mantle',label:'装衣',kind:'mantle',y:7}
+];
 function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 function lum(r,g,b){return .299*r+.587*g+.114*b;}
 function sat(r,g,b){const mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx?((mx-mn)/mx):0;}
-function overlap(a,b){
-  const x=Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x));
-  const y=Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
-  const inter=x*y, uni=a.w*a.h+b.w*b.h-inter;
-  return uni?inter/uni:0;
+function regionStats(data,w,h,x,y,rw,rh){
+ let n=0,dark=0,bright=0,satN=0,edge=0,mean=0;
+ const x0=Math.max(0,Math.floor(x)),y0=Math.max(0,Math.floor(y)),x1=Math.min(w,Math.ceil(x+rw)),y1=Math.min(h,Math.ceil(y+rh));
+ for(let yy=y0;yy<y1;yy++)for(let xx=x0;xx<x1;xx++){const i=(yy*w+xx)*4,L=lum(data[i],data[i+1],data[i+2]),S=sat(data[i],data[i+1],data[i+2]);n++;mean+=L;if(L<95)dark++;if(L>170)bright++;if(S>.22&&L>35)satN++;if(xx+1<x1){const j=i+4;edge+=Math.abs(L-lum(data[j],data[j+1],data[j+2]))>30?1:0;}}
+ return n?{dark:dark/n,bright:bright/n,sat:satN/n,edge:edge/n,mean:mean/n}:null;
 }
-function nms(rows,limit){
-  const out=[];
-  for(const c of rows.sort((a,b)=>b.score-a.score)){
-    if(out.every(o=>overlap(o,c)<.45)) out.push(c);
-    if(out.length>=limit)break;
+function getImageCanvas(){const maxW=1600,scale=Math.min(1,maxW/sourceImage.naturalWidth),c=document.createElement('canvas');c.width=Math.round(sourceImage.naturalWidth*scale);c.height=Math.round(sourceImage.naturalHeight*scale);const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(sourceImage,0,0,c.width,c.height);return {c,ctx,scale,w:c.width,h:c.height};}
+function detectInZone(data,w,h,scale,zone,c){
+ // Search a small neighborhood around the expected icon center. The target type determines the row,
+ // but v0.3 intentionally does not yet use a color/shape classifier.
+ const cx=(zone.x+zone.w*.5)*scale, cy=(zone.y+zone.h*.5)*scale;
+ const iw=zone.iw*scale, ih=zone.ih*scale, pad=zone.pad;
+ let best=null;
+ for(let dy=-pad;dy<=pad;dy+=Math.max(1,Math.round(ih*.10)))for(let dx=-pad;dx<=pad;dx+=Math.max(1,Math.round(iw*.10))){
+  const x=cx-iw/2+dx,y=cy-ih/2+dy,st=regionStats(data,w,h,x,y,iw,ih);if(!st)continue;
+  // Compactness proxy: icon boxes tend to contain both dark UI background and bright/colored pictogram.
+  const contrast=clamp((st.bright+.75*st.sat-st.dark*.15-.20),0,1);
+  const edge=clamp(st.edge/.16,0,1);
+  const texture=clamp((st.dark*.55+st.bright*.25+st.sat*.65),0,1);
+  const score=.45*contrast+.35*edge+.20*texture;
+  if(!best||score>best.score)best={x:x/scale,y:y/scale,w:iw/scale,h:ih/scale,score,stats:st};
+ }
+ return best;
+}
+function detect(){
+ if(!sourceImage)return;
+ const {c,ctx,scale,w,h}=getImageCanvas(),data=ctx.getImageData(0,0,w,h).data;
+ const zx=clamp(Number($('zoneX').value)||.015,0,.5),zw=clamp(Number($('zoneW').value)||.075,.01,.3);
+ const iw=clamp(Number($('iconW').value)||.024,.005,.1),ih=clamp(Number($('iconH').value)||.04,.01,.1);
+ const first=clamp(Number($('firstY').value)||.175,0,1),step=clamp(Number($('rowStep').value)||.087,.01,.2),count=clamp(Math.round(Number($('rowCount').value)||8),1,12),padRatio=clamp(Number($('searchPad').value)||.55,0,2);
+ results=[];
+ for(let i=0;i<count;i++){
+  const t=TARGETS[i]||{key:'row'+(i+1),label:'対象'+(i+1),kind:'custom',y:i};
+  const cy=(first+i*step)*imgH; const zh=ih*imgH*(1+2*padRatio);
+  const zone={x:zx*imgW,y:cy-zh/2,w:zw*imgW,h:zh,iw:iw*imgW,ih:ih*imgH,pad:Math.max(1,Math.round(ih*imgH*padRatio*scale))};
+  const cand=detectInZone(data,w,h,scale,zone);
+  if(cand){
+   cand.key=t.key;cand.label=t.label;cand.kind=t.kind;cand.zone=zone;
+   // reject obviously empty regions; score is relative, not a semantic icon confidence.
+   cand.accept=cand.score>=.42;
+   results.push(cand);
   }
-  return out;
+ }
+ render();
+ $('detectStatus').textContent=`既知対象 ${results.length}件を検査 / ${imgW}×${imgH}px / 全画面総当たりなし / OCR未使用`;
 }
-function imageScaleCanvas(img){
-  const maxW=1200, scale=Math.min(1,maxW/img.naturalWidth);
-  const c=document.createElement('canvas'); c.width=Math.max(1,Math.round(img.naturalWidth*scale)); c.height=Math.max(1,Math.round(img.naturalHeight*scale));
-  const ctx=c.getContext('2d',{willReadFrequently:true}); ctx.drawImage(img,0,0,c.width,c.height);
-  return {c,ctx,scale,w:c.width,h:c.height};
-}
-function rectStats(data,w,h,x,y,rw,rh){
-  const x0=Math.max(0,Math.floor(x)), y0=Math.max(0,Math.floor(y));
-  const x1=Math.min(w,Math.ceil(x+rw)), y1=Math.min(h,Math.ceil(y+rh));
-  let n=0,dark=0,bright=0,satN=0,edge=0,mean=0;
-  for(let yy=y0;yy<y1;yy++){
-    for(let xx=x0;xx<x1;xx++){
-      const i=(yy*w+xx)*4,r=data[i],g=data[i+1],b=data[i+2],L=lum(r,g,b),S=sat(r,g,b);
-      n++;mean+=L;if(L<85)dark++;if(L>145)bright++;if(S>.28&&L>45)satN++;
-      if(xx+1<x1){const j=i+4;edge+=Math.abs(L-lum(data[j],data[j+1],data[j+2]))>42?1:0;}
-    }
-  }
-  if(!n)return null;
-  return {dark:dark/n,bright:bright/n,sat:satN/n,edge:edge/n,mean:mean/n};
-}
-function detectIconCandidates(){
-  if(!sourceImage)return [];
-  const {c,ctx,scale,w,h}=imageScaleCanvas(sourceImage), data=ctx.getImageData(0,0,w,h).data;
-  const minS=clamp(Number($('minSize').value)||42,16,300)*scale;
-  const maxS=clamp(Number($('maxSize').value)||110,24,400)*scale;
-  const sensitivity=clamp(Number($('sensitivity').value)||.55,.2,.9);
-  const maxCandidates=clamp(Math.round(Number($('maxCandidates').value)||80),10,300);
-  const rows=[];
-  const sizes=[];
-  for(let s=minS;s<=maxS;s*=1.22)sizes.push(s);
-  // coarse scan; candidate is intentionally rectangular/square and compact.
-  for(const s of sizes){
-    const step=Math.max(6,Math.round(s*.28));
-    const arH=s*clamp(1,0.7,1.35);
-    for(let y=0;y<=h-arH;y+=step){
-      for(let x=0;x<=w-s;x+=step){
-        const st=rectStats(data,w,h,x,y,s,arH); if(!st)continue;
-        const compact=Math.min(1,st.edge/.18);
-        const darkFrame=clamp((st.dark-.18)/.62,0,1);
-        const nonText=clamp(1-(st.bright-.48)/.45,0,1);
-        const colorHint=clamp(st.sat/.28,0,1);
-        const score=.34*compact+.28*darkFrame+.20*nonText+.18*colorHint;
-        if(score<sensitivity)continue;
-        // reject obvious text strips: too bright, too low edge compactness, or very wide.
-        if(st.bright>.72 && st.edge<.09)continue;
-        rows.push({x:x/scale,y:y/scale,w:s/scale,h:arH/scale,score,stats:st});
-      }
-    }
-  }
-  return nms(rows,maxCandidates);
-}
-function drawOverlay(){
-  const ov=$('overlay'), img=$('img');
-  if(!img.naturalWidth)return;
-  const rect=img.getBoundingClientRect(), stage=$('stage').getBoundingClientRect();
-  ov.width=img.clientWidth; ov.height=img.clientHeight;
-  ov.style.width=img.clientWidth+'px';ov.style.height=img.clientHeight+'px';
-  ov.style.left=(img.offsetLeft)+'px';ov.style.top=(img.offsetTop)+'px';
-  const ctx=ov.getContext('2d');ctx.clearRect(0,0,ov.width,ov.height);
-  const sx=img.clientWidth/img.naturalWidth, sy=img.clientHeight/img.naturalHeight;
-  candidates.forEach((c,i)=>{
-    ctx.lineWidth=i===selectedIndex?4:2;ctx.strokeStyle=i===selectedIndex?'#00e5ff':'#ff4d35';
-    ctx.fillStyle=i===selectedIndex?'rgba(0,229,255,.12)':'rgba(255,77,53,.08)';
-    ctx.strokeRect(c.x*sx,c.y*sy,c.w*sx,c.h*sy);ctx.fillRect(c.x*sx,c.y*sy,c.w*sx,c.h*sy);
-    ctx.font=Math.max(12,14*sx)+'px sans-serif';ctx.fillStyle='#fff';ctx.fillText(String(i+1),c.x*sx+3,c.y*sy+16);
-  });
-}
-function cropCanvas(c,scale=3){
-  const pad=Math.max(8,Math.round(Math.max(c.w,c.h)*.35));
-  const sx=Math.max(0,Math.floor(c.x-pad)), sy=Math.max(0,Math.floor(c.y-pad));
-  const sw=Math.min(imgW-sx,Math.ceil(c.w+pad*2)), sh=Math.min(imgH-sy,Math.ceil(c.h+pad*2));
-  const out=document.createElement('canvas');out.width=Math.max(1,Math.round(sw*scale));out.height=Math.max(1,Math.round(sh*scale));
-  out.getContext('2d').drawImage(sourceImage,sx,sy,sw,sh,0,0,out.width,out.height);return out;
-}
-function renderList(){
-  const host=$('candidateList');
-  if(!candidates.length){host.innerHTML='<div class="note">候補なし。感度を下げるか、アイコンサイズ範囲を広げてください。</div>';return;}
-  host.innerHTML=candidates.map((c,i)=>`<button class="candidateBtn ${i===selectedIndex?'selected':''}" data-i="${i}">#${i+1} x:${Math.round(c.x)} y:${Math.round(c.y)} w:${Math.round(c.w)} h:${Math.round(c.h)} / score:${c.score.toFixed(2)}</button>`).join('');
-  host.querySelectorAll('.candidateBtn').forEach(b=>b.onclick=()=>selectCandidate(Number(b.dataset.i)));
-}
-function renderZoom(){
-  const host=$('zoomHost');host.innerHTML='';
-  candidates.slice(0,Math.min(candidates.length,20)).forEach((c,i)=>{
-    const wrap=document.createElement('div');wrap.className='zoomCard'+(i===selectedIndex?' selected':'');
-    const title=document.createElement('div');title.innerHTML=`<b>#${i+1}</b> <span class="note">score ${c.score.toFixed(2)}</span>`;wrap.appendChild(title);
-    const cv=cropCanvas(c,3);cv.className='zoomImg';wrap.appendChild(cv);wrap.onclick=()=>selectCandidate(i);host.appendChild(wrap);
-  });
-}
-function renderAnchor(){
-  const host=$('anchorOut');
-  if(selectedIndex<0){host.textContent='候補を選択してください。';return;}
-  const c=candidates[selectedIndex], wf=clamp(Number($('ocrWidthFactor').value)||7,1,15), hf=clamp(Number($('ocrHeightFactor').value)||1.15,.5,3);
-  const rect={x:c.x+c.w,y:c.y+c.h*(1-hf)/2,w:c.w*wf,h:c.h*hf};
-  const x=Math.max(0,Math.round(rect.x)),y=Math.max(0,Math.round(rect.y)),w=Math.max(1,Math.min(imgW-x,Math.round(rect.w))),h=Math.max(1,Math.min(imgH-y,Math.round(rect.h)));
-  host.innerHTML=`選択候補 #${selectedIndex+1} → 右側OCR仮領域 <b>x:${x} y:${y} w:${w} h:${h}</b>`;
-}
-function selectCandidate(i){selectedIndex=i;drawOverlay();renderList();renderZoom();renderAnchor();}
-$('file').onchange=()=>{
-  const f=$('file').files?.[0];if(!f)return;const url=URL.createObjectURL(f);const im=new Image();
-  im.onload=()=>{sourceImage=im;imgW=im.naturalWidth;imgH=im.naturalHeight;$('img').src=url;$('fileStatus').textContent=`読み込み完了：${imgW} × ${imgH}px`;candidates=[];selectedIndex=-1;renderList();renderZoom();renderAnchor();drawOverlay();};im.src=url;
-};
-$('detectIcons').onclick=()=>{
-  if(!sourceImage){$('detectStatus').textContent='先に画像を選択してください。';return;}
-  const btn=$('detectIcons');btn.disabled=true;const t=performance.now();
-  try{candidates=detectIconCandidates();selectedIndex=-1;drawOverlay();renderList();renderZoom();renderAnchor();$('detectStatus').textContent=`候補検出完了：${candidates.length}件 / ${(performance.now()-t).toFixed(0)}ms / OCR未使用`;
-    $('debugOut').textContent=candidates.map((c,i)=>`#${i+1} x=${Math.round(c.x)} y=${Math.round(c.y)} w=${Math.round(c.w)} h=${Math.round(c.h)} score=${c.score.toFixed(3)} dark=${c.stats.dark.toFixed(2)} bright=${c.stats.bright.toFixed(2)} sat=${c.stats.sat.toFixed(2)} edge=${c.stats.edge.toFixed(2)}`).join('\n')||'候補なし';
-  }catch(e){$('detectStatus').textContent='検出エラー：'+e;$('debugOut').textContent=String(e)}finally{btn.disabled=false;}
-};
-$('clearOverlay').onclick=()=>{candidates=[];selectedIndex=-1;drawOverlay();renderList();renderZoom();renderAnchor();$('detectStatus').textContent='候補を消しました。'};
-$('ocrWidthFactor').oninput=renderAnchor;$('ocrHeightFactor').oninput=renderAnchor;
-window.addEventListener('resize',drawOverlay);
-</script>
-</body>
-</html>
+function draw(){
+ const img=$('img'),ov=$('overlay');if(!img.naturalWidth)return;const cw=img.clientWidth,ch=img.clientHeight;ov.width=cw;ov.height=ch;ov.style.width=cw+'px';ov.style.height=ch+'px';
+ const ctx=ov.getContext('2d');ctx.clearRect(0,0,cw,ch);const sx=cw/img.naturalWidth,sy=ch/img.naturalHeight;
+ for(const r of results){const z=r.zone;ctx.lineWidth=2;ctx.strokeStyle='#00b7ff';ctx.strokeRect(z.x*sx,z.y*sy,z.w*sx,z.h*sy);ctx.strokeStyle=r.accept?'#39d353':'#ff4d35';ctx.lineWidth=3;ctx.strokeRect(r.x*sx,r.y*sy,r.w*sx,r.h*sy);ctx.fillStyle=r.accept?'#39d353':'#ff4d35';ctx.font=Math.max(12,14*sx)+'px sans-serif';ctx.fillText(r.label,r.x*sx+3,r.y*sy+15);}}
+function cropData(r,scale=3){const pad=Math.max(10,Math.round(Math.max(r.w,r.h)*.7)),x=Math.max(0,Math.floor(r.x-pad)),y=Math.max(0,Math.floor(r.y-pad)),w=Math.min(imgW-x,Math.ceil(r.w+pad*2)),h=Math.min(imgH-y,Math.ceil(r.h+pad*2));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*scale));c.height=Math.max(1,Math.round(h*scale));c.getContext('2d').drawImage(sourceImage,x,y,w,h,0,0,c.width,c.height);return c.toDataURL('image/png');}
+function renderTargets(){const host=$('targets');host.innerHTML=results.map((r,i)=>`<div class="target ${r.accept?'ok':'bad'}"><div class="targetTitle"><span>${r.label}</span><span class="pill">${r.kind}</span></div><div class="small">候補：x:${Math.round(r.x)} y:${Math.round(r.y)} w:${Math.round(r.w)} h:${Math.round(r.h)}</div><div class="small">探索：x:${Math.round(r.zone.x)} y:${Math.round(r.zone.y)} w:${Math.round(r.zone.w)} h:${Math.round(r.zone.h)}</div><div class="small">相対スコア：${r.score.toFixed(3)} ${r.accept?'採用候補':'要調整'}</div></div>`).join('')||'<div class="note">まだ検出していません。</div>';}
+function renderCrops(){const host=$('crops');host.innerHTML='';for(const r of results){const d=document.createElement('div');d.className='cropCard';d.innerHTML=`<b>${r.label}</b><span class="small"> / ${r.score.toFixed(2)}</span>`;const im=document.createElement('img');im.src=cropData(r);d.appendChild(im);host.appendChild(d);}}
+function renderAnchor(){const wf=clamp(Number($('ocrFactor').value)||7,1,20),hf=clamp(Number($('ocrHFactor').value)||1.3,.5,4);const rows=[];for(const r of results){const x=Math.max(0,Math.round(r.x+r.w)),y=Math.max(0,Math.round(r.y+r.h*(1-hf)/2)),w=Math.max(1,Math.min(imgW-x,Math.round(r.w*wf))),h=Math.max(1,Math.min(imgH-y,Math.round(r.h*hf)));rows.push({key:r.key,label:r.label,icon:{x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.w),h:Math.round(r.h)},ocr:{x,y,w,h}})}$('anchorStatus').textContent=`アイコン ${rows.length}件から右側OCR領域を生成`;$('anchorCode').textContent=rows.map(r=>`${r.label}: ICON x=${r.icon.x} y=${r.icon.y} w=${r.icon.w} h=${r.icon.h} → OCR x=${r.ocr.x} y=${r.ocr.y} w=${r.ocr.w} h=${r.ocr.h}`).join('\n')||'未実行';return rows;}
+function render(){draw();renderTargets();renderCrops();const rows=renderAnchor();$('json').textContent=JSON.stringify(rows,null,2);}
+$('file').onchange=()=>{const f=$('file').files?.[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{sourceImage=im;imgW=im.naturalWidth;imgH=im.naturalHeight;$('img').src=u;results=[];$('fileStatus').textContent=`読み込み完了：${imgW} × ${imgH}px`;render();$('detectStatus').textContent='未実行';};im.src=u;};
+$('detect').onclick=()=>{if(!sourceImage){$('detectStatus').textContent='先に画像を選択してください。';return}const t=performance.now(),b=$('detect');b.disabled=true;try{detect();$('detectStatus').textContent+=` / ${Math.round(performance.now()-t)}ms`;}catch(e){$('detectStatus').textContent='検出エラー：'+e;$('anchorCode').textContent=String(e)}finally{b.disabled=false}};
+$('clear').onclick=()=>{results=[];render();$('detectStatus').textContent='候補を消しました。'};
+['zoneX','zoneW','iconW','iconH','firstY','rowStep','rowCount','searchPad'].forEach(id=>$(id).oninput=()=>{if(results.length)detect()});
+['ocrFactor','ocrHFactor'].forEach(id=>$(id).oninput=()=>{if(results.length)render()});
+window.addEventListener('resize',()=>{if(results.length)draw()});
+render();
+</script></body></html>
