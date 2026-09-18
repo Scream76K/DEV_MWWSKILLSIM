@@ -110,6 +110,9 @@ function detect(){
    results.push(cand);
   }
  }
+ // RARE判定を検出直後に実行してから描画する。
+ // v0.8ではこの呼び出しが抜けていたため、常に「未判定」になっていた。
+ enrichRare();
  render();
  $('detectStatus').textContent=`既知対象 ${results.length}件を検査 / ${imgW}×${imgH}px / 全画面総当たりなし / OCR未使用`;
 }
@@ -241,7 +244,7 @@ function renderRarePalette(){
  host.innerHTML=RARE_COLORS.map(m=>`<span><i style="border-color:${m.hex};background:${m.hex}"></i>RARE ${m.rare} <span class="small">${m.hex}</span></span>`).join('');
 }
 
-function renderTargets(){const host=$('targets');host.innerHTML=results.map((r,i)=>`<div class="target ${r.accept?'ok':'bad'}"><div class="targetTitle"><span>${r.label}</span><span class="pill">${r.kind}</span></div><div class="small">候補：x:${Math.round(r.x)} y:${Math.round(r.y)} w:${Math.round(r.w)} h:${Math.round(r.h)}</div><div class="small">探索：x:${Math.round(r.zone.x)} y:${Math.round(r.zone.y)} w:${Math.round(r.zone.w)} h:${Math.round(r.zone.h)}</div><div class="small">相対スコア：${r.score.toFixed(3)} ${r.accept?'採用候補':'要調整'}</div><div class="small"><strong>RARE色：</strong>${r.rareInfo?.label||'未判定'} / 信頼度：${r.rareInfo?.confidence||'—'}</div></div>`).join('')||'<div class="note">まだ検出していません。</div>';}
+function renderTargets(){const host=$('targets');host.innerHTML=results.map((r,i)=>`<div class="target ${r.accept?'ok':'bad'}"><div class="targetTitle"><span>${r.label}</span><span class="pill">${r.kind}</span></div><div class="small">候補：x:${Math.round(r.x)} y:${Math.round(r.y)} w:${Math.round(r.w)} h:${Math.round(r.h)}</div><div class="small">探索：x:${Math.round(r.zone.x)} y:${Math.round(r.zone.y)} w:${Math.round(r.zone.w)} h:${Math.round(r.zone.h)}</div><div class="small">相対スコア：${r.score.toFixed(3)} ${r.accept?'採用候補':'要調整'}</div><div class="small"><strong>RARE色：</strong>${r.rareInfo?.label||'未判定'} / 信頼度：${r.rareInfo?.confidence||'—'}${r.rareInfo?.avg?` / RGB ${r.rareInfo.avg.map(v=>Math.round(v)).join(',')}`:''}</div></div>`).join('')||'<div class="note">まだ検出していません。</div>';}
 function renderCrops(){const host=$('crops');host.innerHTML='';for(const r of results){const d=document.createElement('div');d.className='cropCard';d.innerHTML=`<b>${r.label}</b><span class="small"> / ${r.score.toFixed(2)} / RARE ${r.rareInfo?.label||'—'}</span>`;const im=document.createElement('img');im.src=cropData(r);d.appendChild(im);host.appendChild(d);}}
 function renderAnchor(){const wf=clamp(Number($('ocrFactor').value)||7,1,20),hf=clamp(Number($('ocrHFactor').value)||1.3,.5,4);const rows=[];for(const r of results){const x=Math.max(0,Math.round(r.x+r.w)),y=Math.max(0,Math.round(r.y+r.h*(1-hf)/2)),w=Math.max(1,Math.min(imgW-x,Math.round(r.w*wf))),h=Math.max(1,Math.min(imgH-y,Math.round(r.h*hf)));rows.push({key:r.key,label:r.label,icon:{x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.w),h:Math.round(r.h)},ocr:{x,y,w,h}})}$('anchorStatus').textContent=`アイコン ${rows.length}件から右側OCR領域を生成`;$('anchorCode').textContent=rows.map(r=>`${r.label}: ICON x=${r.icon.x} y=${r.icon.y} w=${r.icon.w} h=${r.icon.h} → OCR x=${r.ocr.x} y=${r.ocr.y} w=${r.ocr.w} h=${r.ocr.h}`).join('\n')||'未実行';return rows;}
 function render(){draw();renderTargets();renderCrops();const rows=renderAnchor();$('json').textContent=JSON.stringify(rows,null,2);}
