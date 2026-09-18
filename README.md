@@ -8,3 +8,9 @@
 - 行ピッチは画面高比を基本値とし、px補正を用意。後段で画像から自動推定する余地を残す。
 - v0.8のCanvas/ImageData修正済みテンプレートマッチングを利用。OpenCV.jsは不使用。
 - サンプルDBアイコンは同じsample_game.pngから切り出した検証用画像。
+
+
+## v0.9.2
+- v0.9.1で残っていた ImageData とラッパーオブジェクトの取り違えを修正。`imageDataFromImage()` の戻り値を `grayData()` に渡しても正しく処理できるようにした。
+- ImageData の width/height/data と内部 {w,h,g} の双方を受け付ける。
+- データ長も検証し、NaN×NaN の発生箇所を早期に検出する。
