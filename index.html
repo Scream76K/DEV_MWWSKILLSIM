@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v3.1.3：アイコン起点OCR：適応型OCR</h1>
+<h1>MH Wilds OCR — Step 1.25-B v3.1.5：アイコン起点OCR：適応型OCR</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -580,7 +580,12 @@ function equipmentNameCropRect(region, imageWidth, imageHeight) {
 
 // v3.1.2 crop variants are retained only for visual regression comparison.
 function buildEquipmentNameCropVariantsV311(region,imageWidth,imageHeight){
-  const base=equipmentNameCropRectV312(region,imageWidth,imageHeight);
+  // Icon-anchor mode is now the production candidate. The crop-only preview
+  // must visualize the same geometry used by the real OCR path; otherwise the
+  // test screen can falsely appear to show the old crop.
+  const base=region?.iconAnchor
+    ? equipmentNameCropRect(region,imageWidth,imageHeight)
+    : equipmentNameCropRectV312(region,imageWidth,imageHeight);
   if(!base)return [];
   const iw=Math.max(1,Number(imageWidth)||1), ih=Math.max(1,Number(imageHeight)||1);
   const rx=Number(region?.x)||0, rw=Math.max(1,Number(region?.width)||1);
@@ -1212,7 +1217,6 @@ function iconAnchorPixelStats(ctx,x,y,size){
   for(let yy=0;yy<sh;yy++)for(let xx=0;xx<sw;xx++){
     const i=(yy*sw+xx)*4,L=lum(d[i],d[i+1],d[i+2]);
     const inInner=xx>=inset&&xx<sw-inset&&yy>=inset&&yy<sh-inset;
-    // Ignore the rounded corners when evaluating the frame.
     const nearBorder=xx<inset||xx>=sw-inset||yy<inset||yy>=sh-inset;
     if(inInner){innerSum+=L;innerN++;if(sat(d[i],d[i+1],d[i+2])>.28&&L>25)colorN++;}
     else if(nearBorder){borderSum+=L;borderN++;}
@@ -1222,48 +1226,57 @@ function iconAnchorPixelStats(ctx,x,y,size){
   const dark=Math.max(0,Math.min(1,(155-inner)/155));
   const frame=Math.max(0,Math.min(1,(border-65)/150));
   const colorRatio=innerN?colorN/innerN:0;
-  // A Wilds equipment icon is typically a dark square with a lighter frame and
-  // a colored glyph. Score those structural properties rather than exact RGB.
   const score=Math.max(0,Math.min(1,.52*Math.max(0,Math.min(1,contrast/120))+.25*dark+.13*frame+.10*Math.min(1,colorRatio*2.2)));
   return {score,inner,border,contrast,colorRatio};
 }
+
 function detectIconAnchor(region,key){
   if(!region||!$('img').src)return null;
   const canvas=document.createElement('canvas'); canvas.width=imgW; canvas.height=imgH;
   const ctx=canvas.getContext('2d',{willReadFrequently:true}); ctx.drawImage($('img'),0,0);
   const rx=Math.max(0,Number(region.x)||0), ry=Math.max(0,Number(region.y)||0), rw=Math.max(1,Number(region.width)||1), rh=Math.max(1,Number(region.height)||1);
-  const pitch=Math.max(60,Number(region.pitch)||rh);
-  const sizes=[60,64,68,72,76,80,84];
-  const xMin=Math.max(0,Math.round(rx-6)), xMax=Math.min(imgW-40,Math.round(rx+Math.min(rw*.72,150)));
-  const yMin=Math.max(0,Math.round(ry-pitch*.28)), yMax=Math.min(imgH-40,Math.round(ry+pitch*.28));
+  const pitch=Math.max(40,Number(region.pitch)||rh);
+  // v3.1.5: UI構造を使いつつ、解像度差・行ズレで左/上下にはみ出すケースを許容。
+  const sizes=[48,54,60,64,68,72,76,80,84,90,96];
+  const xMin=Math.max(0,Math.round(rx-imgW*.05));
+  const xMax=Math.min(imgW-40,Math.round(rx+rw*.85));
+  const yMin=Math.max(0,Math.round(ry-pitch*.45));
+  const yMax=Math.min(imgH-40,Math.round(ry+pitch*.45));
   let best=null;
-  // Coarse-to-fine search. The row geometry already tells us where the icon
-  // belongs, so we never scan the whole screenshot.
+  const expectedLeft=rx+Math.min(22,rw*.10);
+  const yCenter=ry+rh*.48;
+  // 1次探索。getImageDataは重いため、候補数を抑えつつ2px刻みで取りこぼしを減らす。
   for(const size of sizes){
-    for(let y=yMin;y<=yMax;y+=3){
-      for(let x=xMin;x<=xMax;x+=3){
+    for(let y=yMin;y<=yMax;y+=2){
+      for(let x=xMin;x<=xMax;x+=2){
         const st=iconAnchorPixelStats(ctx,x,y,size); if(!st)continue;
-        const expectedLeft=rx+Math.min(22,rw*.10);
-        const xPenalty=Math.min(0.14,Math.abs(x-expectedLeft)/(Math.max(1,rw))*.10);
-        const yCenter=ry+rh*.48;
-        const yPenalty=Math.min(0.10,Math.abs((y+size*.5)-yCenter)/(Math.max(1,pitch))*.12);
+        const xPenalty=Math.min(.08,Math.abs(x-expectedLeft)/Math.max(1,rw)*.05);
+        const yPenalty=Math.min(.08,Math.abs((y+size*.5)-yCenter)/Math.max(1,pitch)*.08);
         const total=st.score-xPenalty-yPenalty;
         if(!best||total>best.total)best={x,y,width:size,height:size,total,stats:st};
       }
     }
   }
-  if(!best||best.total<.38)return null;
-  // Refine around the best coarse location at 1px resolution.
+  // v3.1.5: コントラストが弱い実スクショでも候補を失わない。低スコアは後段でfallback扱いにする。
+  if(!best||best.total<.28)return null;
   let refined=best;
-  const x0=Math.max(xMin,Math.round(best.x-5)), x1=Math.min(xMax,Math.round(best.x+5));
-  const y0=Math.max(yMin,Math.round(best.y-5)), y1=Math.min(yMax,Math.round(best.y+5));
+  const x0=Math.max(xMin,Math.round(best.x-4)), x1=Math.min(xMax,Math.round(best.x+4));
+  const y0=Math.max(yMin,Math.round(best.y-4)), y1=Math.min(yMax,Math.round(best.y+4));
   for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
     const st=iconAnchorPixelStats(ctx,x,y,best.width); if(!st)continue;
-    const expectedLeft=rx+Math.min(22,rw*.10), yCenter=ry+rh*.48;
-    const total=st.score-Math.min(.14,Math.abs(x-expectedLeft)/(Math.max(1,rw))*.10)-Math.min(.10,Math.abs((y+best.height*.5)-yCenter)/(Math.max(1,pitch))*.12);
+    const total=st.score-Math.min(.08,Math.abs(x-expectedLeft)/Math.max(1,rw)*.05)-Math.min(.08,Math.abs((y+best.height*.5)-yCenter)/Math.max(1,pitch)*.08);
     if(total>refined.total)refined={...best,x,y,total,stats:st};
   }
   return {x:Math.round(refined.x),y:Math.round(refined.y),width:Math.round(refined.width),height:Math.round(refined.height),score:refined.total,stats:refined.stats};
+}
+function inferIconAnchor(region){
+  if(!region)return null;
+  const rx=Math.max(0,Number(region.x)||0), ry=Math.max(0,Number(region.y)||0), rw=Math.max(1,Number(region.width)||1), rh=Math.max(1,Number(region.height)||1);
+  const pitch=Math.max(40,Number(region.pitch)||rh);
+  const size=Math.max(40,Math.round(Math.min(96,Math.max(48,rh*.65))));
+  const x=Math.max(0,Math.round(rx+Math.min(22,rw*.10)));
+  const y=Math.max(0,Math.round(ry+rh*.48-size*.5));
+  return {x,y,width:size,height:size,score:0.30,isFallback:true,stats:null};
 }
 function iconAnchorNameCropRect(region,icon){
   if(!region||!icon)return null;
@@ -1272,32 +1285,34 @@ function iconAnchorNameCropRect(region,icon){
   const y=Math.max(0,Math.round(icon.y+icon.height*.08));
   const h=Math.max(18,Math.round(icon.height*.76));
   const bottom=Math.min(imgH,y+h);
-  return {x,y,width:Math.max(1,right-x),height:Math.max(1,bottom-y),source:'icon-anchor'};
+  return {x,y,width:Math.max(1,right-x),height:Math.max(1,bottom-y),source:icon.isFallback?'icon-anchor-fallback':'icon-anchor'};
 }
 function renderIconAnchorPreview(){
   const regions=Array.isArray(window.lastEquipmentRegions)?window.lastEquipmentRegions:[];
   const out=$('iconAnchorOut');
+  out.innerHTML='';
   if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return;}
   if(regions.length!==9){$('iconAnchorStatus').textContent='先に「画面構造を自動検出」を実行してください。';return;}
   const labels={mainWeapon:'メイン武器',subWeapon:'サブ武器',head:'頭防具',chest:'胴防具',arms:'腕防具',waist:'腰防具',legs:'脚防具',charm:'護石',mantle:'装衣'};
   const cards=[]; const started=performance.now();
   for(const region of regions){
-    const icon=detectIconAnchor(region,region.key);
+    let icon=detectIconAnchor(region,region.key);
+    let isFallback=false;
+    if(!icon){icon=inferIconAnchor(region);isFallback=true;}
     const name=iconAnchorNameCropRect(region,icon);
     const card=document.createElement('div');card.className='card';card.style.margin='8px 0';
-    const title=document.createElement('div');title.innerHTML=`<b>${labels[region.key]||region.key}</b> <span class="note">${icon?'アイコン検出':'アイコン未検出'}</span>`;card.appendChild(title);
-    if(!icon){card.insertAdjacentHTML('beforeend','<div class="note" style="margin-top:6px">候補を確定できませんでした。</div>');out.appendChild(card);cards.push({key:region.key,icon:null,name:null});continue;}
+    const title=document.createElement('div');title.innerHTML=`<b>${labels[region.key]||region.key}</b> <span class="note">${isFallback?'推定補正位置':'アイコン検出'}</span>`;card.appendChild(title);
     const wrap=document.createElement('div');wrap.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:7px';
     const makeCanvas=(rect,label)=>{const box=document.createElement('div');box.innerHTML=`<div class="note"><b>${label}</b><br>x:${rect.x} y:${rect.y} w:${rect.width} h:${rect.height}</div>`;const c=document.createElement('canvas');const scale=Math.min(3,520/Math.max(rect.width,rect.height));c.width=Math.max(1,Math.round(rect.width*scale));c.height=Math.max(1,Math.round(rect.height*scale));c.style.cssText='width:100%;max-height:220px;object-fit:contain;background:#222;border-radius:8px;margin-top:4px';c.getContext('2d').drawImage($('img'),rect.x,rect.y,rect.width,rect.height,0,0,c.width,c.height);box.appendChild(c);return box;};
     wrap.appendChild(makeCanvas(icon,'アイコン起点')); wrap.appendChild(makeCanvas(name,'右側OCR領域')); card.appendChild(wrap);
-    card.insertAdjacentHTML('beforeend',`<div class="note" style="margin-top:6px">構造スコア：${Math.round(icon.score*100)}% / 内部RGB平均ではなくアイコン枠・暗部・色付き画素を評価</div>`);
-    out.appendChild(card);cards.push({key:region.key,icon,name});
+    card.insertAdjacentHTML('beforeend',`<div class="note" style="margin-top:6px">構造スコア：${Math.round(icon.score*100)}% ${isFallback?'（※アイコン未検出のため構造推定位置）':'/ アイコン枠・暗部評価'}</div>`);
+    out.appendChild(card);cards.push({key:region.key,icon,name,isFallback});
   }
   const byKey=new Map(cards.map(x=>[x.key,x]));
   regions.forEach(r=>{const hit=byKey.get(r.key); if(hit?.icon) r.iconAnchor=hit.icon;});
   window.lastEquipmentRegions=regions;
   window.lastIconAnchorRegions=cards;
-  $('iconAnchorStatus').textContent=`アイコン起点領域生成完了：${cards.filter(x=>x.icon).length}/9 / ${(performance.now()-started).toFixed(1)}ms`;
+  $('iconAnchorStatus').textContent=`アイコン起点領域生成完了：${cards.filter(x=>x.icon&&!x.isFallback).length}/${regions.length}実検出 / ${cards.filter(x=>x.isFallback).length}推定補正 / ${(performance.now()-started).toFixed(1)}ms`;
 }
 $('detectIconAnchors').onclick=renderIconAnchorPreview;
 
