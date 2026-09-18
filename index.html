@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Step 1.25-B v3.1.2 Name Crop - MH Wilds OCR — 適応型OCR</title>
+<title>Step 1.25-B v3.1.7 Icon Anchor Name Crop - MH Wilds OCR — 適応型OCR</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v3.1.6：アイコン起点OCR：適応型OCR</h1>
+<h1>MH Wilds OCR — Step 1.25-B v3.1.7：アイコン右下角基準OCR</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -1311,12 +1311,17 @@ function inferIconAnchor(region){
 }
 function iconAnchorNameCropRect(region,icon){
   if(!region||!icon)return null;
+  // The icon's bottom-right corner is the fixed anchor for the name OCR band.
+  // Let H be the detected icon height. The OCR band is centered vertically on
+  // that corner: H/2 above + H/2 below, i.e. total height H.
   const right=Math.min(imgW,Math.round((Number(region.x)||0)+(Number(region.width)||1)));
-  const x=Math.min(imgW-1,Math.round(icon.x+icon.width+8));
-  const y=Math.max(0,Math.round(icon.y+icon.height*.08));
-  const h=Math.max(18,Math.round(icon.height*.76));
+  const anchorX=Math.round(Number(icon.x)+Number(icon.width));
+  const anchorY=Math.round(Number(icon.y)+Number(icon.height));
+  const x=Math.max(0,Math.min(imgW-1,anchorX));
+  const h=Math.max(18,Math.round(Number(icon.height)));
+  const y=Math.max(0,Math.round(anchorY-h*.5));
   const bottom=Math.min(imgH,y+h);
-  return {x,y,width:Math.max(1,right-x),height:Math.max(1,bottom-y),source:icon.isFallback?'icon-anchor-fallback':'icon-anchor'};
+  return {x,y,width:Math.max(1,right-x),height:Math.max(1,bottom-y),anchor:{x:anchorX,y:anchorY},source:icon.isFallback?'icon-anchor-fallback':'icon-anchor'};
 }
 function renderIconAnchorPreview(){
   const regions=Array.isArray(window.lastEquipmentRegions)?window.lastEquipmentRegions:[];
