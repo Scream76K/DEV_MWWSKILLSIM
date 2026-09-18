@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-B v3.1.5：アイコン起点OCR：適応型OCR</h1>
+<h1>MH Wilds OCR — Step 1.25-B v3.1.6：アイコン起点OCR：適応型OCR</h1>
 <div class="note">
 全武器DBを検索対象にした診断用です。<br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -1205,23 +1205,54 @@ function renderCandidates(cands,meta){
   }).join('')+`<div class="note" style="margin-top:8px">${meta.decision}</div>`;
 }
 function cleanOCR(raw){return String(raw||'').replace(/[\r\n]+/g,' ').replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim()}
-function iconAnchorPixelStats(ctx,x,y,size){
-  const sx=Math.max(0,Math.round(x)), sy=Math.max(0,Math.round(y));
-  const sw=Math.max(1,Math.min(size,ctx.canvas.width-sx)), sh=Math.max(1,Math.min(size,ctx.canvas.height-sy));
-  if(sw<40||sh<40)return null;
-  const d=ctx.getImageData(sx,sy,sw,sh).data;
-  const lum=(r,g,b)=>.299*r+.587*g+.114*b;
-  const sat=(r,g,b)=>{const mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx? (mx-mn)/mx : 0};
-  const inset=Math.max(4,Math.round(size*.12));
-  let borderSum=0,borderN=0,innerSum=0,innerN=0,colorN=0;
-  for(let yy=0;yy<sh;yy++)for(let xx=0;xx<sw;xx++){
-    const i=(yy*sw+xx)*4,L=lum(d[i],d[i+1],d[i+2]);
-    const inInner=xx>=inset&&xx<sw-inset&&yy>=inset&&yy<sh-inset;
-    const nearBorder=xx<inset||xx>=sw-inset||yy<inset||yy>=sh-inset;
-    if(inInner){innerSum+=L;innerN++;if(sat(d[i],d[i+1],d[i+2])>.28&&L>25)colorN++;}
-    else if(nearBorder){borderSum+=L;borderN++;}
+function buildIconSearchIntegral(ctx, xMin, yMin, xMax, yMax){
+  // Build integral images once per target region. The previous v3.1.6 called
+  // getImageData() for every candidate/size, which can freeze Safari on iPhone.
+  const x0=Math.max(0,Math.floor(xMin)), y0=Math.max(0,Math.floor(yMin));
+  const x1=Math.min(ctx.canvas.width-1,Math.ceil(xMax)), y1=Math.min(ctx.canvas.height-1,Math.ceil(yMax));
+  const w=Math.max(1,x1-x0+1), h=Math.max(1,y1-y0+1);
+  const d=ctx.getImageData(x0,y0,w,h).data;
+  const stride=w+1;
+  const lum=new Float64Array((w+1)*(h+1));
+  const color=new Float64Array((w+1)*(h+1));
+  for(let yy=1;yy<=h;yy++){
+    let rowL=0,rowC=0;
+    const srcY=(yy-1)*w*4;
+    const dstY=yy*stride, prevY=(yy-1)*stride;
+    for(let xx=1;xx<=w;xx++){
+      const di=srcY+(xx-1)*4;
+      const r=d[di],g=d[di+1],b=d[di+2];
+      const L=.299*r+.587*g+.114*b;
+      const mx=Math.max(r,g,b),mn=Math.min(r,g,b);
+      const sat=mx?((mx-mn)/mx):0;
+      const c=(sat>.28&&L>25)?1:0;
+      rowL+=L; rowC+=c;
+      lum[dstY+xx]=lum[prevY+xx]+rowL;
+      color[dstY+xx]=color[prevY+xx]+rowC;
+    }
   }
-  const inner=innerN?innerSum/innerN:255,border=borderN?borderSum/borderN:0;
+  const sum=(arr,ax,ay,bx,by)=>{
+    const xa=Math.max(x0,Math.floor(ax)), ya=Math.max(y0,Math.floor(ay));
+    const xb=Math.min(x1,Math.floor(bx)), yb=Math.min(y1,Math.floor(by));
+    if(xb<xa||yb<ya)return 0;
+    const A=(ya-y0)*stride+(xa-x0), B=(ya-y0)*stride+(xb-x0+1);
+    const C=(yb-y0+1)*stride+(xa-x0), D=(yb-y0+1)*stride+(xb-x0+1);
+    return arr[D]-arr[B]-arr[C]+arr[A];
+  };
+  return {x0,y0,x1,y1,w,h,sumLum:(a,b,c,d)=>sum(lum,a,b,c,d),sumColor:(a,b,c,d)=>sum(color,a,b,c,d)};
+}
+
+function iconAnchorPixelStats(integral,x,y,size){
+  const sx=Math.round(x), sy=Math.round(y), sw=Math.round(size), sh=Math.round(size);
+  if(sw<40||sh<40||sx<integral.x0||sy<integral.y0||sx+sw-1>integral.x1||sy+sh-1>integral.y1)return null;
+  const inset=Math.max(4,Math.round(size*.12));
+  const outerN=sw*sh;
+  const innerW=Math.max(1,sw-inset*2), innerH=Math.max(1,sh-inset*2);
+  const innerN=innerW*innerH, borderN=Math.max(1,outerN-innerN);
+  const inner=integral.sumLum(sx+inset,sy+inset,sx+sw-inset-1,sy+sh-inset-1)/innerN;
+  const outer=integral.sumLum(sx,sy,sx+sw-1,sy+sh-1)/outerN;
+  const border=(outer*outerN-inner*innerN)/borderN;
+  const colorN=integral.sumColor(sx+inset,sy+inset,sx+sw-inset-1,sy+sh-inset-1);
   const contrast=border-inner;
   const dark=Math.max(0,Math.min(1,(155-inner)/155));
   const frame=Math.max(0,Math.min(1,(border-65)/150));
@@ -1236,20 +1267,20 @@ function detectIconAnchor(region,key){
   const ctx=canvas.getContext('2d',{willReadFrequently:true}); ctx.drawImage($('img'),0,0);
   const rx=Math.max(0,Number(region.x)||0), ry=Math.max(0,Number(region.y)||0), rw=Math.max(1,Number(region.width)||1), rh=Math.max(1,Number(region.height)||1);
   const pitch=Math.max(40,Number(region.pitch)||rh);
-  // v3.1.5: UI構造を使いつつ、解像度差・行ズレで左/上下にはみ出すケースを許容。
   const sizes=[48,54,60,64,68,72,76,80,84,90,96];
   const xMin=Math.max(0,Math.round(rx-imgW*.05));
   const xMax=Math.min(imgW-40,Math.round(rx+rw*.85));
   const yMin=Math.max(0,Math.round(ry-pitch*.45));
   const yMax=Math.min(imgH-40,Math.round(ry+pitch*.45));
+  // Read the search image once. Candidate scoring below is O(1) via integral images.
+  const integral=buildIconSearchIntegral(ctx,xMin,yMin,xMax+96,yMax+96);
   let best=null;
   const expectedLeft=rx+Math.min(22,rw*.10);
   const yCenter=ry+rh*.48;
-  // 1次探索。getImageDataは重いため、候補数を抑えつつ2px刻みで取りこぼしを減らす。
   for(const size of sizes){
     for(let y=yMin;y<=yMax;y+=2){
       for(let x=xMin;x<=xMax;x+=2){
-        const st=iconAnchorPixelStats(ctx,x,y,size); if(!st)continue;
+        const st=iconAnchorPixelStats(integral,x,y,size); if(!st)continue;
         const xPenalty=Math.min(.08,Math.abs(x-expectedLeft)/Math.max(1,rw)*.05);
         const yPenalty=Math.min(.08,Math.abs((y+size*.5)-yCenter)/Math.max(1,pitch)*.08);
         const total=st.score-xPenalty-yPenalty;
@@ -1257,18 +1288,18 @@ function detectIconAnchor(region,key){
       }
     }
   }
-  // v3.1.5: コントラストが弱い実スクショでも候補を失わない。低スコアは後段でfallback扱いにする。
   if(!best||best.total<.28)return null;
   let refined=best;
   const x0=Math.max(xMin,Math.round(best.x-4)), x1=Math.min(xMax,Math.round(best.x+4));
   const y0=Math.max(yMin,Math.round(best.y-4)), y1=Math.min(yMax,Math.round(best.y+4));
   for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
-    const st=iconAnchorPixelStats(ctx,x,y,best.width); if(!st)continue;
+    const st=iconAnchorPixelStats(integral,x,y,best.width); if(!st)continue;
     const total=st.score-Math.min(.08,Math.abs(x-expectedLeft)/Math.max(1,rw)*.05)-Math.min(.08,Math.abs((y+best.height*.5)-yCenter)/Math.max(1,pitch)*.08);
     if(total>refined.total)refined={...best,x,y,total,stats:st};
   }
   return {x:Math.round(refined.x),y:Math.round(refined.y),width:Math.round(refined.width),height:Math.round(refined.height),score:refined.total,stats:refined.stats};
 }
+
 function inferIconAnchor(region){
   if(!region)return null;
   const rx=Math.max(0,Number(region.x)||0), ry=Math.max(0,Number(region.y)||0), rw=Math.max(1,Number(region.width)||1), rh=Math.max(1,Number(region.height)||1);
