@@ -41,9 +41,117 @@ function renderDB(){const host=$('dbList');host.innerHTML='';dbItems.forEach((d,
 function inferRow(name){const s=name.toLowerCase();if(/main|weapon|武器/.test(s))return 0;if(/sub/.test(s))return 1;if(/head|helm|頭/.test(s))return 2;if(/chest|胴/.test(s))return 3;if(/arm|腕/.test(s))return 4;if(/waist|腰/.test(s))return 5;if(/leg|脚/.test(s))return 6;if(/talisman|護石/.test(s))return 7;if(/mantle|装衣/.test(s))return 8;return 0}
 function finiteOr(v,fallback){return Number.isFinite(v)?v:fallback}
 function clamp(v,a,b){v=finiteOr(v,a);return Math.max(a,Math.min(b,v))}
-function buildGrid(anchor,imgW,imgH){imgW=finiteOr(Number(imgW),0);imgH=finiteOr(Number(imgH),0);if(imgW<1||imgH<1)throw new Error(`出力画像サイズが不正です：${imgW}×${imgH}`);if(!anchor||![anchor.x,anchor.y,anchor.w,anchor.h,anchor.row].every(Number.isFinite))throw new Error(`アンカー座標が不正です：${JSON.stringify(anchor)}`);const count=clamp(Math.round(Number($('rowCount').value)||9),1,12),ratio=finiteOr(Number($('rowRatio').value),.0855),extra=finiteOr(Number($('rowPx').value),0),ocrW=clamp(Number($('ocrW').value)||7,1,20),ocrH=clamp(Number($('ocrH').value)||1,.5,4),pad=clamp(Number($('ocrPad').value)||0,0,20);const pitch=imgH*ratio+extra;if(!Number.isFinite(pitch)||pitch<=0)throw new Error(`行ピッチが不正です：${pitch}`);rows=[];for(let i=0;i<count;i++){const t=TARGETS[i]||{key:'row'+(i+1),label:`対象${i+1}`,row:i};const y=anchor.y+(i-anchor.row)*pitch;const x=anchor.x,w=anchor.w,h=anchor.h;const ax=x+w,ay=y+h;const oy=Math.max(0,Math.round(ay-h*ocrH/2-pad)),oh=Math.min(imgH-oy,Math.max(1,Math.round(h*ocrH+pad*2)));const ox=Math.min(imgW-1,Math.max(0,Math.round(ax)));const ow=Math.max(1,Math.min(imgW-ox,Math.round(w*ocrW)));rows.push({key:t.key,label:t.label,row:i,icon:{x:Math.round(x),y:Math.round(y),w,h},anchor:{x:Math.round(ax),y:Math.round(ay)},ocr:{x:ox,y:oy,w:ow,h:oh}})}return {pitch,rows}}
+function buildGrid(anchor,imgW,imgH){
+  imgW=finiteOr(Number(imgW),0); imgH=finiteOr(Number(imgH),0);
+  if(imgW<1||imgH<1) throw new Error(`出力画像サイズが不正です：${imgW}×${imgH}`);
+  if(!anchor||![anchor.x,anchor.y,anchor.w,anchor.h,anchor.row].every(Number.isFinite))
+    throw new Error(`アンカー座標が不正です：${JSON.stringify(anchor)}`);
+
+  const count=clamp(Math.round(Number($('rowCount').value)||9),1,12);
+  const ratio=finiteOr(Number($('rowRatio').value),.0855);
+  const extra=finiteOr(Number($('rowPx').value),0);
+  const ocrW=clamp(Number($('ocrW').value)||7,1,20);
+  const ocrH=clamp(Number($('ocrH').value)||1,.5,4);
+  const pad=clamp(Number($('ocrPad').value)||0,0,20);
+
+  const fallbackPitch=imgH*ratio+extra;
+  if(!Number.isFinite(fallbackPitch)||fallbackPitch<=0) throw new Error(`基準行ピッチが不正です：${fallbackPitch}`);
+
+  // v0.9.3: 上段と防具列を別ピッチで校正する。
+  const byRow={};
+  for(const c of anchorCandidates){
+    if(!byRow[c.row] || c.score>byRow[c.row].score) byRow[c.row]=c;
+  }
+
+  const main=byRow[0], head=byRow[2], chest=byRow[3];
+
+  // メイン武器→頭防具の実測値から上段ピッチを算出。
+  let topPitch=fallbackPitch;
+  if(main && head){
+    const p=(head.y-main.y)/2;
+    if(Number.isFinite(p)&&p>1) topPitch=p;
+  }
+
+  // 胴防具以降は画面高比を基本ピッチとして扱う。
+  const armorPitch=fallbackPitch;
+
+  let mainY=main ? main.y : null;
+  let headY=head ? head.y : null;
+  let chestY=chest ? chest.y : null;
+
+  if(mainY===null && headY!==null) mainY=headY-2*topPitch;
+  if(headY===null && mainY!==null) headY=mainY+2*topPitch;
+  if(chestY===null){
+    if(headY!==null) chestY=headY+armorPitch;
+    else chestY=anchor.y+(3-anchor.row)*fallbackPitch;
+  }
+
+  const median=a=>{
+    if(!a.length) return null;
+    const b=[...a].sort((x,y)=>x-y),m=Math.floor(b.length/2);
+    return b.length%2?b[m]:(b[m-1]+b[m])/2;
+  };
+  const xs=anchorCandidates.filter(c=>Number.isFinite(c.x)).map(c=>c.x);
+  const ws=anchorCandidates.filter(c=>Number.isFinite(c.w)&&c.w>0).map(c=>c.w);
+  const hs=anchorCandidates.filter(c=>Number.isFinite(c.h)&&c.h>0).map(c=>c.h);
+  const x0=median(xs) ?? anchor.x;
+  const w0=median(ws) ?? anchor.w;
+  const h0=median(hs) ?? anchor.h;
+
+  rows=[];
+  for(let i=0;i<count;i++){
+    const t=TARGETS[i]||{key:'row'+(i+1),label:`対象${i+1}`,row:i};
+    let y;
+    if(i===0 && mainY!==null) y=mainY;
+    else if(i===1 && mainY!==null) y=mainY+topPitch;
+    else if(i===2 && headY!==null) y=headY;
+    else if(i>=3 && chestY!==null) y=chestY+(i-3)*armorPitch;
+    else y=anchor.y+(i-anchor.row)*fallbackPitch;
+
+    const x=x0,w=w0,h=h0;
+    if(![x,y,w,h].every(Number.isFinite))
+      throw new Error(`生成座標が不正です：row=${i+1}, ${x},${y},${w},${h}`);
+
+    const ax=x+w, ay=y+h;
+    const oy=Math.max(0,Math.round(ay-h*ocrH/2-pad));
+    const oh=Math.min(imgH-oy,Math.max(1,Math.round(h*ocrH+pad*2)));
+    const ox=Math.min(imgW-1,Math.max(0,Math.round(ax)));
+    const ow=Math.max(1,Math.min(imgW-ox,Math.round(w*ocrW)));
+
+    rows.push({
+      key:t.key,label:t.label,row:i,
+      icon:{x:Math.round(x),y:Math.round(y),w:Math.round(w),h:Math.round(h)},
+      anchor:{x:Math.round(ax),y:Math.round(ay)},
+      ocr:{x:ox,y:oy,w:ow,h:oh}
+    });
+  }
+
+  return {
+    pitch:fallbackPitch, topPitch, armorPitch,
+    calibration:{
+      main:main?{x:main.x,y:main.y,score:main.score}:null,
+      head:head?{x:head.x,y:head.y,score:head.score}:null,
+      chest:chest?{x:chest.x,y:chest.y,score:chest.score}:null
+    },
+    rows
+  };
+}
 function draw(img,anchor,grid){const c=$('view');const iw=Number(img.naturalWidth||img.width),ih=Number(img.naturalHeight||img.height);if(!Number.isFinite(iw)||!Number.isFinite(ih)||iw<1||ih<1)throw new Error(`描画画像サイズが不正です：${iw}×${ih}`);c.width=Math.round(iw);c.height=Math.round(ih);const ctx=c.getContext('2d');ctx.drawImage(img,0,0);if(anchor){ctx.strokeStyle='#ff3b30';ctx.lineWidth=4;ctx.strokeRect(anchor.x,anchor.y,anchor.w,anchor.h);ctx.fillStyle='#ff3b30';ctx.font='bold 18px sans-serif';ctx.fillText(`ANCHOR ${anchor.name} ${anchor.score.toFixed(3)}`,anchor.x+5,Math.max(22,anchor.y-7));ctx.fillStyle='#9cff57';ctx.beginPath();ctx.arc(anchor.x+anchor.w,anchor.y+anchor.h,6,0,Math.PI*2);ctx.fill()}for(const r of grid.rows){ctx.strokeStyle='#00d5ff';ctx.lineWidth=2;ctx.strokeRect(r.icon.x,r.icon.y,r.icon.w,r.icon.h);ctx.strokeStyle='#ffd000';ctx.lineWidth=3;ctx.strokeRect(r.ocr.x,r.ocr.y,r.ocr.w,r.ocr.h);ctx.fillStyle='#00d5ff';ctx.font='bold 16px sans-serif';ctx.fillText(`${r.row+1}:${r.label}`,r.icon.x+3,Math.max(18,r.icon.y-4));ctx.fillStyle='#9cff57';ctx.beginPath();ctx.arc(r.anchor.x,r.anchor.y,4,0,Math.PI*2);ctx.fill()}}
-function renderResults(anchor,grid){$('anchorInfo').innerHTML=anchor?`<div class="result ok"><b>採用アンカー：</b>${anchor.name}<br><span class="mono">score=${anchor.score.toFixed(4)} / row=${anchor.row+1} ${TARGETS[anchor.row]?.label||''} / icon x=${anchor.x} y=${anchor.y} w=${anchor.w} h=${anchor.h}<br>右下角 = (${anchor.x+anchor.w}, ${anchor.y+anchor.h})<br>推定行ピッチ = ${grid.pitch.toFixed(2)} px（画面高比 ${Number($('rowRatio').value).toFixed(4)} + 補正 ${Number($('rowPx').value).toFixed(1)}px）</span></div>`:'';const rs=$('results');rs.innerHTML=anchorCandidates.map(c=>`<div class="result"><b>${c.name}</b> / ${TARGETS[c.row]?.label||'1行目'}<div class="mono">score=${c.score.toFixed(4)} / x=${c.x} y=${c.y} w=${c.w} h=${c.h}${c===anchor?' ← 採用アンカー':''}</div></div>`).join('')+'<div class="result"><b>生成された9行</b><div class="mono">'+grid.rows.map(r=>`${r.row+1}. ${r.label}: icon (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / right-bottom (${r.anchor.x},${r.anchor.y}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n')+'</div></div>';$('json').textContent=JSON.stringify(grid.rows,null,2)}
+function renderResults(anchor,grid){
+  const cal=grid.calibration||{};
+  const fmt=c=>c?`x=${c.x} y=${c.y} score=${c.score.toFixed(4)}`:'未検出';
+  $('anchorInfo').innerHTML=anchor?`<div class="result ok"><b>採用アンカー：</b>${anchor.name}<br>
+    <span class="mono">score=${anchor.score.toFixed(4)} / row=${anchor.row+1} ${TARGETS[anchor.row]?.label||''} / icon x=${anchor.x} y=${anchor.y} w=${anchor.w} h=${anchor.h}<br>
+    右下角 = (${anchor.x+anchor.w}, ${anchor.y+anchor.h})<br>
+    上段ピッチ = ${grid.topPitch.toFixed(2)} px / 防具ピッチ = ${grid.armorPitch.toFixed(2)} px<br>
+    校正：メイン[${fmt(cal.main)}] / 頭[${fmt(cal.head)}] / 胴[${fmt(cal.chest)}]</span></div>`:'';
+  const rs=$('results');
+  rs.innerHTML=anchorCandidates.map(c=>`<div class="result"><b>${c.name}</b> / ${TARGETS[c.row]?.label||'1行目'}<div class="mono">score=${c.score.toFixed(4)} / x=${c.x} y=${c.y} w=${c.w} h=${c.h}${c===anchor?' ← 採用アンカー':''}</div></div>`).join('')
+    +'<div class="result"><b>生成された9行</b><div class="mono">'
+    +grid.rows.map(r=>`${r.row+1}. ${r.label}: icon (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / right-bottom (${r.anchor.x},${r.anchor.y}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n')
+    +'</div></div>';
+  $('json').textContent=JSON.stringify(grid.rows,null,2)
+}
 async function run(){if(!shotImg){$('status').textContent='スクショを選択してください。';return}if(!dbItems.length){$('status').textContent='DBアイコンがありません。';return}$('run').disabled=true;$('status').textContent='アンカー探索中…';const t0=performance.now();try{const scene=grayData(imageDataFromImage(shotImg)),minS=Number($('smin').value),maxS=Number($('smax').value),step=Number($('sstep').value),out=[];for(const d of dbItems){const r=await matchOne(scene,d,minS,maxS,step);if(r)out.push({...r,name:d.name,row:d.row,dbImage:d.im})}anchorCandidates=out.sort((a,b)=>b.score-a.score);if(!anchorCandidates.length)throw new Error('アンカー候補がありません');const mode=$('anchorMode').value;const anchor=mode==='auto'?anchorCandidates[0]:anchorCandidates[Number(mode)];if(!anchor)throw new Error('採用するアンカーが見つかりません');const imgW=Number(shotImg.naturalWidth||shotImg.width),imgH=Number(shotImg.naturalHeight||shotImg.height);const grid=buildGrid(anchor,imgW,imgH);draw(shotImg,anchor,grid);renderResults(anchor,grid);$('status').textContent=`完了：アンカー ${anchor.name} / ${anchor.score.toFixed(3)} / 生成 ${grid.rows.length}行 / ${(performance.now()-t0).toFixed(0)}ms`;}catch(e){console.error(e);$('status').textContent='エラー：'+e.message}finally{$('run').disabled=false}}
 async function bundled(){dbItems=[];const paths=[['db_icons/main_weapon_sample.png','メイン武器アイコン',0],['db_icons/head_armor_sample.png','頭防具アイコン',2],['db_icons/chest_armor_sample.png','胴防具アイコン',3]];for(const [p,n,row] of paths){const r=await fetch(p,{cache:'no-store'});if(!r.ok)throw new Error(p+' HTTP '+r.status);const b=await r.blob();const f=new File([b],p.split('/').pop(),{type:b.type||'image/png'});await loadImage(f).then(im=>dbItems.push({name:n,im,file:f,row}))}renderDB()}
 $('shot').onchange=async()=>{const f=$('shot').files?.[0];if(f){shotImg=await loadImage(f);$('shotStatus').textContent=`読み込み：${shotImg.naturalWidth}×${shotImg.naturalHeight}px`;}}
