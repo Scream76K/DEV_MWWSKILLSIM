@@ -35,7 +35,7 @@
 
 <div class="card"><h2>5. RARE色判定（暫定）</h2>
 <div class="note">
-今回いただいたMHWildsの色マスターを登録しています。
+今回いただいたMHWildsの色マスターを登録しています。RGB完全一致ではなく、HSVの色相を主体に、彩度・明度には幅を持たせて判定します。
 <strong>RARE 3/4 と 6/7 は色が近いため、差が小さい場合は「3/4候補」「6/7候補」として確定しません。</strong>
 アイコンの影・縁・画面の色味の影響を考慮し、アイコン中央付近の彩度の高い画素を中心に判定します。
 </div>
@@ -146,66 +146,93 @@ function colorDist(a,b){
  return Math.sqrt(dr*dr+dg*dg+db*db);
 }
 function rareFromCrop(r){
- const x0=Math.max(0,Math.floor(r.x+r.w*.18)), y0=Math.max(0,Math.floor(r.y+r.h*.18));
- const x1=Math.min(imgW,Math.ceil(r.x+r.w*.82)), y1=Math.min(imgH,Math.ceil(r.y+r.h*.82));
- const c=document.createElement('canvas'), w=Math.max(1,x1-x0), h=Math.max(1,y1-y0);
- c.width=w;c.height=h;
- const ctx=c.getContext('2d',{willReadFrequently:true});
- ctx.drawImage(sourceImage,x0,y0,w,h,0,0,w,h);
- const d=ctx.getImageData(0,0,w,h).data;
- const samples=[];
- for(let i=0;i<d.length;i+=4){
-   const rgb=[d[i],d[i+1],d[i+2]], hsv=rgbToHsv(...rgb);
-   // Ignore dark UI background and low-chroma border/gray pixels for chromatic colors.
-   if(hsv.v<.20) continue;
-   if(hsv.s>.16) samples.push({rgb,hsv});
- }
- // If chroma is weak, compare to the gray/white masters.
- if(samples.length<8){
-   let sums=[0,0,0],n=0;
-   for(let i=0;i<d.length;i+=4){
-     const rgb=[d[i],d[i+1],d[i+2]], hsv=rgbToHsv(...rgb);
-     if(hsv.v>.35 && hsv.s<.16){sums[0]+=rgb[0];sums[1]+=rgb[1];sums[2]+=rgb[2];n++;}
-   }
-   if(n){
-     const avg=sums.map(v=>v/n);
-     const ranked=RARE_COLORS.slice(0,2).map(m=>({m,d:colorDist(avg,m.rgb)})).sort((a,b)=>a.d-b.d);
-     const best=ranked[0], second=ranked[1];
-     const amb=second.d-best.d<18;
-     return {label:amb?`${best.m.rare}/${second.m.rare}候補`:String(best.m.rare),rare:amb?null:best.m.rare,confidence:amb?'曖昧':'低彩度',avg};
-   }
- }
- if(!samples.length) return {label:'判定不能',rare:null,confidence:'サンプル不足'};
+  // The crop may contain the icon plus a little UI/text. Use the left/central
+  // portion as the icon ROI and judge chromatic pixels primarily by hue.
+  const x0=Math.max(0,Math.floor(r.x+r.w*.05));
+  const y0=Math.max(0,Math.floor(r.y+r.h*.08));
+  const x1=Math.min(imgW,Math.ceil(r.x+r.w*.78));
+  const y1=Math.min(imgH,Math.ceil(r.y+r.h*.92));
 
- // Compare saturated pixels to the palette, with extra hue weighting.
- const scores=RARE_COLORS.map(m=>{
-   let total=0,n=0;
-   for(const s of samples){
-     const dist=colorDist(s.rgb,m.rgb);
-     const ph=rgbToHsv(...m.rgb);
-     let dh=Math.abs(s.hsv.h-ph.h);dh=Math.min(dh,360-dh);
-     const huePenalty=dh*1.25;
-     total += dist + huePenalty;
-     n++;
-   }
-   return {m,score:total/n};
- }).sort((a,b)=>a.score-b.score);
+  const c=document.createElement('canvas');
+  const w=Math.max(1,x1-x0), h=Math.max(1,y1-y0);
+  c.width=w;c.height=h;
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  ctx.drawImage(sourceImage,x0,y0,w,h,0,0,w,h);
+  const d=ctx.getImageData(0,0,w,h).data;
 
- const best=scores[0],second=scores[1];
- const pair=(best.m.rare===3||second.m.rare===3||best.m.rare===4||second.m.rare===4) &&
-            new Set([best.m.rare,second.m.rare]).size===2;
- const pair67=(best.m.rare===6||second.m.rare===6||best.m.rare===7||second.m.rare===7) &&
-              new Set([best.m.rare,second.m.rare]).size===2;
- const close=second.score-best.score<16;
- const ambiguous=(close && (pair||pair67));
- return {
-   label:ambiguous?`${Math.min(best.m.rare,second.m.rare)}/${Math.max(best.m.rare,second.m.rare)}候補`:String(best.m.rare),
-   rare:ambiguous?null:best.m.rare,
-   confidence:ambiguous?'曖昧':(second.score-best.score<28?'中':'高'),
-   avg:samples.reduce((a,s)=>a.map((v,i)=>v+s.rgb[i]),[0,0,0]).map(v=>v/samples.length),
-   scores:scores.slice(0,3).map(x=>({rare:x.m.rare,score:+x.score.toFixed(1)}))
- };
+  const chroma=[];
+  const gray=[];
+  for(let i=0;i<d.length;i+=4){
+    const rgb=[d[i],d[i+1],d[i+2]];
+    const hsv=rgbToHsv(...rgb);
+    if(hsv.v<.16) continue;
+    if(hsv.s>=.28) chroma.push({rgb,hsv});
+    else if(hsv.s<.10 && hsv.v>.35) gray.push({rgb,hsv});
+  }
+
+  const masters=RARE_COLORS.map(m=>{
+    const hsv=rgbToHsv(...m.rgb);
+    return {...m,hsv};
+  });
+
+  // For colored rarity icons, hue is deliberately the dominant feature.
+  // Saturation and value are allowed to drift because the screenshot is
+  // affected by scaling, compression, glow, lighting and display capture.
+  if(chroma.length>=12){
+    const scores=masters.filter(m=>m.rare>=3).map(m=>{
+      let total=0, weight=0;
+      for(const s of chroma){
+        let dh=Math.abs(s.hsv.h-m.hsv.h);
+        dh=Math.min(dh,360-dh);
+        const hueNorm=dh/180;
+        const satDiff=Math.abs(s.hsv.s-m.hsv.s);
+        // Value is intentionally weak: large brightness changes are expected.
+        const valueDiff=Math.abs(s.hsv.v-m.hsv.v);
+        const score=1.00*hueNorm + 0.18*satDiff + 0.06*valueDiff;
+        const wt=0.5+s.hsv.s;
+        total+=score*wt; weight+=wt;
+      }
+      return {m,score:total/weight};
+    }).sort((a,b)=>a.score-b.score);
+
+    const best=scores[0], second=scores[1];
+    const margin=second.score-best.score;
+
+    // Deliberately avoid overclaiming for the two visually close pairs.
+    const closePair =
+      ((best.m.rare===3||best.m.rare===4) && (second.m.rare===3||second.m.rare===4)) ||
+      ((best.m.rare===6||best.m.rare===7) && (second.m.rare===6||second.m.rare===7));
+
+    // Hue is reliable, but if the two candidates are close, keep it ambiguous.
+    const ambiguous=closePair && margin<0.045;
+
+    return {
+      label:ambiguous?`${Math.min(best.m.rare,second.m.rare)}/${Math.max(best.m.rare,second.m.rare)}候補`:String(best.m.rare),
+      rare:ambiguous?null:best.m.rare,
+      confidence:ambiguous?'曖昧':(margin<0.08?'中':'高'),
+      avg:chroma.reduce((a,s)=>a.map((v,i)=>v+s.rgb[i]),[0,0,0]).map(v=>v/chroma.length),
+      scores:scores.slice(0,3).map(x=>({rare:x.m.rare,score:+x.score.toFixed(3)}))
+    };
+  }
+
+  // RARE 1/2 are grayscale. Judge luminance, with a wide tolerance.
+  if(gray.length>=12){
+    const avg=gray.reduce((a,s)=>a+s.hsv.v,0)/gray.length;
+    const d1=Math.abs(avg-masters[0].hsv.v);
+    const d2=Math.abs(avg-masters[1].hsv.v);
+    const ambiguous=Math.abs(d1-d2)<.09;
+    const best=d1<=d2?1:2, second=best===1?2:1;
+    return {
+      label:ambiguous?`${Math.min(best,second)}/${Math.max(best,second)}候補`:String(best),
+      rare:ambiguous?null:best,
+      confidence:ambiguous?'曖昧':'中',
+      avg:[Math.round(avg*255),Math.round(avg*255),Math.round(avg*255)]
+    };
+  }
+
+  return {label:'判定不能',rare:null,confidence:'色サンプル不足'};
 }
+
 function enrichRare(){
  for(const r of results) r.rareInfo=rareFromCrop(r);
 }
