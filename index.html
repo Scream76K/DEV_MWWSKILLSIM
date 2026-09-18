@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — アイコン起点テスト v0.3</title>
+<title>MH Wilds OCR — アイコン起点テスト v0.6</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4efe1;color:#302b23;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}main{max-width:1000px;margin:auto;padding:16px}h1{font-size:22px;margin:0 0 8px}h2{font-size:18px;margin:20px 0 10px}.card{background:#fffaf0;border:1px solid #b9a98b;border-radius:14px;padding:14px;margin-bottom:14px}.note{font-size:13px;line-height:1.6;color:#625b50}button,input,select{font:inherit}button{border:1px solid #88775c;border-radius:10px;background:#fffaf0;padding:10px 14px}button.primary{background:#536b3f;color:#fff;border-color:#435631;font-weight:700}button:disabled{opacity:.55}input[type=file]{width:100%}input[type=number],select{width:100%;padding:8px;border:1px solid #b9a98b;border-radius:8px;background:#fff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.layoutGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}.status{font-size:13px;margin-top:8px}.pill{display:inline-block;border-radius:999px;padding:3px 8px;background:#e8eadf;font-size:12px}.stage{position:relative;overflow:auto;background:#222;border-radius:10px;padding:8px}.stage img{display:block;max-width:none;width:100%;height:auto}.overlay{position:absolute;left:8px;top:8px;pointer-events:none}.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;margin-top:8px}.legend i{display:inline-block;width:12px;height:12px;border:2px solid;border-radius:3px;vertical-align:-2px;margin-right:3px}.targetList{display:grid;grid-template-columns:1fr 1fr;gap:8px}.target{border:1px solid #c8baa0;border-radius:10px;padding:9px;background:#fff}.target.ok{outline:2px solid #5b7d43}.target.warn{outline:2px solid #c58b37}.target.bad{outline:2px solid #b94b3b}.targetTitle{display:flex;justify-content:space-between;gap:8px;font-weight:700}.small{font-size:12px;color:#665e53}.cropGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.cropCard{border:1px solid #c8baa0;border-radius:9px;padding:7px;background:#fff;cursor:pointer}.cropCard img{width:100%;height:110px;object-fit:contain;background:#111;border-radius:6px;margin-top:5px}.code{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;padding:12px;border-radius:10px;min-height:90px;font-family:ui-monospace,monospace;font-size:12px}.danger{color:#9a3024;font-weight:700}@media(max-width:700px){main{padding:10px}.targetList{grid-template-columns:1fr}.layoutGrid{grid-template-columns:1fr 1fr}.cropGrid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body><main>
-<div class="card"><h1>MH Wilds OCR — アイコン起点テスト v0.3</h1><div class="note"><strong>今回の方式：</strong>画面全体を総当たりしません。装備画面のレイアウトが既知であることを利用し、<strong>9つの対象行ごとの狭いアイコン探索領域</strong>だけを解析します。<br>RAREの色判定と最終的なアイコン形状マスターは次段階です。まず「既知の種類＋既知の行位置＋既知のアイコン列（メイン武器は専用Y補正）」で、本物のアイコンだけを安定して拾えるか確認します。</div></div>
+<div class="card"><h1>MH Wilds OCR — アイコン起点テスト v0.6</h1><div class="note"><strong>今回の方式：</strong>画面全体を総当たりしません。装備画面のレイアウトが既知であることを利用し、<strong>9つの対象行ごとの狭いアイコン探索領域</strong>だけを解析します。<br>RARE色は今回追加します（3/4、6/7は近似時に曖昧判定）。最終的なアイコン形状マスターは次段階です。まず「既知の種類＋既知の行位置＋既知のアイコン列（メイン武器は専用Y補正）」で、本物のアイコンだけを安定して拾えるか確認します。</div></div>
 
 <div class="card"><h2>1. スクリーンショット</h2><input id="file" type="file" accept="image/*"><div id="fileStatus" class="status">画像未選択</div></div>
 
-<div class="card"><h2>2. 既知の対象を設定</h2><div class="note">ワイルズの装備変更画面では、左側の装備リストの行構造が分かっています。v0.3ではその情報を使います。行名はOCRで推測せず、あらかじめ固定します。</div>
+<div class="card"><h2>2. 既知の対象を設定</h2><div class="note">ワイルズの装備変更画面では、左側の装備リストの行構造が分かっています。v0.6ではその情報を使います。行名はOCRで推測せず、あらかじめ固定します。</div>
 <div class="layoutGrid" style="margin-top:10px">
 <div><label>探索X（画面幅比）</label><input id="zoneX" type="number" value="0.004" title="実画面ではアイコン中心がおよそX=0.035付近" min="0" max="0.5" step="0.001"></div>
 <div><label>探索幅（画面幅比）</label><input id="zoneW" type="number" value="0.063" min="0.01" max="0.3" step="0.001"></div>
@@ -32,11 +32,21 @@
 
 <div class="card"><h2>4. 対象ごとの判定</h2><div id="targets" class="targetList"></div></div>
 
-<div class="card"><h2>5. アイコン拡大</h2><div class="note">各行の候補を拡大します。ここで「本当に対象アイコンを拾えているか」を確認します。</div><div id="crops" class="cropGrid" style="margin-top:10px"></div></div>
 
-<div class="card"><h2>6. アイコン起点OCR領域</h2><div class="grid"><div><label>右側OCR幅（アイコン幅×）</label><input id="ocrFactor" type="number" value="7" min="1" max="20" step="0.5"></div><div><label>OCR高さ（アイコン高さ×）</label><input id="ocrHFactor" type="number" value="1.3" min="0.5" max="4" step="0.05"></div></div><div id="anchorStatus" class="status">検出後に表示します。</div><div id="anchorCode" class="code" style="margin-top:8px">未実行</div></div>
+<div class="card"><h2>5. RARE色判定（暫定）</h2>
+<div class="note">
+今回いただいたMHWildsの色マスターを登録しています。
+<strong>RARE 3/4 と 6/7 は色が近いため、差が小さい場合は「3/4候補」「6/7候補」として確定しません。</strong>
+アイコンの影・縁・画面の色味の影響を考慮し、アイコン中央付近の彩度の高い画素を中心に判定します。
+</div>
+<div id="rarePalette" class="legend" style="margin-top:10px"></div>
+</div>
 
-<div class="card"><h2>7. 次段階へ渡すデータ</h2><div class="note">ここではDB照合を行いません。後で <span class="pill">形状</span> <span class="pill">色/RARE</span> <span class="pill">OCR文字列</span> を追加できるよう、アイコン位置を共通形式で保存します。</div><pre id="json" class="code" style="margin-top:8px">[]</pre></div>
+<div class="card"><h2>6. アイコン拡大</h2><div class="note">各行の候補を拡大します。ここで「本当に対象アイコンを拾えているか」を確認します。</div><div id="crops" class="cropGrid" style="margin-top:10px"></div></div>
+
+<div class="card"><h2>7. アイコン起点OCR領域</h2><div class="grid"><div><label>右側OCR幅（アイコン幅×）</label><input id="ocrFactor" type="number" value="7" min="1" max="20" step="0.5"></div><div><label>OCR高さ（アイコン高さ×）</label><input id="ocrHFactor" type="number" value="1.3" min="0.5" max="4" step="0.05"></div></div><div id="anchorStatus" class="status">検出後に表示します。</div><div id="anchorCode" class="code" style="margin-top:8px">未実行</div></div>
+
+<div class="card"><h2>8. 次段階へ渡すデータ</h2><div class="note">ここではDB照合を行いません。後で <span class="pill">形状</span> <span class="pill">色/RARE</span> <span class="pill">OCR文字列</span> を追加できるよう、アイコン位置を共通形式で保存します。</div><pre id="json" class="code" style="margin-top:8px">[]</pre></div>
 </main>
 <script>
 'use strict';
@@ -65,7 +75,7 @@ function regionStats(data,w,h,x,y,rw,rh){
 function getImageCanvas(){const maxW=1600,scale=Math.min(1,maxW/sourceImage.naturalWidth),c=document.createElement('canvas');c.width=Math.round(sourceImage.naturalWidth*scale);c.height=Math.round(sourceImage.naturalHeight*scale);const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(sourceImage,0,0,c.width,c.height);return {c,ctx,scale,w:c.width,h:c.height};}
 function detectInZone(data,w,h,scale,zone,c){
  // Search a small neighborhood around the expected icon center. The target type determines the row,
- // but v0.3 intentionally does not yet use a color/shape classifier.
+ // but v0.6 intentionally does not yet use a color/shape classifier.
  const cx=(zone.x+zone.w*.5)*scale, cy=(zone.y+zone.h*.5)*scale;
  const iw=zone.iw*scale, ih=zone.ih*scale, pad=zone.pad;
  let best=null;
@@ -108,8 +118,104 @@ function draw(){
  const ctx=ov.getContext('2d');ctx.clearRect(0,0,cw,ch);const sx=cw/img.naturalWidth,sy=ch/img.naturalHeight;
  for(const r of results){const z=r.zone;ctx.lineWidth=2;ctx.strokeStyle='#00b7ff';ctx.strokeRect(z.x*sx,z.y*sy,z.w*sx,z.h*sy);ctx.strokeStyle=r.accept?'#39d353':'#ff4d35';ctx.lineWidth=3;ctx.strokeRect(r.x*sx,r.y*sy,r.w*sx,r.h*sy);ctx.fillStyle=r.accept?'#39d353':'#ff4d35';ctx.font=Math.max(12,14*sx)+'px sans-serif';ctx.fillText(r.label,r.x*sx+3,r.y*sy+15);}}
 function cropData(r,scale=3){const pad=Math.max(10,Math.round(Math.max(r.w,r.h)*.7)),x=Math.max(0,Math.floor(r.x-pad)),y=Math.max(0,Math.floor(r.y-pad)),w=Math.min(imgW-x,Math.ceil(r.w+pad*2)),h=Math.min(imgH-y,Math.ceil(r.h+pad*2));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*scale));c.height=Math.max(1,Math.round(h*scale));c.getContext('2d').drawImage(sourceImage,x,y,w,h,0,0,c.width,c.height);return c.toDataURL('image/png');}
-function renderTargets(){const host=$('targets');host.innerHTML=results.map((r,i)=>`<div class="target ${r.accept?'ok':'bad'}"><div class="targetTitle"><span>${r.label}</span><span class="pill">${r.kind}</span></div><div class="small">候補：x:${Math.round(r.x)} y:${Math.round(r.y)} w:${Math.round(r.w)} h:${Math.round(r.h)}</div><div class="small">探索：x:${Math.round(r.zone.x)} y:${Math.round(r.zone.y)} w:${Math.round(r.zone.w)} h:${Math.round(r.zone.h)}</div><div class="small">相対スコア：${r.score.toFixed(3)} ${r.accept?'採用候補':'要調整'}</div></div>`).join('')||'<div class="note">まだ検出していません。</div>';}
-function renderCrops(){const host=$('crops');host.innerHTML='';for(const r of results){const d=document.createElement('div');d.className='cropCard';d.innerHTML=`<b>${r.label}</b><span class="small"> / ${r.score.toFixed(2)}</span>`;const im=document.createElement('img');im.src=cropData(r);d.appendChild(im);host.appendChild(d);}}
+
+const RARE_COLORS = [
+ {rare:1,hex:'#969696',rgb:[150,150,150]},
+ {rare:2,hex:'#DEDEDE',rgb:[222,222,222]},
+ {rare:3,hex:'#A4C43B',rgb:[164,196,59]},
+ {rare:4,hex:'#47A33F',rgb:[71,163,63]},
+ {rare:5,hex:'#5CAE BB'.replace(/\s/g,''),rgb:[92,174,187]},
+ {rare:6,hex:'#575FD9',rgb:[87,95,217]},
+ {rare:7,hex:'#9272E3',rgb:[146,114,227]},
+ {rare:8,hex:'#C76D46',rgb:[199,109,70]}
+];
+
+function rgbToHsv(r,g,b){
+ const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;
+ let h=0;
+ if(d){
+   if(mx===r) h=((g-b)/d)%6;
+   else if(mx===g) h=(b-r)/d+2;
+   else h=(r-g)/d+4;
+   h*=60;if(h<0)h+=360;
+ }
+ return {h,s:mx?d/mx:0,v:mx/255};
+}
+function colorDist(a,b){
+ const dr=a[0]-b[0],dg=a[1]-b[1],db=a[2]-b[2];
+ return Math.sqrt(dr*dr+dg*dg+db*db);
+}
+function rareFromCrop(r){
+ const x0=Math.max(0,Math.floor(r.x+r.w*.18)), y0=Math.max(0,Math.floor(r.y+r.h*.18));
+ const x1=Math.min(imgW,Math.ceil(r.x+r.w*.82)), y1=Math.min(imgH,Math.ceil(r.y+r.h*.82));
+ const c=document.createElement('canvas'), w=Math.max(1,x1-x0), h=Math.max(1,y1-y0);
+ c.width=w;c.height=h;
+ const ctx=c.getContext('2d',{willReadFrequently:true});
+ ctx.drawImage(sourceImage,x0,y0,w,h,0,0,w,h);
+ const d=ctx.getImageData(0,0,w,h).data;
+ const samples=[];
+ for(let i=0;i<d.length;i+=4){
+   const rgb=[d[i],d[i+1],d[i+2]], hsv=rgbToHsv(...rgb);
+   // Ignore dark UI background and low-chroma border/gray pixels for chromatic colors.
+   if(hsv.v<.20) continue;
+   if(hsv.s>.16) samples.push({rgb,hsv});
+ }
+ // If chroma is weak, compare to the gray/white masters.
+ if(samples.length<8){
+   let sums=[0,0,0],n=0;
+   for(let i=0;i<d.length;i+=4){
+     const rgb=[d[i],d[i+1],d[i+2]], hsv=rgbToHsv(...rgb);
+     if(hsv.v>.35 && hsv.s<.16){sums[0]+=rgb[0];sums[1]+=rgb[1];sums[2]+=rgb[2];n++;}
+   }
+   if(n){
+     const avg=sums.map(v=>v/n);
+     const ranked=RARE_COLORS.slice(0,2).map(m=>({m,d:colorDist(avg,m.rgb)})).sort((a,b)=>a.d-b.d);
+     const best=ranked[0], second=ranked[1];
+     const amb=second.d-best.d<18;
+     return {label:amb?`${best.m.rare}/${second.m.rare}候補`:String(best.m.rare),rare:amb?null:best.m.rare,confidence:amb?'曖昧':'低彩度',avg};
+   }
+ }
+ if(!samples.length) return {label:'判定不能',rare:null,confidence:'サンプル不足'};
+
+ // Compare saturated pixels to the palette, with extra hue weighting.
+ const scores=RARE_COLORS.map(m=>{
+   let total=0,n=0;
+   for(const s of samples){
+     const dist=colorDist(s.rgb,m.rgb);
+     const ph=rgbToHsv(...m.rgb);
+     let dh=Math.abs(s.hsv.h-ph.h);dh=Math.min(dh,360-dh);
+     const huePenalty=dh*1.25;
+     total += dist + huePenalty;
+     n++;
+   }
+   return {m,score:total/n};
+ }).sort((a,b)=>a.score-b.score);
+
+ const best=scores[0],second=scores[1];
+ const pair=(best.m.rare===3||second.m.rare===3||best.m.rare===4||second.m.rare===4) &&
+            new Set([best.m.rare,second.m.rare]).size===2;
+ const pair67=(best.m.rare===6||second.m.rare===6||best.m.rare===7||second.m.rare===7) &&
+              new Set([best.m.rare,second.m.rare]).size===2;
+ const close=second.score-best.score<16;
+ const ambiguous=(close && (pair||pair67));
+ return {
+   label:ambiguous?`${Math.min(best.m.rare,second.m.rare)}/${Math.max(best.m.rare,second.m.rare)}候補`:String(best.m.rare),
+   rare:ambiguous?null:best.m.rare,
+   confidence:ambiguous?'曖昧':(second.score-best.score<28?'中':'高'),
+   avg:samples.reduce((a,s)=>a.map((v,i)=>v+s.rgb[i]),[0,0,0]).map(v=>v/samples.length),
+   scores:scores.slice(0,3).map(x=>({rare:x.m.rare,score:+x.score.toFixed(1)}))
+ };
+}
+function enrichRare(){
+ for(const r of results) r.rareInfo=rareFromCrop(r);
+}
+function renderRarePalette(){
+ const host=$('rarePalette');
+ host.innerHTML=RARE_COLORS.map(m=>`<span><i style="border-color:${m.hex};background:${m.hex}"></i>RARE ${m.rare} <span class="small">${m.hex}</span></span>`).join('');
+}
+
+function renderTargets(){const host=$('targets');host.innerHTML=results.map((r,i)=>`<div class="target ${r.accept?'ok':'bad'}"><div class="targetTitle"><span>${r.label}</span><span class="pill">${r.kind}</span></div><div class="small">候補：x:${Math.round(r.x)} y:${Math.round(r.y)} w:${Math.round(r.w)} h:${Math.round(r.h)}</div><div class="small">探索：x:${Math.round(r.zone.x)} y:${Math.round(r.zone.y)} w:${Math.round(r.zone.w)} h:${Math.round(r.zone.h)}</div><div class="small">相対スコア：${r.score.toFixed(3)} ${r.accept?'採用候補':'要調整'}</div><div class="small"><strong>RARE色：</strong>${r.rareInfo?.label||'未判定'} / 信頼度：${r.rareInfo?.confidence||'—'}</div></div>`).join('')||'<div class="note">まだ検出していません。</div>';}
+function renderCrops(){const host=$('crops');host.innerHTML='';for(const r of results){const d=document.createElement('div');d.className='cropCard';d.innerHTML=`<b>${r.label}</b><span class="small"> / ${r.score.toFixed(2)} / RARE ${r.rareInfo?.label||'—'}</span>`;const im=document.createElement('img');im.src=cropData(r);d.appendChild(im);host.appendChild(d);}}
 function renderAnchor(){const wf=clamp(Number($('ocrFactor').value)||7,1,20),hf=clamp(Number($('ocrHFactor').value)||1.3,.5,4);const rows=[];for(const r of results){const x=Math.max(0,Math.round(r.x+r.w)),y=Math.max(0,Math.round(r.y+r.h*(1-hf)/2)),w=Math.max(1,Math.min(imgW-x,Math.round(r.w*wf))),h=Math.max(1,Math.min(imgH-y,Math.round(r.h*hf)));rows.push({key:r.key,label:r.label,icon:{x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.w),h:Math.round(r.h)},ocr:{x,y,w,h}})}$('anchorStatus').textContent=`アイコン ${rows.length}件から右側OCR領域を生成`;$('anchorCode').textContent=rows.map(r=>`${r.label}: ICON x=${r.icon.x} y=${r.icon.y} w=${r.icon.w} h=${r.icon.h} → OCR x=${r.ocr.x} y=${r.ocr.y} w=${r.ocr.w} h=${r.ocr.h}`).join('\n')||'未実行';return rows;}
 function render(){draw();renderTargets();renderCrops();const rows=renderAnchor();$('json').textContent=JSON.stringify(rows,null,2);}
 $('file').onchange=()=>{const f=$('file').files?.[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{sourceImage=im;imgW=im.naturalWidth;imgH=im.naturalHeight;$('img').src=u;results=[];$('fileStatus').textContent=`読み込み完了：${imgW} × ${imgH}px`;render();$('detectStatus').textContent='未実行';};im.src=u;};
@@ -118,5 +224,6 @@ $('clear').onclick=()=>{results=[];render();$('detectStatus').textContent='候�
 ['zoneX','zoneW','iconW','iconH','firstY','rowStep','rowCount','searchPad'].forEach(id=>$(id).oninput=()=>{if(results.length)detect()});
 ['ocrFactor','ocrHFactor'].forEach(id=>$(id).oninput=()=>{if(results.length)render()});
 window.addEventListener('resize',()=>{if(results.length)draw()});
+renderRarePalette();
 render();
 </script></body></html>
