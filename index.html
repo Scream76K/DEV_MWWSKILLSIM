@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — アンカー＋グリッド検証 v0.9.1</title>
+<title>MH Wilds OCR — アンカー＋グリッド検証 v0.10</title>
 <style>
 body{margin:0;background:#f4efe1;color:#302b23;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}main{max-width:1100px;margin:auto;padding:14px}.card{background:#fffaf0;border:1px solid #b9a98b;border-radius:14px;padding:14px;margin-bottom:14px}h1{font-size:21px;margin:0 0 8px}h2{font-size:17px;margin:0 0 8px}.note{font-size:13px;line-height:1.6;color:#625b50}button{font:inherit;border:1px solid #88775c;border-radius:9px;background:#fffaf0;padding:9px 13px}button.primary{background:#536b3f;color:#fff;border-color:#435631;font-weight:700}button:disabled{opacity:.55}input,select{font:inherit}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.status{font-size:13px;margin-top:8px}.mono{font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;word-break:break-word}.dbicon{display:flex;gap:8px;align-items:center;margin:6px 0;padding:7px;border:1px solid #d2c5ab;border-radius:8px}.dbicon img{width:45px;height:45px;object-fit:contain;background:#222;border-radius:4px}.dbicon select{margin-left:auto;padding:5px}.stage{overflow:auto;background:#222;border-radius:10px;padding:6px}.stage canvas{display:block;max-width:100%;height:auto}.legend{font-size:12px;margin-top:8px;display:flex;gap:12px;flex-wrap:wrap}.legend b{display:inline-block;width:12px;height:12px;border:2px solid;vertical-align:-2px;margin-right:3px}.result{padding:9px;border:1px solid #c9bda5;border-radius:9px;margin-top:8px;background:#fff}.ok{outline:2px solid #39a85a}.warn{outline:2px solid #c58b37}@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}}
-</style></head><body><main>
-<div class="card"><h1>MH Wilds OCR — アンカー＋グリッド検証 v0.9.1</h1><div class="note"><b>今回の検証：</b>DBアイコンは全部位の位置決めには使いません。<strong>最も一致度の高い1点をアンカー</strong>として採用し、その右下角を基準に、装備画面の縦一列・一定ピッチから9部位のアイコン位置とOCR帯を計算します。今回は<strong>OCR実行なし</strong>、座標の正しさだけを確認します。</div></div>
+</style><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script></head><body><main>
+<div class="card"><h1>MH Wilds OCR — アンカー＋グリッド検証 v0.9.1</h1><div class="note"><b>今回の検証：</b>DBアイコンは全部位の位置決めには使いません。<strong>最も一致度の高い1点をアンカー</strong>として採用し、その右下角を基準に、装備画面の縦一列・一定ピッチから9部位のアイコン位置とOCR帯を計算します。v0.10では<strong>座標生成後に日本語OCRを実行</strong>し、9部位の装備名候補を表示します。</div></div>
 <div class="card"><h2>1. スクショ</h2><input id="shot" type="file" accept="image/*"><button id="sampleShot" style="margin-top:8px">🧪 サンプル実キャプチャを読み込む</button><div id="shotStatus" class="status">未選択</div></div>
 <div class="card"><h2>2. DBアイコン</h2><div class="note">各DBアイコンには「そのアイコンが何行目か」を設定できます。自動選択時は、検出スコアが最も高い候補をアンカーにします。</div><input id="db" type="file" accept="image/*" multiple><div id="dbList"></div></div>
 <div class="card"><h2>3. アンカー＋グリッド条件</h2><div class="grid">
@@ -17,10 +17,10 @@ body{margin:0;background:#f4efe1;color:#302b23;font-family:-apple-system,BlinkMa
 <div><label>対象行数<br><input id="rowCount" type="number" value="9" min="1" max="12" step="1"></label></div>
 <div><label>OCR幅（アイコン幅×）<br><input id="ocrW" type="number" value="7" min="1" max="20" step="0.5"></label></div>
 <div><label>OCR高さ（アイコン高さ×）<br><input id="ocrH" type="number" value="1.0" min="0.5" max="4" step="0.05"></label></div>
-<div><label>OCR上下パディング(px)<br><input id="ocrPad" type="number" value="2" min="0" max="20" step="1"></label></div>
-</div><button id="run" class="primary" style="margin-top:10px">🎯 アンカー検出→グリッド生成</button><div id="status" class="status">準備完了</div></div>
+<div><label>OCR上下パディング(px)<br><input id="ocrPad" type="number" value="2" min="0" max="20" step="1"></label></div><div><label>OCR拡大倍率<br><input id="ocrScale" type="number" value="2" min="1" max="4" step="0.5"></label></div>
+</div><button id="run" class="primary" style="margin-top:10px">🎯 アンカー検出→グリッド生成</button><button id="ocrRun" style="margin:10px 0 0 8px" disabled>🔤 9部位をOCR</button><div id="status" class="status">準備完了</div></div>
 <div class="card"><h2>4. 結果（座標検証）</h2><div class="stage"><canvas id="view"></canvas></div><div class="legend"><span><b style="border-color:#ff3b30"></b>採用アンカー</span><span><b style="border-color:#00d5ff"></b>推定アイコン</span><span><b style="border-color:#ffd000"></b>OCR帯</span><span><b style="border-color:#9cff57"></b>右下アンカー点</span></div><div id="anchorInfo" style="margin-top:10px"></div><div id="results"></div></div>
-<div class="card"><h2>5. 生成データ</h2><pre id="json" class="mono">[]</pre></div>
+<div class="card"><h2>5. OCR結果</h2><div class="note">各行のOCR枠を画像から切り出し、2倍拡大して日本語Tesseract OCRへ渡します。まずは認識結果をそのまま表示し、DB照合・補正は次段階で行います。</div><div id="ocrStatus" class="status">未実行</div><div id="ocrResults"></div></div><div class="card"><h2>6. 生成データ</h2><pre id="json" class="mono">[]</pre></div>
 </main><script>
 'use strict';
 const $=id=>document.getElementById(id);
@@ -152,10 +152,97 @@ function renderResults(anchor,grid){
     +'</div></div>';
   $('json').textContent=JSON.stringify(grid.rows,null,2)
 }
-async function run(){if(!shotImg){$('status').textContent='スクショを選択してください。';return}if(!dbItems.length){$('status').textContent='DBアイコンがありません。';return}$('run').disabled=true;$('status').textContent='アンカー探索中…';const t0=performance.now();try{const scene=grayData(imageDataFromImage(shotImg)),minS=Number($('smin').value),maxS=Number($('smax').value),step=Number($('sstep').value),out=[];for(const d of dbItems){const r=await matchOne(scene,d,minS,maxS,step);if(r)out.push({...r,name:d.name,row:d.row,dbImage:d.im})}anchorCandidates=out.sort((a,b)=>b.score-a.score);if(!anchorCandidates.length)throw new Error('アンカー候補がありません');const mode=$('anchorMode').value;const anchor=mode==='auto'?anchorCandidates[0]:anchorCandidates[Number(mode)];if(!anchor)throw new Error('採用するアンカーが見つかりません');const imgW=Number(shotImg.naturalWidth||shotImg.width),imgH=Number(shotImg.naturalHeight||shotImg.height);const grid=buildGrid(anchor,imgW,imgH);draw(shotImg,anchor,grid);renderResults(anchor,grid);$('status').textContent=`完了：アンカー ${anchor.name} / ${anchor.score.toFixed(3)} / 生成 ${grid.rows.length}行 / ${(performance.now()-t0).toFixed(0)}ms`;}catch(e){console.error(e);$('status').textContent='エラー：'+e.message}finally{$('run').disabled=false}}
+
+let currentGrid=null, ocrWorker=null, ocrResults=[];
+function cropForOCR(img,r,scale){
+  const s=clamp(Number(scale),1,4);
+  const c=document.createElement('canvas');
+  const sw=Math.max(1,Math.round(r.ocr.w)), sh=Math.max(1,Math.round(r.ocr.h));
+  c.width=Math.max(1,Math.round(sw*s)); c.height=Math.max(1,Math.round(sh*s));
+  const x=c.getContext('2d',{willReadFrequently:true});
+  if(!x) throw new Error('OCR用Canvasを取得できません');
+  x.imageSmoothingEnabled=true;
+  x.imageSmoothingQuality='high';
+  x.drawImage(img,r.ocr.x,r.ocr.y,sw,sh,0,0,c.width,c.height);
+
+  // 軽いグレースケール＋コントラスト補正。元画像は変更しない。
+  const id=x.getImageData(0,0,c.width,c.height), a=id.data;
+  for(let i=0;i<a.length;i+=4){
+    const g=.299*a[i]+.587*a[i+1]+.114*a[i+2];
+    const v=Math.max(0,Math.min(255,(g-128)*1.35+128));
+    a[i]=a[i+1]=a[i+2]=v;
+  }
+  x.putImageData(id,0,0);
+  return c;
+}
+async function ensureOCRWorker(){
+  if(ocrWorker) return ocrWorker;
+  if(!window.Tesseract || typeof Tesseract.createWorker!=='function')
+    throw new Error('日本語OCRエンジンを読み込めません。通信またはCDNアクセスを確認してください。');
+  $('ocrStatus').textContent='日本語OCRエンジンを準備中…';
+  ocrWorker=await Tesseract.createWorker('jpn', 1, {
+    logger:m=>{
+      if(m && Number.isFinite(m.progress)){
+        const pct=Math.round(m.progress*100);
+        $('ocrStatus').textContent=`日本語OCR準備中… ${pct}%`;
+      } else if(m && m.status) {
+        $('ocrStatus').textContent=`日本語OCR準備中… ${m.status}`;
+      }
+    }
+  });
+  try{
+    await ocrWorker.setParameters({tessedit_pageseg_mode:'7'});
+  }catch(e){
+    console.warn('PSM設定をスキップ:',e);
+  }
+  return ocrWorker;
+}
+function renderOCRResults(){
+  const host=$('ocrResults');
+  if(!ocrResults.length){host.innerHTML='';return}
+  host.innerHTML=ocrResults.map(r=>{
+    const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    return `<div class="result"><b>${r.row+1}. ${r.label}</b><div class="mono">OCR: ${esc(r.text||'（空）')} / confidence=${Number.isFinite(r.confidence)?r.confidence.toFixed(1):'—'}%</div></div>`;
+  }).join('');
+}
+async function runOCR(){
+  if(!shotImg || !currentGrid || !currentGrid.rows?.length){
+    $('ocrStatus').textContent='先に「アンカー検出→グリッド生成」を実行してください。';
+    return;
+  }
+  $('ocrRun').disabled=true;
+  ocrResults=[];
+  renderOCRResults();
+  const t0=performance.now();
+  try{
+    const worker=await ensureOCRWorker();
+    const scale=clamp(Number($('ocrScale').value),1,4);
+    for(let i=0;i<currentGrid.rows.length;i++){
+      const r=currentGrid.rows[i];
+      $('ocrStatus').textContent=`OCR実行中… ${i+1}/${currentGrid.rows.length} ${r.label}`;
+      const canvas=cropForOCR(shotImg,r,scale);
+      const out=await worker.recognize(canvas);
+      const data=out?.data||{};
+      const text=String(data.text||'').replace(/\s+/g,' ').trim();
+      ocrResults.push({
+        row:r.row,label:r.label,text,
+        confidence:Number(data.confidence)
+      });
+      renderOCRResults();
+    }
+    $('ocrStatus').textContent=`OCR完了：${ocrResults.length}行 / ${(performance.now()-t0).toFixed(0)}ms`;
+  }catch(e){
+    console.error(e);
+    $('ocrStatus').textContent='OCRエラー：'+e.message;
+  }finally{
+    $('ocrRun').disabled=false;
+  }
+}
+async function run(){if(!shotImg){$('status').textContent='スクショを選択してください。';return}if(!dbItems.length){$('status').textContent='DBアイコンがありません。';return}$('run').disabled=true;$('status').textContent='アンカー探索中…';const t0=performance.now();try{const scene=grayData(imageDataFromImage(shotImg)),minS=Number($('smin').value),maxS=Number($('smax').value),step=Number($('sstep').value),out=[];for(const d of dbItems){const r=await matchOne(scene,d,minS,maxS,step);if(r)out.push({...r,name:d.name,row:d.row,dbImage:d.im})}anchorCandidates=out.sort((a,b)=>b.score-a.score);if(!anchorCandidates.length)throw new Error('アンカー候補がありません');const mode=$('anchorMode').value;const anchor=mode==='auto'?anchorCandidates[0]:anchorCandidates[Number(mode)];if(!anchor)throw new Error('採用するアンカーが見つかりません');const imgW=Number(shotImg.naturalWidth||shotImg.width),imgH=Number(shotImg.naturalHeight||shotImg.height);const grid=buildGrid(anchor,imgW,imgH);currentGrid=grid;draw(shotImg,anchor,grid);renderResults(anchor,grid);$('ocrRun').disabled=false;$('status').textContent=`完了：アンカー ${anchor.name} / ${anchor.score.toFixed(3)} / 生成 ${grid.rows.length}行 / ${(performance.now()-t0).toFixed(0)}ms`;}catch(e){console.error(e);$('status').textContent='エラー：'+e.message}finally{$('run').disabled=false}}
 async function bundled(){dbItems=[];const paths=[['db_icons/main_weapon_sample.png','メイン武器アイコン',0],['db_icons/head_armor_sample.png','頭防具アイコン',2],['db_icons/chest_armor_sample.png','胴防具アイコン',3]];for(const [p,n,row] of paths){const r=await fetch(p,{cache:'no-store'});if(!r.ok)throw new Error(p+' HTTP '+r.status);const b=await r.blob();const f=new File([b],p.split('/').pop(),{type:b.type||'image/png'});await loadImage(f).then(im=>dbItems.push({name:n,im,file:f,row}))}renderDB()}
-$('shot').onchange=async()=>{const f=$('shot').files?.[0];if(f){shotImg=await loadImage(f);$('shotStatus').textContent=`読み込み：${shotImg.naturalWidth}×${shotImg.naturalHeight}px`;}}
+$('shot').onchange=async()=>{const f=$('shot').files?.[0];if(f){shotImg=await loadImage(f);$('shotStatus').textContent=`読み込み：${shotImg.naturalWidth}×${shotImg.naturalHeight}px`;$('ocrRun').disabled=true;currentGrid=null;ocrResults=[];$('ocrStatus').textContent='未実行';renderOCRResults();}}
 $('db').onchange=async()=>{dbItems=[];for(const f of $('db').files||[]){const im=await loadImage(f);dbItems.push({name:f.name,im,file:f,row:inferRow(f.name)})}renderDB()}
-$('sampleShot').onclick=async()=>{try{const r=await fetch('sample_game.png',{cache:'no-store'});if(!r.ok)throw new Error('sample_game.png HTTP '+r.status);const b=await r.blob();shotImg=await loadImage(new File([b],'sample_game.png',{type:b.type||'image/png'}));$('shotStatus').textContent=`サンプル読み込み：${shotImg.naturalWidth}×${shotImg.naturalHeight}px`;}catch(e){$('shotStatus').textContent='サンプル読み込み失敗：'+e.message;}}
+$('sampleShot').onclick=async()=>{try{const r=await fetch('sample_game.png',{cache:'no-store'});if(!r.ok)throw new Error('sample_game.png HTTP '+r.status);const b=await r.blob();shotImg=await loadImage(new File([b],'sample_game.png',{type:b.type||'image/png'}));$('shotStatus').textContent=`サンプル読み込み：${shotImg.naturalWidth}×${shotImg.naturalHeight}px`;$('ocrRun').disabled=true;currentGrid=null;ocrResults=[];$('ocrStatus').textContent='未実行';renderOCRResults();}catch(e){$('shotStatus').textContent='サンプル読み込み失敗：'+e.message;}}
 $('run').onclick=run;
+$('ocrRun').onclick=runOCR;
 </script></body></html>
