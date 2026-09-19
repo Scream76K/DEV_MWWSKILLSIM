@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.0.0：DBアイコンアンカー統合・適応型OCR</title>
+<title>MH Wilds OCR — Step 1.25-C v4.0.2：DBアイコンアンカー統合・適応型OCR</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,9 +34,9 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.0.0：DBアイコンアンカー統合・適応型OCR</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.0.2：DBアイコンアンカー統合・適応型OCR</h1>
 <div class="note">
-<b>v4.0.0：DBアイコンアンカー統合版</b><br>
+<b>v4.0.2：DBアイコンアンカー統合・適応文字帯修正版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
 まだシミュレータ本体には接続しません。装備名を個別OCRし、部位限定DB候補まで確認します。
 </div>
@@ -50,7 +50,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 
 <div class="card">
 <h2>2. DBアイコンアンカーで装備位置を確定</h2>
-<div class="note">v4.0.0では、過去のv3.1.2適応型OCRを維持したまま、前段にDBアイコン検出を追加します。検出したアイコンの右下角をアンカーにして9行の装備位置を復元し、その位置から既存OCRへ渡します。</div>
+<div class="note">v4.0.2では、過去のv3.1.2適応型OCRを維持したまま、前段にDBアイコン検出を追加します。検出したアイコンの右下角をアンカーにして9行の装備位置を復元し、その位置から既存OCRへ渡します。</div>
 <div id="anchorDBStatus" class="status">DBアイコン：準備中</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
   <button id="detectIconAnchor" class="primary">🎯 DBアイコンアンカー→9行生成</button>
@@ -157,7 +157,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>Step 1.25-C v4.0.0 の検証ポイント</h2>
+<h2>Step 1.25-C v4.0.1 の検証ポイント</h2>
 <div class="note">
 ① 赤枠が上段のメイン武器名だけを含む<br>
 ② 下段のサブ武器名を含まない<br>
@@ -527,6 +527,38 @@ function equipmentNameCropRectV312(region, imageWidth, imageHeight) {
   const pitch = Math.max(20, Number(region.pitch) || rh / 0.96);
   const name = region.nameAnchor;
   const lineH = Math.max(10, Number(name?.height) || Number(region.labelHeight) || Math.min(34, pitch * 0.28));
+
+  // v4.0.1: DB-icon anchor geometry is already the intended OCR band. Do not
+  // reinterpret it as a v3.1.2 OCR-derived text bounding box; doing so would
+  // add a second layer of padding and could shift/expand the exact band.
+  if (region.sourceType === 'icon-anchor' && region.iconAnchorRect) {
+    const ir = region.iconAnchorRect;
+    const exact = clampRectToImage({
+      x: Number(ir.x), y: Number(ir.y), width: Number(ir.width), height: Number(ir.height),
+      source: 'icon-anchor-exact'
+    }, iw, ih);
+    // v4.0.2: the icon anchor gives us a reliable row center, but the full
+    // H×H band also contains the neighbouring row and slot icons. Keep the
+    // anchor center fixed and narrow only the vertical OCR band. This is a
+    // crop refinement, not a change to the anchor geometry.
+    const bandH = Math.max(18, Math.min(exact.height, Math.round(exact.height * 0.58)));
+    const centerY = Number.isFinite(Number(region.anchor?.y)) ? Number(region.anchor.y) : (Number(ir.y) + Number(ir.height));
+    const bandY = centerY - bandH / 2;
+    const band = clampRectToImage({
+      x: exact.x, y: bandY, width: exact.width, height: bandH,
+      source: 'icon-anchor-adaptive-band'
+    }, iw, ih);
+    return {
+      ...band,
+      pitch,
+      source: 'icon-anchor-adaptive-band',
+      anchorRect: exact,
+      nameAnchor: {
+        x: band.x, y: band.y, width: band.width,
+        height: band.height
+      }
+    };
+  }
 
   // v3.1.2: if the first layout OCR found the equipment-name line, use only
   // that line's geometry. OCR text is intentionally ignored here.
@@ -2033,7 +2065,7 @@ function renderEquipmentResult(x){
   const title=equipmentSlotLabel(x.key);const b=x.best;const label=b?.decision?.label||'候補なし';
   const raw=x.rows.map(r=>`${r.mode}: ${r.raw} (${Math.round(r.conf)}%)`).join(' / ')||'OCR文字なし';
   const candidates=(x.ranked||[]).map((c,i)=>{const hierarchy=c.hierarchy?` / シリーズ ${Math.round(c.hierarchy.seriesScore*100)}% / 型式 ${Math.round(c.hierarchy.subtypeScore*100)}%`:'';return `<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${i+1}位 ${c.name}</b> ${i===0?`<span class="corrected-tag">${label}</span>`:''}<br><span class="note">総合 ${Math.round(c.totalScore*100)}pt / 文字 ${Math.round(c.avgNameScore*100)}% / OCR ${Math.round(c.confAvg)}% / 支持 ${c.support}/${x.rows.length}${c.gap!=null?` / 候補差 ${Math.round(c.gap*100)}pt`:''}${hierarchy}</span></div>`}).join('');
-  return `<div class="card" style="margin:8px 0;padding:10px"><b>${title}</b><div class="note">${x.region?.inferred?'領域：構造推定':'領域：OCRアンカー'} / 装備名1行をPSM7でOCR / 生OCR：${raw}</div>${candidates||'<div class="note">該当候補なし</div>'}</div>`;
+  return `<div class="card" style="margin:8px 0;padding:10px"><b>${title}</b><div class="note">${x.region?.sourceType==='icon-anchor'?'領域：DBアイコンアンカー（適応文字帯）':(x.region?.inferred?'領域：構造推定':'領域：OCRアンカー')} / 装備名1行をPSM7でOCR / 生OCR：${raw}</div>${candidates||'<div class="note">該当候補なし</div>'}</div>`;
 }
 $('recognizeEquipment').onclick=recognizeEquipmentAll;
 $('ocr').onclick=async()=>{
@@ -2236,7 +2268,7 @@ const originalFileOnloadMessage=$("fileStatus");
 
 
 // ============================================================================
-// Step 1.25-C v4.0.0
+// Step 1.25-C v4.0.1
 // DB icon anchor -> 9-row grid -> existing v3.1.2 adaptive OCR.
 // The v3.1.2 OCR engine is intentionally retained; this block only replaces
 // the upstream screen-layout detection when the icon-anchor run succeeds.
@@ -2300,15 +2332,32 @@ function v400BuildGrid(anchor,candidates,width,height){
   return {rows,topPitch:topPitch??0,armorPitch,calibration:{main,head,chest},anchor};
 }
 function v400RegionsFromGrid(grid){
-  return grid.rows.map(r=>({
-    key:r.key,x:r.ocr.x,y:r.ocr.y,width:r.ocr.w,height:r.ocr.h,x1:r.ocr.x,y1:r.ocr.y,x2:r.ocr.x+r.ocr.w,y2:r.ocr.y+r.ocr.h,
-    confidence:100,labelConfidence:100,label:r.label,inferred:true,pitch:grid.armorPitch,labelHeight:Math.max(10,r.ocr.h),
-    labelX:r.ocr.x,labelY:r.ocr.y,anchorY:r.ocr.y,nameAnchor:{x:r.ocr.x,y:r.ocr.y,width:r.ocr.w,height:r.ocr.h},slotX:Math.min(imgW,r.ocr.x+r.ocr.w)
-  }));
+  return grid.rows.map(r=>{
+    const labelHeight=Math.max(10,Math.round(r.icon.h*0.28));
+    return {
+      key:r.key,
+      x:r.ocr.x,y:r.ocr.y,width:r.ocr.w,height:r.ocr.h,
+      x1:r.ocr.x,y1:r.ocr.y,x2:r.ocr.x+r.ocr.w,y2:r.ocr.y+r.ocr.h,
+      confidence:100,labelConfidence:100,label:r.label,
+      // This geometry is established by a matched DB icon, so it is NOT an
+      // inferred OCR-layout region. Keep the source explicit for downstream
+      // cropping and UI diagnostics.
+      inferred:false,
+      sourceType:'icon-anchor',
+      pitch:r.row>=3?grid.armorPitch:(grid.topPitch||grid.armorPitch),
+      labelHeight,
+      labelX:r.ocr.x,labelY:r.ocr.y,anchorY:r.ocr.y,
+      nameAnchor:{x:r.ocr.x,y:r.ocr.y,width:r.ocr.w,height:labelHeight},
+      iconAnchorRect:{x:r.ocr.x,y:r.ocr.y,width:r.ocr.w,height:r.ocr.h},
+      slotX:Math.min(imgW,r.ocr.x+r.ocr.w),
+      icon:r.icon,
+      anchor:r.anchor
+    };
+  });
 }
 function v400Draw(img,grid){const host=$('iconAnchorStage'),c=$('iconAnchorView');host.style.display='block';const iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;c.width=iw;c.height=ih;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const a=grid.anchor;ctx.strokeStyle='#ff3b30';ctx.lineWidth=4;ctx.strokeRect(a.x,a.y,a.w,a.h);ctx.fillStyle='#ff3b30';ctx.font='bold 18px sans-serif';ctx.fillText(`ANCHOR ${a.name} ${a.score.toFixed(4)}`,a.x+5,Math.max(22,a.y-7));ctx.fillStyle='#9cff57';ctx.beginPath();ctx.arc(a.x+a.w,a.y+a.h,6,0,Math.PI*2);ctx.fill();for(const r of grid.rows){ctx.strokeStyle='#00d5ff';ctx.lineWidth=2;ctx.strokeRect(r.icon.x,r.icon.y,r.icon.w,r.icon.h);ctx.strokeStyle='#ffd000';ctx.lineWidth=3;ctx.strokeRect(r.ocr.x,r.ocr.y,r.ocr.w,r.ocr.h);ctx.fillStyle='#00d5ff';ctx.font='bold 16px sans-serif';ctx.fillText(`${r.row+1}:${r.label}`,r.icon.x+3,Math.max(18,r.icon.y-4));}}
 function v400Render(){const g=v400IconGrid,a=g.anchor,cal=g.calibration;const fmt=c=>c?`x=${c.x} y=${c.y} score=${c.score.toFixed(4)}`:'未検出';$('iconAnchorOut').innerHTML=`<div class="result ok"><b>採用アンカー：</b>${a.name}<br><span class="mono">score=${a.score.toFixed(4)} / row=${a.row+1} / icon x=${a.x} y=${a.y} w=${a.w} h=${a.h}<br>右下角 = (${a.x+a.w}, ${a.y+a.h})<br>上段ピッチ = ${g.topPitch.toFixed(2)} px / 防具ピッチ = ${g.armorPitch.toFixed(2)} px<br>校正：メイン[${fmt(cal.main)}] / 頭[${fmt(cal.head)}] / 胴[${fmt(cal.chest)}]</span></div>`+v400IconCandidates.map(c=>`<div class="result"><b>${c.name}</b> / ${V400_ICON_TARGETS[c.row]?.label||''}<div class="mono">score=${c.score.toFixed(4)} / x=${c.x} y=${c.y} w=${c.w} h=${c.h}${c===a?' ← 採用アンカー':''}</div></div>`).join('')+`<div class="result"><b>生成された9行</b><div class="mono">${g.rows.map(r=>`${r.row+1}. ${r.label}: icon (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / right-bottom (${r.anchor.x},${r.anchor.y}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n')}</div></div>`;}
-async function v400Detect(){if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return}if(!v400IconItems.length){$('iconAnchorStatus').textContent='DBアイコンがありません。';return}const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();try{$('iconAnchorStatus').textContent='DBアイコンを探索中…';const scene=v400Gray(v400ImageData($('img')));const out=[];for(const item of v400IconItems){const r=await v400Match(scene,item,.70,1.30,.05);if(r)out.push({...r,name:item.name,row:item.row,dbImage:item.im});}v400IconCandidates=out.sort((a,b)=>b.score-a.score);if(!v400IconCandidates.length)throw new Error('アンカー候補がありません');const anchor=v400IconCandidates[0];const grid=v400BuildGrid(anchor,v400IconCandidates,imgW,imgH);v400IconGrid=grid;v400Draw($('img'),grid);v400Render();window.lastEquipmentRegions=v400RegionsFromGrid(grid);window.v400IconGrid=grid;$('layoutStatus').textContent='v4.0.0アンカー方式を使用中：画面構造OCRは省略';$('layoutOut').innerHTML='<div class="note">DBアイコンアンカー方式で9部位を確定しました。以下の「装備名を一括認識」は、既存v3.1.2適応型OCRエンジンをそのまま使用します。</div>';$('iconAnchorStatus').textContent=`完了：${anchor.name} / score=${anchor.score.toFixed(4)} / 9行 / ${(performance.now()-t0).toFixed(0)}ms`;$('recognizeEquipment').disabled=false;}catch(e){console.error(e);$('iconAnchorStatus').textContent='アンカー検出エラー：'+e.message}finally{btn.disabled=false}}
+async function v400Detect(){if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return}if(!v400IconItems.length){$('iconAnchorStatus').textContent='DBアイコンがありません。';return}const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();try{$('iconAnchorStatus').textContent='DBアイコンを探索中…';const scene=v400Gray(v400ImageData($('img')));const out=[];for(const item of v400IconItems){const r=await v400Match(scene,item,.70,1.30,.05);if(r)out.push({...r,name:item.name,row:item.row,dbImage:item.im});}v400IconCandidates=out.sort((a,b)=>b.score-a.score);if(!v400IconCandidates.length)throw new Error('アンカー候補がありません');const anchor=v400IconCandidates[0];const grid=v400BuildGrid(anchor,v400IconCandidates,imgW,imgH);v400IconGrid=grid;v400Draw($('img'),grid);v400Render();window.lastEquipmentRegions=v400RegionsFromGrid(grid);window.v400IconGrid=grid;$('layoutStatus').textContent='v4.0.2 DBアイコンアンカー方式を使用中：画面構造OCRは省略';$('layoutOut').innerHTML='<div class="note">DBアイコンアンカー方式で9部位を確定しました。以下の「装備名を一括認識」は、既存v3.1.2適応型OCRエンジンをそのまま使用し、DBアイコンから確定したOCR帯を直接渡します。</div>';$('iconAnchorStatus').textContent=`完了：${anchor.name} / score=${anchor.score.toFixed(4)} / 9行 / ${(performance.now()-t0).toFixed(0)}ms`;$('recognizeEquipment').disabled=false;}catch(e){console.error(e);$('iconAnchorStatus').textContent='アンカー検出エラー：'+e.message}finally{btn.disabled=false}}
 $('detectIconAnchor').onclick=v400Detect;
 (async()=>{try{await v400LoadBundledIcons();}catch(e){$('anchorDBStatus').textContent='DBアイコン読み込み失敗：'+e.message;console.error(e);}})();
 
