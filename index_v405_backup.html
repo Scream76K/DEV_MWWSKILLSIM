@@ -1,0 +1,15 @@
+  // v4.0.4: derive a common right boundary from the repeated slot-icon column.
+  // Keep a conservative fallback if the slot column is not confidently detected.
+  // ax is shared by all generated rows, so declare it outside the row loop.
+  const ax=Math.round(x+w);
+  const slotX=v400EstimateSlotColumn($('img'),rows,x+w*1.7,x+w*7.2);
+  const fallbackRight=Math.min(width,Math.round(ax+w*4.2));
+  const detectedRight=slotX!=null ? Math.max(Math.round(ax+w*0.9),Math.round(slotX-w*0.18)) : fallbackRight;
+  const right=Math.min(width,Math.max(Math.round(ax+1),detectedRight));
+  for(const r of rows){
+    const bandH=Math.max(18,Math.min(r.icon.h,Math.round(r.icon.h*0.58)));
+    const bandY=Math.max(0,Math.round(r.anchor.y-bandH/2));
+    r.ocr={x:Math.round(ax),y:bandY,w:Math.max(1,right-Math.round(ax)),h:Math.min(height-bandY,bandH)};
+    r.slotX=slotX;
+  }
+  return {rows,topPitch:topPitch??0,armorPitch,calibration:{main,head,chest},anchor,slotX,ocrRight:right};
