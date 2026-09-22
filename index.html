@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MHWilds 装備検出デバッガー</title>
+  <title>MHWilds 黄色アンカー検出デバッガー</title>
   <style>
     :root {
       --bg-color: #0f141c;
@@ -21,7 +21,7 @@
     }
 
     h2 {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       text-align: center;
       color: var(--accent-color);
       margin: 0 0 12px 0;
@@ -58,7 +58,15 @@
       display: block;
     }
 
-    /* 切り出しプレビュー一覧 */
+    .status-badge {
+      background: var(--card-bg);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #aaa;
+      text-align: center;
+    }
+
     .crops-container {
       background: var(--card-bg);
       padding: 12px;
@@ -88,50 +96,36 @@
       color: var(--accent-color);
     }
 
-    .crop-canvas-wrapper {
-      background: #000;
-      border: 1px solid #444;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
     .crop-canvas-wrapper canvas {
       display: block;
       height: 28px;
       width: auto;
+      background: #000;
+      border: 1px solid #444;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>MHWilds 装備領域判定デバッガー</h2>
+  <h2>MHWilds 黄色アンカー自動検出</h2>
   <input type="file" id="imageInput" accept="image/*">
   
+  <div class="status-badge" id="statusText">画像を選択してください</div>
+
   <div class="canvas-wrapper">
     <canvas id="stage"></canvas>
   </div>
 
-  <div id="cropsContainer" class="crops-container" style="display: none;">
-    <!-- 切り出し画像がここに動的追加されます -->
-  </div>
+  <div id="cropsContainer" class="crops-container" style="display: none;"></div>
 </div>
 
 <script>
-  // 1920x1080 基準での左側装備テキストのROI定義 (対象7箇所)
-  const ROI_PRESETS_1080P = {
-    weaponMain: { x: 88, y: 259, w: 250, h: 36, label: "メイン武器" },
-    head:       { x: 88, y: 431, w: 250, h: 36, label: "頭防具" },
-    chest:      { x: 88, y: 516, w: 250, h: 36, label: "胴防具" },
-    arm:        { x: 88, y: 602, w: 250, h: 36, label: "腕防具" },
-    waist:      { x: 88, y: 687, w: 250, h: 36, label: "腰防具" },
-    leg:        { x: 88, y: 773, w: 250, h: 36, label: "脚防具" },
-    charm:      { x: 88, y: 858, w: 250, h: 36, label: "護石" }
-  };
-
   const imageInput = document.getElementById('imageInput');
   const stage = document.getElementById('stage');
   const ctx = stage.getContext('2d');
+  const statusText = document.getElementById('statusText');
   const cropsContainer = document.getElementById('cropsContainer');
 
   imageInput.addEventListener('change', (e) => {
@@ -144,61 +138,134 @@
       stage.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      // 1. 解像度に合わせたROI座標計算
-      const rois = calculateROIBounds(img.width, img.height);
-      
-      // 2. メイン画像上に青枠を描画
-      drawROIBounds(ctx, rois);
+      // 1. 左上の「黄色アイコン」を検索して原点座標を特定
+      const anchor = findYellowIconAnchor(stage);
 
-      // 3. 切り出した箇所の個別プレビューを描画
+      if (!anchor) {
+        statusText.textContent = "❌ 黄色アンカーの検出に失敗しました";
+        statusText.style.color = "#ff3366";
+        return;
+      }
+
+      statusText.textContent = `✅ 黄色アンカー検出成功! 原点: (${anchor.x}, ${anchor.y})`;
+      statusText.style.color = "#00ff88";
+
+      // 2. 原点から相対計算で7箇所のROIを取得
+      const rois = calculateROIsFromAnchor(anchor, img.width, img.height);
+
+      // 3. 画面上にアンカー(赤枠)とROI(青枠)を描画
+      drawDebugOverlays(ctx, anchor, rois);
+
+      // 4. 切り出しプレビューを表示
       renderCropPreviews(img, rois);
     };
     img.src = URL.createObjectURL(file);
   });
 
-  function calculateROIBounds(imgWidth, imgHeight) {
-    const targetAspect = 16 / 9;
-    const currentAspect = imgWidth / imgHeight;
+  /**
+   * 左上エリア(X: 0~25%, Y: 5~25%)から「黄色アイコン」の中心座標を検索
+   */
+  function findYellowIconAnchor(canvas) {
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
 
-    let activeW = imgWidth;
-    let activeH = imgHeight;
-    let offsetX = 0;
-    let offsetY = 0;
+    // 検索エリア絞り込み（左上周辺）
+    const scanX1 = Math.floor(w * 0.01);
+    const scanX2 = Math.floor(w * 0.15);
+    const scanY1 = Math.floor(h * 0.08);
+    const scanY2 = Math.floor(h * 0.28);
+    const scanW = scanX2 - scanX1;
+    const scanH = scanY2 - scanY1;
 
-    if (currentAspect > targetAspect) {
-      activeW = imgHeight * targetAspect;
-      offsetX = (imgWidth - activeW) / 2;
-    } else if (currentAspect < targetAspect) {
-      activeH = imgWidth / targetAspect;
-      offsetY = (imgHeight - activeH) / 2;
+    const imgData = ctx.getImageData(scanX1, scanY1, scanW, scanH);
+    const data = imgData.data;
+
+    let totalX = 0;
+    let totalY = 0;
+    let matchCount = 0;
+
+    for (let y = 0; y < scanH; y++) {
+      for (let x = 0; x < scanW; x++) {
+        const idx = (y * scanW + x) * 4;
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+
+        // 鮮やかな黄色/ゴールドの色の閾値判定
+        // RとGが高く、Bが低い (例: R>170, G>140, B<100)
+        if (r > 160 && g > 130 && b < 100 && (r - b) > 80) {
+          totalX += x;
+          totalY += y;
+          matchCount++;
+        }
+      }
     }
 
-    const scale = activeW / 1920;
-    const calculatedROIs = {};
+    if (matchCount < 10) return null; // 見つからない場合
 
-    for (const [key, rect] of Object.entries(ROI_PRESETS_1080P)) {
-      calculatedROIs[key] = {
-        label: rect.label,
-        x: Math.round(offsetX + (rect.x * scale)),
-        y: Math.round(offsetY + (rect.y * scale)),
-        w: Math.round(rect.w * scale),
-        h: Math.round(rect.h * scale)
+    // 黄色ピクセルの「重心」をアンカー原点として返す
+    return {
+      x: Math.round(scanX1 + (totalX / matchCount)),
+      y: Math.round(scanY1 + (totalY / matchCount))
+    };
+  }
+
+  /**
+   * 黄色アンカー座標を起点にして、全7行のテキスト切り出し範囲を算出
+   */
+  function calculateROIsFromAnchor(anchor, imgWidth, imgHeight) {
+    // 画面の高さに対する1行のピッチ（行間隔）とテキストサイズの比率
+    const pitch = imgHeight * 0.0788;
+    const textW = imgWidth * 0.130;
+    const textH = imgHeight * 0.032;
+
+    // アンカー点から「メイン武器」テキスト左上までの相対オフセット
+    const offsetX = imgWidth * 0.040;
+    const offsetY = imgHeight * 0.022;
+
+    // 7部位の行インデックス
+    const targets = [
+      { key: 'weaponMain', label: 'メイン武器', row: 0 },
+      { key: 'head',       label: '頭防具',     row: 2 },
+      { key: 'chest',      label: '胴防具',     row: 3 },
+      { key: 'arm',        label: '腕防具',     row: 4 },
+      { key: 'waist',      label: '腰防具',     row: 5 },
+      { key: 'leg',        label: '脚防具',     row: 6 },
+      { key: 'charm',      label: '護石',       row: 7 }
+    ];
+
+    const rois = {};
+    for (const t of targets) {
+      rois[t.key] = {
+        label: t.label,
+        x: Math.round(anchor.x + offsetX),
+        y: Math.round(anchor.y + offsetY + (t.row * pitch)),
+        w: Math.round(textW),
+        h: Math.round(textH)
       };
     }
 
-    return calculatedROIs;
+    return rois;
   }
 
-  function drawROIBounds(ctx, rois) {
-    ctx.lineWidth = Math.max(2, Math.round(stage.width / 600));
-    ctx.font = `bold ${Math.max(12, Math.round(stage.width / 80))}px sans-serif`;
+  function drawDebugOverlays(ctx, anchor, rois) {
+    // アンカー位置を赤い丸と十字線でハイライト
+    ctx.strokeStyle = '#ff0055';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(anchor.x, anchor.y, 12, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 7領域を青枠で描画
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#00d5ff';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillStyle = '#00d5ff';
 
     for (const [key, rect] of Object.entries(rois)) {
-      ctx.strokeStyle = '#00d5ff';
       ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
-      
-      ctx.fillStyle = '#00d5ff';
-      ctx.fillText(rect.label, rect.x, Math.max(15, rect.y - 5));
+      ctx.fillText(rect.label, rect.x, rect.y - 4);
     }
   }
 
@@ -212,7 +279,7 @@
       </div>
     `).join('');
 
-    cropsContainer.innerHTML = '<div style="font-size: 0.9rem; font-weight: bold; margin-bottom: 4px;">▼ 切り出しプレビュー (7箇所)</div>' + listHtml;
+    cropsContainer.innerHTML = '<div style="font-size: 0.9rem; font-weight: bold; margin-bottom: 4px;">▼ 自動判定された切り出し領域</div>' + listHtml;
     cropsContainer.style.display = 'flex';
 
     for (const [key, rect] of Object.entries(rois)) {
