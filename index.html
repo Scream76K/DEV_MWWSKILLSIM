@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.3.0：アイコン構造検出＋DBアンカー版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.3.1：暗色コア検出＋DB geometry版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,9 +34,9 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.3.0：アイコン構造検出＋DBアンカー版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.3.1：暗色コア検出＋DB geometry版</h1>
 <div class="note">
-<b>v4.3.0：アイコン構造検出＋DBアンカー版</b><br>
+<b>v4.3.1：暗色コア検出＋DB geometry版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
 まだシミュレータ本体には接続しません。装備名を個別OCRし、部位限定DB候補まで確認します。
 </div>
@@ -2431,184 +2431,172 @@ function v400Draw(img,grid){const host=$('iconAnchorStage'),c=$('iconAnchorView'
 function v400Render(){const g=v400IconGrid,a=g.anchor,cal=g.calibration;const fmt=c=>c?`x=${c.x} y=${c.y} score=${c.score.toFixed(4)}`:'未検出';$('iconAnchorOut').innerHTML=`<div class="result ok"><b>採用アンカー：</b>${a.name}<br><span class="mono">score=${a.score.toFixed(4)} / row=${a.row+1} / icon x=${a.x} y=${a.y} w=${a.w} h=${a.h}<br>OCR入力：v0.9.3検証済み式 / X=icon右 / Y=icon上+50%H / H=100%H / W=7×iconW / 推定字高=${Math.round(Math.max(8,Number(g.anchor?.h||45)*0.28))}px / 目標字高=40px / scale≈${(40/Math.max(8,Number(g.anchor?.h||45)*0.28)).toFixed(2)}x<br>右下角 = (${a.x+a.w}, ${a.y+a.h})<br>上段ピッチ = ${g.topPitch.toFixed(2)} px / 防具ピッチ = ${g.armorPitch.toFixed(2)} px / OCR右端 = ${g.ocrRight ?? 'fallback'} px / スロット列 = ${g.slotX ?? '未検出'}<br>校正：メイン[${fmt(cal.main)}] / 頭[${fmt(cal.head)}] / 胴[${fmt(cal.chest)}]</span></div>`+v400IconCandidates.map(c=>`<div class="result"><b>${c.name}</b> / ${V400_ICON_TARGETS[c.row]?.label||''}<div class="mono">score=${c.score.toFixed(4)} / x=${c.x} y=${c.y} w=${c.w} h=${c.h}${c===a?' ← 採用アンカー':''}</div></div>`).join('')+`<div class="result"><b>生成された9行</b><div class="mono">${g.rows.map(r=>`${r.row+1}. ${r.label}: icon (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / right-bottom (${r.anchor.x},${r.anchor.y}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n')}</div></div>`;}
 
 // ============================================================================
-// Step 1.25-C v4.2.0
-// v4.3.0 icon-structure detector
-// Design: detect the icon's dark inner core from the screenshot itself.
-// No DB/template matching is used for detection. DB is used only after a
-// candidate core is found, to overlay the normalized outer frame and define
-// the right-bottom anchor.
-function v430Integral(a,w,h){
-  const out=new Float64Array((w+1)*(h+1));
-  for(let y=0;y<h;y++){
-    let row=0; const src=y*w,dst=(y+1)*(w+1),prev=y*(w+1);
-    for(let x=0;x<w;x++){row+=a[src+x];out[dst+x+1]=out[prev+x+1]+row;}
-  }
-  return out;
+// Step 1.25-C v4.3.1
+// Generic MH Wilds icon-structure detector.
+//
+// Detection does NOT use any DB artwork/template. It first finds dark inner
+// icon cores as connected components, then chooses the dominant left-side
+// column. Only after a candidate is found, the bundled DB icons are used to
+// obtain the common frame/core geometry (anchor geometry only).
+// No row pitch is assumed.
+// ============================================================================
+function v431GrayArray(src){
+  const a=src.data.data,w=src.w,h=src.h,g=new Uint8Array(w*h);
+  for(let i=0,p=0;i<g.length;i++,p+=4) g[i]=Math.round(.299*a[p]+.587*a[p+1]+.114*a[p+2]);
+  return g;
 }
-function v430Sum(I,w,x,y,rw,rh){
-  x=Math.max(0,Math.floor(x)); y=Math.max(0,Math.floor(y));
-  rw=Math.max(0,Math.floor(rw)); rh=Math.max(0,Math.floor(rh));
-  const x2=Math.min(w,x+rw),y2=Math.min(Math.floor(I.length/(w+1))-1,y+rh),W=w+1;
-  return I[y2*W+x2]-I[y*W+x2]-I[y2*W+x]+I[y*W+x];
-}
-function v430Features(src){
-  const w=src.w,h=src.h, n=w*h, rgb=src.data.data;
-  const g=new Float32Array(n), sat=new Float32Array(n), dark=new Float32Array(n), color=new Float32Array(n), mag=new Float32Array(n);
-  for(let i=0,p=0;i<n;i++,p+=4){
-    const r=rgb[p],gg=rgb[p+1],b=rgb[p+2],mx=Math.max(r,gg,b),mn=Math.min(r,gg,b);
-    g[i]=.299*r+.587*gg+.114*b; sat[i]=mx-mn;
-    dark[i]=g[i]<95?1:0; color[i]=(sat[i]>35 && mx>45)?1:0;
-  }
-  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-    const i=y*w+x;
-    const a=g[i-w-1],b=g[i-w],c=g[i-w+1],d=g[i-1],e=g[i+1],f=g[i+w-1],q=g[i+w],r=g[i+w+1];
-    const dx=-a+c-2*d+2*e-f+r,dy=-a-2*b-c+f+2*q+r; mag[i]=Math.sqrt(dx*dx+dy*dy);
-  }
-  return {w,h,Ig:v430Integral(g,w,h),Id:v430Integral(dark,w,h),Ic:v430Integral(color,w,h),Im:v430Integral(mag,w,h)};
-}
-function v430CoreScore(F,x,y,s){
-  const b=Math.max(2,Math.round(s*.12)), iw=s-2*b, ih=iw, n=iw*ih;
-  if(iw<8)return null;
-  const mean=v430Sum(F.Ig,F.w,x+b,y+b,iw,ih)/n;
-  const dark=v430Sum(F.Id,F.w,x+b,y+b,iw,ih)/n;
-  const color=v430Sum(F.Ic,F.w,x+b,y+b,iw,ih)/n;
-  const ring=(
-    v430Sum(F.Im,F.w,x,y,s,b)+v430Sum(F.Im,F.w,x,y+s-b,s,b)+
-    v430Sum(F.Im,F.w,x,y,b,s)+v430Sum(F.Im,F.w,x+s-b,y,b,s)
-  )/(4*b*s);
-  // The icon core is characteristically dark, has a compact rectangular edge,
-  // and contains some colored pixels. No particular weapon/armor artwork is used.
-  if(color < .02) return null;
-  const darkTerm=Math.min(1.6,Math.max(0,(115-mean)/45));
-  const coreTerm=Math.min(1.5,dark/.52);
-  const colorTerm=Math.min(1.5,color/.055);
-  const edgeTerm=Math.min(1.5,ring/85);
-  return .34*darkTerm+.28*coreTerm+.26*colorTerm+.12*edgeTerm;
-}
-function v430Nms(cands){
-  const sorted=cands.slice().sort((a,b)=>b.score-a.score),out=[];
-  for(const c of sorted){
-    let keep=true;
-    for(const q of out){
-      const ix=Math.max(0,Math.min(c.x+c.s,q.x+q.s)-Math.max(c.x,q.x));
-      const iy=Math.max(0,Math.min(c.y+c.s,q.y+q.s)-Math.max(c.y,q.y));
-      const inter=ix*iy, union=c.s*c.s+q.s*q.s-inter;
-      if(inter/Math.max(1,union)>.45){keep=false;break;}
-    }
-    if(keep)out.push(c);
-    if(out.length>=180)break;
-  }
-  return out;
-}
-function v430DetectCores(F){
-  const {w,h}=F, searchW=Math.floor(w*.30);
-  const minS=Math.max(18,Math.round(h*.030)), maxS=Math.min(60,Math.round(h*.060));
-  const c=[];
-  for(let s=minS;s<=maxS;s+=2){
-    for(let y=8;y<h-s-8;y+=2){
-      for(let x=8;x<searchW-s;x+=2){
-        const score=v430CoreScore(F,x,y,s);
-        if(score===null || score<.72)continue;
-        c.push({x,y,s,score});
+function v431BinaryComponents(gray,w,h,threshold=70){
+  const seen=new Uint8Array(w*h), comps=[];
+  const maxX=Math.floor(w*.30);
+  const qx=new Int32Array(w*h), qy=new Int32Array(w*h);
+  for(let y=0;y<h;y++) for(let x=0;x<maxX;x++){
+    const idx=y*w+x;
+    if(seen[idx]||gray[idx]>=threshold) continue;
+    let head=0,tail=0,minX=x,maxXc=x,minY=y,maxYc=y,area=0;
+    qx[tail]=x;qy[tail]=y;tail++;seen[idx]=1;
+    while(head<tail){
+      const cx=qx[head],cy=qy[head];head++;area++;
+      if(cx<minX)minX=cx;if(cx>maxXc)maxXc=cx;if(cy<minY)minY=cy;if(cy>maxYc)maxYc=cy;
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+        if(!dx&&!dy)continue; const nx=cx+dx,ny=cy+dy;
+        if(nx<0||nx>=maxX||ny<0||ny>=h)continue;
+        const ni=ny*w+nx;if(seen[ni]||gray[ni]>=threshold)continue;
+        seen[ni]=1;qx[tail]=nx;qy[tail]=ny;tail++;
       }
     }
-  }
-  return v430Nms(c);
-}
-function v430SelectColumn(cands,w,h){
-  if(!cands.length)return [];
-  // First cluster candidates by X. No row pitch is assumed.
-  const groups=[]; const xTol=Math.max(14,Math.round(h*.022));
-  for(const c of cands.slice().sort((a,b)=>(a.x+a.s/2)-(b.x+b.s/2))){
-    const cx=c.x+c.s/2; let best=null;
-    for(const g of groups){if(Math.abs(cx-g.cx)<=Math.max(xTol,g.size*.65)){best=g;break;}}
-    if(!best){best={items:[],cx,size:c.s};groups.push(best);}
-    best.items.push(c); best.cx=best.items.reduce((s,q)=>s+q.x+q.s/2,0)/best.items.length;
-    best.size=v400Median(best.items.map(q=>q.s))||best.size;
-  }
-  // For each X group, collapse overlapping Y candidates into independent rows.
-  const scored=groups.map(g=>{
-    const ys=g.items.slice().sort((a,b)=>a.y-b.y); const rows=[];
-    for(const c of ys){
-      const prev=rows[rows.length-1];
-      if(prev && c.y < prev.y+Math.min(c.s,prev.s)*.72){
-        if(c.score>prev.score)rows[rows.length-1]=c;
-      }else rows.push(c);
+    const bw=maxXc-minX+1,bh=maxYc-minY+1,density=area/(bw*bh);
+    if(bw>=20&&bw<=45&&bh>=20&&bh<=45&&bw/bh>=.72&&bw/bh<=1.35&&area>=200){
+      comps.push({x:minX,y:minY,w:bw,h:bh,area,density});
     }
-    const span=rows.length?rows[rows.length-1].y-rows[0].y:0;
-    const mean=rows.length?rows.reduce((s,q)=>s+q.score,0)/rows.length:0;
-    // Prefer a long vertical run with many independently detected rows, not
-    // a perfectly regular pitch.
-    const quality=rows.length*100 + Math.min(100,span/Math.max(1,h)*100)*2 + mean*20;
-    return {...g,rows,quality};
-  }).sort((a,b)=>b.quality-a.quality);
-  const best=scored[0];
-  return (best?.rows||[]).slice(0,14).sort((a,b)=>a.y-b.y);
-}
-function v430OuterFromCore(core){
-  // Derived from the stable MH Wilds icon construction: the dark core sits
-  // inside a larger framed icon. Scale follows the detected core size, not a
-  // fixed screenshot pitch. These are geometry ratios, not DB matching.
-  const s=core.s;
-  const outerW=Math.round(s*45/32), outerH=Math.round(s*45/32);
-  const x=Math.round(core.x-s*7/32), y=Math.round(core.y-s*14/32);
-  return {x,y,w:outerW,h:outerH};
-}
-function v430FrameGeometryFromDB(){
-  const ref=v400IconItems.find(x=>x.im);
-  const w=Number(ref?.im?.naturalWidth||ref?.im?.width||45),h=Number(ref?.im?.naturalHeight||ref?.im?.height||45);
-  return {referenceW:w||45,referenceH:h||45,anchorX:1,anchorY:1,dbRole:'anchor-geometry-only'};
-}
-function v430BuildGrid(rows,width,height){
-  const geom=v430FrameGeometryFromDB();
-  const labels=V400_ICON_TARGETS;
-  const out=[];
-  rows.forEach((core,i)=>{
-    const raw=v430OuterFromCore(core);
-    const icon=clampRectToImage(raw,width,height);
-    const anchor={x:Math.round(icon.x+icon.w*geom.anchorX),y:Math.round(icon.y+icon.h*geom.anchorY)};
-    const ocr=clampRectToImage({x:anchor.x,y:anchor.y-icon.h*.5,width:icon.w*7,height:icon.h,source:'v4.3-icon-structure-anchor'},width,height);
-    out.push({key:labels[i]?.key||`row${i}`,label:labels[i]?.label||`アイコン${i+1}`,row:i,core,icon,anchor,ocr});
-  });
-  return {rows:out,dbRole:geom.dbRole,detectionMode:'icon-structure-core',reference:geom};
-}
-function v430Draw(img,grid,cands){
-  const host=$('iconAnchorStage'),c=$('iconAnchorView');host.style.display='block';
-  const iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;c.width=iw;c.height=ih;
-  const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
-  // All candidates: thin yellow. Selected cores: cyan. Final outer icon frames: red.
-  for(const q of cands.slice(0,80)){ctx.strokeStyle='rgba(255,208,0,.45)';ctx.lineWidth=1;ctx.strokeRect(q.x,q.y,q.s,q.s);}
-  for(const r of grid.rows){
-    ctx.strokeStyle='#00d5ff';ctx.lineWidth=2;ctx.strokeRect(r.core.x,r.core.y,r.core.s,r.core.s);
-    ctx.strokeStyle='#ff3b30';ctx.lineWidth=3;ctx.strokeRect(r.icon.x,r.icon.y,r.icon.w,r.icon.h);
-    ctx.strokeStyle='#ffd000';ctx.lineWidth=2;ctx.strokeRect(r.ocr.x,r.ocr.y,r.ocr.w,r.ocr.h);
-    ctx.fillStyle='#00d5ff';ctx.font='bold 16px sans-serif';ctx.fillText(`${r.row+1}:${r.label}`,r.icon.x+2,Math.max(18,r.icon.y-4));
   }
+  return comps;
 }
-function v430Render(grid,cands){
-  const lines=grid.rows.map(r=>`${r.row+1}. ${r.label}: core (${r.core.x},${r.core.y}) ${r.core.s}x${r.core.s} / icon (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / anchor (${r.anchor.x},${r.anchor.y}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n');
-  $('iconAnchorOut').innerHTML=`<div class="result ok"><b>検出方式：</b>DB一致検索なし → アイコン内部構造（暗色コア＋色付き領域＋外周エッジ）を個別検出 → DBは検出後のアンカーgeometryのみ<br><span class="mono">候補=${cands.length} / 採用アイコン=${grid.rows.length} / ピッチ計算なし / DB一致検索0回</span></div><div class="result"><b>検出結果</b><div class="mono">${lines||'採用アイコンなし'}</div></div>`;
+function v431ColorContext(src,c){
+  const a=src.data.data,w=src.w,h=src.h, pad=10;
+  const x0=Math.max(0,c.x-pad),y0=Math.max(0,c.y-pad),x1=Math.min(w,c.x+c.w+pad),y1=Math.min(h,c.y+c.h+pad);
+  let colored=0,total=0;
+  for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){
+    const p=(y*w+x)*4,r=a[p],g=a[p+1],b=a[p+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b);
+    if(mx-mn>45&&mx>45)colored++; total++;
+  }
+  return total?colored/total:0;
 }
-async function v430Detect(){
+function v431NmsCore(cands){
+  const sorted=cands.slice().sort((a,b)=>b.score-a.score),out=[];
+  for(const c of sorted){
+    if(out.some(q=>Math.abs((c.x+c.w/2)-(q.x+q.w/2))<10&&Math.abs((c.y+c.h/2)-(q.y+q.h/2))<12))continue;
+    out.push(c); if(out.length>=120)break;
+  }
+  return out;
+}
+function v431DetectCoreCandidates(src){
+  const gray=v431GrayArray(src), comps=v431BinaryComponents(gray,src.w,src.h,70),out=[];
+  for(const c of comps){
+    const color=v431ColorContext(src,c);
+    // A real icon core is compact, very dark, and surrounded by colored pixels.
+    const densityTerm=Math.min(1.25,c.density/.60);
+    const colorTerm=Math.min(1.35,color/.18);
+    const aspectTerm=1-Math.min(.35,Math.abs(1-c.w/c.h));
+    const score=.52*densityTerm+.38*colorTerm+.10*aspectTerm;
+    if(color<.055)continue;
+    out.push({...c,color,score});
+  }
+  return v431NmsCore(out);
+}
+function v431DbCoreGeometry(){
+  const vals=[];
+  for(const item of v400IconItems){
+    const im=item.im,w=Number(im?.naturalWidth||im?.width||0),h=Number(im?.naturalHeight||im?.height||0);
+    if(!w||!h)continue;
+    try{
+      const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(im,0,0);
+      const id=ctx.getImageData(0,0,w,h),g=new Uint8Array(w*h);
+      for(let i=0,p=0;i<g.length;i++,p+=4)g[i]=Math.round(.299*id.data[p]+.587*id.data[p+1]+.114*id.data[p+2]);
+      // Derive the common frame/core ratio from the DB image itself.
+      const seen=new Uint8Array(w*h),cc=[];
+      for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+        const ii=y*w+x;if(seen[ii]||g[ii]>=70)continue;
+        const qx=[x],qy=[y];seen[ii]=1;let head=0,minX=x,maxX=x,minY=y,maxY=y,area=0;
+        while(head<qx.length){const cx=qx[head],cy=qy[head++];area++;minX=Math.min(minX,cx);maxX=Math.max(maxX,cx);minY=Math.min(minY,cy);maxY=Math.max(maxY,cy);
+          for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const nx=cx+dx,ny=cy+dy;if(nx<0||nx>=w||ny<0||ny>=h)continue;const ni=ny*w+nx;if(seen[ni]||g[ni]>=70)continue;seen[ni]=1;qx.push(nx);qy.push(ny);}
+        }
+        const bw=maxX-minX+1,bh=maxY-minY+1;if(area>20&&bw>=.45*w&&bw<=.98*w&&bh>=.45*h&&bh<=.98*h)cc.push({x:minX,y:minY,w:bw,h:bh,area});
+      }
+      cc.sort((a,b)=>b.area-a.area);const k=cc[0];if(!k)continue;
+      vals.push({left:k.x/w,top:k.y/h,coreW:k.w/w,coreH:k.h/h,frameW:w,frameH:h});
+    }catch(e){}
+  }
+  const med=k=>v400Median(vals.map(v=>v[k]).filter(Number.isFinite));
+  return {left:med('left')??0,top:med('top')??.22,coreW:med('coreW')??.94,coreH:med('coreH')??.78,referenceW:Math.round(med('frameW')||45),referenceH:Math.round(med('frameH')||45),samples:vals.length};
+}
+function v431IconFromCore(core,geom,width,height){
+  const fw=Math.max(1,Math.round(core.w/Math.max(.1,geom.coreW)));
+  const fh=Math.max(1,Math.round(core.h/Math.max(.1,geom.coreH)));
+  const x=Math.round(core.x-geom.left*fw),y=Math.round(core.y-geom.top*fh);
+  return clampRectToImage({x,y,w:fw,h:fh},width,height);
+}
+function v431ChooseColumn(cands){
+  if(!cands.length)return [];
+  const groups=[];
+  for(const c of cands.slice().sort((a,b)=>a.x-b.x)){
+    const cx=c.x+c.w/2;let g=groups.find(q=>Math.abs(cx-q.cx)<=18);
+    if(!g){g={items:[],cx};groups.push(g);} g.items.push(c);g.cx=g.items.reduce((s,q)=>s+q.x+q.w/2,0)/g.items.length;
+  }
+  groups.sort((a,b)=>b.items.length-a.items.length || b.items.reduce((s,q)=>s+q.score,0)-a.items.reduce((s,q)=>s+q.score,0));
+  const best=groups[0];
+  const rows=[];
+  for(const c of best.items.sort((a,b)=>a.y-b.y)){
+    if(rows.some(q=>Math.abs(c.y-q.y)<Math.min(c.h,q.h)*.55))continue;
+    rows.push(c);
+  }
+  return rows;
+}
+function v431BuildGrid(rows,width,height){
+  const geom=v431DbCoreGeometry(),out=[];
+  // A single screenshot has one UI scale. Use the median core size of the
+  // detected column so anti-aliased edges do not make every row a different
+  // icon size. This is scale estimation, not row-pitch estimation.
+  const medW=v400Median(rows.map(r=>r.w)),medH=v400Median(rows.map(r=>r.h));
+  const scaleW=medW/Math.max(.1,geom.coreW*Math.max(1,geom.referenceW));
+  const scaleH=medH/Math.max(.1,geom.coreH*Math.max(1,geom.referenceH));
+  const scale=Math.max(.25,Math.min(4,(scaleW+scaleH)/2));
+  const frameW=Math.max(8,Math.round(geom.referenceW*scale)),frameH=Math.max(8,Math.round(geom.referenceH*scale));
+  rows.forEach((core,i)=>{
+    const x=Math.round(core.x-geom.left*frameW),y=Math.round(core.y-geom.top*frameH);
+    const icon=clampRectToImage({x,y,w:frameW,h:frameH},width,height);
+    const anchor={x:Math.round(icon.x+icon.w),y:Math.round(icon.y+icon.h)};
+    const ocr=clampRectToImage({x:anchor.x,y:anchor.y-icon.h*.5,width:icon.w*7,height:icon.h,source:'v4.3.1-icon-anchor'},width,height);
+    const t=V400_ICON_TARGETS[i]||{key:`row${i}`,label:`アイコン${i+1}`};
+    out.push({key:t.key,label:t.label,row:i,core,icon,anchor,ocr});
+  });
+  return {rows:out,dbRole:'anchor-geometry-only',reference:{...geom,scale,frameW,frameH,coreMedianW:medW,coreMedianH:medH}};
+}
+function v431Draw(img,grid,cands){
+  const host=$('iconAnchorStage'),c=$('iconAnchorView');host.style.display='block';const iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;c.width=iw;c.height=ih;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
+  for(const q of cands.slice(0,80)){ctx.strokeStyle='rgba(255,208,0,.65)';ctx.lineWidth=1;ctx.strokeRect(q.x,q.y,q.w,q.h);}
+  for(const r of grid.rows){ctx.strokeStyle='#00d5ff';ctx.lineWidth=2;ctx.strokeRect(r.core.x,r.core.y,r.core.w,r.core.h);ctx.strokeStyle='#ff3b30';ctx.lineWidth=3;ctx.strokeRect(r.icon.x,r.icon.y,r.icon.w,r.icon.h);ctx.fillStyle='#00d5ff';ctx.font='bold 15px sans-serif';ctx.fillText(`${r.row+1}:${r.label}`,r.icon.x+2,Math.max(16,r.icon.y-4));}
+}
+function v431Render(grid,cands){
+  const lines=grid.rows.map(r=>`${r.row+1}. ${r.label}: core (${r.core.x},${r.core.y}) ${r.core.w}x${r.core.h} / icon (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / anchor (${r.anchor.x},${r.anchor.y}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n');
+  $('iconAnchorOut').innerHTML=`<div class="result ok"><b>検出方式：</b>DB一致検索なし → 暗色コアの連結領域＋色付き周辺構造を個別検出 → 左側の最多列を採用 → DBは検出後の共通フレームgeometry/アンカーのみ<br><span class="mono">候補=${cands.length} / 採用=${grid.rows.length} / ピッチ計算0回 / DB一致検索0回 / DB geometry samples=${grid.reference.samples}</span></div><div class="result"><b>検出結果</b><div class="mono">${lines||'採用アイコンなし'}</div></div>`;
+}
+async function v431Detect(){
   if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return;}
   const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();
   try{
-    $('iconAnchorStatus').textContent='DBを使わず、アイコン内部構造を個別検出中…';
-    const scene=v400ImageData($('img')); const F=v430Features(scene);
-    const cands=v430DetectCores(F); const rows=v430SelectColumn(cands,scene.w,scene.h);
-    if(rows.length<1)throw new Error(`アイコン構造候補を検出できませんでした（候補${cands.length}）`);
-    const grid=v430BuildGrid(rows,scene.w,scene.h);
-    v400IconCandidates=rows.map((c,i)=>({...c,name:`構造検出アイコン${i+1}`,row:i}));
-    v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=grid.rows.length>=9?v400RegionsFromGrid(grid):[];
-    v430Draw($('img'),grid,cands);v430Render(grid,cands);
-    $('layoutStatus').textContent='v4.3.0 アイコン構造検出（DB一致なし）→検出後DB geometry→アンカー';
-    $('layoutOut').innerHTML='<div class="note">アイコンの存在位置はスクリーンショットの「暗色コア＋色付き領域＋外周エッジ」だけから個別に検出します。行間ピッチは検出条件に使用しません。DBは検出後のアイコン枠サイズ・右下アンカー基準にのみ使用します。</div>';
-    $('iconAnchorStatus').textContent=`完了：アイコン構造候補${cands.length}個 / 採用${rows.length}個 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回 / ピッチ計算なし`;
+    $('iconAnchorStatus').textContent='DBを使わず、暗色コア＋色付き周辺構造を検出中…';
+    const scene=v400ImageData($('img')),cands=v431DetectCoreCandidates(scene),rows=v431ChooseColumn(cands);
+    if(!rows.length)throw new Error(`アイコン候補を検出できませんでした（候補${cands.length}）`);
+    const grid=v431BuildGrid(rows,scene.w,scene.h);v400IconCandidates=rows.map((c,i)=>({...c,name:`構造検出アイコン${i+1}`,row:i}));v400IconGrid=grid;window.v400IconGrid=grid;
+    window.lastEquipmentRegions=grid.rows.length>=9?v400RegionsFromGrid(grid):[];v431Draw($('img'),grid,cands);v431Render(grid,cands);
+    $('layoutStatus').textContent='v4.3.1 アイコン構造検出→DB共通geometry→右下アンカー';
+    $('layoutOut').innerHTML='<div class="note">行間ピッチは検出条件に使用しません。まず暗色コアを独立検出し、左側で最多のX列を採用します。DBは検出後の共通フレームgeometryと右下アンカー定義だけに使用します。</div>';
+    $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 採用列${rows.length}個 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回`;
     $('recognizeEquipment').disabled=rows.length<9;
   }catch(e){console.error(e);$('iconAnchorStatus').textContent='アイコン検出エラー：'+e.message;}
   finally{btn.disabled=false;}
 }
-$('detectIconAnchor').onclick=v430Detect;
+$('detectIconAnchor').onclick=v431Detect;
 
 (async()=>{try{await v400LoadBundledIcons();}catch(e){$('anchorDBStatus').textContent='DBアイコン読み込み失敗：'+e.message;console.error(e);}})();
 
