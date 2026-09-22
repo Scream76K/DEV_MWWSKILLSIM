@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.4.0：トップダウン装備9行グリッド・プロトタイプ＋v4.3.8併設</title>
+<title>MH Wilds OCR — Step 1.25-C v4.4.2：装備UI領域＋10境界9行Grid・プロトタイプ＋v4.3.8併設</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.4.0：トップダウン装備9行グリッド・プロトタイプ＋v4.3.8併設</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.4.2：装備UI領域＋10境界9行Grid・プロトタイプ＋v4.3.8併設</h1>
 <div class="note">
 <b>v4.3.8：短辺基準スケール適応＋フルアイコン枠検出＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -61,20 +61,17 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>2-0. 座標系統合監査（v4.4.1）</h2>
-<div class="note">検出条件・Grid条件・OCR条件はv4.4.0から変更しません。Raw Image、Canvas Buffer、CSS表示、ImageData、Grid座標の関係だけを監査します。</div>
-<button id="auditCoordinates" class="primary">🧭 座標系を監査</button>
-<div id="coordinateAuditStatus" class="status">未実行</div>
-<div id="coordinateAuditOut" style="margin-top:8px"></div>
-</div>
-
-<div class="card">
-<h2>2-A. トップダウン装備9行グリッド（v4.4.1 監査版）</h2>
-<div class="note">アイコンを探して行を決めるのではなく、左側UIに現れる水平セパレータの構造から8本の境界線→9行を推定します。v4.3.xのアイコン検出・DB検索はこのプロトタイプでは使用しません。まず画像上に9行の枠を描き、Yグリッドが正しく追従するかだけを検証します。</div>
+<h2>2-A. トップダウン装備9行グリッド（v4.4.2 検証版）</h2>
+<div class="note">アイコンを探して行を決めるのではなく、左側UIに現れる装備UI領域を先に候補化し、10本の境界（上下端＋内部8本）から9行を検証します。v4.3.xのアイコン検出・DB検索はこのプロトタイプでは使用しません。単なる等間隔パターンを装備欄と誤認しないよう、境界の連続性・正規化pitch・9行全体の画像内収まりまで検証します。</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-  <button id="detectTopDownGrid" class="primary">📐 トップダウン9行を検証（監査付き）</button>
+  <button id="detectTopDownGrid" class="primary">📐 装備UI＋9行を厳密検証</button>
 </div>
 <div id="topDownStatus" class="status">未実行</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+  <button id="auditCoordinates" class="primary">🧭 座標系を監査</button>
+</div>
+<div id="coordinateAuditStatus" class="status">未実行</div>
+<div id="coordinateAuditOut" style="margin-top:8px"></div>
 <div id="topDownOut" style="margin-top:8px"></div>
 <div id="topDownStage" class="stage" style="margin-top:10px;display:none"><canvas id="topDownView"></canvas></div>
 </div>
@@ -2823,10 +2820,8 @@ async function v432Detect(){
   finally{btn.disabled=false}
 }
 // ==============================
-
 // ==============================
-// v4.4.1 Coordinate Auditor
-// Observation only. Detection/Grid/OCR algorithms are unchanged.
+// v4.4.1 coordinate audit retained in v4.4.2
 // ==============================
 function auditCoordinates(){
   const im=$('img');
@@ -2888,16 +2883,94 @@ $('auditCoordinates').onclick=()=>{
     $('coordinateAuditStatus').textContent='座標監査エラー：'+e.message;
   }
 };
-
-// v4.4.0 Top-down equipment-row prototype
-// Detect 8 horizontal separator lines, then derive 9 rows.
-// This stage deliberately does NOT use icon detection or DB matching.
+// ==============================
+// v4.4.2 Top-down equipment-row detector
+// Coordinate rule: RAW image pixels only.
+// Core idea:
+//   1) find the left equipment-panel candidate width from vertical luminance structure
+//   2) inside each candidate panel width, score a 10-boundary / 9-row grid
+//   3) use long horizontal separator occupancy rather than generic edge magnitude
+//   4) require all 9 rows to stay inside the image
+//   5) reject grids whose normalized pitch/span are implausible
+// No icon DB matching is used here.
 // ==============================
 function tdClamp(v,a,b){return Math.max(a,Math.min(b,v));}
 function tdMedian(a){const v=a.filter(Number.isFinite).slice().sort((x,y)=>x-y);if(!v.length)return 0;const m=Math.floor(v.length/2);return v.length%2?v[m]:(v[m-1]+v[m])/2;}
-function tdSmooth(a,r){if(r<=0)return a.slice();const out=new Float64Array(a.length);let sum=0,c=0;for(let i=0;i<a.length;i++){sum+=a[i];c++;if(i-r-1>=0){sum-=a[i-r-1];c--;}if(i+r<a.length){/* delayed right side */}out[i]=sum/c;}const out2=new Float64Array(a.length);for(let i=0;i<a.length;i++){let st=Math.max(0,i-r),en=Math.min(a.length-1,i+r),ss=0;for(let j=st;j<=en;j++)ss+=a[j];out2[i]=ss/(en-st+1);}return out2;}
+function tdSmooth(a,r){if(r<=0)return a.slice();const out=new Float64Array(a.length);for(let i=0;i<a.length;i++){let st=Math.max(0,i-r),en=Math.min(a.length-1,i+r),s=0;for(let j=st;j<=en;j++)s+=a[j];out[i]=s/(en-st+1);}return out;}
 function tdPercentile(a,p){const v=Array.from(a).filter(Number.isFinite).sort((x,y)=>x-y);if(!v.length)return 0;const k=tdClamp(Math.round((v.length-1)*p),0,v.length-1);return v[k];}
-function tdLocalPeaks(profile,minY,maxY,minDist,threshold){
+
+function tdHorizontalOccupancy(src,x0,x1,threshold){
+  const w=src.w,h=src.h,d=src.data;
+  const p=new Float32Array(h);
+  const span=Math.max(1,x1-x0);
+  for(let y=1;y<h;y++){
+    let hit=0;
+    for(let x=x0;x<x1;x++){
+      const i=(y*w+x)*4, j=((y-1)*w+x)*4;
+      const a=.299*d[i]+.587*d[i+1]+.114*d[i+2];
+      const b=.299*d[j]+.587*d[j+1]+.114*d[j+2];
+      if(Math.abs(a-b)>=threshold)hit++;
+    }
+    p[y]=hit/span;
+  }
+  return p;
+}
+
+function tdHorizontalMeanGradient(src,x0,x1){
+  const w=src.w,h=src.h,d=src.data,p=new Float32Array(h),span=Math.max(1,x1-x0);
+  for(let y=1;y<h;y++){
+    let s=0;
+    for(let x=x0;x<x1;x++){
+      const i=(y*w+x)*4,j=((y-1)*w+x)*4;
+      const a=.299*d[i]+.587*d[i+1]+.114*d[i+2];
+      const b=.299*d[j]+.587*d[j+1]+.114*d[j+2];
+      s+=Math.abs(a-b);
+    }
+    p[y]=s/span;
+  }
+  return p;
+}
+
+function tdVerticalMeanGradient(src){
+  const w=src.w,h=src.h,d=src.data,p=new Float32Array(w);
+  const y0=Math.max(1,Math.round(h*.08)),y1=Math.min(h-1,Math.round(h*.92));
+  for(let x=1;x<w;x++){
+    let s=0;
+    for(let y=y0;y<y1;y++){
+      const i=(y*w+x)*4,j=(y*w+x-1)*4;
+      const a=.299*d[i]+.587*d[i+1]+.114*d[i+2];
+      const b=.299*d[j]+.587*d[j+1]+.114*d[j+2];
+      s+=Math.abs(a-b);
+    }
+    p[x]=s/Math.max(1,y1-y0);
+  }
+  return p;
+}
+
+function tdCandidatePanelXs(src){
+  const w=src.w, vp=tdVerticalMeanGradient(src);
+  const lo=Math.max(1,Math.round(w*.10)), hi=Math.min(w-2,Math.round(w*.75));
+  const peaks=[];
+  for(let x=lo+1;x<hi-1;x++){
+    if(vp[x]>=vp[x-1]&&vp[x]>=vp[x+1])peaks.push({x,score:vp[x]});
+  }
+  peaks.sort((a,b)=>b.score-a.score);
+  const kept=[];
+  const minDist=Math.max(8,Math.round(w*.018));
+  for(const p of peaks){
+    if(kept.every(q=>Math.abs(q.x-p.x)>=minDist))kept.push(p);
+    if(kept.length>=18)break;
+  }
+  // A few normalized probes protect against a weak panel edge.
+  for(const f of [.14,.18,.22,.28,.34,.42,.52,.62,.70]){
+    const x=Math.round(w*f);
+    if(x>=lo&&x<=hi&&kept.every(q=>Math.abs(q.x-x)>=minDist))kept.push({x,score:vp[x]||0});
+  }
+  kept.sort((a,b)=>a.x-b.x);
+  return {candidates:kept,profile:vp};
+}
+
+function tdFindPeaks(profile,minY,maxY,minDist,threshold){
   const peaks=[];
   for(let y=Math.max(1,minY);y<=Math.min(profile.length-2,maxY);y++){
     const v=profile[y];
@@ -2911,111 +2984,200 @@ function tdLocalPeaks(profile,minY,maxY,minDist,threshold){
   }
   return kept.sort((a,b)=>a.y-b.y);
 }
-function tdBuildVerticalProfile(src){
-  const w=src.w,h=src.h,data=src.data;
-  const g=new Float32Array(w*h);
-  for(let i=0;i<w*h;i++)g[i]=0.299*data[i*4]+0.587*data[i*4+1]+0.114*data[i*4+2];
-  // The equipment panel is on the left. Use a broad band so the method
-  // survives different text/icon widths, but avoid the far-right character.
-  const x0=Math.round(w*0.03),x1=Math.max(x0+10,Math.round(w*0.68));
-  const p=new Float64Array(h);
-  for(let y=1;y<h;y++){
-    let s=0,n=0;
-    for(let x=x0;x<x1;x++)s+=Math.abs(g[y*w+x]-g[(y-1)*w+x]),n++;
-    p[y]=s/Math.max(1,n);
-  }
-  const radius=Math.max(1,Math.round(Math.min(w,h)/700));
-  return {profile:tdSmooth(p,radius),x0,x1,radius};
-}
-function tdFindSeparatorGrid(profile,w,h){
-  const minY=Math.round(h*0.05),maxY=Math.round(h*0.95);
-  const vals=Array.from(profile).slice(minY,maxY+1);
-  const q=tdPercentile(vals,0.72);
-  const threshold=Math.max(q,tdPercentile(vals,0.82)*0.55);
-  const minDist=Math.max(8,Math.round(h*0.020));
-  const peaks=tdLocalPeaks(profile,minY,maxY,minDist,threshold);
-  if(peaks.length<8)return {ok:false,reason:`水平境界候補が${peaks.length}本しかありません`,peaks};
-  const medRange=Math.max(30,h*0.035),maxRange=Math.min(h*0.18,h-1);
+
+function tdBestGridForPanel(src,panelX){
+  const w=src.w,h=src.h,x0=Math.max(1,Math.round(w*.018)),x1=Math.max(x0+20,panelX);
+  const minPitch=h*.070,maxPitch=h*.095;
+  const thresholdSet=[8,16,24];
   let best=null;
-  for(let i=0;i<peaks.length;i++)for(let j=i+1;j<peaks.length;j++){
-    const dy=peaks[j].y-peaks[i].y;
-    if(dy<medRange*1.5)continue;
-    for(let steps=1;steps<=7;steps++){
-      const pitch=dy/steps;
-      if(pitch<medRange||pitch>maxRange)continue;
-      const chosen=[];let err=0,score=0;
-      for(let k=0;k<8;k++){
-        const target=peaks[i].y+pitch*k;
-        let bp=null,bd=Infinity;
-        for(const p of peaks){const d=Math.abs(p.y-target);if(d<bd){bd=d;bp=p;}}
-        const tol=Math.max(10,pitch*0.12);
-        if(bp&&bd<=tol){chosen.push(bp);err+=bd;score+=bp.score;}
+
+  for(const threshold of thresholdSet){
+    const occ=tdSmooth(tdHorizontalOccupancy(src,x0,x1,threshold),Math.max(1,Math.round(Math.min(w,h)/900)));
+    const mean=tdSmooth(tdHorizontalMeanGradient(src,x0,x1),Math.max(1,Math.round(Math.min(w,h)/900)));
+    const occQ=tdPercentile(Array.from(occ).slice(Math.round(h*.05),Math.round(h*.95)),.85)||1;
+    const meanQ=tdPercentile(Array.from(mean).slice(Math.round(h*.05),Math.round(h*.95)),.90)||1;
+
+    // Ten boundaries describe nine rows: top edge + 8 internal separators + bottom edge.
+    // Outer edges may be weaker; internal separators carry most of the score.
+    const pitchSteps=72, ySteps=100;
+    for(let pi=0;pi<=pitchSteps;pi++){
+      const pitch=minPitch+(maxPitch-minPitch)*pi/pitchSteps;
+      const yMin=h*.08, yMax=Math.min(h*.22,h-pitch*9.2);
+      for(let yi=0;yi<=ySteps;yi++){
+        const y0=yMin+(yMax-yMin)*yi/ySteps;
+        const ys=new Array(10);
+        for(let k=0;k<10;k++)ys[k]=y0+pitch*k;
+        if(ys[0]<0||ys[9]>=h)continue;
+
+        let score=0,residual=0;
+        const vals=[];
+        for(let k=0;k<10;k++){
+          const target=ys[k];
+          const radius=Math.max(2,Math.round(pitch*.018));
+          const lo=Math.max(1,Math.floor(target-radius));
+          const hi=Math.min(h-2,Math.ceil(target+radius));
+          let bestY=lo,bestV=-1;
+          for(let y=lo;y<=hi;y++){
+            // Occupancy is the primary separator signal; mean gradient is secondary.
+            const v=.72*Math.min(1,occ[y]/Math.max(.05,occQ))+
+                    .28*Math.min(1,mean[y]/Math.max(1,meanQ));
+            if(v>bestV){bestV=v;bestY=y;}
+          }
+          vals.push(bestV);
+          residual+=Math.abs(bestY-target)/Math.max(1,pitch);
+          score += bestV*(k===0||k===9?0.45:1.0);
+        }
+
+        const internalMean=vals.slice(1,9).reduce((a,b)=>a+b,0)/8;
+        const outerMean=(vals[0]+vals[9])/2;
+        const internalMin=Math.min(...vals.slice(1,9));
+        const fit=Math.max(0,1-residual/10);
+        const consistency=Math.max(0,1-(Math.max(...vals.slice(1,9))-Math.min(...vals.slice(1,9))));
+        const normalizedPitch=pitch/h;
+        const pitchPrior=Math.max(0,1-Math.abs(normalizedPitch-.083)/.018);
+        const spanPrior=Math.max(0,1-Math.abs((pitch*8/h)-.666)/.145);
+
+        const total =
+          internalMean*0.52 +
+          internalMin*0.18 +
+          fit*0.10 +
+          consistency*0.06 +
+          pitchPrior*0.08 +
+          spanPrior*0.06 +
+          outerMean*0.03;
+
+        if(!best||total>best.score){
+          best={score:total,panelX,pitch,y0,ys,vals,residual,internalMean,internalMin,
+            normalizedPitch,span:pitch*8/h,threshold};
+        }
       }
-      const uniq=[...new Map(chosen.map(p=>[p.y,p])).values()].sort((a,b)=>a.y-b.y);
-      if(uniq.length!==8)continue;
-      const gaps=[];for(let k=1;k<uniq.length;k++)gaps.push(uniq[k].y-uniq[k-1].y);
-      const pitchMed=tdMedian(gaps),pitchSd=Math.sqrt(tdMedian(gaps.map(x=>(x-pitchMed)*(x-pitchMed))));
-      const residual=err/8;
-      const regularity=Math.max(0,1-pitchSd/Math.max(1,pitchMed));
-      const fit=Math.max(0,1-residual/Math.max(1,pitchMed*0.12));
-      const total=score*(0.65+0.20*regularity+0.15*fit);
-      if(!best||total>best.total)best={total,chosen, pitch:pitchMed,pitchSd,residual,regularity,fit};
     }
   }
-  if(!best)return {ok:false,reason:'8本の等間隔セパレータ列を構成できません',peaks};
-  // Re-check strict regularity. This is only the row-structure prototype.
-  if(best.pitchSd>Math.max(12,best.pitch*0.14))return {ok:false,reason:`ピッチ不安定（SD=${best.pitchSd.toFixed(1)}px）`,peaks,best};
-  return {ok:true,peaks,best};
+  return best;
 }
-function tdDetectTopDown(src){
-  const {profile,x0,x1,radius}=tdBuildVerticalProfile(src);
-  const result=tdFindSeparatorGrid(profile,src.w,src.h);
-  if(!result.ok)return {...result,sceneWidth:src.w,sceneHeight:src.h,profileX:[x0,x1],smoothRadius:radius};
-  const seps=result.best.chosen.map(p=>p.y).sort((a,b)=>a-b);
-  const pitch=result.best.pitch;
-  const top=seps[0]-pitch;
-  const bottom=seps[seps.length-1]+pitch;
+
+function tdValidateGrid(g,src){
+  if(!g)return {ok:false,reason:'Grid候補なし'};
+  const h=src.h,w=src.w;
   const rows=[];
-  const labels=['メイン武器','サブ武器','頭防具','胴防具','腕防具','腰防具','脚防具','護石','装衣'];
   for(let i=0;i<9;i++){
-    const y=Math.round(top+pitch*i);
-    const h=Math.round(pitch);
-    rows.push({row:i,label:labels[i],x:Math.round(src.w*0.03),y,width:Math.round(src.w*0.65),height:h});
+    const y=Math.round(g.y0+g.pitch*i);
+    const bottom=Math.round(y+g.pitch);
+    if(y<0||bottom>h)return {ok:false,reason:`行${i+1}が画像外（y=${y}, bottom=${bottom}, H=${h}）`,candidate:g};
+    rows.push({
+      row:i,
+      label:['メイン武器','サブ武器','頭防具','胴防具','腕防具','腰防具','脚防具','護石','装衣'][i],
+      x:Math.round(w*.018),
+      y,
+      width:Math.max(1,Math.round(g.panelX-w*.018)),
+      height:Math.round(g.pitch)
+    });
   }
-  return {ok:true,sceneWidth:src.w,sceneHeight:src.h,profileX:[x0,x1],smoothRadius:radius,separators:seps,pitch,pitchSd:result.best.pitchSd,rows,top,bottom,peaks:result.peaks};
+  if(g.normalizedPitch<.070||g.normalizedPitch>.095)
+    return {ok:false,reason:`正規化pitch範囲外（pitch/H=${g.normalizedPitch.toFixed(4)}）`,candidate:g};
+  if(g.span<.56||g.span>.78)
+    return {ok:false,reason:`9行全体の高さが不自然（8pitch/H=${g.span.toFixed(4)}）`,candidate:g};
+  if(g.internalMin<.42)
+    return {ok:false,reason:`内部境界の連続性不足（min=${g.internalMin.toFixed(2)}）`,candidate:g};
+  if(g.internalMean<.58)
+    return {ok:false,reason:`内部境界の平均強度不足（mean=${g.internalMean.toFixed(2)}）`,candidate:g};
+  if(g.score<.64)
+    return {ok:false,reason:`Grid総合スコア不足（${g.score.toFixed(3)}）`,candidate:g};
+  return {ok:true,rows};
 }
+
+function tdDetectTopDown(src){
+  const pc=tdCandidatePanelXs(src);
+  const trials=[];
+  for(const p of pc.candidates){
+    const g=tdBestGridForPanel(src,p.x);
+    if(g)trials.push(g);
+  }
+  trials.sort((a,b)=>b.score-a.score);
+
+  for(const g of trials){
+    const v=tdValidateGrid(g,src);
+    if(v.ok){
+      return {
+        ok:true,
+        sceneWidth:src.w,sceneHeight:src.h,
+        profileX:[Math.round(src.w*.018),g.panelX],
+        smoothRadius:Math.max(1,Math.round(Math.min(src.w,src.h)/900)),
+        separators:g.ys.slice(1,9).map(y=>Math.round(y)),
+        boundaries:g.ys.map(y=>Math.round(y)),
+        pitch:g.pitch,pitchSd:0,
+        rows:v.rows,top:g.y0,bottom:g.y0+g.pitch*9,
+        panelX:g.panelX,panelWidth:g.panelX-Math.round(src.w*.018),
+        score:g.score,internalMean:g.internalMean,internalMin:g.internalMin,
+        normalizedPitch:g.normalizedPitch,span:g.span,threshold:g.threshold,
+        panelCandidates:pc.candidates.map(p=>({x:p.x,score:p.score})),
+        rejectedCandidates:trials.filter(x=>x!==g).slice(0,8).map(x=>({panelX:x.panelX,score:x.score,pitch:x.pitch,y0:x.y0}))
+      };
+    }
+  }
+  const top=trials[0];
+  return {
+    ok:false,
+    sceneWidth:src.w,sceneHeight:src.h,
+    profileX:[Math.round(src.w*.018),top?.panelX||Math.round(src.w*.2)],
+    smoothRadius:Math.max(1,Math.round(Math.min(src.w,src.h)/900)),
+    reason:top ? tdValidateGrid(top,src).reason : '候補Gridなし',
+    candidate:top||null,
+    panelCandidates:pc.candidates.map(p=>({x:p.x,score:p.score}))
+  };
+}
+
 function tdDraw(img,result){
   const host=$('topDownStage'),c=$('topDownView');host.style.display='block';
   const iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;c.width=iw;c.height=ih;
   const ctx=c.getContext('2d');ctx.clearRect(0,0,iw,ih);ctx.drawImage(img,0,0);
   if(!result||!result.ok)return;
-  // Separator lines: red. Row boxes: cyan. Labels: yellow.
-  for(const y of result.separators){ctx.strokeStyle='#ff3b30';ctx.lineWidth=Math.max(2,Math.round(Math.min(iw,ih)/500));ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(iw,y);ctx.stroke();}
-  result.rows.forEach(r=>{ctx.strokeStyle='#00d5ff';ctx.lineWidth=2;ctx.strokeRect(r.x,r.y,r.width,r.height);ctx.fillStyle='#ffd000';ctx.font=`bold ${Math.max(12,Math.round(Math.min(iw,ih)/55))}px sans-serif`;ctx.fillText(`${r.row+1}:${r.label}`,r.x+4,r.y+18);});
+  for(const y of result.boundaries){
+    ctx.strokeStyle='#ff3b30';ctx.lineWidth=Math.max(2,Math.round(Math.min(iw,ih)/500));
+    ctx.beginPath();ctx.moveTo(result.profileX[0],y);ctx.lineTo(result.panelX,y);ctx.stroke();
+  }
+  result.rows.forEach(r=>{
+    ctx.strokeStyle='#00d5ff';ctx.lineWidth=2;ctx.strokeRect(r.x,r.y,r.width,r.height);
+    ctx.fillStyle='#ffd000';ctx.font=`bold ${Math.max(12,Math.round(Math.min(iw,ih)/55))}px sans-serif`;
+    ctx.fillText(`${r.row+1}:${r.label}`,r.x+4,r.y+18);
+  });
+  ctx.strokeStyle='#00ff80';ctx.lineWidth=Math.max(2,Math.round(Math.min(iw,ih)/450));
+  ctx.strokeRect(result.profileX[0],result.top,result.panelWidth,result.bottom-result.top);
 }
+
 function tdRender(result){
   if(!result){$('topDownOut').innerHTML='';return;}
-  const base=`<div class="result ok"><b>v4.4.0 トップダウン装備9行グリッド</b><br><span class="mono">アイコン検出=0回 / DB一致検索=0回 / 水平セパレータ→8境界→9行</span></div>`;
+  const base=`<div class="result ok"><b>v4.4.2 トップダウン装備9行グリッド</b><br><span class="mono">アイコン検出=0回 / DB一致検索=0回 / 10境界候補→9行検証 / RAW座標のみ</span></div>`;
   const scene=`<div class="result"><b>入力座標</b><div class="mono">raw=${result.sceneWidth||'-'}×${result.sceneHeight||'-'}px / 解析X=${result.profileX?result.profileX[0]+'～'+result.profileX[1]:'-'} / 平滑化半径=${result.smoothRadius||'-'}px</div></div>`;
-  if(!result.ok){$('topDownOut').innerHTML=base+scene+`<div class="result warn"><b>9行グリッド未成立</b><div class="mono">${result.reason||'不成立'} / 水平候補=${result.peaks?result.peaks.length:0}本</div></div>`;return;}
-  const sep=result.separators.join(', ');
+  if(!result.ok){
+    $('topDownOut').innerHTML=base+scene+`<div class="result warn"><b>9行グリッド未成立</b><div class="mono">${result.reason||'不成立'}<br>${result.candidate?`候補: panelX=${Math.round(result.candidate.panelX)}, pitch=${result.candidate.pitch.toFixed(1)}, pitch/H=${result.candidate.normalizedPitch.toFixed(4)}, score=${result.candidate.score.toFixed(3)}`:''}</div></div>`;
+    return;
+  }
   const rows=result.rows.map(r=>`${r.row+1}. ${r.label}: x=${r.x}, y=${r.y}, ${r.width}×${r.height}`).join('\n');
-  $('topDownOut').innerHTML=base+scene+`<div class="result"><b>Yグリッド</b><div class="mono">境界線8本=${sep}\npitch=${result.pitch.toFixed(1)}px / pitchSD=${result.pitchSd.toFixed(1)}px / 行上端=${Math.round(result.top)} / 行下端=${Math.round(result.bottom)}</div></div><div class="result"><b>生成された9行（OCRはまだ実行しません）</b><div class="mono">${rows}</div></div>`;
+  const cand=(result.panelCandidates||[]).map(p=>`${p.x}(${p.score.toFixed(1)})`).join(', ');
+  $('topDownOut').innerHTML=base+scene+
+    `<div class="result"><b>装備UI領域</b><div class="mono">panelX=${result.panelX} / panelWidth=${result.panelWidth} / GridScore=${result.score.toFixed(3)} / 境界強度mean=${result.internalMean.toFixed(2)} min=${result.internalMin.toFixed(2)}</div></div>`+
+    `<div class="result"><b>Yグリッド</b><div class="mono">内部境界8本=${result.separators.join(', ')}<br>pitch=${result.pitch.toFixed(1)}px / pitch/H=${result.normalizedPitch.toFixed(4)} / 8pitch/H=${result.span.toFixed(4)}<br>10境界=${result.boundaries.join(', ')}</div></div>`+
+    `<div class="result"><b>パネル候補X</b><div class="mono">${cand}</div></div>`+
+    `<div class="result"><b>生成された9行</b><div class="mono">${rows}</div></div>`;
 }
+
 async function tdRun(){
   if(!$('img').src){$('topDownStatus').textContent='先に画像を選択してください。';return;}
   const btn=$('detectTopDownGrid');btn.disabled=true;const t0=performance.now();
   try{
-    $('topDownStatus').textContent='水平セパレータを解析→8本の境界→9行グリッドを検証中…';
+    $('topDownStatus').textContent='装備UI領域→10境界→9行Gridを総当たり検証中（速度より正確性優先）…';
     const scene=v400ImageData($('img'));
     const result=tdDetectTopDown(scene);
     tdDraw($('img'),result);tdRender(result);
-    $('topDownStatus').textContent=result.ok?`完了：9行グリッド成立 / ${(performance.now()-t0).toFixed(0)}ms / アイコン検出0回 / DB一致0回`:`完了：9行グリッド未成立 / ${(performance.now()-t0).toFixed(0)}ms / ${result.reason||'不成立'}`;
+    $('topDownStatus').textContent=result.ok
+      ? `完了：9行グリッド成立 / ${(performance.now()-t0).toFixed(0)}ms / アイコン検出0回 / DB一致0回`
+      : `完了：9行グリッド未成立 / ${(performance.now()-t0).toFixed(0)}ms / ${result.reason||'不成立'}`;
     window.topDownGridResult=result;
   }catch(e){console.error(e);$('topDownStatus').textContent='トップダウン検出エラー：'+e.message;}
-  finally{btn.disabled=false;}
+  finally{btn.disabled=false}
 }
-$('detectTopDownGrid').onclick=tdRun;
+
 
 $('detectIconAnchor').onclick=v432Detect;
 (async()=>{try{await v400LoadBundledIcons();}catch(e){$('anchorDBStatus').textContent='DBアイコン読み込み失敗：'+e.message;console.error(e);}})();
