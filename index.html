@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MHWilds 黄色アンカー検出デバッガー</title>
+  <title>MHWilds 黄色アンカー自動検出 (16:9正規化版)</title>
   <style>
     :root {
       --bg-color: #0f141c;
@@ -138,43 +138,67 @@
       stage.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      // 1. 左上の「黄色アイコン」を検索して原点座標を特定
-      const anchor = findYellowIconAnchor(stage);
+      // 1. スマホスクショ内の16:9ゲーム有効描画エリアを計算
+      const gameArea = calculate16by9Area(img.width, img.height);
+
+      // 2. ピンポイントで黄色アイコンアンカーを検索
+      const anchor = findYellowIconAnchor(stage, gameArea);
 
       if (!anchor) {
-        statusText.textContent = "❌ 黄色アンカーの検出に失敗しました";
+        statusText.textContent = "❌ 黄色アンカーの検出に失敗しました（標準計算を使用します）";
         statusText.style.color = "#ff3366";
         return;
       }
 
-      statusText.textContent = `✅ 黄色アンカー検出成功! 原点: (${anchor.x}, ${anchor.y})`;
+      statusText.textContent = `✅ 黄色アンカー検出成功! 座標: (${anchor.x}, ${anchor.y})`;
       statusText.style.color = "#00ff88";
 
-      // 2. 原点から相対計算で7箇所のROIを取得
-      const rois = calculateROIsFromAnchor(anchor, img.width, img.height);
+      // 3. アンカー基準で7箇所のROIを計算
+      const rois = calculateROIsFromAnchor(anchor, gameArea);
 
-      // 3. 画面上にアンカー(赤枠)とROI(青枠)を描画
-      drawDebugOverlays(ctx, anchor, rois);
+      // 4. アンカー(赤丸)とROI(水色枠)をプレビュー描画
+      drawDebugOverlays(ctx, anchor, rois, gameArea);
 
-      // 4. 切り出しプレビューを表示
+      // 5. 切り出し個別プレビュー
       renderCropPreviews(img, rois);
     };
     img.src = URL.createObjectURL(file);
   });
 
   /**
-   * 左上エリア(X: 0~25%, Y: 5~25%)から「黄色アイコン」の中心座標を検索
+   * 画像全体の中から 16:9 のゲーム表示領域 (X, Y, W, H) を算出
    */
-  function findYellowIconAnchor(canvas) {
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
+  function calculate16by9Area(imgW, imgH) {
+    const targetAspect = 16 / 9;
+    const currentAspect = imgW / imgH;
 
-    // 検索エリア絞り込み（左上周辺）
-    const scanX1 = Math.floor(w * 0.01);
-    const scanX2 = Math.floor(w * 0.15);
-    const scanY1 = Math.floor(h * 0.08);
-    const scanY2 = Math.floor(h * 0.28);
+    let gameW = imgW;
+    let gameH = imgH;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    if (currentAspect > targetAspect) {
+      gameW = imgH * targetAspect;
+      offsetX = (imgW - gameW) / 2;
+    } else if (currentAspect < targetAspect) {
+      gameH = imgW / targetAspect;
+      offsetY = (imgH - gameH) / 2;
+    }
+
+    return { x: offsetX, y: offsetY, w: gameW, h: gameH };
+  }
+
+  /**
+   * ゲーム画面内の左上極小エリア(メイン武器アイコン左上)のみをピンポイント検索
+   */
+  function findYellowIconAnchor(canvas, gameArea) {
+    const ctx = canvas.getContext('2d');
+
+    // 16:9画面内の左上「メイン武器の黄色アイコン」が存在する絶対ピンポイント領域
+    const scanX1 = Math.floor(gameArea.x + (gameArea.w * 0.038));
+    const scanX2 = Math.floor(gameArea.x + (gameArea.w * 0.065));
+    const scanY1 = Math.floor(gameArea.y + (gameArea.h * 0.190));
+    const scanY2 = Math.floor(gameArea.y + (gameArea.h * 0.240));
     const scanW = scanX2 - scanX1;
     const scanH = scanY2 - scanY1;
 
@@ -192,9 +216,8 @@
         const g = data[idx + 1];
         const b = data[idx + 2];
 
-        // 鮮やかな黄色/ゴールドの色の閾値判定
-        // RとGが高く、Bが低い (例: R>170, G>140, B<100)
-        if (r > 160 && g > 130 && b < 100 && (r - b) > 80) {
+        // 鮮やかな黄色/ゴールドの色の判定
+        if (r > 160 && g > 130 && b < 100 && (r - b) > 70) {
           totalX += x;
           totalY += y;
           matchCount++;
@@ -202,9 +225,8 @@
       }
     }
 
-    if (matchCount < 10) return null; // 見つからない場合
+    if (matchCount < 5) return null;
 
-    // 黄色ピクセルの「重心」をアンカー原点として返す
     return {
       x: Math.round(scanX1 + (totalX / matchCount)),
       y: Math.round(scanY1 + (totalY / matchCount))
@@ -212,19 +234,19 @@
   }
 
   /**
-   * 黄色アンカー座標を起点にして、全7行のテキスト切り出し範囲を算出
+   * 黄色アンカーから精密オフセット計算でテキスト枠を配置
    */
-  function calculateROIsFromAnchor(anchor, imgWidth, imgHeight) {
-    // 画面の高さに対する1行のピッチ（行間隔）とテキストサイズの比率
-    const pitch = imgHeight * 0.0788;
-    const textW = imgWidth * 0.130;
-    const textH = imgHeight * 0.032;
+  function calculateROIsFromAnchor(anchor, gameArea) {
+    const scale = gameArea.w / 1920; // 1080p基準のスケール率
 
-    // アンカー点から「メイン武器」テキスト左上までの相対オフセット
-    const offsetX = imgWidth * 0.040;
-    const offsetY = imgHeight * 0.022;
+    // 1080p基準での黄色アンカー中心から「メイン武器」文字の左上までのピクセルオフセット
+    // 1080p基準: アンカーY ≒ 232px, 文字Y ≒ 253px (差分 +21px)
+    const offsetX1080 = 50;  // 右に50px
+    const offsetY1080 = 21;  // 下に21px
+    const pitch1080   = 85.3; // 行間ピッチ (1080p換算)
+    const textW1080   = 240;
+    const textH1080   = 35;
 
-    // 7部位の行インデックス
     const targets = [
       { key: 'weaponMain', label: 'メイン武器', row: 0 },
       { key: 'head',       label: '頭防具',     row: 2 },
@@ -239,33 +261,43 @@
     for (const t of targets) {
       rois[t.key] = {
         label: t.label,
-        x: Math.round(anchor.x + offsetX),
-        y: Math.round(anchor.y + offsetY + (t.row * pitch)),
-        w: Math.round(textW),
-        h: Math.round(textH)
+        x: Math.round(anchor.x + (offsetX1080 * scale)),
+        y: Math.round(anchor.y + (offsetY1080 * scale) + (t.row * pitch1080 * scale)),
+        w: Math.round(textW1080 * scale),
+        h: Math.round(textH1080 * scale)
       };
     }
 
     return rois;
   }
 
-  function drawDebugOverlays(ctx, anchor, rois) {
-    // アンカー位置を赤い丸と十字線でハイライト
+  function drawDebugOverlays(ctx, anchor, rois, gameArea) {
+    // 検索エリア枠（黄色点線）
+    ctx.strokeStyle = '#ffff00';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(
+      gameArea.x + (gameArea.w * 0.038),
+      gameArea.y + (gameArea.h * 0.190),
+      gameArea.w * 0.027,
+      gameArea.h * 0.050
+    );
+
+    // 黄色アンカー位置（赤丸）
     ctx.strokeStyle = '#ff0055';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.arc(anchor.x, anchor.y, 12, 0, Math.PI * 2);
+    ctx.arc(anchor.x, anchor.y, 8, 0, Math.PI * 2);
     ctx.stroke();
 
-    // 7領域を青枠で描画
+    // 7箇所の切り出し枠（水色）
     ctx.lineWidth = 2;
     ctx.strokeStyle = '#00d5ff';
-    ctx.font = 'bold 14px sans-serif';
+    ctx.font = 'bold 12px sans-serif';
     ctx.fillStyle = '#00d5ff';
 
     for (const [key, rect] of Object.entries(rois)) {
       ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
-      ctx.fillText(rect.label, rect.x, rect.y - 4);
+      ctx.fillText(rect.label, rect.x, Math.max(12, rect.y - 3));
     }
   }
 
