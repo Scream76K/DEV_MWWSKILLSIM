@@ -1,10 +1,6 @@
-# MH Wilds OCR Step 1.25-C v4.2.6
-
-- 画面内アイコン検出はDB画像との一致検索を使用しません。
-- アイコン探索はスクリーンショット左12%に限定。
-- DBアイコンは検出後のフレーム／右下アンカーgeometry基準としてのみ使用。
-- 旧v4.0系のDBテンプレート検索関数・旧検出経路をコードから除去。
-- 装備名OCRはPSM 7を固定し、武器・防具・護石DBの名称から日本語文字を含むwhitelistを生成。
-- OCR入力矩形は既定の検証済み geometry：X=icon右、Y=icon底-0.5H、H=iconH、W≈7W を維持。
-- Gemini提案の「右1.1W・上0.1H・高さ0.8H」には変更していない。これは既存の検証済みgeometryと競合するため。
-- JavaScript構文チェック済み。
+MH Wilds OCR Step 1.25-C v4.2.8
+- DB template matching is not used for icon discovery.
+- Icon discovery remains limited to the left 12% of the source image.
+- Diagnostic canvas is displayed with the same aspect ratio/width scaling as the source image.
+- Row-chain scoring no longer rewards a uniformly spaced false chain too strongly; it uses candidate image score and the verified structural transition from upper rows to armor rows without hard-coded absolute coordinates.
+- OCR geometry remains the existing icon-right / anchor-center-Y / H=iconH / W=7x iconW rule.

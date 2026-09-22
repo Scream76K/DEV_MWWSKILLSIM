@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.2.4：左側40%・境界候補除外＋色特徴改善版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.2.8：候補列構造改善＋座標表示補正版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -19,6 +19,7 @@ button.primary{background:#536b3f;color:white;border-color:#435631;font-weight:7
 input[type=file]{width:100%}
 #stage{position:relative;overflow:auto;background:#222;border-radius:10px;padding:8px}
 #img{display:block;max-width:none;width:100%;height:auto}
+#iconAnchorView{display:block;width:100%;height:auto;max-width:100%;margin:0}
 #box{position:absolute;border:3px solid #e64b2f;background:rgba(230,75,47,.12);touch-action:none;cursor:move}
 .handle{position:absolute;width:18px;height:18px;background:#e64b2f;border-radius:50%}
 .tl{left:-9px;top:-9px}.tr{right:-9px;top:-9px}.bl{left:-9px;bottom:-9px}.br{right:-9px;bottom:-9px}
@@ -34,9 +35,9 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.2.2：左側50%限定・汎用アイコン検出＋DBアンカー版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.2.8：候補列構造改善＋座標表示補正版</h1>
 <div class="note">
-<b>v4.2.2：左側50%限定・汎用アイコン検出＋DBアンカー版</b><br>
+<b>v4.2.8：候補列構造改善＋座標表示補正版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
 まだシミュレータ本体には接続しません。装備名を個別OCRし、部位限定DB候補まで確認します。
 </div>
@@ -2557,14 +2558,28 @@ function v412FindRowChain(cands,srcH){
 }
 function v412ChainQuality(path,srcH){
   if(path.length<7)return -1e9;
-  const expectedSize=srcH*0.0592,expectedPitch=srcH*0.0855;
-  const pitches=[];for(let i=1;i<path.length;i++)pitches.push(path[i].y-path[i-1].y);
-  const med=v400Median(pitches)||expectedPitch;
-  const pitchErr=pitches.reduce((s,p)=>s+Math.abs(p-expectedPitch),0)/Math.max(1,pitches.length*expectedPitch);
-  const sizeErr=path.reduce((s,q)=>s+Math.abs(q.s-expectedSize),0)/(path.length*Math.max(1,expectedSize));
-  const xErr=path.reduce((s,q,i)=>i?s+Math.abs((q.x+q.s/2)-(path[0].x+path[0].s/2)):s,0)/Math.max(1,(path.length-1)*expectedSize);
-  const score=path.reduce((s,q)=>s+q.score,0)/path.length;
-  return path.length*100 + score*30 - pitchErr*120 - sizeErr*120 - xErr*18;
+  const expectedSize=srcH*0.0592;
+  // The verified equipment layout is intentionally NOT treated as one uniform
+  // pitch.  Its structure is approximately: upper row pitch, upper row pitch,
+  // one larger transition into the armor block, then a regular armor pitch.
+  // Use ratios only; do not hard-code absolute screen coordinates.
+  const pitches=[];
+  for(let i=1;i<path.length;i++) pitches.push(path[i].y-path[i-1].y);
+  const med=v400Median(pitches)||srcH*.0855;
+  const upperTarget=med;
+  const armorTarget=v400Median(pitches.slice(2))||med;
+  let pitchPenalty=0;
+  for(let i=0;i<pitches.length;i++){
+    const target=i===2 ? armorTarget*1.15 : (i<3 ? upperTarget : armorTarget);
+    pitchPenalty += Math.abs(pitches[i]-target)/Math.max(1,target);
+  }
+  // A false chain with perfectly regular pitch can otherwise beat the real
+  // equipment chain. Candidate image evidence therefore has substantial weight.
+  const scoreAvg=path.reduce((sum,q)=>sum+Number(q.score||0),0)/path.length;
+  const scoreMin=Math.min(...path.map(q=>Number(q.score||0)));
+  const sizeErr=path.reduce((sum,q)=>sum+Math.abs(q.s-expectedSize),0)/(path.length*Math.max(1,expectedSize));
+  const xErr=path.reduce((sum,q,i)=>i?sum+Math.abs((q.x+q.s/2)-(path[0].x+path[0].s/2)):sum,0)/Math.max(1,(path.length-1)*expectedSize);
+  return path.length*100 + scoreAvg*120 + scoreMin*35 - pitchPenalty*70 - sizeErr*80 - xErr*18;
 }
 function v412FrameGeometryFromDB(){
   // DB is NOT used for locating icons. Its only role here is to define the
@@ -2618,11 +2633,11 @@ async function v412Detect(){
     // built after we can inspect the raw candidates.
     const host=$('iconAnchorStage'),cv=$('iconAnchorView');
     host.style.display='block';cv.width=scene.w;cv.height=scene.h;
-    const ctx=cv.getContext('2d');ctx.clearRect(0,0,scene.w,scene.h);ctx.drawImage($('img'),0,0);
+    const ctx=cv.getContext('2d');ctx.clearRect(0,0,scene.w,scene.h);ctx.drawImage($('img'),0,0);cv.style.width='100%';cv.style.height='auto';cv.style.maxWidth='100%';cv.style.display='block';
     const top=cands.slice().sort((a,b)=>b.score-a.score).slice(0,30);
     top.forEach((c,i)=>{ctx.strokeStyle=i===0?'#ff3b30':'#00d5ff';ctx.lineWidth=i===0?4:2;ctx.strokeRect(c.x,c.y,c.s,c.s);ctx.fillStyle=i===0?'#ff3b30':'#00d5ff';ctx.font='bold 14px sans-serif';ctx.fillText(`#${i+1} ${c.score.toFixed(3)}`,c.x+2,Math.max(14,c.y-3));});
     const candText=top.map((c,i)=>`${i+1}. score=${c.score.toFixed(4)} / x=${c.x} y=${c.y} s=${c.s}`).join('\n');
-    $('iconAnchorOut').innerHTML=`<div class="result ok"><b>v4.2.7候補可視化：</b>DB一致検索0回 / 左12% / 生候補=${cands.length} / 9連続候補=${chain?.length||0}</div><div class="result"><b>上位30候補</b><div class="mono">${candText || '候補なし'}</div></div>`;
+    $('iconAnchorOut').innerHTML=`<div class="result ok"><b>v4.2.8候補可視化：</b>DB一致検索0回 / 左12% / 生候補=${cands.length} / 9連続候補=${chain?.length||0}<br><span class="mono">座標系：元画像 ${scene.w}×${scene.h}px / 表示canvasは元画像比率で100%縮小</span></div><div class="result"><b>上位30候補</b><div class="mono">${candText || '候補なし'}</div></div>`;
     if(chain&&chain.length>=9){
       const grid=v412BuildGridFromDetectedChain(chain,scene.w,scene.h);
       v400IconCandidates=chain.map((c,i)=>({...c,name:`検出アイコン${i+1}`,row:i}));
