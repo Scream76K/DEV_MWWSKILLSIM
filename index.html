@@ -827,6 +827,18 @@ function buildOCRWhitelist(dict){
     for(const ch of Array.from(s)) chars.add(ch);
   return [...chars].join('');
 }
+
+function buildEquipmentOCRWhitelist(){
+  // Equipment names contain kanji that may not appear in the weapon dictionary.
+  // Build the whitelist from the currently loaded equipment/charm master data,
+  // while retaining the full Japanese kana set and alpha/beta/gamma.
+  const names=[];
+  for(const item of (Array.isArray(weaponDB)?weaponDB:[])) names.push(item?.name);
+  for(const item of (Array.isArray(armorDB)?armorDB:[])) names.push(item?.name);
+  for(const item of (Array.isArray(charmDB)?charmDB:[])) names.push(item?.name);
+  return buildOCRWhitelist(names.filter(Boolean));
+}
+
 function makeNameOCRCanvas(mode,dx=0,dy=0,dw=0,dh=0){
   const q=nameRegion(),base=q.base;
   const x=Math.max(0,Math.min(99,q.x+dx)), y=Math.max(0,Math.min(99,q.y+dy));
@@ -2040,7 +2052,12 @@ async function recognizeEquipmentAll(){
     await Promise.all([ensureWeaponDB(),loadArmorDB(false),loadCharmDB(false)]);
     setEquipmentDBStatus(`武器 ${weaponDB.length.toLocaleString()}件 / 防具 ${armorDB.length.toLocaleString()}件 / 護石 ${charmDB.length.toLocaleString()}件`,'ok');
     const worker=await Tesseract.createWorker('jpn');
-    await worker.setParameters({tessedit_pageseg_mode:'7',preserve_interword_spaces:'1'});
+    const equipmentWhitelist=buildEquipmentOCRWhitelist();
+    await worker.setParameters({
+      tessedit_pageseg_mode:'7',
+      preserve_interword_spaces:'1',
+      tessedit_char_whitelist:equipmentWhitelist
+    });
     const output=[];
     for(const key of targets){
       const region=regions.find(r=>r.key===key); const items=equipmentRowsForSlot(key); const rows=[];
@@ -2312,9 +2329,6 @@ function v400LoadImage(file){return new Promise((resolve,reject)=>{const u=URL.c
 function v400ImageData(im){const w=Number(im.naturalWidth||im.width),h=Number(im.naturalHeight||im.height);if(!Number.isFinite(w)||!Number.isFinite(h)||w<1||h<1)throw new Error(`画像サイズが不正です：${w}×${h}`);const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(im,0,0);return {data:ctx.getImageData(0,0,w,h),w,h};}
 function v400Gray(src){const id=src?.data instanceof ImageData?src.data:src;const a=id?.data,w=Number(id?.width??src?.w),h=Number(id?.height??src?.h);if(!a||!Number.isFinite(w)||!Number.isFinite(h)||w<1||h<1)throw new Error(`グレースケール化する画像サイズが不正です：${w}×${h}`);const g=new Float32Array(w*h),mask=new Float32Array(w*h);for(let i=0,p=0;i<g.length;i++,p+=4){g[i]=.299*a[p]+.587*a[p+1]+.114*a[p+2];mask[i]=(a[p+3]??255)/255;}return {g,mask,w,h};}
 function v400Downsample(src,factor){const w=Math.max(1,Math.floor(src.w/factor)),h=Math.max(1,Math.floor(src.h/factor));const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d',{willReadFrequently:true});const tmp=document.createElement('canvas');tmp.width=src.w;tmp.height=src.h;const tx=tmp.getContext('2d',{willReadFrequently:true});const id=tx.createImageData(src.w,src.h);for(let i=0,p=0;i<src.g.length;i++,p+=4){const v=Math.max(0,Math.min(255,src.g[i]));id.data[p]=id.data[p+1]=id.data[p+2]=v;id.data[p+3]=Math.round(255*(src.mask?.[i]??1));}tx.putImageData(id,0,0);ctx.imageSmoothingEnabled=true;ctx.drawImage(tmp,0,0,w,h);return v400Gray(ctx.getImageData(0,0,w,h));}
-function v400Ncc(scene,t,x,y,step=2){if(x<0||y<0||x+t.w>scene.w||y+t.h>scene.h)return -Infinity;let sa=0,sb=0,n=0;for(let j=0;j<t.h;j+=step){const base=(y+j)*scene.w+x, tb=j*t.w;for(let i=0;i<t.w;i+=step){if((t.mask?.[tb+i]??1)<0.5)continue;sa+=scene.g[base+i];sb+=t.g[tb+i];n++;}}if(n<12)return -Infinity;const ma=sa/n,mb=sb/n;let num=0,da=0,db=0;for(let j=0;j<t.h;j+=step){const base=(y+j)*scene.w+x, tb=j*t.w;for(let i=0;i<t.w;i+=step){if((t.mask?.[tb+i]??1)<0.5)continue;const a=scene.g[base+i]-ma,b=t.g[tb+i]-mb;num+=a*b;da+=a*a;db+=b*b;}}const den=Math.sqrt((da+1e-9)*(db+1e-9));return den>0&&Number.isFinite(den)?num/den:-Infinity;}
-function v400Template(item,scale){const iw=Number(item.im.naturalWidth||item.im.width),ih=Number(item.im.naturalHeight||item.im.height);const w=Math.max(8,Math.round(iw*scale)),h=Math.max(8,Math.round(ih*scale));const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.imageSmoothingEnabled=true;ctx.drawImage(item.im,0,0,w,h);return v400Gray(ctx.getImageData(0,0,w,h));}
-async function v400Match(scene,item,minS=.70,maxS=1.30,stepS=.05){const factor=2,scene2=v400Downsample(scene,factor);let best=null;let guard=0;for(let s=minS;s<=maxS+1e-9&&guard<100;s+=stepS,guard++){const t=v400Template(item,s),t2=v400Downsample(t,factor);if(t2.w>=scene2.w||t2.h>=scene2.h)continue;let coarse=null;const maxX=Math.min(scene2.w-t2.w,Math.round(scene2.w*.38)),maxY=scene2.h-t2.h;for(let y=0;y<=maxY;y+=2)for(let x=0;x<=maxX;x+=2){const score=v400Ncc(scene2,t2,x,y,2);if(Number.isFinite(score)&&(!coarse||score>coarse.score))coarse={score,x,y};}if(coarse){const cx=coarse.x*factor,cy=coarse.y*factor;for(let y=Math.max(0,cy-8);y<=Math.min(scene.h-t.h,cy+8);y++)for(let x=Math.max(0,cx-8);x<=Math.min(scene.w-t.w,cx+8);x++){const score=v400Ncc(scene,t,x,y,2);if(Number.isFinite(score)&&(!best||score>best.score))best={score,x,y,w:t.w,h:t.h,scale:s};}}await new Promise(r=>setTimeout(r,0));}return best;}
 async function v400LoadBundledIcons(){
   v400IconItems=[];
   const targets=[
@@ -2332,7 +2346,7 @@ async function v400LoadBundledIcons(){
     const im=await v400LoadImage(f);
     v400IconItems.push({name,im,file:f,row:0,id});
   }
-  $('anchorDBStatus').textContent=`DBアンカー基準：${v400IconItems.length}枚（検索には使用しません）`;
+  $('anchorDBStatus').textContent=`DBアンカー基準：${v400IconItems.length}枚（検出検索には使用しません）`;
 }
 function v400EstimateSlotColumn(img, rows, startX, endX){
   // v4.0.4: keep the OCR band to the equipment-name column. The Wilds UI
@@ -2487,7 +2501,7 @@ function v412Nms(cands,limit=1800){
   return out;
 }
 function v412DetectCandidates(F,srcW,srcH){
-  // v4.2.5: restrict icon discovery to the LEFT 12% of the screenshot. The verified equipment icon column is near the left edge; wider ranges admit character/UI false positives.
+  // v4.2.6: restrict icon discovery to the LEFT 12% of the screenshot. The verified equipment icon column is near the left edge; wider ranges admit character/UI false positives.
   // Also reject candidates that touch the screenshot/panel edge. The previous
   // detector was locking onto the left UI frame at x≈2 instead of the actual
   // equipment icon at x≈26 in the verified sample.
@@ -2604,14 +2618,13 @@ async function v412Detect(){
     v400IconCandidates=chain.map((c,i)=>({...c,name:`検出アイコン${i+1}`,row:i}));
     v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=v400RegionsFromGrid(grid);
     v412Draw($('img'),grid);v412Render(grid,chain);
-    $('layoutStatus').textContent='v4.2.5 左側12%汎用アイコン検出＋境界候補除外→DBはアンカー基準のみ／表示矩形＝実OCR入力矩形';
+    $('layoutStatus').textContent='v4.2.6 左側12%汎用アイコン検出＋DB検索コード除去＋OCR whitelist→DBはアンカー基準のみ／表示矩形＝実OCR入力矩形';
     $('layoutOut').innerHTML='<div class="note">アイコンの存在位置は画像処理だけで検出しました。探索範囲はスクリーンショット左側12%に限定しています。14武器DBとの一致性は検索に使用していません。DBは検出済みアイコンの右下をアンカーとする幾何基準としてのみ使用しています。</div>';
     $('iconAnchorStatus').textContent=`完了：汎用アイコン列9個 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回 / 左端境界候補除外 / 左12%`;
     $('recognizeEquipment').disabled=false;
   }catch(e){console.error(e);$('iconAnchorStatus').textContent='アイコン検出エラー：'+e.message}
   finally{btn.disabled=false}
 }
-async function v400Detect(){if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return}if(!v400IconItems.length){$('iconAnchorStatus').textContent='DBアイコンがありません。';return}const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();try{$('iconAnchorStatus').textContent='画面内のアイコン枠を探索中…';const scene=v400Gray(v400ImageData($('img')));const out=[];for(const item of v400IconItems){const r=await v400Match(scene,item,.20,.60,.025);if(r)out.push({...r,name:item.name,row:item.row,dbImage:item.im});}v400IconCandidates=out.sort((a,b)=>b.score-a.score);if(!v400IconCandidates.length)throw new Error('アンカー候補がありません');const anchor=v400IconCandidates[0];const grid=v400BuildGrid(anchor,v400IconCandidates,$('img').naturalWidth||$('img').width,$('img').naturalHeight||$('img').height);v400IconGrid=grid;v400Draw($('img'),grid);v400Render();window.lastEquipmentRegions=v400RegionsFromGrid(grid);window.v400IconGrid=grid;$('layoutStatus').textContent='v4.2.5 左側12%汎用アイコン検出＋境界候補除外→DBはアンカー基準のみ／表示矩形＝実OCR入力矩形';$('layoutOut').innerHTML='<div class="note">DBアイコンアンカー方式で9部位を確定しました。以下の「装備名を一括認識」は、既存v3.1.2前処理・複数OCRをそのまま使用し、表示した黄色枠＝実際のOCR入力矩形を渡します。</div>';$('iconAnchorStatus').textContent=`完了：${anchor.name} / score=${anchor.score.toFixed(4)} / 9行 / ${(performance.now()-t0).toFixed(0)}ms`;$('recognizeEquipment').disabled=false;}catch(e){console.error(e);$('iconAnchorStatus').textContent='アンカー検出エラー：'+e.message}finally{btn.disabled=false}}
 $('detectIconAnchor').onclick=v412Detect;
 (async()=>{try{await v400LoadBundledIcons();}catch(e){$('anchorDBStatus').textContent='DBアイコン読み込み失敗：'+e.message;console.error(e);}})();
 
