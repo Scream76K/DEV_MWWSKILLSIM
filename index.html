@@ -61,10 +61,18 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>2-A. トップダウン装備9行グリッド（v4.4.0 プロトタイプ）</h2>
+<h2>2-0. 座標系統合監査（v4.4.1）</h2>
+<div class="note">検出条件・Grid条件・OCR条件はv4.4.0から変更しません。Raw Image、Canvas Buffer、CSS表示、ImageData、Grid座標の関係だけを監査します。</div>
+<button id="auditCoordinates" class="primary">🧭 座標系を監査</button>
+<div id="coordinateAuditStatus" class="status">未実行</div>
+<div id="coordinateAuditOut" style="margin-top:8px"></div>
+</div>
+
+<div class="card">
+<h2>2-A. トップダウン装備9行グリッド（v4.4.1 監査版）</h2>
 <div class="note">アイコンを探して行を決めるのではなく、左側UIに現れる水平セパレータの構造から8本の境界線→9行を推定します。v4.3.xのアイコン検出・DB検索はこのプロトタイプでは使用しません。まず画像上に9行の枠を描き、Yグリッドが正しく追従するかだけを検証します。</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-  <button id="detectTopDownGrid" class="primary">📐 トップダウン9行を検証</button>
+  <button id="detectTopDownGrid" class="primary">📐 トップダウン9行を検証（監査付き）</button>
 </div>
 <div id="topDownStatus" class="status">未実行</div>
 <div id="topDownOut" style="margin-top:8px"></div>
@@ -2815,6 +2823,72 @@ async function v432Detect(){
   finally{btn.disabled=false}
 }
 // ==============================
+
+// ==============================
+// v4.4.1 Coordinate Auditor
+// Observation only. Detection/Grid/OCR algorithms are unchanged.
+// ==============================
+function auditCoordinates(){
+  const im=$('img');
+  if(!im || !im.src){
+    $('coordinateAuditStatus').textContent='先に画像を選択してください。';
+    return;
+  }
+  const rawW=Number(im.naturalWidth||im.width);
+  const rawH=Number(im.naturalHeight||im.height);
+
+  // Exact analysis path used by v4.4.0:
+  // natural size -> same-size canvas -> ImageData.
+  const c=document.createElement('canvas');
+  c.width=rawW; c.height=rawH;
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  ctx.drawImage(im,0,0);
+  const id=ctx.getImageData(0,0,rawW,rawH);
+
+  const rect=im.getBoundingClientRect();
+  const top=$('topDownView');
+  const topRect=top?top.getBoundingClientRect():null;
+  const r=window.topDownGridResult||null;
+
+  const sceneW=r?.sceneWidth ?? null;
+  const sceneH=r?.sceneHeight ?? null;
+  const sx=(sceneW&&rawW)?rawW/sceneW:null;
+  const sy=(sceneH&&rawH)?rawH/sceneH:null;
+  const pitchNorm=(r?.pitch&&sceneH)?r.pitch/sceneH:null;
+
+  const lines=[
+    `RAW IMAGE       natural=${rawW}×${rawH}`,
+    `IMG CSS         client=${rect.width.toFixed(1)}×${rect.height.toFixed(1)}`,
+    `ANALYSIS        ImageData=${id.width}×${id.height}`,
+    `RAW→ANALYSIS    X=${(id.width/rawW).toFixed(6)} / Y=${(id.height/rawH).toFixed(6)}`,
+    `TOPDOWN CANVAS  buffer=${top?top.width+'×'+top.height:'-'} / CSS=${topRect?topRect.width.toFixed(1)+'×'+topRect.height.toFixed(1):'-'}`,
+    `GRID SOURCE     ${sceneW&&sceneH?sceneW+'×'+sceneH:'未実行'}`,
+    `GRID→RAW        ${sx!==null?'X='+sx.toFixed(6)+' / Y='+sy.toFixed(6):'未算出'}`,
+    `GRID NORMALIZED ${pitchNorm!==null?'pitch/H='+pitchNorm.toFixed(6):'未実行'}`
+  ];
+
+  const mismatch=sceneW&&sceneH&&(sceneW!==rawW||sceneH!==rawH);
+  $('coordinateAuditStatus').textContent=mismatch
+    ? '要確認：Gridの座標系とRaw画像サイズが一致していません。'
+    : '監査完了：Raw画像と解析ImageDataの座標を確認しました。';
+
+  let out=`<div class="result ${mismatch?'warn':'ok'}"><b>=== 座標系 統合監査ログ ===</b><div class="mono">${lines.join('\n')}</div></div>`;
+
+  if(r?.ok){
+    out+=`<div class="result"><b>Grid境界 / 9行</b><div class="mono">境界=${(r.separators||[]).join(', ')}
+pitch=${Number(r.pitch).toFixed(3)}
+9行=${(r.rows||[]).map(x=>`${x.row+1}: y=${x.y}, h=${x.height}`).join(' / ')}</div></div>`;
+  }
+  $('coordinateAuditOut').innerHTML=out;
+  return {rawW,rawH,analysisW:id.width,analysisH:id.height,sceneW,sceneH,sx,sy,pitchNorm};
+}
+$('auditCoordinates').onclick=()=>{
+  try{auditCoordinates()}catch(e){
+    console.error(e);
+    $('coordinateAuditStatus').textContent='座標監査エラー：'+e.message;
+  }
+};
+
 // v4.4.0 Top-down equipment-row prototype
 // Detect 8 horizontal separator lines, then derive 9 rows.
 // This stage deliberately does NOT use icon detection or DB matching.
@@ -2922,7 +2996,7 @@ function tdDraw(img,result){
 function tdRender(result){
   if(!result){$('topDownOut').innerHTML='';return;}
   const base=`<div class="result ok"><b>v4.4.0 トップダウン装備9行グリッド</b><br><span class="mono">アイコン検出=0回 / DB一致検索=0回 / 水平セパレータ→8境界→9行</span></div>`;
-  const scene=`<div class="result"><b>入力座標</b><div class="mono">scene=${result.sceneWidth||'-'}×${result.sceneHeight||'-'}px / 解析X=${result.profileX?result.profileX[0]+'～'+result.profileX[1]:'-'} / 平滑化半径=${result.smoothRadius||'-'}px</div></div>`;
+  const scene=`<div class="result"><b>入力座標</b><div class="mono">raw=${result.sceneWidth||'-'}×${result.sceneHeight||'-'}px / 解析X=${result.profileX?result.profileX[0]+'～'+result.profileX[1]:'-'} / 平滑化半径=${result.smoothRadius||'-'}px</div></div>`;
   if(!result.ok){$('topDownOut').innerHTML=base+scene+`<div class="result warn"><b>9行グリッド未成立</b><div class="mono">${result.reason||'不成立'} / 水平候補=${result.peaks?result.peaks.length:0}本</div></div>`;return;}
   const sep=result.separators.join(', ');
   const rows=result.rows.map(r=>`${r.row+1}. ${r.label}: x=${r.x}, y=${r.y}, ${r.width}×${r.height}`).join('\n');
