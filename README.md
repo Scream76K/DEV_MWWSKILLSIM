@@ -1,13 +1,10 @@
-# MH Wilds OCR Step 1.25-C v4.1.1
+# MH Wilds OCR — DBアイコン照合検証 v0.3
 
-## OCR DB icon frame rebuild
+v0.2でOpenCV.jsの`onRuntimeInitialized`登録順が原因で「OpenCV.jsがまだ準備できていません。」から進まない可能性があったため修正。
 
-- 14 weapon icons use the user-confirmed mapping.
-- Original supplied icon files are preserved byte-for-byte under `db_icons/weapon/raw/`.
-- The weapon artwork itself is never resized.
-- The in-game reference was measured as a 45×45 icon area with a 34×36 tight icon reference.
-- The DB frame is generated outside the original artwork using that measured geometric ratio.
-- The frame is a square dark/gray game-style border; transparent artwork background is excluded from NCC matching.
-- Framed PNGs use `compress_level=0` to avoid additional PNG compression.
-- The OCR matcher searches scales 0.20–0.60 because the framed DB assets retain the original icon resolution.
-- OCR geometry remains: icon bottom-right is the vertical center of the OCR band; OCR band height equals icon height and width is approximately 7× icon width.
+- `Module`をOpenCV.js読み込み前に定義
+- コールバックはグローバルフラグだけを立て、後続スクリプトのTDZを回避
+- `cv.Mat`を200ms間隔でポーリングするフォールバックを維持
+- DBアイコン照合→重ね合わせ→右下角→H/2上下OCR帯の検証ロジックは変更なし
+
+※OpenCV.jsは`https://docs.opencv.org/4.x/opencv.js`から読み込みます。インターネット接続がない環境では準備完了になりません。
