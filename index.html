@@ -2639,7 +2639,7 @@ function v435GridScore(candidates, seedX, seedY, pitch, width, height){
       picks.push(best);matched++;
       const cx=best.x+best.w*.5,cy=best.y+best.h*.5;
       xErr+=Math.abs(cx-seedX)/xTol;
-      if(i>0){const prev=picks[picks.length-2];const py=prev.y+prev.h*.5;pitchErr+=Math.abs((cy-py)-pitch)/Math.max(1,pitch);}
+      if(picks.length>=2){const prev=picks[picks.length-2];const py=prev.y+prev.h*.5;pitchErr+=Math.abs((cy-py)-pitch)/Math.max(1,pitch);}
     }
   }
   const coverage=matched/9;
