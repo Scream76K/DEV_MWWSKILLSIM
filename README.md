@@ -1,10 +1,45 @@
-# MH Wilds OCR — DBアイコン照合検証 v0.3
+# MH Wilds OCR Step 1.25-C v4.2.0
 
-v0.2でOpenCV.jsの`onRuntimeInitialized`登録順が原因で「OpenCV.jsがまだ準備できていません。」から進まない可能性があったため修正。
+## 方針変更（重要）
 
-- `Module`をOpenCV.js読み込み前に定義
-- コールバックはグローバルフラグだけを立て、後続スクリプトのTDZを回避
-- `cv.Mat`を200ms間隔でポーリングするフォールバックを維持
-- DBアイコン照合→重ね合わせ→右下角→H/2上下OCR帯の検証ロジックは変更なし
+この版では、**DBアイコンとの一致性を使って画面内のアイコンを探しません。**
 
-※OpenCV.jsは`https://docs.opencv.org/4.x/opencv.js`から読み込みます。インターネット接続がない環境では準備完了になりません。
+1. スクリーンショット自体の画像特徴（枠のエッジ、内部の色/変化、縦方向の反復配置）からアイコン枠候補を検出。
+2. 同じX付近に連続する9個のアイコン列を構造的に確定。
+3. その後でDBアイコンを参照し、**枠の幾何と右下アンカーの定義だけ**を適用。
+4. DBアイコンのテンプレート一致スコアは、アイコンの存在位置の決定には使用しない。
+5. アンカー確定後は、従来のOCR前処理5方式・複数OCR・DB候補照合を使用。
+
+## DBの役割
+
+`db_icons/weapon/` の14武器アイコンは、ビルドUIでも使用する原画像系DBです。
+OCR側では、これらを画面全体へテンプレートマッチさせません。
+
+## GitHub配置
+
+`index.html` と同じ階層に `db_icons/weapon/` を置いてください。
+
+```text
+index.html
+db_icons/
+└─ weapon/
+   ├─ greatsword.png
+   ├─ longsword.png
+   ├─ sword_shield.png
+   ├─ dual_blades.png
+   ├─ hammer.png
+   ├─ hunting_horn.png
+   ├─ lance.png
+   ├─ gunlance.png
+   ├─ switch_axe.png
+   ├─ charge_blade.png
+   ├─ insect_glaive.png
+   ├─ light_bowgun.png
+   ├─ heavy_bowgun.png
+   └─ bow.png
+```
+
+## 注意
+
+v4.2.0はまず「アイコン検出→アンカー→OCR枠」の接続を検証する版です。
+実スクリーンショットで9個の枠が正しく検出できることを確認してから、必要に応じて検出器の閾値だけを調整します。
