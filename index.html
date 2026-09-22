@@ -2686,7 +2686,7 @@ async function v432Detect(){
     $('iconAnchorStatus').textContent='画面左側からアイコン構造を個別検出中…';
     const scene=v400ImageData($('img'));
     const cands=v432DetectIconComponents(scene);
-    const grid=v432BuildRows(cands,scene.w,scene.h);
+    const grid=v433BuildRows(cands,scene.w,scene.h);
     v432Draw($('img'),grid,cands);
     v432Render(cands,grid);
     if(grid){

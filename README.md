@@ -1,4 +1,4 @@
-# MH Wilds OCR Step 1.25-C v4.3.3
+# MH Wilds OCR Step 1.25-C v4.3.4
 
 ## 変更点
 - DB一致検索は0回。スクリーンショット左側12%からアイコンcoreを直接検出。
