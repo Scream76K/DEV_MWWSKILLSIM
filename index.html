@@ -2613,15 +2613,30 @@ async function v412Detect(){
     const scene=v400ImageData($('img')),F=v412BuildFeatureImage(scene,2);
     const cands=v412DetectCandidates(F,scene.w,scene.h);
     const chain=v412FindRowChain(cands,scene.h);
-    if(!chain||chain.length<9)throw new Error(`9個の連続アイコンを確定できませんでした（候補${cands.length} / 連続${chain?.length||0}）`);
-    const grid=v412BuildGridFromDetectedChain(chain,scene.w,scene.h);
-    v400IconCandidates=chain.map((c,i)=>({...c,name:`検出アイコン${i+1}`,row:i}));
-    v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=v400RegionsFromGrid(grid);
-    v412Draw($('img'),grid);v412Render(grid,chain);
-    $('layoutStatus').textContent='v4.2.6 左側12%汎用アイコン検出＋DB検索コード除去＋OCR whitelist→DBはアンカー基準のみ／表示矩形＝実OCR入力矩形';
-    $('layoutOut').innerHTML='<div class="note">アイコンの存在位置は画像処理だけで検出しました。探索範囲はスクリーンショット左側12%に限定しています。14武器DBとの一致性は検索に使用していません。DBは検出済みアイコンの右下をアンカーとする幾何基準としてのみ使用しています。</div>';
-    $('iconAnchorStatus').textContent=`完了：汎用アイコン列9個 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回 / 左端境界候補除外 / 左12%`;
-    $('recognizeEquipment').disabled=false;
+    // v4.2.7: candidate visualization is the primary diagnostic. Do not let a
+    // forced 9-row chain hide a wrong first candidate. The chain/grid is only
+    // built after we can inspect the raw candidates.
+    const host=$('iconAnchorStage'),cv=$('iconAnchorView');
+    host.style.display='block';cv.width=scene.w;cv.height=scene.h;
+    const ctx=cv.getContext('2d');ctx.clearRect(0,0,scene.w,scene.h);ctx.drawImage($('img'),0,0);
+    const top=cands.slice().sort((a,b)=>b.score-a.score).slice(0,30);
+    top.forEach((c,i)=>{ctx.strokeStyle=i===0?'#ff3b30':'#00d5ff';ctx.lineWidth=i===0?4:2;ctx.strokeRect(c.x,c.y,c.s,c.s);ctx.fillStyle=i===0?'#ff3b30':'#00d5ff';ctx.font='bold 14px sans-serif';ctx.fillText(`#${i+1} ${c.score.toFixed(3)}`,c.x+2,Math.max(14,c.y-3));});
+    const candText=top.map((c,i)=>`${i+1}. score=${c.score.toFixed(4)} / x=${c.x} y=${c.y} s=${c.s}`).join('\n');
+    $('iconAnchorOut').innerHTML=`<div class="result ok"><b>v4.2.7候補可視化：</b>DB一致検索0回 / 左12% / 生候補=${cands.length} / 9連続候補=${chain?.length||0}</div><div class="result"><b>上位30候補</b><div class="mono">${candText || '候補なし'}</div></div>`;
+    if(chain&&chain.length>=9){
+      const grid=v412BuildGridFromDetectedChain(chain,scene.w,scene.h);
+      v400IconCandidates=chain.map((c,i)=>({...c,name:`検出アイコン${i+1}`,row:i}));
+      v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=v400RegionsFromGrid(grid);
+      v412Render(grid,chain);
+      $('layoutStatus').textContent='v4.2.7 候補可視化＋9行生成（9連続成立時のみ）／DBはアンカー基準のみ';
+      $('layoutOut').innerHTML='<div class="note">まず生のアイコン候補を可視化しています。9行グリッドは9個の連続候補が成立した場合のみ生成します。DB一致検索はしていません。</div>';
+      $('iconAnchorStatus').textContent=`完了：候補可視化＋汎用アイコン列9個 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回 / 左12%`;
+      $('recognizeEquipment').disabled=false;
+    }else{
+      v400IconCandidates=[];v400IconGrid=null;window.lastEquipmentRegions=[];
+      $('recognizeEquipment').disabled=true;
+      $('iconAnchorStatus').textContent=`候補可視化完了：生候補${cands.length} / 9連続${chain?.length||0} / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回`;
+    }
   }catch(e){console.error(e);$('iconAnchorStatus').textContent='アイコン検出エラー：'+e.message}
   finally{btn.disabled=false}
 }
