@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.2.2：左側50%限定・汎用アイコン検出＋DBアンカー版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.2.4：左側40%・境界候補除外＋色特徴改善版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -2441,20 +2441,29 @@ function v412RectSum(I,w,x,y,rw,rh){
   return I[y2*W+x2]-I[y1*W+x2]-I[y2*W+x1]+I[y1*W+x1];
 }
 function v412BuildFeatureImage(src,factor=2){
-  const w=Math.max(1,Math.floor(src.w/factor)),h=Math.max(1,Math.floor(src.h/factor));
+  const sw=Number(src?.w||0), sh=Number(src?.h||0);
+  const srcData=src?.data instanceof ImageData ? src.data.data : null;
+  const w=Math.max(1,Math.floor(sw/factor)),h=Math.max(1,Math.floor(sh/factor));
   const c=document.createElement('canvas');c.width=w;c.height=h;
   const ctx=c.getContext('2d',{willReadFrequently:true});ctx.imageSmoothingEnabled=true;
-  const tmp=document.createElement('canvas');tmp.width=src.w;tmp.height=src.h;
+  const tmp=document.createElement('canvas');tmp.width=sw;tmp.height=sh;
   const tx=tmp.getContext('2d',{willReadFrequently:true});
-  const id=tx.createImageData(src.w,src.h);
-  for(let i=0,p=0;i<src.g.length;i++,p+=4){const v=src.g[i];id.data[p]=id.data[p+1]=id.data[p+2]=v;id.data[p+3]=255;}
-  tx.putImageData(id,0,0);ctx.drawImage(tmp,0,0,w,h);
-  const gray=ctx.getImageData(0,0,w,h);
-  const g=new Float32Array(w*h),sat=new Float32Array(w*h);
-  for(let i=0,p=0;i<g.length;i++,p+=4){g[i]=gray.data[p];}
-  // Re-read RGB for saturation; keep it lightweight at the downsampled size.
+  if(srcData){
+    const id=new ImageData(new Uint8ClampedArray(srcData),sw,sh);
+    tx.putImageData(id,0,0);
+  }else{
+    const id=tx.createImageData(sw,sh);
+    for(let i=0,p=0;i<(src?.g?.length||0);i++,p+=4){const v=src.g[i];id.data[p]=id.data[p+1]=id.data[p+2]=v;id.data[p+3]=255;}
+    tx.putImageData(id,0,0);
+  }
+  ctx.drawImage(tmp,0,0,w,h);
   const rgb=ctx.getImageData(0,0,w,h).data;
-  for(let i=0,p=0;i<sat.length;i++,p+=4){const mx=Math.max(rgb[p],rgb[p+1],rgb[p+2]),mn=Math.min(rgb[p],rgb[p+1],rgb[p+2]);sat[i]=mx-mn;}
+  const g=new Float32Array(w*h),sat=new Float32Array(w*h);
+  for(let i=0,p=0;i<g.length;i++,p+=4){
+    g[i]=.299*rgb[p]+.587*rgb[p+1]+.114*rgb[p+2];
+    const mx=Math.max(rgb[p],rgb[p+1],rgb[p+2]),mn=Math.min(rgb[p],rgb[p+1],rgb[p+2]);
+    sat[i]=mx-mn;
+  }
   const gx=new Float32Array(w*h),gy=new Float32Array(w*h),mag=new Float32Array(w*h);
   for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
     const i=y*w+x;
@@ -2478,18 +2487,24 @@ function v412Nms(cands,limit=1800){
   return out;
 }
 function v412DetectCandidates(F,srcW,srcH){
-  // v4.2.3: restrict icon discovery to the LEFT 40% of the screenshot.
-  // This is deliberately a search-window constraint, not a DB/template match.
-  // The right-side skill/status boxes are therefore excluded before candidate
-  // scoring. Coordinates returned below remain in the original screenshot space.
+  // v4.2.4: restrict icon discovery to the LEFT 40% of the screenshot.
+  // Also reject candidates that touch the screenshot/panel edge. The previous
+  // detector was locking onto the left UI frame at x≈2 instead of the actual
+  // equipment icon at x≈26 in the verified sample.
   const searchW=Math.max(1,Math.floor(F.w*.40));
+  const edgeX=Math.max(5,Math.round(srcW*.012));
+  const edgeY=Math.max(5,Math.round(srcH*.012));
   const minS=Math.max(14,Math.round(srcH*.035/2)), maxS=Math.min(Math.round(Math.min(searchW,F.h)*.14),Math.round(srcH*.090/2));
   const sizes=[];for(let s=minS;s<=maxS;s+=Math.max(2,Math.round((maxS-minS)/7)))sizes.push(s);
   const c=[];
   for(const s of sizes){
     for(let y=4;y<F.h-s-4;y+=2)for(let x=2;x<searchW-s-2;x+=2){
       const score=v412CandidateScore(F,x,y,s);
-      if(score>=.38)c.push({score,x:x*2,y:y*2,s:s*2});
+      const ox=x*2, oy=y*2, os=s*2;
+      // Do not accept a box whose outer edge is effectively the screen/panel edge.
+      // This is geometry filtering, not DB matching.
+      if(ox<edgeX || oy<edgeY || ox+os>srcW-edgeX) continue;
+      if(score>=.38)c.push({score,x:ox,y:oy,s:os});
     }
   }
   return v412Nms(c);
@@ -2578,7 +2593,7 @@ async function v412Detect(){
   const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();
   try{
     $('iconAnchorStatus').textContent='DBを使わず、画面左側40%のアイコン枠を探索中…';
-    const scene=v400ImageData($('img')),F=v412BuildFeatureImage(v400Gray(scene),2);
+    const scene=v400ImageData($('img')),F=v412BuildFeatureImage(scene,2);
     const cands=v412DetectCandidates(F,scene.w,scene.h);
     const chain=v412FindRowChain(cands,scene.h);
     if(!chain||chain.length<9)throw new Error(`9個の連続アイコンを確定できませんでした（候補${cands.length} / 連続${chain?.length||0}）`);
@@ -2586,14 +2601,14 @@ async function v412Detect(){
     v400IconCandidates=chain.map((c,i)=>({...c,name:`検出アイコン${i+1}`,row:i}));
     v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=v400RegionsFromGrid(grid);
     v412Draw($('img'),grid);v412Render(grid,chain);
-    $('layoutStatus').textContent='v4.2.3 左側40%汎用アイコン検出→DBはアンカー位置補正のみ／表示矩形＝実OCR入力矩形';
+    $('layoutStatus').textContent='v4.2.4 左側40%汎用アイコン検出＋境界候補除外→DBはアンカー位置補正のみ／表示矩形＝実OCR入力矩形';
     $('layoutOut').innerHTML='<div class="note">アイコンの存在位置は画像処理だけで検出しました。探索範囲はスクリーンショット左側40%に限定しています。14武器DBとの一致性は検索に使用していません。DBは検出済みアイコンの右下をアンカーとする幾何基準としてのみ使用しています。</div>';
-    $('iconAnchorStatus').textContent=`完了：汎用アイコン列9個 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回`;
+    $('iconAnchorStatus').textContent=`完了：汎用アイコン列9個 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回 / 左端境界候補除外`;
     $('recognizeEquipment').disabled=false;
   }catch(e){console.error(e);$('iconAnchorStatus').textContent='アイコン検出エラー：'+e.message}
   finally{btn.disabled=false}
 }
-async function v400Detect(){if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return}if(!v400IconItems.length){$('iconAnchorStatus').textContent='DBアイコンがありません。';return}const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();try{$('iconAnchorStatus').textContent='画面内のアイコン枠を探索中…';const scene=v400Gray(v400ImageData($('img')));const out=[];for(const item of v400IconItems){const r=await v400Match(scene,item,.20,.60,.025);if(r)out.push({...r,name:item.name,row:item.row,dbImage:item.im});}v400IconCandidates=out.sort((a,b)=>b.score-a.score);if(!v400IconCandidates.length)throw new Error('アンカー候補がありません');const anchor=v400IconCandidates[0];const grid=v400BuildGrid(anchor,v400IconCandidates,$('img').naturalWidth||$('img').width,$('img').naturalHeight||$('img').height);v400IconGrid=grid;v400Draw($('img'),grid);v400Render();window.lastEquipmentRegions=v400RegionsFromGrid(grid);window.v400IconGrid=grid;$('layoutStatus').textContent='v4.2.3 左側40%汎用アイコン検出→DBはアンカー位置補正のみ／表示矩形＝実OCR入力矩形';$('layoutOut').innerHTML='<div class="note">DBアイコンアンカー方式で9部位を確定しました。以下の「装備名を一括認識」は、既存v3.1.2前処理・複数OCRをそのまま使用し、表示した黄色枠＝実際のOCR入力矩形を渡します。</div>';$('iconAnchorStatus').textContent=`完了：${anchor.name} / score=${anchor.score.toFixed(4)} / 9行 / ${(performance.now()-t0).toFixed(0)}ms`;$('recognizeEquipment').disabled=false;}catch(e){console.error(e);$('iconAnchorStatus').textContent='アンカー検出エラー：'+e.message}finally{btn.disabled=false}}
+async function v400Detect(){if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return}if(!v400IconItems.length){$('iconAnchorStatus').textContent='DBアイコンがありません。';return}const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();try{$('iconAnchorStatus').textContent='画面内のアイコン枠を探索中…';const scene=v400Gray(v400ImageData($('img')));const out=[];for(const item of v400IconItems){const r=await v400Match(scene,item,.20,.60,.025);if(r)out.push({...r,name:item.name,row:item.row,dbImage:item.im});}v400IconCandidates=out.sort((a,b)=>b.score-a.score);if(!v400IconCandidates.length)throw new Error('アンカー候補がありません');const anchor=v400IconCandidates[0];const grid=v400BuildGrid(anchor,v400IconCandidates,$('img').naturalWidth||$('img').width,$('img').naturalHeight||$('img').height);v400IconGrid=grid;v400Draw($('img'),grid);v400Render();window.lastEquipmentRegions=v400RegionsFromGrid(grid);window.v400IconGrid=grid;$('layoutStatus').textContent='v4.2.4 左側40%汎用アイコン検出＋境界候補除外→DBはアンカー位置補正のみ／表示矩形＝実OCR入力矩形';$('layoutOut').innerHTML='<div class="note">DBアイコンアンカー方式で9部位を確定しました。以下の「装備名を一括認識」は、既存v3.1.2前処理・複数OCRをそのまま使用し、表示した黄色枠＝実際のOCR入力矩形を渡します。</div>';$('iconAnchorStatus').textContent=`完了：${anchor.name} / score=${anchor.score.toFixed(4)} / 9行 / ${(performance.now()-t0).toFixed(0)}ms`;$('recognizeEquipment').disabled=false;}catch(e){console.error(e);$('iconAnchorStatus').textContent='アンカー検出エラー：'+e.message}finally{btn.disabled=false}}
 $('detectIconAnchor').onclick=v412Detect;
 (async()=>{try{await v400LoadBundledIcons();}catch(e){$('anchorDBStatus').textContent='DBアイコン読み込み失敗：'+e.message;console.error(e);}})();
 
