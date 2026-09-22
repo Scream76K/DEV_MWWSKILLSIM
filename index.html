@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.0.9：DBアイコン下端アンカーOCR修正版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.1.1：ゲーム比率フレーム付き14武器DB版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,9 +34,9 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.0.9：DBアイコン下端アンカーOCR修正版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.1.1：ゲーム比率フレーム付き14武器DB版</h1>
 <div class="note">
-<b>v4.0.9：DBアイコン下端アンカーOCR修正版</b><br>
+<b>v4.1.1：ゲーム比率フレーム付き14武器DB版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
 まだシミュレータ本体には接続しません。装備名を個別OCRし、部位限定DB候補まで確認します。
 </div>
@@ -550,7 +550,7 @@ function equipmentNameCropRectV312(region, imageWidth, imageHeight) {
       return {
         ...rect,
         pitch,
-        source:'v4.0.9-db-icon-bottomright',
+        source:'v4.1.1-db-icon-bottomright',
         anchorRect:{x:ix,y:iy,width:iw0,height:ih0},
         nameAnchor:{x:rect.x,y:rect.y,width:rect.width,height:rect.height}
       };
@@ -2310,20 +2310,29 @@ let v400IconGrid=null;
 function v400Median(values){const a=values.filter(Number.isFinite).slice().sort((x,y)=>x-y);if(!a.length)return null;const m=Math.floor(a.length/2);return a.length%2?a[m]:(a[m-1]+a[m])/2;}
 function v400LoadImage(file){return new Promise((resolve,reject)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{URL.revokeObjectURL(u);resolve(im)};im.onerror=reject;im.src=u;});}
 function v400ImageData(im){const w=Number(im.naturalWidth||im.width),h=Number(im.naturalHeight||im.height);if(!Number.isFinite(w)||!Number.isFinite(h)||w<1||h<1)throw new Error(`画像サイズが不正です：${w}×${h}`);const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(im,0,0);return {data:ctx.getImageData(0,0,w,h),w,h};}
-function v400Gray(src){const id=src?.data instanceof ImageData?src.data:src;const a=id?.data,w=Number(id?.width??src?.w),h=Number(id?.height??src?.h);if(!a||!Number.isFinite(w)||!Number.isFinite(h)||w<1||h<1)throw new Error(`グレースケール化する画像サイズが不正です：${w}×${h}`);const g=new Float32Array(w*h);for(let i=0,p=0;i<g.length;i++,p+=4)g[i]=.299*a[p]+.587*a[p+1]+.114*a[p+2];return {g,w,h};}
-function v400Downsample(src,factor){const w=Math.max(1,Math.floor(src.w/factor)),h=Math.max(1,Math.floor(src.h/factor));const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d',{willReadFrequently:true});const tmp=document.createElement('canvas');tmp.width=src.w;tmp.height=src.h;const tx=tmp.getContext('2d',{willReadFrequently:true});const id=tx.createImageData(src.w,src.h);for(let i=0,p=0;i<src.g.length;i++,p+=4){const v=Math.max(0,Math.min(255,src.g[i]));id.data[p]=id.data[p+1]=id.data[p+2]=v;id.data[p+3]=255;}tx.putImageData(id,0,0);ctx.imageSmoothingEnabled=true;ctx.drawImage(tmp,0,0,w,h);return v400Gray(ctx.getImageData(0,0,w,h));}
-function v400Ncc(scene,t,x,y,step=2){if(x<0||y<0||x+t.w>scene.w||y+t.h>scene.h)return -Infinity;let sa=0,sb=0,n=0;for(let j=0;j<t.h;j+=step){const base=(y+j)*scene.w+x;for(let i=0;i<t.w;i+=step){sa+=scene.g[base+i];sb+=t.g[j*t.w+i];n++;}}if(!n)return -Infinity;const ma=sa/n,mb=sb/n;let num=0,da=0,db=0;for(let j=0;j<t.h;j+=step){const base=(y+j)*scene.w+x;for(let i=0;i<t.w;i+=step){const a=scene.g[base+i]-ma,b=t.g[j*t.w+i]-mb;num+=a*b;da+=a*a;db+=b*b;}}const den=Math.sqrt((da+1e-9)*(db+1e-9));return den>0&&Number.isFinite(den)?num/den:-Infinity;}
+function v400Gray(src){const id=src?.data instanceof ImageData?src.data:src;const a=id?.data,w=Number(id?.width??src?.w),h=Number(id?.height??src?.h);if(!a||!Number.isFinite(w)||!Number.isFinite(h)||w<1||h<1)throw new Error(`グレースケール化する画像サイズが不正です：${w}×${h}`);const g=new Float32Array(w*h),mask=new Float32Array(w*h);for(let i=0,p=0;i<g.length;i++,p+=4){g[i]=.299*a[p]+.587*a[p+1]+.114*a[p+2];mask[i]=(a[p+3]??255)/255;}return {g,mask,w,h};}
+function v400Downsample(src,factor){const w=Math.max(1,Math.floor(src.w/factor)),h=Math.max(1,Math.floor(src.h/factor));const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d',{willReadFrequently:true});const tmp=document.createElement('canvas');tmp.width=src.w;tmp.height=src.h;const tx=tmp.getContext('2d',{willReadFrequently:true});const id=tx.createImageData(src.w,src.h);for(let i=0,p=0;i<src.g.length;i++,p+=4){const v=Math.max(0,Math.min(255,src.g[i]));id.data[p]=id.data[p+1]=id.data[p+2]=v;id.data[p+3]=Math.round(255*(src.mask?.[i]??1));}tx.putImageData(id,0,0);ctx.imageSmoothingEnabled=true;ctx.drawImage(tmp,0,0,w,h);return v400Gray(ctx.getImageData(0,0,w,h));}
+function v400Ncc(scene,t,x,y,step=2){if(x<0||y<0||x+t.w>scene.w||y+t.h>scene.h)return -Infinity;let sa=0,sb=0,n=0;for(let j=0;j<t.h;j+=step){const base=(y+j)*scene.w+x, tb=j*t.w;for(let i=0;i<t.w;i+=step){if((t.mask?.[tb+i]??1)<0.5)continue;sa+=scene.g[base+i];sb+=t.g[tb+i];n++;}}if(n<12)return -Infinity;const ma=sa/n,mb=sb/n;let num=0,da=0,db=0;for(let j=0;j<t.h;j+=step){const base=(y+j)*scene.w+x, tb=j*t.w;for(let i=0;i<t.w;i+=step){if((t.mask?.[tb+i]??1)<0.5)continue;const a=scene.g[base+i]-ma,b=t.g[tb+i]-mb;num+=a*b;da+=a*a;db+=b*b;}}const den=Math.sqrt((da+1e-9)*(db+1e-9));return den>0&&Number.isFinite(den)?num/den:-Infinity;}
 function v400Template(item,scale){const iw=Number(item.im.naturalWidth||item.im.width),ih=Number(item.im.naturalHeight||item.im.height);const w=Math.max(8,Math.round(iw*scale)),h=Math.max(8,Math.round(ih*scale));const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.imageSmoothingEnabled=true;ctx.drawImage(item.im,0,0,w,h);return v400Gray(ctx.getImageData(0,0,w,h));}
 async function v400Match(scene,item,minS=.70,maxS=1.30,stepS=.05){const factor=2,scene2=v400Downsample(scene,factor);let best=null;let guard=0;for(let s=minS;s<=maxS+1e-9&&guard<100;s+=stepS,guard++){const t=v400Template(item,s),t2=v400Downsample(t,factor);if(t2.w>=scene2.w||t2.h>=scene2.h)continue;let coarse=null;const maxX=Math.min(scene2.w-t2.w,Math.round(scene2.w*.38)),maxY=scene2.h-t2.h;for(let y=0;y<=maxY;y+=2)for(let x=0;x<=maxX;x+=2){const score=v400Ncc(scene2,t2,x,y,2);if(Number.isFinite(score)&&(!coarse||score>coarse.score))coarse={score,x,y};}if(coarse){const cx=coarse.x*factor,cy=coarse.y*factor;for(let y=Math.max(0,cy-8);y<=Math.min(scene.h-t.h,cy+8);y++)for(let x=Math.max(0,cx-8);x<=Math.min(scene.w-t.w,cx+8);x++){const score=v400Ncc(scene,t,x,y,2);if(Number.isFinite(score)&&(!best||score>best.score))best={score,x,y,w:t.w,h:t.h,scale:s};}}await new Promise(r=>setTimeout(r,0));}return best;}
 async function v400LoadBundledIcons(){
   v400IconItems=[];
-  const paths=[
-    ['db_icons/main_weapon_sample.png','メイン武器アイコン',0],
-    ['db_icons/head_armor_sample.png','頭防具アイコン',2],
-    ['db_icons/chest_armor_sample.png','胴防具アイコン',3]
+  const targets=[
+    ['greatsword','大剣'],['sword_shield','片手剣'],['longsword','太刀'],['dual_blades','双剣'],
+    ['hammer','ハンマー'],['lance','ランス'],['light_bowgun','ライトボウガン'],['heavy_bowgun','ヘビィボウガン'],
+    ['bow','弓'],['charge_blade','チャージアックス'],['switch_axe','スラッシュアックス'],['hunting_horn','狩猟笛'],
+    ['insect_glaive','操虫棍'],['gunlance','ガンランス']
   ];
-  for(const [path,name,row] of paths){const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw new Error(`${path} HTTP ${r.status}`);const b=await r.blob();const f=new File([b],path.split('/').pop(),{type:b.type||'image/png'});const im=await v400LoadImage(f);v400IconItems.push({name,im,file:f,row});}
-  $('anchorDBStatus').textContent=`DBアイコン：${v400IconItems.length}枚（メイン・頭・胴）を読み込み済み`;
+  for(const [id,name] of targets){
+    const path=`db_icons/weapon/${id}.png`;
+    const r=await fetch(path,{cache:'no-store'});
+    if(!r.ok)throw new Error(`${path} HTTP ${r.status}`);
+    const b=await r.blob();
+    const f=new File([b],`${id}.png`,{type:'image/png'});
+    const im=await v400LoadImage(f);
+    v400IconItems.push({name,im,file:f,row:0,id});
+  }
+  $('anchorDBStatus').textContent=`DBアイコン：${v400IconItems.length}枚（14武器種・原寸アイコン＋実ゲーム比率フレーム）を読み込み済み`;
 }
 function v400EstimateSlotColumn(img, rows, startX, endX){
   // v4.0.4: keep the OCR band to the equipment-name column. The Wilds UI
@@ -2406,7 +2415,7 @@ function v400RegionsFromGrid(grid){
 }
 function v400Draw(img,grid){const host=$('iconAnchorStage'),c=$('iconAnchorView');host.style.display='block';const iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;c.width=iw;c.height=ih;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const a=grid.anchor;ctx.strokeStyle='#ff3b30';ctx.lineWidth=4;ctx.strokeRect(a.x,a.y,a.w,a.h);ctx.fillStyle='#ff3b30';ctx.font='bold 18px sans-serif';ctx.fillText(`ANCHOR ${a.name} ${a.score.toFixed(4)}`,a.x+5,Math.max(22,a.y-7));ctx.fillStyle='#9cff57';ctx.beginPath();ctx.arc(a.x+a.w,a.y+a.h,6,0,Math.PI*2);ctx.fill();for(const r of grid.rows){ctx.strokeStyle='#00d5ff';ctx.lineWidth=2;ctx.strokeRect(r.icon.x,r.icon.y,r.icon.w,r.icon.h);ctx.strokeStyle='#ffd000';ctx.lineWidth=3;ctx.strokeRect(r.ocr.x,r.ocr.y,r.ocr.w,r.ocr.h);ctx.fillStyle='#00d5ff';ctx.font='bold 16px sans-serif';ctx.fillText(`${r.row+1}:${r.label}`,r.icon.x+3,Math.max(18,r.icon.y-4));}}
 function v400Render(){const g=v400IconGrid,a=g.anchor,cal=g.calibration;const fmt=c=>c?`x=${c.x} y=${c.y} score=${c.score.toFixed(4)}`:'未検出';$('iconAnchorOut').innerHTML=`<div class="result ok"><b>採用アンカー：</b>${a.name}<br><span class="mono">score=${a.score.toFixed(4)} / row=${a.row+1} / icon x=${a.x} y=${a.y} w=${a.w} h=${a.h}<br>OCR入力：v0.9.3検証済み式 / X=icon右 / Y=icon上+50%H / H=100%H / W=7×iconW / 推定字高=${Math.round(Math.max(8,Number(g.anchor?.h||45)*0.28))}px / 目標字高=40px / scale≈${(40/Math.max(8,Number(g.anchor?.h||45)*0.28)).toFixed(2)}x<br>右下角 = (${a.x+a.w}, ${a.y+a.h})<br>上段ピッチ = ${g.topPitch.toFixed(2)} px / 防具ピッチ = ${g.armorPitch.toFixed(2)} px / OCR右端 = ${g.ocrRight ?? 'fallback'} px / スロット列 = ${g.slotX ?? '未検出'}<br>校正：メイン[${fmt(cal.main)}] / 頭[${fmt(cal.head)}] / 胴[${fmt(cal.chest)}]</span></div>`+v400IconCandidates.map(c=>`<div class="result"><b>${c.name}</b> / ${V400_ICON_TARGETS[c.row]?.label||''}<div class="mono">score=${c.score.toFixed(4)} / x=${c.x} y=${c.y} w=${c.w} h=${c.h}${c===a?' ← 採用アンカー':''}</div></div>`).join('')+`<div class="result"><b>生成された9行</b><div class="mono">${g.rows.map(r=>`${r.row+1}. ${r.label}: icon (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / right-bottom (${r.anchor.x},${r.anchor.y}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n')}</div></div>`;}
-async function v400Detect(){if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return}if(!v400IconItems.length){$('iconAnchorStatus').textContent='DBアイコンがありません。';return}const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();try{$('iconAnchorStatus').textContent='DBアイコンを探索中…';const scene=v400Gray(v400ImageData($('img')));const out=[];for(const item of v400IconItems){const r=await v400Match(scene,item,.70,1.30,.05);if(r)out.push({...r,name:item.name,row:item.row,dbImage:item.im});}v400IconCandidates=out.sort((a,b)=>b.score-a.score);if(!v400IconCandidates.length)throw new Error('アンカー候補がありません');const anchor=v400IconCandidates[0];const grid=v400BuildGrid(anchor,v400IconCandidates,$('img').naturalWidth||$('img').width,$('img').naturalHeight||$('img').height);v400IconGrid=grid;v400Draw($('img'),grid);v400Render();window.lastEquipmentRegions=v400RegionsFromGrid(grid);window.v400IconGrid=grid;$('layoutStatus').textContent='v4.0.9 DBアイコン下端アンカー方式：表示矩形＝実OCR入力矩形';$('layoutOut').innerHTML='<div class="note">DBアイコンアンカー方式で9部位を確定しました。以下の「装備名を一括認識」は、既存v3.1.2前処理・複数OCRをそのまま使用し、表示した黄色枠＝実際のOCR入力矩形を渡します。</div>';$('iconAnchorStatus').textContent=`完了：${anchor.name} / score=${anchor.score.toFixed(4)} / 9行 / ${(performance.now()-t0).toFixed(0)}ms`;$('recognizeEquipment').disabled=false;}catch(e){console.error(e);$('iconAnchorStatus').textContent='アンカー検出エラー：'+e.message}finally{btn.disabled=false}}
+async function v400Detect(){if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return}if(!v400IconItems.length){$('iconAnchorStatus').textContent='DBアイコンがありません。';return}const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();try{$('iconAnchorStatus').textContent='DBアイコンを探索中…';const scene=v400Gray(v400ImageData($('img')));const out=[];for(const item of v400IconItems){const r=await v400Match(scene,item,.20,.60,.025);if(r)out.push({...r,name:item.name,row:item.row,dbImage:item.im});}v400IconCandidates=out.sort((a,b)=>b.score-a.score);if(!v400IconCandidates.length)throw new Error('アンカー候補がありません');const anchor=v400IconCandidates[0];const grid=v400BuildGrid(anchor,v400IconCandidates,$('img').naturalWidth||$('img').width,$('img').naturalHeight||$('img').height);v400IconGrid=grid;v400Draw($('img'),grid);v400Render();window.lastEquipmentRegions=v400RegionsFromGrid(grid);window.v400IconGrid=grid;$('layoutStatus').textContent='v4.1.1 14武器種DBアイコン：実ゲーム比率フレーム／透明部分をNCC除外／表示矩形＝実OCR入力矩形';$('layoutOut').innerHTML='<div class="note">DBアイコンアンカー方式で9部位を確定しました。以下の「装備名を一括認識」は、既存v3.1.2前処理・複数OCRをそのまま使用し、表示した黄色枠＝実際のOCR入力矩形を渡します。</div>';$('iconAnchorStatus').textContent=`完了：${anchor.name} / score=${anchor.score.toFixed(4)} / 9行 / ${(performance.now()-t0).toFixed(0)}ms`;$('recognizeEquipment').disabled=false;}catch(e){console.error(e);$('iconAnchorStatus').textContent='アンカー検出エラー：'+e.message}finally{btn.disabled=false}}
 $('detectIconAnchor').onclick=v400Detect;
 (async()=>{try{await v400LoadBundledIcons();}catch(e){$('anchorDBStatus').textContent='DBアイコン読み込み失敗：'+e.message;console.error(e);}})();
 
