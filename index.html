@@ -2,196 +2,146 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <!-- iPhone全画面アプリ化（PWA対応）用の設定 -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>MHWilds OCR Scanner</title>
-  
-  <!-- Tesseract.js CDN (ブラウザ用OCRエンジン) -->
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MHWilds ROI Tester</title>
   <style>
-    :root {
-      --bg-color: #0f141c;
-      --card-bg: #1e2638;
-      --accent-color: #00d5ff;
-      --text-color: #e0e6ed;
-    }
-
     body {
       margin: 0;
       padding: 16px;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-user-select: none;
+      background-color: #0f141c;
+      color: #e0e6ed;
+      font-family: sans-serif;
     }
-
-    h1 {
-      font-size: 1.2rem;
-      text-align: center;
-      color: var(--accent-color);
-      margin-top: 8px;
-    }
-
     .container {
-      max-width: 600px;
+      max-width: 1000px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
     }
-
-    /* ファイル選択領域 */
-    .file-input-wrapper {
-      position: relative;
-      background: var(--card-bg);
-      border: 2px dashed var(--accent-color);
-      border-radius: 12px;
-      padding: 24px;
-      text-align: center;
+    input[type="file"] {
+      background: #1e2638;
+      color: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #00d5ff;
     }
-
-    .file-input-wrapper input[type="file"] {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-    }
-
-    /* プレビュー表示キャンバス */
-    .preview-container {
+    .canvas-wrapper {
       width: 100%;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
-      display: flex;
-      justify-content: center;
     }
-
     canvas {
-      max-width: 100%;
+      width: 100%;
       height: auto;
       display: block;
-    }
-
-    /* ボタン */
-    .btn {
-      background: var(--accent-color);
-      color: #000;
-      font-weight: bold;
-      border: none;
-      padding: 14px;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-    }
-
-    /* 結果表示ログ */
-    .result-box {
-      background: var(--card-bg);
-      border-radius: 8px;
-      padding: 16px;
-      font-family: monospace;
-      font-size: 0.9rem;
-      white-space: pre-wrap;
-      max-height: 250px;
-      overflow-y: auto;
-    }
-
-    .status {
-      font-size: 0.85rem;
-      color: #aaa;
-      text-align: center;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>MHWilds スクショ解析</h1>
-
-  <div class="file-input-wrapper">
-    <p>📷 タップしてスクショを選択</p>
-    <input type="file" id="imageInput" accept="image/*">
-  </div>
-
-  <div class="preview-container">
+  <h2>MHWilds ROI 判定デバッガー</h2>
+  <input type="file" id="imageInput" accept="image/*">
+  <div class="canvas-wrapper">
     <canvas id="stage"></canvas>
   </div>
-
-  <button id="runBtn" class="btn" disabled>OCR解析を実行</button>
-
-  <div class="status" id="statusText">画像を選択してください</div>
-  
-  <div class="result-box" id="output">解析結果がここに表示されます</div>
 </div>
 
 <script>
+  const ROI_PRESETS_1080P = {
+    // 装備名称
+    weaponMain:    { x: 92,  y: 253, w: 240, h: 36 },
+    weaponSub:     { x: 92,  y: 424, w: 240, h: 36 },
+    head:          { x: 92,  y: 595, w: 240, h: 36 },
+    chest:         { x: 92,  y: 764, w: 240, h: 36 },
+    arm:           { x: 92,  y: 935, w: 240, h: 36 },
+    
+    // 全身スキル
+    skillsAll:     { x: 1220, y: 230, w: 280, h: 630 },
+
+    // ステータス
+    statusAttack:  { x: 1800, y: 330, w: 90,  h: 36 },
+    statusCrit:    { x: 1800, y: 362, w: 90,  h: 36 },
+    statusElement: { x: 1800, y: 394, w: 90,  h: 36 },
+    statusDef:     { x: 1800, y: 780, w: 90,  h: 36 }
+  };
+
   const imageInput = document.getElementById('imageInput');
   const stage = document.getElementById('stage');
   const ctx = stage.getContext('2d');
-  const runBtn = document.getElementById('runBtn');
-  const statusText = document.getElementById('statusText');
-  const output = document.getElementById('output');
 
-  let currentImage = null;
-
-  // 画像選択時の処理
   imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const img = new Image();
     img.onload = () => {
-      currentImage = img;
       stage.width = img.width;
       stage.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      runBtn.disabled = false;
-      statusText.textContent = `読み込み完了 (${img.width}x${img.height})`;
+      // ROI座標の計算と描画
+      const rois = calculateROIBounds(img.width, img.height);
+      drawROIBounds(ctx, rois);
     };
     img.src = URL.createObjectURL(file);
   });
 
-  // OCR処理実行
-  runBtn.addEventListener('click', async () => {
-    if (!currentImage) return;
+  function calculateROIBounds(imgWidth, imgHeight) {
+    const targetAspect = 16 / 9;
+    const currentAspect = imgWidth / imgHeight;
 
-    runBtn.disabled = true;
-    statusText.textContent = 'OCRエンジン準備中...';
-    output.textContent = '';
+    let activeW = imgWidth;
+    let activeH = imgHeight;
+    let offsetX = 0;
+    let offsetY = 0;
 
-    try {
-      // Workerの生成（日本語モデルを指定）
-      const worker = await Tesseract.createWorker('jpn');
-
-      statusText.textContent = '解析実行中...（数秒かかります）';
-      
-      // canvas描画データに対してOCR実行
-      const ret = await worker.recognize(stage);
-      
-      output.textContent = ret.data.text;
-      statusText.textContent = '解析完了';
-
-      await worker.terminate();
-    } catch (err) {
-      console.error(err);
-      statusText.textContent = 'エラーが発生しました';
-      output.textContent = err.message;
-    } finally {
-      runBtn.disabled = false;
+    if (currentAspect > targetAspect) {
+      activeW = imgHeight * targetAspect;
+      offsetX = (imgWidth - activeW) / 2;
+    } else if (currentAspect < targetAspect) {
+      activeH = imgWidth / targetAspect;
+      offsetY = (imgHeight - activeH) / 2;
     }
-  });
+
+    const scale = activeW / 1920;
+    const calculatedROIs = {};
+
+    for (const [key, rect] of Object.entries(ROI_PRESETS_1080P)) {
+      calculatedROIs[key] = {
+        x: Math.round(offsetX + (rect.x * scale)),
+        y: Math.round(offsetY + (rect.y * scale)),
+        w: Math.round(rect.w * scale),
+        h: Math.round(rect.h * scale)
+      };
+    }
+
+    return calculatedROIs;
+  }
+
+  function drawROIBounds(ctx, rois) {
+    ctx.lineWidth = Math.max(2, Math.round(stage.width / 600));
+    ctx.font = `bold ${Math.max(12, Math.round(stage.width / 90))}px sans-serif`;
+
+    for (const [key, rect] of Object.entries(rois)) {
+      // 色分け
+      if (key.startsWith('weapon') || key.startsWith('head') || key.startsWith('chest') || key.startsWith('arm')) {
+        ctx.strokeStyle = '#00d5ff'; // 装備系：シアン
+      } else if (key.startsWith('skills')) {
+        ctx.strokeStyle = '#00ff88'; // スキル：緑
+      } else {
+        ctx.strokeStyle = '#ff3366'; // ステータス：赤
+      }
+
+      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      
+      // ラベル表示
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.fillText(key, rect.x, Math.max(15, rect.y - 5));
+    }
+  }
 </script>
 
 </body>
