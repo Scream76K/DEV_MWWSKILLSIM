@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.3.5：core基準＋縦列Grid検証＋DB geometry＋サイズ適応版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.3.6：実画像座標＋左端15%＋縦列Grid検証＋DB geometry版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,9 +34,9 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.3.5：core基準＋縦列Grid検証＋DB geometry＋サイズ適応版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.3.6：実画像座標＋左端15%＋縦列Grid検証＋DB geometry版</h1>
 <div class="note">
-<b>v4.3.5：core基準＋縦列Grid検証＋DB geometry＋サイズ適応版</b><br>
+<b>v4.3.6：実画像座標＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
 まだシミュレータ本体には接続しません。装備名を個別OCRし、部位限定DB候補まで確認します。
 </div>
@@ -50,7 +50,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 
 <div class="card">
 <h2>2. DBアイコンアンカーで装備位置を確定</h2>
-<div class="note">v4.3.5では、v4.3.4のcore直接検出を維持し、候補群からX軸整合・Y軸等間隔の9行縦列をRANSAC/Grid的に検証します。9行の幾何条件が成立しない場合は9行を生成しません。DB画像は検索・置換には使わず、core→仮想アイコン右下アンカーのgeometry補正だけに使用します。</div>
+<div class="note">v4.3.6では、入力画像の実ピクセル座標（naturalWidth / naturalHeight）を検出処理の基準に統一します。core探索は実画像幅の左端15%だけに限定し、v4.3.2の固定coreサイズ条件を基準として候補を抽出します。候補群はv4.3.5のX軸整合・Y軸等間隔の9行縦列Gridで検証し、9行が成立しない場合は装備行を生成しません。DB画像は検索・置換には使わず、core→仮想アイコン右下アンカーのgeometry補正だけに使用します。</div>
 <div id="anchorDBStatus" class="status">DBアイコン：準備中</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
   <button id="detectIconAnchor" class="primary">🎯 アイコン検出→DBアンカー補正→9行生成</button>
@@ -2501,37 +2501,31 @@ function v412Nms(cands,limit=1800){
   return out;
 }
 function v432DetectIconComponents(src){
-  // v4.3.3: detect the actual dark icon core from the screenshot itself.
-  // No DB template matching and no row-pitch assumption.
-  const w=src.w,h=src.h;
-  const id=src.data instanceof ImageData ? src.data : null;
+  // v4.3.6: REAL PIXEL COORDINATE BASELINE.
+  // The detector works only in the ImageData/canvas coordinate space produced
+  // by v400ImageData(). CSS/display dimensions are never used here.
+  // DB template matching remains disabled.
+  const w=Number(src?.w||0),h=Number(src?.h||0);
+  const id=src?.data instanceof ImageData ? src.data : null;
   if(!id) throw new Error('元画像のImageDataがありません');
+  if(!Number.isFinite(w)||!Number.isFinite(h)||w<1||h<1) throw new Error(`実画像サイズが不正です：${w}×${h}`);
   const d=id.data;
   const gray=new Uint8Array(w*h);
   for(let i=0,p=0;i<gray.length;i++,p+=4){
     gray[i]=Math.round(.299*d[p]+.587*d[p+1]+.114*d[p+2]);
   }
-  // v4.3.4: icon/core size is scale-aware. The verified portrait reference
-  // uses roughly 30px cores at 1536px image height. Do not keep the old
-  // 20..45px bounds when the capture is rendered at another pixel scale.
-  // Height is used as the primary scale axis because the equipment list is a
-  // vertical UI structure; this also avoids letting a wide 16:9 capture
-  // inflate the icon size merely because its width is large.
-  const refHeight=1536;
-  const uiScale=Math.max(0.55,Math.min(3.0,h/refHeight));
-  const minCore=Math.round(20*uiScale);
-  const maxCore=Math.round(45*uiScale);
-  // Keep a modest safety margin around the scaled bounds.
-  const minW=Math.max(14,Math.round(minCore*.80));
-  const maxW=Math.max(minW+4,Math.round(maxCore*1.20));
-  const minH=Math.max(14,Math.round(minCore*.80));
-  const maxH=Math.max(minH+4,Math.round(maxCore*1.20));
-  // The previous 12% search width was tied to the old capture geometry.
-  // Keep it narrow enough to avoid the text column, but make it scale with
-  // the actual image layout instead of assuming one fixed pixel width.
-  const xMax=Math.min(w,Math.max(Math.round(84*uiScale),Math.round(w*.18)));
-  const yMin=Math.max(0,Math.round(h*.06));
-  const yMax=Math.min(h,Math.round(h*.96));
+
+  // IMPORTANT: do not derive the search region from uiScale or CSS size.
+  // The equipment icons are constrained to the left side of the screenshot.
+  // v4.3.6 deliberately uses the actual pixel width directly.
+  const searchRatio=0.15;
+  const xMax=Math.max(1,Math.min(w,Math.round(w*searchRatio)));
+  const yMin=Math.max(0,Math.round(h*.10));
+  const yMax=Math.min(h,Math.round(h*.94));
+
+  // Restore the verified v4.3.2 core-size baseline. Do not widen the range
+  // merely because another capture has a different CSS/display size.
+  const minW=20,maxW=45,minH=20,maxH=45;
   const threshold=70;
   const seen=new Uint8Array(w*h);
   const candidates=[];
@@ -2539,8 +2533,8 @@ function v432DetectIconComponents(src){
   for(let sy=yMin;sy<yMax;sy++){
     for(let sx=0;sx<xMax;sx++){
       const si=sy*w+sx;
-      if(seen[si]||gray[si]>=threshold){continue;}
-      let head=0,tail=0; qx[tail]=sx;qy[tail]=sy;tail++;seen[si]=1;
+      if(seen[si]||gray[si]>=threshold)continue;
+      let head=0,tail=0;qx[tail]=sx;qy[tail]=sy;tail++;seen[si]=1;
       let minX=sx,maxX=sx,minY=sy,maxY=sy,area=0;
       while(head<tail){
         const x=qx[head],y=qy[head];head++;area++;
@@ -2554,11 +2548,9 @@ function v432DetectIconComponents(src){
         }
       }
       const bw=maxX-minX+1,bh=maxY-minY+1;
-      if(bw<minW||bw>maxW||bh<minH||bh>maxH||area<Math.round(150*uiScale*uiScale)||area>Math.round(1800*uiScale*uiScale))continue;
-      // Reject very thin/solid UI borders.
+      if(bw<minW||bw>maxW||bh<minH||bh>maxH||area<150||area>1800)continue;
       const fill=area/(bw*bh);
       if(fill<0.35||fill>0.95)continue;
-      // Require some lighter/color variation inside the dark body.
       let minG=255,maxG=0,minSat=255,maxSat=0,count=0;
       for(let y=minY;y<=maxY;y++)for(let x=minX;x<=maxX;x++){
         const p=(y*w+x)*4,r=d[p],g=d[p+1],b=d[p+2];
@@ -2569,7 +2561,6 @@ function v432DetectIconComponents(src){
       candidates.push({x:minX,y:minY,w:bw,h:bh,area,fill,score:Math.min(1.2,.55+Math.min(.25,area/3000)+Math.min(.20,(maxG-minG)/160)+Math.min(.20,(maxSat-minSat)/180))});
     }
   }
-  // NMS for overlapping connected pieces; keep one physical icon per Y band.
   candidates.sort((a,b)=>b.score-a.score);
   const kept=[];
   for(const c of candidates){
@@ -2581,9 +2572,11 @@ function v432DetectIconComponents(src){
     if(!overlap)kept.push(c);
   }
   kept.sort((a,b)=>a.y-b.y);
-  kept.uiScale=uiScale;
+  kept.searchRatio=searchRatio;
   kept.searchXMax=xMax;
   kept.coreRange={minW,maxW,minH,maxH};
+  kept.sceneWidth=w;
+  kept.sceneHeight=h;
   return kept;
 }
 
@@ -2639,7 +2632,11 @@ function v435GridScore(candidates, seedX, seedY, pitch, width, height){
       picks.push(best);matched++;
       const cx=best.x+best.w*.5,cy=best.y+best.h*.5;
       xErr+=Math.abs(cx-seedX)/xTol;
-      if(picks.length>=2){const prev=picks[picks.length-2];const py=prev.y+prev.h*.5;pitchErr+=Math.abs((cy-py)-pitch)/Math.max(1,pitch);}
+      const prev = picks.length >= 2 ? picks[picks.length - 2] : null;
+      if(prev && Number.isFinite(prev.y) && Number.isFinite(prev.h)){
+        const py=prev.y+prev.h*.5;
+        pitchErr+=Math.abs((cy-py)-pitch)/Math.max(1,pitch);
+      }
     }
   }
   const coverage=matched/9;
@@ -2752,9 +2749,9 @@ function v432Draw(img,grid,cands){
 
 function v432Render(cands,grid){
   const dbCount=v400IconItems.length;
-  const head=`<div class="result ok"><b>v4.3.5 アイコン構造検出＋サイズ適応＋縦列Grid検証</b><br><span class="mono">DB一致検索=0回 / DB geometry samples=${dbCount} / 縦列Grid/RANSAC検証 / 左側UI探索（サイズ適応） / DB役割=geometry-calibration-only</span></div>`;
+  const head=`<div class="result ok"><b>v4.3.6 アイコン構造検出＋実画像座標＋左端15%＋縦列Grid検証</b><br><span class="mono">DB一致検索=0回 / DB geometry samples=${dbCount} / 縦列Grid/RANSAC検証 / 実画像座標・左端15%探索 / DB役割=geometry-calibration-only</span></div>`;
   const candText=cands.map((c,i)=>`${i+1}. core (${c.x},${c.y}) ${c.w}x${c.h} / score=${c.score.toFixed(4)}`).join('\n');
-  const scaleText=`uiScale=${Number(cands.uiScale||1).toFixed(3)} / 探索X=${cands.searchXMax||'-'}px / core範囲=${cands.coreRange?`${cands.coreRange.minW}～${cands.coreRange.maxW} × ${cands.coreRange.minH}～${cands.coreRange.maxH}px`:'-'}`;
+  const scaleText=`scene=${cands.sceneWidth||'-'}×${cands.sceneHeight||'-'}px / 探索X=${cands.searchXMax||'-'}px (${Math.round((cands.searchRatio||0)*100)}%) / core範囲=${cands.coreRange?`${cands.coreRange.minW}～${cands.coreRange.maxW} × ${cands.coreRange.minH}～${cands.coreRange.maxH}px`:'-'}`;
   let html=head+`<div class="result"><b>サイズ補正</b><div class="mono">${scaleText}</div></div><div class="result"><b>検出候補 ${cands.length}個</b><div class="mono">${candText||'候補なし'}</div></div>`;
   if(grid){
     html+=`<div class="result"><b>縦列Grid検証＋Geometry補正</b><div class="mono">matched=${grid.grid.matched}/9 / score=${grid.grid.score.toFixed(3)} / X偏差=${grid.grid.xResidual.toFixed(1)}px / pitch=${grid.grid.pitch.toFixed(1)}px / pitchSD=${grid.grid.pitchSd.toFixed(1)}px<br>core→anchor: +${grid.calibration.offsetXRatio}W / +${grid.calibration.offsetYRatio}H / OCR幅=${grid.calibration.ocrWidthRatio}W / OCR高=${grid.calibration.ocrHeightRatio}H</div></div>`;
@@ -2779,11 +2776,11 @@ async function v432Detect(){
       v400IconCandidates=cands.slice(0,9).map((c,i)=>({...c,name:`検出アイコン${i+1}`,row:i}));
       v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=v400RegionsFromGrid(grid);
       $('recognizeEquipment').disabled=false;
-      $('layoutStatus').textContent='v4.3.5：9個のcore＋縦列Grid検証＋サイズ適応＋DB geometry補正が成立';
-      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9行生成 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / サイズ適応＋core基準＋縦列Grid検証＋geometry補正`;
+      $('layoutStatus').textContent='v4.3.6：9個のcore＋縦列Grid検証＋実画像座標＋DB geometry補正が成立';
+      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9行生成 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / 実画像座標＋左端15%＋core基準＋縦列Grid検証＋geometry補正`;
     }else{
       v400IconCandidates=[];v400IconGrid=null;window.lastEquipmentRegions=[];$('recognizeEquipment').disabled=true;
-      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9個未成立 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / サイズ適応＋縦列Grid検証`;
+      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9個未成立 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / 実画像座標＋左端15%＋縦列Grid検証`;
     }
   }catch(e){console.error(e);$('iconAnchorStatus').textContent='アイコン検出エラー：'+e.message}
   finally{btn.disabled=false}
