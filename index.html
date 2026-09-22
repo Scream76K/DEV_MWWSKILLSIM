@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.3.7：フルアイコン枠検出＋実画像座標＋左端15%＋縦列Grid検証＋DB geometry版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.4.0：トップダウン装備9行グリッド・プロトタイプ＋v4.3.8併設</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,9 +34,9 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.3.7：フルアイコン枠検出＋実画像座標＋左端15%＋縦列Grid検証＋DB geometry版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.4.0：トップダウン装備9行グリッド・プロトタイプ＋v4.3.8併設</h1>
 <div class="note">
-<b>v4.3.7：フルアイコン枠検出＋実画像座標＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
+<b>v4.3.8：短辺基準スケール適応＋フルアイコン枠検出＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
 まだシミュレータ本体には接続しません。装備名を個別OCRし、部位限定DB候補まで確認します。
 </div>
@@ -50,7 +50,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 
 <div class="card">
 <h2>2. DBアイコンアンカーで装備位置を確定</h2>
-<div class="note">v4.3.7では、入力画像の実ピクセル座標（naturalWidth / naturalHeight）を検出処理の基準に統一します。小さな暗部coreではなく、実際の装備アイコン枠全体（約50～82pxを画像高さに応じて補正）を候補として探索します。アイコン左端は実画像幅の左端15%を基準にしつつ、アイコン全体を切らないよう右方向へ候補窓を拡張します。候補群はv4.3.5のX軸整合・Y軸等間隔の9行縦列Gridで検証し、9行が成立しない場合は装備行を生成しません。DB画像は検索・置換には使わず、検出アイコン枠→右下アンカーのgeometry補正だけに使用します。</div>
+<div class="note">v4.3.8では、入力画像の実ピクセル座標を基準にし、装備アイコンの最小・最大サイズをキャプチャの短辺に比例して同時に調整します。基準は706px短辺で50～82px。小さな暗部coreではなくフルアイコン枠を探索し、左端15%をアイコン左端の探索基準として維持します。候補群はv4.3.5のX軸整合・Y軸等間隔の9行縦列Gridで検証し、9行が成立しない場合は装備行を生成しません。DB画像は検索・置換には使わず、検出アイコン枠→右下アンカーのgeometry補正だけに使用します。</div>
 <div id="anchorDBStatus" class="status">DBアイコン：準備中</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
   <button id="detectIconAnchor" class="primary">🎯 アイコン検出→DBアンカー補正→9行生成</button>
@@ -58,6 +58,17 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <div id="iconAnchorStatus" class="status">未実行</div>
 <div id="iconAnchorOut" style="margin-top:8px"></div>
 <div id="iconAnchorStage" class="stage" style="margin-top:10px;display:none"><canvas id="iconAnchorView"></canvas></div>
+</div>
+
+<div class="card">
+<h2>2-A. トップダウン装備9行グリッド（v4.4.0 プロトタイプ）</h2>
+<div class="note">アイコンを探して行を決めるのではなく、左側UIに現れる水平セパレータの構造から8本の境界線→9行を推定します。v4.3.xのアイコン検出・DB検索はこのプロトタイプでは使用しません。まず画像上に9行の枠を描き、Yグリッドが正しく追従するかだけを検証します。</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button id="detectTopDownGrid" class="primary">📐 トップダウン9行を検証</button>
+</div>
+<div id="topDownStatus" class="status">未実行</div>
+<div id="topDownOut" style="margin-top:8px"></div>
+<div id="topDownStage" class="stage" style="margin-top:10px;display:none"><canvas id="topDownView"></canvas></div>
 </div>
 
 <div class="card">
@@ -2509,11 +2520,19 @@ function v432DetectIconComponents(src){
   if(!id) throw new Error('元画像のImageDataがありません');
   if(!Number.isFinite(w)||!Number.isFinite(h)||w<1||h<1) throw new Error(`実画像サイズが不正です：${w}×${h}`);
 
-  // Reference: the actual 706×1536 capture has equipment icon frames around 60～65 px.
-  // Scale from image height, but NEVER from CSS/display dimensions.
-  const refH=1536;
-  const scale=Math.max(.65,Math.min(2.2,h/refH));
-  const minS=Math.round(50*scale), maxS=Math.round(82*scale);
+  // v4.3.8: the icon size must scale with BOTH capture dimensions, not
+  // height alone. A portrait 706×1536 capture and a landscape 3840×2160
+  // capture can have very different heights while the UI icon scale follows
+  // the display's short-side scale more reliably.
+  // Reference capture: 706×1536, icon frame ≈60～65 px.
+  // Therefore use the shorter image dimension as the scale basis.
+  // This also fixes the previous 3840×2160 case where h/1536=1.406 made
+  // the detector search only 70～115 px objects, far below the actual UI icon.
+  const refShort=706;
+  const shortSide=Math.min(w,h);
+  const scale=Math.max(.55,Math.min(5.0,shortSide/refShort));
+  const minS=Math.round(50*scale);
+  const maxS=Math.round(82*scale);
   const step=Math.max(2,Math.round(2*scale));
 
   // The icon itself extends beyond 15% of this 706 px image (~106 px).
@@ -2580,6 +2599,9 @@ function v432DetectIconComponents(src){
   kept.searchXMax=searchLeftMax;
   kept.searchXEnd=xEnd;
   kept.coreRange={minW:minS,maxW:maxS,minH:minS,maxH:maxS};
+  kept.scaleBasis='short-side';
+  kept.shortSide=shortSide;
+  kept.refShort=refShort;
   kept.sceneWidth=w;
   kept.sceneHeight=h;
   kept.detector='full-icon-frame-scan-v4.3.7';
@@ -2756,9 +2778,9 @@ function v432Draw(img,grid,cands){
 
 function v432Render(cands,grid){
   const dbCount=v400IconItems.length;
-  const head=`<div class="result ok"><b>v4.3.7 フルアイコン枠検出＋実画像座標＋左端15%＋縦列Grid検証</b><br><span class="mono">DB一致検索=0回 / DB geometry samples=${dbCount} / 縦列Grid/RANSAC検証 / 実画像座標・左端15%基準＋アイコン全体探索 / DB役割=geometry-calibration-only</span></div>`;
+  const head=`<div class="result ok"><b>v4.3.8 短辺基準スケール適応＋フルアイコン枠検出＋左端15%＋縦列Grid検証</b><br><span class="mono">DB一致検索=0回 / DB geometry samples=${dbCount} / 縦列Grid/RANSAC検証 / 実画像座標・左端15%基準＋アイコン全体探索 / DB役割=geometry-calibration-only</span></div>`;
   const candText=cands.map((c,i)=>`${i+1}. core (${c.x},${c.y}) ${c.w}x${c.h} / score=${c.score.toFixed(4)}`).join('\n');
-  const scaleText=`scene=${cands.sceneWidth||'-'}×${cands.sceneHeight||'-'}px / 左端基準X=${cands.searchXMax||'-'}px (15%) / 実探索X終端=${cands.searchXEnd||'-'}px / アイコン枠=${cands.coreRange?`${cands.coreRange.minW}～${cands.coreRange.maxW} × ${cands.coreRange.minH}～${cands.coreRange.maxH}px`:'-'}`;
+  const scaleText=`scene=${cands.sceneWidth||'-'}×${cands.sceneHeight||'-'}px / 短辺=${cands.shortSide||'-'}px / 短辺基準=${cands.scaleBasis||'-'} / scale=${Number(cands.scale||0).toFixed(3)} / 左端基準X=${cands.searchXMax||'-'}px (15%) / 実探索X終端=${cands.searchXEnd||'-'}px / アイコン枠=${cands.coreRange?`${cands.coreRange.minW}～${cands.coreRange.maxW} × ${cands.coreRange.minH}～${cands.coreRange.maxH}px`:'-'}`;
   let html=head+`<div class="result"><b>サイズ補正</b><div class="mono">${scaleText}</div></div><div class="result"><b>検出候補 ${cands.length}個</b><div class="mono">${candText||'候補なし'}</div></div>`;
   if(grid){
     html+=`<div class="result"><b>縦列Grid検証＋Geometry補正</b><div class="mono">matched=${grid.grid.matched}/9 / score=${grid.grid.score.toFixed(3)} / X偏差=${grid.grid.xResidual.toFixed(1)}px / pitch=${grid.grid.pitch.toFixed(1)}px / pitchSD=${grid.grid.pitchSd.toFixed(1)}px<br>core→anchor: +${grid.calibration.offsetXRatio}W / +${grid.calibration.offsetYRatio}H / OCR幅=${grid.calibration.ocrWidthRatio}W / OCR高=${grid.calibration.ocrHeightRatio}H</div></div>`;
@@ -2783,19 +2805,148 @@ async function v432Detect(){
       v400IconCandidates=cands.slice(0,9).map((c,i)=>({...c,name:`検出アイコン${i+1}`,row:i}));
       v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=v400RegionsFromGrid(grid);
       $('recognizeEquipment').disabled=false;
-      $('layoutStatus').textContent='v4.3.7：9個のアイコン枠＋縦列Grid検証＋実画像座標＋DB geometry補正が成立';
-      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9行生成 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / 実画像座標＋左端15%＋フルアイコン枠＋縦列Grid検証＋geometry補正`;
+      $('layoutStatus').textContent='v4.3.8：9個のアイコン枠＋短辺基準スケール適応＋縦列Grid検証＋DB geometry補正が成立';
+      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9行生成 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / 短辺基準スケール＋実画像座標＋左端15%＋フルアイコン枠＋縦列Grid検証＋geometry補正`;
     }else{
       v400IconCandidates=[];v400IconGrid=null;window.lastEquipmentRegions=[];$('recognizeEquipment').disabled=true;
-      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9個未成立 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / 実画像座標＋左端15%＋フルアイコン枠＋縦列Grid検証`;
+      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9個未成立 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / 短辺基準スケール＋実画像座標＋左端15%＋フルアイコン枠＋縦列Grid検証`;
     }
   }catch(e){console.error(e);$('iconAnchorStatus').textContent='アイコン検出エラー：'+e.message}
   finally{btn.disabled=false}
 }
+// ==============================
+// v4.4.0 Top-down equipment-row prototype
+// Detect 8 horizontal separator lines, then derive 9 rows.
+// This stage deliberately does NOT use icon detection or DB matching.
+// ==============================
+function tdClamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function tdMedian(a){const v=a.filter(Number.isFinite).slice().sort((x,y)=>x-y);if(!v.length)return 0;const m=Math.floor(v.length/2);return v.length%2?v[m]:(v[m-1]+v[m])/2;}
+function tdSmooth(a,r){if(r<=0)return a.slice();const out=new Float64Array(a.length);let sum=0,c=0;for(let i=0;i<a.length;i++){sum+=a[i];c++;if(i-r-1>=0){sum-=a[i-r-1];c--;}if(i+r<a.length){/* delayed right side */}out[i]=sum/c;}const out2=new Float64Array(a.length);for(let i=0;i<a.length;i++){let st=Math.max(0,i-r),en=Math.min(a.length-1,i+r),ss=0;for(let j=st;j<=en;j++)ss+=a[j];out2[i]=ss/(en-st+1);}return out2;}
+function tdPercentile(a,p){const v=Array.from(a).filter(Number.isFinite).sort((x,y)=>x-y);if(!v.length)return 0;const k=tdClamp(Math.round((v.length-1)*p),0,v.length-1);return v[k];}
+function tdLocalPeaks(profile,minY,maxY,minDist,threshold){
+  const peaks=[];
+  for(let y=Math.max(1,minY);y<=Math.min(profile.length-2,maxY);y++){
+    const v=profile[y];
+    if(v<threshold||v<profile[y-1]||v<profile[y+1])continue;
+    peaks.push({y,score:v});
+  }
+  peaks.sort((a,b)=>b.score-a.score);
+  const kept=[];
+  for(const p of peaks){
+    if(kept.every(q=>Math.abs(q.y-p.y)>=minDist))kept.push(p);
+  }
+  return kept.sort((a,b)=>a.y-b.y);
+}
+function tdBuildVerticalProfile(src){
+  const w=src.w,h=src.h,data=src.data;
+  const g=new Float32Array(w*h);
+  for(let i=0;i<w*h;i++)g[i]=0.299*data[i*4]+0.587*data[i*4+1]+0.114*data[i*4+2];
+  // The equipment panel is on the left. Use a broad band so the method
+  // survives different text/icon widths, but avoid the far-right character.
+  const x0=Math.round(w*0.03),x1=Math.max(x0+10,Math.round(w*0.68));
+  const p=new Float64Array(h);
+  for(let y=1;y<h;y++){
+    let s=0,n=0;
+    for(let x=x0;x<x1;x++)s+=Math.abs(g[y*w+x]-g[(y-1)*w+x]),n++;
+    p[y]=s/Math.max(1,n);
+  }
+  const radius=Math.max(1,Math.round(Math.min(w,h)/700));
+  return {profile:tdSmooth(p,radius),x0,x1,radius};
+}
+function tdFindSeparatorGrid(profile,w,h){
+  const minY=Math.round(h*0.05),maxY=Math.round(h*0.95);
+  const vals=Array.from(profile).slice(minY,maxY+1);
+  const q=tdPercentile(vals,0.72);
+  const threshold=Math.max(q,tdPercentile(vals,0.82)*0.55);
+  const minDist=Math.max(8,Math.round(h*0.020));
+  const peaks=tdLocalPeaks(profile,minY,maxY,minDist,threshold);
+  if(peaks.length<8)return {ok:false,reason:`水平境界候補が${peaks.length}本しかありません`,peaks};
+  const medRange=Math.max(30,h*0.035),maxRange=Math.min(h*0.18,h-1);
+  let best=null;
+  for(let i=0;i<peaks.length;i++)for(let j=i+1;j<peaks.length;j++){
+    const dy=peaks[j].y-peaks[i].y;
+    if(dy<medRange*1.5)continue;
+    for(let steps=1;steps<=7;steps++){
+      const pitch=dy/steps;
+      if(pitch<medRange||pitch>maxRange)continue;
+      const chosen=[];let err=0,score=0;
+      for(let k=0;k<8;k++){
+        const target=peaks[i].y+pitch*k;
+        let bp=null,bd=Infinity;
+        for(const p of peaks){const d=Math.abs(p.y-target);if(d<bd){bd=d;bp=p;}}
+        const tol=Math.max(10,pitch*0.12);
+        if(bp&&bd<=tol){chosen.push(bp);err+=bd;score+=bp.score;}
+      }
+      const uniq=[...new Map(chosen.map(p=>[p.y,p])).values()].sort((a,b)=>a.y-b.y);
+      if(uniq.length!==8)continue;
+      const gaps=[];for(let k=1;k<uniq.length;k++)gaps.push(uniq[k].y-uniq[k-1].y);
+      const pitchMed=tdMedian(gaps),pitchSd=Math.sqrt(tdMedian(gaps.map(x=>(x-pitchMed)*(x-pitchMed))));
+      const residual=err/8;
+      const regularity=Math.max(0,1-pitchSd/Math.max(1,pitchMed));
+      const fit=Math.max(0,1-residual/Math.max(1,pitchMed*0.12));
+      const total=score*(0.65+0.20*regularity+0.15*fit);
+      if(!best||total>best.total)best={total,chosen, pitch:pitchMed,pitchSd,residual,regularity,fit};
+    }
+  }
+  if(!best)return {ok:false,reason:'8本の等間隔セパレータ列を構成できません',peaks};
+  // Re-check strict regularity. This is only the row-structure prototype.
+  if(best.pitchSd>Math.max(12,best.pitch*0.14))return {ok:false,reason:`ピッチ不安定（SD=${best.pitchSd.toFixed(1)}px）`,peaks,best};
+  return {ok:true,peaks,best};
+}
+function tdDetectTopDown(src){
+  const {profile,x0,x1,radius}=tdBuildVerticalProfile(src);
+  const result=tdFindSeparatorGrid(profile,src.w,src.h);
+  if(!result.ok)return {...result,sceneWidth:src.w,sceneHeight:src.h,profileX:[x0,x1],smoothRadius:radius};
+  const seps=result.best.chosen.map(p=>p.y).sort((a,b)=>a-b);
+  const pitch=result.best.pitch;
+  const top=seps[0]-pitch;
+  const bottom=seps[seps.length-1]+pitch;
+  const rows=[];
+  const labels=['メイン武器','サブ武器','頭防具','胴防具','腕防具','腰防具','脚防具','護石','装衣'];
+  for(let i=0;i<9;i++){
+    const y=Math.round(top+pitch*i);
+    const h=Math.round(pitch);
+    rows.push({row:i,label:labels[i],x:Math.round(src.w*0.03),y,width:Math.round(src.w*0.65),height:h});
+  }
+  return {ok:true,sceneWidth:src.w,sceneHeight:src.h,profileX:[x0,x1],smoothRadius:radius,separators:seps,pitch,pitchSd:result.best.pitchSd,rows,top,bottom,peaks:result.peaks};
+}
+function tdDraw(img,result){
+  const host=$('topDownStage'),c=$('topDownView');host.style.display='block';
+  const iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;c.width=iw;c.height=ih;
+  const ctx=c.getContext('2d');ctx.clearRect(0,0,iw,ih);ctx.drawImage(img,0,0);
+  if(!result||!result.ok)return;
+  // Separator lines: red. Row boxes: cyan. Labels: yellow.
+  for(const y of result.separators){ctx.strokeStyle='#ff3b30';ctx.lineWidth=Math.max(2,Math.round(Math.min(iw,ih)/500));ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(iw,y);ctx.stroke();}
+  result.rows.forEach(r=>{ctx.strokeStyle='#00d5ff';ctx.lineWidth=2;ctx.strokeRect(r.x,r.y,r.width,r.height);ctx.fillStyle='#ffd000';ctx.font=`bold ${Math.max(12,Math.round(Math.min(iw,ih)/55))}px sans-serif`;ctx.fillText(`${r.row+1}:${r.label}`,r.x+4,r.y+18);});
+}
+function tdRender(result){
+  if(!result){$('topDownOut').innerHTML='';return;}
+  const base=`<div class="result ok"><b>v4.4.0 トップダウン装備9行グリッド</b><br><span class="mono">アイコン検出=0回 / DB一致検索=0回 / 水平セパレータ→8境界→9行</span></div>`;
+  const scene=`<div class="result"><b>入力座標</b><div class="mono">scene=${result.sceneWidth||'-'}×${result.sceneHeight||'-'}px / 解析X=${result.profileX?result.profileX[0]+'～'+result.profileX[1]:'-'} / 平滑化半径=${result.smoothRadius||'-'}px</div></div>`;
+  if(!result.ok){$('topDownOut').innerHTML=base+scene+`<div class="result warn"><b>9行グリッド未成立</b><div class="mono">${result.reason||'不成立'} / 水平候補=${result.peaks?result.peaks.length:0}本</div></div>`;return;}
+  const sep=result.separators.join(', ');
+  const rows=result.rows.map(r=>`${r.row+1}. ${r.label}: x=${r.x}, y=${r.y}, ${r.width}×${r.height}`).join('\n');
+  $('topDownOut').innerHTML=base+scene+`<div class="result"><b>Yグリッド</b><div class="mono">境界線8本=${sep}\npitch=${result.pitch.toFixed(1)}px / pitchSD=${result.pitchSd.toFixed(1)}px / 行上端=${Math.round(result.top)} / 行下端=${Math.round(result.bottom)}</div></div><div class="result"><b>生成された9行（OCRはまだ実行しません）</b><div class="mono">${rows}</div></div>`;
+}
+async function tdRun(){
+  if(!$('img').src){$('topDownStatus').textContent='先に画像を選択してください。';return;}
+  const btn=$('detectTopDownGrid');btn.disabled=true;const t0=performance.now();
+  try{
+    $('topDownStatus').textContent='水平セパレータを解析→8本の境界→9行グリッドを検証中…';
+    const scene=v400ImageData($('img'));
+    const result=tdDetectTopDown(scene);
+    tdDraw($('img'),result);tdRender(result);
+    $('topDownStatus').textContent=result.ok?`完了：9行グリッド成立 / ${(performance.now()-t0).toFixed(0)}ms / アイコン検出0回 / DB一致0回`:`完了：9行グリッド未成立 / ${(performance.now()-t0).toFixed(0)}ms / ${result.reason||'不成立'}`;
+    window.topDownGridResult=result;
+  }catch(e){console.error(e);$('topDownStatus').textContent='トップダウン検出エラー：'+e.message;}
+  finally{btn.disabled=false;}
+}
+$('detectTopDownGrid').onclick=tdRun;
+
 $('detectIconAnchor').onclick=v432Detect;
 (async()=>{try{await v400LoadBundledIcons();}catch(e){$('anchorDBStatus').textContent='DBアイコン読み込み失敗：'+e.message;console.error(e);}})();
 
-$('file').addEventListener('change',()=>{v400IconGrid=null;v400IconCandidates=[];window.lastEquipmentRegions=[];$('iconAnchorStatus').textContent='画像を読み込みました。DBアイコンアンカーを実行してください。';$('iconAnchorStage').style.display='none';});
+$('file').addEventListener('change',()=>{v400IconGrid=null;v400IconCandidates=[];window.lastEquipmentRegions=[];$('iconAnchorStatus').textContent='画像を読み込みました。DBアイコンアンカーを実行してください。';$('iconAnchorStage').style.display='none';$('topDownStage').style.display='none';});
 
 </script>
 </body>
