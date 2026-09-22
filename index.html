@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.2.4：左側40%・境界候補除外＋色特徴改善版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.3.3：core基準＋DB geometry補正版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,9 +34,9 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.2.2：左側50%限定・汎用アイコン検出＋DBアンカー版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.3.3：core基準＋DB geometry補正版</h1>
 <div class="note">
-<b>v4.2.2：左側50%限定・汎用アイコン検出＋DBアンカー版</b><br>
+<b>v4.3.3：core基準＋DB geometry補正版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
 まだシミュレータ本体には接続しません。装備名を個別OCRし、部位限定DB候補まで確認します。
 </div>
@@ -50,7 +50,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 
 <div class="card">
 <h2>2. DBアイコンアンカーで装備位置を確定</h2>
-<div class="note">v4.2.0では、まずDB一致を使わず画像の形状・反復配置から9個のアイコン枠を検出します。その後、DBアイコンは検出済みアイコンのアンカー位置（右下）と枠比率を補正するためだけに使用します。</div>
+<div class="note">v4.3.3では、DB一致検索を行わずスクショのcoreを直接検出します。DB画像は検索・置換には使わず、core→仮想アイコン右下アンカーのgeometry補正だけに使用します。</div>
 <div id="anchorDBStatus" class="status">DBアイコン：準備中</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
   <button id="detectIconAnchor" class="primary">🎯 アイコン検出→DBアンカー補正→9行生成</button>
@@ -72,7 +72,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 
 <div class="card">
 <h2>4. OCR前処理を確認</h2>
-<div class="note">v4.2.0検証：まずアイコン検出とOCR切り出し境界を確認し、その後に既存5方式の前処理画像を確認します。</div>
+<div class="note">v4.3.3検証：まずcore検出→geometry補正→OCR切り出し境界を確認し、その後に既存OCR処理を確認します。</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
   <button id="previewCropOnly" class="primary">✂️ 切り出しだけ確認</button>
   <button id="previewPreprocess" class="primary">🖼️ 前処理画像を確認</button>
@@ -2501,7 +2501,7 @@ function v412Nms(cands,limit=1800){
   return out;
 }
 function v432DetectIconComponents(src){
-  // v4.3.2: detect the actual dark icon body from the screenshot itself.
+  // v4.3.3: detect the actual dark icon core from the screenshot itself.
   // No DB template matching and no row-pitch assumption.
   const w=src.w,h=src.h;
   const id=src.data instanceof ImageData ? src.data : null;
@@ -2568,34 +2568,69 @@ function v432DetectIconComponents(src){
   return kept;
 }
 
-function v432BuildRows(candidates,width,height){
+// v4.3.3 geometry calibration:
+// The screenshot core is the detection truth. DB images are NOT overlaid and
+// are NOT searched against the screenshot. They only define the calibrated
+// relationship from the detected dark core to the virtual icon bottom-right.
+// Ratios are intentionally relative to the detected core size so the geometry
+// follows screenshot scale instead of using fixed pixels.
+const V433_GEOMETRY_CALIBRATION={
+  anchorOffsetXRatio:0.22,
+  anchorOffsetYRatio:0.21,
+  ocrWidthRatio:7.0,
+  ocrHeightRatio:1.0,
+  ocrCenterYOffsetRatio:0
+};
+
+function v433CalibrateAnchor(core){
+  const w=Math.max(1,Number(core?.w)||1);
+  const h=Math.max(1,Number(core?.h)||1);
+  const ax=Number(core.x)+w+Math.round(w*V433_GEOMETRY_CALIBRATION.anchorOffsetXRatio);
+  const ay=Number(core.y)+h+Math.round(h*V433_GEOMETRY_CALIBRATION.anchorOffsetYRatio);
+  return {x:Math.round(ax),y:Math.round(ay),
+    deltaX:Math.round(w*V433_GEOMETRY_CALIBRATION.anchorOffsetXRatio),
+    deltaY:Math.round(h*V433_GEOMETRY_CALIBRATION.anchorOffsetYRatio)};
+}
+
+function v433BuildRows(candidates,width,height){
   const ordered=candidates.slice().sort((a,b)=>a.y-b.y);
   if(ordered.length<9)return null;
-  // Only the first nine vertically ordered physical icons become equipment rows.
-  // No pitch calculation is used. Each row keeps its own detected geometry.
+  // The nine rows are assigned from the nine independently detected cores.
+  // No row pitch is used to invent or move a row.
   const rows=ordered.slice(0,9).map((c,i)=>{
     const t=V400_ICON_TARGETS[i];
     const icon={x:c.x,y:c.y,w:c.w,h:c.h};
-    const ax=icon.x+icon.w, ay=icon.y+icon.h;
+    const calibrated=v433CalibrateAnchor(icon);
     const ocr=clampRectToImage({
-      x:ax,
-      y:ay-icon.h*.5,
-      width:icon.w*7,
-      height:icon.h,
-      source:'v4.3.2-icon-component'
+      x:calibrated.x,
+      y:calibrated.y-icon.h*0.5+icon.h*V433_GEOMETRY_CALIBRATION.ocrCenterYOffsetRatio,
+      width:icon.w*V433_GEOMETRY_CALIBRATION.ocrWidthRatio,
+      height:icon.h*V433_GEOMETRY_CALIBRATION.ocrHeightRatio,
+      source:'v4.3.3-core-db-geometry'
     },width,height);
-    return {key:t.key,label:t.label,row:i,icon,anchor:{x:ax,y:ay},ocr:{x:ocr.x,y:ocr.y,w:ocr.width,h:ocr.height},candidate:c};
+    return {
+      key:t.key,label:t.label,row:i,icon,
+      anchor:{x:calibrated.x,y:calibrated.y,deltaX:calibrated.deltaX,deltaY:calibrated.deltaY},
+      ocr:{x:ocr.x,y:ocr.y,w:ocr.width,h:ocr.height},
+      candidate:c
+    };
   });
   return {
     rows,
-    anchor:{...rows[0].icon,name:'画面構造から検出したアイコン',score:rows[0].candidate.score,row:0},
+    anchor:{...rows[0].icon,name:'core基準＋DB geometry補正',score:rows[0].candidate.score,row:0},
     topPitch:0,
     armorPitch:0,
-    calibration:{main:null,head:null,chest:null},
+    calibration:{
+      profile:'core→virtual-icon-bottom-right',
+      offsetXRatio:V433_GEOMETRY_CALIBRATION.anchorOffsetXRatio,
+      offsetYRatio:V433_GEOMETRY_CALIBRATION.anchorOffsetYRatio,
+      ocrWidthRatio:V433_GEOMETRY_CALIBRATION.ocrWidthRatio,
+      ocrHeightRatio:V433_GEOMETRY_CALIBRATION.ocrHeightRatio
+    },
     slotX:null,
     ocrRight:Math.max(...rows.map(r=>r.ocr.x+r.ocr.w)),
     detectionMode:'dark-component-independent',
-    dbRole:'anchor-geometry-only'
+    dbRole:'geometry-calibration-only'
   };
 }
 
@@ -2612,11 +2647,12 @@ function v432Draw(img,grid,cands){
 
 function v432Render(cands,grid){
   const dbCount=v400IconItems.length;
-  const head=`<div class="result ok"><b>v4.3.2 アイコン構造検出</b><br><span class="mono">DB一致検索=0回 / DB geometry samples=${dbCount} / ピッチ計算=0回 / 左側12%探索 / DB役割=anchor-geometry-only</span></div>`;
+  const head=`<div class="result ok"><b>v4.3.3 アイコン構造検出</b><br><span class="mono">DB一致検索=0回 / DB geometry samples=${dbCount} / ピッチ計算=0回 / 左側12%探索 / DB役割=geometry-calibration-only</span></div>`;
   const candText=cands.map((c,i)=>`${i+1}. core (${c.x},${c.y}) ${c.w}x${c.h} / score=${c.score.toFixed(4)}`).join('\n');
   let html=head+`<div class="result"><b>検出候補 ${cands.length}個</b><div class="mono">${candText||'候補なし'}</div></div>`;
   if(grid){
-    html+=`<div class="result"><b>9行生成</b><div class="mono">${grid.rows.map(r=>`${r.row+1}. ${r.label}: icon (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / anchor (${r.anchor.x},${r.anchor.y}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n')}</div></div>`;
+    html+=`<div class="result"><b>Geometry補正</b><div class="mono">core→anchor: +${grid.calibration.offsetXRatio}W / +${grid.calibration.offsetYRatio}H / OCR幅=${grid.calibration.ocrWidthRatio}W / OCR高=${grid.calibration.ocrHeightRatio}H</div></div>`;
+    html+=`<div class="result"><b>9行生成</b><div class="mono">${grid.rows.map(r=>`${r.row+1}. ${r.label}: core (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / anchor (${r.anchor.x},${r.anchor.y}) Δ(+${r.anchor.deltaX},+${r.anchor.deltaY}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n')}</div></div>`;
   }else{
     html+=`<div class="result warn"><b>9個未満のため装備部位への割り当ては行いません。</b><br>誤った9行生成で後続OCRを壊さない設計です。</div>`;
   }
@@ -2637,8 +2673,8 @@ async function v432Detect(){
       v400IconCandidates=cands.slice(0,9).map((c,i)=>({...c,name:`検出アイコン${i+1}`,row:i}));
       v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=v400RegionsFromGrid(grid);
       $('recognizeEquipment').disabled=false;
-      $('layoutStatus').textContent='v4.3.2：9個の独立アイコン検出が成立';
-      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9行生成 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回 / ピッチ計算0回`;
+      $('layoutStatus').textContent='v4.3.3：9個の独立core検出＋DB geometry補正が成立';
+      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9行生成 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回 / ピッチ計算0回 / core基準＋geometry補正`;
     }else{
       v400IconCandidates=[];v400IconGrid=null;window.lastEquipmentRegions=[];$('recognizeEquipment').disabled=true;
       $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9個未成立 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回 / ピッチ計算0回`;
