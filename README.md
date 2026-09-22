@@ -1,6 +1,30 @@
-MH Wilds OCR Step 1.25-C v4.2.8
-- DB template matching is not used for icon discovery.
-- Icon discovery remains limited to the left 12% of the source image.
-- Diagnostic canvas is displayed with the same aspect ratio/width scaling as the source image.
-- Row-chain scoring no longer rewards a uniformly spaced false chain too strongly; it uses candidate image score and the verified structural transition from upper rows to armor rows without hard-coded absolute coordinates.
-- OCR geometry remains the existing icon-right / anchor-center-Y / H=iconH / W=7x iconW rule.
+# MH Wilds OCR Step 1.25-C v4.3.0
+
+## アイコン構造検出版
+
+今回の目的は、装備名OCRより前段の「アイコン検出」を独立して安定化することです。
+
+### 検出方針
+- DBアイコンとの一致検索は行わない
+- スクリーンショット左側を探索
+- アイコン内部の共通構造を検出
+  - 暗色の内部コア
+  - 内部の色付き領域
+  - 外周エッジ
+- アイコン候補を個別に検出し、行間ピッチを前提にしない
+- 検出後、DBはアイコン外枠のgeometryと右下アンカー定義にのみ使用
+- 検出した外枠の右下をOCRアンカーとして利用
+
+### 表示枠
+- 黄枠：検出候補
+- 水色枠：採用した暗色コア
+- 赤枠：コアから復元したアイコン外枠
+- 黄枠：OCR入力範囲
+
+### 検証
+`index.html` の JavaScript は Node.js `node --check` で構文確認済み。
+`sample_game.png` は従来の検証画像を同梱。
+
+### 注意
+DBアイコン本体はGitHub側の `db_icons/weapon/` を使用する前提です。
+検出処理はDB画像の一致性に依存しません。

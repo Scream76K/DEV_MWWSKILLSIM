@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.2.8：候補列構造改善＋座標表示補正版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.3.0：アイコン構造検出＋DBアンカー版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -19,7 +19,6 @@ button.primary{background:#536b3f;color:white;border-color:#435631;font-weight:7
 input[type=file]{width:100%}
 #stage{position:relative;overflow:auto;background:#222;border-radius:10px;padding:8px}
 #img{display:block;max-width:none;width:100%;height:auto}
-#iconAnchorView{display:block;width:100%;height:auto;max-width:100%;margin:0}
 #box{position:absolute;border:3px solid #e64b2f;background:rgba(230,75,47,.12);touch-action:none;cursor:move}
 .handle{position:absolute;width:18px;height:18px;background:#e64b2f;border-radius:50%}
 .tl{left:-9px;top:-9px}.tr{right:-9px;top:-9px}.bl{left:-9px;bottom:-9px}.br{right:-9px;bottom:-9px}
@@ -35,9 +34,9 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.2.8：候補列構造改善＋座標表示補正版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.3.0：アイコン構造検出＋DBアンカー版</h1>
 <div class="note">
-<b>v4.2.8：候補列構造改善＋座標表示補正版</b><br>
+<b>v4.3.0：アイコン構造検出＋DBアンカー版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
 まだシミュレータ本体には接続しません。装備名を個別OCRし、部位限定DB候補まで確認します。
 </div>
@@ -54,7 +53,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <div class="note">v4.2.0では、まずDB一致を使わず画像の形状・反復配置から9個のアイコン枠を検出します。その後、DBアイコンは検出済みアイコンのアンカー位置（右下）と枠比率を補正するためだけに使用します。</div>
 <div id="anchorDBStatus" class="status">DBアイコン：準備中</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-  <button id="detectIconAnchor" class="primary">🎯 アイコン検出→DBアンカー補正→9行生成</button>
+  <button id="detectIconAnchor" class="primary">🎯 アイコン構造検出→DBアンカー→OCR範囲生成</button>
 </div>
 <div id="iconAnchorStatus" class="status">未実行</div>
 <div id="iconAnchorOut" style="margin-top:8px"></div>
@@ -2433,229 +2432,184 @@ function v400Render(){const g=v400IconGrid,a=g.anchor,cal=g.calibration;const fm
 
 // ============================================================================
 // Step 1.25-C v4.2.0
-// IMPORTANT DESIGN RULE:
-// 1) Find icon boxes from the screenshot itself. NO weapon DB template matching.
-// 2) After a 9-row icon column is found, DB icons are used only as a geometric
-//    reference for the frame/anchor (bottom-right). They never decide WHERE an
-//    icon exists on the screen.
-// ============================================================================
-function v412Integral(a,w,h){
-  const out=new Float32Array((w+1)*(h+1));
+// v4.3.0 icon-structure detector
+// Design: detect the icon's dark inner core from the screenshot itself.
+// No DB/template matching is used for detection. DB is used only after a
+// candidate core is found, to overlay the normalized outer frame and define
+// the right-bottom anchor.
+function v430Integral(a,w,h){
+  const out=new Float64Array((w+1)*(h+1));
   for(let y=0;y<h;y++){
-    let row=0;
-    const src=y*w, dst=(y+1)*(w+1), prev=y*(w+1);
+    let row=0; const src=y*w,dst=(y+1)*(w+1),prev=y*(w+1);
     for(let x=0;x<w;x++){row+=a[src+x];out[dst+x+1]=out[prev+x+1]+row;}
   }
   return out;
 }
-function v412RectSum(I,w,x,y,rw,rh){
-  if(rw<=0||rh<=0)return 0;
-  const x1=Math.max(0,Math.floor(x)),y1=Math.max(0,Math.floor(y));
-  const x2=Math.min(w,Math.ceil(x+rw)),y2=Math.min(Math.floor(I.length/(w+1))-1,Math.ceil(y+rh));
-  const W=w+1;
-  return I[y2*W+x2]-I[y1*W+x2]-I[y2*W+x1]+I[y1*W+x1];
+function v430Sum(I,w,x,y,rw,rh){
+  x=Math.max(0,Math.floor(x)); y=Math.max(0,Math.floor(y));
+  rw=Math.max(0,Math.floor(rw)); rh=Math.max(0,Math.floor(rh));
+  const x2=Math.min(w,x+rw),y2=Math.min(Math.floor(I.length/(w+1))-1,y+rh),W=w+1;
+  return I[y2*W+x2]-I[y*W+x2]-I[y2*W+x]+I[y*W+x];
 }
-function v412BuildFeatureImage(src,factor=2){
-  const sw=Number(src?.w||0), sh=Number(src?.h||0);
-  const srcData=src?.data instanceof ImageData ? src.data.data : null;
-  const w=Math.max(1,Math.floor(sw/factor)),h=Math.max(1,Math.floor(sh/factor));
-  const c=document.createElement('canvas');c.width=w;c.height=h;
-  const ctx=c.getContext('2d',{willReadFrequently:true});ctx.imageSmoothingEnabled=true;
-  const tmp=document.createElement('canvas');tmp.width=sw;tmp.height=sh;
-  const tx=tmp.getContext('2d',{willReadFrequently:true});
-  if(srcData){
-    const id=new ImageData(new Uint8ClampedArray(srcData),sw,sh);
-    tx.putImageData(id,0,0);
-  }else{
-    const id=tx.createImageData(sw,sh);
-    for(let i=0,p=0;i<(src?.g?.length||0);i++,p+=4){const v=src.g[i];id.data[p]=id.data[p+1]=id.data[p+2]=v;id.data[p+3]=255;}
-    tx.putImageData(id,0,0);
+function v430Features(src){
+  const w=src.w,h=src.h, n=w*h, rgb=src.data.data;
+  const g=new Float32Array(n), sat=new Float32Array(n), dark=new Float32Array(n), color=new Float32Array(n), mag=new Float32Array(n);
+  for(let i=0,p=0;i<n;i++,p+=4){
+    const r=rgb[p],gg=rgb[p+1],b=rgb[p+2],mx=Math.max(r,gg,b),mn=Math.min(r,gg,b);
+    g[i]=.299*r+.587*gg+.114*b; sat[i]=mx-mn;
+    dark[i]=g[i]<95?1:0; color[i]=(sat[i]>35 && mx>45)?1:0;
   }
-  ctx.drawImage(tmp,0,0,w,h);
-  const rgb=ctx.getImageData(0,0,w,h).data;
-  const g=new Float32Array(w*h),sat=new Float32Array(w*h);
-  for(let i=0,p=0;i<g.length;i++,p+=4){
-    g[i]=.299*rgb[p]+.587*rgb[p+1]+.114*rgb[p+2];
-    const mx=Math.max(rgb[p],rgb[p+1],rgb[p+2]),mn=Math.min(rgb[p],rgb[p+1],rgb[p+2]);
-    sat[i]=mx-mn;
-  }
-  const gx=new Float32Array(w*h),gy=new Float32Array(w*h),mag=new Float32Array(w*h);
   for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
     const i=y*w+x;
-    const a=g[i-w-1],b=g[i-w],d=g[i-w+1],e=g[i-1],f=g[i+1],q=g[i+w-1],r=g[i+w],t=g[i+w+1];
-    const dx=-a+d-2*e+2*f-q+t,dy=-a-2*b-d+q+2*r+t;mag[i]=Math.sqrt(dx*dx+dy*dy);
+    const a=g[i-w-1],b=g[i-w],c=g[i-w+1],d=g[i-1],e=g[i+1],f=g[i+w-1],q=g[i+w],r=g[i+w+1];
+    const dx=-a+c-2*d+2*e-f+r,dy=-a-2*b-c+f+2*q+r; mag[i]=Math.sqrt(dx*dx+dy*dy);
   }
-  return {w,h,g,sat,mag,Ig:v412Integral(mag,w,h),Is:v412Integral(sat,w,h),Is2:v412Integral(sat.map(v=>v*v),w,h)};
+  return {w,h,Ig:v430Integral(g,w,h),Id:v430Integral(dark,w,h),Ic:v430Integral(color,w,h),Im:v430Integral(mag,w,h)};
 }
-function v412CandidateScore(F,x,y,s){
-  const bw=Math.max(2,Math.round(s*.10));
-  const ring=(v412RectSum(F.Ig,F.w,x,y,s,bw)+v412RectSum(F.Ig,F.w,x,y+s-bw,s,bw)+v412RectSum(F.Ig,F.w,x,y,bw,s)+v412RectSum(F.Ig,F.w,x+s-bw,y,bw,s))/(4*bw*s);
-  const ix=x+bw,iy=y+bw,iw=Math.max(2,s-2*bw),ih=iw,n=iw*ih;
-  const sm=v412RectSum(F.Is,F.w,ix,iy,iw,ih)/n;
-  const sm2=v412RectSum(F.Is2,F.w,ix,iy,iw,ih)/n;
-  const std=Math.sqrt(Math.max(0,sm2-sm*sm));
-  return .45*Math.min(ring/80,2)+.35*sm/160+.20*Math.min(std/70,2);
+function v430CoreScore(F,x,y,s){
+  const b=Math.max(2,Math.round(s*.12)), iw=s-2*b, ih=iw, n=iw*ih;
+  if(iw<8)return null;
+  const mean=v430Sum(F.Ig,F.w,x+b,y+b,iw,ih)/n;
+  const dark=v430Sum(F.Id,F.w,x+b,y+b,iw,ih)/n;
+  const color=v430Sum(F.Ic,F.w,x+b,y+b,iw,ih)/n;
+  const ring=(
+    v430Sum(F.Im,F.w,x,y,s,b)+v430Sum(F.Im,F.w,x,y+s-b,s,b)+
+    v430Sum(F.Im,F.w,x,y,b,s)+v430Sum(F.Im,F.w,x+s-b,y,b,s)
+  )/(4*b*s);
+  // The icon core is characteristically dark, has a compact rectangular edge,
+  // and contains some colored pixels. No particular weapon/armor artwork is used.
+  if(color < .02) return null;
+  const darkTerm=Math.min(1.6,Math.max(0,(115-mean)/45));
+  const coreTerm=Math.min(1.5,dark/.52);
+  const colorTerm=Math.min(1.5,color/.055);
+  const edgeTerm=Math.min(1.5,ring/85);
+  return .34*darkTerm+.28*coreTerm+.26*colorTerm+.12*edgeTerm;
 }
-function v412Nms(cands,limit=1800){
+function v430Nms(cands){
   const sorted=cands.slice().sort((a,b)=>b.score-a.score),out=[];
-  for(const c of sorted){let keep=true;for(const q of out){const ix=Math.max(0,Math.min(c.x+c.s,q.x+q.s)-Math.max(c.x,q.x));const iy=Math.max(0,Math.min(c.y+c.s,q.y+q.s)-Math.max(c.y,q.y));const inter=ix*iy,union=c.s*c.s+q.s*q.s-inter;if(inter/Math.max(1,union)>.50){keep=false;break;}}if(keep){out.push(c);if(out.length>=limit)break;}}
+  for(const c of sorted){
+    let keep=true;
+    for(const q of out){
+      const ix=Math.max(0,Math.min(c.x+c.s,q.x+q.s)-Math.max(c.x,q.x));
+      const iy=Math.max(0,Math.min(c.y+c.s,q.y+q.s)-Math.max(c.y,q.y));
+      const inter=ix*iy, union=c.s*c.s+q.s*q.s-inter;
+      if(inter/Math.max(1,union)>.45){keep=false;break;}
+    }
+    if(keep)out.push(c);
+    if(out.length>=180)break;
+  }
   return out;
 }
-function v412DetectCandidates(F,srcW,srcH){
-  // v4.2.6: restrict icon discovery to the LEFT 12% of the screenshot. The verified equipment icon column is near the left edge; wider ranges admit character/UI false positives.
-  // Also reject candidates that touch the screenshot/panel edge. The previous
-  // detector was locking onto the left UI frame at x≈2 instead of the actual
-  // equipment icon at x≈26 in the verified sample.
-  const searchW=Math.max(1,Math.floor(F.w*.12));
-  const edgeX=Math.max(5,Math.round(srcW*.012));
-  const edgeY=Math.max(5,Math.round(srcH*.012));
-  const minS=Math.max(14,Math.round(srcH*.035/2)), maxS=Math.max(minS+4,Math.round(srcH*.090/2));
-  const sizes=[];for(let s=minS;s<=maxS;s+=Math.max(2,Math.round((maxS-minS)/7)))sizes.push(s);
+function v430DetectCores(F){
+  const {w,h}=F, searchW=Math.floor(w*.30);
+  const minS=Math.max(18,Math.round(h*.030)), maxS=Math.min(60,Math.round(h*.060));
   const c=[];
-  for(const s of sizes){
-    for(let y=4;y<F.h-s-4;y+=2)for(let x=2;x<searchW-s-2;x+=2){
-      const score=v412CandidateScore(F,x,y,s);
-      const ox=x*2, oy=y*2, os=s*2;
-      // Do not accept a box whose outer edge is effectively the screen/panel edge.
-      // This is geometry filtering, not DB matching.
-      if(ox<edgeX || oy<edgeY || ox+os>srcW-edgeX) continue;
-      // The equipment icon column is expected to sit close to the left UI edge.
-      // This is a screen-region constraint, not a DB/image match.
-      if(ox > srcW*0.10) continue;
-      if(score>=.38)c.push({score,x:ox,y:oy,s:os});
+  for(let s=minS;s<=maxS;s+=2){
+    for(let y=8;y<h-s-8;y+=2){
+      for(let x=8;x<searchW-s;x+=2){
+        const score=v430CoreScore(F,x,y,s);
+        if(score===null || score<.72)continue;
+        c.push({x,y,s,score});
+      }
     }
   }
-  return v412Nms(c);
+  return v430Nms(c);
 }
-function v412FindRowChain(cands,srcH){
-  if(!cands.length)return null;
-  const expectedSize=srcH*0.0592;
-  const expectedPitch=srcH*0.0855;
-  const sorted=cands.slice().sort((a,b)=>a.y-b.y);
-  const paths=[];
-  for(let i=0;i<sorted.length;i++){
-    const first=sorted[i],path=[first];let last=first;
-    for(let n=1;n<9;n++){
-      const near=sorted.filter(q=>q.y>last.y+Math.max(expectedPitch*.45,last.s*.65)&&q.y<last.y+Math.max(expectedPitch*1.65,last.s*2.35)&&Math.abs((q.x+q.s/2)-(last.x+last.s/2))<=Math.max(24,expectedSize*.75)&&q.s>=last.s*.72&&q.s<=last.s*1.28);
-      if(!near.length)break;
-      const next=near.map(q=>{
-        const pitchErr=Math.abs((q.y-last.y)-expectedPitch)/Math.max(1,expectedPitch);
-        const xErr=Math.abs((q.x+q.s/2)-(last.x+last.s/2))/Math.max(1,expectedSize);
-        const sizeErr=Math.abs(q.s-expectedSize)/Math.max(1,expectedSize);
-        return {...q,fit:pitchErr*30+xErr*10+sizeErr*12-q.score*12};
-      }).sort((a,b)=>a.fit-b.fit)[0];
-      path.push(next);last=next;
+function v430SelectColumn(cands,w,h){
+  if(!cands.length)return [];
+  // First cluster candidates by X. No row pitch is assumed.
+  const groups=[]; const xTol=Math.max(14,Math.round(h*.022));
+  for(const c of cands.slice().sort((a,b)=>(a.x+a.s/2)-(b.x+b.s/2))){
+    const cx=c.x+c.s/2; let best=null;
+    for(const g of groups){if(Math.abs(cx-g.cx)<=Math.max(xTol,g.size*.65)){best=g;break;}}
+    if(!best){best={items:[],cx,size:c.s};groups.push(best);}
+    best.items.push(c); best.cx=best.items.reduce((s,q)=>s+q.x+q.s/2,0)/best.items.length;
+    best.size=v400Median(best.items.map(q=>q.s))||best.size;
+  }
+  // For each X group, collapse overlapping Y candidates into independent rows.
+  const scored=groups.map(g=>{
+    const ys=g.items.slice().sort((a,b)=>a.y-b.y); const rows=[];
+    for(const c of ys){
+      const prev=rows[rows.length-1];
+      if(prev && c.y < prev.y+Math.min(c.s,prev.s)*.72){
+        if(c.score>prev.score)rows[rows.length-1]=c;
+      }else rows.push(c);
     }
-    if(path.length>=7)paths.push(path);
-  }
-  if(!paths.length)return null;
-  paths.sort((a,b)=>{
-    const sa=v412ChainQuality(a,srcH);
-    const sb=v412ChainQuality(b,srcH);
-    return sb-sa;
-  });
-  return paths[0];
+    const span=rows.length?rows[rows.length-1].y-rows[0].y:0;
+    const mean=rows.length?rows.reduce((s,q)=>s+q.score,0)/rows.length:0;
+    // Prefer a long vertical run with many independently detected rows, not
+    // a perfectly regular pitch.
+    const quality=rows.length*100 + Math.min(100,span/Math.max(1,h)*100)*2 + mean*20;
+    return {...g,rows,quality};
+  }).sort((a,b)=>b.quality-a.quality);
+  const best=scored[0];
+  return (best?.rows||[]).slice(0,14).sort((a,b)=>a.y-b.y);
 }
-function v412ChainQuality(path,srcH){
-  if(path.length<7)return -1e9;
-  const expectedSize=srcH*0.0592;
-  // The verified equipment layout is intentionally NOT treated as one uniform
-  // pitch.  Its structure is approximately: upper row pitch, upper row pitch,
-  // one larger transition into the armor block, then a regular armor pitch.
-  // Use ratios only; do not hard-code absolute screen coordinates.
-  const pitches=[];
-  for(let i=1;i<path.length;i++) pitches.push(path[i].y-path[i-1].y);
-  const med=v400Median(pitches)||srcH*.0855;
-  const upperTarget=med;
-  const armorTarget=v400Median(pitches.slice(2))||med;
-  let pitchPenalty=0;
-  for(let i=0;i<pitches.length;i++){
-    const target=i===2 ? armorTarget*1.15 : (i<3 ? upperTarget : armorTarget);
-    pitchPenalty += Math.abs(pitches[i]-target)/Math.max(1,target);
-  }
-  // A false chain with perfectly regular pitch can otherwise beat the real
-  // equipment chain. Candidate image evidence therefore has substantial weight.
-  const scoreAvg=path.reduce((sum,q)=>sum+Number(q.score||0),0)/path.length;
-  const scoreMin=Math.min(...path.map(q=>Number(q.score||0)));
-  const sizeErr=path.reduce((sum,q)=>sum+Math.abs(q.s-expectedSize),0)/(path.length*Math.max(1,expectedSize));
-  const xErr=path.reduce((sum,q,i)=>i?sum+Math.abs((q.x+q.s/2)-(path[0].x+path[0].s/2)):sum,0)/Math.max(1,(path.length-1)*expectedSize);
-  return path.length*100 + scoreAvg*120 + scoreMin*35 - pitchPenalty*70 - sizeErr*80 - xErr*18;
+function v430OuterFromCore(core){
+  // Derived from the stable MH Wilds icon construction: the dark core sits
+  // inside a larger framed icon. Scale follows the detected core size, not a
+  // fixed screenshot pitch. These are geometry ratios, not DB matching.
+  const s=core.s;
+  const outerW=Math.round(s*45/32), outerH=Math.round(s*45/32);
+  const x=Math.round(core.x-s*7/32), y=Math.round(core.y-s*14/32);
+  return {x,y,w:outerW,h:outerH};
 }
-function v412FrameGeometryFromDB(){
-  // DB is NOT used for locating icons. Its only role here is to define the
-  // anchor convention: the frame's outer lower-right corner is the anchor.
-  // The game-screen calibration is independent: the verified sample uses
-  // frame=45px and the normal armor-row pitch≈65px, so frame/pitch=45/65.
+function v430FrameGeometryFromDB(){
   const ref=v400IconItems.find(x=>x.im);
-  const w=Number(ref?.im?.naturalWidth||ref?.im?.width||1),h=Number(ref?.im?.height||ref?.im?.naturalHeight||1);
-  return {outerAspect:w/Math.max(1,h),anchorX:1,anchorY:1,referenceSize:w,frameToPitch:45/65};
+  const w=Number(ref?.im?.naturalWidth||ref?.im?.width||45),h=Number(ref?.im?.naturalHeight||ref?.im?.height||45);
+  return {referenceW:w||45,referenceH:h||45,anchorX:1,anchorY:1,dbRole:'anchor-geometry-only'};
 }
-function v412NormalizeChain(chain){
-  const x=v400Median(chain.map(c=>c.x)),w=v400Median(chain.map(c=>c.s)),h=v400Median(chain.map(c=>c.s));
-  return chain.map((c,i)=>({x:Math.round(x),y:Math.round(c.y),w:Math.round(w),h:Math.round(h),row:i,raw:c}));
+function v430BuildGrid(rows,width,height){
+  const geom=v430FrameGeometryFromDB();
+  const labels=V400_ICON_TARGETS;
+  const out=[];
+  rows.forEach((core,i)=>{
+    const raw=v430OuterFromCore(core);
+    const icon=clampRectToImage(raw,width,height);
+    const anchor={x:Math.round(icon.x+icon.w*geom.anchorX),y:Math.round(icon.y+icon.h*geom.anchorY)};
+    const ocr=clampRectToImage({x:anchor.x,y:anchor.y-icon.h*.5,width:icon.w*7,height:icon.h,source:'v4.3-icon-structure-anchor'},width,height);
+    out.push({key:labels[i]?.key||`row${i}`,label:labels[i]?.label||`アイコン${i+1}`,row:i,core,icon,anchor,ocr});
+  });
+  return {rows:out,dbRole:geom.dbRole,detectionMode:'icon-structure-core',reference:geom};
 }
-function v412BuildGridFromDetectedChain(chain,width,height){
-  const geom=v412FrameGeometryFromDB();
-  const centersX=chain.map(c=>c.x+c.s/2),centerX=v400Median(centersX)??chain[0].x+chain[0].s/2;
-  const pitchValues=[];for(let i=1;i<chain.length;i++)pitchValues.push(chain[i].y-chain[i-1].y);
-  const armorPitch=v400Median(pitchValues)||height*.0855;
-  const frameSize=Math.max(20,Math.round(armorPitch*geom.frameToPitch));
-  const frameW=Math.round(frameSize*geom.outerAspect),frameH=frameSize;
-  const rows=[];
-  for(let i=0;i<9;i++){
-    // Candidate centers establish row locations; only the frame geometry is
-    // normalized from the verified game ratio. This avoids inheriting a
-    // partial/inner candidate box as the actual icon rectangle.
-    const c=chain[Math.min(i,chain.length-1)];
-    const cy=c.y+c.s/2;
-    const icon={x:Math.round(centerX-frameW/2),y:Math.round(cy-frameH/2),w:frameW,h:frameH};
-    const ax=Math.round(icon.x+icon.w*geom.anchorX),ay=Math.round(icon.y+icon.h*geom.anchorY);
-    const legacyX=ax,legacyY=icon.y+icon.h*.5,legacyW=icon.w*7,legacyH=icon.h;
-    const clipped=clampRectToImage({x:legacyX,y:legacyY,width:legacyW,height:legacyH,source:'generic-icon-detect-db-anchor'},width,height);
-    rows.push({key:V400_ICON_TARGETS[i].key,label:V400_ICON_TARGETS[i].label,row:i,icon,anchor:{x:ax,y:ay},ocr:{x:clipped.x,y:clipped.y,w:clipped.width,h:clipped.height},slotX:null});
+function v430Draw(img,grid,cands){
+  const host=$('iconAnchorStage'),c=$('iconAnchorView');host.style.display='block';
+  const iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;c.width=iw;c.height=ih;
+  const ctx=c.getContext('2d');ctx.drawImage(img,0,0);
+  // All candidates: thin yellow. Selected cores: cyan. Final outer icon frames: red.
+  for(const q of cands.slice(0,80)){ctx.strokeStyle='rgba(255,208,0,.45)';ctx.lineWidth=1;ctx.strokeRect(q.x,q.y,q.s,q.s);}
+  for(const r of grid.rows){
+    ctx.strokeStyle='#00d5ff';ctx.lineWidth=2;ctx.strokeRect(r.core.x,r.core.y,r.core.s,r.core.s);
+    ctx.strokeStyle='#ff3b30';ctx.lineWidth=3;ctx.strokeRect(r.icon.x,r.icon.y,r.icon.w,r.icon.h);
+    ctx.strokeStyle='#ffd000';ctx.lineWidth=2;ctx.strokeRect(r.ocr.x,r.ocr.y,r.ocr.w,r.ocr.h);
+    ctx.fillStyle='#00d5ff';ctx.font='bold 16px sans-serif';ctx.fillText(`${r.row+1}:${r.label}`,r.icon.x+2,Math.max(18,r.icon.y-4));
   }
-  const slotX=v400EstimateSlotColumn($('img'),rows,rows[0].icon.x+rows[0].icon.w*1.7,rows[0].icon.x+rows[0].icon.w*7.2);
-  rows.forEach(r=>r.slotX=slotX);
-  return {rows,topPitch:chain.length>=3?(chain[2].y-chain[0].y)/2:armorPitch,armorPitch,calibration:{main:null,head:null,chest:null},anchor:{...rows[0].icon,name:'アイコン枠（汎用検出）',score:chain[0].score,row:0},slotX,ocrRight:Math.max(...rows.map(r=>r.ocr.x+r.ocr.w)),detectionMode:'generic-icon-boxes',dbRole:'anchor-geometry-only',candidateChain:chain,frameGeometry:geom};
 }
-function v412Draw(img,grid){const host=$('iconAnchorStage'),c=$('iconAnchorView');host.style.display='block';const iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;c.width=iw;c.height=ih;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);ctx.strokeStyle='#ff3b30';ctx.lineWidth=4;ctx.strokeRect(grid.anchor.x,grid.anchor.y,grid.anchor.w,grid.anchor.h);ctx.fillStyle='#ff3b30';ctx.font='bold 18px sans-serif';ctx.fillText('汎用アイコン検出→DBアンカー基準',grid.anchor.x+5,Math.max(22,grid.anchor.y-7));for(const r of grid.rows){ctx.strokeStyle='#00d5ff';ctx.lineWidth=2;ctx.strokeRect(r.icon.x,r.icon.y,r.icon.w,r.icon.h);ctx.strokeStyle='#ffd000';ctx.lineWidth=3;ctx.strokeRect(r.ocr.x,r.ocr.y,r.ocr.w,r.ocr.h);ctx.fillStyle='#00d5ff';ctx.font='bold 16px sans-serif';ctx.fillText(`${r.row+1}:${r.label}`,r.icon.x+3,Math.max(18,r.icon.y-4));}}
-function v412Render(grid,cands){const g=grid;$('iconAnchorOut').innerHTML=`<div class="result ok"><b>検出方式：</b>DB一致検索なし → 画面左側12%からアイコン枠を検出 → DBはアンカー基準のみ<br><span class="mono">検出アイコン列=${g.rows.length} / 先頭候補score=${Number(cands?.[0]?.score||0).toFixed(4)} / 上段ピッチ=${g.topPitch.toFixed(2)}px / 防具ピッチ=${g.armorPitch.toFixed(2)}px / 右下アンカー=icon右下 / DB役割=${g.dbRole}</span></div><div class="result"><b>生成された9行</b><div class="mono">${g.rows.map(r=>`${r.row+1}. ${r.label}: icon (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / anchor (${r.anchor.x},${r.anchor.y}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n')}</div></div>`;}
-async function v412Detect(){
-  if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return}
+function v430Render(grid,cands){
+  const lines=grid.rows.map(r=>`${r.row+1}. ${r.label}: core (${r.core.x},${r.core.y}) ${r.core.s}x${r.core.s} / icon (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / anchor (${r.anchor.x},${r.anchor.y}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n');
+  $('iconAnchorOut').innerHTML=`<div class="result ok"><b>検出方式：</b>DB一致検索なし → アイコン内部構造（暗色コア＋色付き領域＋外周エッジ）を個別検出 → DBは検出後のアンカーgeometryのみ<br><span class="mono">候補=${cands.length} / 採用アイコン=${grid.rows.length} / ピッチ計算なし / DB一致検索0回</span></div><div class="result"><b>検出結果</b><div class="mono">${lines||'採用アイコンなし'}</div></div>`;
+}
+async function v430Detect(){
+  if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return;}
   const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();
   try{
-    $('iconAnchorStatus').textContent='DBを使わず、画面左側12%のアイコン枠を探索中…';
-    const scene=v400ImageData($('img')),F=v412BuildFeatureImage(scene,2);
-    const cands=v412DetectCandidates(F,scene.w,scene.h);
-    const chain=v412FindRowChain(cands,scene.h);
-    // v4.2.7: candidate visualization is the primary diagnostic. Do not let a
-    // forced 9-row chain hide a wrong first candidate. The chain/grid is only
-    // built after we can inspect the raw candidates.
-    const host=$('iconAnchorStage'),cv=$('iconAnchorView');
-    host.style.display='block';cv.width=scene.w;cv.height=scene.h;
-    const ctx=cv.getContext('2d');ctx.clearRect(0,0,scene.w,scene.h);ctx.drawImage($('img'),0,0);cv.style.width='100%';cv.style.height='auto';cv.style.maxWidth='100%';cv.style.display='block';
-    const top=cands.slice().sort((a,b)=>b.score-a.score).slice(0,30);
-    top.forEach((c,i)=>{ctx.strokeStyle=i===0?'#ff3b30':'#00d5ff';ctx.lineWidth=i===0?4:2;ctx.strokeRect(c.x,c.y,c.s,c.s);ctx.fillStyle=i===0?'#ff3b30':'#00d5ff';ctx.font='bold 14px sans-serif';ctx.fillText(`#${i+1} ${c.score.toFixed(3)}`,c.x+2,Math.max(14,c.y-3));});
-    const candText=top.map((c,i)=>`${i+1}. score=${c.score.toFixed(4)} / x=${c.x} y=${c.y} s=${c.s}`).join('\n');
-    $('iconAnchorOut').innerHTML=`<div class="result ok"><b>v4.2.8候補可視化：</b>DB一致検索0回 / 左12% / 生候補=${cands.length} / 9連続候補=${chain?.length||0}<br><span class="mono">座標系：元画像 ${scene.w}×${scene.h}px / 表示canvasは元画像比率で100%縮小</span></div><div class="result"><b>上位30候補</b><div class="mono">${candText || '候補なし'}</div></div>`;
-    if(chain&&chain.length>=9){
-      const grid=v412BuildGridFromDetectedChain(chain,scene.w,scene.h);
-      v400IconCandidates=chain.map((c,i)=>({...c,name:`検出アイコン${i+1}`,row:i}));
-      v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=v400RegionsFromGrid(grid);
-      v412Render(grid,chain);
-      $('layoutStatus').textContent='v4.2.7 候補可視化＋9行生成（9連続成立時のみ）／DBはアンカー基準のみ';
-      $('layoutOut').innerHTML='<div class="note">まず生のアイコン候補を可視化しています。9行グリッドは9個の連続候補が成立した場合のみ生成します。DB一致検索はしていません。</div>';
-      $('iconAnchorStatus').textContent=`完了：候補可視化＋汎用アイコン列9個 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回 / 左12%`;
-      $('recognizeEquipment').disabled=false;
-    }else{
-      v400IconCandidates=[];v400IconGrid=null;window.lastEquipmentRegions=[];
-      $('recognizeEquipment').disabled=true;
-      $('iconAnchorStatus').textContent=`候補可視化完了：生候補${cands.length} / 9連続${chain?.length||0} / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回`;
-    }
-  }catch(e){console.error(e);$('iconAnchorStatus').textContent='アイコン検出エラー：'+e.message}
-  finally{btn.disabled=false}
+    $('iconAnchorStatus').textContent='DBを使わず、アイコン内部構造を個別検出中…';
+    const scene=v400ImageData($('img')); const F=v430Features(scene);
+    const cands=v430DetectCores(F); const rows=v430SelectColumn(cands,scene.w,scene.h);
+    if(rows.length<1)throw new Error(`アイコン構造候補を検出できませんでした（候補${cands.length}）`);
+    const grid=v430BuildGrid(rows,scene.w,scene.h);
+    v400IconCandidates=rows.map((c,i)=>({...c,name:`構造検出アイコン${i+1}`,row:i}));
+    v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=grid.rows.length>=9?v400RegionsFromGrid(grid):[];
+    v430Draw($('img'),grid,cands);v430Render(grid,cands);
+    $('layoutStatus').textContent='v4.3.0 アイコン構造検出（DB一致なし）→検出後DB geometry→アンカー';
+    $('layoutOut').innerHTML='<div class="note">アイコンの存在位置はスクリーンショットの「暗色コア＋色付き領域＋外周エッジ」だけから個別に検出します。行間ピッチは検出条件に使用しません。DBは検出後のアイコン枠サイズ・右下アンカー基準にのみ使用します。</div>';
+    $('iconAnchorStatus').textContent=`完了：アイコン構造候補${cands.length}個 / 採用${rows.length}個 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回 / ピッチ計算なし`;
+    $('recognizeEquipment').disabled=rows.length<9;
+  }catch(e){console.error(e);$('iconAnchorStatus').textContent='アイコン検出エラー：'+e.message;}
+  finally{btn.disabled=false;}
 }
-$('detectIconAnchor').onclick=v412Detect;
+$('detectIconAnchor').onclick=v430Detect;
+
 (async()=>{try{await v400LoadBundledIcons();}catch(e){$('anchorDBStatus').textContent='DBアイコン読み込み失敗：'+e.message;console.error(e);}})();
 
 $('file').addEventListener('change',()=>{v400IconGrid=null;v400IconCandidates=[];window.lastEquipmentRegions=[];$('iconAnchorStatus').textContent='画像を読み込みました。DBアイコンアンカーを実行してください。';$('iconAnchorStage').style.display='none';});
