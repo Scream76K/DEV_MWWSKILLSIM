@@ -2,75 +2,137 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MHWilds ROI Tester</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MHWilds 装備検出デバッガー</title>
   <style>
+    :root {
+      --bg-color: #0f141c;
+      --card-bg: #1e2638;
+      --accent-color: #00d5ff;
+      --text-color: #e0e6ed;
+    }
+
     body {
       margin: 0;
       padding: 16px;
-      background-color: #0f141c;
-      color: #e0e6ed;
-      font-family: sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     }
+
+    h2 {
+      font-size: 1.2rem;
+      text-align: center;
+      color: var(--accent-color);
+      margin: 0 0 12px 0;
+    }
+
     .container {
-      max-width: 1000px;
+      max-width: 600px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
+
     input[type="file"] {
-      background: #1e2638;
+      background: var(--card-bg);
       color: #fff;
       padding: 12px;
       border-radius: 8px;
-      border: 1px solid #00d5ff;
+      border: 1px solid var(--accent-color);
+      width: 100%;
+      box-sizing: border-box;
     }
+
     .canvas-wrapper {
       width: 100%;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
     }
-    canvas {
+
+    canvas#stage {
       width: 100%;
       height: auto;
       display: block;
+    }
+
+    /* 切り出しプレビュー一覧 */
+    .crops-container {
+      background: var(--card-bg);
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .crop-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #2d374d;
+      padding-bottom: 6px;
+    }
+
+    .crop-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .crop-label {
+      font-size: 0.85rem;
+      width: 80px;
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+
+    .crop-canvas-wrapper {
+      background: #000;
+      border: 1px solid #444;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .crop-canvas-wrapper canvas {
+      display: block;
+      height: 28px;
+      width: auto;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>MHWilds ROI 判定デバッガー</h2>
+  <h2>MHWilds 装備領域判定デバッガー</h2>
   <input type="file" id="imageInput" accept="image/*">
+  
   <div class="canvas-wrapper">
     <canvas id="stage"></canvas>
+  </div>
+
+  <div id="cropsContainer" class="crops-container" style="display: none;">
+    <!-- 切り出し画像がここに動的追加されます -->
   </div>
 </div>
 
 <script>
+  // 1920x1080 基準での左側装備テキストのROI定義 (対象7箇所)
   const ROI_PRESETS_1080P = {
-    // 装備名称
-    weaponMain:    { x: 92,  y: 253, w: 240, h: 36 },
-    weaponSub:     { x: 92,  y: 424, w: 240, h: 36 },
-    head:          { x: 92,  y: 595, w: 240, h: 36 },
-    chest:         { x: 92,  y: 764, w: 240, h: 36 },
-    arm:           { x: 92,  y: 935, w: 240, h: 36 },
-    
-    // 全身スキル
-    skillsAll:     { x: 1220, y: 230, w: 280, h: 630 },
-
-    // ステータス
-    statusAttack:  { x: 1800, y: 330, w: 90,  h: 36 },
-    statusCrit:    { x: 1800, y: 362, w: 90,  h: 36 },
-    statusElement: { x: 1800, y: 394, w: 90,  h: 36 },
-    statusDef:     { x: 1800, y: 780, w: 90,  h: 36 }
+    weaponMain: { x: 88, y: 259, w: 250, h: 36, label: "メイン武器" },
+    head:       { x: 88, y: 431, w: 250, h: 36, label: "頭防具" },
+    chest:      { x: 88, y: 516, w: 250, h: 36, label: "胴防具" },
+    arm:        { x: 88, y: 602, w: 250, h: 36, label: "腕防具" },
+    waist:      { x: 88, y: 687, w: 250, h: 36, label: "腰防具" },
+    leg:        { x: 88, y: 773, w: 250, h: 36, label: "脚防具" },
+    charm:      { x: 88, y: 858, w: 250, h: 36, label: "護石" }
   };
 
   const imageInput = document.getElementById('imageInput');
   const stage = document.getElementById('stage');
   const ctx = stage.getContext('2d');
+  const cropsContainer = document.getElementById('cropsContainer');
 
   imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -82,9 +144,14 @@
       stage.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      // ROI座標の計算と描画
+      // 1. 解像度に合わせたROI座標計算
       const rois = calculateROIBounds(img.width, img.height);
+      
+      // 2. メイン画像上に青枠を描画
       drawROIBounds(ctx, rois);
+
+      // 3. 切り出した箇所の個別プレビューを描画
+      renderCropPreviews(img, rois);
     };
     img.src = URL.createObjectURL(file);
   });
@@ -111,6 +178,7 @@
 
     for (const [key, rect] of Object.entries(ROI_PRESETS_1080P)) {
       calculatedROIs[key] = {
+        label: rect.label,
         x: Math.round(offsetX + (rect.x * scale)),
         y: Math.round(offsetY + (rect.y * scale)),
         w: Math.round(rect.w * scale),
@@ -123,23 +191,40 @@
 
   function drawROIBounds(ctx, rois) {
     ctx.lineWidth = Math.max(2, Math.round(stage.width / 600));
-    ctx.font = `bold ${Math.max(12, Math.round(stage.width / 90))}px sans-serif`;
+    ctx.font = `bold ${Math.max(12, Math.round(stage.width / 80))}px sans-serif`;
 
     for (const [key, rect] of Object.entries(rois)) {
-      // 色分け
-      if (key.startsWith('weapon') || key.startsWith('head') || key.startsWith('chest') || key.startsWith('arm')) {
-        ctx.strokeStyle = '#00d5ff'; // 装備系：シアン
-      } else if (key.startsWith('skills')) {
-        ctx.strokeStyle = '#00ff88'; // スキル：緑
-      } else {
-        ctx.strokeStyle = '#ff3366'; // ステータス：赤
-      }
-
+      ctx.strokeStyle = '#00d5ff';
       ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
       
-      // ラベル表示
-      ctx.fillStyle = ctx.strokeStyle;
-      ctx.fillText(key, rect.x, Math.max(15, rect.y - 5));
+      ctx.fillStyle = '#00d5ff';
+      ctx.fillText(rect.label, rect.x, Math.max(15, rect.y - 5));
+    }
+  }
+
+  function renderCropPreviews(sourceImg, rois) {
+    const listHtml = Object.entries(rois).map(([key, rect]) => `
+      <div class="crop-item">
+        <div class="crop-label">${rect.label}</div>
+        <div class="crop-canvas-wrapper">
+          <canvas id="crop_${key}" width="${rect.w}" height="${rect.h}"></canvas>
+        </div>
+      </div>
+    `).join('');
+
+    cropsContainer.innerHTML = '<div style="font-size: 0.9rem; font-weight: bold; margin-bottom: 4px;">▼ 切り出しプレビュー (7箇所)</div>' + listHtml;
+    cropsContainer.style.display = 'flex';
+
+    for (const [key, rect] of Object.entries(rois)) {
+      const c = document.getElementById(`crop_${key}`);
+      if (c) {
+        const cCtx = c.getContext('2d');
+        cCtx.drawImage(
+          sourceImg,
+          rect.x, rect.y, rect.w, rect.h,
+          0, 0, rect.w, rect.h
+        );
+      }
     }
   }
 </script>
