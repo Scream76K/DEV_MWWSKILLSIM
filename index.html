@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.3.6：実画像座標＋左端15%＋縦列Grid検証＋DB geometry版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.3.7：フルアイコン枠検出＋実画像座標＋左端15%＋縦列Grid検証＋DB geometry版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,9 +34,9 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.3.6：実画像座標＋左端15%＋縦列Grid検証＋DB geometry版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.3.7：フルアイコン枠検出＋実画像座標＋左端15%＋縦列Grid検証＋DB geometry版</h1>
 <div class="note">
-<b>v4.3.6：実画像座標＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
+<b>v4.3.7：フルアイコン枠検出＋実画像座標＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
 まだシミュレータ本体には接続しません。装備名を個別OCRし、部位限定DB候補まで確認します。
 </div>
@@ -50,7 +50,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 
 <div class="card">
 <h2>2. DBアイコンアンカーで装備位置を確定</h2>
-<div class="note">v4.3.6では、入力画像の実ピクセル座標（naturalWidth / naturalHeight）を検出処理の基準に統一します。core探索は実画像幅の左端15%だけに限定し、v4.3.2の固定coreサイズ条件を基準として候補を抽出します。候補群はv4.3.5のX軸整合・Y軸等間隔の9行縦列Gridで検証し、9行が成立しない場合は装備行を生成しません。DB画像は検索・置換には使わず、core→仮想アイコン右下アンカーのgeometry補正だけに使用します。</div>
+<div class="note">v4.3.7では、入力画像の実ピクセル座標（naturalWidth / naturalHeight）を検出処理の基準に統一します。小さな暗部coreではなく、実際の装備アイコン枠全体（約50～82pxを画像高さに応じて補正）を候補として探索します。アイコン左端は実画像幅の左端15%を基準にしつつ、アイコン全体を切らないよう右方向へ候補窓を拡張します。候補群はv4.3.5のX軸整合・Y軸等間隔の9行縦列Gridで検証し、9行が成立しない場合は装備行を生成しません。DB画像は検索・置換には使わず、検出アイコン枠→右下アンカーのgeometry補正だけに使用します。</div>
 <div id="anchorDBStatus" class="status">DBアイコン：準備中</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
   <button id="detectIconAnchor" class="primary">🎯 アイコン検出→DBアンカー補正→9行生成</button>
@@ -2501,82 +2501,89 @@ function v412Nms(cands,limit=1800){
   return out;
 }
 function v432DetectIconComponents(src){
-  // v4.3.6: REAL PIXEL COORDINATE BASELINE.
-  // The detector works only in the ImageData/canvas coordinate space produced
-  // by v400ImageData(). CSS/display dimensions are never used here.
+  // v4.3.7: detect the FULL equipment icon frame, not a small dark interior core.
+  // Coordinate space is the actual ImageData/canvas pixel space only.
   // DB template matching remains disabled.
   const w=Number(src?.w||0),h=Number(src?.h||0);
   const id=src?.data instanceof ImageData ? src.data : null;
   if(!id) throw new Error('元画像のImageDataがありません');
   if(!Number.isFinite(w)||!Number.isFinite(h)||w<1||h<1) throw new Error(`実画像サイズが不正です：${w}×${h}`);
-  const d=id.data;
-  const gray=new Uint8Array(w*h);
-  for(let i=0,p=0;i<gray.length;i++,p+=4){
-    gray[i]=Math.round(.299*d[p]+.587*d[p+1]+.114*d[p+2]);
-  }
 
-  // IMPORTANT: do not derive the search region from uiScale or CSS size.
-  // The equipment icons are constrained to the left side of the screenshot.
-  // v4.3.6 deliberately uses the actual pixel width directly.
-  const searchRatio=0.15;
-  const xMax=Math.max(1,Math.min(w,Math.round(w*searchRatio)));
+  // Reference: the actual 706×1536 capture has equipment icon frames around 60～65 px.
+  // Scale from image height, but NEVER from CSS/display dimensions.
+  const refH=1536;
+  const scale=Math.max(.65,Math.min(2.2,h/refH));
+  const minS=Math.round(50*scale), maxS=Math.round(82*scale);
+  const step=Math.max(2,Math.round(2*scale));
+
+  // The icon itself extends beyond 15% of this 706 px image (~106 px).
+  // Therefore 15% is used as the candidate LEFT-edge zone, while the full
+  // square is allowed to extend rightward. This preserves the strong left-UI
+  // constraint without truncating the icon frame.
+  const searchLeftMax=Math.max(1,Math.min(w,Math.round(w*.15)));
+  const xStart=0;
+  const xEnd=Math.min(w- minS, searchLeftMax + Math.round(maxS*.55));
   const yMin=Math.max(0,Math.round(h*.10));
-  const yMax=Math.min(h,Math.round(h*.94));
+  const yMax=Math.min(h-maxS,Math.round(h*.90));
 
-  // Restore the verified v4.3.2 core-size baseline. Do not widen the range
-  // merely because another capture has a different CSS/display size.
-  const minW=20,maxW=45,minH=20,maxH=45;
-  const threshold=70;
-  const seen=new Uint8Array(w*h);
+  const F=v412BuildFeatureImage(src,2);
+  const ds=2;
   const candidates=[];
-  const qx=new Int32Array(w*h), qy=new Int32Array(w*h);
-  for(let sy=yMin;sy<yMax;sy++){
-    for(let sx=0;sx<xMax;sx++){
-      const si=sy*w+sx;
-      if(seen[si]||gray[si]>=threshold)continue;
-      let head=0,tail=0;qx[tail]=sx;qy[tail]=sy;tail++;seen[si]=1;
-      let minX=sx,maxX=sx,minY=sy,maxY=sy,area=0;
-      while(head<tail){
-        const x=qx[head],y=qy[head];head++;area++;
-        if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;
-        for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
-          if(dx===0&&dy===0)continue;
-          const nx=x+dx,ny=y+dy;
-          if(nx<0||nx>=xMax||ny<yMin||ny>=yMax)continue;
-          const ni=ny*w+nx;
-          if(!seen[ni]&&gray[ni]<threshold){seen[ni]=1;qx[tail]=nx;qy[tail]=ny;tail++;}
-        }
+  const minSd=Math.max(20,Math.floor(minS/ds)), maxSd=Math.max(minSd+1,Math.ceil(maxS/ds));
+  const xEndD=Math.floor(xEnd/ds), yMinD=Math.floor(yMin/ds), yMaxD=Math.floor(yMax/ds);
+
+  // Scan square windows for the characteristic rounded icon frame:
+  // strong edge energy around the perimeter + meaningful interior structure.
+  for(let sd=minSd;sd<=maxSd;sd+=Math.max(1,Math.round(step/ds))){
+    const s=sd*ds;
+    const bw=Math.max(2,Math.round(sd*.12));
+    for(let y=yMinD;y<=yMaxD;y+=Math.max(1,Math.round(step/ds))){
+      for(let x=0;x<=xEndD;x+=Math.max(1,Math.round(step/ds))){
+        const ring=(
+          v412RectSum(F.Ig,F.w,x,y,sd,bw)+
+          v412RectSum(F.Ig,F.w,x,y+sd-bw,sd,bw)+
+          v412RectSum(F.Ig,F.w,x,y,bw,sd)+
+          v412RectSum(F.Ig,F.w,x+sd-bw,y,bw,sd)
+        )/(4*bw*sd);
+        const ix=x+bw,iy=y+bw,iw=Math.max(2,sd-2*bw),n=iw*iw;
+        const sm=v412RectSum(F.Is,F.w,ix,iy,iw,iw)/n;
+        const sm2=v412RectSum(F.Is2,F.w,ix,iy,iw,iw)/n;
+        const std=Math.sqrt(Math.max(0,sm2-sm*sm));
+        // Reject weak/plain background first.
+        if(ring<20 || std<10)continue;
+        const score=Math.min(1.5,
+          .56*Math.min(ring/75,1.5)+
+          .24*Math.min(sm/110,1.5)+
+          .20*Math.min(std/65,1.5)
+        );
+        if(score<.62)continue;
+        candidates.push({x:x*ds,y:y*ds,w:s,h:s,score,ring,std,sm});
       }
-      const bw=maxX-minX+1,bh=maxY-minY+1;
-      if(bw<minW||bw>maxW||bh<minH||bh>maxH||area<150||area>1800)continue;
-      const fill=area/(bw*bh);
-      if(fill<0.35||fill>0.95)continue;
-      let minG=255,maxG=0,minSat=255,maxSat=0,count=0;
-      for(let y=minY;y<=maxY;y++)for(let x=minX;x<=maxX;x++){
-        const p=(y*w+x)*4,r=d[p],g=d[p+1],b=d[p+2];
-        const v=Math.max(r,g,b)-Math.min(r,g,b);
-        if(gray[y*w+x]<130){minG=Math.min(minG,gray[y*w+x]);maxG=Math.max(maxG,gray[y*w+x]);minSat=Math.min(minSat,v);maxSat=Math.max(maxSat,v);count++;}
-      }
-      if(count<100||maxG-minG<18||maxSat-minSat<15)continue;
-      candidates.push({x:minX,y:minY,w:bw,h:bh,area,fill,score:Math.min(1.2,.55+Math.min(.25,area/3000)+Math.min(.20,(maxG-minG)/160)+Math.min(.20,(maxSat-minSat)/180))});
     }
   }
+
+  // Non-maximum suppression. Keep only spatially distinct square frames.
   candidates.sort((a,b)=>b.score-a.score);
   const kept=[];
   for(const c of candidates){
     const overlap=kept.some(q=>{
       const ix=Math.max(0,Math.min(c.x+c.w,q.x+q.w)-Math.max(c.x,q.x));
       const iy=Math.max(0,Math.min(c.y+c.h,q.y+q.h)-Math.max(c.y,q.y));
-      return ix*iy/Math.max(1,c.w*c.h+q.w*q.h-ix*iy)>.35;
+      const inter=ix*iy, union=c.w*c.h+q.w*q.h-inter;
+      return inter/Math.max(1,union)>.55;
     });
     if(!overlap)kept.push(c);
+    if(kept.length>=80)break;
   }
-  kept.sort((a,b)=>a.y-b.y);
-  kept.searchRatio=searchRatio;
-  kept.searchXMax=xMax;
-  kept.coreRange={minW,maxW,minH,maxH};
+  kept.sort((a,b)=>a.y-b.y || a.x-b.x);
+  kept.searchRatio=.15;
+  kept.searchXMax=searchLeftMax;
+  kept.searchXEnd=xEnd;
+  kept.coreRange={minW:minS,maxW:maxS,minH:minS,maxH:maxS};
   kept.sceneWidth=w;
   kept.sceneHeight=h;
+  kept.detector='full-icon-frame-scan-v4.3.7';
+  kept.scale=scale;
   return kept;
 }
 
@@ -2663,7 +2670,7 @@ function v435FindVerticalGrid(candidates,width,height){
     if(dx>Math.max(12,2.0*medW))continue;
     for(let steps=1;steps<=8;steps++){
       const pitch=dy/steps;
-      if(pitch<Math.max(2.2*medH,28)||pitch>Math.min(height/4,7.0*medH))continue;
+      if(pitch<Math.max(1.65*medH,45)||pitch>Math.min(height/4,7.0*medH))continue;
       const y0=steps===1?Math.min(ya,yb):Math.min(ya,yb);
       seeds.push({x:(xa+xb)/2,y:y0,pitch});
       seeds.push({x:(xa+xb)/2,y:Math.max(0,Math.max(ya,yb)-pitch*steps),pitch});
@@ -2676,7 +2683,7 @@ function v435FindVerticalGrid(candidates,width,height){
     const dy=ys[j]-ys[i];
     for(let steps=1;steps<=8;steps++){
       const pitch=dy/steps;
-      if(pitch>=Math.max(2.2*medH,28)&&pitch<=Math.min(height/4,7.0*medH)){
+      if(pitch>=Math.max(1.65*medH,45)&&pitch<=Math.min(height/4,7.0*medH)){
         for(let k=0;k<9;k++){
           const y=ys[i]-pitch*k;
           if(y>=0&&y<=height){seeds.push({x:medianX,y,pitch});}
@@ -2749,9 +2756,9 @@ function v432Draw(img,grid,cands){
 
 function v432Render(cands,grid){
   const dbCount=v400IconItems.length;
-  const head=`<div class="result ok"><b>v4.3.6 アイコン構造検出＋実画像座標＋左端15%＋縦列Grid検証</b><br><span class="mono">DB一致検索=0回 / DB geometry samples=${dbCount} / 縦列Grid/RANSAC検証 / 実画像座標・左端15%探索 / DB役割=geometry-calibration-only</span></div>`;
+  const head=`<div class="result ok"><b>v4.3.7 フルアイコン枠検出＋実画像座標＋左端15%＋縦列Grid検証</b><br><span class="mono">DB一致検索=0回 / DB geometry samples=${dbCount} / 縦列Grid/RANSAC検証 / 実画像座標・左端15%基準＋アイコン全体探索 / DB役割=geometry-calibration-only</span></div>`;
   const candText=cands.map((c,i)=>`${i+1}. core (${c.x},${c.y}) ${c.w}x${c.h} / score=${c.score.toFixed(4)}`).join('\n');
-  const scaleText=`scene=${cands.sceneWidth||'-'}×${cands.sceneHeight||'-'}px / 探索X=${cands.searchXMax||'-'}px (${Math.round((cands.searchRatio||0)*100)}%) / core範囲=${cands.coreRange?`${cands.coreRange.minW}～${cands.coreRange.maxW} × ${cands.coreRange.minH}～${cands.coreRange.maxH}px`:'-'}`;
+  const scaleText=`scene=${cands.sceneWidth||'-'}×${cands.sceneHeight||'-'}px / 左端基準X=${cands.searchXMax||'-'}px (15%) / 実探索X終端=${cands.searchXEnd||'-'}px / アイコン枠=${cands.coreRange?`${cands.coreRange.minW}～${cands.coreRange.maxW} × ${cands.coreRange.minH}～${cands.coreRange.maxH}px`:'-'}`;
   let html=head+`<div class="result"><b>サイズ補正</b><div class="mono">${scaleText}</div></div><div class="result"><b>検出候補 ${cands.length}個</b><div class="mono">${candText||'候補なし'}</div></div>`;
   if(grid){
     html+=`<div class="result"><b>縦列Grid検証＋Geometry補正</b><div class="mono">matched=${grid.grid.matched}/9 / score=${grid.grid.score.toFixed(3)} / X偏差=${grid.grid.xResidual.toFixed(1)}px / pitch=${grid.grid.pitch.toFixed(1)}px / pitchSD=${grid.grid.pitchSd.toFixed(1)}px<br>core→anchor: +${grid.calibration.offsetXRatio}W / +${grid.calibration.offsetYRatio}H / OCR幅=${grid.calibration.ocrWidthRatio}W / OCR高=${grid.calibration.ocrHeightRatio}H</div></div>`;
@@ -2776,11 +2783,11 @@ async function v432Detect(){
       v400IconCandidates=cands.slice(0,9).map((c,i)=>({...c,name:`検出アイコン${i+1}`,row:i}));
       v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=v400RegionsFromGrid(grid);
       $('recognizeEquipment').disabled=false;
-      $('layoutStatus').textContent='v4.3.6：9個のcore＋縦列Grid検証＋実画像座標＋DB geometry補正が成立';
-      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9行生成 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / 実画像座標＋左端15%＋core基準＋縦列Grid検証＋geometry補正`;
+      $('layoutStatus').textContent='v4.3.7：9個のアイコン枠＋縦列Grid検証＋実画像座標＋DB geometry補正が成立';
+      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9行生成 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / 実画像座標＋左端15%＋フルアイコン枠＋縦列Grid検証＋geometry補正`;
     }else{
       v400IconCandidates=[];v400IconGrid=null;window.lastEquipmentRegions=[];$('recognizeEquipment').disabled=true;
-      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9個未成立 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / 実画像座標＋左端15%＋縦列Grid検証`;
+      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9個未成立 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / 実画像座標＋左端15%＋フルアイコン枠＋縦列Grid検証`;
     }
   }catch(e){console.error(e);$('iconAnchorStatus').textContent='アイコン検出エラー：'+e.message}
   finally{btn.disabled=false}

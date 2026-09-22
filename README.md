@@ -1,13 +1,21 @@
-# MH Wilds OCR Step 1.25-C v4.3.6
+# MHWilds OCR Step 1.25-C v4.3.7
 
-v4.3.6 is a focused coordinate-system correction from v4.3.5.
+## 今回の変更
+- v4.3.6の「小さな暗部core」検出を廃止。
+- 実画像ピクセル座標（naturalWidth / naturalHeight → ImageData）を維持。
+- 装備アイコン全体の枠を約50～82px（1536px高を基準に画像高さ比例）で探索。
+- 左端15%を「アイコン左端の基準ゾーン」とし、アイコン全体を切らないよう右方向へ候補窓を拡張。
+- DB一致検索は0回。DBはgeometry補正専用。
+- v4.3.5の9個縦列Gridガードを維持。9個成立しない場合は装備行を生成しない。
+- 縦列Gridの候補pitch下限をアイコン高2.2倍→1.65倍へ調整。実画像706×1536ではアイコン約60～65px、行間約129pxを想定し、実測構造に合わせるため。
 
-- Detection coordinates are based on the actual ImageData/canvas pixel dimensions from `naturalWidth` / `naturalHeight`.
-- CSS/display dimensions are not used by the icon detector.
-- Core search is physically restricted to the leftmost 15% of the actual image width.
-- The v4.3.2 fixed core-size baseline (20–45 px) is restored; no `uiScale` expansion is used.
-- v4.3.5 vertical Grid/RANSAC validation remains unchanged as the safety gate.
-- DB template matching remains 0; DB icons are geometry calibration only.
-- If a 9-row vertical grid is not established, no equipment rows are generated and OCR is not enabled.
+## 想定診断
+IMG_9443.jpeg（706×1536）では、アイコン枠は概ね60～65px。
+診断には以下が表示されます。
+- scene=706×1536px
+- 左端基準X=約106px (15%)
+- 実探索X終端=約151px
+- アイコン枠=約50～82px
 
-The UI reports the detector scene dimensions and search width so coordinate-space mismatches can be diagnosed directly.
+## 安全策
+9個の縦列構造が成立しない場合、OCR領域・装備部位割り当てを生成しません。
