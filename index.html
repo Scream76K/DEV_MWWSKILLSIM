@@ -2478,11 +2478,11 @@ function v412Nms(cands,limit=1800){
   return out;
 }
 function v412DetectCandidates(F,srcW,srcH){
-  // v4.2.2: restrict icon discovery to the LEFT 50% of the screenshot.
+  // v4.2.3: restrict icon discovery to the LEFT 40% of the screenshot.
   // This is deliberately a search-window constraint, not a DB/template match.
   // The right-side skill/status boxes are therefore excluded before candidate
   // scoring. Coordinates returned below remain in the original screenshot space.
-  const searchW=Math.max(1,Math.floor(F.w*.50));
+  const searchW=Math.max(1,Math.floor(F.w*.40));
   const minS=Math.max(14,Math.round(srcH*.035/2)), maxS=Math.min(Math.round(Math.min(searchW,F.h)*.14),Math.round(srcH*.090/2));
   const sizes=[];for(let s=minS;s<=maxS;s+=Math.max(2,Math.round((maxS-minS)/7)))sizes.push(s);
   const c=[];
@@ -2572,12 +2572,12 @@ function v412BuildGridFromDetectedChain(chain,width,height){
   return {rows,topPitch:chain.length>=3?(chain[2].y-chain[0].y)/2:armorPitch,armorPitch,calibration:{main:null,head:null,chest:null},anchor:{...rows[0].icon,name:'アイコン枠（汎用検出）',score:chain[0].score,row:0},slotX,ocrRight:Math.max(...rows.map(r=>r.ocr.x+r.ocr.w)),detectionMode:'generic-icon-boxes',dbRole:'anchor-geometry-only',candidateChain:chain,frameGeometry:geom};
 }
 function v412Draw(img,grid){const host=$('iconAnchorStage'),c=$('iconAnchorView');host.style.display='block';const iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;c.width=iw;c.height=ih;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);ctx.strokeStyle='#ff3b30';ctx.lineWidth=4;ctx.strokeRect(grid.anchor.x,grid.anchor.y,grid.anchor.w,grid.anchor.h);ctx.fillStyle='#ff3b30';ctx.font='bold 18px sans-serif';ctx.fillText('汎用アイコン検出→DBアンカー基準',grid.anchor.x+5,Math.max(22,grid.anchor.y-7));for(const r of grid.rows){ctx.strokeStyle='#00d5ff';ctx.lineWidth=2;ctx.strokeRect(r.icon.x,r.icon.y,r.icon.w,r.icon.h);ctx.strokeStyle='#ffd000';ctx.lineWidth=3;ctx.strokeRect(r.ocr.x,r.ocr.y,r.ocr.w,r.ocr.h);ctx.fillStyle='#00d5ff';ctx.font='bold 16px sans-serif';ctx.fillText(`${r.row+1}:${r.label}`,r.icon.x+3,Math.max(18,r.icon.y-4));}}
-function v412Render(grid,cands){const g=grid;$('iconAnchorOut').innerHTML=`<div class="result ok"><b>検出方式：</b>DB一致検索なし → 画面左側50%からアイコン枠を検出 → DBはアンカー基準のみ<br><span class="mono">検出アイコン列=${g.rows.length} / 先頭候補score=${Number(cands?.[0]?.score||0).toFixed(4)} / 上段ピッチ=${g.topPitch.toFixed(2)}px / 防具ピッチ=${g.armorPitch.toFixed(2)}px / 右下アンカー=icon右下 / DB役割=${g.dbRole}</span></div><div class="result"><b>生成された9行</b><div class="mono">${g.rows.map(r=>`${r.row+1}. ${r.label}: icon (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / anchor (${r.anchor.x},${r.anchor.y}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n')}</div></div>`;}
+function v412Render(grid,cands){const g=grid;$('iconAnchorOut').innerHTML=`<div class="result ok"><b>検出方式：</b>DB一致検索なし → 画面左側40%からアイコン枠を検出 → DBはアンカー基準のみ<br><span class="mono">検出アイコン列=${g.rows.length} / 先頭候補score=${Number(cands?.[0]?.score||0).toFixed(4)} / 上段ピッチ=${g.topPitch.toFixed(2)}px / 防具ピッチ=${g.armorPitch.toFixed(2)}px / 右下アンカー=icon右下 / DB役割=${g.dbRole}</span></div><div class="result"><b>生成された9行</b><div class="mono">${g.rows.map(r=>`${r.row+1}. ${r.label}: icon (${r.icon.x},${r.icon.y}) ${r.icon.w}x${r.icon.h} / anchor (${r.anchor.x},${r.anchor.y}) / OCR (${r.ocr.x},${r.ocr.y}) ${r.ocr.w}x${r.ocr.h}`).join('\n')}</div></div>`;}
 async function v412Detect(){
   if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return}
   const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();
   try{
-    $('iconAnchorStatus').textContent='DBを使わず、画面左側50%のアイコン枠を探索中…';
+    $('iconAnchorStatus').textContent='DBを使わず、画面左側40%のアイコン枠を探索中…';
     const scene=v400ImageData($('img')),F=v412BuildFeatureImage(v400Gray(scene),2);
     const cands=v412DetectCandidates(F,scene.w,scene.h);
     const chain=v412FindRowChain(cands,scene.h);
@@ -2586,14 +2586,14 @@ async function v412Detect(){
     v400IconCandidates=chain.map((c,i)=>({...c,name:`検出アイコン${i+1}`,row:i}));
     v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=v400RegionsFromGrid(grid);
     v412Draw($('img'),grid);v412Render(grid,chain);
-    $('layoutStatus').textContent='v4.2.2 左側50%汎用アイコン検出→DBはアンカー位置補正のみ／表示矩形＝実OCR入力矩形';
-    $('layoutOut').innerHTML='<div class="note">アイコンの存在位置は画像処理だけで検出しました。探索範囲はスクリーンショット左側50%に限定しています。14武器DBとの一致性は検索に使用していません。DBは検出済みアイコンの右下をアンカーとする幾何基準としてのみ使用しています。</div>';
+    $('layoutStatus').textContent='v4.2.3 左側40%汎用アイコン検出→DBはアンカー位置補正のみ／表示矩形＝実OCR入力矩形';
+    $('layoutOut').innerHTML='<div class="note">アイコンの存在位置は画像処理だけで検出しました。探索範囲はスクリーンショット左側40%に限定しています。14武器DBとの一致性は検索に使用していません。DBは検出済みアイコンの右下をアンカーとする幾何基準としてのみ使用しています。</div>';
     $('iconAnchorStatus').textContent=`完了：汎用アイコン列9個 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回`;
     $('recognizeEquipment').disabled=false;
   }catch(e){console.error(e);$('iconAnchorStatus').textContent='アイコン検出エラー：'+e.message}
   finally{btn.disabled=false}
 }
-async function v400Detect(){if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return}if(!v400IconItems.length){$('iconAnchorStatus').textContent='DBアイコンがありません。';return}const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();try{$('iconAnchorStatus').textContent='画面内のアイコン枠を探索中…';const scene=v400Gray(v400ImageData($('img')));const out=[];for(const item of v400IconItems){const r=await v400Match(scene,item,.20,.60,.025);if(r)out.push({...r,name:item.name,row:item.row,dbImage:item.im});}v400IconCandidates=out.sort((a,b)=>b.score-a.score);if(!v400IconCandidates.length)throw new Error('アンカー候補がありません');const anchor=v400IconCandidates[0];const grid=v400BuildGrid(anchor,v400IconCandidates,$('img').naturalWidth||$('img').width,$('img').naturalHeight||$('img').height);v400IconGrid=grid;v400Draw($('img'),grid);v400Render();window.lastEquipmentRegions=v400RegionsFromGrid(grid);window.v400IconGrid=grid;$('layoutStatus').textContent='v4.2.2 左側50%汎用アイコン検出→DBはアンカー位置補正のみ／表示矩形＝実OCR入力矩形';$('layoutOut').innerHTML='<div class="note">DBアイコンアンカー方式で9部位を確定しました。以下の「装備名を一括認識」は、既存v3.1.2前処理・複数OCRをそのまま使用し、表示した黄色枠＝実際のOCR入力矩形を渡します。</div>';$('iconAnchorStatus').textContent=`完了：${anchor.name} / score=${anchor.score.toFixed(4)} / 9行 / ${(performance.now()-t0).toFixed(0)}ms`;$('recognizeEquipment').disabled=false;}catch(e){console.error(e);$('iconAnchorStatus').textContent='アンカー検出エラー：'+e.message}finally{btn.disabled=false}}
+async function v400Detect(){if(!$('img').src){$('iconAnchorStatus').textContent='先に画像を選択してください。';return}if(!v400IconItems.length){$('iconAnchorStatus').textContent='DBアイコンがありません。';return}const btn=$('detectIconAnchor');btn.disabled=true;const t0=performance.now();try{$('iconAnchorStatus').textContent='画面内のアイコン枠を探索中…';const scene=v400Gray(v400ImageData($('img')));const out=[];for(const item of v400IconItems){const r=await v400Match(scene,item,.20,.60,.025);if(r)out.push({...r,name:item.name,row:item.row,dbImage:item.im});}v400IconCandidates=out.sort((a,b)=>b.score-a.score);if(!v400IconCandidates.length)throw new Error('アンカー候補がありません');const anchor=v400IconCandidates[0];const grid=v400BuildGrid(anchor,v400IconCandidates,$('img').naturalWidth||$('img').width,$('img').naturalHeight||$('img').height);v400IconGrid=grid;v400Draw($('img'),grid);v400Render();window.lastEquipmentRegions=v400RegionsFromGrid(grid);window.v400IconGrid=grid;$('layoutStatus').textContent='v4.2.3 左側40%汎用アイコン検出→DBはアンカー位置補正のみ／表示矩形＝実OCR入力矩形';$('layoutOut').innerHTML='<div class="note">DBアイコンアンカー方式で9部位を確定しました。以下の「装備名を一括認識」は、既存v3.1.2前処理・複数OCRをそのまま使用し、表示した黄色枠＝実際のOCR入力矩形を渡します。</div>';$('iconAnchorStatus').textContent=`完了：${anchor.name} / score=${anchor.score.toFixed(4)} / 9行 / ${(performance.now()-t0).toFixed(0)}ms`;$('recognizeEquipment').disabled=false;}catch(e){console.error(e);$('iconAnchorStatus').textContent='アンカー検出エラー：'+e.message}finally{btn.disabled=false}}
 $('detectIconAnchor').onclick=v412Detect;
 (async()=>{try{await v400LoadBundledIcons();}catch(e){$('anchorDBStatus').textContent='DBアイコン読み込み失敗：'+e.message;console.error(e);}})();
 
