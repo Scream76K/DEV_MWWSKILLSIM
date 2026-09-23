@@ -153,7 +153,7 @@
 </div>
 
 <script>
-  // 対象7部位（行番号インデックス: 0〜7）
+  // 対象7部位（リストの行インデックス: 0〜8 のうち指定の7行）
   const TARGET_EQUIPMENTS = [
     { key: 'weaponMain', label: 'メイン武器', row: 0 },
     { key: 'head',       label: '頭防具',     row: 2 },
@@ -188,7 +188,7 @@
       // 1. 16:9ゲーム画面有効領域の算出
       const gameArea = calculate16by9Area(img.width, img.height);
 
-      // 2. 相対割合（パーセンテージ）による厳密座標計算
+      // 2. 実測比率に基づく厳密なROI計算
       computedROIs = calculatePercentageROIs(gameArea);
 
       // 3. 画面上に青枠を描画
@@ -202,14 +202,14 @@
   });
 
   /**
-   * 16:9領域に対する相対割合（パーセンテージ）で領域を算出する関数
+   * キャプチャ画像から実測した16:9領域相対比率による計算関数
    */
   function calculatePercentageROIs(gameArea) {
-    const startXRatio  = 0.062; // 画面幅の 6.2%
-    const startYRatio  = 0.158; // 画面高さの 15.8% (メイン武器テキスト位置)
-    const pitchYRatio  = 0.090; // 画面高さの 9.0% (1行のピッチ)
-    const widthRatio   = 0.135; // 画面幅の 13.5%
-    const heightRatio  = 0.033; // 画面高さの 3.3%
+    const startXRatio  = 0.052;  // X開始位置 (5.2%)
+    const startYRatio  = 0.236;  // メイン武器 Y位置 (23.6%)
+    const pitchYRatio  = 0.0782; // 1行のピッチ (7.82%)
+    const widthRatio   = 0.125;  // 枠幅 (12.5%)
+    const heightRatio  = 0.033;  // 枠高さ (3.3%)
 
     const cropX = gameArea.x + (gameArea.w * startXRatio);
     const cropW = gameArea.w * widthRatio;
