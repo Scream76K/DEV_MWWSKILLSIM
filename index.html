@@ -153,15 +153,15 @@
 </div>
 
 <script>
-  // 部位ごとの定義（防具は変更せず、武器と護石のみyOffsetRatioでピンポイント微調整）
+  // 【完全維持】部位ごとの定義および個別微調整オフセット
   const TARGET_EQUIPMENTS = [
-    { key: 'weaponMain', label: 'メイン武器', row: 0, yOffsetRatio: -0.004 }, // ほんの少し上へ
-    { key: 'head',       label: '頭防具',     row: 2, yOffsetRatio:  0.000 }, // 位置変更なし
-    { key: 'chest',      label: '胴防具',     row: 3, yOffsetRatio:  0.000 }, // 位置変更なし
-    { key: 'arm',        label: '腕防具',     row: 4, yOffsetRatio:  0.000 }, // 位置変更なし
-    { key: 'waist',      label: '腰防具',     row: 5, yOffsetRatio:  0.000 }, // 位置変更なし
-    { key: 'leg',        label: '脚防具',     row: 6, yOffsetRatio:  0.000 }, // 位置変更なし
-    { key: 'charm',      label: '護石',       row: 7, yOffsetRatio:  0.004 }  // ほんの少し下へ
+    { key: 'weaponMain', label: 'メイン武器', row: 0, yOffsetRatio: -0.004 },
+    { key: 'head',       label: '頭防具',     row: 2, yOffsetRatio:  0.000 },
+    { key: 'chest',      label: '胴防具',     row: 3, yOffsetRatio:  0.000 },
+    { key: 'arm',        label: '腕防具',     row: 4, yOffsetRatio:  0.000 },
+    { key: 'waist',      label: '腰防具',     row: 5, yOffsetRatio:  0.000 },
+    { key: 'leg',        label: '脚防具',     row: 6, yOffsetRatio:  0.000 },
+    { key: 'charm',      label: '護石',       row: 7, yOffsetRatio:  0.004 }
   ];
 
   const imageInput = document.getElementById('imageInput');
@@ -185,10 +185,13 @@
       stage.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      // 1. 16:9ゲーム画面有効領域の算出
-      const gameArea = calculate16by9Area(img.width, img.height);
+      // 【新機能前処理】画像内の暗色余白（黒帯）を自動検出し、ゲーム画面領域を取り出す
+      const gameBounds = detectGameBounds(ctx, img.width, img.height);
 
-      // 2. 個別オフセット適用済みの精密座標計算
+      // 1. 検出されたゲーム領域に対する 16:9 領域の自動調整
+      const gameArea = calculate16by9Area(gameBounds);
+
+      // 2. 【完全維持】精密座標計算ロジック
       computedROIs = calculatePercentageROIs(gameArea);
 
       // 3. 画面上に青枠を描画
@@ -202,14 +205,91 @@
   });
 
   /**
-   * 防具固定・武器上・護石下・長さ微延長の計算関数
+   * 【新規追加モジュール】
+   * 上下左右の黒帯・不揃い余白を自動検知してゲーム画面の境界を返す
+   * （スマホの時計・バッテリー表記などの局所ノイズに強いサンプリング検知）
+   */
+  function detectGameBounds(canvasCtx, imgW, imgH) {
+    const imgData = canvasCtx.getImageData(0, 0, imgW, imgH);
+    const data = imgData.data;
+
+    const isNonBlack = (x, y) => {
+      const idx = (y * imgW + x) * 4;
+      const r = data[idx];
+      const g = data[idx + 1];
+      const b = data[idx + 2];
+      // 明度が一定以上のピクセルを非黒帯（ゲーム領域）とみなす
+      return (r * 0.299 + g * 0.587 + b * 0.114) > 30;
+    };
+
+    // スマホ上の時刻などのノイズを避けるため、画面中央30%〜70%の複数ラインで走査
+    const sampleXList = [0.3, 0.4, 0.5, 0.6, 0.7].map(r => Math.floor(imgW * r));
+    const sampleYList = [0.3, 0.4, 0.5, 0.6, 0.7].map(r => Math.floor(imgH * r));
+
+    let top = 0, bottom = imgH - 1, left = 0, right = imgW - 1;
+
+    // 上方向の境界検知
+    for (let y = 0; y < imgH / 2; y++) {
+      let activeCount = sampleXList.filter(x => isNonBlack(x, y)).length;
+      if (activeCount >= 2) { top = y; break; }
+    }
+
+    // 下方向の境界検知
+    for (let y = imgH - 1; y >= imgH / 2; y--) {
+      let activeCount = sampleXList.filter(x => isNonBlack(x, y)).length;
+      if (activeCount >= 2) { bottom = y; break; }
+    }
+
+    // 左方向の境界検知
+    for (let x = 0; x < imgW / 2; x++) {
+      let activeCount = sampleYList.filter(y => isNonBlack(x, y)).length;
+      if (activeCount >= 2) { left = x; break; }
+    }
+
+    // 右方向の境界検知
+    for (let x = imgW - 1; x >= imgW / 2; x--) {
+      let activeCount = sampleYList.filter(y => isNonBlack(x, y)).length;
+      if (activeCount >= 2) { right = x; break; }
+    }
+
+    return {
+      x: left,
+      y: top,
+      w: Math.max(1, right - left + 1),
+      h: Math.max(1, bottom - top + 1)
+    };
+  }
+
+  /**
+   * 検出されたゲーム境界範囲 (bounds) をもとに 16:9 有効領域を算出
+   */
+  function calculate16by9Area(bounds) {
+    const targetAspect = 16 / 9;
+    const currentAspect = bounds.w / bounds.h;
+
+    let gameW = bounds.w, gameH = bounds.h;
+    let offsetX = 0, offsetY = 0;
+
+    if (currentAspect > targetAspect) {
+      gameW = bounds.h * targetAspect;
+      offsetX = (bounds.w - gameW) / 2;
+    } else if (currentAspect < targetAspect) {
+      gameH = bounds.w / targetAspect;
+      offsetY = (bounds.h - gameH) / 2;
+    }
+
+    return { x: bounds.x + offsetX, y: bounds.y + offsetY, w: gameW, h: gameH };
+  }
+
+  /**
+   * 【完全維持】確定済みの黄金パラメータ計算ロジック
    */
   function calculatePercentageROIs(gameArea) {
     const startXRatio  = 0.048;    // X位置 (4.8%)
     const startYRatio  = 0.147;    // 基準Y位置 (14.7%)
     const pitchYRatio  = 0.0904;   // 実測ピッチ (9.04%)
-    const widthRatio   = 0.123;    // 長さを微延長 (12.3%)
-    const heightRatio  = 0.032;    // 高さ (3.2%)
+    const widthRatio   = 0.123;    // 枠長さ (12.3%)
+    const heightRatio  = 0.032;    // 枠高さ (3.2%)
 
     const cropX = gameArea.x + (gameArea.w * startXRatio);
     const cropW = gameArea.w * widthRatio;
@@ -217,7 +297,6 @@
 
     const rois = {};
     for (const item of TARGET_EQUIPMENTS) {
-      // 基本ピッチ計算 ＋ 部位別個別オフセット
       const calculatedYRatio = startYRatio + (item.row * pitchYRatio) + item.yOffsetRatio;
       const cropY = gameArea.y + (gameArea.h * calculatedYRatio);
       
@@ -232,24 +311,6 @@
     return rois;
   }
 
-  function calculate16by9Area(imgW, imgH) {
-    const targetAspect = 16 / 9;
-    const currentAspect = imgW / imgH;
-
-    let gameW = imgW, gameH = imgH;
-    let offsetX = 0, offsetY = 0;
-
-    if (currentAspect > targetAspect) {
-      gameW = imgH * targetAspect;
-      offsetX = (imgW - gameW) / 2;
-    } else if (currentAspect < targetAspect) {
-      gameH = imgW / targetAspect;
-      offsetY = (imgH - gameH) / 2;
-    }
-
-    return { x: offsetX, y: offsetY, w: gameW, h: gameH };
-  }
-
   function drawROIBounds(ctx, rois) {
     ctx.lineWidth = Math.max(2, Math.round(stage.width / 700));
     ctx.strokeStyle = '#00d5ff';
@@ -262,7 +323,7 @@
     }
   }
 
-  // OCR実行（前処理付き）
+  // 【完全維持】OCR実行
   runBtn.addEventListener('click', async () => {
     if (!currentImg || !computedROIs) return;
 
@@ -276,10 +337,8 @@
       for (const [key, rect] of Object.entries(computedROIs)) {
         statusText.textContent = `解析中: ${rect.label}...`;
 
-        // 画像切り出し ＆ 白黒反転・高解像度化
         const processedCanvas = preprocessCropImage(currentImg, rect);
 
-        // OCR認識処理
         const ret = await worker.recognize(processedCanvas);
         const cleanText = ret.data.text
           .replace(/[\s\n\r\t|="'_.,;:-]+/g, '')
@@ -299,6 +358,7 @@
     }
   });
 
+  // 【完全維持】前処理関数
   function preprocessCropImage(sourceImg, rect) {
     const canvas = document.createElement('canvas');
     const scale = 3;
