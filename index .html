@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MHWilds 精密装備スキャナー</title>
+  
+  <!-- Tesseract.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #0f141c;
+      --card-bg: #1e2638;
+      --accent-color: #00d5ff;
+      --text-color: #e0e6ed;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      text-align: center;
+      color: var(--accent-color);
+      margin: 0 0 12px 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    input[type="file"] {
+      background: var(--card-bg);
+      color: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--accent-color);
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .btn {
+      background: var(--accent-color);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+    }
+
+    .canvas-wrapper {
+      width: 100%;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    canvas#stage {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .status-badge {
+      background: var(--card-bg);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #aaa;
+      text-align: center;
+    }
+
+    /* OCR結果カード */
+    .result-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #2d374d;
+      padding-bottom: 6px;
+    }
+
+    .result-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .result-label {
+      font-size: 0.85rem;
+      color: var(--accent-color);
+      font-weight: bold;
+      width: 90px;
+    }
+
+    .result-value {
+      font-size: 0.95rem;
+      font-family: monospace;
+      text-align: right;
+      flex-grow: 1;
+      font-weight: bold;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>MHWilds 精密装備スキャナー</h2>
+  
+  <input type="file" id="imageInput" accept="image/*">
+
+  <div class="canvas-wrapper">
+    <canvas id="stage"></canvas>
+  </div>
+
+  <button id="runBtn" class="btn" disabled>装備名をOCR解析</button>
+
+  <div class="status-badge" id="statusText">画像を選択してください</div>
+
+  <div class="result-card" id="resultCard" style="display: none;">
+    <div class="result-row"><div class="result-label">メイン武器</div><div class="result-value" id="res_weaponMain">-</div></div>
+    <div class="result-row"><div class="result-label">頭防具</div><div class="result-value" id="res_head">-</div></div>
+    <div class="result-row"><div class="result-label">胴防具</div><div class="result-value" id="res_chest">-</div></div>
+    <div class="result-row"><div class="result-label">腕防具</div><div class="result-value" id="res_arm">-</div></div>
+    <div class="result-row"><div class="result-label">腰防具</div><div class="result-value" id="res_waist">-</div></div>
+    <div class="result-row"><div class="result-label">脚防具</div><div class="result-value" id="res_leg">-</div></div>
+    <div class="result-row"><div class="result-label">護石</div><div class="result-value" id="res_charm">-</div></div>
+  </div>
+</div>
+
+<script>
+  // 1920x1080 基準の対象7部位
+  const EXACT_ROIS_1080P = [
+    { key: 'weaponMain', label: 'メイン武器', row: 0 },
+    { key: 'head',       label: '頭防具',     row: 2 },
+    { key: 'chest',      label: '胴防具',     row: 3 },
+    { key: 'arm',        label: '腕防具',     row: 4 },
+    { key: 'waist',      label: '腰防具',     row: 5 },
+    { key: 'leg',        label: '脚防具',     row: 6 },
+    { key: 'charm',      label: '護石',       row: 7 }
+  ];
+
+  const imageInput = document.getElementById('imageInput');
+  const stage = document.getElementById('stage');
+  const ctx = stage.getContext('2d');
+  const runBtn = document.getElementById('runBtn');
+  const statusText = document.getElementById('statusText');
+  const resultCard = document.getElementById('resultCard');
+
+  let currentImg = null;
+  let computedROIs = {};
+
+  imageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const img = new Image();
+    img.onload = () => {
+      currentImg = img;
+      stage.width = img.width;
+      stage.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      // 1. 16:9ゲーム画面領域の計算
+      const gameArea = calculate16by9Area(img.width, img.height);
+
+      // 2. 正確な1080p座標からROIを計算
+      computedROIs = calculateExactROIs(gameArea);
+
+      // 3. 画面上に枠線を描画してプレビュー
+      drawROIBounds(ctx, computedROIs);
+
+      runBtn.disabled = false;
+      statusText.textContent = "枠線が文字に合っているか確認し、「装備名をOCR解析」を押してください";
+      resultCard.style.display = 'none';
+    };
+    img.src = URL.createObjectURL(file);
+  });
+
+  // 1080p基準のY座標オフセット調整
+  function calculateExactROIs(gameArea) {
+    const scale = gameArea.w / 1920;
+
+    const baseLeft1080 = 118;   // テキスト左端X (1080p)
+    const baseTop1080  = 168;   // ★見出しラベル分だけ下（144→168）へ移動
+    const pitch1080    = 88.5;  // 行ピッチ (1080p)
+    const textW1080    = 280;   // テキスト幅 (1080p)
+    const textH1080    = 34;    // テキスト高さ (1080p)
+
+    const rois = {};
+    for (const item of EXACT_ROIS_1080P) {
+      rois[item.key] = {
+        label: item.label,
+        x: Math.round(gameArea.x + (baseLeft1080 * scale)),
+        y: Math.round(gameArea.y + ((baseTop1080 + (item.row * pitch1080)) * scale)),
+        w: Math.round(textW1080 * scale),
+        h: Math.round(textH1080 * scale)
+      };
+    }
+    return rois;
+  }
+
+  function calculate16by9Area(imgW, imgH) {
+    const targetAspect = 16 / 9;
+    const currentAspect = imgW / imgH;
+
+    let gameW = imgW, gameH = imgH;
+    let offsetX = 0, offsetY = 0;
+
+    if (currentAspect > targetAspect) {
+      gameW = imgH * targetAspect;
+      offsetX = (imgW - gameW) / 2;
+    } else if (currentAspect < targetAspect) {
+      gameH = imgW / targetAspect;
+      offsetY = (imgH - gameH) / 2;
+    }
+
+    return { x: offsetX, y: offsetY, w: gameW, h: gameH };
+  }
+
+  function drawROIBounds(ctx, rois) {
+    ctx.lineWidth = Math.max(2, Math.round(stage.width / 700));
+    ctx.strokeStyle = '#00d5ff';
+    ctx.fillStyle = '#00d5ff';
+    ctx.font = 'bold 12px sans-serif';
+
+    for (const [key, rect] of Object.entries(rois)) {
+      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      ctx.fillText(rect.label, rect.x, Math.max(12, rect.y - 4));
+    }
+  }
+
+  // OCR実行（前処理付き）
+  runBtn.addEventListener('click', async () => {
+    if (!currentImg || !computedROIs) return;
+
+    runBtn.disabled = true;
+    statusText.textContent = "OCRエンジンを初期化中...";
+
+    try {
+      const worker = await Tesseract.createWorker('jpn');
+
+      resultCard.style.display = 'flex';
+      
+      for (const [key, rect] of Object.entries(computedROIs)) {
+        statusText.textContent = `解析中: ${rect.label}...`;
+
+        // 1. ピンポイント切り出し ＆ 前処理（白黒二値化・拡大）
+        const processedCanvas = preprocessCropImage(currentImg, rect);
+
+        // 2. 高精度OCR実行
+        const ret = await worker.recognize(processedCanvas);
+        
+        // 3. 特殊記号や空白を除去
+        const cleanText = ret.data.text.replace(/[\s\n\r\t|]+/g, '').trim();
+
+        const el = document.getElementById(`res_${key}`);
+        if (el) el.textContent = cleanText || '（読み取り失敗）';
+      }
+
+      statusText.textContent = "✅ すべての装備の解析が完了しました！";
+      await worker.terminate();
+    } catch (err) {
+      console.error(err);
+      statusText.textContent = "❌ エラーが発生しました: " + err.message;
+    } finally {
+      runBtn.disabled = false;
+    }
+  });
+
+  function preprocessCropImage(sourceImg, rect) {
+    const canvas = document.createElement('canvas');
+    const scale = 2;
+    canvas.width = rect.w * scale;
+    canvas.height = rect.h * scale;
+
+    const pCtx = canvas.getContext('2d');
+    
+    pCtx.drawImage(
+      sourceImg,
+      rect.x, rect.y, rect.w, rect.h,
+      0, 0, canvas.width, canvas.height
+    );
+
+    const imgData = pCtx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const avg = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+      const val = avg > 130 ? 0 : 255;
+      data[i] = val;
+      data[i + 1] = val;
+      data[i + 2] = val;
+    }
+
+    pCtx.putImageData(imgData, 0, 0);
+    return canvas;
+  }
+</script>
+
+</body>
+</html>
