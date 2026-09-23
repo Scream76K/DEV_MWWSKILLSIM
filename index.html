@@ -153,8 +153,8 @@
 </div>
 
 <script>
-  // 1920x1080 基準の対象7部位
-  const EXACT_ROIS_1080P = [
+  // 対象7部位（行番号インデックス: 0〜7）
+  const TARGET_EQUIPMENTS = [
     { key: 'weaponMain', label: 'メイン武器', row: 0 },
     { key: 'head',       label: '頭防具',     row: 2 },
     { key: 'chest',      label: '胴防具',     row: 3 },
@@ -185,40 +185,46 @@
       stage.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      // 1. 16:9ゲーム画面領域の計算
+      // 1. 16:9ゲーム画面有効領域の算出
       const gameArea = calculate16by9Area(img.width, img.height);
 
-      // 2. 実測1080p座標からROIを計算
-      computedROIs = calculateExactROIs(gameArea);
+      // 2. 相対割合（パーセンテージ）による厳密座標計算
+      computedROIs = calculatePercentageROIs(gameArea);
 
-      // 3. 画面上に枠線を描画してプレビュー
+      // 3. 画面上に青枠を描画
       drawROIBounds(ctx, computedROIs);
 
       runBtn.disabled = false;
-      statusText.textContent = "枠線が文字に合っているか確認し、「装備名をOCR解析」を押してください";
+      statusText.textContent = "枠線の位置を確認し、「装備名をOCR解析」を押してください";
       resultCard.style.display = 'none';
     };
     img.src = URL.createObjectURL(file);
   });
 
-  // 1080p基準の実測修正値
-  function calculateExactROIs(gameArea) {
-    const scale = gameArea.w / 1920;
+  /**
+   * 16:9領域に対する相対割合（パーセンテージ）で領域を算出する関数
+   */
+  function calculatePercentageROIs(gameArea) {
+    const startXRatio  = 0.062; // 画面幅の 6.2%
+    const startYRatio  = 0.158; // 画面高さの 15.8% (メイン武器テキスト位置)
+    const pitchYRatio  = 0.090; // 画面高さの 9.0% (1行のピッチ)
+    const widthRatio   = 0.135; // 画面幅の 13.5%
+    const heightRatio  = 0.033; // 画面高さの 3.3%
 
-    const baseLeft1080 = 88;    // 左に30px移動 (118 -> 88)
-    const baseTop1080  = 212;   // 下に44px移動 (168 -> 212)
-    const pitch1080    = 85.5;  // 実測行間ピッチ
-    const textW1080    = 250;   // 枠幅
-    const textH1080    = 36;    // 枠高さ
+    const cropX = gameArea.x + (gameArea.w * startXRatio);
+    const cropW = gameArea.w * widthRatio;
+    const cropH = gameArea.h * heightRatio;
 
     const rois = {};
-    for (const item of EXACT_ROIS_1080P) {
+    for (const item of TARGET_EQUIPMENTS) {
+      const cropY = gameArea.y + (gameArea.h * (startYRatio + (item.row * pitchYRatio)));
+      
       rois[item.key] = {
         label: item.label,
-        x: Math.round(gameArea.x + (baseLeft1080 * scale)),
-        y: Math.round(gameArea.y + ((baseTop1080 + (item.row * pitch1080)) * scale)),
-        w: Math.round(textW1080 * scale),
-        h: Math.round(textH1080 * scale)
+        x: Math.round(cropX),
+        y: Math.round(cropY),
+        w: Math.round(cropW),
+        h: Math.round(cropH)
       };
     }
     return rois;
@@ -263,19 +269,16 @@
 
     try {
       const worker = await Tesseract.createWorker('jpn');
-
       resultCard.style.display = 'flex';
       
       for (const [key, rect] of Object.entries(computedROIs)) {
         statusText.textContent = `解析中: ${rect.label}...`;
 
-        // 1. ピンポイント切り出し ＆ 前処理（白黒二値化・拡大）
+        // 画像切り出し ＆ 白黒反転・拡大前処理
         const processedCanvas = preprocessCropImage(currentImg, rect);
 
-        // 2. 高精度OCR実行
+        // OCR認識処理
         const ret = await worker.recognize(processedCanvas);
-        
-        // 3. 特殊記号や空白を除去
         const cleanText = ret.data.text.replace(/[\s\n\r\t|]+/g, '').trim();
 
         const el = document.getElementById(`res_${key}`);
