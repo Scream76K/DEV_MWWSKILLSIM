@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MHWilds 精密装備スキャナー</title>
+  <title>MHWilds 精密装備＆装飾品スキャナー</title>
   
   <!-- Tesseract.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -34,6 +34,16 @@
     .container {
       max-width: 600px;
       margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid #2d374d;
+      border-radius: 12px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -71,7 +81,7 @@
       overflow: hidden;
     }
 
-    canvas#stage {
+    canvas {
       width: 100%;
       height: auto;
       display: block;
@@ -94,6 +104,8 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      max-height: 380px;
+      overflow-y: auto;
     }
 
     .result-row {
@@ -113,7 +125,7 @@
       font-size: 0.85rem;
       color: var(--accent-color);
       font-weight: bold;
-      width: 90px;
+      width: 100px;
     }
 
     .result-value {
@@ -124,36 +136,75 @@
       font-weight: bold;
       color: #fff;
     }
+
+    hr.divider {
+      border: none;
+      border-top: 1px dashed #2d374d;
+      margin: 8px 0;
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>MHWilds 精密装備スキャナー</h2>
-  
-  <input type="file" id="imageInput" accept="image/*">
 
-  <div class="canvas-wrapper">
-    <canvas id="stage"></canvas>
+  <!-- ==========================================
+       【1】既存：装備画面スキャナー（完全維持）
+       ========================================== -->
+  <div class="section-card">
+    <h2>⚔️ 1. 装備画面スキャナー</h2>
+    
+    <input type="file" id="imageInput" accept="image/*">
+
+    <div class="canvas-wrapper">
+      <canvas id="stage"></canvas>
+    </div>
+
+    <button id="runBtn" class="btn" disabled>装備名をOCR解析</button>
+
+    <div class="status-badge" id="statusText">画像を選択してください</div>
+
+    <div class="result-card" id="resultCard" style="display: none;">
+      <div class="result-row"><div class="result-label">メイン武器</div><div class="result-value" id="res_weaponMain">-</div></div>
+      <div class="result-row"><div class="result-label">頭防具</div><div class="result-value" id="res_head">-</div></div>
+      <div class="result-row"><div class="result-label">胴防具</div><div class="result-value" id="res_chest">-</div></div>
+      <div class="result-row"><div class="result-label">腕防具</div><div class="result-value" id="res_arm">-</div></div>
+      <div class="result-row"><div class="result-label">腰防具</div><div class="result-value" id="res_waist">-</div></div>
+      <div class="result-row"><div class="result-label">脚防具</div><div class="result-value" id="res_leg">-</div></div>
+      <div class="result-row"><div class="result-label">護石</div><div class="result-value" id="res_charm">-</div></div>
+    </div>
   </div>
 
-  <button id="runBtn" class="btn" disabled>装備名をOCR解析</button>
+  <hr class="divider">
 
-  <div class="status-badge" id="statusText">画像を選択してください</div>
+  <!-- ==========================================
+       【2】追加：装飾品画面スキャナー（新規追記）
+       ========================================== -->
+  <div class="section-card">
+    <h2>💎 2. 装飾品画面スキャナー (24行)</h2>
+    
+    <input type="file" id="decoImageInput" accept="image/*">
 
-  <div class="result-card" id="resultCard" style="display: none;">
-    <div class="result-row"><div class="result-label">メイン武器</div><div class="result-value" id="res_weaponMain">-</div></div>
-    <div class="result-row"><div class="result-label">頭防具</div><div class="result-value" id="res_head">-</div></div>
-    <div class="result-row"><div class="result-label">胴防具</div><div class="result-value" id="res_chest">-</div></div>
-    <div class="result-row"><div class="result-label">腕防具</div><div class="result-value" id="res_arm">-</div></div>
-    <div class="result-row"><div class="result-label">腰防具</div><div class="result-value" id="res_waist">-</div></div>
-    <div class="result-row"><div class="result-label">脚防具</div><div class="result-value" id="res_leg">-</div></div>
-    <div class="result-row"><div class="result-label">護石</div><div class="result-value" id="res_charm">-</div></div>
+    <div class="canvas-wrapper">
+      <canvas id="decoStage"></canvas>
+    </div>
+
+    <button id="decoRunBtn" class="btn" disabled>装飾品をOCR解析</button>
+
+    <div class="status-badge" id="decoStatusText">装飾品画面の画像を選択してください</div>
+
+    <div class="result-card" id="decoResultCard" style="display: none;"></div>
   </div>
+
 </div>
 
+<!-- ==========================================
+     スクリプト領域
+     ========================================== -->
 <script>
-  // 【完全維持】部位ごとの定義および個別微調整オフセット
+  /* --------------------------------------------------
+   * 【1】既存コード：装備画面スキャナー（完全維持）
+   * -------------------------------------------------- */
   const TARGET_EQUIPMENTS = [
     { key: 'weaponMain', label: 'メイン武器', row: 0, yOffsetRatio: -0.004 },
     { key: 'head',       label: '頭防具',     row: 2, yOffsetRatio:  0.000 },
@@ -185,16 +236,10 @@
       stage.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      // 【新機能前処理】画像内の暗色余白（黒帯）を自動検出し、ゲーム画面領域を取り出す
       const gameBounds = detectGameBounds(ctx, img.width, img.height);
-
-      // 1. 検出されたゲーム領域に対する 16:9 領域の自動調整
       const gameArea = calculate16by9Area(gameBounds);
 
-      // 2. 【完全維持】精密座標計算ロジック
       computedROIs = calculatePercentageROIs(gameArea);
-
-      // 3. 画面上に青枠を描画
       drawROIBounds(ctx, computedROIs);
 
       runBtn.disabled = false;
@@ -204,71 +249,40 @@
     img.src = URL.createObjectURL(file);
   });
 
-  /**
-   * 【新規追加モジュール】
-   * 上下左右の黒帯・不揃い余白を自動検知してゲーム画面の境界を返す
-   * （スマホの時計・バッテリー表記などの局所ノイズに強いサンプリング検知）
-   */
   function detectGameBounds(canvasCtx, imgW, imgH) {
     const imgData = canvasCtx.getImageData(0, 0, imgW, imgH);
     const data = imgData.data;
 
     const isNonBlack = (x, y) => {
       const idx = (y * imgW + x) * 4;
-      const r = data[idx];
-      const g = data[idx + 1];
-      const b = data[idx + 2];
-      // 明度が一定以上のピクセルを非黒帯（ゲーム領域）とみなす
-      return (r * 0.299 + g * 0.587 + b * 0.114) > 30;
+      return (data[idx] * 0.299 + data[idx + 1] * 0.587 + data[idx + 2] * 0.114) > 30;
     };
 
-    // スマホ上の時刻などのノイズを避けるため、画面中央30%〜70%の複数ラインで走査
     const sampleXList = [0.3, 0.4, 0.5, 0.6, 0.7].map(r => Math.floor(imgW * r));
     const sampleYList = [0.3, 0.4, 0.5, 0.6, 0.7].map(r => Math.floor(imgH * r));
 
     let top = 0, bottom = imgH - 1, left = 0, right = imgW - 1;
 
-    // 上方向の境界検知
     for (let y = 0; y < imgH / 2; y++) {
-      let activeCount = sampleXList.filter(x => isNonBlack(x, y)).length;
-      if (activeCount >= 2) { top = y; break; }
+      if (sampleXList.filter(x => isNonBlack(x, y)).length >= 2) { top = y; break; }
     }
-
-    // 下方向の境界検知
     for (let y = imgH - 1; y >= imgH / 2; y--) {
-      let activeCount = sampleXList.filter(x => isNonBlack(x, y)).length;
-      if (activeCount >= 2) { bottom = y; break; }
+      if (sampleXList.filter(x => isNonBlack(x, y)).length >= 2) { bottom = y; break; }
     }
-
-    // 左方向の境界検知
     for (let x = 0; x < imgW / 2; x++) {
-      let activeCount = sampleYList.filter(y => isNonBlack(x, y)).length;
-      if (activeCount >= 2) { left = x; break; }
+      if (sampleYList.filter(y => isNonBlack(x, y)).length >= 2) { left = x; break; }
     }
-
-    // 右方向の境界検知
     for (let x = imgW - 1; x >= imgW / 2; x--) {
-      let activeCount = sampleYList.filter(y => isNonBlack(x, y)).length;
-      if (activeCount >= 2) { right = x; break; }
+      if (sampleYList.filter(y => isNonBlack(x, y)).length >= 2) { right = x; break; }
     }
 
-    return {
-      x: left,
-      y: top,
-      w: Math.max(1, right - left + 1),
-      h: Math.max(1, bottom - top + 1)
-    };
+    return { x: left, y: top, w: Math.max(1, right - left + 1), h: Math.max(1, bottom - top + 1) };
   }
 
-  /**
-   * 検出されたゲーム境界範囲 (bounds) をもとに 16:9 有効領域を算出
-   */
   function calculate16by9Area(bounds) {
     const targetAspect = 16 / 9;
     const currentAspect = bounds.w / bounds.h;
-
-    let gameW = bounds.w, gameH = bounds.h;
-    let offsetX = 0, offsetY = 0;
+    let gameW = bounds.w, gameH = bounds.h, offsetX = 0, offsetY = 0;
 
     if (currentAspect > targetAspect) {
       gameW = bounds.h * targetAspect;
@@ -281,15 +295,12 @@
     return { x: bounds.x + offsetX, y: bounds.y + offsetY, w: gameW, h: gameH };
   }
 
-  /**
-   * 【完全維持】確定済みの黄金パラメータ計算ロジック
-   */
   function calculatePercentageROIs(gameArea) {
-    const startXRatio  = 0.048;    // X位置 (4.8%)
-    const startYRatio  = 0.147;    // 基準Y位置 (14.7%)
-    const pitchYRatio  = 0.0904;   // 実測ピッチ (9.04%)
-    const widthRatio   = 0.123;    // 枠長さ (12.3%)
-    const heightRatio  = 0.032;    // 枠高さ (3.2%)
+    const startXRatio  = 0.048;
+    const startYRatio  = 0.147;
+    const pitchYRatio  = 0.0904;
+    const widthRatio   = 0.123;
+    const heightRatio  = 0.032;
 
     const cropX = gameArea.x + (gameArea.w * startXRatio);
     const cropW = gameArea.w * widthRatio;
@@ -323,7 +334,6 @@
     }
   }
 
-  // 【完全維持】OCR実行
   runBtn.addEventListener('click', async () => {
     if (!currentImg || !computedROIs) return;
 
@@ -340,9 +350,7 @@
         const processedCanvas = preprocessCropImage(currentImg, rect);
 
         const ret = await worker.recognize(processedCanvas);
-        const cleanText = ret.data.text
-          .replace(/[\s\n\r\t|="'_.,;:-]+/g, '')
-          .trim();
+        const cleanText = ret.data.text.replace(/[\s\n\r\t|="'_.,;:-]+/g, '').trim();
 
         const el = document.getElementById(`res_${key}`);
         if (el) el.textContent = cleanText || '（読み取り失敗）';
@@ -358,7 +366,6 @@
     }
   });
 
-  // 【完全維持】前処理関数
   function preprocessCropImage(sourceImg, rect) {
     const canvas = document.createElement('canvas');
     const scale = 3;
@@ -379,6 +386,174 @@
     for (let i = 0; i < data.length; i += 4) {
       const avg = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
       const val = avg > 120 ? 0 : 255;
+      data[i] = val;
+      data[i + 1] = val;
+      data[i + 2] = val;
+    }
+
+    pCtx.putImageData(imgData, 0, 0);
+    return canvas;
+  }
+
+  /* --------------------------------------------------
+   * 【2】新規追記：装飾品画面スキャナー (24行固定)
+   * -------------------------------------------------- */
+  const DECORATION_GRID_CONFIG = {
+    maxRows: 24,           // 最大走査行数
+    startXRatio: 0.058,    // 左端X位置 (5.8%)
+    startYRatio: 0.104,    // 1行目Y基準 (10.4%)
+    pitchYRatio: 0.0415,   // 行間ピッチ (4.15%)
+    widthRatio:  0.115,    // 枠幅 (11.5%)
+    heightRatio: 0.028     // 枠高さ (2.8%)
+  };
+
+  const decoImageInput = document.getElementById('decoImageInput');
+  const decoStage = document.getElementById('decoStage');
+  const decoCtx = decoStage.getContext('2d');
+  const decoRunBtn = document.getElementById('decoRunBtn');
+  const decoStatusText = document.getElementById('decoStatusText');
+  const decoResultCard = document.getElementById('decoResultCard');
+
+  let decoCurrentImg = null;
+  let decoComputedROIs = [];
+
+  decoImageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const img = new Image();
+    img.onload = () => {
+      decoCurrentImg = img;
+      decoStage.width = img.width;
+      decoStage.height = img.height;
+      decoCtx.drawImage(img, 0, 0);
+
+      // 黒帯自動検知（既存関数を使用）
+      const gameBounds = detectGameBounds(decoCtx, img.width, img.height);
+      const gameArea = calculate16by9Area(gameBounds);
+
+      // 24行ROI計算
+      decoComputedROIs = calculateDecorationROIs(gameArea);
+      drawDecoROIBounds(decoCtx, decoComputedROIs);
+
+      decoRunBtn.disabled = false;
+      decoStatusText.textContent = "枠線（24行）を確認し、「装飾品をOCR解析」を押してください";
+      decoResultCard.style.display = 'none';
+    };
+    img.src = URL.createObjectURL(file);
+  });
+
+  function calculateDecorationROIs(gameArea) {
+    const cfg = DECORATION_GRID_CONFIG;
+    const cropX = gameArea.x + (gameArea.w * cfg.startXRatio);
+    const cropW = gameArea.w * cfg.widthRatio;
+    const cropH = gameArea.h * cfg.heightRatio;
+
+    const rois = [];
+    for (let row = 0; row < cfg.maxRows; row++) {
+      const calculatedYRatio = cfg.startYRatio + (row * cfg.pitchYRatio);
+      rois.push({
+        rowIndex: row,
+        label: `枠 ${row + 1}`,
+        x: Math.round(cropX),
+        y: Math.round(gameArea.y + (gameArea.h * calculatedYRatio)),
+        w: Math.round(cropW),
+        h: Math.round(cropH)
+      });
+    }
+    return rois;
+  }
+
+  function drawDecoROIBounds(canvasCtx, rois) {
+    canvasCtx.lineWidth = Math.max(2, Math.round(decoStage.width / 700));
+    canvasCtx.strokeStyle = '#00d5ff';
+    canvasCtx.fillStyle = '#00d5ff';
+    canvasCtx.font = 'bold 11px sans-serif';
+
+    for (const rect of rois) {
+      canvasCtx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      // 画面が見づらくならないよう、5行ごとにラベル描画
+      if (rect.rowIndex % 5 === 0) {
+        canvasCtx.fillText(rect.label, rect.x, Math.max(12, rect.y - 2));
+      }
+    }
+  }
+
+  // 装飾品OCR実行
+  decoRunBtn.addEventListener('click', async () => {
+    if (!decoCurrentImg || decoComputedROIs.length === 0) return;
+
+    decoRunBtn.disabled = true;
+    decoStatusText.textContent = "OCRエンジンを初期化中...";
+
+    try {
+      const worker = await Tesseract.createWorker('jpn');
+      decoResultCard.style.display = 'flex';
+      decoResultCard.innerHTML = ''; // 前回結果クリア
+
+      for (const rect of decoComputedROIs) {
+        decoStatusText.textContent = `解析中: 枠 ${rect.rowIndex + 1} / 24...`;
+
+        // 黄色カーソル行対応の前処理
+        const processedCanvas = preprocessDecoCropImage(decoCurrentImg, rect);
+
+        const ret = await worker.recognize(processedCanvas);
+        const cleanText = ret.data.text.replace(/[\s\n\r\t|="'_.,;:-]+/g, '').trim();
+
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'result-row';
+        rowDiv.innerHTML = `<div class="result-label">枠 ${rect.rowIndex + 1}</div><div class="result-value">${cleanText || '（なし）'}</div>`;
+        decoResultCard.appendChild(rowDiv);
+      }
+
+      decoStatusText.textContent = "✅ すべての装飾品スロットの解析が完了しました！";
+      await worker.terminate();
+    } catch (err) {
+      console.error(err);
+      decoStatusText.textContent = "❌ エラーが発生しました: " + err.message;
+    } finally {
+      decoRunBtn.disabled = false;
+    }
+  });
+
+  /**
+   * 装飾品専用：黄色カーソル背景の明暗を自動判定して二値化する補正処理
+   */
+  function preprocessDecoCropImage(sourceImg, rect) {
+    const canvas = document.createElement('canvas');
+    const scale = 3;
+    canvas.width = rect.w * scale;
+    canvas.height = rect.h * scale;
+
+    const pCtx = canvas.getContext('2d');
+    pCtx.imageSmoothingEnabled = false;
+    pCtx.drawImage(
+      sourceImg,
+      rect.x, rect.y, rect.w, rect.h,
+      0, 0, canvas.width, canvas.height
+    );
+
+    const imgData = pCtx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+
+    // 平均輝度から「選択中の黄色背景」か「通常の暗い背景」かを自動判別
+    let totalLum = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      totalLum += data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+    }
+    const avgLum = totalLum / (data.length / 4);
+    const isBrightBg = avgLum > 120;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const lum = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+      let val;
+      if (isBrightBg) {
+        // 黄色背景行：黒字を抽出して文字（黒）背景（白）に
+        val = lum < 120 ? 0 : 255;
+      } else {
+        // 通常の暗背景行：白字を抽出して文字（黒）背景（白）に
+        val = lum > 120 ? 0 : 255;
+      }
       data[i] = val;
       data[i + 1] = val;
       data[i + 2] = val;
