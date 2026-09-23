@@ -188,7 +188,7 @@
       // 1. 16:9ゲーム画面有効領域の算出
       const gameArea = calculate16by9Area(img.width, img.height);
 
-      // 2. 精密分析に基づく画面比率座標の計算
+      // 2. 実測ピクセルに基づく相対比率座標の計算
       computedROIs = calculatePercentageROIs(gameArea);
 
       // 3. 画面上に青枠を描画
@@ -202,12 +202,12 @@
   });
 
   /**
-   * 画面全体に対する厳密な相対比率計算
+   * 精密実測に基づく比率計算
    */
   function calculatePercentageROIs(gameArea) {
     const startXRatio  = 0.052;    // X位置 (5.2%)
     const startYRatio  = 0.152;    // メイン武器テキスト Y位置 (15.2%)
-    const pitchYRatio  = 0.0835;   // 精密ピッチ (8.35%)
+    const pitchYRatio  = 0.0904;   // 実測ピッチ (9.04%)
     const widthRatio   = 0.098;    // 装飾品スロットの直前で止める幅 (9.8%)
     const heightRatio  = 0.025;    // テキスト高さのみに限定する高さ (2.5%)
 
