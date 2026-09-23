@@ -399,15 +399,15 @@
   }
 
   /* --------------------------------------------------
-   * 【2】装飾品画面スキャナー (24行固定・修正版)
+   * 【2】装飾品画面スキャナー (24行固定・精密ピクセル補正版)
    * -------------------------------------------------- */
   const DECORATION_GRID_CONFIG = {
     maxRows: 24,           // 最大走査行数
-    startXRatio: 0.062,    // 左端X位置 (6.2%)
-    startYRatio: 0.138,    // 1行目Y基準 (13.8%)
-    pitchYRatio: 0.0335,   // 行間ピッチ (3.35%)
-    widthRatio:  0.110,    // 枠幅 (11.0%)
-    heightRatio: 0.024     // 枠高さ (2.4%)
+    startXRatio: 0.102,    // 左端X位置 (10.2%: 宝珠アイコン回避)
+    startYRatio: 0.103,    // 1行目Y基準 (10.3%: 1行目文字高さ)
+    pitchYRatio: 0.0415,   // 行間ピッチ (4.15%: 全行追従)
+    widthRatio:  0.068,    // 枠幅 (6.8%: 4〜5文字ジャスト)
+    heightRatio: 0.026     // 枠高さ (2.6%)
   };
 
   const decoImageInput = document.getElementById('decoImageInput');
