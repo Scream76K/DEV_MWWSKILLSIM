@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MHWilds 黄色アンカー自動検出 (16:9正規化版)</title>
+  <title>MHWilds 黄色アンカー自動検出 (HSV版)</title>
   <style>
     :root {
       --bg-color: #0f141c;
@@ -67,6 +67,14 @@
       text-align: center;
     }
 
+    /* デバッグ用マスクプレビュー */
+    .debug-box {
+      background: var(--card-bg);
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
     .crops-container {
       background: var(--card-bg);
       padding: 12px;
@@ -118,6 +126,12 @@
     <canvas id="stage"></canvas>
   </div>
 
+  <!-- スキャン結果の可視化デバッグ領域 -->
+  <div class="debug-box" id="debugBox" style="display:none;">
+    <div>▼ スキャンエリアの黄色検知マスク (白い部分が検出対象)</div>
+    <canvas id="maskCanvas" style="border: 1px solid #ffcc00; margin-top: 4px; max-width: 100%;"></canvas>
+  </div>
+
   <div id="cropsContainer" class="crops-container" style="display: none;"></div>
 </div>
 
@@ -126,6 +140,8 @@
   const stage = document.getElementById('stage');
   const ctx = stage.getContext('2d');
   const statusText = document.getElementById('statusText');
+  const debugBox = document.getElementById('debugBox');
+  const maskCanvas = document.getElementById('maskCanvas');
   const cropsContainer = document.getElementById('cropsContainer');
 
   imageInput.addEventListener('change', (e) => {
@@ -138,36 +154,42 @@
       stage.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      // 1. スマホスクショ内の16:9ゲーム有効描画エリアを計算
+      // 1. 16:9ゲーム有効エリアを特定
       const gameArea = calculate16by9Area(img.width, img.height);
 
-      // 2. ピンポイントで黄色アイコンアンカーを検索
-      const anchor = findYellowIconAnchor(stage, gameArea);
+      // 2. HSVによるアンカー検出
+      const anchorResult = findYellowIconAnchorHSV(stage, gameArea);
+
+      // 検索マスクのデバッグ描画
+      showDebugMask(anchorResult.maskData, anchorResult.scanW, anchorResult.scanH);
+
+      let anchor = anchorResult.anchor;
 
       if (!anchor) {
-        statusText.textContent = "❌ 黄色アンカーの検出に失敗しました（標準計算を使用します）";
-        statusText.style.color = "#ff3366";
-        return;
+        statusText.textContent = "⚠️ 黄色アンカー未検出（画面比率フォールバックで計算）";
+        statusText.style.color = "#ffcc00";
+        // フォールバック用の計算
+        anchor = {
+          x: Math.round(gameArea.x + (gameArea.w * 0.045)),
+          y: Math.round(gameArea.y + (gameArea.h * 0.215))
+        };
+      } else {
+        statusText.textContent = `✅ 黄色アンカー検出成功! 座標: (${anchor.x}, ${anchor.y})`;
+        statusText.style.color = "#00ff88";
       }
 
-      statusText.textContent = `✅ 黄色アンカー検出成功! 座標: (${anchor.x}, ${anchor.y})`;
-      statusText.style.color = "#00ff88";
-
-      // 3. アンカー基準で7箇所のROIを計算
+      // 3. ROI計算
       const rois = calculateROIsFromAnchor(anchor, gameArea);
 
-      // 4. アンカー(赤丸)とROI(水色枠)をプレビュー描画
-      drawDebugOverlays(ctx, anchor, rois, gameArea);
+      // 4. デバッグ描画
+      drawDebugOverlays(ctx, anchor, rois, anchorResult.scanRect);
 
-      // 5. 切り出し個別プレビュー
+      // 5. 切り出しプレビュー
       renderCropPreviews(img, rois);
     };
     img.src = URL.createObjectURL(file);
   });
 
-  /**
-   * 画像全体の中から 16:9 のゲーム表示領域 (X, Y, W, H) を算出
-   */
   function calculate16by9Area(imgW, imgH) {
     const targetAspect = 16 / 9;
     const currentAspect = imgW / imgH;
@@ -188,22 +210,42 @@
     return { x: offsetX, y: offsetY, w: gameW, h: gameH };
   }
 
+  // RGBからHSVへの変換関数
+  function rgbToHsv(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    const d = max - min;
+    let h, s = (max === 0 ? 0 : d / max), v = max;
+    if (max !== min) {
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    return [h * 360, s, v];
+  }
+
   /**
-   * ゲーム画面内の左上極小エリア(メイン武器アイコン左上)のみをピンポイント検索
+   * HSV色空間を用いた黄色アイコンアンカー検索
    */
-  function findYellowIconAnchor(canvas, gameArea) {
+  function findYellowIconAnchorHSV(canvas, gameArea) {
     const ctx = canvas.getContext('2d');
 
-    // 16:9画面内の左上「メイン武器の黄色アイコン」が存在する絶対ピンポイント領域
-    const scanX1 = Math.floor(gameArea.x + (gameArea.w * 0.038));
-    const scanX2 = Math.floor(gameArea.x + (gameArea.w * 0.065));
-    const scanY1 = Math.floor(gameArea.y + (gameArea.h * 0.190));
-    const scanY2 = Math.floor(gameArea.y + (gameArea.h * 0.240));
+    // スキャンエリア（少し広めに確保）
+    const scanX1 = Math.floor(gameArea.x + (gameArea.w * 0.020));
+    const scanX2 = Math.floor(gameArea.x + (gameArea.w * 0.090));
+    const scanY1 = Math.floor(gameArea.y + (gameArea.h * 0.170));
+    const scanY2 = Math.floor(gameArea.y + (gameArea.h * 0.270));
     const scanW = scanX2 - scanX1;
     const scanH = scanY2 - scanY1;
 
     const imgData = ctx.getImageData(scanX1, scanY1, scanW, scanH);
     const data = imgData.data;
+
+    const maskData = ctx.createImageData(scanW, scanH);
+    const mData = maskData.data;
 
     let totalX = 0;
     let totalY = 0;
@@ -216,36 +258,51 @@
         const g = data[idx + 1];
         const b = data[idx + 2];
 
-        // 鮮やかな黄色/ゴールドの色の判定
-        if (r > 160 && g > 130 && b < 100 && (r - b) > 70) {
+        const [h, s, v] = rgbToHsv(r, g, b);
+
+        // 黄色(Hue: 25°〜65°), 高彩度(S > 0.35), 高明度(V > 0.35)
+        if (h >= 25 && h <= 65 && s >= 0.35 && v >= 0.35) {
           totalX += x;
           totalY += y;
           matchCount++;
+
+          // マスクに白で表示
+          mData[idx] = 255;
+          mData[idx + 1] = 255;
+          mData[idx + 2] = 255;
+          mData[idx + 3] = 255;
+        } else {
+          mData[idx + 3] = 255; // 黒背景
         }
       }
     }
 
-    if (matchCount < 5) return null;
+    let anchor = null;
+    if (matchCount >= 8) {
+      anchor = {
+        x: Math.round(scanX1 + (totalX / matchCount)),
+        y: Math.round(scanY1 + (totalY / matchCount))
+      };
+    }
 
     return {
-      x: Math.round(scanX1 + (totalX / matchCount)),
-      y: Math.round(scanY1 + (totalY / matchCount))
+      anchor,
+      scanRect: { x: scanX1, y: scanY1, w: scanW, h: scanH },
+      maskData,
+      scanW,
+      scanH
     };
   }
 
-  /**
-   * 黄色アンカーから精密オフセット計算でテキスト枠を配置
-   */
   function calculateROIsFromAnchor(anchor, gameArea) {
-    const scale = gameArea.w / 1920; // 1080p基準のスケール率
+    const scale = gameArea.w / 1920;
 
-    // 1080p基準での黄色アンカー中心から「メイン武器」文字の左上までのピクセルオフセット
-    // 1080p基準: アンカーY ≒ 232px, 文字Y ≒ 253px (差分 +21px)
-    const offsetX1080 = 50;  // 右に50px
-    const offsetY1080 = 21;  // 下に21px
-    const pitch1080   = 85.3; // 行間ピッチ (1080p換算)
+    // 1080p基準でのアンカー(黄色アイコン中心)からのオフセット
+    const offsetX1080 = 52;   // 右へ
+    const offsetY1080 = 21;   // 下へ
+    const pitch1080   = 85.3; // 1行の間隔
     const textW1080   = 240;
-    const textH1080   = 35;
+    const textH1080   = 36;
 
     const targets = [
       { key: 'weaponMain', label: 'メイン武器', row: 0 },
@@ -271,25 +328,30 @@
     return rois;
   }
 
-  function drawDebugOverlays(ctx, anchor, rois, gameArea) {
-    // 検索エリア枠（黄色点線）
-    ctx.strokeStyle = '#ffff00';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(
-      gameArea.x + (gameArea.w * 0.038),
-      gameArea.y + (gameArea.h * 0.190),
-      gameArea.w * 0.027,
-      gameArea.h * 0.050
-    );
+  function showDebugMask(maskData, w, h) {
+    debugBox.style.display = 'block';
+    maskCanvas.width = w;
+    maskCanvas.height = h;
+    const mCtx = maskCanvas.getContext('2d');
+    mCtx.putImageData(maskData, 0, 0);
+  }
 
-    // 黄色アンカー位置（赤丸）
+  function drawDebugOverlays(ctx, anchor, rois, scanRect) {
+    // スキャンした検索枠（黄色破線）
+    ctx.strokeStyle = '#ffff00';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+    ctx.strokeRect(scanRect.x, scanRect.y, scanRect.w, scanRect.h);
+    ctx.setLineDash([]);
+
+    // 検出されたアンカー（赤丸）
     ctx.strokeStyle = '#ff0055';
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.arc(anchor.x, anchor.y, 8, 0, Math.PI * 2);
     ctx.stroke();
 
-    // 7箇所の切り出し枠（水色）
+    // 7箇所の枠（水色）
     ctx.lineWidth = 2;
     ctx.strokeStyle = '#00d5ff';
     ctx.font = 'bold 12px sans-serif';
@@ -311,7 +373,7 @@
       </div>
     `).join('');
 
-    cropsContainer.innerHTML = '<div style="font-size: 0.9rem; font-weight: bold; margin-bottom: 4px;">▼ 自動判定された切り出し領域</div>' + listHtml;
+    cropsContainer.innerHTML = '<div style="font-size: 0.9rem; font-weight: bold; margin-bottom: 4px;">▼ 切り出しプレビュー</div>' + listHtml;
     cropsContainer.style.display = 'flex';
 
     for (const [key, rect] of Object.entries(rois)) {
