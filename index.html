@@ -188,7 +188,7 @@
       // 1. 16:9ゲーム画面有効領域の算出
       const gameArea = calculate16by9Area(img.width, img.height);
 
-      // 2. 元画像(1000x563)の完全実測比率に基づく絶対座標計算
+      // 2. 文字領域だけにピンポイントフィットさせた相対計算
       computedROIs = calculatePercentageROIs(gameArea);
 
       // 3. 画面上に青枠を描画
@@ -202,14 +202,14 @@
   });
 
   /**
-   * 元画像(1000x563)の精密計測値に基づく相対計算関数
+   * 装備名テキストだけに絞り込んだ精密計算関数
    */
   function calculatePercentageROIs(gameArea) {
-    const startXRatio  = 0.052;   // X開始位置 (52px / 1000px = 5.2%)
-    const startYRatio  = 0.1421;  // メイン武器 Y位置 (80px / 563px = 14.21%)
-    const pitchYRatio  = 0.08881; // 正確な行ピッチ (50px / 563px = 8.881%)
-    const widthRatio   = 0.145;   // 枠幅 (145px / 1000px = 14.5%)
-    const heightRatio  = 0.039;   // 枠高さ (22px / 563px = 3.9%)
+    const startXRatio  = 0.055;   // 文字開始位置 (5.5%)
+    const startYRatio  = 0.146;   // メイン武器 Y位置 (14.6%)
+    const pitchYRatio  = 0.08881; // 正確な行ピッチ (8.881%)
+    const widthRatio   = 0.108;   // 装飾品スロットの手前で止める幅 (10.8%)
+    const heightRatio  = 0.028;   // 上下のラベルや線を巻き込まない高さ (2.8%)
 
     const cropX = gameArea.x + (gameArea.w * startXRatio);
     const cropW = gameArea.w * widthRatio;
@@ -274,12 +274,15 @@
       for (const [key, rect] of Object.entries(computedROIs)) {
         statusText.textContent = `解析中: ${rect.label}...`;
 
-        // 画像切り出し ＆ 白黒反転・拡大前処理
+        // 画像切り出し ＆ 白黒反転・3倍高解像度化
         const processedCanvas = preprocessCropImage(currentImg, rect);
 
         // OCR認識処理
         const ret = await worker.recognize(processedCanvas);
-        const cleanText = ret.data.text.replace(/[\s\n\r\t|]+/g, '').trim();
+        // ノイズ文字列のクレンジング
+        const cleanText = ret.data.text
+          .replace(/[\s\n\r\t|="'_.,;:-]+/g, '')
+          .trim();
 
         const el = document.getElementById(`res_${key}`);
         if (el) el.textContent = cleanText || '（読み取り失敗）';
@@ -295,14 +298,19 @@
     }
   });
 
+  /**
+   * OCR精度向上のための前処理（3倍拡大＋白背景・黒文字二値化）
+   */
   function preprocessCropImage(sourceImg, rect) {
     const canvas = document.createElement('canvas');
-    const scale = 2;
+    const scale = 3; // 高解像度化
     canvas.width = rect.w * scale;
     canvas.height = rect.h * scale;
 
     const pCtx = canvas.getContext('2d');
     
+    // スムージング無効でシャープに拡大
+    pCtx.imageSmoothingEnabled = false;
     pCtx.drawImage(
       sourceImg,
       rect.x, rect.y, rect.w, rect.h,
@@ -312,9 +320,10 @@
     const imgData = pCtx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imgData.data;
 
+    // 白文字（明るい部分）を黒文字に、暗い背景を純白に反転二値化
     for (let i = 0; i < data.length; i += 4) {
       const avg = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-      const val = avg > 130 ? 0 : 255;
+      const val = avg > 120 ? 0 : 255; // 閾値120で二値化
       data[i] = val;
       data[i + 1] = val;
       data[i + 2] = val;
