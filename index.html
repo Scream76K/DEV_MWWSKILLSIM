@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MHWilds 装備一括OCRスキャナー</title>
+  <title>MHWilds 精密OCRスキャナー</title>
   
   <!-- Tesseract.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -71,7 +71,7 @@
       overflow: hidden;
     }
 
-    canvas {
+    canvas#stage {
       width: 100%;
       height: auto;
       display: block;
@@ -86,7 +86,7 @@
       text-align: center;
     }
 
-    /* OCR結果カード表示 */
+    /* OCR結果カード */
     .result-card {
       background: var(--card-bg);
       border-radius: 8px;
@@ -121,35 +121,23 @@
       font-family: monospace;
       text-align: right;
       flex-grow: 1;
-      word-break: break-all;
-    }
-
-    /* 原文ログ領域 */
-    .raw-log {
-      background: #000;
-      color: #888;
-      font-family: monospace;
-      font-size: 0.75rem;
-      padding: 8px;
-      border-radius: 6px;
-      white-space: pre-wrap;
-      max-height: 120px;
-      overflow-y: auto;
+      font-weight: bold;
+      color: #fff;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>MHWilds 装備一括OCRスキャナー</h2>
+  <h2>MHWilds 精密装備スキャナー</h2>
   
   <input type="file" id="imageInput" accept="image/*">
 
   <div class="canvas-wrapper">
-    <canvas id="cropStage"></canvas>
+    <canvas id="stage"></canvas>
   </div>
 
-  <button id="runBtn" class="btn" disabled>装備を一括認識</button>
+  <button id="runBtn" class="btn" disabled>装備名をOCR解析</button>
 
   <div class="status-badge" id="statusText">画像を選択してください</div>
 
@@ -162,20 +150,30 @@
     <div class="result-row"><div class="result-label">脚防具</div><div class="result-value" id="res_leg">-</div></div>
     <div class="result-row"><div class="result-label">護石</div><div class="result-value" id="res_charm">-</div></div>
   </div>
-
-  <div class="raw-log" id="rawLog" style="display: none;"></div>
 </div>
 
 <script>
+  // 1920x1080 基準の実測・正確なテキスト切り出し座標
+  // 0:メイン, 1:サブ(除外), 2:頭, 3:胴, 4:腕, 5:腰, 6:脚, 7:護石
+  const EXACT_ROIS_1080P = [
+    { key: 'weaponMain', label: 'メイン武器', row: 0 },
+    { key: 'head',       label: '頭防具',     row: 2 },
+    { key: 'chest',      label: '胴防具',     row: 3 },
+    { key: 'arm',        label: '腕防具',     row: 4 },
+    { key: 'waist',      label: '腰防具',     row: 5 },
+    { key: 'leg',        label: '脚防具',     row: 6 },
+    { key: 'charm',      label: '護石',       row: 7 }
+  ];
+
   const imageInput = document.getElementById('imageInput');
-  const cropStage = document.getElementById('cropStage');
-  const ctx = cropStage.getContext('2d');
+  const stage = document.getElementById('stage');
+  const ctx = stage.getContext('2d');
   const runBtn = document.getElementById('runBtn');
   const statusText = document.getElementById('statusText');
   const resultCard = document.getElementById('resultCard');
-  const rawLog = document.getElementById('rawLog');
 
-  let currentCropCanvas = null;
+  let currentImg = null;
+  let computedROIs = {};
 
   imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -183,79 +181,50 @@
 
     const img = new Image();
     img.onload = () => {
-      // 1. 16:9ゲーム有効領域の計算
+      currentImg = img;
+      stage.width = img.width;
+      stage.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      // 1. 16:9ゲーム画面領域の計算
       const gameArea = calculate16by9Area(img.width, img.height);
 
-      // 2. 左側装備パネル（パネル全体）を余裕を持って大雑把に切り出し
-      // X: ゲーム画面の 3%〜33%, Y: 18%〜92%
-      const cropX = Math.floor(gameArea.x + (gameArea.w * 0.03));
-      const cropY = Math.floor(gameArea.y + (gameArea.h * 0.18));
-      const cropW = Math.floor(gameArea.w * 0.30);
-      const cropH = Math.floor(gameArea.h * 0.74);
+      // 2. 正確な1080p座標からROIを計算
+      computedROIs = calculateExactROIs(gameArea);
 
-      cropStage.width = cropW;
-      cropStage.height = cropH;
+      // 3. 画面上に枠線を描画してプレビュー
+      drawROIBounds(ctx, computedROIs);
 
-      ctx.drawImage(
-        img,
-        cropX, cropY, cropW, cropH,
-        0, 0, cropW, cropH
-      );
-
-      currentCropCanvas = cropStage;
       runBtn.disabled = false;
-      statusText.textContent = "パネル領域の切り出し成功。「装備を一括認識」を押してください";
+      statusText.textContent = "枠線が文字に合っているか確認し、「装備名をOCR解析」を押してください";
       resultCard.style.display = 'none';
-      rawLog.style.display = 'none';
     };
     img.src = URL.createObjectURL(file);
   });
 
-  // OCRの実行とパース処理
-  runBtn.addEventListener('click', async () => {
-    if (!currentCropCanvas) return;
+  // 1080p基準の実測座標計算関数
+  function calculateExactROIs(gameArea) {
+    const scale = gameArea.w / 1920;
 
-    runBtn.disabled = true;
-    statusText.textContent = "OCRエンジン準備中...";
+    const baseLeft1080 = 118;   // テキスト左端X (1080p)
+    const baseTop1080  = 144;   // メイン武器テキスト上端Y (1080p)
+    const pitch1080    = 88.5;  // 行ピッチ (1080p)
+    const textW1080    = 280;   // テキスト幅 (1080p)
+    const textH1080    = 34;    // テキスト高さ (1080p)
 
-    try {
-      // 日本語モデルのロード
-      const worker = await Tesseract.createWorker('jpn');
-
-      statusText.textContent = "文字認識を実行中...（数秒かかります）";
-
-      // OCRの実行（行・単語単位の構造データを取得）
-      const ret = await worker.recognize(currentCropCanvas);
-      const textLines = ret.data.lines;
-
-      statusText.textContent = "テキスト構造を解析中...";
-
-      // ログ表示（デバッグ用）
-      rawLog.textContent = "▼ OCR検出テキスト（原文）:\n" + ret.data.text;
-      rawLog.style.display = 'block';
-
-      // 抽出パース処理
-      const parsedData = parseEquipmentLines(textLines);
-
-      // 画面カードへ反映
-      for (const [key, val] of Object.entries(parsedData)) {
-        const el = document.getElementById(`res_${key}`);
-        if (el) el.textContent = val;
-      }
-
-      resultCard.style.display = 'flex';
-      statusText.textContent = "✅ 解析完了!";
-
-      await worker.terminate();
-    } catch (err) {
-      console.error(err);
-      statusText.textContent = "❌ エラーが発生しました: " + err.message;
-    } finally {
-      runBtn.disabled = false;
+    const rois = {};
+    for (const item of EXACT_ROIS_1080P) {
+      rois[item.key] = {
+        label: item.label,
+        x: Math.round(gameArea.x + (baseLeft1080 * scale)),
+        y: Math.round(gameArea.y + ((baseTop1080 + (item.row * pitch1080)) * scale)),
+        w: Math.round(textW1080 * scale),
+        h: Math.round(textH1080 * scale)
+      };
     }
-  });
+    return rois;
+  }
 
-  // 16:9領域算出
   function calculate16by9Area(imgW, imgH) {
     const targetAspect = 16 / 9;
     const currentAspect = imgW / imgH;
@@ -274,64 +243,92 @@
     return { x: offsetX, y: offsetY, w: gameW, h: gameH };
   }
 
-  /**
-   * 行データから見出しラベルを探し、直後のテキストを装備名として自動マッピングするコアロジック
-   */
-  function parseEquipmentLines(lines) {
-    const results = {
-      weaponMain: '（未検出）',
-      head:       '（未検出）',
-      chest:      '（未検出）',
-      arm:        '（未検出）',
-      waist:      '（未検出）',
-      leg:        '（未検出）',
-      charm:      '（未検出）'
-    };
+  function drawROIBounds(ctx, rois) {
+    ctx.lineWidth = Math.max(2, Math.round(stage.width / 700));
+    ctx.strokeStyle = '#00d5ff';
+    ctx.fillStyle = '#00d5ff';
+    ctx.font = 'bold 12px sans-serif';
 
-    const targets = [
-      { key: 'weaponMain', keywords: ['メイン武器', 'メイン', '武器'] },
-      { key: 'head',       keywords: ['頭防具', '頭防', '頭'] },
-      { key: 'chest',      keywords: ['胴防具', '胴防', '胴'] },
-      { key: 'arm',        keywords: ['腕防具', '腕防', '腕'] },
-      { key: 'waist',      keywords: ['腰防具', '腰防', '腰'] },
-      { key: 'leg',        keywords: ['脚防具', '脚防', '脚'] },
-      { key: 'charm',      keywords: ['護石', '護'] }
-    ];
+    for (const [key, rect] of Object.entries(rois)) {
+      ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      ctx.fillText(rect.label, rect.x, Math.max(12, rect.y - 4));
+    }
+  }
 
-    // 不要な空白や特殊文字を除去した行リストを作成
-    const cleanLines = lines.map(lineObj => {
-      return lineObj.text.replace(/[\s　]+/g, '').trim();
-    }).filter(t => t.length > 0);
+  // OCR実行（前処理付き）
+  runBtn.addEventListener('click', async () => {
+    if (!currentImg || !computedROIs) return;
 
-    // 全キーワードの集合（誤検出防止用）
-    const allKeywords = targets.flatMap(t => t.keywords).concat(['サブ武器', 'サブ', '装衣']);
+    runBtn.disabled = true;
+    statusText.textContent = "OCRエンジンを初期化中...";
 
-    for (let i = 0; i < cleanLines.length; i++) {
-      const lineText = cleanLines[i];
+    try {
+      const worker = await Tesseract.createWorker('jpn');
 
-      for (const target of targets) {
-        // 現在の部位のキーワードに一致するかチェック
-        if (target.keywords.some(kw => lineText.includes(kw))) {
-          
-          // 見出しが見つかったら、直後の行（i+1 〜 i+2）から装備名と思われる行を探す
-          for (let offset = 1; offset <= 2; offset++) {
-            if (i + offset < cleanLines.length) {
-              const candidate = cleanLines[i + offset];
+      resultCard.style.display = 'flex';
+      
+      for (const [key, rect] of Object.entries(computedROIs)) {
+        statusText.textContent = `解析中: ${rect.label}...`;
 
-              // 直後の行が「他の見出しキーワード」を含んでいない場合、それを装備名と判定
-              const isAnotherHeader = allKeywords.some(kw => candidate.includes(kw));
-              if (!isAnotherHeader && candidate.length > 1) {
-                results[target.key] = candidate;
-                break;
-              }
-            }
-          }
+        // 1. ピンポイント切り出し ＆ 前処理（白黒二値化・拡大）
+        const processedCanvas = preprocessCropImage(currentImg, rect);
 
-        }
+        // 2. 高精度OCR実行
+        const ret = await worker.recognize(processedCanvas);
+        
+        // 3. 特殊記号や空白を除去
+        const cleanText = ret.data.text.replace(/[\s\n\r\t|]+/g, '').trim();
+
+        const el = document.getElementById(`res_${key}`);
+        if (el) el.textContent = cleanText || '（読み取り失敗）';
       }
+
+      statusText.textContent = "✅ すべての装備の解析が完了しました！";
+      await worker.terminate();
+    } catch (err) {
+      console.error(err);
+      statusText.textContent = "❌ エラーが発生しました: " + err.message;
+    } finally {
+      runBtn.disabled = false;
+    }
+  });
+
+  /**
+   * OCR精度を高めるための前処理関数
+   * (2倍拡大 ＋ グレースケール ＋ 二値化 ＋ 反転)
+   */
+  function preprocessCropImage(sourceImg, rect) {
+    const canvas = document.createElement('canvas');
+    const scale = 2; // OCR認識率を上げるために2倍拡大
+    canvas.width = rect.w * scale;
+    canvas.height = rect.h * scale;
+
+    const pCtx = canvas.getContext('2d');
+    
+    // 拡大描画
+    pCtx.drawImage(
+      sourceImg,
+      rect.x, rect.y, rect.w, rect.h,
+      0, 0, canvas.width, canvas.height
+    );
+
+    // 二値化処理（白文字・黒背景を、白背景・黒文字に反転）
+    const imgData = pCtx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      // 輝度計算
+      const avg = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+      
+      // 閾値（140）以上なら黒文字(0)、それ以外は白背景(255)
+      const val = avg > 130 ? 0 : 255;
+      data[i] = val;
+      data[i + 1] = val;
+      data[i + 2] = val;
     }
 
-    return results;
+    pCtx.putImageData(imgData, 0, 0);
+    return canvas;
   }
 </script>
 
