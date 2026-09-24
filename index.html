@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.5.1：装備OCR独立実行＋装飾品グループ＋装飾品DB版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.5.2：装備OCR復旧＋装飾品グループ接続＋装飾品DB照合強化</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -41,7 +41,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.5.1：装備OCR独立実行＋装飾品グループ＋装飾品DB版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.5.2：装備OCR復旧＋装飾品グループ接続＋装飾品DB照合強化</h1>
 <div class="note">
 <b>v4.3.8：短辺基準スケール適応＋フルアイコン枠検出＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -2288,26 +2288,26 @@ function decorationBaseName(raw){
 }
 function searchDecorationItems(raw, expectedSlot=null, expectedKind=null){
   if(!decorationDB.length)return [];
-  const n=decorationBaseName(raw); const counts=new Map();
-  for(let i=0;i<n.length-1;i++){
-    const g=n.slice(i,i+2), set=decorationGramIndex.get(g); if(!set)continue;
-    for(const idx of set)counts.set(idx,(counts.get(idx)||0)+1);
-  }
-  let pool;
-  if(counts.size){pool=[...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,100).map(x=>decorationDB[x[0]])}
-  else pool=decorationDB;
-  if(expectedKind) pool=pool.filter(x=>x.kind===expectedKind);
+  const n=decorationBaseName(raw);
+  // The decoration DB is small enough (currently ~361 rows) that correctness
+  // is more important than gram-index recall.  First apply hard structural
+  // constraints, then score every remaining DB row.  Never fall back to a
+  // different slot/kind merely because the constrained pool became empty.
+  let pool=decorationDB;
+  if(expectedKind) pool=pool.filter(x=>String(x.kind)===String(expectedKind));
   if(expectedSlot!=null) pool=pool.filter(x=>Number(x.slot)===Number(expectedSlot));
-  return pool.length?pool:(expectedKind?decorationDB.filter(x=>x.kind===expectedKind):decorationDB);
+  if(!pool.length)return [];
+  return pool;
 }
 function scoreDecorationCandidate(raw,cand,expectedSlot=null,expectedKind=null){
   const a=decorationBaseName(raw), b=decorationBaseName(cand.name);
   if(!a||!b)return 0;
   const edit=1-lev(a,b)/Math.max(a.length,b.length,1);
-  const contain=(a.includes(b)||b.includes(a))?0.12:0;
-  const slot=(expectedSlot!=null && Number(cand.slot)===Number(expectedSlot))?0.18:0;
-  const kind=(expectedKind && cand.kind===expectedKind)?0.10:0;
-  return Math.max(0,Math.min(1,edit*0.60+contain+slot+kind));
+  const contain=(a.includes(b)||b.includes(a))?0.08:0;
+  const exact=a===b?0.28:0;
+  const slot=(expectedSlot!=null && Number(cand.slot)===Number(expectedSlot))?0.12:0;
+  const kind=(expectedKind && cand.kind===expectedKind)?0.08:0;
+  return Math.max(0,Math.min(1,edit*0.64+contain+exact+slot+kind));
 }
 function matchDecorationCandidates(raw,expectedSlot=null,expectedKind=null){
   if(!raw||!decorationDB.length)return [];
@@ -3768,7 +3768,7 @@ function renderEquipmentROIResult(result, selfTestRows = null) {
   const g = result.gameArea;
   let html =
     `<div class="result ${errors.length ? 'warn' : 'ok'}">` +
-    `<b>v4.5.1 7部位ROI＋装飾品24スロット切出し</b><br>` +
+    `<b>v4.5.2 7部位ROI＋装飾品24スロット切出し</b><br>` +
     `<span class="mono">` +
     `入力=${iw}×${ih} / ` +
     `16:9領域=x:${g.x.toFixed(2)}, y:${g.y.toFixed(2)}, ` +
@@ -4291,7 +4291,16 @@ function buildDecorationGroupsFromRows(img, rois) {
   const groups=logicalBlocks.map((block,groupIndex)=>{
     const def=DECORATION_GROUP_ORDER[groupIndex] || {key:null,label:`装備グループ${groupIndex+1}`,reflect:false};
     const expected=getEquipmentExpectedGroupSlots(def.key);
-    const slots=block.map((r,j)=>({...r,groupIndex,slotInGroup:j,slotLevel:null}));
+    const slots=block.map((r,j)=>{
+      const slot={...r,groupIndex,slotInGroup:j,slotLevel:null};
+      // IMPORTANT: OCR later iterates result.rois, not only group.slots.
+      // Write the logical IDs back to the same ROI object so group/slot identity
+      // cannot be lost between detection and OCR.
+      r.groupIndex=groupIndex;
+      r.slotInGroup=j;
+      r.logicalGroupLabel=def.label;
+      return slot;
+    });
     return {groupIndex,key:def.key,label:def.label,equipmentKey:def.key,reflect:def.reflect!==false,expectedSlotLevels:expected,slots};
   });
   return {rois:classified,groups};
@@ -4466,6 +4475,8 @@ async function recognizeDecorationOCR(){
     await worker.setParameters({tessedit_pageseg_mode:'7',preserve_interword_spaces:'1'});
     const out=[];
     for(const roi of result.rois.filter(r=>!r.isSeparator)){
+      const group=result.groups.find(g=>g.groupIndex===roi.groupIndex);
+      if(!group) continue;
       const c=document.createElement('canvas');
       const sw=Math.max(1,Math.round(roi.w)), sh=Math.max(1,Math.round(roi.h));
       const scale=Math.max(3,Math.min(6,Math.round(900/Math.max(1,sw))));
@@ -4493,7 +4504,6 @@ async function recognizeDecorationOCR(){
       const usable=passes.filter(x=>x.raw).sort((a,b)=>b.confidence-a.confidence);
       const best=usable[0]||{raw:'',confidence:0,mode:'none'};
       const slotLevel=parseDecorationSlotLevel(best.raw);
-      const group=result.groups.find(g=>g.groupIndex===roi.groupIndex);
       const expectedLevels=group?.expectedSlotLevels||[];
       const expectedSlot=expectedLevels[roi.slotInGroup]??slotLevel??null;
       const equipmentKey=group?.equipmentKey||null;
@@ -4542,11 +4552,12 @@ function renderDecorationOCRResult(rows){
     const g=window.decorationSlotResult?.groups?.find(x=>x.groupIndex===gi);
     const lines=rs.map(r=>{
       const raw=r.raw||'（空／認識なし）';
+      const slotLabel=(Number.isFinite(Number(r.slotInGroup))?`${Number(r.slotInGroup)+1}番スロット`:'スロット未割当');
       const state=r.raw?(r.confidence>=25?'候補':'低信頼'):'空・未認識';
       const db=r.dbBest;
       const dbLine=db?`<br><span class="note">DB候補：${db.name} / slot${db.slot??'?'} / ${db.kind||'?'} / DB一致 ${Math.round(db.matchScore*100)}%</span>`:'<br><span class="note">DB候補：未照合（DB未取得または候補なし）</span>';
       const mismatch=(r.expectedSlot!=null&&r.dbBest&&Number(r.dbBest.slot)!==Number(r.expectedSlot));
-      return `<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${r.slotInGroup+1}番スロット</b>　${raw} <span class="note">${state} / ${Math.round(r.confidence)}%${r.slotLevel?` / OCR Lv${r.slotLevel}`:''}${r.expectedSlot!=null?` / 期待Lv${r.expectedSlot}`:''}${mismatch?' / ⚠Lv不一致':''}</span>${dbLine}</div>`;
+      return `<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${slotLabel}</b>　${raw} <span class="note">${state} / ${Math.round(r.confidence)}%${r.slotLevel?` / OCR Lv${r.slotLevel}`:''}${r.expectedSlot!=null?` / 期待Lv${r.expectedSlot}`:''}${mismatch?' / ⚠Lv不一致':''}</span>${dbLine}</div>`;
     }).join('');
     return `<div style="border:1px solid #88775c;border-radius:10px;padding:8px;margin-top:8px"><b>${g?.label||`装備グループ${gi+1}`}</b>${g?.expectedSlotLevels?.length?` / DBスロット[${g.expectedSlotLevels.join(',')}]`:''}${lines}</div>`;
   }).join('');
