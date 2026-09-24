@@ -771,6 +771,30 @@ function clampRectToImage(rect,imageWidth,imageHeight){
   return {x,y,width,height,source:rect?.source};
 }
 
+// v4.5.7: MHDB's armor `slots` field is the pre-limit-break value.
+// The simulator's equipment model uses the max limit-break state for armor.
+// Wilds limit-break slot expansion for the relevant RARE5/6 armor follows the
+// documented pattern: existing slot levels +1, and a one-slot armor gains a
+// second Lv1 slot. Keep the raw/base slots as well so the source of the
+// effective value remains explicit and reversible.
+function maxLimitBreakArmorSlotLevels(baseLevels, rarity) {
+  const base=Array.isArray(baseLevels)?baseLevels.slice(0,3).map(Number).filter(n=>Number.isFinite(n)&&n>=1&&n<=3):[];
+  const r=Number(rarity);
+  if(!(r===5 || r===6)) return base;
+  if(base.length===0) return [1,1];
+  const upgraded=base.map(n=>Math.min(3,n+1));
+  if(base.length===1) upgraded.push(1);
+  return upgraded.slice(0,3);
+}
+
+function effectiveArmorSlotLevels(row) {
+  if(!row) return [];
+  const explicit=normalizeDecorationSlotLevels(row?.limitBreakSlotLevels ?? row?.maxLimitBreakSlots);
+  if(explicit.length) return explicit;
+  const base=normalizeDecorationSlotLevels(row?.slotLevels ?? row?.decorationSlots ?? row?.slots);
+  return maxLimitBreakArmorSlotLevels(base,row?.rarity);
+}
+
 function normalizeEquipmentCandidateRows(rows, slot) {
   const allowed = {
     mainWeapon: 'weapon', head: 'head', chest: 'chest', arms: 'arms',
@@ -779,17 +803,26 @@ function normalizeEquipmentCandidateRows(rows, slot) {
   const want = allowed[slot];
   if (!want) return [];
   const seen = new Set();
-  return (Array.isArray(rows) ? rows : []).map((r, i) => ({
-    id: r?.id ?? null,
-    gameId: r?.gameId ?? null,
-    kind: String(r?.kind || ''),
-    name: String(r?.name || '').trim(),
-    rankLevel: r?.rankLevel ?? null,
-    slots: r?.slots ?? null,
-    decorationSlots: r?.decorationSlots ?? null,
-    slotLevels: normalizeDecorationSlotLevels(r?.slotLevels ?? r?.decorationSlots ?? r?.slots),
-    sourceIndex: i
-  })).filter(r => r.name && r.kind === want).filter(r => {
+  return (Array.isArray(rows) ? rows : []).map((r, i) => {
+    const baseSlots=normalizeDecorationSlotLevels(r?.slotLevels ?? r?.decorationSlots ?? r?.slots);
+    const slotLevels=(slot==='head'||slot==='chest'||slot==='arms'||slot==='waist'||slot==='legs')
+      ? maxLimitBreakArmorSlotLevels(baseSlots,r?.rarity)
+      : baseSlots;
+    return {
+      id: r?.id ?? null,
+      gameId: r?.gameId ?? null,
+      kind: String(r?.kind || ''),
+      name: String(r?.name || '').trim(),
+      rankLevel: r?.rankLevel ?? null,
+      rarity: r?.rarity ?? null,
+      slots: r?.slots ?? null,
+      decorationSlots: r?.decorationSlots ?? null,
+      baseSlotLevels: baseSlots,
+      limitBreakSlotLevels: (slot==='head'||slot==='chest'||slot==='arms'||slot==='waist'||slot==='legs') ? slotLevels : [],
+      slotLevels,
+      sourceIndex: i
+    };
+  }).filter(r => r.name && r.kind === want).filter(r => {
     const key = `${r.kind}\u0000${r.id ?? ''}\u0000${r.gameId ?? ''}\u0000${r.name}\u0000${r.rankLevel ?? ''}`;
     if (seen.has(key)) return false;
     seen.add(key); return true;
@@ -1012,11 +1045,11 @@ function updateNameCrop(){
 const oldUpdateCrop=updateCrop; updateCrop=function(){oldUpdateCrop();updateNameCrop()};
 
 // ---- 装備DB（Step 1.25-B） ----
-// v4.5.6: equipment slot caches are versioned because an older cached row could
+// v4.5.7: equipment slot caches are versioned because an older cached row could
 // contain only the first slot (for example [1] instead of [2,1]).
 const ARMOR_API='https://wilds.mhdb.io/ja/armor';
 const CHARM_API='https://wilds.mhdb.io/ja/charms';
-const ARMOR_CACHE_KEY='DEV_MWWSKILLSIM_OCR_ARMOR_V2';
+const ARMOR_CACHE_KEY='DEV_MWWSKILLSIM_OCR_ARMOR_V3';
 const CHARM_CACHE_KEY='DEV_MWWSKILLSIM_OCR_CHARMS_V2';
 let armorDB=[], charmDB=[];
 let armorReady=false, charmReady=false;
@@ -1025,11 +1058,11 @@ function setEquipmentDBStatus(text, cls=''){
   const el=$('equipmentDBStatus'); if(el) el.innerHTML=`装備DB：<span class="${cls}">${text}</span>`;
 }
 function normalizeArmorRows(rows){
-  return normalizeEquipmentCandidateRows(rows.map(r=>({id:r?.id,gameId:r?.gameId,kind:String(r?.kind||''),name:r?.name,slots:r?.slots,decorationSlots:r?.decorationSlots,slotLevels:r?.slotLevels})), 'head')
+  return normalizeEquipmentCandidateRows(rows.map(r=>({id:r?.id,gameId:r?.gameId,kind:String(r?.kind||''),name:r?.name,rarity:r?.rarity,slots:r?.slots,decorationSlots:r?.decorationSlots,slotLevels:r?.slotLevels,limitBreakSlotLevels:r?.limitBreakSlotLevels})), 'head')
     .concat(normalizeEquipmentCandidateRows(rows,'chest'),normalizeEquipmentCandidateRows(rows,'arms'),normalizeEquipmentCandidateRows(rows,'waist'),normalizeEquipmentCandidateRows(rows,'legs'));
 }
 async function fetchEquipmentPage(api, offset){
-  const u=`${api}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
+  const u=`${api}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true,rarity:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'}); if(!r.ok) throw new Error(`装備DB HTTP ${r.status}`);
   const data=await r.json(); if(!Array.isArray(data)) throw new Error('装備DBの応答が配列ではありません'); return data;
 }
@@ -1120,7 +1153,7 @@ function searchWeaponItems(raw){
   return ranked.length?ranked:weaponDB;
 }
 async function fetchWeaponPage(offset){
-  const u=`${WEAPON_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
+  const u=`${WEAPON_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true,rarity:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'});
   if(!r.ok)throw new Error(`武器DB HTTP ${r.status}`);
   const data=await r.json();
@@ -2398,11 +2431,9 @@ function normalizeDecorationSlotLevels(value) {
 
 function extractDecorationSlotLevels(row) {
   if(!row)return [];
-  for(const key of ['slotLevels','decorationSlots','slots']) {
-    const v=normalizeDecorationSlotLevels(row[key]);
-    if(v.length)return v;
-  }
-  return [];
+  const effective=normalizeDecorationSlotLevels(row?.limitBreakSlotLevels ?? row?.maxLimitBreakSlots);
+  if(effective.length)return effective;
+  return normalizeDecorationSlotLevels(row?.slotLevels ?? row?.decorationSlots ?? row?.slots);
 }
 
 function runEquipmentSlotExtractionSelfTest() {
@@ -2418,7 +2449,16 @@ function runEquipmentSlotExtractionSelfTest() {
     {name:'nested', value:{decorationSlots:{slots:[2,1]}}, expected:[2,1]},
     {name:'numericKeys', value:{slot1:2,slot2:1}, expected:[2,1]}
   ];
-  return cases.every(c=>JSON.stringify(normalizeDecorationSlotLevels(c.value))===JSON.stringify(c.expected));
+  const basic=cases.every(c=>JSON.stringify(normalizeDecorationSlotLevels(c.value))===JSON.stringify(c.expected));
+  const limitCases=[
+    {name:'rare6 one slot',base:[1],rarity:6,expected:[2,1]},
+    {name:'rare6 two slots',base:[2,1],rarity:6,expected:[3,2]},
+    {name:'rare6 three slots',base:[2,2,1],rarity:6,expected:[3,3,2]},
+    {name:'rare8 unchanged',base:[3,2],rarity:8,expected:[3,2]},
+    {name:'rare6 no slots',base:[],rarity:6,expected:[1,1]}
+  ];
+  const limitOk=limitCases.every(c=>JSON.stringify(maxLimitBreakArmorSlotLevels(c.base,c.rarity))===JSON.stringify(c.expected));
+  return basic&&limitOk;
 }
 
 function getEquipmentExpectedGroupSlots(key) {
