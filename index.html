@@ -191,18 +191,15 @@
     const targetRatio = 16 / 9;
     const currentRatio = imgW / imgH;
 
-    // 16:9画像そのものの場合
     if (Math.abs(currentRatio - targetRatio) < 0.02) {
       return { x: 0, y: 0, w: imgW, h: imgH };
     }
 
-    // 縦長画像（スマホスクショ）の場合
     let gameW = imgW;
     let gameH = imgW / targetRatio;
     let offsetX = 0;
     let offsetY = (imgH - gameH) / 2;
 
-    // 上下の暗色領域・余白をスキャンしてゲーム表示領域の上端（Y）を精密検知
     if (canvasCtx) {
       try {
         const sampleX = Math.floor(imgW * 0.5);
@@ -212,7 +209,6 @@
         for (let y = 0; y < imgH; y++) {
           const idx = y * 4;
           const lum = imgData[idx] * 0.299 + imgData[idx + 1] * 0.587 + imgData[idx + 2] * 0.114;
-          // 黒帯を抜けてゲーム画面の色（輝度30以上）が始まる地点
           if (lum > 30) {
             topY = y;
             break;
@@ -335,15 +331,15 @@
   });
 
   /* --------------------------------------------------
-   * 【2】装飾品画面スキャナー (修正版精密座標)
+   * 【2】装飾品画面スキャナー (実測ピクセル16:9完全同期版)
    * -------------------------------------------------- */
   const DECORATION_GRID_CONFIG = {
     maxRows: 24,
-    startXRatio: 0.062,    // ★6.2%: 「攻」の1文字目の真左縁から完全開始
-    startYRatio: 0.100,    // 10.0%: 1行目文字上端
-    pitchYRatio: 0.0338,   // 3.38%: 24行精密ピッチ
-    widthRatio:  0.076,    // ★7.6%: 「攻撃珠III【3】」末尾までジャストカバー
-    heightRatio: 0.026     // 2.6%: 1行分の高さ
+    startXRatio: 0.0620,   // 6.20%: 「攻」の1文字目の真左縁から開始
+    startYRatio: 0.0941,   // 9.41%: 1行目文字上端 (53px/563px)
+    pitchYRatio: 0.03023,  // 3.023%: 全24行完全追従ピッチ (17.02px/563px)
+    widthRatio:  0.0760,   // 7.60%: 右カッコ末尾まで完全に収まる幅 (76px/1000px)
+    heightRatio: 0.0231    // 2.31%: 文字高さ (13px/563px)
   };
 
   const decoImageInput = document.getElementById('decoImageInput');
