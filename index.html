@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.4.8：装備8グループ連携＋装飾品グループ解析版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.5.0：装備OCR独立実行＋装飾品グループ＋装飾品DB版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -41,7 +41,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.4.8：装備8グループ連携＋装飾品グループ解析版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.5.0：装備OCR独立実行＋装飾品グループ＋装飾品DB版</h1>
 <div class="note">
 <b>v4.3.8：短辺基準スケール適応＋フルアイコン枠検出＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -68,6 +68,11 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
     <h3>💎 装飾品</h3>
     <input id="decorationFile" type="file" accept="image/*">
     <div id="decorationFileStatus" class="status">装飾品画像：未選択</div>
+    <div id="decorationDBStatus" class="status">装飾品DB：未取得</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <button id="loadDecorationDB">💎 装飾品DBを読み込む</button>
+      <button id="clearDecorationDB">装飾品DBキャッシュを削除</button>
+    </div>
     <div class="workflow-actions">
       <button id="workflowDecorationROI" class="primary">💎 装飾品グループを検出</button>
       <button id="workflowDecorationOCR" class="primary">🔎 装飾品をOCR→グループ照合</button>
@@ -2157,6 +2162,139 @@ function renderCropOnlySpike(){
 if(typeof renderCropOnlySpike==='function') $('previewCropOnly').onclick=renderCropOnlySpike;
 $('previewPreprocess').onclick=renderPreprocessPreview;
 
+
+// ---- 装飾品DB（Step 1.25-C v4.5.0） ----
+// MHDB Japanese decoration list: one row per decoration. OCR never depends on
+// this network call; the DB is a post-OCR candidate source and is cached locally.
+const DECORATION_API='https://wilds.mhdb.io/ja/decorations';
+const DECORATION_CACHE_KEY='DEV_MWWSKILLSIM_OCR_DECORATIONS_V1';
+let decorationDB=[];
+let decorationDBReady=false;
+let decorationDBPromise=null;
+let decorationGramIndex=new Map();
+
+function setDecorationDBStatus(text, cls=''){
+  const el=$('decorationDBStatus');
+  if(el) el.innerHTML=`装飾品DB：<span class="${cls}">${text}</span>`;
+}
+function normalizeDecorationName(v){
+  return String(v||'').normalize('NFKC').replace(/[［］]/g,'【').replace(/[\[\]]/g,'【').replace(/\s+/g,'').trim();
+}
+function normalizeDecorationRows(rows){
+  const seen=new Set(); const out=[];
+  for(const d of (Array.isArray(rows)?rows:[])){
+    const name=normalizeDecorationName(d?.name);
+    if(!name)continue;
+    const row={
+      id:d?.id??null, gameId:d?.gameId??null, name,
+      description:d?.description??null,
+      value:d?.value??null,
+      slot:Number.isFinite(Number(d?.slot))?Number(d.slot):null,
+      rarity:Number.isFinite(Number(d?.rarity))?Number(d.rarity):null,
+      kind:String(d?.kind||''),
+      skills:Array.isArray(d?.skills)?d.skills.map(x=>({
+        id:x?.skill?.id??null, gameId:x?.skill?.gameId??null,
+        name:x?.skill?.name??null, level:x?.level??null, description:x?.description??null
+      })):[],
+      icon:d?.icon?{color:d.icon.color??null,colorId:d.icon.colorId??null}:null
+    };
+    const key=`${row.gameId??''}\u0000${row.id??''}\u0000${row.name}\u0000${row.slot??''}\u0000${row.kind}`;
+    if(seen.has(key))continue; seen.add(key); out.push(row);
+  }
+  return out;
+}
+function rebuildDecorationGramIndex(){
+  decorationGramIndex=new Map();
+  decorationDB.forEach((item,idx)=>{
+    const n=normJPLoose(item.name.replace(/[【［].*?[】］]/g,''));
+    const seen=new Set();
+    for(let i=0;i<n.length-1;i++){
+      const g=n.slice(i,i+2); if(seen.has(g))continue; seen.add(g);
+      if(!decorationGramIndex.has(g))decorationGramIndex.set(g,new Set());
+      decorationGramIndex.get(g).add(idx);
+    }
+  });
+}
+async function fetchDecorationPage(offset){
+  const projection={id:true,gameId:true,name:true,description:true,value:true,slot:true,rarity:true,kind:true,skills:true,icon:true};
+  const u=`${DECORATION_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify(projection))}`;
+  const r=await fetch(u,{cache:'no-store',mode:'cors'});
+  if(!r.ok)throw new Error(`装飾品DB HTTP ${r.status}`);
+  const data=await r.json();
+  if(!Array.isArray(data))throw new Error('装飾品DBの応答が配列ではありません');
+  return data;
+}
+async function loadDecorationDB(force=false){
+  if(decorationDBReady&&!force)return decorationDB;
+  if(decorationDBPromise&&!force)return decorationDBPromise;
+  decorationDBPromise=(async()=>{
+    if(!force){
+      try{
+        const c=JSON.parse(localStorage.getItem(DECORATION_CACHE_KEY)||'null');
+        const rows=normalizeDecorationRows(c?.rows||c);
+        if(rows.length){decorationDB=rows;rebuildDecorationGramIndex();decorationDBReady=true;setDecorationDBStatus(`${rows.length.toLocaleString()}件（端末キャッシュ）`,'ok');return decorationDB;}
+      }catch(e){}
+    }
+    setDecorationDBStatus('全件取得中…','info');
+    const all=[]; let offset=0;
+    for(let page=0;page<100;page++){
+      const part=await fetchDecorationPage(offset); all.push(...part);
+      setDecorationDBStatus(`全件取得中… ${all.length.toLocaleString()}件`,'info');
+      if(part.length<250)break; offset+=250;
+    }
+    const rows=normalizeDecorationRows(all);
+    if(!rows.length)throw new Error('装飾品DBが0件でした');
+    decorationDB=rows; rebuildDecorationGramIndex(); decorationDBReady=true;
+    try{localStorage.setItem(DECORATION_CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),rows}));}catch(e){}
+    setDecorationDBStatus(`${rows.length.toLocaleString()}件（最新取得）`,'ok');
+    return decorationDB;
+  })();
+  try{return await decorationDBPromise}
+  catch(e){decorationDBPromise=null;decorationDBReady=false;setDecorationDBStatus('取得失敗：'+e.message,'bad');throw e}
+  finally{decorationDBPromise=null}
+}
+function decorationKindForEquipmentKey(key){
+  return key==='mainWeapon'||key==='subWeapon'?'weapon':'armor';
+}
+function decorationBaseName(raw){
+  return normJPLoose(String(raw||'')
+    .replace(/[【［\[].*?[】］\]]/g,'')
+    .replace(/\bLv\.?\s*[1-3]\b/ig,'')
+    .replace(/[0-9]+$/g,''));
+}
+function searchDecorationItems(raw, expectedSlot=null, expectedKind=null){
+  if(!decorationDB.length)return [];
+  const n=decorationBaseName(raw); const counts=new Map();
+  for(let i=0;i<n.length-1;i++){
+    const g=n.slice(i,i+2), set=decorationGramIndex.get(g); if(!set)continue;
+    for(const idx of set)counts.set(idx,(counts.get(idx)||0)+1);
+  }
+  let pool;
+  if(counts.size){pool=[...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,100).map(x=>decorationDB[x[0]])}
+  else pool=decorationDB;
+  if(expectedKind) pool=pool.filter(x=>x.kind===expectedKind);
+  if(expectedSlot!=null) pool=pool.filter(x=>Number(x.slot)===Number(expectedSlot));
+  return pool.length?pool:(expectedKind?decorationDB.filter(x=>x.kind===expectedKind):decorationDB);
+}
+function scoreDecorationCandidate(raw,cand,expectedSlot=null,expectedKind=null){
+  const a=decorationBaseName(raw), b=decorationBaseName(cand.name);
+  if(!a||!b)return 0;
+  const edit=1-lev(a,b)/Math.max(a.length,b.length,1);
+  const contain=(a.includes(b)||b.includes(a))?0.12:0;
+  const slot=(expectedSlot!=null && Number(cand.slot)===Number(expectedSlot))?0.18:0;
+  const kind=(expectedKind && cand.kind===expectedKind)?0.10:0;
+  return Math.max(0,Math.min(1,edit*0.60+contain+slot+kind));
+}
+function matchDecorationCandidates(raw,expectedSlot=null,expectedKind=null){
+  if(!raw||!decorationDB.length)return [];
+  return searchDecorationItems(raw,expectedSlot,expectedKind)
+    .map(c=>({...c,matchScore:scoreDecorationCandidate(raw,c,expectedSlot,expectedKind)}))
+    .sort((a,b)=>b.matchScore-a.matchScore)
+    .slice(0,5);
+}
+$('loadDecorationDB')?.addEventListener('click',async()=>{const b=$('loadDecorationDB');b.disabled=true;try{await loadDecorationDB(true)}catch(e){}finally{b.disabled=false}});
+$('clearDecorationDB')?.addEventListener('click',()=>{try{localStorage.removeItem(DECORATION_CACHE_KEY)}catch(e){} decorationDB=[];decorationDBReady=false;decorationDBPromise=null;decorationGramIndex=new Map();setDecorationDBStatus('未取得')});
+
 function normalizeDecorationSlotLevels(value) {
   const out=[];
   const push=(v)=>{
@@ -2231,7 +2369,7 @@ function updateDecorationContext() {
       groupIndex:g.groupIndex, equipmentKey:g.equipmentKey || null, label:g.label || null,
       expectedSlotLevels:(getEquipmentExpectedGroupSlots(g.equipmentKey) || g.expectedSlotLevels || []),
       slots:g.slots.map(x=>({slotIndex:x.slotIndex,slotInGroup:x.slotInGroup,slotLevel:x.slotLevel||null,
-        x:x.x,y:x.y,w:x.w,h:x.h,pitch:x.pitch,ocr:x.ocr||null,jewel:x.jewel||null}))
+        x:x.x,y:x.y,w:x.w,h:x.h,pitch:x.pitch,ocr:x.ocr||null,jewel:x.jewel||null,decorationCandidates:x.decorationCandidates||x.ocr?.candidates||[],decorationBest:x.decorationBest||x.ocr?.dbBest||null}))
     })) : [],
     buildGroups: Array.isArray(r.groups) ? r.groups.filter(g=>g.reflect!==false).map(g=>({groupIndex:g.groupIndex,equipmentKey:g.equipmentKey,label:g.label,expectedSlotLevels:(getEquipmentExpectedGroupSlots(g.equipmentKey)||g.expectedSlotLevels||[]),slots:g.slots})) : [],
     rois: Array.isArray(r.rois) ? r.rois.map(x => ({
@@ -2262,7 +2400,7 @@ function renderBuildReflectionState(state) {
 function reflectAnalysisToBuild() {
   const equipment = updateEquipmentContext();
   const decoration = updateDecorationContext();
-  const state = { version: '4.4.8', reflectedAt: new Date().toISOString(), equipment, decoration };
+  const state = { version: '4.5.0', reflectedAt: new Date().toISOString(), equipment, decoration };
   window.buildReflectionState = state;
 
   // 将来のスキルシミュレータ本体が接続された場合も、この1つの入口だけを呼び出せるようにする。
@@ -2287,17 +2425,35 @@ async function recognizeEquipmentAll(){
   const regions=roiResult.rois||{};
   const targets=['mainWeapon','head','chest','arms','waist','legs','charm'];
   const btn=$('recognizeEquipment');btn.disabled=true;
+  const workflowBtn=$('workflowEquipmentOCR'); if(workflowBtn) workflowBtn.disabled=true;
   const started=performance.now();
+  let dbErrors=[];
   try{
-    $('equipmentOCRStatus').textContent='装備DBを準備中…';
-    await Promise.all([ensureWeaponDB(),loadArmorDB(false),loadCharmDB(false)]);
-    setEquipmentDBStatus(`武器 ${weaponDB.length.toLocaleString()}件 / 防具 ${armorDB.length.toLocaleString()}件 / 護石 ${charmDB.length.toLocaleString()}件`,'ok');
+    // v4.4.9: OCR itself must never be blocked by a remote DB failure.
+    // Start DB loading in parallel, but begin OCR immediately. Candidate ranking
+    // is performed with whatever DB data is available when each slot finishes.
+    $('equipmentOCRStatus').textContent='装備OCR準備中…（DBは並行取得）';
+    const dbPromise=Promise.allSettled([
+      ensureWeaponDB(),
+      loadArmorDB(false),
+      loadCharmDB(false)
+    ]).then(results=>{
+      const labels=['武器DB','防具DB','護石DB'];
+      dbErrors=results.map((r,i)=>r.status==='rejected'?`${labels[i]}：${r.reason?.message||r.reason}`:null).filter(Boolean);
+      if(dbErrors.length){
+        setEquipmentDBStatus(`一部DB取得失敗（OCRは継続） / 武器${weaponDB.length.toLocaleString()}件・防具${armorDB.length.toLocaleString()}件・護石${charmDB.length.toLocaleString()}件`,'bad');
+      }else{
+        setEquipmentDBStatus(`武器 ${weaponDB.length.toLocaleString()}件 / 防具 ${armorDB.length.toLocaleString()}件 / 護石 ${charmDB.length.toLocaleString()}件`,'ok');
+      }
+      return results;
+    });
+
     const worker=await Tesseract.createWorker('jpn');
-    const equipmentWhitelist=buildEquipmentOCRWhitelist();
+    // DB未取得でも漢字を欠落させないため、v4.4.9では装備OCRに文字whitelistを掛けない。
+    // OCRは原文を広く取得し、その後にDB照合・部位制約で候補を絞る。
     await worker.setParameters({
       tessedit_pageseg_mode:'7',
-      preserve_interword_spaces:'1',
-      tessedit_char_whitelist:equipmentWhitelist
+      preserve_interword_spaces:'1'
     });
     const output=[];
     for(const key of targets){
@@ -2332,13 +2488,28 @@ async function recognizeEquipmentAll(){
       $('equipmentResults').innerHTML=output.map(renderEquipmentResult).join('');
     }
     await worker.terminate();
+    await dbPromise;
+    // Re-rank once with the final DB state, without re-running OCR.
+    for(const x of output){
+      const key=x.key;
+      const items=equipmentRowsForSlot(key);
+      let ranked=[];
+      if(key==='mainWeapon') ranked=aggregateGenericEquipmentCandidates(x.rows,items);
+      else if(key==='charm') ranked=aggregateTalismanCandidates(x.rows,items);
+      else ranked=aggregateHierarchicalArmorCandidatesV26(x.rows,items,key==='head'?'頭防具':key==='chest'?'胴防具':key==='arms'?'腕防具':key==='waist'?'腰防具':'脚防具',armorDB);
+      x.ranked=ranked.slice(0,3);
+      x.best=x.ranked[0];
+      const second=x.ranked[1];
+      if(x.best) x.best.decision=(key==='mainWeapon'||key==='charm')?equipmentDecision(x.best,second):equipmentDecisionV26(x.best,second);
+      if(x.best) x.best.gap=second?x.best.totalScore-second.totalScore:null;
+    }
     window.lastEquipmentOCR=output;
     updateEquipmentContext();
     const elapsed=(performance.now()-started)/1000;
     const auto=output.filter(x=>x.best?.decision?.level==='auto').length;
-    $('equipmentOCRStatus').textContent=`装備名OCR完了：${output.length}部位 / ${auto}部位が自動確定候補 / ${elapsed.toFixed(1)}秒`;
+    $('equipmentOCRStatus').textContent=`装備名OCR完了：${output.length}部位 / ${auto}部位が自動確定候補 / ${elapsed.toFixed(1)}秒${dbErrors.length?` / ${dbErrors.length}系統のDB取得失敗（生OCRは保持）`:''}`;
   }catch(err){$('equipmentOCRStatus').textContent='装備名OCRエラー：'+String(err)}
-  finally{btn.disabled=false}
+  finally{btn.disabled=false; if(workflowBtn) workflowBtn.disabled=false}
 }
 function renderEquipmentResult(x){
   const title=equipmentSlotLabel(x.key);const b=x.best;const label=b?.decision?.label||'候補なし';
@@ -3771,7 +3942,7 @@ function calculateEquipmentROIBase(){
 }
 
 // ============================================================
-// v4.4.8 装飾品グループ解析
+// v4.4.9 装飾品グループ解析
 //
 // 方針:
 // 1) 16:9ゲーム領域を確定
@@ -4210,7 +4381,7 @@ function renderDecorationSlotResult(result) {
 
   html += `<div class="result"><b>検出条件</b><div class="mono">` +
     `候補境界=${d.candidates.length}本 / 必要境界=25本 / ` +
-    `論理スロット=24 / OCR=未実行 / 珠DB=未照合` +
+    `論理スロット=24 / OCR=未実行 / 珠DB=取得後に照合` +
     `</div></div>`;
 
   if (!b) {
@@ -4248,7 +4419,14 @@ async function recognizeDecorationOCR(){
   btn.disabled=true;
   const started=performance.now();
   try{
-    $('workflowDecorationStatus').textContent=`装飾品${result.groups.length}グループ / ${result.groups.reduce((n,g)=>n+g.slots.length,0)}スロットをOCR中…`;
+    $('workflowDecorationStatus').textContent=`装飾品${result.groups.length}グループ / ${result.groups.reduce((n,g)=>n+g.slots.length,0)}スロットをOCR中…（珠DBは並行取得）`;
+    // Decoration OCR is independent from the remote DB. Start the DB load in
+    // parallel so cached data can be used immediately and a fresh DB can join
+    // candidate matching without making OCR itself a prerequisite.
+    const decoDBPromise=loadDecorationDB(false).catch(e=>{
+      console.warn('装飾品DB取得失敗：',e);
+      return null;
+    });
     const worker=await Tesseract.createWorker('jpn');
     await worker.setParameters({tessedit_pageseg_mode:'7',preserve_interword_spaces:'1'});
     const out=[];
@@ -4280,12 +4458,36 @@ async function recognizeDecorationOCR(){
       const usable=passes.filter(x=>x.raw).sort((a,b)=>b.confidence-a.confidence);
       const best=usable[0]||{raw:'',confidence:0,mode:'none'};
       const slotLevel=parseDecorationSlotLevel(best.raw);
+      const group=result.groups.find(g=>g.groupIndex===roi.groupIndex);
+      const expectedLevels=group?.expectedSlotLevels||[];
+      const expectedSlot=expectedLevels[roi.slotInGroup]??slotLevel??null;
+      const equipmentKey=group?.equipmentKey||null;
+      const expectedKind=decorationKindForEquipmentKey(equipmentKey);
+      const candidates=matchDecorationCandidates(best.raw,expectedSlot,expectedKind);
       roi.slotLevel=slotLevel;
-      const group=result.groups.find(g=>g.groupIndex===roi.groupIndex); if(group){ const gs=group.slots.find(x=>x.slotIndex===roi.slotIndex); if(gs){ gs.slotLevel=slotLevel; gs.ocr={slotIndex:roi.slotIndex,groupIndex:roi.groupIndex,slotInGroup:roi.slotInGroup,slotLevel,raw:best.raw,confidence:best.confidence,mode:best.mode}; } }
-      out.push({slotIndex:roi.slotIndex,groupIndex:roi.groupIndex,slotInGroup:roi.slotInGroup,slotLevel,roi,passes,raw:best.raw,confidence:best.confidence,mode:best.mode});
+      roi.decorationCandidates=candidates;
+      roi.decorationBest=candidates[0]||null;
+      if(group){ const gs=group.slots.find(x=>x.slotIndex===roi.slotIndex); if(gs){ gs.slotLevel=slotLevel; gs.ocr={slotIndex:roi.slotIndex,groupIndex:roi.groupIndex,slotInGroup:roi.slotInGroup,slotLevel,expectedSlot,raw:best.raw,confidence:best.confidence,mode:best.mode,candidates,dbBest:candidates[0]||null}; gs.jewel=candidates[0]||null; } }
+      out.push({slotIndex:roi.slotIndex,groupIndex:roi.groupIndex,slotInGroup:roi.slotInGroup,slotLevel,expectedSlot,equipmentKey,expectedKind,roi,passes,raw:best.raw,confidence:best.confidence,mode:best.mode,candidates,dbBest:candidates[0]||null});
       if((out.length)%4===0) $('workflowDecorationStatus').textContent=`装飾品OCR中… ${out.length}/${result.groups.reduce((n,g)=>n+g.slots.length,0)}`;
     }
     await worker.terminate();
+    // Fresh DB may have completed while OCR was running. Re-score every OCR row
+    // once more so late-arriving DB data is reflected without rerunning OCR.
+    await decoDBPromise;
+    for(const r of out){
+      const group=result.groups.find(g=>g.groupIndex===r.groupIndex);
+      const expectedLevels=group?.expectedSlotLevels||[];
+      const expectedSlot=expectedLevels[r.slotInGroup]??r.slotLevel??null;
+      r.expectedSlot=expectedSlot;
+      r.expectedKind=decorationKindForEquipmentKey(group?.equipmentKey||null);
+      r.candidates=matchDecorationCandidates(r.raw,expectedSlot,r.expectedKind);
+      r.dbBest=r.candidates[0]||null;
+      r.roi.decorationCandidates=r.candidates;
+      r.roi.decorationBest=r.dbBest;
+      const gs=group?.slots?.find(x=>x.slotIndex===r.slotIndex);
+      if(gs){ gs.ocr={...(gs.ocr||{}),expectedSlot,candidates:r.candidates,dbBest:r.dbBest}; gs.jewel=r.dbBest||null; }
+    }
     window.lastDecorationOCR=out;
     window.decorationSlotResult.ocr=out;
     updateDecorationContext();
@@ -4306,7 +4508,10 @@ function renderDecorationOCRResult(rows){
     const lines=rs.map(r=>{
       const raw=r.raw||'（空／認識なし）';
       const state=r.raw?(r.confidence>=25?'候補':'低信頼'):'空・未認識';
-      return `<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${r.slotInGroup+1}番スロット</b>　${raw} <span class="note">${state} / ${Math.round(r.confidence)}%${r.slotLevel?` / Lv${r.slotLevel}`:''}</span></div>`;
+      const db=r.dbBest;
+      const dbLine=db?`<br><span class="note">DB候補：${db.name} / slot${db.slot??'?'} / ${db.kind||'?'} / DB一致 ${Math.round(db.matchScore*100)}%</span>`:'<br><span class="note">DB候補：未照合（DB未取得または候補なし）</span>';
+      const mismatch=(r.expectedSlot!=null&&r.dbBest&&Number(r.dbBest.slot)!==Number(r.expectedSlot));
+      return `<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${r.slotInGroup+1}番スロット</b>　${raw} <span class="note">${state} / ${Math.round(r.confidence)}%${r.slotLevel?` / OCR Lv${r.slotLevel}`:''}${r.expectedSlot!=null?` / 期待Lv${r.expectedSlot}`:''}${mismatch?' / ⚠Lv不一致':''}</span>${dbLine}</div>`;
     }).join('');
     return `<div style="border:1px solid #88775c;border-radius:10px;padding:8px;margin-top:8px"><b>${g?.label||`装備グループ${gi+1}`}</b>${g?.expectedSlotLevels?.length?` / DBスロット[${g.expectedSlotLevels.join(',')}]`:''}${lines}</div>`;
   }).join('');
