@@ -185,16 +185,18 @@
 
 <script>
   /* --------------------------------------------------
-   * 精密16:9領域算出（スマホ縦スクショの黒帯・UI境界を考慮）
+   * 精密16:9領域算出（スマホ縦スクショの黒帯・UI境界を精密検出）
    * -------------------------------------------------- */
   function getGameArea(canvasCtx, imgW, imgH) {
     const targetRatio = 16 / 9;
     const currentRatio = imgW / imgH;
 
+    // 16:9画像の場合
     if (Math.abs(currentRatio - targetRatio) < 0.02) {
       return { x: 0, y: 0, w: imgW, h: imgH };
     }
 
+    // 縦長画像（スマホスクショ）の場合
     let gameW = imgW;
     let gameH = imgW / targetRatio;
     let offsetX = 0;
@@ -206,10 +208,11 @@
         const imgData = canvasCtx.getImageData(sampleX, 0, 1, imgH).data;
         let topY = -1;
 
+        // 上部ステータスバーを抜けてゲームUI領域の上端（輝度検知）を探索
         for (let y = 0; y < imgH; y++) {
           const idx = y * 4;
           const lum = imgData[idx] * 0.299 + imgData[idx + 1] * 0.587 + imgData[idx + 2] * 0.114;
-          if (lum > 30) {
+          if (lum > 35) {
             topY = y;
             break;
           }
@@ -331,15 +334,15 @@
   });
 
   /* --------------------------------------------------
-   * 【2】装飾品画面スキャナー (実測ピクセル16:9完全同期版)
+   * 【2】装飾品画面スキャナー (IMG_9323 実測・検証通過パラメータ)
    * -------------------------------------------------- */
   const DECORATION_GRID_CONFIG = {
     maxRows: 24,
-    startXRatio: 0.0620,   // 6.20%: 「攻」の1文字目の真左縁から開始
-    startYRatio: 0.0941,   // 9.41%: 1行目文字上端 (53px/563px)
-    pitchYRatio: 0.03023,  // 3.023%: 全24行完全追従ピッチ (17.02px/563px)
-    widthRatio:  0.0760,   // 7.60%: 右カッコ末尾まで完全に収まる幅 (76px/1000px)
-    heightRatio: 0.0231    // 2.31%: 文字高さ (13px/563px)
+    startXRatio: 0.0620,   // 6.20%: 「攻」の1文字目の左端にぴったり同期
+    startYRatio: 0.0965,   // 9.65%: 1行目文字上端位置へ完全アラインメント
+    pitchYRatio: 0.03023,  // 3.023%: 24行目「加護珠【1】」まで1pxも狂わない精密ピッチ
+    widthRatio:  0.1180,   // ★11.80%: 右カッコ「【3】」の右縁まで完全に包み込む幅
+    heightRatio: 0.0240    // 2.40%: 上下境界線を巻き込まないクリアな文字高
   };
 
   const decoImageInput = document.getElementById('decoImageInput');
@@ -442,7 +445,7 @@
   });
 
   /* --------------------------------------------------
-   * 【共通】高解像度クロップ（二値化を行わずアンチエイリアスを保持）
+   * 【共通】高解像度クロップ（アンチエイリアス保持）
    * -------------------------------------------------- */
   function createHighResCrop(sourceImg, rect) {
     const canvas = document.createElement('canvas');
