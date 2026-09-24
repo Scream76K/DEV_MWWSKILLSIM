@@ -185,25 +185,49 @@
 
 <script>
   /* --------------------------------------------------
-   * 16:9ゲームエリア算出
+   * 精密16:9領域算出（スマホ縦スクショの黒帯・UI境界を考慮）
    * -------------------------------------------------- */
-  function getGameArea(imgW, imgH) {
+  function getGameArea(canvasCtx, imgW, imgH) {
     const targetRatio = 16 / 9;
     const currentRatio = imgW / imgH;
 
-    let w = imgW, h = imgH, x = 0, y = 0;
+    // 16:9画像そのものの場合
+    if (Math.abs(currentRatio - targetRatio) < 0.02) {
+      return { x: 0, y: 0, w: imgW, h: imgH };
+    }
 
-    if (Math.abs(currentRatio - targetRatio) > 0.02) {
-      if (currentRatio > targetRatio) {
-        w = imgH * targetRatio;
-        x = (imgW - w) / 2;
-      } else {
-        h = imgW / targetRatio;
-        y = (imgH - h) / 2;
+    // 縦長画像（スマホスクショ）の場合
+    let gameW = imgW;
+    let gameH = imgW / targetRatio;
+    let offsetX = 0;
+    let offsetY = (imgH - gameH) / 2;
+
+    // 上下の暗色領域・余白をスキャンしてゲーム表示領域の上端（Y）を精密検知
+    if (canvasCtx) {
+      try {
+        const sampleX = Math.floor(imgW * 0.5);
+        const imgData = canvasCtx.getImageData(sampleX, 0, 1, imgH).data;
+        let topY = -1;
+
+        for (let y = 0; y < imgH; y++) {
+          const idx = y * 4;
+          const lum = imgData[idx] * 0.299 + imgData[idx + 1] * 0.587 + imgData[idx + 2] * 0.114;
+          // 黒帯を抜けてゲーム画面の色（輝度30以上）が始まる地点
+          if (lum > 30) {
+            topY = y;
+            break;
+          }
+        }
+
+        if (topY >= 0 && topY + gameH <= imgH) {
+          offsetY = topY;
+        }
+      } catch (e) {
+        console.warn("Auto Y detection fallback to center:", e);
       }
     }
 
-    return { x, y, w, h };
+    return { x: offsetX, y: offsetY, w: gameW, h: gameH };
   }
 
   /* --------------------------------------------------
@@ -240,7 +264,7 @@
       stage.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      const gameArea = getGameArea(img.width, img.height);
+      const gameArea = getGameArea(ctx, img.width, img.height);
       computedROIs = calculatePercentageROIs(gameArea);
       drawROIBounds(ctx, computedROIs);
 
@@ -311,14 +335,14 @@
   });
 
   /* --------------------------------------------------
-   * 【2】装飾品画面スキャナー (image_4.png 直計精密パラメータ)
+   * 【2】装飾品画面スキャナー (修正版精密座標)
    * -------------------------------------------------- */
   const DECORATION_GRID_CONFIG = {
     maxRows: 24,
-    startXRatio: 0.088,    // 8.8%: 宝珠アイコンを越え、文字1文字目直前
+    startXRatio: 0.062,    // ★6.2%: 「攻」の1文字目の真左縁から完全開始
     startYRatio: 0.100,    // 10.0%: 1行目文字上端
-    pitchYRatio: 0.0338,   // 3.38%: 全24行精密ピッチ
-    widthRatio:  0.075,    // 7.5%: 「攻撃珠III【3】」末尾までジャストフィット
+    pitchYRatio: 0.0338,   // 3.38%: 24行精密ピッチ
+    widthRatio:  0.076,    // ★7.6%: 「攻撃珠III【3】」末尾までジャストカバー
     heightRatio: 0.026     // 2.6%: 1行分の高さ
   };
 
@@ -343,7 +367,7 @@
       decoStage.height = img.height;
       decoCtx.drawImage(img, 0, 0);
 
-      const gameArea = getGameArea(img.width, img.height);
+      const gameArea = getGameArea(decoCtx, img.width, img.height);
 
       decoComputedROIs = calculateDecorationROIs(gameArea);
       drawDecoROIBounds(decoCtx, decoComputedROIs);
