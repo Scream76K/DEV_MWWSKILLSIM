@@ -185,24 +185,19 @@
 
 <script>
   /* --------------------------------------------------
-   * 堅牢な16:9ゲームエリア算出（どのような縦横比画像でも中央ゲーム画面を正確補正）
+   * 16:9ゲームエリア算出
    * -------------------------------------------------- */
   function getGameArea(imgW, imgH) {
     const targetRatio = 16 / 9;
     const currentRatio = imgW / imgH;
 
-    let w = imgW;
-    let h = imgH;
-    let x = 0;
-    let y = 0;
+    let w = imgW, h = imgH, x = 0, y = 0;
 
     if (Math.abs(currentRatio - targetRatio) > 0.02) {
       if (currentRatio > targetRatio) {
-        // 横長すぎる場合（左右に黒帯）
         w = imgH * targetRatio;
         x = (imgW - w) / 2;
       } else {
-        // 縦長すぎる場合（スマホスクショ：上下に黒帯/UI）
         h = imgW / targetRatio;
         y = (imgH - h) / 2;
       }
@@ -257,7 +252,7 @@
   });
 
   function calculatePercentageROIs(gameArea) {
-    const startXRatio  = 0.045, startYRatio  = 0.145, pitchYRatio  = 0.0904, widthRatio   = 0.140, heightRatio  = 0.035;
+    const startXRatio  = 0.048, startYRatio  = 0.147, pitchYRatio  = 0.0904, widthRatio   = 0.123, heightRatio  = 0.032;
     const cropX = gameArea.x + (gameArea.w * startXRatio);
     const cropW = gameArea.w * widthRatio;
     const cropH = gameArea.h * heightRatio;
@@ -316,15 +311,15 @@
   });
 
   /* --------------------------------------------------
-   * 【2】装飾品画面スキャナー（文字欠けを絶対に防ぐワイド枠設計）
+   * 【2】装飾品画面スキャナー (image_4.png 直計精密パラメータ)
    * -------------------------------------------------- */
   const DECORATION_GRID_CONFIG = {
     maxRows: 24,
-    startXRatio: 0.082,    // ★十分左に寄せて「攻」の左端切れを100%防止
-    startYRatio: 0.098,    // ★1行目の上端にゆとりを付与
-    pitchYRatio: 0.0337,   // ★24行追従ピッチ
-    widthRatio:  0.100,    // ★横幅を広げて右端【3】や「業物・匠珠」の切れを完全防止
-    heightRatio: 0.030     // ★縦幅を太くして上下ズレを吸収
+    startXRatio: 0.088,    // 8.8%: 宝珠アイコンを越え、文字1文字目直前
+    startYRatio: 0.100,    // 10.0%: 1行目文字上端
+    pitchYRatio: 0.0338,   // 3.38%: 全24行精密ピッチ
+    widthRatio:  0.075,    // 7.5%: 「攻撃珠III【3】」末尾までジャストフィット
+    heightRatio: 0.026     // 2.6%: 1行分の高さ
   };
 
   const decoImageInput = document.getElementById('decoImageInput');
@@ -354,7 +349,7 @@
       drawDecoROIBounds(decoCtx, decoComputedROIs);
 
       decoRunBtn.disabled = false;
-      decoStatusText.textContent = "24行枠線を確認し、「装飾品をOCR解析」を押してください";
+      decoStatusText.textContent = "枠線を確認し、「装飾品をOCR解析」を押してください";
       decoResultCard.style.display = 'none';
     };
     img.src = URL.createObjectURL(file);
