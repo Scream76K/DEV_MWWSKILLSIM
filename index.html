@@ -3,63 +3,60 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.6.0</title>
+<title>MH Wilds OCR — Step 1.25-C v4.6.1</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
-.hero{padding:18px 18px 16px}.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.eyebrow{font-size:11px;letter-spacing:.14em;font-weight:800;color:#6f6659}.version{margin:2px 0 0;font-size:12px;color:#817766}.production-badge{padding:5px 9px;border-radius:999px;background:#e7ecdf;color:#50633f;font-size:10px;font-weight:800;white-space:nowrap}.hero-note{margin:12px 0 10px;font-size:14px;line-height:1.6}.rules{display:flex;gap:7px;flex-wrap:wrap}.rules span{font-size:11px;background:#f0eadc;border:1px solid #ddd2bd;border-radius:999px;padding:5px 8px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.section-head h2{margin:2px 0 0}.step-label{font-size:10px;letter-spacing:.12em;font-weight:800;color:#657853}.subtle{font-size:11px;color:#7a705f}.secondary{background:#f0eadc;border-color:#c8baa0}.file-input{padding:9px;border:1px dashed #b9a98b;border-radius:9px;background:#fffdf7}.reflect-button{min-height:48px;width:100%;font-size:15px}.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.check-grid>div{padding:10px;border:1px solid #ddd2bd;border-radius:9px;background:#fbf7ed}.check-grid b{display:block;font-size:12px;margin-bottom:3px}.check-grid span{font-size:11px;line-height:1.5;color:#625b50}.compact-help summary{cursor:pointer;font-weight:700;font-size:13px}.help-body{font-size:12px;line-height:1.6;color:#625b50}.help-body p{margin:9px 0}.status{min-height:20px}.workflow-panel button:disabled{opacity:.55;cursor:wait}@media(max-width:760px){.hero-top{align-items:center}.check-grid{grid-template-columns:1fr}.section-head{align-items:flex-start}.production-badge{display:none}}
+:root{--ink:#25221d;--muted:#71695d;--line:#d8cdb9;--paper:#fbf7ee;--paper2:#f3ecdd;--accent:#5d6848;--accent2:#7d6a45;--warn:#9a6a22;--danger:#8b5148}
+*{box-sizing:border-box}html{background:#eee9df}body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;background:linear-gradient(#f5f1e8,#e9e3d7);font-size:14px}main{max-width:920px;margin:0 auto;padding:12px}.card{background:rgba(255,253,247,.96);border:1px solid var(--line);border-radius:16px;box-shadow:0 3px 14px rgba(54,45,31,.07);padding:16px;margin-bottom:12px}h1,h2,h3{margin:0;font-weight:800;letter-spacing:.01em}h1{font-size:23px}h2{font-size:18px}h3{font-size:15px}.eyebrow{font-size:10px;letter-spacing:.16em;color:#777060;font-weight:800}.version{font-size:10px;color:#958a78;margin:3px 0 0}.hero{padding:17px}.hero-top{display:flex;justify-content:space-between;align-items:flex-start}.hero-note{margin:10px 0 0;color:var(--muted);line-height:1.6}.production-badge{font-size:10px;font-weight:800;background:#e9eedf;color:#586744;border-radius:999px;padding:6px 9px}.stepbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:14px}.stepbar div{padding:7px 8px;border-radius:9px;background:var(--paper2);color:#817765;font-size:11px;font-weight:800;text-align:center}.stepbar .active{background:#697653;color:#fff}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.step-label{font-size:10px;letter-spacing:.13em;font-weight:900;color:var(--accent)}.subtle,.note,.status{color:var(--muted);font-size:12px;line-height:1.55}.input-panel{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fffdf8}.input-panel+.input-panel{margin-top:10px}.input-title{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}.badge{font-size:10px;background:var(--paper2);padding:4px 7px;border-radius:999px;color:#71634f}.file-row{display:flex;gap:8px;align-items:center}.file-button{display:block;flex:1;text-align:center;padding:12px;border:1px dashed #aa9a7d;border-radius:10px;background:#f8f2e6;font-weight:800;color:#4e483e;cursor:pointer}.file-button input{display:none}.file-name{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.preview-wrap{display:flex;gap:10px;align-items:center;margin-top:10px}.thumb{width:92px;height:68px;border-radius:8px;border:1px solid var(--line);overflow:hidden;background:#e8e2d7;display:none}.thumb img{width:100%;height:100%;object-fit:cover}.preview-wrap.has-image .thumb{display:block}.preview-actions{display:flex;flex-direction:column;gap:3px}.link-btn{border:0;background:none;color:#5f6d48;padding:4px 0;text-align:left;font-size:12px;font-weight:800}.analysis-button{width:100%;min-height:48px;margin-top:12px;border:0;border-radius:11px;background:#5f6b49;color:white;font-weight:900;font-size:15px;box-shadow:0 2px 5px rgba(47,52,34,.16)}button{font-family:inherit;cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}.progress{margin-top:11px;display:none}.progress.show{display:block}.progress-track{height:7px;border-radius:99px;background:#e7e0d3;overflow:hidden}.progress-bar{height:100%;width:0;background:#7b875f;border-radius:99px;transition:width .25s ease}.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:5px}.stages{display:flex;gap:5px;margin-top:8px}.stage{flex:1;text-align:center;padding:5px 3px;border-radius:7px;background:#eee9df;color:#938979;font-size:10px}.stage.active{background:#dfe6d4;color:#53603e;font-weight:800}.stage.done{background:#e9eee1;color:#596748}.result-box{margin-top:12px}.confirm-summary{padding:10px 12px;background:#f2eee4;border-radius:10px;font-size:12px;margin-bottom:10px}.confirm-item{border:1px solid var(--line);border-radius:11px;padding:10px;margin:8px 0;background:#fffdf9}.confirm-item.warning{border-color:#d6b47b;background:#fffaf0}.confirm-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.confirm-state{font-size:10px;padding:4px 7px;border-radius:999px;background:#e8eedf;color:#566642;font-weight:800}.confirm-state.warn{background:#f3e2c3;color:#8b6429}.candidate-list{display:grid;gap:5px;margin-top:8px}.candidate-choice{display:flex;gap:8px;align-items:flex-start;padding:8px;border:1px solid #d8cdb9;border-radius:8px;background:#fff}.candidate-choice.selected{border-color:#78865d;background:#f1f5eb}.candidate-choice input{margin-top:3px}.candidate-name{font-weight:800}.candidate-meta{font-size:10px;color:var(--muted);margin-top:2px}.confirm-apply{margin-top:8px;padding:8px 12px;border:1px solid #a99b82;background:#f4eee1;border-radius:8px;font-weight:800;font-size:12px}.skip{border:0;background:none;color:#766c5d;font-size:12px;text-decoration:underline;padding:8px 0}.final-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.build-col{border:1px solid var(--line);border-radius:12px;overflow:hidden}.build-col-title{padding:10px 12px;background:#eee8da;font-weight:900}.build-row{display:grid;grid-template-columns:42% 58%;border-top:1px solid #e4dccd}.build-equip{padding:9px 10px;font-weight:800}.build-jewels{padding:9px 10px;color:#4e493f;font-size:12px;line-height:1.55}.reflect-button{width:100%;min-height:54px;font-size:17px;border:0;border-radius:12px;background:#596747;color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(47,52,34,.18);margin-top:12px}.secondary{border:1px solid var(--line);background:#f4eee2;border-radius:9px;padding:8px 10px;font-weight:800;color:#61584d}.compact-help summary{cursor:pointer;font-weight:800}.help-body{font-size:12px;line-height:1.6;color:var(--muted)}.modal{position:fixed;inset:0;background:rgba(20,18,14,.72);z-index:50;display:none;align-items:center;justify-content:center;padding:14px}.modal.show{display:flex}.modal-card{width:min(900px,100%);height:min(90vh,900px);background:#f8f4eb;border-radius:14px;display:flex;flex-direction:column;overflow:hidden}.modal-head{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}.modal-close{border:0;background:#e8e1d4;border-radius:8px;padding:7px 10px;font-weight:800}.modal-body{flex:1;display:flex;align-items:center;justify-content:center;overflow:auto;padding:10px}.modal-body img{max-width:100%;max-height:100%;object-fit:contain}.hidden-dev{display:none!important}@media(max-width:700px){main{padding:8px}.card{padding:13px;border-radius:14px}.hero{padding:14px}h1{font-size:21px}.production-badge{display:none}.stepbar div{font-size:10px;padding:7px 3px}.final-grid{grid-template-columns:1fr}.build-row{grid-template-columns:45% 55%}.thumb{width:78px;height:58px}}
 </style>
 </head>
 <body>
 <main>
   <header class="hero card">
-    <div class="hero-top"><div><div class="eyebrow">MONSTER HUNTER WILDS</div><h1>装備・装飾品 OCR</h1><p class="version">Step 1.25-C / v4.6.0</p></div><span class="production-badge">PRODUCTION UI</span></div>
-    <p class="hero-note">装備画面と装飾品画面を画像から読み取り、現在のビルドへ反映するための解析画面です。</p>
-    <div class="rules"><span>✓ 装備7部位</span><span>✓ 装飾品は最大8グループ</span><span>✓ サブ武器は反映対象外</span><span>✓ 装衣に装飾品スロットなし</span></div>
-  </header>
+  <div class="hero-top"><div><div class="eyebrow">MONSTER HUNTER WILDS</div><h1>スクショからビルドを取り込む</h1><p class="version">v4.6.1</p></div><span class="production-badge">BUILD IMPORT</span></div>
+  <p class="hero-note">装備と装飾品のスクショを順番に解析して、ビルドとして取り込みます。</p>
+  <div class="stepbar"><div class="active">STEP 1　装備</div><div>STEP 2　装飾品</div><div>STEP 3　取り込み</div></div>
+</header>
 
-  <section class="card workflow-card">
-    <div class="section-head"><div><span class="step-label">STEP 1</span><h2>画像を選択</h2></div><button id="resetAnalysis" class="secondary">↻ 最初からやり直す</button></div>
-    <div class="workflow-grid">
-      <section class="workflow-panel">
-        <div class="workflow-card-head"><h3>🛡️ 装備ビルド</h3><span class="workflow-badge">7部位</span></div>
-        <input id="file" class="file-input" type="file" accept="image/*">
-        <div id="fileStatus" class="workflow-statusline"><span id="workflowEquipmentDot" class="workflow-dot"></span><span>装備画像：未選択</span></div>
-        <div id="workflowEquipmentPreview" class="workflow-preview empty"></div>
-        <div class="workflow-summary"><div class="workflow-metric"><b id="workflowEquipmentImageMetric">—</b>画像サイズ</div><div class="workflow-metric"><b id="workflowEquipmentResultMetric">0 / 7</b>解析部位</div></div>
-        <div class="workflow-actions"><button id="workflowEquipmentROI" class="primary">① 7部位を解析</button><button id="workflowEquipmentOCR" class="primary">② OCR・DB照合</button></div>
-        <div id="workflowEquipmentStatus" class="status">画像を選択してください</div>
-        <div id="workflowEquipmentOut" class="workflow-result"></div>
-      </section>
-      <section class="workflow-panel">
-        <div class="workflow-card-head"><h3>💎 装飾品</h3><span class="workflow-badge">最大8グループ</span></div>
-        <input id="decorationFile" class="file-input" type="file" accept="image/*">
-        <div id="decorationFileStatus" class="workflow-statusline"><span id="workflowDecorationDot" class="workflow-dot"></span><span>装飾品画像：未選択</span></div>
-        <div id="workflowDecorationPreview" class="workflow-preview empty"></div>
-        <div class="workflow-summary"><div class="workflow-metric"><b id="workflowDecorationImageMetric">—</b>画像サイズ</div><div class="workflow-metric"><b id="workflowDecorationResultMetric">0 / 0</b>実スロット</div></div>
-        <div id="decorationDBStatus" class="status">装飾品DB：OCR時に自動取得</div>
-        <div class="workflow-actions"><button id="workflowDecorationROI" class="primary">① グループを解析</button><button id="workflowDecorationOCR" class="primary">② OCR・DB照合</button></div>
-        <div id="workflowDecorationStatus" class="status">画像を選択してください</div>
-        <div id="workflowDecorationOut" class="workflow-result"></div>
-      </section>
-    </div>
-  </section>
+<section class="card">
+  <div class="section-head"><div><span class="step-label">STEP 1</span><h2>武器・防具・護石を取り込む</h2></div><span class="subtle">7部位</span></div>
+  <div class="input-panel">
+    <div class="input-title"><b>① スクショを選ぶ</b><span class="badge">装備画面</span></div>
+    <div class="file-row"><label class="file-button">📷 装備スクショを選ぶ<input id="file" type="file" accept="image/*"></label></div>
+    <div id="fileStatus" class="file-name">画像はまだ選択されていません</div>
+    <div id="equipmentPreviewWrap" class="preview-wrap"><div id="workflowEquipmentPreview" class="thumb"></div><div class="preview-actions"><button id="equipmentPreviewButton" class="link-btn" type="button" disabled>画像を確認する</button><span id="workflowEquipmentImageMetric" class="subtle">—</span></div></div>
+    <button id="workflowEquipmentOCR" class="analysis-button" disabled>② 装備の画像解析を開始</button>
+    <div id="equipmentProgress" class="progress"><div class="progress-track"><div id="equipmentProgressBar" class="progress-bar"></div></div><div class="progress-label"><span id="equipmentProgressLabel">準備中…</span><span id="equipmentProgressPct">0%</span></div><div class="stages"><span id="eqStage1" class="stage active">画像確認</span><span id="eqStage2" class="stage">装備検出</span><span id="eqStage3" class="stage">OCR</span><span id="eqStage4" class="stage">DB照合</span></div></div>
+    <div id="workflowEquipmentStatus" class="status" style="margin-top:8px">装備スクショを選択してください</div>
+    <div id="workflowEquipmentOut" class="result-box"></div>
+  </div>
+</section>
 
-  <section class="card flow-guide">
-    <div class="section-head"><div><span class="step-label">STEP 2</span><h2>解析結果を確認</h2></div><span class="subtle">誤認識を無理に確定しません</span></div>
-    <div class="check-grid"><div><b>装備</b><span>部位ごとに対応DBだけを検索。α・β・γは名前末尾の証拠を優先します。</span></div><div><b>装飾品</b><span>メイン武器 → サブ武器 → 頭 → 胴 → 腕 → 腰 → 脚 → 護石の物理グループで保持します。</span></div><div><b>スロット上限</b><span>装備側のLvは「上限」です。装着珠のLvが上限以下なら一致として扱います。</span></div><div><b>安全側</b><span>9行・グループ構造が確定しない場合は、推測で装備や珠を割り当てません。</span></div></div>
-  </section>
+<section class="card">
+  <div class="section-head"><div><span class="step-label">STEP 2</span><h2>装飾品を取り込む</h2></div><button id="skipDecoration" class="skip">スキップする</button></div>
+  <div class="input-panel">
+    <div class="input-title"><b>① スクショを選ぶ</b><span class="badge">任意</span></div>
+    <div class="file-row"><label class="file-button">📷 装飾品スクショを選ぶ<input id="decorationFile" type="file" accept="image/*"></label></div>
+    <div id="decorationFileStatus" class="file-name">画像はまだ選択されていません</div>
+    <div id="decorationPreviewWrap" class="preview-wrap"><div id="workflowDecorationPreview" class="thumb"></div><div class="preview-actions"><button id="decorationPreviewButton" class="link-btn" type="button" disabled>画像を確認する</button><span id="workflowDecorationImageMetric" class="subtle">—</span></div></div>
+    <button id="workflowDecorationOCR" class="analysis-button" disabled>② 装飾品の画像解析を開始</button>
+    <div id="decorationProgress" class="progress"><div class="progress-track"><div id="decorationProgressBar" class="progress-bar"></div></div><div class="progress-label"><span id="decorationProgressLabel">準備中…</span><span id="decorationProgressPct">0%</span></div><div class="stages"><span id="decoStage1" class="stage active">画像確認</span><span id="decoStage2" class="stage">グループ検出</span><span id="decoStage3" class="stage">OCR</span><span id="decoStage4" class="stage">DB照合</span></div></div>
+    <div id="workflowDecorationStatus" class="status" style="margin-top:8px">装飾品スクショはスキップできます</div>
+    <div id="workflowDecorationOut" class="result-box"></div>
+  </div>
+</section>
 
-  <section class="card reflection-card">
-    <div class="section-head"><div><span class="step-label">STEP 3</span><h2>ビルドへ反映</h2></div><span class="workflow-badge">共通入口</span></div>
-    <p class="note">装備だけ、装飾品だけ、または両方を反映できます。サブ武器は位置合わせには使用しますが、ビルド反映対象には含めません。</p>
-    <button id="workflowReflectBuild" class="primary reflect-button">🔄 解析結果をビルドへ反映</button>
-    <div id="workflowReflectionStatus" class="status">解析結果が揃ったら反映できます</div>
-    <div id="workflowReflectionOut" class="workflow-result"></div>
-  </section>
+<section class="card">
+  <div class="section-head"><div><span class="step-label">STEP 3</span><h2>ビルドを確定させて取り込む</h2></div></div>
+  <div id="finalBuildPreview" class="result-box"><div class="confirm-summary">Step 1・2で確定した内容がここに表示されます。</div></div>
+  <button id="workflowReflectBuild" class="reflect-button">ビルドを取り込む</button>
+  <div id="workflowReflectionStatus" class="status" style="margin-top:8px">装備を解析すると、ここに最終確認が表示されます</div>
+  <div id="workflowReflectionOut" class="result-box"></div>
+</section>
 
-  <section class="card compact-help">
-    <details><summary>この解析のルール</summary><div class="help-body"><p>装飾品画面は最大8物理グループとして解析します。サブ武器グループは保持しますが、ビルドへの反映から除外します。装衣には装飾品スロットがありません。</p><p>装備DBのスロット値は装着可能な最大Lvです。たとえば上限Lv3のスロットにはLv1～3の珠を装着できます。上限値と装着珠Lvを同一視しません。</p><p>OCR結果とDB候補が十分に一致しない場合は「候補なし／確認」に留め、勝手に別の装備・珠へ置き換えません。</p></div></details>
-  </section>
+<section class="card compact-help"><details><summary>使い方と注意</summary><div class="help-body"><p>装備・装飾品DBはシミュレータのトップで一括取得します。この画面ではDB取得操作は行いません。</p><p>自動確定できない装備・装飾品だけ確認をお願いします。スロットLvは装備側の「上限」であり、装着した珠のLvを強制しません。</p></div></details></section>
+
+<div id="imageModal" class="modal" role="dialog" aria-modal="true"><div class="modal-card"><div class="modal-head"><b id="modalTitle">スクショを確認</b><button id="modalClose" class="modal-close">閉じる</button></div><div class="modal-body"><img id="modalImage" alt="スクショ"></div></div></div>
 
   <div id="equipmentDBStatus" hidden></div><div id="equipmentOCRStatus" hidden></div><div id="equipmentResults" hidden></div>
   <div id="decorationSlotStatus" hidden></div><div id="decorationSlotOut" hidden></div><div id="decorationOCROut" hidden></div>
@@ -4696,7 +4693,7 @@ window.equipmentContext=null;
 window.decorationContext=null;
 window.buildReflectionState=null;
 
-// v4.6.0 production UI: keep the public surface focused on the three-step workflow.
+// v4.6.1 production UI: keep the public surface focused on the three-step workflow.
 function updateProductionState(){
   const eq=window.equipmentContext?.results?.length||0;
   const deco=window.lastDecorationOCR?.length||0;
@@ -4719,6 +4716,73 @@ const _eqOCR=$('workflowEquipmentOCR');
 if(_eqOCR){ const oldEq=_eqOCR.onclick; _eqOCR.onclick=async()=>{await oldEq?.(); updateProductionState();}; }
 const _decoOCR=$('workflowDecorationOCR');
 if(_decoOCR){ const oldDeco=_decoOCR.onclick; _decoOCR.onclick=async()=>{await oldDeco?.(); updateProductionState();}; }
+
+// v4.6.1 UI layer: the public workflow is deliberately separate from the OCR engine.
+function setAnalysisProgress(kind,pct,label,stage){
+  const p=$(kind==='eq'?'equipmentProgress':'decorationProgress'); if(!p)return;
+  p.classList.add('show'); $(kind==='eq'?'equipmentProgressBar':'decorationProgressBar').style.width=Math.max(0,Math.min(100,pct))+'%';
+  $(kind==='eq'?'equipmentProgressLabel':'decorationProgressLabel').textContent=label;
+  $(kind==='eq'?'equipmentProgressPct':'decorationProgressPct').textContent=Math.round(pct)+'%';
+  const ids=kind==='eq'?['eqStage1','eqStage2','eqStage3','eqStage4']:['decoStage1','decoStage2','decoStage3','decoStage4'];
+  ids.forEach((id,i)=>{const e=$(id);if(e)e.className='stage '+(i<stage?'done':i===stage?'active':'');});
+}
+function showImageModal(src,title){if(!src)return;$('modalTitle').textContent=title||'スクショを確認';$('modalImage').src=src;$('imageModal').classList.add('show')}
+$('modalClose').onclick=()=>{$('imageModal').classList.remove('show');$('modalImage').removeAttribute('src')};
+$('imageModal').addEventListener('click',e=>{if(e.target.id==='imageModal')$('modalClose').click()});
+function refreshFinalBuildPreview(){
+  const eq=window.equipmentContext?.results||[]; const de=window.decorationContext?.buildGroups||[];
+  if(!eq.length&&!de.length){$('finalBuildPreview').innerHTML='<div class="confirm-summary">Step 1・2で確定した内容がここに表示されます。</div>';return;}
+  const jewels=new Map(de.map(g=>[g.equipmentKey,g]));
+  const rows=eq.map(x=>{const g=jewels.get(x.key);const js=(g?.slots||[]).map(s=>s.jewel?.name||s.ocr?.raw||'未確定').join('<br>')||'—';return `<div class="build-row"><div class="build-equip">${equipmentSlotLabel(x.key)}<br><span class="subtle">${x.best?.name||'未確定'}</span></div><div class="build-jewels">${js}</div></div>`}).join('');
+  $('finalBuildPreview').innerHTML=`<div class="build-col" style="grid-column:1/-1"><div class="build-row" style="border-top:0"><div class="build-equip" style="background:#eee8da"><b>装備</b></div><div class="build-jewels" style="background:#eee8da"><b>対応する装飾品</b></div></div>${rows||'<div class="confirm-summary">装備未解析</div>'}</div>`;
+}
+// Candidate selection: only non-auto results need a user decision.
+function selectEquipmentCandidate(key,index){
+  const row=(window.lastEquipmentOCR||[]).find(x=>x.key===key); if(!row||!row.ranked?.[index])return;
+  row.best=row.ranked[index];
+  row.best.decision={level:'user',label:'ユーザー確定',reason:'ユーザーが候補を選択'};
+  updateEquipmentContext(); renderProductionEquipment(); refreshFinalBuildPreview();
+}
+function renderProductionEquipment(){
+  const rows=window.lastEquipmentOCR||[]; if(!rows.length){$('workflowEquipmentOut').innerHTML='';return;}
+  const needs=rows.filter(x=>x.best?.decision?.level!=='auto').length;
+  let html=`<div class="confirm-summary"><b>③ 装備の確認</b><br>${rows.length-needs}部位を自動確定 / ${needs}部位を確認してください。</div>`;
+  for(const x of rows){const b=x.best;const need=b?.decision?.level!=='auto';const cs=(x.ranked||[]).slice(0,3).map((c,i)=>`<label class="candidate-choice ${i===0?'selected':''}"><input type="radio" name="eq-${x.key}" ${i===0?'checked':''} onchange="selectEquipmentCandidate('${x.key}',${i})"><span><span class="candidate-name">${c.name}</span><span class="candidate-meta">総合 ${Math.round((c.totalScore??0)*100)}pt / OCR ${Math.round(c.confAvg||0)}%</span></span></label>`).join('');html+=`<div class="confirm-item ${need?'warning':''}"><div class="confirm-head"><b>${equipmentSlotLabel(x.key)}</b><span class="confirm-state ${need?'warn':''}">${need?'要確認':'自動確定'}</span></div><div style="margin-top:5px;font-weight:800">${b?.name||'候補なし'}</div>${need&&x.ranked?.length?`<div class="candidate-list">${cs}</div>`:''}</div>`;}
+  $('workflowEquipmentOut').innerHTML=html;
+}
+window.selectEquipmentCandidate=selectEquipmentCandidate;
+const _renderEquipmentResultOrig=renderEquipmentResult;
+const _oldEqHandler=$('workflowEquipmentOCR')?.onclick;
+if($('workflowEquipmentOCR'))$('workflowEquipmentOCR').onclick=async()=>{
+  if(!$('file').files?.[0])return;
+  $('workflowEquipmentOCR').disabled=true;setAnalysisProgress('eq',8,'画像を確認中…',0);
+  await new Promise(r=>setTimeout(r,80));setAnalysisProgress('eq',25,'装備位置を検出中…',1);
+  await calculateEquipmentROI();
+  setAnalysisProgress('eq',45,'装備名をOCR中…',2);
+  await recognizeEquipmentAll();
+  setAnalysisProgress('eq',82,'DB候補を照合中…',3);
+  renderProductionEquipment();
+  setAnalysisProgress('eq',100,'解析完了',4);
+  $('workflowEquipmentStatus').textContent='装備の解析が完了しました。下の候補を確認してください。';
+  $('workflowEquipmentOCR').disabled=false;refreshFinalBuildPreview();
+};
+if($('workflowDecorationOCR'))$('workflowDecorationOCR').onclick=async()=>{
+  if(!$('decorationFile').files?.[0])return;
+  $('workflowDecorationOCR').disabled=true;setAnalysisProgress('deco',8,'画像を確認中…',0);
+  await new Promise(r=>setTimeout(r,80));setAnalysisProgress('deco',25,'装飾品グループを検出中…',1);
+  await calculateDecorationSlots();
+  if(!window.decorationSlotResult?.groups?.length){$('workflowDecorationOCR').disabled=false;return;}
+  setAnalysisProgress('deco',45,'装飾品をOCR中…',2);
+  await recognizeDecorationOCR();
+  setAnalysisProgress('deco',82,'装飾品DBを照合中…',3);
+  updateDecorationContext();renderDecorationOCRResult(window.lastDecorationOCR||[]);
+  setAnalysisProgress('deco',100,'解析完了',4);
+  $('workflowDecorationStatus').textContent='装飾品の解析が完了しました。下の候補を確認してください。';
+  $('workflowDecorationOCR').disabled=false;refreshFinalBuildPreview();
+};
+$('equipmentPreviewButton').onclick=()=>showImageModal($('img').src,'装備スクショ');
+$('decorationPreviewButton').onclick=()=>showImageModal($('decorationImg').src,'装飾品スクショ');
+$('skipDecoration').onclick=()=>{$('workflowDecorationStatus').textContent='装飾品の取り込みをスキップしました。';$('decorationProgress').classList.remove('show');refreshFinalBuildPreview()};
 </script>
 </body>
 </html>
