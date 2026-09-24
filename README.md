@@ -1,17 +1,21 @@
-# MH Wilds OCR v4.5.0
+# MHWilds OCR v4.5.1
 
-装飾品DBをMHDB日本語APIから全件取得し、端末キャッシュする版。
+## 目的
+v4.5.0で発生した装備名OCRの実質的な未認識を復旧するための修正版です。装飾品DB/OCRは既存の成功経路を維持します。
 
-## 追加内容
-- `https://wilds.mhdb.io/ja/decorations` を使用
-- 装飾品DBをページングで全件取得（250件/ページ）
-- `id / gameId / name / slot / rarity / kind / skills / icon` を保持
-- `gameId` を長期識別子として保持
-- localStorageキャッシュ: `DEV_MWWSKILLSIM_OCR_DECORATIONS_V1`
-- OCRはDB取得に依存しない
-- OCR後に「スロットLv」「装備種別(weapon/armor)」を使って候補を絞り込み
-- OCR誤認識を許容した名前類似度で上位候補を表示
-- 装飾品グループ構造（最大8グループ×最大3スロット）を維持
+## v4.5.1 修正
+- 装備名ROIの「検出した文字帯」をそのままOCR入力へ渡すよう修正。
+- 従来の二重Yシフトを廃止。名前行ピーク→明示的nameAnchor→OCRという一本化。
+- 元画像、グレースケール、ソフト白文字、白文字・色除去を標準OCRパスとして使用。
+- OCRが空文字、記号だけ、単一数字などの場合はDB候補を生成しない。
+- 「OCR 0%なのにDB候補が表示される」状態を防止。
+- DB取得はOCRと独立。武器/防具/護石DBの既存取得・キャッシュを維持。
+- 装飾品DB 361件取得、装飾品OCR、グループ構造は維持。
 
-## 重要
-MHDB API仕様上、装飾品は `slot` が「装着可能な最低/必要スロットLv」、`kind` が `weapon` / `armor`、`skills` に付与スキル、`icon` に色/IDを持つ。API仕様は docs.wilds.mhdb.io を参照。
+## 安全方針
+OCRで十分な文字が得られない場合は「未認識」として扱い、別名を推測して確定候補にしません。
+
+## 検証
+- JavaScript構文チェック済み。
+- ROIの名前帯抽出ロジックを実画像 `sample_game.png` で静的確認。
+- 実ブラウザでTesseractを実行した通し試験はこの環境では未実施です。

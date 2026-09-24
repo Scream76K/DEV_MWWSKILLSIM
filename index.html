@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.5.0：装備OCR独立実行＋装飾品グループ＋装飾品DB版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.5.1：装備OCR独立実行＋装飾品グループ＋装飾品DB版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -41,7 +41,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.5.0：装備OCR独立実行＋装飾品グループ＋装飾品DB版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.5.1：装備OCR独立実行＋装飾品グループ＋装飾品DB版</h1>
 <div class="note">
 <b>v4.3.8：短辺基準スケール適応＋フルアイコン枠検出＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -643,6 +643,25 @@ function equipmentNameCropRectV312(region, imageWidth, imageHeight) {
   const pitch = Math.max(20, Number(region.pitch) || rh / 0.96);
   const name = region.nameAnchor;
   const lineH = Math.max(10, Number(name?.height) || Number(region.labelHeight) || Math.min(34, pitch * 0.28));
+
+  // v4.5.1: explicit name-band refinement takes priority. Do not shift the
+  // detected band again. The previous path found the correct peak and then
+  // moved the crop down by another ~0.4 line, which caused empty OCR on the
+  // actual 3840x2160 equipment screenshot.
+  if (region.refined && region.nameAnchor && Number.isFinite(Number(region.nameAnchor.y))) {
+    const a=region.nameAnchor;
+    const rect=clampRectToImage({
+      x:Number(a.x), y:Number(a.y),
+      width:Number(a.width), height:Number(a.height)
+    },iw,ih);
+    return {
+      ...rect,
+      pitch,
+      source:'v4.5.1-refined-name-band',
+      anchorRect:{x:Number(a.x),y:Number(a.y),width:Number(a.width),height:Number(a.height)},
+      nameAnchor:{x:rect.x,y:rect.y,width:rect.width,height:rect.height}
+    };
+  }
 
   // v4.2.0: use the OCR rectangle produced by the generic icon grid directly.
   // The intended geometry is: the icon bottom-right is the OCR band's vertical
@@ -1565,7 +1584,9 @@ function prepareEquipmentOCRCanvas(region,mode='grayscale',band='name'){
   ctx.imageSmoothingQuality='high';
   ctx.drawImage($('img'),rect.x,rect.y,sw,sh,0,0,out.width,out.height);
 
-  if(mode==='hsv_white') whiteTextHSV(ctx,out.width,out.height);
+  if(mode==='raw_color') { /* keep original pixels */ }
+  else if(mode==='soft_white') softWhiteText(ctx,out.width,out.height);
+  else if(mode==='hsv_white') whiteTextHSV(ctx,out.width,out.height);
   else if(mode==='local_contrast'){applyLocalContrast(ctx,out.width,out.height);applyMildUnsharp(ctx,out.width,out.height);}
   else if(mode==='grayscale'){
     const d=ctx.getImageData(0,0,out.width,out.height);
@@ -1585,7 +1606,7 @@ function prepareEquipmentOCRCanvas(region,mode='grayscale',band='name'){
     }
     ctx.putImageData(d,0,0);
   }
-  const pad=(mode==='white_extract'||mode==='hsv_white'||mode==='local_contrast'||mode==='grayscale')?'#000000':'#FFFFFF';
+  const pad=(mode==='raw_color'||mode==='white_extract'||mode==='hsv_white'||mode==='soft_white'||mode==='local_contrast'||mode==='grayscale')?'#000000':'#FFFFFF';
   return addPaddingCustom(out,Math.max(15,Math.round(out.width*.04)),Math.max(15,Math.round(out.height*.10)),pad);
 }
 function equipmentRegionCanvas(region, mode='color', band='full'){
@@ -1853,7 +1874,7 @@ function rankArmorSeriesV26(raw,conf,items,category){
   return scored.slice(0,5);
 }
 function aggregateHierarchicalArmorCandidatesV26(rows,items,category,allArmorItems){
-  const list=Array.isArray(rows)?rows:[]; const agg=new Map();
+  const list=Array.isArray(rows)?rows.filter(r=>equipmentOCRUsableText(r?.raw)):[]; if(!list.length)return []; const agg=new Map();
   const searchPool=Array.isArray(allArmorItems)&&allArmorItems.length?allArmorItems:items;
   for(const row of list){
     const ranked=rankArmorSeriesV26(row.raw,row.conf,searchPool,category); if(!ranked.length)continue;
@@ -1971,12 +1992,14 @@ function rankGenericEquipmentCandidates(raw,conf,items){
   return pool.map(item=>{const w=weightedNameDistance(raw,item.name);const cw=confidenceWeight(conf);return {...item,nameScore:w.score,score:.85*w.score+.15*cw,confidenceWeight:cw,details:w.details,matched:w.matched};}).sort((a,b)=>b.score-a.score);
 }
 function aggregateGenericEquipmentCandidates(rows,items){
+  const list=Array.isArray(rows)?rows.filter(r=>equipmentOCRUsableText(r?.raw)):[];
+  if(!list.length)return [];
   const agg=new Map();
-  for(const row of rows){
+  for(const row of list){
     const ranked=rankGenericEquipmentCandidates(row.raw,row.conf,items).slice(0,3); row.ranked=ranked;
-    ranked.forEach((cand,rank)=>{const rw=rank===0?1:rank===1?.65:.4;const old=agg.get(cand.name)||{...cand,support:0,sumName:0,sumScore:0,bestName:0,confSum:0,total:rows.length};if(rank===0)old.support++;old.sumName+=cand.nameScore*rw;old.sumScore+=cand.score*rw;old.bestName=Math.max(old.bestName,cand.nameScore);old.confSum+=rank===0?row.conf*1:0;old.id=cand.id;old.gameId=cand.gameId;old.kind=cand.kind;agg.set(cand.name,old);});
+    ranked.forEach((cand,rank)=>{const rw=rank===0?1:rank===1?.65:.4;const old=agg.get(cand.name)||{...cand,support:0,sumName:0,sumScore:0,bestName:0,confSum:0,total:list.length};if(rank===0)old.support++;old.sumName+=cand.nameScore*rw;old.sumScore+=cand.score*rw;old.bestName=Math.max(old.bestName,cand.nameScore);old.confSum+=rank===0?row.conf*1:0;old.id=cand.id;old.gameId=cand.gameId;old.kind=cand.kind;agg.set(cand.name,old);});
   }
-  return [...agg.values()].map(x=>{const supportRows=Math.max(1,x.support);const avgName=x.sumName/Math.max(1,rows.length);const confAvg=x.support?x.confSum/x.support:0;const supportBonus=x.support===rows.length&&rows.length>=2?.08:x.support>=2?.04:x.support===1&&rows.length===1?.04:0;const total=Math.min(1,.78*avgName+.15*x.bestName+.07*(confAvg/100)+supportBonus);return {...x,avgNameScore:avgName,bestNameScore:x.bestName,confAvg,totalScore:total,supportBonus};}).sort((a,b)=>b.totalScore-a.totalScore);
+  return [...agg.values()].map(x=>{const supportRows=Math.max(1,x.support);const avgName=x.sumName/Math.max(1,list.length);const confAvg=x.support?x.confSum/x.support:0;const supportBonus=x.support===list.length&&list.length>=2?.08:x.support>=2?.04:x.support===1&&list.length===1?.04:0;const total=Math.min(1,.78*avgName+.15*x.bestName+.07*(confAvg/100)+supportBonus);return {...x,avgNameScore:avgName,bestNameScore:x.bestName,confAvg,totalScore:total,supportBonus};}).sort((a,b)=>b.totalScore-a.totalScore);
 }
 function equipmentDecision(top,second){
   if(!top)return {level:'manual',label:'手動入力'};
@@ -1993,9 +2016,10 @@ function equipmentOCRShouldStop(ranked, rows) {
   return top.totalScore>=0.78 && top.avgNameScore>=0.60 && top.confAvg>=55 && gap>=0.07;
 }
 const EQUIPMENT_OCR_STANDARD_PASSES=[
-  ['white_extract','白文字強調'],
-  ['hsv_white','白文字・色除去'],
-  ['grayscale','グレースケール']
+  ['raw_color','元画像'],
+  ['grayscale','グレースケール'],
+  ['soft_white','ソフト白文字'],
+  ['hsv_white','白文字・色除去']
 ];
 const EQUIPMENT_OCR_RESCUE_PASSES=[
   ['local_contrast','局所コントラスト救済'],
@@ -2163,7 +2187,7 @@ if(typeof renderCropOnlySpike==='function') $('previewCropOnly').onclick=renderC
 $('previewPreprocess').onclick=renderPreprocessPreview;
 
 
-// ---- 装飾品DB（Step 1.25-C v4.5.0） ----
+// ---- 装飾品DB（Step 1.25-C v4.5.1） ----
 // MHDB Japanese decoration list: one row per decoration. OCR never depends on
 // this network call; the DB is a post-OCR candidate source and is cached locally.
 const DECORATION_API='https://wilds.mhdb.io/ja/decorations';
@@ -2411,6 +2435,22 @@ function reflectAnalysisToBuild() {
     `反映データ作成完了：装備=${equipment ? 'あり' : 'なし'} / 装飾品=${decoration ? 'あり' : 'なし'}`;
 }
 
+function equipmentOCRUsableText(raw){
+  const s=String(raw||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/\s+/g,'').trim();
+  if(!s)return false;
+  // Never turn punctuation, a single digit, or a lone OCR artifact into a DB
+  // candidate. At least two meaningful Japanese/Latin characters are required.
+  const meaningful=Array.from(s).filter(ch=>/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}A-Za-z]/u.test(ch));
+  if(meaningful.length<2)return false;
+  if(/^[\[\]（）(){}【】<>:：・.,，。/／\\|｜0-9]+$/.test(s))return false;
+  return true;
+}
+function cleanEquipmentOCRText(raw){
+  return cleanOCR(raw||'')
+    .replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石|装衣)/g,' ')
+    .replace(/\s+/g,' ').trim();
+}
+
 async function recognizeEquipmentAll(){
   if(!$('img').src){$('equipmentOCRStatus').textContent='先に装備画像を選択してください。';return}
   let roiResult=window.equipmentROIResult;
@@ -2429,7 +2469,7 @@ async function recognizeEquipmentAll(){
   const started=performance.now();
   let dbErrors=[];
   try{
-    // v4.4.9: OCR itself must never be blocked by a remote DB failure.
+    // v4.5.1: OCR itself must never be blocked by a remote DB failure.
     // Start DB loading in parallel, but begin OCR immediately. Candidate ranking
     // is performed with whatever DB data is available when each slot finishes.
     $('equipmentOCRStatus').textContent='装備OCR準備中…（DBは並行取得）';
@@ -2449,7 +2489,7 @@ async function recognizeEquipmentAll(){
     });
 
     const worker=await Tesseract.createWorker('jpn');
-    // DB未取得でも漢字を欠落させないため、v4.4.9では装備OCRに文字whitelistを掛けない。
+    // DB未取得でも漢字を欠落させないため、v4.5.1では装備OCRに文字whitelistを掛けない。
     // OCRは原文を広く取得し、その後にDB照合・部位制約で候補を絞る。
     await worker.setParameters({
       tessedit_pageseg_mode:'7',
@@ -2461,7 +2501,7 @@ async function recognizeEquipmentAll(){
       const passes=EQUIPMENT_OCR_STANDARD_PASSES;
       for(const [mode,label] of passes){
         $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}をOCR中… ${label}`;
-        const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c);let raw=cleanOCR(r?.data?.text||'');raw=raw.replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石|装衣)/g,' ').replace(/\s+/g,' ').trim();const conf=Number(r?.data?.confidence||0);if(raw)rows.push({raw,conf,mode:label});
+        const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c);const raw=cleanEquipmentOCRText(r?.data?.text||'');const conf=Number(r?.data?.confidence||0);if(equipmentOCRUsableText(raw))rows.push({raw,conf,mode:label});
         const interim=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : (key==='charm' ? aggregateTalismanCandidates(rows,items) : aggregateHierarchicalArmorCandidatesV26(rows,items,key==='head'?'頭防具':key==='chest'?'胴防具':key==='arms'?'腕防具':key==='waist'?'腰防具':'脚防具',armorDB));
         if(equipmentOCRShouldStop(interim,rows)) break;
       }
@@ -2476,8 +2516,8 @@ async function recognizeEquipmentAll(){
       if(key!=='mainWeapon'&&key!=='charm'&&(!ranked.length || ranked[0].avgSeriesScore<.40)){
         for(const [mode,label] of EQUIPMENT_OCR_RESCUE_PASSES){
           $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}を救済OCR中… ${label}`;
-          const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c); const raw=cleanOCR(r?.data?.text||''); const conf=Number(r?.data?.confidence||0);
-          if(raw)rows.push({mode:label,raw,conf});
+          const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c); const raw=cleanEquipmentOCRText(r?.data?.text||''); const conf=Number(r?.data?.confidence||0);
+          if(equipmentOCRUsableText(raw))rows.push({mode:label,raw,conf});
           ranked=aggregateHierarchicalArmorCandidatesV26(rows,items,key==='head'?'頭防具':key==='chest'?'胴防具':key==='arms'?'腕防具':key==='waist'?'腰防具':'脚防具',armorDB);
           if(ranked.length&&ranked[0].avgSeriesScore>=.40)break;
         }
@@ -2513,7 +2553,7 @@ async function recognizeEquipmentAll(){
 }
 function renderEquipmentResult(x){
   const title=equipmentSlotLabel(x.key);const b=x.best;const label=b?.decision?.label||'候補なし';
-  const raw=x.rows.map(r=>`${r.mode}: ${r.raw} (${Math.round(r.conf)}%)`).join(' / ')||'OCR文字なし';
+  const raw=x.rows.map(r=>`${r.mode}: ${r.raw} (${Math.round(r.conf)}%)`).join(' / ')||'OCR文字なし（DB照合は実施しません）';
   const candidates=(x.ranked||[]).map((c,i)=>{const hierarchy=c.hierarchy?` / シリーズ ${Math.round(c.hierarchy.seriesScore*100)}% / 型式 ${Math.round(c.hierarchy.subtypeScore*100)}%`:'';return `<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${i+1}位 ${c.name}</b> ${i===0?`<span class="corrected-tag">${label}</span>`:''}<br><span class="note">総合 ${Math.round(c.totalScore*100)}pt / 文字 ${Math.round(c.avgNameScore*100)}% / OCR ${Math.round(c.confAvg)}% / 支持 ${c.support}/${x.rows.length}${c.gap!=null?` / 候補差 ${Math.round(c.gap*100)}pt`:''}${hierarchy}</span></div>`}).join('');
   return `<div class="card" style="margin:8px 0;padding:10px"><b>${title}</b><div class="note">${x.region?.sourceType==='icon-anchor'?'領域：DBアイコンアンカー（適応文字帯）':(x.region?.inferred?'領域：構造推定':'領域：OCRアンカー')} / 装備名1行をPSM7でOCR（元画像直接クロップ） / 生OCR：${raw}</div>${candidates||'<div class="note">該当候補なし</div>'}</div>`;
 }
@@ -3728,7 +3768,7 @@ function renderEquipmentROIResult(result, selfTestRows = null) {
   const g = result.gameArea;
   let html =
     `<div class="result ${errors.length ? 'warn' : 'ok'}">` +
-    `<b>v4.4.7 7部位ROI＋装飾品24スロット切出し</b><br>` +
+    `<b>v4.5.1 7部位ROI＋装飾品24スロット切出し</b><br>` +
     `<span class="mono">` +
     `入力=${iw}×${ih} / ` +
     `16:9領域=x:${g.x.toFixed(2)}, y:${g.y.toFixed(2)}, ` +
@@ -3767,74 +3807,69 @@ function refineEquipmentNameROI(img, baseROI, gameArea) {
   const iw = img.naturalWidth || img.width;
   const ih = img.naturalHeight || img.height;
   const canvas = document.createElement('canvas');
-  canvas.width = iw;
-  canvas.height = ih;
+  canvas.width = iw; canvas.height = ih;
   const c = canvas.getContext('2d', {willReadFrequently:true});
   c.drawImage(img, 0, 0);
 
-  // Geminiの比率ROIを「基準位置」とし、その下側にある装備名の文字帯だけを探索する。
-  // ラベル（メイン武器/頭防具…）と装備名が2段になっている実画像に対応するための局所補正。
-  const baseY = baseROI.yExact;
-  const searchTop = Math.max(gameArea.y, baseY + gameArea.h * 0.015);
-  const searchBottom = Math.min(gameArea.y + gameArea.h, baseY + gameArea.h * 0.065);
+  // v4.5.1: The base ROI is a layout anchor, not the final OCR crop.
+  // In the Wilds equipment UI the category label and equipment name are two
+  // lines. The old refinement found the name-line peak correctly, but the
+  // downstream crop helper shifted it a second time and often cut the glyphs.
+  // Here the detected peak is carried explicitly as nameAnchor so OCR consumes
+  // the same band that the refinement actually detected.
+  const baseY = Number(baseROI?.yExact ?? baseROI?.y ?? 0);
+  const baseH = Number(baseROI?.hExact ?? baseROI?.h ?? gameArea.h*0.032);
+  const searchTop = Math.max(gameArea.y, baseY + gameArea.h * 0.012);
+  const searchBottom = Math.min(gameArea.y + gameArea.h, baseY + gameArea.h * 0.070);
   const x0 = Math.max(0, Math.floor(baseROI.x));
   const x1 = Math.min(iw, Math.ceil(baseROI.x + baseROI.w));
   const y0 = Math.max(0, Math.floor(searchTop));
   const y1 = Math.min(ih, Math.ceil(searchBottom));
-
   if (x1 <= x0 || y1 <= y0) return {...baseROI, refined:false, refineScore:0};
 
   const data = c.getImageData(x0, y0, x1-x0, y1-y0).data;
-  const w = x1-x0, h = y1-y0;
-  const profile = new Float64Array(h);
-
+  const w=x1-x0, h=y1-y0;
+  const profile=new Float64Array(h);
   for(let y=0;y<h;y++){
     let hit=0;
     for(let x=0;x<w;x++){
-      const i=(y*w+x)*4;
-      const r=data[i], g=data[i+1], b=data[i+2];
-      const maxc=Math.max(r,g,b), minc=Math.min(r,g,b);
-      const lum=0.299*r+0.587*g+0.114*b;
-      // MHの文字は白～灰色系。背景の色成分が強い画素を抑える。
-      if(lum>=145 && (maxc-minc)<=50) hit++;
+      const i=(y*w+x)*4, r=data[i],g=data[i+1],b=data[i+2];
+      const mx=Math.max(r,g,b), mn=Math.min(r,g,b);
+      const lum=.299*r+.587*g+.114*b;
+      // White/gray glyphs on the dark translucent UI. Keep a second, softer
+      // luminance contribution so anti-aliased edges are not discarded.
+      if(lum>=125 && (mx-mn)<=68) hit += lum>=160 ? 1.0 : 0.45;
     }
     profile[y]=hit;
   }
-
-  // 3px相当の局所平滑化
-  const smoothed=new Float64Array(h);
+  const smooth=new Float64Array(h);
   for(let y=0;y<h;y++){
     let sum=0,n=0;
-    for(let k=-1;k<=1;k++){
-      const yy=y+k;
-      if(yy>=0&&yy<h){sum+=profile[yy];n++;}
-    }
-    smoothed[y]=sum/n;
+    for(let k=-2;k<=2;k++){const yy=y+k;if(yy>=0&&yy<h){sum+=profile[yy];n++;}}
+    smooth[y]=sum/Math.max(1,n);
   }
-
-  let bestIndex=-1,bestScore=0;
+  let peak=-1,score=0;
   for(let y=1;y<h-1;y++){
-    if(smoothed[y]>=smoothed[y-1] && smoothed[y]>=smoothed[y+1] && smoothed[y]>bestScore){
-      bestScore=smoothed[y];
-      bestIndex=y;
-    }
+    if(smooth[y]>=smooth[y-1] && smooth[y]>=smooth[y+1] && smooth[y]>score){score=smooth[y];peak=y;}
   }
+  if(peak<0 || score<1.5) return {...baseROI, refined:false, refineScore:Number(score.toFixed(2))};
 
-  if(bestIndex<0 || bestScore<1.5) return {...baseROI, refined:false, refineScore:bestScore};
-
-  const peakY=y0+bestIndex;
-  const refinedY=Math.round(peakY - gameArea.h*0.010);
+  const peakY=y0+peak;
+  // Estimate the glyph band from game height. At 760px this is ~14px; at
+  // 2160px it is ~39px, matching the UI text scale much better than baseH.
+  const glyphH=Math.max(10, Math.min(gameArea.h*0.022, gameArea.h*0.032));
+  const bandH=Math.max(14, glyphH*1.55);
+  const bandY=Math.max(gameArea.y, Math.round(peakY-bandH*0.48));
   const refined={
     ...baseROI,
-    y: refinedY,
-    refined:true,
-    baselineY: baseROI.y,
-    refinePeakY: peakY,
-    refineScore: Number(bestScore.toFixed(2)),
-    refineDelta: refinedY-baseROI.y
+    x:Math.round(baseROI.x), y:bandY,
+    w:Math.round(baseROI.w), h:Math.round(bandH),
+    xExact:baseROI.x, yExact:bandY, wExact:baseROI.w, hExact:bandH,
+    refined:true, baselineY:baseROI.y, refinePeakY:peakY,
+    refineScore:Number(score.toFixed(2)), refineDelta:bandY-baseROI.y,
+    nameAnchor:{x:baseROI.x,y:bandY,width:baseROI.w,height:bandH}
   };
-
-  if(refinedY<0 || refinedY+refined.h>ih) return {...baseROI, refined:false, refineScore:bestScore};
+  if(refined.y<0 || refined.y+refined.h>ih) return {...baseROI, refined:false, refineScore:Number(score.toFixed(2))};
   return refined;
 }
 
@@ -3942,7 +3977,7 @@ function calculateEquipmentROIBase(){
 }
 
 // ============================================================
-// v4.4.9 装飾品グループ解析
+// v4.5.1 装飾品グループ解析
 //
 // 方針:
 // 1) 16:9ゲーム領域を確定
@@ -4372,7 +4407,7 @@ function renderDecorationSlotResult(result) {
 
   let html =
     `<div class="result ${b ? 'ok' : 'warn'}">` +
-    `<b>v4.4.8 装飾品グループ構造検証</b><br>` +
+    `<b>v4.5.1 装飾品グループ構造検証</b><br>` +
     `<span class="mono">` +
     `入力=${result.imageW}×${result.imageH} / ` +
     `16:9=${result.gameArea.x.toFixed(1)},${result.gameArea.y.toFixed(1)},` +
