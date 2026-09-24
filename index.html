@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.5.3：装飾品グループ／スロット再構築＋DB名前照合強化</title>
+<title>MH Wilds OCR — Step 1.25-C v4.5.4：装飾品グループ／スロット再構築＋DB名前照合強化</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -41,7 +41,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.5.3：装飾品グループ／スロット再構築＋DB名前照合強化</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.5.4：装飾品グループ／スロット再構築＋DB名前照合強化</h1>
 <div class="note">
 <b>v4.3.8：短辺基準スケール適応＋フルアイコン枠検出＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -2420,8 +2420,10 @@ function updateDecorationContext() {
   return window.decorationContext;
 }
 
-function selfTestDecorationStructureV453(){
-  const sizes=[3,3,3,2,2,2,2,2];
+function selfTestDecorationStructureV454(){
+  const labels=['メイン武器','サブ武器','頭防具','胴防具','腕防具','腰防具','脚防具','護石'];
+  const keys=['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm'];
+  const sizes=[3,3,2,2,2,2,2,3];
   const mock=[]; let slotIndex=0;
   sizes.forEach((n)=>{for(let j=0;j<n;j++)mock.push({slotIndex:slotIndex++,isSeparator:false});});
   const groups=[];
@@ -2431,10 +2433,12 @@ function selfTestDecorationStructureV453(){
   }
   const ids=groups.flatMap(g=>g.slots.map(s=>`${g.groupIndex}:${s.slotInGroup}`));
   const unique=new Set(ids).size===ids.length;
-  const ok=groups.length===8&&mock.length===19&&unique&&groups.every(g=>g.slots.length<=3);
-  return {ok,groups:groups.length,slots:mock.length,uniqueIds:unique,sizes:groups.map(g=>g.slots.length)};
+  const orderOk=labels.join('|')===DECORATION_GROUP_ORDER.map(x=>x.label).join('|') && keys.join('|')===DECORATION_GROUP_ORDER.map(x=>x.key).join('|');
+  const ok=groups.length===8&&mock.length===19&&unique&&orderOk&&groups.every(g=>g.slots.length<=3);
+  return {ok,groups:groups.length,slots:mock.length,uniqueIds:unique,orderOk,sizes:groups.map(g=>g.slots.length),labels};
 }
-window.selfTestDecorationStructureV453=selfTestDecorationStructureV453;
+window.selfTestDecorationStructureV454=selfTestDecorationStructureV454;
+window.selfTestDecorationStructureV453=selfTestDecorationStructureV454;
 
 function renderBuildReflectionState(state) {
   const eqCount = state.equipment ? state.equipment.results.length : 0;
@@ -3799,7 +3803,7 @@ function renderEquipmentROIResult(result, selfTestRows = null) {
   const g = result.gameArea;
   let html =
     `<div class="result ${errors.length ? 'warn' : 'ok'}">` +
-    `<b>v4.5.3 7部位ROI＋装飾品24スロット切出し</b><br>` +
+    `<b>v4.5.4 7部位ROI＋装飾品24スロット切出し</b><br>` +
     `<span class="mono">` +
     `入力=${iw}×${ih} / ` +
     `16:9領域=x:${g.x.toFixed(2)}, y:${g.y.toFixed(2)}, ` +
@@ -4282,14 +4286,17 @@ function classifyDecorationRows(img, rois) {
 // サブ武器は現在の装飾品ビルド反映モデルには含めず、9番目の固定枠として
 // 扱わない。これにより、サブ武器の有無で以降の装備グループがずれることを防ぐ。
 const DECORATION_GROUP_ORDER = [
+  // 実際の装飾品画面の上からの並び順。
+  // サブ武器は物理グループとして位置合わせに必要だが、ビルド反映対象外。
+  // 装衣には装飾品スロットがないため、このグループ列には含めない。
   {key:'mainWeapon',label:'メイン武器',reflect:true},
+  {key:'subWeapon',label:'サブ武器',reflect:false},
   {key:'head',label:'頭防具',reflect:true},
   {key:'chest',label:'胴防具',reflect:true},
   {key:'arms',label:'腕防具',reflect:true},
   {key:'waist',label:'腰防具',reflect:true},
   {key:'legs',label:'脚防具',reflect:true},
-  {key:'charm',label:'護石',reflect:true},
-  {key:'mantle',label:'装衣',reflect:true}
+  {key:'charm',label:'護石',reflect:true}
 ];
 
 function parseDecorationSlotLevel(raw) {
@@ -4451,7 +4458,7 @@ function renderDecorationSlotResult(result) {
 
   let html =
     `<div class="result ${b ? 'ok' : 'warn'}">` +
-    `<b>v4.5.3 装飾品グループ構造検証</b><br>` +
+    `<b>v4.5.4 装飾品グループ構造検証</b><br>` +
     `<span class="mono">` +
     `入力=${result.imageW}×${result.imageH} / ` +
     `16:9=${result.gameArea.x.toFixed(1)},${result.gameArea.y.toFixed(1)},` +
@@ -4481,7 +4488,7 @@ function renderDecorationSlotResult(result) {
   html += `</div></div>`;
 
   html += renderDecorationGroups(result);
-  html += `<div class="result"><b>グループ化ルール</b><div class="mono">区切り行を検出してグループを分離 / 1グループ最大3スロット / 画面上は最大8グループ（サブ武器を固定グループとして挿入しない）。区切り行はスロット数に含めません。装備DBのスロットLvは照合情報として保持します。</div></div>`;
+  html += `<div class="result"><b>グループ化ルール</b><div class="mono">区切り行を検出してグループを分離 / 1グループ最大3スロット / 画面上は最大8グループ（メイン武器→サブ武器→頭→胴→腕→腰→脚→護石）。サブ武器は位置合わせ用に保持するがビルド反映対象外。装衣には装飾品スロットがないためグループ化しない。区切り行はスロット数に含めません。装備DBのスロットLvは照合情報として保持します。</div></div>`;
 
   $('decorationSlotOut').innerHTML = html;
 }
