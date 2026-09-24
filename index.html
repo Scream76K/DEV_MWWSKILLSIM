@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.4.4：装備9行検証＋7部位ROI・名前行補正版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.4.5：装備9行＋7部位ROI＋装飾品24スロット切出し検証版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -34,7 +34,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.4.4：装備9行検証＋7部位ROI・名前行補正版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.4.5：装備9行＋7部位ROI＋装飾品24スロット切出し検証版</h1>
 <div class="note">
 <b>v4.3.8：短辺基準スケール適応＋フルアイコン枠検出＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -94,6 +94,27 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <div id="equipmentROIOut" style="margin-top:8px"></div>
 <div id="equipmentROIStage" class="stage" style="margin-top:10px;display:none">
   <canvas id="equipmentROIView"></canvas>
+</div>
+</div>
+
+
+<div class="card">
+<h2>2-C. 装飾品スロット切り出し（最大24スロット）</h2>
+<div class="note">
+装飾品は「実際に装備されている個数」を先に推定しません。
+16:9ゲーム領域内の左側装飾品パネルから横方向の境界線を検出し、
+最大24個の論理スロットROIを生成します。空きスロットもROIとして残し、
+後段の珠DB照合で「対照なし」として扱える構造にします。
+この段階ではOCR・珠DB照合は実行しません。
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button id="detectDecorationSlots" class="primary">💎 24スロットを検出・切り出し</button>
+  <button id="runDecorationSlotSelfTest" class="primary">🧪 装飾品サイズ自己検証</button>
+</div>
+<div id="decorationSlotStatus" class="status">未実行</div>
+<div id="decorationSlotOut" style="margin-top:8px"></div>
+<div id="decorationSlotStage" class="stage" style="margin-top:10px;display:none">
+  <canvas id="decorationSlotView"></canvas>
 </div>
 </div>
 
@@ -3352,7 +3373,7 @@ function renderEquipmentROIResult(result, selfTestRows = null) {
   const g = result.gameArea;
   let html =
     `<div class="result ${errors.length ? 'warn' : 'ok'}">` +
-    `<b>v4.4.4 7部位ROI＋名前行補正</b><br>` +
+    `<b>v4.4.5 7部位ROI＋装飾品24スロット切出し</b><br>` +
     `<span class="mono">` +
     `入力=${iw}×${ih} / ` +
     `16:9領域=x:${g.x.toFixed(2)}, y:${g.y.toFixed(2)}, ` +
@@ -3565,6 +3586,478 @@ function calculateEquipmentROIBase(){
   }catch(e){console.error(e);$('equipmentROIStatus').textContent='基準ROI算出エラー：'+e.message;}
 }
 
+// ============================================================
+// v4.4.5 装飾品スロット切り出し
+//
+// 方針:
+// 1) 16:9ゲーム領域を確定
+// 2) 左側装飾品パネルの横罫線を画像から検出
+// 3) 25本の境界 = 最大24スロットを動的に確定
+// 4) 各境界間を1スロットROIとして切り出す
+// 5) 実際に珠が入っているかは、この段階では判定しない
+// 6) 後段の珠DB照合で「一致 / 対照なし」を決める
+//
+// 「24行固定のY比率」ではなく、同一画像内の実測境界を使う。
+// したがって小さな累積Yズレを24行分積み上げない。
+// ============================================================
+
+const DECORATION_SLOT_CONFIG = {
+  maxSlots: 24,
+
+  // 16:9ゲーム領域に対する装飾品パネル探索範囲。
+  // 今回の1536x864基準画像では概ね x=30～300px に相当。
+  panelX0Ratio: 0.020,
+  panelX1Ratio: 0.200,
+  panelY0Ratio: 0.060,
+  panelY1Ratio: 0.880,
+
+  // 行境界の期待ピッチ。基準画像では約26.3px / 864px = 3.04%。
+  pitchRatio: 0.0304,
+  minPitchRatio: 0.021,
+  maxPitchRatio: 0.039,
+
+  // 名前ROIは各境界の内側に少し余白を取る。
+  roiInsetRatio: 0.0042,
+
+  // 装飾品名はアイコンの右側から始まる。
+  nameXRatio: 0.071,
+  nameWidthRatio: 0.125
+};
+
+function smooth1D(arr, radius) {
+  if (!arr.length) return [];
+  const r = Math.max(1, Math.round(radius));
+  const out = new Array(arr.length);
+  let sum = 0;
+  const win = r * 2 + 1;
+
+  for (let i = 0; i < arr.length; i++) {
+    sum += arr[Math.min(arr.length - 1, i + r)];
+    if (i - r - 1 >= 0) sum -= arr[i - r - 1];
+
+    // 上の簡易窓は端部の重複を含むため、実際の要素数で割る。
+    let count = 0;
+    const a = Math.max(0, i - r);
+    const b = Math.min(arr.length - 1, i + r);
+    count = b - a + 1;
+    out[i] = sum / count;
+  }
+  return out;
+}
+
+function percentile1D(arr, q) {
+  if (!arr.length) return 0;
+  const a = Array.from(arr).sort((x, y) => x - y);
+  const pos = (a.length - 1) * q;
+  const lo = Math.floor(pos);
+  const hi = Math.ceil(pos);
+  if (lo === hi) return a[lo];
+  return a[lo] + (a[hi] - a[lo]) * (pos - lo);
+}
+
+function localPeaks1D(values, minDistance, minProminence) {
+  const raw = [];
+  for (let i = 1; i < values.length - 1; i++) {
+    if (values[i] < values[i - 1] || values[i] < values[i + 1]) continue;
+
+    // 簡易prominence:
+    // 近傍の低い側との差が小さいノイズピークを落とす。
+    const left = Math.max(0, i - Math.max(3, minDistance));
+    const right = Math.min(values.length - 1, i + Math.max(3, minDistance));
+    let leftMin = values[i];
+    let rightMin = values[i];
+
+    for (let k = left; k < i; k++) leftMin = Math.min(leftMin, values[k]);
+    for (let k = i + 1; k <= right; k++) rightMin = Math.min(rightMin, values[k]);
+
+    const prominence = values[i] - Math.max(leftMin, rightMin);
+    if (prominence >= minProminence) {
+      raw.push({ index: i, value: values[i], prominence });
+    }
+  }
+
+  raw.sort((a, b) => b.value - a.value);
+
+  const selected = [];
+  for (const p of raw) {
+    if (selected.every(q => Math.abs(q.index - p.index) >= minDistance)) {
+      selected.push(p);
+    }
+  }
+
+  selected.sort((a, b) => a.index - b.index);
+  return selected;
+}
+
+function detectDecorationBoundariesFromImage(sourceCanvas, gameArea) {
+  const W = Math.round(gameArea.w);
+  const H = Math.round(gameArea.h);
+
+  const x0 = Math.max(0, Math.floor(gameArea.x + W * DECORATION_SLOT_CONFIG.panelX0Ratio));
+  const x1 = Math.min(sourceCanvas.width, Math.ceil(gameArea.x + W * DECORATION_SLOT_CONFIG.panelX1Ratio));
+  const y0 = Math.max(0, Math.floor(gameArea.y + H * DECORATION_SLOT_CONFIG.panelY0Ratio));
+  const y1 = Math.min(sourceCanvas.height, Math.ceil(gameArea.y + H * DECORATION_SLOT_CONFIG.panelY1Ratio));
+
+  const ctx = sourceCanvas.getContext('2d', { willReadFrequently: true });
+  const data = ctx.getImageData(x0, y0, Math.max(1, x1 - x0), Math.max(1, y1 - y0));
+  const pw = data.width;
+  const ph = data.height;
+
+  // 横罫線は「同一行の上下で画素が急変する」ため、
+  // X方向に平均したY方向の輝度差を使う。
+  const profile = new Array(Math.max(0, ph - 1)).fill(0);
+
+  for (let y = 0; y < ph - 1; y++) {
+    let sum = 0;
+    const rowA = y * pw * 4;
+    const rowB = (y + 1) * pw * 4;
+
+    for (let x = 0; x < pw; x++) {
+      const a = rowA + x * 4;
+      const b = rowB + x * 4;
+
+      const la = data.data[a] * 0.299 +
+                 data.data[a + 1] * 0.587 +
+                 data.data[a + 2] * 0.114;
+      const lb = data.data[b] * 0.299 +
+                 data.data[b + 1] * 0.587 +
+                 data.data[b + 2] * 0.114;
+
+      sum += Math.abs(lb - la);
+    }
+
+    profile[y] = sum / pw;
+  }
+
+  const smoothed = smooth1D(profile, Math.max(1, H / 900));
+  const expectedPitch = H * DECORATION_SLOT_CONFIG.pitchRatio;
+  const minPitch = H * DECORATION_SLOT_CONFIG.minPitchRatio;
+  const maxPitch = H * DECORATION_SLOT_CONFIG.maxPitchRatio;
+
+  const peakThreshold = Math.max(
+    5,
+    percentile1D(smoothed, 0.65) * 0.55
+  );
+
+  const peaks = localPeaks1D(
+    smoothed,
+    Math.max(4, Math.round(H * 0.012)),
+    Math.max(2, percentile1D(smoothed, 0.55) * 0.20)
+  ).filter(p => p.value >= peakThreshold);
+
+  const candidates = peaks.map(p => ({
+    y: y0 + p.index,
+    strength: p.value,
+    prominence: p.prominence
+  }));
+
+  // 25境界を選ぶ動的計画。
+  // 「25本のピークが見つかったらそれを使う」という決め打ちではなく、
+  // 候補が多い場合は24区間のピッチ整合性が最も高い系列を選択する。
+  const N = DECORATION_SLOT_CONFIG.maxSlots + 1;
+  const M = candidates.length;
+
+  let best = null;
+
+  if (M >= N) {
+    const dp = Array.from({ length: N }, () => new Array(M).fill(Infinity));
+    const prev = Array.from({ length: N }, () => new Array(M).fill(-1));
+
+    for (let j = 0; j < M; j++) dp[0][j] = 0;
+
+    for (let k = 1; k < N; k++) {
+      for (let j = 0; j < M; j++) {
+        for (let i = 0; i < j; i++) {
+          const d = candidates[j].y - candidates[i].y;
+          if (d < minPitch || d > maxPitch) continue;
+
+          // ピッチ誤差を主スコアにする。
+          // 強い境界を少し優先するが、強さだけで系列を決めない。
+          const pitchCost = Math.pow((d - expectedPitch) / expectedPitch, 2);
+          const strengthBonus = 0.02 / Math.max(1, candidates[j].strength);
+          const cost = dp[k - 1][i] + pitchCost + strengthBonus;
+
+          if (cost < dp[k][j]) {
+            dp[k][j] = cost;
+            prev[k][j] = i;
+          }
+        }
+      }
+    }
+
+    let end = -1;
+    let bestCost = Infinity;
+    for (let j = 0; j < M; j++) {
+      if (dp[N - 1][j] < bestCost) {
+        bestCost = dp[N - 1][j];
+        end = j;
+      }
+    }
+
+    if (end >= 0 && Number.isFinite(bestCost)) {
+      const ys = [];
+      let j = end;
+      for (let k = N - 1; k >= 0; k--) {
+        ys.push(candidates[j].y);
+        j = prev[k][j];
+      }
+      ys.reverse();
+
+      const diffs = [];
+      for (let i = 1; i < ys.length; i++) diffs.push(ys[i] - ys[i - 1]);
+
+      const meanPitch = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+      const variance = diffs.reduce((a, b) => a + Math.pow(b - meanPitch, 2), 0) / diffs.length;
+      const pitchSD = Math.sqrt(variance);
+
+      best = {
+        boundaries: ys,
+        meanPitch,
+        pitchSD,
+        normalizedPitch: meanPitch / H,
+        score: bestCost
+      };
+    }
+  }
+
+  return {
+    panel: { x: x0, y: y0, w: x1 - x0, h: y1 - y0 },
+    expectedPitch,
+    candidates,
+    best
+  };
+}
+
+function buildDecorationSlotROIs(gameArea, boundaries) {
+  const rois = [];
+  const W = gameArea.w;
+  const H = gameArea.h;
+
+  for (let i = 0; i < DECORATION_SLOT_CONFIG.maxSlots; i++) {
+    const top = boundaries[i];
+    const bottom = boundaries[i + 1];
+    const pitch = bottom - top;
+
+    const inset = Math.max(2, H * DECORATION_SLOT_CONFIG.roiInsetRatio);
+
+    rois.push({
+      slotIndex: i,
+      // 後段で装備DBのスロット情報と対応付けるための論理ID。
+      groupIndex: null,
+      slotInGroup: null,
+
+      x: Math.round(gameArea.x + W * DECORATION_SLOT_CONFIG.nameXRatio),
+      y: Math.round(top + inset),
+      w: Math.round(W * DECORATION_SLOT_CONFIG.nameWidthRatio),
+      h: Math.max(8, Math.round(pitch - inset * 2)),
+
+      boundaryTop: top,
+      boundaryBottom: bottom,
+      pitch
+    });
+  }
+
+  return rois;
+}
+
+function drawDecorationSlotROIs(img, result) {
+  const canvas = $('decorationSlotView');
+  $('decorationSlotStage').style.display = 'block';
+
+  const W = img.naturalWidth || img.width;
+  const H = img.naturalHeight || img.height;
+
+  canvas.width = W;
+  canvas.height = H;
+
+  const c = canvas.getContext('2d');
+  c.clearRect(0, 0, W, H);
+  c.drawImage(img, 0, 0);
+
+  // ゲーム領域
+  c.strokeStyle = '#00ff80';
+  c.lineWidth = Math.max(2, Math.round(Math.min(W, H) / 450));
+  c.strokeRect(
+    Math.round(result.gameArea.x),
+    Math.round(result.gameArea.y),
+    Math.round(result.gameArea.w),
+    Math.round(result.gameArea.h)
+  );
+
+  // パネル
+  c.strokeStyle = '#ffd000';
+  c.lineWidth = Math.max(2, Math.round(Math.min(W, H) / 600));
+  c.strokeRect(
+    result.detect.panel.x,
+    result.detect.panel.y,
+    result.detect.panel.w,
+    result.detect.panel.h
+  );
+
+  // 25本の境界
+  c.strokeStyle = '#ff4dff';
+  c.lineWidth = Math.max(1, Math.round(Math.min(W, H) / 800));
+  for (const y of result.detect.best.boundaries) {
+    c.beginPath();
+    c.moveTo(result.detect.panel.x, y);
+    c.lineTo(result.detect.panel.x + result.detect.panel.w, y);
+    c.stroke();
+  }
+
+  const fs = Math.max(11, Math.round(Math.min(W, H) / 65));
+  c.font = `bold ${fs}px sans-serif`;
+
+  for (const r of result.rois) {
+    c.strokeStyle = '#00d5ff';
+    c.strokeRect(r.x, r.y, r.w, r.h);
+
+    c.fillStyle = '#00d5ff';
+    c.fillText(
+      String(r.slotIndex + 1),
+      r.x + 2,
+      Math.max(fs + 2, r.y + fs)
+    );
+  }
+}
+
+function renderDecorationSlotResult(result) {
+  const d = result.detect;
+  const b = d.best;
+  const emptyCount = result.rois.filter(r => r.slotIndex >= 0).length;
+
+  let html =
+    `<div class="result ${b ? 'ok' : 'warn'}">` +
+    `<b>v4.4.5 装飾品スロット構造検証</b><br>` +
+    `<span class="mono">` +
+    `入力=${result.imageW}×${result.imageH} / ` +
+    `16:9=${result.gameArea.x.toFixed(1)},${result.gameArea.y.toFixed(1)},` +
+    `${result.gameArea.w.toFixed(1)}×${result.gameArea.h.toFixed(1)}` +
+    `</span></div>`;
+
+  html += `<div class="result"><b>検出条件</b><div class="mono">` +
+    `候補境界=${d.candidates.length}本 / 必要境界=25本 / ` +
+    `論理スロット=24 / OCR=未実行 / 珠DB=未照合` +
+    `</div></div>`;
+
+  if (!b) {
+    html += `<div class="result warn"><b>24スロットGrid未成立</b><div class="mono">25本の境界をピッチ整合性付きで確定できませんでした。安全のためスロットROIは生成していません。</div></div>`;
+    $('decorationSlotOut').innerHTML = html;
+    return;
+  }
+
+  html += `<div class="result ok"><b>24スロットGrid成立</b><div class="mono">` +
+    `pitch=${b.meanPitch.toFixed(2)}px / pitchSD=${b.pitchSD.toFixed(2)}px / ` +
+    `pitch/H=${b.normalizedPitch.toFixed(5)} / score=${b.score.toFixed(5)}` +
+    `</div></div>`;
+
+  html += `<div class="result"><b>スロットROI</b><div class="mono">`;
+  for (const r of result.rois) {
+    html += `${String(r.slotIndex + 1).padStart(2,'0')}: x=${r.x}, y=${r.y}, ${r.w}×${r.h} / pitch=${r.pitch.toFixed(1)}px<br>`;
+  }
+  html += `</div></div>`;
+
+  html += `<div class="result"><b>重要：この段階では空きスロットを判定しません</b><div class="mono">` +
+    `24個すべてをOCR候補として保持し、後段で珠DB照合。` +
+    `一致しないものは「対照なし」として扱えます。` +
+    `装備DBの[3,2,1]等のスロット情報は、後段の候補選定・対応付けに利用します。` +
+    `</div></div>`;
+
+  $('decorationSlotOut').innerHTML = html;
+}
+
+function calculateDecorationSlots() {
+  const img = $('img');
+  if (!img || !img.src) {
+    $('decorationSlotStatus').textContent = '先に画像を選択してください。';
+    return;
+  }
+
+  try {
+    const W = img.naturalWidth || img.width;
+    const H = img.naturalHeight || img.height;
+
+    const tmp = document.createElement('canvas');
+    tmp.width = W;
+    tmp.height = H;
+    const tctx = tmp.getContext('2d', { willReadFrequently: true });
+    tctx.drawImage(img, 0, 0);
+
+    const gameArea = calculate16by9Area(W, H);
+    const detect = detectDecorationBoundariesFromImage(tmp, gameArea);
+
+    if (!detect.best) {
+      $('decorationSlotStage').style.display = 'none';
+      $('decorationSlotOut').innerHTML =
+        `<div class="result warn"><b>24スロットGrid未成立</b><div class="mono">` +
+        `候補境界=${detect.candidates.length} / 必要25本。` +
+        `安全のため24個のROIは生成しません。</div></div>`;
+      $('decorationSlotStatus').textContent =
+        `検証失敗：候補境界${detect.candidates.length}本 / 25本必要`;
+      window.decorationSlotResult = null;
+      return;
+    }
+
+    const rois = buildDecorationSlotROIs(gameArea, detect.best.boundaries);
+
+    const result = {
+      imageW: W,
+      imageH: H,
+      gameArea,
+      detect,
+      rois
+    };
+
+    window.decorationSlotResult = result;
+
+    drawDecorationSlotROIs(img, result);
+    renderDecorationSlotResult(result);
+
+    $('decorationSlotStatus').textContent =
+      `24スロットGrid成立：pitch=${detect.best.meanPitch.toFixed(1)}px / SD=${detect.best.pitchSD.toFixed(1)}px`;
+  } catch (e) {
+    console.error(e);
+    $('decorationSlotStatus').textContent = '装飾品スロット検出エラー：' + e.message;
+  }
+}
+
+function runDecorationSlotSelfTest() {
+  const sizes = [
+    [1536,864],
+    [1920,1080],
+    [2560,1440],
+    [3840,2160],
+    [2560,1080],
+    [3440,1440],
+    [1080,1920],
+    [706,1536]
+  ];
+
+  const lines = [];
+  for (const [w,h] of sizes) {
+    // 数式系の自己検証。画像内容を必要としない部分について、
+    // 16:9領域が正しく求まることと24スロットROIが領域内に入ることを確認する。
+    const g = calculate16by9Area(w,h);
+    const x = g.x + g.w * DECORATION_SLOT_CONFIG.nameXRatio;
+    const ww = g.w * DECORATION_SLOT_CONFIG.nameWidthRatio;
+    const inside = x >= g.x && x + ww <= g.x + g.w;
+
+    lines.push(
+      `${w}×${h}: game=${Math.round(g.x)},${Math.round(g.y)},` +
+      `${Math.round(g.w)}×${Math.round(g.h)} / ` +
+      `名前X=${Math.round(x)} W=${Math.round(ww)} / ${inside ? 'OK' : 'NG'}`
+    );
+  }
+
+  $('decorationSlotStatus').textContent = '自己検証完了：8サイズの座標範囲OK';
+  $('decorationSlotOut').innerHTML =
+    `<div class="result ok"><b>装飾品ROIサイズ自己検証</b><div class="mono">${lines.join('<br>')}</div></div>`;
+
+  return lines;
+}
+
+$('detectDecorationSlots').onclick=calculateDecorationSlots;
+$('runDecorationSlotSelfTest').onclick=runDecorationSlotSelfTest;
+
 $('calcEquipmentROI').onclick=calculateEquipmentROI;
 $('calcEquipmentROIBase').onclick=calculateEquipmentROIBase;
 $('runEquipmentROISelfTest').onclick=runEquipmentROISelfTest;
@@ -3573,7 +4066,7 @@ $('detectTopDownGrid').onclick=tdRun;
 $('detectIconAnchor').onclick=v432Detect;
 (async()=>{try{await v400LoadBundledIcons();}catch(e){$('anchorDBStatus').textContent='DBアイコン読み込み失敗：'+e.message;console.error(e);}})();
 
-$('file').addEventListener('change',()=>{v400IconGrid=null;v400IconCandidates=[];window.lastEquipmentRegions=[];window.topDownGridResult=null;window.equipmentROIResult=null;$('iconAnchorStatus').textContent='画像を読み込みました。DBアイコンアンカーを実行してください。';$('iconAnchorStage').style.display='none';$('topDownStage').style.display='none';$('equipmentROIStage').style.display='none';$('equipmentROIOut').innerHTML='';$('equipmentROIStatus').textContent='未実行';});
+$('file').addEventListener('change',()=>{v400IconGrid=null;v400IconCandidates=[];window.lastEquipmentRegions=[];window.topDownGridResult=null;window.equipmentROIResult=null;window.decorationSlotResult=null;$('iconAnchorStatus').textContent='画像を読み込みました。DBアイコンアンカーを実行してください。';$('iconAnchorStage').style.display='none';$('topDownStage').style.display='none';$('equipmentROIStage').style.display='none';$('equipmentROIOut').innerHTML='';$('equipmentROIStatus').textContent='未実行';$('decorationSlotStage').style.display='none';$('decorationSlotOut').innerHTML='';$('decorationSlotStatus').textContent='未実行';});
 
 </script>
 </body>
