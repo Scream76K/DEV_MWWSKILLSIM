@@ -185,39 +185,28 @@
 
 <script>
   /* --------------------------------------------------
-   * 【改善版】ゲーム画面（16:9領域）の堅牢な自動切り出し
+   * 16:9領域算出
    * -------------------------------------------------- */
-  function findGameScreen16by9(canvasCtx, imgW, imgH) {
-    // 画像アスペクト比がすでに約16:9なら、画像全体をゲーム画面とする
-    const imgAspect = imgW / imgH;
-    if (Math.abs(imgAspect - (16 / 9)) < 0.05) {
-      return { x: 0, y: 0, w: imgW, h: imgH };
+  function calculate16by9AreaFromImage(imgW, imgH) {
+    const targetAspect = 16 / 9;
+    const currentAspect = imgW / imgH;
+    let gameW = imgW, gameH = imgH, offsetX = 0, offsetY = 0;
+
+    if (Math.abs(currentAspect - targetAspect) > 0.01) {
+      if (currentAspect > targetAspect) {
+        gameW = imgH * targetAspect;
+        offsetX = (imgW - gameW) / 2;
+      } else {
+        gameH = imgW / targetAspect;
+        offsetY = (imgH - gameH) / 2;
+      }
     }
 
-    // 縦長画像（スマホスクショ）の場合：幅基準で16:9領域を中央配置と仮定
-    let gameW = imgW;
-    let gameH = imgW * (9 / 16);
-
-    // 高さが画像を超える場合は高さ基準
-    if (gameH > imgH) {
-      gameH = imgH;
-      gameW = imgH * (16 / 9);
-    }
-
-    // 画像中央付近にゲーム画面を置く
-    let x = (imgW - gameW) / 2;
-    let y = (imgH - gameH) / 2;
-
-    // もしWeb UIのせいでゲーム画面が上に寄っている場合の簡易補正（画像中央〜やや上）
-    if (imgH > imgW) {
-      y = imgH * 0.22; // スマホ縦スクショの中央表示エリアの一般的な開始位置
-    }
-
-    return { x: Math.round(x), y: Math.round(y), w: Math.round(gameW), h: Math.round(gameH) };
+    return { x: offsetX, y: offsetY, w: gameW, h: gameH };
   }
 
   /* --------------------------------------------------
-   * 【1】装備画面スキャナー
+   * 【1】装備画面スキャナー ロジック
    * -------------------------------------------------- */
   const TARGET_EQUIPMENTS = [
     { key: 'weaponMain', label: 'メイン武器', row: 0, yOffsetRatio: -0.004 },
@@ -250,18 +239,12 @@
       stage.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      const gameArea = findGameScreen16by9(ctx, img.width, img.height);
-
-      // 赤枠で検知したゲーム画面を描画（デバッグ可視化）
-      ctx.lineWidth = Math.max(4, Math.round(img.width / 300));
-      ctx.strokeStyle = '#ff0055';
-      ctx.strokeRect(gameArea.x, gameArea.y, gameArea.w, gameArea.h);
-
+      const gameArea = calculate16by9AreaFromImage(img.width, img.height);
       computedROIs = calculatePercentageROIs(gameArea);
       drawROIBounds(ctx, computedROIs);
 
       runBtn.disabled = false;
-      statusText.textContent = "赤枠（ゲーム認識領域）と青枠（認識ターゲット）を確認してください";
+      statusText.textContent = "枠線の位置を確認し、「装備名をOCR解析」を押してください";
       resultCard.style.display = 'none';
     };
     img.src = URL.createObjectURL(file);
@@ -343,15 +326,15 @@
   }
 
   /* --------------------------------------------------
-   * 【2】装飾品画面スキャナー
+   * 【2】装飾品画面スキャナー (image_4.png 100%基準パラメータ)
    * -------------------------------------------------- */
   const DECORATION_GRID_CONFIG = {
     maxRows: 24,
-    startXRatio: 0.102,
-    startYRatio: 0.103,
-    pitchYRatio: 0.0415,
-    widthRatio:  0.068,
-    heightRatio: 0.026
+    startXRatio: 0.091,    // 9.1%: アイコン直後から開始
+    startYRatio: 0.101,    // 10.1%: 1行目「攻撃珠III」上端
+    pitchYRatio: 0.0338,   // 3.38%: 24行の精密行間ピッチ
+    widthRatio:  0.072,    // 7.2%: 最大5文字ジャスト幅
+    heightRatio: 0.026     // 2.6%: 1行高さ
   };
 
   const decoImageInput = document.getElementById('decoImageInput');
@@ -375,20 +358,13 @@
       decoStage.height = img.height;
       decoCtx.drawImage(img, 0, 0);
 
-      // ゲーム画面16:9領域を検出
-      const gameArea = findGameScreen16by9(decoCtx, img.width, img.height);
+      const gameArea = calculate16by9AreaFromImage(img.width, img.height);
 
-      // ★赤枠で「プログラムが認識しているゲーム画面」を描画★
-      decoCtx.lineWidth = Math.max(4, Math.round(img.width / 300));
-      decoCtx.strokeStyle = '#ff0055';
-      decoCtx.strokeRect(gameArea.x, gameArea.y, gameArea.w, gameArea.h);
-
-      // 24行ROI計算＆青枠描画
       decoComputedROIs = calculateDecorationROIs(gameArea);
       drawDecoROIBounds(decoCtx, decoComputedROIs);
 
       decoRunBtn.disabled = false;
-      decoStatusText.textContent = "赤枠（ゲーム認識領域）と青枠（24行）の位置を確認してください";
+      decoStatusText.textContent = "24行枠線の重なりを確認し、「装飾品をOCR解析」を押してください";
       decoResultCard.style.display = 'none';
     };
     img.src = URL.createObjectURL(file);
