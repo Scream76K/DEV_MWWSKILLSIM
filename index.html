@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.4.6：装備・装飾品独立解析＋ビルド反映統合版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.4.8：装備8グループ連携＋装飾品グループ解析版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -23,6 +23,13 @@ input[type=file]{width:100%}
 .handle{position:absolute;width:18px;height:18px;background:#e64b2f;border-radius:50%}
 .tl{left:-9px;top:-9px}.tr{right:-9px;top:-9px}.bl{left:-9px;bottom:-9px}.br{right:-9px;bottom:-9px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.workflow-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.workflow-panel{background:#fffdf7;border:1px solid #c8baa0;border-radius:12px;padding:12px}
+.workflow-panel h3{font-size:17px;margin:0 0 8px}
+.workflow-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.workflow-result{margin-top:10px}
+.workflow-divider{height:1px;background:#c8baa0;margin:14px 0}
+@media(max-width:760px){.workflow-grid{grid-template-columns:1fr}}
 label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}
 input[type=number]{width:100%;padding:8px;border:1px solid #b9a98b;border-radius:8px;background:white}
 pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;padding:12px;border-radius:10px;min-height:90px}
@@ -34,7 +41,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.4.6：装備・装飾品独立解析＋ビルド反映統合版</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.4.8：装備8グループ連携＋装飾品グループ解析版</h1>
 <div class="note">
 <b>v4.3.8：短辺基準スケール適応＋フルアイコン枠検出＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -43,13 +50,42 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 <div class="card">
-<h2>1. スクショを読み込む</h2>
-<input id="file" type="file" accept="image/*">
-<div id="fileStatus" class="status">装備画像：未選択</div>
-<div style="margin-top:12px;font-weight:700">💎 装飾品画面</div>
-<input id="decorationFile" type="file" accept="image/*">
-<div id="decorationFileStatus" class="status">装飾品画像：未選択</div>
-<div class="note" style="margin-top:6px">装備画面と装飾品画面は独立して解析できます。どちらか片方だけでも実行可能です。</div>
+<h2>1. 装備ビルド解析</h2>
+<div class="note">装備画面と装飾品画面を左右に並べ、同じ画面上で「どの装備に、どの装飾品が付いているか」を確認できる構成です。左右は完全に独立して解析できます。装飾品は「24個の独立スロット」ではなく、<b>最大8装備グループ × 1～3スロット</b>として保持します。グループ間の区切り行を使って実際の装着数を確定し、装備DBのスロット情報が取得できる場合は照合します。最後のビルド反映だけを1ボタンに統一します。</div>
+<div class="workflow-grid" style="margin-top:12px">
+  <section class="workflow-panel">
+    <h3>🛡️ 装備ビルド</h3>
+    <input id="file" type="file" accept="image/*">
+    <div id="fileStatus" class="status">装備画像：未選択</div>
+    <div class="workflow-actions">
+      <button id="workflowEquipmentROI" class="primary">🧾 装備7部位を切り出す</button>
+      <button id="workflowEquipmentOCR" class="primary">🔎 装備をOCR→確定候補</button>
+    </div>
+    <div id="workflowEquipmentStatus" class="status">未実行</div>
+    <div id="workflowEquipmentOut" class="workflow-result"></div>
+  </section>
+  <section class="workflow-panel">
+    <h3>💎 装飾品</h3>
+    <input id="decorationFile" type="file" accept="image/*">
+    <div id="decorationFileStatus" class="status">装飾品画像：未選択</div>
+    <div class="workflow-actions">
+      <button id="workflowDecorationROI" class="primary">💎 装飾品グループを検出</button>
+      <button id="workflowDecorationOCR" class="primary">🔎 装飾品をOCR→グループ照合</button>
+    </div>
+    <div id="workflowDecorationStatus" class="status">未実行</div>
+    <div id="workflowDecorationOut" class="workflow-result"></div>
+  </section>
+</div>
+<div class="workflow-divider"></div>
+<div class="workflow-panel">
+  <h3>🔄 ビルドへ反映</h3>
+  <div class="note">装備だけ、装飾品だけ、両方のどの状態でも反映できます。解析結果を確定させた後、このボタンだけで現在のビルドへ渡します。</div>
+  <div class="workflow-actions">
+    <button id="workflowReflectBuild" class="primary">🔄 解析結果をビルドへ反映</button>
+  </div>
+  <div id="workflowReflectionStatus" class="status">未実行</div>
+  <div id="workflowReflectionOut" class="workflow-result"></div>
+</div>
 </div>
 
 <div class="card">
@@ -81,7 +117,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 
-<div class="card">
+<div class="card dev-workflow-card" style="display:none">
 <h2>2-B. 装備名OCR ROI（Gemini引継ぎ・7部位）</h2>
 <div class="note">
 16:9の実ゲーム領域を先に算出し、その領域内の比率から
@@ -102,18 +138,19 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 </div>
 
 
-<div class="card">
+<div class="card dev-workflow-card" style="display:none">
 <h2>2-C. 装飾品スロット切り出し（最大24スロット）</h2>
 <div class="note">
-装飾品は「実際に装備されている個数」を先に推定しません。
-16:9ゲーム領域内の左側装飾品パネルから横方向の境界線を検出し、
-最大24個の論理スロットROIを生成します。空きスロットもROIとして残し、
-後段の珠DB照合で「対照なし」として扱える構造にします。
-この段階ではOCR・珠DB照合は実行しません。
+装飾品は24個の独立スロットとして扱いません。
+まず画面上の最大24行を検出し、その中にある「区切り行」を識別して
+<b>最大8グループ × 1～3スロット</b>へ再構成します。
+実際に装着されている珠だけを各グループへ保持し、区切り行はスロットとして扱いません。
+装備解析が先に済んでいる場合は、装備DBから得たスロットLv列も照合情報として保持します。
 </div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-  <button id="detectDecorationSlots" class="primary">💎 24スロットを検出・切り出し</button>
+  <button id="detectDecorationSlots" class="primary">💎 装飾品グループを検出</button>
   <button id="runDecorationSlotSelfTest" class="primary">🧪 装飾品サイズ自己検証</button>
+  <button id="runDecorationGroupSelfTest" class="primary">🧪 実画像グループ自己検証</button>
 </div>
 <div id="decorationSlotStatus" class="status">未実行</div>
 <img id="decorationImg" alt="" style="display:none">
@@ -121,9 +158,10 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <div id="decorationSlotStage" class="stage" style="margin-top:10px;display:none">
   <canvas id="decorationSlotView"></canvas>
 </div>
+<div id="decorationOCROut" style="margin-top:10px"></div>
 </div>
 
-<div class="card">
+<div class="card dev-workflow-card" style="display:none">
 <h2>2-D. ビルドへの反映</h2>
 <div class="note">装備解析結果と装飾品解析結果は別々に保持します。ここだけを共通の入口にし、ボタンを押した時点で存在する解析結果だけを現在のビルドへ反映します。装備だけ、装飾品だけ、両方のいずれでも実行できます。</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
@@ -723,6 +761,9 @@ function normalizeEquipmentCandidateRows(rows, slot) {
     kind: String(r?.kind || ''),
     name: String(r?.name || '').trim(),
     rankLevel: r?.rankLevel ?? null,
+    slots: r?.slots ?? null,
+    decorationSlots: r?.decorationSlots ?? null,
+    slotLevels: r?.slotLevels ?? null,
     sourceIndex: i
   })).filter(r => r.name && r.kind === want).filter(r => {
     const key = `${r.kind}\u0000${r.id ?? ''}\u0000${r.gameId ?? ''}\u0000${r.name}\u0000${r.rankLevel ?? ''}`;
@@ -958,18 +999,18 @@ function setEquipmentDBStatus(text, cls=''){
   const el=$('equipmentDBStatus'); if(el) el.innerHTML=`装備DB：<span class="${cls}">${text}</span>`;
 }
 function normalizeArmorRows(rows){
-  return normalizeEquipmentCandidateRows(rows.map(r=>({id:r?.id,gameId:r?.gameId,kind:String(r?.kind||''),name:r?.name})), 'head')
+  return normalizeEquipmentCandidateRows(rows.map(r=>({id:r?.id,gameId:r?.gameId,kind:String(r?.kind||''),name:r?.name,slots:r?.slots,decorationSlots:r?.decorationSlots,slotLevels:r?.slotLevels})), 'head')
     .concat(normalizeEquipmentCandidateRows(rows,'chest'),normalizeEquipmentCandidateRows(rows,'arms'),normalizeEquipmentCandidateRows(rows,'waist'),normalizeEquipmentCandidateRows(rows,'legs'));
 }
 async function fetchEquipmentPage(api, offset){
-  const u=`${api}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true}))}`;
+  const u=`${api}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'}); if(!r.ok) throw new Error(`装備DB HTTP ${r.status}`);
   const data=await r.json(); if(!Array.isArray(data)) throw new Error('装備DBの応答が配列ではありません'); return data;
 }
 async function fetchCharmPage(offset){
   // Charm names live on ranks, not on the top-level Charm object. Keep ranks
   // in this projection or OCR candidate construction would silently get zero rows.
-  const u=`${CHARM_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,ranks:true}))}`;
+  const u=`${CHARM_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,ranks:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'}); if(!r.ok) throw new Error(`護石DB HTTP ${r.status}`);
   const data=await r.json(); if(!Array.isArray(data)) throw new Error('護石DBの応答が配列ではありません'); return data;
 }
@@ -991,7 +1032,7 @@ async function loadCharmDB(force=false){
     const all=[];let offset=0;
     for(let page=0;page<100;page++){const part=await fetchCharmPage(offset);all.push(...part);if(part.length<250)break;offset+=250;}
     const rows=[]; const seen=new Set();
-    for(const c of all){for(const rank of Array.isArray(c?.ranks)?c.ranks:[]){const name=String(rank?.name||'').trim();if(!name)continue;const row={id:c?.id??null,gameId:c?.gameId??null,kind:'charm',name,rankLevel:rank?.level??null};const key=`${row.id}\u0000${row.rankLevel}\u0000${row.name}`;if(seen.has(key))continue;seen.add(key);rows.push(row);}}
+    for(const c of all){for(const rank of Array.isArray(c?.ranks)?c.ranks:[]){const name=String(rank?.name||'').trim();if(!name)continue;const row={id:c?.id??null,gameId:c?.gameId??null,kind:'charm',name,rankLevel:rank?.level??null,slots:rank?.slots ?? c?.slots ?? null,decorationSlots:rank?.decorationSlots ?? c?.decorationSlots ?? null,slotLevels:rank?.slotLevels ?? c?.slotLevels ?? null};const key=`${row.id}\u0000${row.rankLevel}\u0000${row.name}`;if(seen.has(key))continue;seen.add(key);rows.push(row);}}
     charmDB=rows;if(!charmDB.length)throw new Error('護石DBが0件でした');charmReady=true;
     try{localStorage.setItem(CHARM_CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),rows:charmDB}));}catch(e){} return charmDB;
   })();
@@ -1020,7 +1061,10 @@ function normalizeWeaponRows(rows){
     id:w?.id ?? null,
     gameId:w?.gameId ?? null,
     kind:String(w?.kind||''),
-    name:String(w?.name||'').trim()
+    name:String(w?.name||'').trim(),
+    slots:w?.slots ?? null,
+    decorationSlots:w?.decorationSlots ?? null,
+    slotLevels:w?.slotLevels ?? null
   })).filter(w=>w.name).filter(w=>{
     const key=`${w.kind}\u0000${w.gameId??''}\u0000${w.id??''}\u0000${w.name}`;
     if(seen.has(key))return false;seen.add(key);return true;
@@ -1050,7 +1094,7 @@ function searchWeaponItems(raw){
   return ranked.length?ranked:weaponDB;
 }
 async function fetchWeaponPage(offset){
-  const u=`${WEAPON_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true}))}`;
+  const u=`${WEAPON_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'});
   if(!r.ok)throw new Error(`武器DB HTTP ${r.status}`);
   const data=await r.json();
@@ -2113,6 +2157,37 @@ function renderCropOnlySpike(){
 if(typeof renderCropOnlySpike==='function') $('previewCropOnly').onclick=renderCropOnlySpike;
 $('previewPreprocess').onclick=renderPreprocessPreview;
 
+function normalizeDecorationSlotLevels(value) {
+  const out=[];
+  const push=(v)=>{
+    if(v==null)return;
+    if(typeof v==='number' && Number.isFinite(v)){ const n=Math.round(v); if(n>=1&&n<=3) out.push(n); return; }
+    if(typeof v==='string'){ const m=v.match(/[1-3]/); if(m) out.push(Number(m[0])); return; }
+    if(Array.isArray(v)){ v.forEach(push); return; }
+    if(typeof v==='object'){
+      for(const k of ['level','slotLevel','size','rank','value']) if(v[k]!=null){ push(v[k]); return; }
+      for(const k of ['slots','decorationSlots','slotLevels','levels']) if(v[k]!=null){ push(v[k]); return; }
+    }
+  };
+  push(value);
+  return out.slice(0,3);
+}
+
+function extractDecorationSlotLevels(row) {
+  if(!row)return [];
+  for(const key of ['slotLevels','decorationSlots','slots']) {
+    const v=normalizeDecorationSlotLevels(row[key]);
+    if(v.length)return v;
+  }
+  return [];
+}
+
+function getEquipmentExpectedGroupSlots(key) {
+  const ctx=window.equipmentContext;
+  const row=ctx?.results?.find(x=>x.key===key);
+  return extractDecorationSlotLevels(row?.best);
+}
+
 function updateEquipmentContext() {
   const output = Array.isArray(window.lastEquipmentOCR) ? window.lastEquipmentOCR : [];
   window.equipmentContext = output.length ? {
@@ -2125,13 +2200,15 @@ function updateEquipmentContext() {
         totalScore: Number(x.best.totalScore ?? x.best.final ?? 0),
         decision: x.best.decision?.level || null,
         slots: x.best.slots || x.best.decorationSlots || null,
+        slotLevels: extractDecorationSlotLevels(x.best),
         raw: x.rows?.map(r => r.raw).filter(Boolean) || []
       } : null,
       ranked: Array.isArray(x.ranked) ? x.ranked.map(c => ({
         name: c.name || null,
         totalScore: Number(c.totalScore ?? c.final ?? 0),
         decision: c.decision?.level || null,
-        slots: c.slots || c.decorationSlots || null
+        slots: c.slots || c.decorationSlots || null,
+        slotLevels: extractDecorationSlotLevels(c)
       })) : []
     }))
   } : null;
@@ -2145,11 +2222,22 @@ function updateDecorationContext() {
     analyzedAt: new Date().toISOString(),
     imageW: r.imageW, imageH: r.imageH,
     gameArea: r.gameArea,
-    slotCount: Array.isArray(r.rois) ? r.rois.length : 0,
+    rowCount: Array.isArray(r.rois) ? r.rois.length : 0,
+    slotCount: Array.isArray(r.groups) ? r.groups.reduce((n,g)=>n+g.slots.length,0) : 0,
+    groupCount: Array.isArray(r.groups) ? r.groups.length : 0,
+    buildGroupCount: Array.isArray(r.groups) ? r.groups.filter(g=>g.reflect!==false).length : 0,
+    buildSlotCount: Array.isArray(r.groups) ? r.groups.filter(g=>g.reflect!==false).reduce((n,g)=>n+g.slots.length,0) : 0,
+    groups: Array.isArray(r.groups) ? r.groups.map(g => ({
+      groupIndex:g.groupIndex, equipmentKey:g.equipmentKey || null, label:g.label || null,
+      expectedSlotLevels:(getEquipmentExpectedGroupSlots(g.equipmentKey) || g.expectedSlotLevels || []),
+      slots:g.slots.map(x=>({slotIndex:x.slotIndex,slotInGroup:x.slotInGroup,slotLevel:x.slotLevel||null,
+        x:x.x,y:x.y,w:x.w,h:x.h,pitch:x.pitch,ocr:x.ocr||null,jewel:x.jewel||null}))
+    })) : [],
+    buildGroups: Array.isArray(r.groups) ? r.groups.filter(g=>g.reflect!==false).map(g=>({groupIndex:g.groupIndex,equipmentKey:g.equipmentKey,label:g.label,expectedSlotLevels:(getEquipmentExpectedGroupSlots(g.equipmentKey)||g.expectedSlotLevels||[]),slots:g.slots})) : [],
     rois: Array.isArray(r.rois) ? r.rois.map(x => ({
       slotIndex: x.slotIndex, groupIndex: x.groupIndex, slotInGroup: x.slotInGroup,
-      x: x.x, y: x.y, w: x.w, h: x.h, pitch: x.pitch,
-      ocr: x.ocr || null, jewel: x.jewel || null
+      isSeparator: !!x.isSeparator, x: x.x, y: x.y, w: x.w, h: x.h, pitch: x.pitch,
+      ocr: x.ocr || (Array.isArray(r.ocr) ? r.ocr.find(o=>o.slotIndex===x.slotIndex) || null : null), jewel: x.jewel || null
     })) : []
   } : null;
   return window.decorationContext;
@@ -2158,12 +2246,15 @@ function updateDecorationContext() {
 function renderBuildReflectionState(state) {
   const eqCount = state.equipment ? state.equipment.results.length : 0;
   const decoCount = state.decoration ? state.decoration.slotCount : 0;
+  const groupCount = state.decoration ? state.decoration.groupCount : 0;
+  const buildGroupCount = state.decoration ? state.decoration.buildGroupCount : 0;
+  const buildSlotCount = state.decoration ? state.decoration.buildSlotCount : 0;
   let html = `<div class="result ok"><b>ビルド反映データを作成しました</b><div class="mono">` +
     `装備解析=${state.equipment ? 'あり' : 'なし'} / 装飾品解析=${state.decoration ? 'あり' : 'なし'} / ` +
-    `装備結果=${eqCount}部位 / 装飾品論理スロット=${decoCount}個` +
+    `装備結果=${eqCount}部位 / 装飾品=${groupCount}表示グループ・${decoCount}スロット / ビルド反映=${buildGroupCount}グループ・${buildSlotCount}スロット` +
     `</div></div>`;
-  if (state.equipment) html += `<div class="result"><b>装備</b><div class="mono">${state.equipment.results.map(x => `${equipmentSlotLabel(x.key)}：${x.best?.name || '候補なし'}`).join('<br>')}</div></div>`;
-  if (state.decoration) html += `<div class="result"><b>装飾品</b><div class="mono">24個固定ではなく、解析済み論理スロット ${decoCount}個をビルド側へ渡します。空き・未照合は後段で判定します。</div></div>`;
+  if (state.equipment) html += `<div class="result"><b>装備</b><div class="mono">${state.equipment.results.map(x => `${equipmentSlotLabel(x.key)}：${x.best?.name || '候補なし'}${x.best?.slotLevels?.length?' / DBスロット['+x.best.slotLevels.join(',')+']':''}`).join('<br>')}</div></div>`;
+  if (state.decoration) html += `<div class="result"><b>装飾品グループ</b><div class="mono">${state.decoration.buildGroups.map(g => `${g.groupIndex+1}. ${g.label||'装備グループ'}：${g.slots.length}スロット${g.expectedSlotLevels.length?' / DB['+g.expectedSlotLevels.join(',')+']':''} → ${g.slots.map(x=>x.ocr?.raw||'未OCR').join(' / ')}`).join('<br>')}</div></div>`;
   if (!state.equipment && !state.decoration) html = `<div class="result warn"><b>反映対象がありません</b><div class="mono">装備画面または装飾品画面を先に解析してください。</div></div>`;
   $('buildReflectionOut').innerHTML = html;
 }
@@ -2171,7 +2262,7 @@ function renderBuildReflectionState(state) {
 function reflectAnalysisToBuild() {
   const equipment = updateEquipmentContext();
   const decoration = updateDecorationContext();
-  const state = { version: '4.4.6', reflectedAt: new Date().toISOString(), equipment, decoration };
+  const state = { version: '4.4.8', reflectedAt: new Date().toISOString(), equipment, decoration };
   window.buildReflectionState = state;
 
   // 将来のスキルシミュレータ本体が接続された場合も、この1つの入口だけを呼び出せるようにする。
@@ -2183,9 +2274,17 @@ function reflectAnalysisToBuild() {
 }
 
 async function recognizeEquipmentAll(){
-  if(!$('img').src){$('equipmentOCRStatus').textContent='先に画像を選択してください。';return}
-  const regions=Array.isArray(window.lastEquipmentRegions)?window.lastEquipmentRegions:[];
-  if(regions.length!==9){$('equipmentOCRStatus').textContent='先に「画面構造を自動検出」を実行してください。';return}
+  if(!$('img').src){$('equipmentOCRStatus').textContent='先に装備画像を選択してください。';return}
+  let roiResult=window.equipmentROIResult;
+  if(!roiResult){
+    try{
+      roiResult=calculateEquipmentROIsRefined($('img'));
+      window.equipmentROIResult=roiResult;
+      drawEquipmentROIs($('img'),roiResult);
+      renderEquipmentROIResult(roiResult);
+    }catch(e){$('equipmentOCRStatus').textContent='装備ROI算出エラー：'+e.message;return}
+  }
+  const regions=roiResult.rois||{};
   const targets=['mainWeapon','head','chest','arms','waist','legs','charm'];
   const btn=$('recognizeEquipment');btn.disabled=true;
   const started=performance.now();
@@ -2202,7 +2301,7 @@ async function recognizeEquipmentAll(){
     });
     const output=[];
     for(const key of targets){
-      const region=regions.find(r=>r.key===key); const items=equipmentRowsForSlot(key); const rows=[];
+      const region=regions[key==='mainWeapon'?'weaponMain':key==='arms'?'arm':key==='legs'?'leg':key]; const items=equipmentRowsForSlot(key); const rows=[];
       const passes=EQUIPMENT_OCR_STANDARD_PASSES;
       for(const [mode,label] of passes){
         $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}をOCR中… ${label}`;
@@ -3458,7 +3557,7 @@ function renderEquipmentROIResult(result, selfTestRows = null) {
   const g = result.gameArea;
   let html =
     `<div class="result ${errors.length ? 'warn' : 'ok'}">` +
-    `<b>v4.4.6 7部位ROI＋装飾品24スロット切出し</b><br>` +
+    `<b>v4.4.7 7部位ROI＋装飾品24スロット切出し</b><br>` +
     `<span class="mono">` +
     `入力=${iw}×${ih} / ` +
     `16:9領域=x:${g.x.toFixed(2)}, y:${g.y.toFixed(2)}, ` +
@@ -3672,7 +3771,7 @@ function calculateEquipmentROIBase(){
 }
 
 // ============================================================
-// v4.4.6 装飾品スロット切り出し
+// v4.4.8 装飾品グループ解析
 //
 // 方針:
 // 1) 16:9ゲーム領域を確定
@@ -3913,6 +4012,96 @@ function detectDecorationBoundariesFromImage(sourceCanvas, gameArea) {
   };
 }
 
+function decorationRowTextureMetrics(img, roi) {
+  const sw=Math.max(1,Math.round(roi.w)), sh=Math.max(1,Math.round(roi.h));
+  const c=document.createElement('canvas'); c.width=sw; c.height=sh;
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  ctx.drawImage(img,roi.x,roi.y,sw,sh,0,0,sw,sh);
+  const d=ctx.getImageData(0,0,sw,sh).data;
+  let edgeSum=0, edgeN=0, sum=0, sum2=0;
+  for(let y=0;y<sh;y++){
+    for(let x=0;x<sw;x++){
+      const i=(y*sw+x)*4; const g=.299*d[i]+.587*d[i+1]+.114*d[i+2];
+      sum+=g; sum2+=g*g;
+      if(x>0){ const j=i-4; const g0=.299*d[j]+.587*d[j+1]+.114*d[j+2]; edgeSum+=Math.abs(g-g0); edgeN++; }
+    }
+  }
+  const mean=sum/(sw*sh); const sd=Math.sqrt(Math.max(0,sum2/(sw*sh)-mean*mean));
+  return {edge:edgeSum/Math.max(1,edgeN),sd};
+}
+
+function classifyDecorationRows(img, rois) {
+  const metrics=rois.map(r=>decorationRowTextureMetrics(img,r));
+  const medEdge=percentile1D(metrics.map(m=>m.edge),0.5);
+  const medSD=percentile1D(metrics.map(m=>m.sd),0.5);
+  return rois.map((r,i)=>{
+    const m=metrics[i];
+    const separator = m.edge <= Math.max(2.5,medEdge*0.30) && m.sd <= Math.max(30,medSD*0.75);
+    return {...r,isSeparator:separator,rowTexture:m};
+  });
+}
+
+const DECORATION_GROUP_ORDER = [
+  {key:'mainWeapon',label:'メイン武器',reflect:true},
+  {key:'subWeapon',label:'サブ武器',reflect:false},
+  {key:'head',label:'頭防具',reflect:true},
+  {key:'chest',label:'胴防具',reflect:true},
+  {key:'arms',label:'腕防具',reflect:true},
+  {key:'waist',label:'腰防具',reflect:true},
+  {key:'legs',label:'脚防具',reflect:true},
+  {key:'charm',label:'護石',reflect:true},
+  {key:'mantle',label:'装衣',reflect:true}
+];
+
+function parseDecorationSlotLevel(raw) {
+  const s=String(raw||'');
+  const m=s.match(/[\[【]\s*([1-3])\s*[\]】]/);
+  return m ? Number(m[1]) : null;
+}
+
+function buildDecorationGroupsFromRows(img, rois) {
+  const classified=classifyDecorationRows(img,rois);
+  const blocks=[]; let current=[];
+  const flush=()=>{ if(current.length){blocks.push(current);current=[];} };
+  for(const r of classified){
+    if(r.isSeparator){ flush(); }
+    else current.push(r);
+  }
+  flush();
+
+  // Wildsの装飾品画面では、区切り線のない先頭ブロックに複数装備が連続して
+  // 表示されることがあります。1装備最大3スロットという仕様を守り、
+  // 3件ずつ分割します。以降の区切りブロックは1グループとして保持します。
+  const logicalBlocks=[];
+  for(const block of blocks){
+    if(block.length<=3){ logicalBlocks.push(block); continue; }
+    for(let i=0;i<block.length;i+=3) logicalBlocks.push(block.slice(i,i+3));
+  }
+
+  if(logicalBlocks.length>DECORATION_GROUP_ORDER.length){
+    throw new Error(`装備グループが${logicalBlocks.length}件あります（表示上限${DECORATION_GROUP_ORDER.length}件）`);
+  }
+
+  const groups=logicalBlocks.map((block,groupIndex)=>{
+    const def=DECORATION_GROUP_ORDER[groupIndex] || {key:null,label:`装備グループ${groupIndex+1}`,reflect:false};
+    const expected=getEquipmentExpectedGroupSlots(def.key);
+    const slots=block.map((r,j)=>({...r,groupIndex,slotInGroup:j,slotLevel:null}));
+    return {groupIndex,key:def.key,label:def.label,equipmentKey:def.key,reflect:def.reflect!==false,expectedSlotLevels:expected,slots};
+  });
+  return {rois:classified,groups};
+}
+
+function renderDecorationGroups(result) {
+  const groups=result.groups||[];
+  if(!groups.length) return `<div class="result warn"><b>装飾品グループを確定できません</b></div>`;
+  return `<div class="result ok"><b>装飾品グループ：${groups.length}グループ / ${groups.reduce((n,g)=>n+g.slots.length,0)}スロット</b>`+
+    groups.map(g=>`<div style="border:1px solid #c8baa0;border-radius:8px;padding:8px;margin-top:6px"><b>${g.groupIndex+1}. ${g.label}</b>`+
+      ` / 実スロット${g.slots.length}`+
+      `${g.expectedSlotLevels.length?` / DBスロット[${g.expectedSlotLevels.join(',')}]`:' / DBスロット情報なし'}`+
+      `<div class="mono">${g.slots.map((r,i)=>`${i+1}番：行${r.slotIndex+1} / OCR前 / Lv${r.slotLevel||'未確定'}`).join('<br>')}</div></div>`).join('')+
+    `</div>`;
+}
+
 function buildDecorationSlotROIs(gameArea, boundaries) {
   const rois = [];
   const W = gameArea.w;
@@ -4012,7 +4201,7 @@ function renderDecorationSlotResult(result) {
 
   let html =
     `<div class="result ${b ? 'ok' : 'warn'}">` +
-    `<b>v4.4.6 装飾品スロット構造検証</b><br>` +
+    `<b>v4.4.8 装飾品グループ構造検証</b><br>` +
     `<span class="mono">` +
     `入力=${result.imageW}×${result.imageH} / ` +
     `16:9=${result.gameArea.x.toFixed(1)},${result.gameArea.y.toFixed(1)},` +
@@ -4041,13 +4230,112 @@ function renderDecorationSlotResult(result) {
   }
   html += `</div></div>`;
 
-  html += `<div class="result"><b>重要：この段階では空きスロットを判定しません</b><div class="mono">` +
-    `24個すべてをOCR候補として保持し、後段で珠DB照合。` +
-    `一致しないものは「対照なし」として扱えます。` +
-    `装備DBの[3,2,1]等のスロット情報は、後段の候補選定・対応付けに利用します。` +
-    `</div></div>`;
+  html += renderDecorationGroups(result);
+  html += `<div class="result"><b>グループ化ルール</b><div class="mono">区切り行を検出してグループを分離 / 1グループ最大3スロット / 画面上は最大9グループ（サブ武器はビルド反映対象外）。区切り行はスロット数に含めません。装備DBのスロットLvは照合情報として保持します。</div></div>`;
 
   $('decorationSlotOut').innerHTML = html;
+}
+
+async function recognizeDecorationOCR(){
+  const result=window.decorationSlotResult;
+  if(!result || !Array.isArray(result.groups) || !result.groups.length){
+    $('decorationSlotStatus').textContent='先に「24スロットを切り出す」を実行してください。';
+    $('workflowDecorationStatus').textContent='先に装飾品スロットROIを確定してください。';
+    return;
+  }
+  const img=$('decorationImg');
+  const btn=$('workflowDecorationOCR');
+  btn.disabled=true;
+  const started=performance.now();
+  try{
+    $('workflowDecorationStatus').textContent=`装飾品${result.groups.length}グループ / ${result.groups.reduce((n,g)=>n+g.slots.length,0)}スロットをOCR中…`;
+    const worker=await Tesseract.createWorker('jpn');
+    await worker.setParameters({tessedit_pageseg_mode:'7',preserve_interword_spaces:'1'});
+    const out=[];
+    for(const roi of result.rois.filter(r=>!r.isSeparator)){
+      const c=document.createElement('canvas');
+      const sw=Math.max(1,Math.round(roi.w)), sh=Math.max(1,Math.round(roi.h));
+      const scale=Math.max(3,Math.min(6,Math.round(900/Math.max(1,sw))));
+      c.width=sw*scale; c.height=sh*scale;
+      const ctx=c.getContext('2d',{willReadFrequently:true});
+      ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+      ctx.drawImage(img,roi.x,roi.y,sw,sh,0,0,c.width,c.height);
+      const passes=[];
+      for(const mode of ['gray','white']){
+        const pc=document.createElement('canvas'); pc.width=c.width; pc.height=c.height;
+        const pctx=pc.getContext('2d',{willReadFrequently:true}); pctx.drawImage(c,0,0);
+        const d=pctx.getImageData(0,0,pc.width,pc.height);
+        for(let i=0;i<d.data.length;i+=4){
+          const g=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
+          const z=mode==='gray' ? clampNumber(128+(g-128)*1.35,0,255) : (g>=145?255:0);
+          d.data[i]=d.data[i+1]=d.data[i+2]=Math.round(z);
+        }
+        pctx.putImageData(d,0,0);
+        const padded=addPaddingCustom(pc,Math.max(16,Math.round(pc.width*.05)),Math.max(16,Math.round(pc.height*.18)),'#000000');
+        const r=await worker.recognize(padded);
+        const raw=cleanOCR(r?.data?.text||'');
+        const conf=Number(r?.data?.confidence||0);
+        passes.push({mode,raw,confidence:conf});
+      }
+      const usable=passes.filter(x=>x.raw).sort((a,b)=>b.confidence-a.confidence);
+      const best=usable[0]||{raw:'',confidence:0,mode:'none'};
+      const slotLevel=parseDecorationSlotLevel(best.raw);
+      roi.slotLevel=slotLevel;
+      const group=result.groups.find(g=>g.groupIndex===roi.groupIndex); if(group){ const gs=group.slots.find(x=>x.slotIndex===roi.slotIndex); if(gs){ gs.slotLevel=slotLevel; gs.ocr={slotIndex:roi.slotIndex,groupIndex:roi.groupIndex,slotInGroup:roi.slotInGroup,slotLevel,raw:best.raw,confidence:best.confidence,mode:best.mode}; } }
+      out.push({slotIndex:roi.slotIndex,groupIndex:roi.groupIndex,slotInGroup:roi.slotInGroup,slotLevel,roi,passes,raw:best.raw,confidence:best.confidence,mode:best.mode});
+      if((out.length)%4===0) $('workflowDecorationStatus').textContent=`装飾品OCR中… ${out.length}/${result.groups.reduce((n,g)=>n+g.slots.length,0)}`;
+    }
+    await worker.terminate();
+    window.lastDecorationOCR=out;
+    window.decorationSlotResult.ocr=out;
+    updateDecorationContext();
+    renderDecorationOCRResult(out);
+    const recognized=out.filter(x=>x.raw && x.confidence>=25).length;
+    const elapsed=(performance.now()-started)/1000;
+    $('workflowDecorationStatus').textContent=`装飾品OCR完了：${result.groups.length}グループ / ${out.length}スロット / 文字候補${recognized}件 / ${elapsed.toFixed(1)}秒`;
+  }catch(e){
+    console.error(e);
+    $('workflowDecorationStatus').textContent='装飾品OCRエラー：'+e.message;
+  }finally{btn.disabled=false}
+}
+function renderDecorationOCRResult(rows){
+  const byGroup=new Map();
+  rows.forEach(r=>{if(!byGroup.has(r.groupIndex))byGroup.set(r.groupIndex,[]);byGroup.get(r.groupIndex).push(r);});
+  const groups=Array.from(byGroup.entries()).sort((a,b)=>a[0]-b[0]).map(([gi,rs])=>{
+    const g=window.decorationSlotResult?.groups?.find(x=>x.groupIndex===gi);
+    const lines=rs.map(r=>{
+      const raw=r.raw||'（空／認識なし）';
+      const state=r.raw?(r.confidence>=25?'候補':'低信頼'):'空・未認識';
+      return `<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${r.slotInGroup+1}番スロット</b>　${raw} <span class="note">${state} / ${Math.round(r.confidence)}%${r.slotLevel?` / Lv${r.slotLevel}`:''}</span></div>`;
+    }).join('');
+    return `<div style="border:1px solid #88775c;border-radius:10px;padding:8px;margin-top:8px"><b>${g?.label||`装備グループ${gi+1}`}</b>${g?.expectedSlotLevels?.length?` / DBスロット[${g.expectedSlotLevels.join(',')}]`:''}${lines}</div>`;
+  }).join('');
+  const html=`<div class="result"><b>装飾品OCR：グループ単位</b><div class="note">区切り行を除外し、実際の装着スロットだけをOCRしています。各グループは最大3スロットです。</div>${groups}</div>`;
+  $('decorationOCROut').innerHTML=html;
+  $('workflowDecorationOut').innerHTML=html;
+}
+
+async function runDecorationGroupSelfTest(){
+  const path='decoration_reference_IMG_9323_1.jpeg';
+  const img=document.createElement('img');
+  img.src=path;
+  try{
+    await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(new Error('同梱参照画像を読み込めませんでした'));});
+    const W=img.naturalWidth||img.width,H=img.naturalHeight||img.height;
+    const tmp=document.createElement('canvas'); tmp.width=W;tmp.height=H;tmp.getContext('2d').drawImage(img,0,0);
+    const gameArea=calculate16by9Area(W,H); const detect=detectDecorationBoundariesFromImage(tmp,gameArea);
+    if(!detect.best) throw new Error('25境界を確定できません');
+    const rois=buildDecorationSlotROIs(gameArea,detect.best.boundaries); const grouped=buildDecorationGroupsFromRows(img,rois);
+    const sizes=grouped.groups.map(g=>g.slots.length);
+    const ok=grouped.groups.length===8 && sizes.join(',')==='3,3,2,2,2,2,2,3';
+    $('decorationSlotStatus').textContent=ok?'実画像グループ自己検証OK':'実画像グループ自己検証NG';
+    $('decorationSlotOut').innerHTML=`<div class="result ${ok?'ok':'warn'}"><b>実画像グループ自己検証</b><div class="mono">入力=${W}×${H} / 境界=${detect.best.boundaries.length} / グループ=${grouped.groups.length} / 構成=[${sizes.join(',')}] / 期待=[3,3,2,2,2,2,2,3]</div></div>`;
+    return {ok,groupCount:grouped.groups.length,sizes};
+  }catch(e){
+    $('decorationSlotStatus').textContent='実画像グループ自己検証エラー：'+e.message;
+    $('decorationSlotOut').innerHTML=`<div class="result warn"><b>実画像グループ自己検証失敗</b><div class="mono">${e.message}</div></div>`;
+    return {ok:false,error:e.message};
+  }
 }
 
 function calculateDecorationSlots() {
@@ -4083,13 +4371,15 @@ function calculateDecorationSlots() {
     }
 
     const rois = buildDecorationSlotROIs(gameArea, detect.best.boundaries);
+    const grouped = buildDecorationGroupsFromRows(img, rois);
 
     const result = {
       imageW: W,
       imageH: H,
       gameArea,
       detect,
-      rois
+      rois: grouped.rois,
+      groups: grouped.groups
     };
 
     window.decorationSlotResult = result;
@@ -4143,12 +4433,20 @@ function runDecorationSlotSelfTest() {
 
 $('detectDecorationSlots').onclick=calculateDecorationSlots;
 $('runDecorationSlotSelfTest').onclick=runDecorationSlotSelfTest;
+$('runDecorationGroupSelfTest').onclick=runDecorationGroupSelfTest;
 $('reflectBuild').onclick=reflectAnalysisToBuild;
+$('workflowEquipmentROI').onclick=()=>calculateEquipmentROI();
+$('workflowEquipmentOCR').onclick=async()=>{await recognizeEquipmentAll(); $('workflowEquipmentStatus').textContent=$('equipmentOCRStatus').textContent; $('workflowEquipmentOut').innerHTML=$('equipmentResults').innerHTML || `<div class="note">装備OCR結果を確認してください。</div>`;};
+$('workflowDecorationROI').onclick=()=>{calculateDecorationSlots(); setTimeout(()=>{ $('workflowDecorationStatus').textContent=$('decorationSlotStatus').textContent; $('workflowDecorationOut').innerHTML=$('decorationSlotOut').innerHTML; },0);};
+$('workflowDecorationOCR').onclick=recognizeDecorationOCR;
+$('workflowReflectBuild').onclick=()=>{reflectAnalysisToBuild(); $('workflowReflectionStatus').textContent=$('buildReflectionStatus').textContent; $('workflowReflectionOut').innerHTML=$('buildReflectionOut').innerHTML;};
 
 $('decorationFile').addEventListener('change',()=>{
   const f=$('decorationFile').files?.[0];
   window.decorationContext=null;
   window.decorationSlotResult=null;
+  window.decorationContext=null;
+  window.lastDecorationOCR=[];
   $('decorationSlotStage').style.display='none';
   $('decorationSlotOut').innerHTML='';
   $('decorationSlotStatus').textContent='未実行';
@@ -4160,7 +4458,7 @@ $('decorationFile').addEventListener('change',()=>{
   const url=URL.createObjectURL(f);
   $('decorationImg').onload=()=>{
     URL.revokeObjectURL(url);
-    $('decorationFileStatus').textContent=`装飾品画像：${f.name} / ${$('decorationImg').naturalWidth}×${$('decorationImg').naturalHeight}`;
+    $('decorationFileStatus').textContent=`装飾品画像：${f.name} / ${$('decorationImg').naturalWidth}×${$('decorationImg').naturalHeight}`; $('workflowDecorationStatus').textContent='装飾品画像を読み込みました。'; $('workflowDecorationOut').innerHTML='';
   };
   $('decorationImg').src=url;
 });
@@ -4182,7 +4480,7 @@ $('file').addEventListener('change',()=>{
   $('equipmentROIStage').style.display='none';$('equipmentROIOut').innerHTML='';$('equipmentROIStatus').textContent='未実行';
   $('equipmentResults').innerHTML='';$('equipmentOCRStatus').textContent='未実行';
   const f=$('file').files?.[0];
-  $('fileStatus').textContent=f?`装備画像：${f.name}`:'装備画像：未選択';
+  $('fileStatus').textContent=f?`装備画像：${f.name}`:'装備画像：未選択'; $('workflowEquipmentStatus').textContent=f?'装備画像を読み込みました。':'未実行'; $('workflowEquipmentOut').innerHTML='';
 });
 
 window.equipmentContext=null;
