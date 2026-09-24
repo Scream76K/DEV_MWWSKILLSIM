@@ -3,170 +3,82 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.3.5：core基準＋縦列Grid検証＋DB geometry＋サイズ適応版</title>
+<title>MH Wilds OCR — Step 1.25-C v4.6.0</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#f4efe1;color:#302b23;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}
-main{max-width:980px;margin:auto;padding:16px}
-h1{font-size:22px;margin:0 0 8px}
-h2{font-size:18px;margin:20px 0 10px}
-.card{background:#fffaf0;border:1px solid #b9a98b;border-radius:14px;padding:14px;margin-bottom:14px}
-.note{font-size:13px;line-height:1.6;color:#625b50}
-button,input{font:inherit}
-button{border:1px solid #88775c;border-radius:10px;background:#fffaf0;padding:10px 14px}
-button.primary{background:#536b3f;color:white;border-color:#435631;font-weight:700}
-input[type=file]{width:100%}
-#stage{position:relative;overflow:auto;background:#222;border-radius:10px;padding:8px}
-#img{display:block;max-width:none;width:100%;height:auto}
-#box{position:absolute;border:3px solid #e64b2f;background:rgba(230,75,47,.12);touch-action:none;cursor:move}
-.handle{position:absolute;width:18px;height:18px;background:#e64b2f;border-radius:50%}
-.tl{left:-9px;top:-9px}.tr{right:-9px;top:-9px}.bl{left:-9px;bottom:-9px}.br{right:-9px;bottom:-9px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}
-input[type=number]{width:100%;padding:8px;border:1px solid #b9a98b;border-radius:8px;background:white}
-pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;padding:12px;border-radius:10px;min-height:90px}
-.result{font-size:18px;font-weight:700;padding:12px;background:#eef2e8;border-radius:10px}
-.status{font-size:13px;margin-top:8px}
-@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}main{padding:10px}}
+.hero{padding:18px 18px 16px}.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.eyebrow{font-size:11px;letter-spacing:.14em;font-weight:800;color:#6f6659}.version{margin:2px 0 0;font-size:12px;color:#817766}.production-badge{padding:5px 9px;border-radius:999px;background:#e7ecdf;color:#50633f;font-size:10px;font-weight:800;white-space:nowrap}.hero-note{margin:12px 0 10px;font-size:14px;line-height:1.6}.rules{display:flex;gap:7px;flex-wrap:wrap}.rules span{font-size:11px;background:#f0eadc;border:1px solid #ddd2bd;border-radius:999px;padding:5px 8px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.section-head h2{margin:2px 0 0}.step-label{font-size:10px;letter-spacing:.12em;font-weight:800;color:#657853}.subtle{font-size:11px;color:#7a705f}.secondary{background:#f0eadc;border-color:#c8baa0}.file-input{padding:9px;border:1px dashed #b9a98b;border-radius:9px;background:#fffdf7}.reflect-button{min-height:48px;width:100%;font-size:15px}.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.check-grid>div{padding:10px;border:1px solid #ddd2bd;border-radius:9px;background:#fbf7ed}.check-grid b{display:block;font-size:12px;margin-bottom:3px}.check-grid span{font-size:11px;line-height:1.5;color:#625b50}.compact-help summary{cursor:pointer;font-weight:700;font-size:13px}.help-body{font-size:12px;line-height:1.6;color:#625b50}.help-body p{margin:9px 0}.status{min-height:20px}.workflow-panel button:disabled{opacity:.55;cursor:wait}@media(max-width:760px){.hero-top{align-items:center}.check-grid{grid-template-columns:1fr}.section-head{align-items:flex-start}.production-badge{display:none}}
 </style>
 </head>
 <body>
 <main>
-<div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.3.5：core基準＋縦列Grid検証＋DB geometry＋サイズ適応版</h1>
-<div class="note">
-<b>v4.3.5：core基準＋縦列Grid検証＋DB geometry＋サイズ適応版</b><br>
-<strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
-まだシミュレータ本体には接続しません。装備名を個別OCRし、部位限定DB候補まで確認します。
-</div>
-</div>
+  <header class="hero card">
+    <div class="hero-top"><div><div class="eyebrow">MONSTER HUNTER WILDS</div><h1>装備・装飾品 OCR</h1><p class="version">Step 1.25-C / v4.6.0</p></div><span class="production-badge">PRODUCTION UI</span></div>
+    <p class="hero-note">装備画面と装飾品画面を画像から読み取り、現在のビルドへ反映するための解析画面です。</p>
+    <div class="rules"><span>✓ 装備7部位</span><span>✓ 装飾品は最大8グループ</span><span>✓ サブ武器は反映対象外</span><span>✓ 装衣に装飾品スロットなし</span></div>
+  </header>
 
-<div class="card">
-<h2>1. スクショを読み込む</h2>
-<input id="file" type="file" accept="image/*">
-<div id="fileStatus" class="status">画像未選択</div>
-</div>
+  <section class="card workflow-card">
+    <div class="section-head"><div><span class="step-label">STEP 1</span><h2>画像を選択</h2></div><button id="resetAnalysis" class="secondary">↻ 最初からやり直す</button></div>
+    <div class="workflow-grid">
+      <section class="workflow-panel">
+        <div class="workflow-card-head"><h3>🛡️ 装備ビルド</h3><span class="workflow-badge">7部位</span></div>
+        <input id="file" class="file-input" type="file" accept="image/*">
+        <div id="fileStatus" class="workflow-statusline"><span id="workflowEquipmentDot" class="workflow-dot"></span><span>装備画像：未選択</span></div>
+        <div id="workflowEquipmentPreview" class="workflow-preview empty"></div>
+        <div class="workflow-summary"><div class="workflow-metric"><b id="workflowEquipmentImageMetric">—</b>画像サイズ</div><div class="workflow-metric"><b id="workflowEquipmentResultMetric">0 / 7</b>解析部位</div></div>
+        <div class="workflow-actions"><button id="workflowEquipmentROI" class="primary">① 7部位を解析</button><button id="workflowEquipmentOCR" class="primary">② OCR・DB照合</button></div>
+        <div id="workflowEquipmentStatus" class="status">画像を選択してください</div>
+        <div id="workflowEquipmentOut" class="workflow-result"></div>
+      </section>
+      <section class="workflow-panel">
+        <div class="workflow-card-head"><h3>💎 装飾品</h3><span class="workflow-badge">最大8グループ</span></div>
+        <input id="decorationFile" class="file-input" type="file" accept="image/*">
+        <div id="decorationFileStatus" class="workflow-statusline"><span id="workflowDecorationDot" class="workflow-dot"></span><span>装飾品画像：未選択</span></div>
+        <div id="workflowDecorationPreview" class="workflow-preview empty"></div>
+        <div class="workflow-summary"><div class="workflow-metric"><b id="workflowDecorationImageMetric">—</b>画像サイズ</div><div class="workflow-metric"><b id="workflowDecorationResultMetric">0 / 0</b>実スロット</div></div>
+        <div id="decorationDBStatus" class="status">装飾品DB：OCR時に自動取得</div>
+        <div class="workflow-actions"><button id="workflowDecorationROI" class="primary">① グループを解析</button><button id="workflowDecorationOCR" class="primary">② OCR・DB照合</button></div>
+        <div id="workflowDecorationStatus" class="status">画像を選択してください</div>
+        <div id="workflowDecorationOut" class="workflow-result"></div>
+      </section>
+    </div>
+  </section>
 
-<div class="card">
-<h2>2. DBアイコンアンカーで装備位置を確定</h2>
-<div class="note">v4.3.5では、v4.3.4のcore直接検出を維持し、候補群からX軸整合・Y軸等間隔の9行縦列をRANSAC/Grid的に検証します。9行の幾何条件が成立しない場合は9行を生成しません。DB画像は検索・置換には使わず、core→仮想アイコン右下アンカーのgeometry補正だけに使用します。</div>
-<div id="anchorDBStatus" class="status">DBアイコン：準備中</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-  <button id="detectIconAnchor" class="primary">🎯 アイコン検出→DBアンカー補正→9行生成</button>
-</div>
-<div id="iconAnchorStatus" class="status">未実行</div>
-<div id="iconAnchorOut" style="margin-top:8px"></div>
-<div id="iconAnchorStage" class="stage" style="margin-top:10px;display:none"><canvas id="iconAnchorView"></canvas></div>
-</div>
+  <section class="card flow-guide">
+    <div class="section-head"><div><span class="step-label">STEP 2</span><h2>解析結果を確認</h2></div><span class="subtle">誤認識を無理に確定しません</span></div>
+    <div class="check-grid"><div><b>装備</b><span>部位ごとに対応DBだけを検索。α・β・γは名前末尾の証拠を優先します。</span></div><div><b>装飾品</b><span>メイン武器 → サブ武器 → 頭 → 胴 → 腕 → 腰 → 脚 → 護石の物理グループで保持します。</span></div><div><b>スロット上限</b><span>装備側のLvは「上限」です。装着珠のLvが上限以下なら一致として扱います。</span></div><div><b>安全側</b><span>9行・グループ構造が確定しない場合は、推測で装備や珠を割り当てません。</span></div></div>
+  </section>
 
-<div class="card">
-<h2>3. 画面構造を自動検出（従来方式）</h2>
-<div class="note">画面全体を1回OCRし、「メイン武器／サブ武器／頭・胴・腕・腰・脚／護石／装衣」の位置を自動推定します。サブ武器と装衣は検出しても認識対象から除外します。</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-  <button id="detectLayout" class="primary">🔎 画面構造を自動検出</button>
-</div>
-<div id="layoutStatus" class="status">未実行</div>
-<div id="layoutOut" style="margin-top:8px"></div>
-</div>
+  <section class="card reflection-card">
+    <div class="section-head"><div><span class="step-label">STEP 3</span><h2>ビルドへ反映</h2></div><span class="workflow-badge">共通入口</span></div>
+    <p class="note">装備だけ、装飾品だけ、または両方を反映できます。サブ武器は位置合わせには使用しますが、ビルド反映対象には含めません。</p>
+    <button id="workflowReflectBuild" class="primary reflect-button">🔄 解析結果をビルドへ反映</button>
+    <div id="workflowReflectionStatus" class="status">解析結果が揃ったら反映できます</div>
+    <div id="workflowReflectionOut" class="workflow-result"></div>
+  </section>
 
-<div class="card">
-<h2>4. OCR前処理を確認</h2>
-<div class="note">v4.3.3検証：まずcore検出→geometry補正→OCR切り出し境界を確認し、その後に既存OCR処理を確認します。</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-  <button id="previewCropOnly" class="primary">✂️ 切り出しだけ確認</button>
-  <button id="previewPreprocess" class="primary">🖼️ 前処理画像を確認</button>
-  <button id="runPreprocessSpike" class="primary">🧪 前処理Spikeを実行</button>
-</div>
-<div id="preprocessStatus" class="status">未実行</div>
-<div id="preprocessPreview" style="margin-top:10px"></div>
-</div>
+  <section class="card compact-help">
+    <details><summary>この解析のルール</summary><div class="help-body"><p>装飾品画面は最大8物理グループとして解析します。サブ武器グループは保持しますが、ビルドへの反映から除外します。装衣には装飾品スロットがありません。</p><p>装備DBのスロット値は装着可能な最大Lvです。たとえば上限Lv3のスロットにはLv1～3の珠を装着できます。上限値と装着珠Lvを同一視しません。</p><p>OCR結果とDB候補が十分に一致しない場合は「候補なし／確認」に留め、勝手に別の装備・珠へ置き換えません。</p></div></details>
+  </section>
 
-<div class="card">
-<h2>5. 装備名を一括OCR</h2>
-<div class="note">Step 1.25-Aで得た9領域を使い、メイン武器・5防具・護石を個別OCRします。サブ武器と装衣はOCR結果を取得してもシミュレーターには反映しません。各部位は対応するDBだけを候補検索対象にします。</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-  <button id="recognizeEquipment" class="primary">🔎 装備名を一括認識</button>
-</div>
-<div id="equipmentDBStatus" class="status">装備DB：未取得</div>
-<div id="equipmentOCRStatus" class="status">未実行</div>
-<div id="equipmentResults" style="margin-top:10px"></div>
-</div>
+  <div id="equipmentDBStatus" hidden></div><div id="equipmentOCRStatus" hidden></div><div id="equipmentResults" hidden></div>
+  <div id="decorationSlotStatus" hidden></div><div id="decorationSlotOut" hidden></div><div id="decorationOCROut" hidden></div>
 
-<div class="card">
-<h2>6. メイン武器領域（従来診断）</h2>
-<div class="note">
-赤枠が今回OCRする範囲です。まず初期値を試し、必要なら枠をドラッグして調整します。OCRは元画像から直接3倍拡大して処理します。
-このStepでは「画面全体OCR」は行いません。
-</div>
-<div id="stage">
-  <img id="img" alt="">
-  <div id="box">
-    <div class="handle tl"></div><div class="handle tr"></div>
-    <div class="handle bl"></div><div class="handle br"></div>
+  <!-- Legacy diagnostic DOM is retained only as an internal compatibility surface; it is not part of the product UI. -->
+  <div hidden id="legacyCompat">
+    <div id="anchorDBStatus"></div><div id="iconAnchorStatus"></div><div id="iconAnchorOut"></div><div id="iconAnchorStage"><canvas id="iconAnchorView"></canvas></div>
+    <div id="topDownStatus"></div><div id="coordinateAuditStatus"></div><div id="coordinateAuditOut"></div><div id="topDownOut"></div><div id="topDownStage"><canvas id="topDownView"></canvas></div>
+    <div id="equipmentROIStatus"></div><div id="equipmentROIOut"></div><div id="equipmentROIStage"><canvas id="equipmentROIView"></canvas></div>
+    <img id="decorationImg" alt=""><div id="decorationSlotStage"><canvas id="decorationSlotView"></canvas></div>
+    <div id="preprocessStatus"></div><div id="preprocessPreview"></div><div id="layoutStatus"></div><div id="layoutOut"></div>
+    <div id="stage"><img id="img"><div id="box"><div class="handle tl"></div><div class="handle tr"></div><div class="handle bl"></div><div class="handle br"></div></div></div>
+    <input id="x"><input id="y"><input id="w"><input id="h"><input id="nx"><input id="ny"><input id="nw"><input id="nh">
+    <canvas id="crop"></canvas><canvas id="nameCrop"></canvas><div id="dbStatus"></div><div id="recognized"></div><div id="ocrStatus"></div><pre id="raw"></pre><div id="candidateOut"></div>
+    <button id="default"></button><button id="ocr"></button><button id="loadDB"></button><button id="clearDB"></button><button id="calcEquipmentROI"></button><button id="calcEquipmentROIBase"></button><button id="runEquipmentROISelfTest"></button>
+    <button id="detectIconAnchor"></button><button id="detectTopDownGrid"></button><button id="auditCoordinates"></button><button id="detectDecorationSlots"></button><button id="runDecorationSlotSelfTest"></button><button id="runDecorationGroupSelfTest"></button><button id="reflectBuild"></button><button id="detectLayout"></button><button id="previewCropOnly"></button><button id="previewPreprocess"></button><button id="runPreprocessSpike"></button><button id="recognizeEquipment"></button>
+    <div id="buildReflectionStatus"></div><div id="buildReflectionOut"></div>
   </div>
-</div>
-<div class="grid" style="margin-top:10px">
-  <div><label>左 %</label><input id="x" type="number" step="0.1"></div>
-  <div><label>上 %</label><input id="y" type="number" step="0.1"></div>
-  <div><label>幅 %</label><input id="w" type="number" step="0.1"></div>
-  <div><label>高さ %</label><input id="h" type="number" step="0.1"></div>
-</div>
-<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-  <button id="default">初期範囲に戻す</button>
-  <button id="ocr" class="primary">🔎 この範囲だけOCR</button>
-</div>
-</div>
-
-<div class="card">
-<h2>7. 切り出した画像</h2>
-<canvas id="crop" style="max-width:100%;display:block;border-radius:8px;background:#222"></canvas>
-<div style="margin-top:14px;padding-top:12px;border-top:1px solid #c8baa0">
-  <div style="font-weight:700;margin-bottom:5px">武器名だけのOCR領域</div>
-  <div class="note">上段の「メイン武器」というラベルや右側のスロット・アイコンを除き、武器名の行だけを自動で切り出します。ここも必要なら数値で微調整できます。</div>
-  <div class="grid" style="margin-top:8px">
-    <div><label>領域内 左 %</label><input id="nx" type="number" step="0.5" value="12"></div>
-    <div><label>領域内 上 %</label><input id="ny" type="number" step="0.5" value="38"></div>
-    <div><label>領域内 幅 %</label><input id="nw" type="number" step="0.5" value="58"></div>
-    <div><label>領域内 高さ %</label><input id="nh" type="number" step="0.5" value="48"></div>
-  </div>
-  <canvas id="nameCrop" style="max-width:100%;display:block;margin-top:8px;border-radius:8px;background:#222"></canvas>
-</div>
-</div>
-
-<div class="card">
-<h2>8. 全武器DB（従来診断）</h2>
-<div class="note">MHDBの日本語版「武器」データを全件取得して候補検索に使用します。数件だけの固定辞書には戻しません。取得済みデータは端末内にキャッシュします。</div>
-<div id="dbStatus" class="status">武器DB：未取得</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-  <button id="loadDB">全武器DBを読み込む</button>
-  <button id="clearDB">武器DBキャッシュを削除</button>
-</div>
-</div>
-
-<div class="card">
-<h2>9. OCR結果（従来のメイン武器診断）</h2>
-<div id="recognized" class="result">未実行</div>
-<div class="status" id="ocrStatus"></div>
-<pre id="raw"></pre>
-<div style="margin-top:12px;padding-top:12px;border-top:1px solid #c8baa0">
-  <div style="font-weight:700;margin-bottom:5px">MHDB候補・証拠統合</div>
-  <div class="note">「一番近い名前」を無条件に正解にはしません。複数の切り出し・前処理で同じ候補が支持された回数、OCR信頼度、文字列類似度を統合し、差が小さい場合は判定保留にします。</div>
-  <div id="candidateOut" style="margin-top:8px"></div>
-</div>
-</div>
-
-<div class="card">
-<h2>Step 1.25-C v4.2.0 の検証ポイント</h2>
-<div class="note">
-① 赤枠が上段のメイン武器名だけを含む<br>
-② 下段のサブ武器名を含まない<br>
-③ 4方式のうち少なくとも1方式で、日本語の武器名が読める<br>
-④ DBに十分近い候補がない場合は、無理に別の武器名を候補にしない<br>⑤ 「クビドバイン」→「亡国のクピドバイン」のような部分一致を正しく評価する
-</div>
-</div>
 </main>
-
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
@@ -528,6 +440,25 @@ function equipmentNameCropRectV312(region, imageWidth, imageHeight) {
   const name = region.nameAnchor;
   const lineH = Math.max(10, Number(name?.height) || Number(region.labelHeight) || Math.min(34, pitch * 0.28));
 
+  // v4.5.1: explicit name-band refinement takes priority. Do not shift the
+  // detected band again. The previous path found the correct peak and then
+  // moved the crop down by another ~0.4 line, which caused empty OCR on the
+  // actual 3840x2160 equipment screenshot.
+  if (region.refined && region.nameAnchor && Number.isFinite(Number(region.nameAnchor.y))) {
+    const a=region.nameAnchor;
+    const rect=clampRectToImage({
+      x:Number(a.x), y:Number(a.y),
+      width:Number(a.width), height:Number(a.height)
+    },iw,ih);
+    return {
+      ...rect,
+      pitch,
+      source:'v4.5.1-refined-name-band',
+      anchorRect:{x:Number(a.x),y:Number(a.y),width:Number(a.width),height:Number(a.height)},
+      nameAnchor:{x:rect.x,y:rect.y,width:rect.width,height:rect.height}
+    };
+  }
+
   // v4.2.0: use the OCR rectangle produced by the generic icon grid directly.
   // The intended geometry is: the icon bottom-right is the OCR band's vertical
   // center; the band extends H/2 above and H/2 below that anchor.
@@ -636,6 +567,30 @@ function clampRectToImage(rect,imageWidth,imageHeight){
   return {x,y,width,height,source:rect?.source};
 }
 
+// v4.5.9: MHDB's armor `slots` field is the pre-limit-break value.
+// The simulator's equipment model uses the max limit-break state for armor.
+// Wilds limit-break slot expansion for the relevant RARE5/6 armor follows the
+// documented pattern: existing slot levels +1, and a one-slot armor gains a
+// second Lv1 slot. Keep the raw/base slots as well so the source of the
+// effective value remains explicit and reversible.
+function maxLimitBreakArmorSlotLevels(baseLevels, rarity) {
+  const base=Array.isArray(baseLevels)?baseLevels.slice(0,3).map(Number).filter(n=>Number.isFinite(n)&&n>=1&&n<=3):[];
+  const r=Number(rarity);
+  if(!(r===5 || r===6)) return base;
+  if(base.length===0) return [1,1];
+  const upgraded=base.map(n=>Math.min(3,n+1));
+  if(base.length===1) upgraded.push(1);
+  return upgraded.slice(0,3);
+}
+
+function effectiveArmorSlotLevels(row) {
+  if(!row) return [];
+  const explicit=normalizeDecorationSlotLevels(row?.limitBreakSlotLevels ?? row?.maxLimitBreakSlots);
+  if(explicit.length) return explicit;
+  const base=normalizeDecorationSlotLevels(row?.slotLevels ?? row?.decorationSlots ?? row?.slots);
+  return maxLimitBreakArmorSlotLevels(base,row?.rarity);
+}
+
 function normalizeEquipmentCandidateRows(rows, slot) {
   const allowed = {
     mainWeapon: 'weapon', head: 'head', chest: 'chest', arms: 'arms',
@@ -644,14 +599,29 @@ function normalizeEquipmentCandidateRows(rows, slot) {
   const want = allowed[slot];
   if (!want) return [];
   const seen = new Set();
-  return (Array.isArray(rows) ? rows : []).map((r, i) => ({
-    id: r?.id ?? null,
-    gameId: r?.gameId ?? null,
-    kind: String(r?.kind || ''),
-    name: String(r?.name || '').trim(),
-    rankLevel: r?.rankLevel ?? null,
-    sourceIndex: i
-  })).filter(r => r.name && r.kind === want).filter(r => {
+  return (Array.isArray(rows) ? rows : []).map((r, i) => {
+    const baseSlots=normalizeDecorationSlotLevels(r?.baseSlotLevels ?? r?.slotLevels ?? r?.decorationSlots ?? r?.slots);
+    // Keep slotLevels as the DB/base value for compatibility with the established
+    // equipment candidate matcher. Effective max-limit-break slots are exposed
+    // separately through limitBreakSlotLevels and extractDecorationSlotLevels().
+    const effectiveSlotLevels=(slot==='head'||slot==='chest'||slot==='arms'||slot==='waist'||slot==='legs')
+      ? maxLimitBreakArmorSlotLevels(baseSlots,r?.rarity)
+      : baseSlots.slice();
+    return {
+      id: r?.id ?? null,
+      gameId: r?.gameId ?? null,
+      kind: String(r?.kind || ''),
+      name: String(r?.name || '').trim(),
+      rankLevel: r?.rankLevel ?? null,
+      rarity: r?.rarity ?? null,
+      slots: r?.slots ?? null,
+      decorationSlots: r?.decorationSlots ?? null,
+      baseSlotLevels: baseSlots,
+      limitBreakSlotLevels: (slot==='head'||slot==='chest'||slot==='arms'||slot==='waist'||slot==='legs') ? effectiveSlotLevels : [],
+      slotLevels: baseSlots,
+      sourceIndex: i
+    };
+  }).filter(r => r.name && r.kind === want).filter(r => {
     const key = `${r.kind}\u0000${r.id ?? ''}\u0000${r.gameId ?? ''}\u0000${r.name}\u0000${r.rankLevel ?? ''}`;
     if (seen.has(key)) return false;
     seen.add(key); return true;
@@ -874,10 +844,12 @@ function updateNameCrop(){
 const oldUpdateCrop=updateCrop; updateCrop=function(){oldUpdateCrop();updateNameCrop()};
 
 // ---- 装備DB（Step 1.25-B） ----
+// v4.5.7: equipment slot caches are versioned because an older cached row could
+// contain only the first slot (for example [1] instead of [2,1]).
 const ARMOR_API='https://wilds.mhdb.io/ja/armor';
 const CHARM_API='https://wilds.mhdb.io/ja/charms';
-const ARMOR_CACHE_KEY='DEV_MWWSKILLSIM_OCR_ARMOR_V1';
-const CHARM_CACHE_KEY='DEV_MWWSKILLSIM_OCR_CHARMS_V1';
+const ARMOR_CACHE_KEY='DEV_MWWSKILLSIM_OCR_ARMOR_V4';
+const CHARM_CACHE_KEY='DEV_MWWSKILLSIM_OCR_CHARMS_V2';
 let armorDB=[], charmDB=[];
 let armorReady=false, charmReady=false;
 let armorPromise=null, charmPromise=null;
@@ -885,25 +857,25 @@ function setEquipmentDBStatus(text, cls=''){
   const el=$('equipmentDBStatus'); if(el) el.innerHTML=`装備DB：<span class="${cls}">${text}</span>`;
 }
 function normalizeArmorRows(rows){
-  return normalizeEquipmentCandidateRows(rows.map(r=>({id:r?.id,gameId:r?.gameId,kind:String(r?.kind||''),name:r?.name})), 'head')
+  return normalizeEquipmentCandidateRows(rows.map(r=>({id:r?.id,gameId:r?.gameId,kind:String(r?.kind||''),name:r?.name,rarity:r?.rarity,slots:r?.slots,decorationSlots:r?.decorationSlots,slotLevels:r?.slotLevels,limitBreakSlotLevels:r?.limitBreakSlotLevels})), 'head')
     .concat(normalizeEquipmentCandidateRows(rows,'chest'),normalizeEquipmentCandidateRows(rows,'arms'),normalizeEquipmentCandidateRows(rows,'waist'),normalizeEquipmentCandidateRows(rows,'legs'));
 }
 async function fetchEquipmentPage(api, offset){
-  const u=`${api}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true}))}`;
+  const u=`${api}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true,rarity:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'}); if(!r.ok) throw new Error(`装備DB HTTP ${r.status}`);
   const data=await r.json(); if(!Array.isArray(data)) throw new Error('装備DBの応答が配列ではありません'); return data;
 }
 async function fetchCharmPage(offset){
   // Charm names live on ranks, not on the top-level Charm object. Keep ranks
   // in this projection or OCR candidate construction would silently get zero rows.
-  const u=`${CHARM_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,ranks:true}))}`;
+  const u=`${CHARM_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,ranks:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'}); if(!r.ok) throw new Error(`護石DB HTTP ${r.status}`);
   const data=await r.json(); if(!Array.isArray(data)) throw new Error('護石DBの応答が配列ではありません'); return data;
 }
 async function loadArmorDB(force=false){
   if(armorReady&&!force)return armorDB; if(armorPromise&&!force)return armorPromise;
   armorPromise=(async()=>{
-    if(!force){try{const c=JSON.parse(localStorage.getItem(ARMOR_CACHE_KEY)||'null');if(Array.isArray(c?.rows)&&c.rows.length){armorDB=c.rows;armorReady=true;return armorDB;}}catch(e){}}
+    if(!force){try{const c=JSON.parse(localStorage.getItem(ARMOR_CACHE_KEY)||'null');if(Array.isArray(c?.rows)&&c.rows.length){armorDB=normalizeArmorRows(c.rows);if(armorDB.length){armorReady=true;return armorDB;}}}catch(e){}}
     const all=[];let offset=0;
     for(let page=0;page<100;page++){const part=await fetchEquipmentPage(ARMOR_API,offset);all.push(...part);if(part.length<250)break;offset+=250;}
     armorDB=normalizeArmorRows(all); if(!armorDB.length)throw new Error('防具DBが0件でした'); armorReady=true;
@@ -918,7 +890,7 @@ async function loadCharmDB(force=false){
     const all=[];let offset=0;
     for(let page=0;page<100;page++){const part=await fetchCharmPage(offset);all.push(...part);if(part.length<250)break;offset+=250;}
     const rows=[]; const seen=new Set();
-    for(const c of all){for(const rank of Array.isArray(c?.ranks)?c.ranks:[]){const name=String(rank?.name||'').trim();if(!name)continue;const row={id:c?.id??null,gameId:c?.gameId??null,kind:'charm',name,rankLevel:rank?.level??null};const key=`${row.id}\u0000${row.rankLevel}\u0000${row.name}`;if(seen.has(key))continue;seen.add(key);rows.push(row);}}
+    for(const c of all){for(const rank of Array.isArray(c?.ranks)?c.ranks:[]){const name=String(rank?.name||'').trim();if(!name)continue;const row={id:c?.id??null,gameId:c?.gameId??null,kind:'charm',name,rankLevel:rank?.level??null,slots:rank?.slots ?? c?.slots ?? null,decorationSlots:rank?.decorationSlots ?? c?.decorationSlots ?? null,slotLevels:normalizeDecorationSlotLevels(rank?.slotLevels ?? rank?.decorationSlots ?? rank?.slots ?? c?.slotLevels ?? c?.decorationSlots ?? c?.slots)};const key=`${row.id}\u0000${row.rankLevel}\u0000${row.name}`;if(seen.has(key))continue;seen.add(key);rows.push(row);}}
     charmDB=rows;if(!charmDB.length)throw new Error('護石DBが0件でした');charmReady=true;
     try{localStorage.setItem(CHARM_CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),rows:charmDB}));}catch(e){} return charmDB;
   })();
@@ -947,7 +919,10 @@ function normalizeWeaponRows(rows){
     id:w?.id ?? null,
     gameId:w?.gameId ?? null,
     kind:String(w?.kind||''),
-    name:String(w?.name||'').trim()
+    name:String(w?.name||'').trim(),
+    slots:w?.slots ?? null,
+    decorationSlots:w?.decorationSlots ?? null,
+    slotLevels:w?.slotLevels ?? null
   })).filter(w=>w.name).filter(w=>{
     const key=`${w.kind}\u0000${w.gameId??''}\u0000${w.id??''}\u0000${w.name}`;
     if(seen.has(key))return false;seen.add(key);return true;
@@ -977,7 +952,7 @@ function searchWeaponItems(raw){
   return ranked.length?ranked:weaponDB;
 }
 async function fetchWeaponPage(offset){
-  const u=`${WEAPON_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true}))}`;
+  const u=`${WEAPON_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true,rarity:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'});
   if(!r.ok)throw new Error(`武器DB HTTP ${r.status}`);
   const data=await r.json();
@@ -1396,7 +1371,7 @@ function applyMildUnsharp(ctx,w,h){
 function extractSubtypeTail(raw){
   const s=String(raw||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/[|｜]/g,' ').replace(/\s+/g,' ').trim();
   // Noise after the subtype is common in the Wilds UI OCR crop.
-  const m=s.match(/(?:^|[^A-Za-z])(80q|bq|Bq|BQ|b|B|6|8|aq|nq|a|A|q|v|V|y|Y|ν|α|β|γ|𝛂|𝛽|𝛾)(?=\s*(?:[^A-Za-z0-9]*)$)/iu);
+  const m=s.match(/(?:^|[^A-Za-z0-9])(80q|b6|bq|aq|nq|Bq|BQ|b|B|6|8|a|A|q|v|V|y|Y|ν|α|β|γ|𝛂|𝛽|𝛾)(?=\s*(?:[^A-Za-z0-9]*)$)/iu);
   return m?m[1]:'';
 }
 function subtypeTailRect(region,imageWidth,imageHeight){
@@ -1443,7 +1418,9 @@ function prepareEquipmentOCRCanvas(region,mode='grayscale',band='name'){
   ctx.imageSmoothingQuality='high';
   ctx.drawImage($('img'),rect.x,rect.y,sw,sh,0,0,out.width,out.height);
 
-  if(mode==='hsv_white') whiteTextHSV(ctx,out.width,out.height);
+  if(mode==='raw_color') { /* keep original pixels */ }
+  else if(mode==='soft_white') softWhiteText(ctx,out.width,out.height);
+  else if(mode==='hsv_white') whiteTextHSV(ctx,out.width,out.height);
   else if(mode==='local_contrast'){applyLocalContrast(ctx,out.width,out.height);applyMildUnsharp(ctx,out.width,out.height);}
   else if(mode==='grayscale'){
     const d=ctx.getImageData(0,0,out.width,out.height);
@@ -1463,7 +1440,7 @@ function prepareEquipmentOCRCanvas(region,mode='grayscale',band='name'){
     }
     ctx.putImageData(d,0,0);
   }
-  const pad=(mode==='white_extract'||mode==='hsv_white'||mode==='local_contrast'||mode==='grayscale')?'#000000':'#FFFFFF';
+  const pad=(mode==='raw_color'||mode==='white_extract'||mode==='hsv_white'||mode==='soft_white'||mode==='local_contrast'||mode==='grayscale')?'#000000':'#FFFFFF';
   return addPaddingCustom(out,Math.max(15,Math.round(out.width*.04)),Math.max(15,Math.round(out.height*.10)),pad);
 }
 function equipmentRegionCanvas(region, mode='color', band='full'){
@@ -1575,13 +1552,13 @@ function armorSeriesScore(raw,itemName){
   return robustArmorSeriesSimilarity(rawBase,itemBase);
 }
 function parseSubtypeFromTail(tailStr){
-  // Tail OCR often includes UI punctuation/noise after the subtype token.
-  // Keep the parser tail-only, but tolerate trailing dashes/digits/noise.
+  // MH Wilds equipment OCR commonly turns the terminal β marker into B6/BQ/bq.
+  // Treat these as beta only when they occur in the terminal subtype tail.
   const clean=String(tailStr||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim().toLowerCase();
   if(!clean)return '';
   const token=clean.replace(/[^a-zαβγν𝛂𝛽𝛾0-9]+$/iu,'').trim();
-  if(/^(?:80q|bq|β|b|6|𝛽)$/iu.test(token))return 'β';
-  if(/^(?:aq|α|a|q|𝛂)$/iu.test(token))return 'α';
+  if(/^(?:b6|bq|80q|β|b|6|8|𝛽)$/iu.test(token))return 'β';
+  if(/^(?:aq|nq|α|a|q|𝛂)$/iu.test(token))return 'α';
   if(/^(?:γ|y|v|ν|𝛾)$/iu.test(token))return 'γ';
   return '';
 }
@@ -1731,7 +1708,10 @@ function rankArmorSeriesV26(raw,conf,items,category){
   return scored.slice(0,5);
 }
 function aggregateHierarchicalArmorCandidatesV26(rows,items,category,allArmorItems){
-  const list=Array.isArray(rows)?rows:[]; const agg=new Map();
+  // v4.5.11: subtype evidence is authoritative when OCR identifies α/β/γ;
+  // do not allow equal series scores to leave α/β tied.
+
+  const list=Array.isArray(rows)?rows.filter(r=>equipmentOCRUsableText(r?.raw)):[]; if(!list.length)return []; const agg=new Map();
   const searchPool=Array.isArray(allArmorItems)&&allArmorItems.length?allArmorItems:items;
   for(const row of list){
     const ranked=rankArmorSeriesV26(row.raw,row.conf,searchPool,category); if(!ranked.length)continue;
@@ -1758,7 +1738,10 @@ function aggregateHierarchicalArmorCandidatesV26(rows,items,category,allArmorIte
     const categoryVariants=topFamily.items.filter(item=>String(item?.category||item?.kind||'')===String(category)||String(item?.kind||'')===wantKind);
     if(!categoryVariants.length)continue;
     row.ranked=categoryVariants.map(item=>({item,seriesName:topFamily.seriesName}));
-    const detected=row.subtypeDetected||parseSubtypeFromTail(parseArmorStructure(row.raw,category).tailPart);
+    const rawSubtype=parseSubtypeFromTail(parseArmorStructure(row.raw,category).tailPart);
+    // The full-name OCR contains the actual terminal token (e.g. B6 in "護雷顎竜ヘルムB6").
+    // Prefer that explicit evidence over the separate narrow-tail OCR, which can misread a short token.
+    const detected=rawSubtype||row.subtypeDetected;
     for(const item of categoryVariants){
       const parts=splitEquipmentSubtype(item.name); const subtype=parts.subtype;
       const subtypeEvidence=subtype&&detected?(detected===subtype?1:0):-1;
@@ -1849,12 +1832,14 @@ function rankGenericEquipmentCandidates(raw,conf,items){
   return pool.map(item=>{const w=weightedNameDistance(raw,item.name);const cw=confidenceWeight(conf);return {...item,nameScore:w.score,score:.85*w.score+.15*cw,confidenceWeight:cw,details:w.details,matched:w.matched};}).sort((a,b)=>b.score-a.score);
 }
 function aggregateGenericEquipmentCandidates(rows,items){
+  const list=Array.isArray(rows)?rows.filter(r=>equipmentOCRUsableText(r?.raw)):[];
+  if(!list.length)return [];
   const agg=new Map();
-  for(const row of rows){
+  for(const row of list){
     const ranked=rankGenericEquipmentCandidates(row.raw,row.conf,items).slice(0,3); row.ranked=ranked;
-    ranked.forEach((cand,rank)=>{const rw=rank===0?1:rank===1?.65:.4;const old=agg.get(cand.name)||{...cand,support:0,sumName:0,sumScore:0,bestName:0,confSum:0,total:rows.length};if(rank===0)old.support++;old.sumName+=cand.nameScore*rw;old.sumScore+=cand.score*rw;old.bestName=Math.max(old.bestName,cand.nameScore);old.confSum+=rank===0?row.conf*1:0;old.id=cand.id;old.gameId=cand.gameId;old.kind=cand.kind;agg.set(cand.name,old);});
+    ranked.forEach((cand,rank)=>{const rw=rank===0?1:rank===1?.65:.4;const old=agg.get(cand.name)||{...cand,support:0,sumName:0,sumScore:0,bestName:0,confSum:0,total:list.length};if(rank===0)old.support++;old.sumName+=cand.nameScore*rw;old.sumScore+=cand.score*rw;old.bestName=Math.max(old.bestName,cand.nameScore);old.confSum+=rank===0?row.conf*1:0;old.id=cand.id;old.gameId=cand.gameId;old.kind=cand.kind;agg.set(cand.name,old);});
   }
-  return [...agg.values()].map(x=>{const supportRows=Math.max(1,x.support);const avgName=x.sumName/Math.max(1,rows.length);const confAvg=x.support?x.confSum/x.support:0;const supportBonus=x.support===rows.length&&rows.length>=2?.08:x.support>=2?.04:x.support===1&&rows.length===1?.04:0;const total=Math.min(1,.78*avgName+.15*x.bestName+.07*(confAvg/100)+supportBonus);return {...x,avgNameScore:avgName,bestNameScore:x.bestName,confAvg,totalScore:total,supportBonus};}).sort((a,b)=>b.totalScore-a.totalScore);
+  return [...agg.values()].map(x=>{const supportRows=Math.max(1,x.support);const avgName=x.sumName/Math.max(1,list.length);const confAvg=x.support?x.confSum/x.support:0;const supportBonus=x.support===list.length&&list.length>=2?.08:x.support>=2?.04:x.support===1&&list.length===1?.04:0;const total=Math.min(1,.78*avgName+.15*x.bestName+.07*(confAvg/100)+supportBonus);return {...x,avgNameScore:avgName,bestNameScore:x.bestName,confAvg,totalScore:total,supportBonus};}).sort((a,b)=>b.totalScore-a.totalScore);
 }
 function equipmentDecision(top,second){
   if(!top)return {level:'manual',label:'手動入力'};
@@ -1871,9 +1856,10 @@ function equipmentOCRShouldStop(ranked, rows) {
   return top.totalScore>=0.78 && top.avgNameScore>=0.60 && top.confAvg>=55 && gap>=0.07;
 }
 const EQUIPMENT_OCR_STANDARD_PASSES=[
-  ['white_extract','白文字強調'],
-  ['hsv_white','白文字・色除去'],
-  ['grayscale','グレースケール']
+  ['raw_color','元画像'],
+  ['grayscale','グレースケール'],
+  ['soft_white','ソフト白文字'],
+  ['hsv_white','白文字・色除去']
 ];
 const EQUIPMENT_OCR_RESCUE_PASSES=[
   ['local_contrast','局所コントラスト救済'],
@@ -2040,31 +2026,423 @@ function renderCropOnlySpike(){
 if(typeof renderCropOnlySpike==='function') $('previewCropOnly').onclick=renderCropOnlySpike;
 $('previewPreprocess').onclick=renderPreprocessPreview;
 
+
+// ---- 装飾品DB（Step 1.25-C v4.5.1） ----
+// MHDB Japanese decoration list: one row per decoration. OCR never depends on
+// this network call; the DB is a post-OCR candidate source and is cached locally.
+const DECORATION_API='https://wilds.mhdb.io/ja/decorations';
+const DECORATION_CACHE_KEY='DEV_MWWSKILLSIM_OCR_DECORATIONS_V1';
+let decorationDB=[];
+let decorationDBReady=false;
+let decorationDBPromise=null;
+let decorationGramIndex=new Map();
+
+function setDecorationDBStatus(text, cls=''){
+  const el=$('decorationDBStatus');
+  if(el) el.innerHTML=`装飾品DB：<span class="${cls}">${text}</span>`;
+}
+function normalizeDecorationName(v){
+  return String(v||'').normalize('NFKC').replace(/[［］]/g,'【').replace(/[\[\]]/g,'【').replace(/\s+/g,'').trim();
+}
+function normalizeDecorationRows(rows){
+  const seen=new Set(); const out=[];
+  for(const d of (Array.isArray(rows)?rows:[])){
+    const name=normalizeDecorationName(d?.name);
+    if(!name)continue;
+    const row={
+      id:d?.id??null, gameId:d?.gameId??null, name,
+      description:d?.description??null,
+      value:d?.value??null,
+      slot:Number.isFinite(Number(d?.slot))?Number(d.slot):null,
+      rarity:Number.isFinite(Number(d?.rarity))?Number(d.rarity):null,
+      kind:String(d?.kind||''),
+      skills:Array.isArray(d?.skills)?d.skills.map(x=>({
+        id:x?.skill?.id??null, gameId:x?.skill?.gameId??null,
+        name:x?.skill?.name??null, level:x?.level??null, description:x?.description??null
+      })):[],
+      icon:d?.icon?{color:d.icon.color??null,colorId:d.icon.colorId??null}:null
+    };
+    const key=`${row.gameId??''}\u0000${row.id??''}\u0000${row.name}\u0000${row.slot??''}\u0000${row.kind}`;
+    if(seen.has(key))continue; seen.add(key); out.push(row);
+  }
+  return out;
+}
+function rebuildDecorationGramIndex(){
+  decorationGramIndex=new Map();
+  decorationDB.forEach((item,idx)=>{
+    const n=normJPLoose(item.name.replace(/[【［].*?[】］]/g,''));
+    const seen=new Set();
+    for(let i=0;i<n.length-1;i++){
+      const g=n.slice(i,i+2); if(seen.has(g))continue; seen.add(g);
+      if(!decorationGramIndex.has(g))decorationGramIndex.set(g,new Set());
+      decorationGramIndex.get(g).add(idx);
+    }
+  });
+}
+async function fetchDecorationPage(offset){
+  const projection={id:true,gameId:true,name:true,description:true,value:true,slot:true,rarity:true,kind:true,skills:true,icon:true};
+  const u=`${DECORATION_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify(projection))}`;
+  const r=await fetch(u,{cache:'no-store',mode:'cors'});
+  if(!r.ok)throw new Error(`装飾品DB HTTP ${r.status}`);
+  const data=await r.json();
+  if(!Array.isArray(data))throw new Error('装飾品DBの応答が配列ではありません');
+  return data;
+}
+async function loadDecorationDB(force=false){
+  if(decorationDBReady&&!force)return decorationDB;
+  if(decorationDBPromise&&!force)return decorationDBPromise;
+  decorationDBPromise=(async()=>{
+    if(!force){
+      try{
+        const c=JSON.parse(localStorage.getItem(DECORATION_CACHE_KEY)||'null');
+        const rows=normalizeDecorationRows(c?.rows||c);
+        if(rows.length){decorationDB=rows;rebuildDecorationGramIndex();decorationDBReady=true;setDecorationDBStatus(`${rows.length.toLocaleString()}件（端末キャッシュ）`,'ok');return decorationDB;}
+      }catch(e){}
+    }
+    setDecorationDBStatus('全件取得中…','info');
+    const all=[]; let offset=0;
+    for(let page=0;page<100;page++){
+      const part=await fetchDecorationPage(offset); all.push(...part);
+      setDecorationDBStatus(`全件取得中… ${all.length.toLocaleString()}件`,'info');
+      if(part.length<250)break; offset+=250;
+    }
+    const rows=normalizeDecorationRows(all);
+    if(!rows.length)throw new Error('装飾品DBが0件でした');
+    decorationDB=rows; rebuildDecorationGramIndex(); decorationDBReady=true;
+    try{localStorage.setItem(DECORATION_CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),rows}));}catch(e){}
+    setDecorationDBStatus(`${rows.length.toLocaleString()}件（最新取得）`,'ok');
+    return decorationDB;
+  })();
+  try{return await decorationDBPromise}
+  catch(e){decorationDBPromise=null;decorationDBReady=false;setDecorationDBStatus('取得失敗：'+e.message,'bad');throw e}
+  finally{decorationDBPromise=null}
+}
+function decorationKindForEquipmentKey(key){
+  return key==='mainWeapon'||key==='subWeapon'?'weapon':'armor';
+}
+function decorationBaseName(raw){
+  return normJPLoose(String(raw||'')
+    .replace(/[【［\[].*?[】］\]]/g,'')
+    .replace(/\bLv\.?\s*[1-3]\b/ig,'')
+    .replace(/[0-9]+$/g,''));
+}
+function decorationCoreName(raw){
+  // 「珠」までをシリーズ核として扱う。
+  const s=decorationBaseName(raw).replace(/[|｜]/g,'');
+  const i=s.indexOf('珠');
+  return i>=0 ? s.slice(0,i+1) : s.replace(/(?:I{1,3}|V|[１２３]|[旧昌号告])$/,'');
+}
+function decorationVariantKey(raw){
+  // 同じ核・同じslotでも II / III のような別DB行があるため、
+  // 核だけで選ばず枝番号も照合する。認識不能な末尾は空文字にして
+  // 勝手にIII等へ決め打ちしない。
+  const s=normJPLoose(String(raw||'')).replace(/[【［\[].*?[】］\]]/g,'').trim();
+  const m=s.match(/(?:珠)\s*(I{1,3}|V|[1-3]|[１２３])/i);
+  if(!m)return '';
+  const v=m[1].toUpperCase().replace(/[１２３]/g,x=>({'１':'1','２':'2','３':'3'}[x]));
+  return v==='1'?'I':v==='2'?'II':v==='3'?'III':v;
+}
+function decorationVariantCompatible(raw,cand){
+  const a=decorationVariantKey(raw), b=decorationVariantKey(cand?.name);
+  if(!a || !b)return null;
+  return a===b;
+}
+function searchDecorationItems(raw, maxSlot=null, expectedKind=null){
+  if(!decorationDB.length)return [];
+  let pool=decorationDB;
+  if(expectedKind) pool=pool.filter(x=>String(x.kind)===String(expectedKind));
+  // 装備側のslotは上限値。実際の装飾品Lvを拘束しない。
+  if(maxSlot!=null) pool=pool.filter(x=>Number(x.slot)<=Number(maxSlot));
+  return pool;
+}
+function scoreDecorationCandidate(raw,cand,maxSlot=null,expectedKind=null){
+  const a=decorationBaseName(raw), b=decorationBaseName(cand.name);
+  const ac=decorationCoreName(raw), bc=decorationCoreName(cand.name);
+  if(!a||!b||!ac||!bc)return {score:0,coreScore:0,exactCore:false};
+  const edit=1-lev(a,b)/Math.max(a.length,b.length,1);
+  const coreScore=1-lev(ac,bc)/Math.max(ac.length,bc.length,1);
+  const exactCore=ac===bc;
+  const variant=decorationVariantCompatible(raw,cand);
+  const rawLv=parseDecorationSlotLevel(raw);
+  const contain=(a.includes(b)||b.includes(a))?0.05:0;
+  const exact=a===b?0.20:0;
+  const variantBonus=variant===true?0.24:(variant===false?-0.28:0);
+  const slot=(rawLv!=null && Number(cand.slot)===Number(rawLv))?0.10:0;
+  const kind=(expectedKind && cand.kind===expectedKind)?0.05:0;
+  const score=Math.max(0,Math.min(1,coreScore*0.55+edit*0.16+contain+exact+variantBonus+slot+kind));
+  return {score,coreScore,exactCore,variant,rawLv};
+}
+function matchDecorationCandidates(raw,maxSlot=null,expectedKind=null){
+  if(!raw||!decorationDB.length)return [];
+  const pool=searchDecorationItems(raw,maxSlot,expectedKind);
+  if(!pool.length)return [];
+  const ac=decorationCoreName(raw);
+  const exactCorePool=pool.filter(c=>decorationCoreName(c.name)===ac);
+  const targetPool=exactCorePool.length ? exactCorePool : pool;
+  const scored=targetPool.map(c=>{const m=scoreDecorationCandidate(raw,c,maxSlot,expectedKind);return {...c,matchScore:m.score,coreMatchScore:m.coreScore,exactCore:m.exactCore,variantMatch:m.variant};});
+  const rawVariant=decorationVariantKey(raw);
+  const variantPool=rawVariant ? scored.filter(c=>c.variantMatch===true) : scored;
+  const finalPool=rawVariant && variantPool.length ? variantPool : (rawVariant ? [] : scored);
+  finalPool.sort((a,b)=>b.matchScore-a.matchScore);
+  if(rawVariant && !variantPool.length)return [];
+  if(!exactCorePool.length && (!finalPool[0] || finalPool[0].coreMatchScore<0.62))return [];
+  return finalPool.slice(0,5);
+}
+$('loadDecorationDB')?.addEventListener('click',async()=>{const b=$('loadDecorationDB');b.disabled=true;try{await loadDecorationDB(true)}catch(e){}finally{b.disabled=false}});
+$('clearDecorationDB')?.addEventListener('click',()=>{try{localStorage.removeItem(DECORATION_CACHE_KEY)}catch(e){} decorationDB=[];decorationDBReady=false;decorationDBPromise=null;decorationGramIndex=new Map();setDecorationDBStatus('未取得')});
+
+function normalizeDecorationSlotLevels(value) {
+  const out=[];
+  const seen=new Set();
+  const push=(v,depth=0)=>{
+    if(v==null || depth>6)return;
+    if(typeof v==='number' && Number.isFinite(v)){ const n=Math.round(v); if(n>=1&&n<=3) out.push(n); return; }
+    if(typeof v==='string'){
+      const ms=v.match(/[1-3]/g)||[];
+      ms.forEach(m=>out.push(Number(m)));
+      return;
+    }
+    if(Array.isArray(v)){ v.forEach(x=>push(x,depth+1)); return; }
+    if(typeof v==='object'){
+      if(seen.has(v))return; seen.add(v);
+      // Prefer the actual slot collections. Do not stop after the first key:
+      // a previous implementation returned after the first nested value and
+      // could reduce [2,1] to [2].
+      let usedCollection=false;
+      for(const k of ['slotLevels','decorationSlots','slots','levels']){
+        if(v[k]!=null){ usedCollection=true; push(v[k],depth+1); }
+      }
+      if(!usedCollection){
+        for(const k of ['level','slotLevel','size','rank','value']){
+          if(v[k]!=null) push(v[k],depth+1);
+        }
+      }
+      // API/cache variants can expose slots as slot1/slot2/slot3 or level1/2/3.
+      // Read these keys in numeric order so [2,1] cannot collapse to [2].
+      const keyed=Object.keys(v)
+        .filter(k=>/^(?:slot|decorationSlot|level)?\s*[1-3]$/i.test(k))
+        .sort((a,b)=>Number((a.match(/[1-3]/)||['0'])[0])-Number((b.match(/[1-3]/)||['0'])[0]));
+      keyed.forEach(k=>push(v[k],depth+1));
+    }
+  };
+  push(value);
+  return out.slice(0,3);
+}
+
+
+function extractDecorationSlotLevels(row) {
+  if(!row)return [];
+  const explicit=normalizeDecorationSlotLevels(row?.limitBreakSlotLevels ?? row?.maxLimitBreakSlots);
+  if(explicit.length)return explicit;
+  const base=normalizeDecorationSlotLevels(row?.baseSlotLevels ?? row?.slotLevels ?? row?.decorationSlots ?? row?.slots);
+  const kind=String(row?.kind||'');
+  if(['head','chest','arms','waist','legs'].includes(kind)) return maxLimitBreakArmorSlotLevels(base,row?.rarity);
+  return base;
+}
+
+function runEquipmentSlotExtractionSelfTest() {
+  const cases = [
+    {name:'mainWeapon', value:{slots:[3,3,3]}, expected:[3,3,3]},
+    {name:'subWeapon', value:{slots:[3,3,1]}, expected:[3,3,1]},
+    {name:'head', value:{slots:[3,1]}, expected:[3,1]},
+    {name:'chest', value:{slots:[3,2]}, expected:[3,2]},
+    {name:'arms', value:{slots:[2,1]}, expected:[2,1]},
+    {name:'waist', value:{slots:[2,1]}, expected:[2,1]},
+    {name:'legs', value:{slots:[3,3]}, expected:[3,3]},
+    {name:'charm', value:{slots:[1,1,1]}, expected:[1,1,1]},
+    {name:'nested', value:{decorationSlots:{slots:[2,1]}}, expected:[2,1]},
+    {name:'numericKeys', value:{slot1:2,slot2:1}, expected:[2,1]}
+  ];
+  const basic=cases.every(c=>JSON.stringify(normalizeDecorationSlotLevels(c.value))===JSON.stringify(c.expected));
+  const limitCases=[
+    {name:'rare6 one slot',base:[1],rarity:6,expected:[2,1]},
+    {name:'rare6 two slots',base:[2,1],rarity:6,expected:[3,2]},
+    {name:'rare6 three slots',base:[2,2,1],rarity:6,expected:[3,3,2]},
+    {name:'rare8 unchanged',base:[3,2],rarity:8,expected:[3,2]},
+    {name:'rare6 no slots',base:[],rarity:6,expected:[1,1]}
+  ];
+  const limitOk=limitCases.every(c=>JSON.stringify(maxLimitBreakArmorSlotLevels(c.base,c.rarity))===JSON.stringify(c.expected));
+  return basic&&limitOk;
+}
+
+function getEquipmentExpectedGroupSlots(key) {
+  const ctx=window.equipmentContext;
+  const row=ctx?.results?.find(x=>x.key===key);
+  return extractDecorationSlotLevels(row?.best);
+}
+
+function updateEquipmentContext() {
+  const output = Array.isArray(window.lastEquipmentOCR) ? window.lastEquipmentOCR : [];
+  window.equipmentContext = output.length ? {
+    source: 'equipment',
+    analyzedAt: new Date().toISOString(),
+    results: output.map(x => ({
+      key: x.key,
+      best: x.best ? {
+        name: x.best.name || null,
+        totalScore: Number(x.best.totalScore ?? x.best.final ?? 0),
+        decision: x.best.decision?.level || null,
+        slots: x.best.slots || x.best.decorationSlots || null,
+        slotLevels: extractDecorationSlotLevels(x.best),
+        raw: x.rows?.map(r => r.raw).filter(Boolean) || []
+      } : null,
+      ranked: Array.isArray(x.ranked) ? x.ranked.map(c => ({
+        name: c.name || null,
+        totalScore: Number(c.totalScore ?? c.final ?? 0),
+        decision: c.decision?.level || null,
+        slots: c.slots || c.decorationSlots || null,
+        slotLevels: extractDecorationSlotLevels(c)
+      })) : []
+    }))
+  } : null;
+  return window.equipmentContext;
+}
+
+function updateDecorationContext() {
+  const r = window.decorationSlotResult || null;
+  window.decorationContext = r ? {
+    source: 'decoration',
+    analyzedAt: new Date().toISOString(),
+    imageW: r.imageW, imageH: r.imageH,
+    gameArea: r.gameArea,
+    rowCount: Array.isArray(r.rois) ? r.rois.length : 0,
+    slotCount: Array.isArray(r.groups) ? r.groups.reduce((n,g)=>n+g.slots.length,0) : 0,
+    groupCount: Array.isArray(r.groups) ? r.groups.length : 0,
+    buildGroupCount: Array.isArray(r.groups) ? r.groups.filter(g=>g.reflect!==false).length : 0,
+    buildSlotCount: Array.isArray(r.groups) ? r.groups.filter(g=>g.reflect!==false).reduce((n,g)=>n+g.slots.length,0) : 0,
+    groups: Array.isArray(r.groups) ? r.groups.map(g => ({
+      groupIndex:g.groupIndex, equipmentKey:g.equipmentKey || null, label:g.label || null,
+      expectedSlotLevels:(getEquipmentExpectedGroupSlots(g.equipmentKey) || g.expectedSlotLevels || []),
+      slots:g.slots.map(x=>({slotIndex:x.slotIndex,slotInGroup:x.slotInGroup,slotLevel:x.slotLevel||null,
+        x:x.x,y:x.y,w:x.w,h:x.h,pitch:x.pitch,ocr:x.ocr||null,jewel:x.jewel||null,decorationCandidates:x.decorationCandidates||x.ocr?.candidates||[],decorationBest:x.decorationBest||x.ocr?.dbBest||null}))
+    })) : [],
+    buildGroups: Array.isArray(r.groups) ? r.groups.filter(g=>g.reflect!==false).map(g=>({groupIndex:g.groupIndex,equipmentKey:g.equipmentKey,label:g.label,expectedSlotLevels:(getEquipmentExpectedGroupSlots(g.equipmentKey)||g.expectedSlotLevels||[]),slots:g.slots})) : [],
+    rois: Array.isArray(r.rois) ? r.rois.map(x => ({
+      slotIndex: x.slotIndex, groupIndex: x.groupIndex, slotInGroup: x.slotInGroup,
+      isSeparator: !!x.isSeparator, x: x.x, y: x.y, w: x.w, h: x.h, pitch: x.pitch,
+      ocr: x.ocr || (Array.isArray(r.ocr) ? r.ocr.find(o=>o.slotIndex===x.slotIndex) || null : null), jewel: x.jewel || null
+    })) : []
+  } : null;
+  return window.decorationContext;
+}
+
+function selfTestDecorationStructureV454(){
+  const labels=['メイン武器','サブ武器','頭防具','胴防具','腕防具','腰防具','脚防具','護石'];
+  const keys=['mainWeapon','subWeapon','head','chest','arms','waist','legs','charm'];
+  const sizes=[3,3,2,2,2,2,2,3];
+  const mock=[]; let slotIndex=0;
+  sizes.forEach((n)=>{for(let j=0;j<n;j++)mock.push({slotIndex:slotIndex++,isSeparator:false});});
+  const groups=[];
+  for(let i=0,gi=0;i<mock.length;i+=sizes[gi++]){
+    const block=mock.slice(i,i+sizes[gi-1]);
+    groups.push({groupIndex:gi-1,slots:block.map((r,j)=>({...r,groupIndex:gi-1,slotInGroup:j}))});
+  }
+  const ids=groups.flatMap(g=>g.slots.map(s=>`${g.groupIndex}:${s.slotInGroup}`));
+  const unique=new Set(ids).size===ids.length;
+  const orderOk=labels.join('|')===DECORATION_GROUP_ORDER.map(x=>x.label).join('|') && keys.join('|')===DECORATION_GROUP_ORDER.map(x=>x.key).join('|');
+  const ok=groups.length===8&&mock.length===19&&unique&&orderOk&&groups.every(g=>g.slots.length<=3);
+  return {ok,groups:groups.length,slots:mock.length,uniqueIds:unique,orderOk,sizes:groups.map(g=>g.slots.length),labels};
+}
+window.selfTestDecorationStructureV454=selfTestDecorationStructureV454;
+window.selfTestDecorationStructureV453=selfTestDecorationStructureV454;
+
+function renderBuildReflectionState(state) {
+  const eqCount = state.equipment ? state.equipment.results.length : 0;
+  const decoCount = state.decoration ? state.decoration.slotCount : 0;
+  const groupCount = state.decoration ? state.decoration.groupCount : 0;
+  const buildGroupCount = state.decoration ? state.decoration.buildGroupCount : 0;
+  const buildSlotCount = state.decoration ? state.decoration.buildSlotCount : 0;
+  let html = `<div class="result ok"><b>ビルド反映データを作成しました</b><div class="mono">` +
+    `装備解析=${state.equipment ? 'あり' : 'なし'} / 装飾品解析=${state.decoration ? 'あり' : 'なし'} / ` +
+    `装備結果=${eqCount}部位 / 装飾品=${groupCount}表示グループ・${decoCount}スロット / ビルド反映=${buildGroupCount}グループ・${buildSlotCount}スロット` +
+    `</div></div>`;
+  if (state.equipment) html += `<div class="result"><b>装備</b><div class="mono">${state.equipment.results.map(x => `${equipmentSlotLabel(x.key)}：${x.best?.name || '候補なし'}${x.best?.slotLevels?.length?' / DBスロット['+x.best.slotLevels.join(',')+']':''}`).join('<br>')}</div></div>`;
+  if (state.decoration) html += `<div class="result"><b>装飾品グループ</b><div class="mono">${state.decoration.buildGroups.map(g => `${g.groupIndex+1}. ${g.label||'装備グループ'}：${g.slots.length}スロット${g.expectedSlotLevels.length?' / 上限['+g.expectedSlotLevels.join(',')+']':''} → ${g.slots.map(x=>x.ocr?.raw||'未OCR').join(' / ')}`).join('<br>')}</div></div>`;
+  if (!state.equipment && !state.decoration) html = `<div class="result warn"><b>反映対象がありません</b><div class="mono">装備画面または装飾品画面を先に解析してください。</div></div>`;
+  $('buildReflectionOut').innerHTML = html;
+}
+
+function reflectAnalysisToBuild() {
+  const equipment = updateEquipmentContext();
+  const decoration = updateDecorationContext();
+  const state = { version: '4.6.0', reflectedAt: new Date().toISOString(), equipment, decoration };
+  window.buildReflectionState = state;
+
+  // 将来のスキルシミュレータ本体が接続された場合も、この1つの入口だけを呼び出せるようにする。
+  window.dispatchEvent(new CustomEvent('mhWildsBuildReflect', { detail: state }));
+
+  renderBuildReflectionState(state);
+  $('buildReflectionStatus').textContent =
+    `反映データ作成完了：装備=${equipment ? 'あり' : 'なし'} / 装飾品=${decoration ? 'あり' : 'なし'}`;
+}
+
+function equipmentOCRUsableText(raw){
+  const s=String(raw||'').normalize('NFKC').replace(/[\r\n]+/g,' ').replace(/\s+/g,'').trim();
+  if(!s)return false;
+  // Never turn punctuation, a single digit, or a lone OCR artifact into a DB
+  // candidate. At least two meaningful Japanese/Latin characters are required.
+  const meaningful=Array.from(s).filter(ch=>/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}A-Za-z]/u.test(ch));
+  if(meaningful.length<2)return false;
+  if(/^[\[\]（）(){}【】<>:：・.,，。/／\\|｜0-9]+$/.test(s))return false;
+  return true;
+}
+function cleanEquipmentOCRText(raw){
+  return cleanOCR(raw||'')
+    .replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石|装衣)/g,' ')
+    .replace(/\s+/g,' ').trim();
+}
+
 async function recognizeEquipmentAll(){
-  if(!$('img').src){$('equipmentOCRStatus').textContent='先に画像を選択してください。';return}
-  const regions=Array.isArray(window.lastEquipmentRegions)?window.lastEquipmentRegions:[];
-  if(regions.length!==9){$('equipmentOCRStatus').textContent='先に「画面構造を自動検出」を実行してください。';return}
+  if(!$('img').src){$('equipmentOCRStatus').textContent='先に装備画像を選択してください。';return}
+  let roiResult=window.equipmentROIResult;
+  if(!roiResult){
+    try{
+      roiResult=calculateEquipmentROIsRefined($('img'));
+      window.equipmentROIResult=roiResult;
+      drawEquipmentROIs($('img'),roiResult);
+      renderEquipmentROIResult(roiResult);
+    }catch(e){$('equipmentOCRStatus').textContent='装備ROI算出エラー：'+e.message;return}
+  }
+  const regions=roiResult.rois||{};
   const targets=['mainWeapon','head','chest','arms','waist','legs','charm'];
   const btn=$('recognizeEquipment');btn.disabled=true;
+  const workflowBtn=$('workflowEquipmentOCR'); if(workflowBtn) workflowBtn.disabled=true;
   const started=performance.now();
+  let dbErrors=[];
   try{
-    $('equipmentOCRStatus').textContent='装備DBを準備中…';
-    await Promise.all([ensureWeaponDB(),loadArmorDB(false),loadCharmDB(false)]);
-    setEquipmentDBStatus(`武器 ${weaponDB.length.toLocaleString()}件 / 防具 ${armorDB.length.toLocaleString()}件 / 護石 ${charmDB.length.toLocaleString()}件`,'ok');
+    // v4.5.1: OCR itself must never be blocked by a remote DB failure.
+    // Start DB loading in parallel, but begin OCR immediately. Candidate ranking
+    // is performed with whatever DB data is available when each slot finishes.
+    $('equipmentOCRStatus').textContent='装備OCR準備中…（DBは並行取得）';
+    const dbPromise=Promise.allSettled([
+      ensureWeaponDB(),
+      loadArmorDB(false),
+      loadCharmDB(false)
+    ]).then(results=>{
+      const labels=['武器DB','防具DB','護石DB'];
+      dbErrors=results.map((r,i)=>r.status==='rejected'?`${labels[i]}：${r.reason?.message||r.reason}`:null).filter(Boolean);
+      if(dbErrors.length){
+        setEquipmentDBStatus(`一部DB取得失敗（OCRは継続） / 武器${weaponDB.length.toLocaleString()}件・防具${armorDB.length.toLocaleString()}件・護石${charmDB.length.toLocaleString()}件`,'bad');
+      }else{
+        setEquipmentDBStatus(`武器 ${weaponDB.length.toLocaleString()}件 / 防具 ${armorDB.length.toLocaleString()}件 / 護石 ${charmDB.length.toLocaleString()}件`,'ok');
+      }
+      return results;
+    });
+
     const worker=await Tesseract.createWorker('jpn');
-    const equipmentWhitelist=buildEquipmentOCRWhitelist();
+    // DB未取得でも漢字を欠落させないため、v4.5.1では装備OCRに文字whitelistを掛けない。
+    // OCRは原文を広く取得し、その後にDB照合・部位制約で候補を絞る。
     await worker.setParameters({
       tessedit_pageseg_mode:'7',
-      preserve_interword_spaces:'1',
-      tessedit_char_whitelist:equipmentWhitelist
+      preserve_interword_spaces:'1'
     });
     const output=[];
     for(const key of targets){
-      const region=regions.find(r=>r.key===key); const items=equipmentRowsForSlot(key); const rows=[];
+      const region=regions[key==='mainWeapon'?'weaponMain':key==='arms'?'arm':key==='legs'?'leg':key]; const items=equipmentRowsForSlot(key); const rows=[];
       const passes=EQUIPMENT_OCR_STANDARD_PASSES;
       for(const [mode,label] of passes){
         $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}をOCR中… ${label}`;
-        const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c);let raw=cleanOCR(r?.data?.text||'');raw=raw.replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|護石|装衣)/g,' ').replace(/\s+/g,' ').trim();const conf=Number(r?.data?.confidence||0);if(raw)rows.push({raw,conf,mode:label});
+        const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c);const raw=cleanEquipmentOCRText(r?.data?.text||'');const conf=Number(r?.data?.confidence||0);if(equipmentOCRUsableText(raw))rows.push({raw,conf,mode:label});
         const interim=key==='mainWeapon' ? aggregateGenericEquipmentCandidates(rows,items) : (key==='charm' ? aggregateTalismanCandidates(rows,items) : aggregateHierarchicalArmorCandidatesV26(rows,items,key==='head'?'頭防具':key==='chest'?'胴防具':key==='arms'?'腕防具':key==='waist'?'腰防具':'脚防具',armorDB));
         if(equipmentOCRShouldStop(interim,rows)) break;
       }
@@ -2079,8 +2457,8 @@ async function recognizeEquipmentAll(){
       if(key!=='mainWeapon'&&key!=='charm'&&(!ranked.length || ranked[0].avgSeriesScore<.40)){
         for(const [mode,label] of EQUIPMENT_OCR_RESCUE_PASSES){
           $('equipmentOCRStatus').textContent=`${equipmentSlotLabel(key)}を救済OCR中… ${label}`;
-          const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c); const raw=cleanOCR(r?.data?.text||''); const conf=Number(r?.data?.confidence||0);
-          if(raw)rows.push({mode:label,raw,conf});
+          const c=equipmentRegionCanvas(region,mode,'name'); const r=await worker.recognize(c); const raw=cleanEquipmentOCRText(r?.data?.text||''); const conf=Number(r?.data?.confidence||0);
+          if(equipmentOCRUsableText(raw))rows.push({mode:label,raw,conf});
           ranked=aggregateHierarchicalArmorCandidatesV26(rows,items,key==='head'?'頭防具':key==='chest'?'胴防具':key==='arms'?'腕防具':key==='waist'?'腰防具':'脚防具',armorDB);
           if(ranked.length&&ranked[0].avgSeriesScore>=.40)break;
         }
@@ -2091,16 +2469,32 @@ async function recognizeEquipmentAll(){
       $('equipmentResults').innerHTML=output.map(renderEquipmentResult).join('');
     }
     await worker.terminate();
+    await dbPromise;
+    // Re-rank once with the final DB state, without re-running OCR.
+    for(const x of output){
+      const key=x.key;
+      const items=equipmentRowsForSlot(key);
+      let ranked=[];
+      if(key==='mainWeapon') ranked=aggregateGenericEquipmentCandidates(x.rows,items);
+      else if(key==='charm') ranked=aggregateTalismanCandidates(x.rows,items);
+      else ranked=aggregateHierarchicalArmorCandidatesV26(x.rows,items,key==='head'?'頭防具':key==='chest'?'胴防具':key==='arms'?'腕防具':key==='waist'?'腰防具':'脚防具',armorDB);
+      x.ranked=ranked.slice(0,3);
+      x.best=x.ranked[0];
+      const second=x.ranked[1];
+      if(x.best) x.best.decision=(key==='mainWeapon'||key==='charm')?equipmentDecision(x.best,second):equipmentDecisionV26(x.best,second);
+      if(x.best) x.best.gap=second?x.best.totalScore-second.totalScore:null;
+    }
     window.lastEquipmentOCR=output;
+    updateEquipmentContext();
     const elapsed=(performance.now()-started)/1000;
     const auto=output.filter(x=>x.best?.decision?.level==='auto').length;
-    $('equipmentOCRStatus').textContent=`装備名OCR完了：${output.length}部位 / ${auto}部位が自動確定候補 / ${elapsed.toFixed(1)}秒`;
+    $('equipmentOCRStatus').textContent=`装備名OCR完了：${output.length}部位 / ${auto}部位が自動確定候補 / ${elapsed.toFixed(1)}秒${dbErrors.length?` / ${dbErrors.length}系統のDB取得失敗（生OCRは保持）`:''}`;
   }catch(err){$('equipmentOCRStatus').textContent='装備名OCRエラー：'+String(err)}
-  finally{btn.disabled=false}
+  finally{btn.disabled=false; if(workflowBtn) workflowBtn.disabled=false}
 }
 function renderEquipmentResult(x){
   const title=equipmentSlotLabel(x.key);const b=x.best;const label=b?.decision?.label||'候補なし';
-  const raw=x.rows.map(r=>`${r.mode}: ${r.raw} (${Math.round(r.conf)}%)`).join(' / ')||'OCR文字なし';
+  const raw=x.rows.map(r=>`${r.mode}: ${r.raw} (${Math.round(r.conf)}%)`).join(' / ')||'OCR文字なし（DB照合は実施しません）';
   const candidates=(x.ranked||[]).map((c,i)=>{const hierarchy=c.hierarchy?` / シリーズ ${Math.round(c.hierarchy.seriesScore*100)}% / 型式 ${Math.round(c.hierarchy.subtypeScore*100)}%`:'';return `<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${i+1}位 ${c.name}</b> ${i===0?`<span class="corrected-tag">${label}</span>`:''}<br><span class="note">総合 ${Math.round(c.totalScore*100)}pt / 文字 ${Math.round(c.avgNameScore*100)}% / OCR ${Math.round(c.confAvg)}% / 支持 ${c.support}/${x.rows.length}${c.gap!=null?` / 候補差 ${Math.round(c.gap*100)}pt`:''}${hierarchy}</span></div>`}).join('');
   return `<div class="card" style="margin:8px 0;padding:10px"><b>${title}</b><div class="note">${x.region?.sourceType==='icon-anchor'?'領域：DBアイコンアンカー（適応文字帯）':(x.region?.inferred?'領域：構造推定':'領域：OCRアンカー')} / 装備名1行をPSM7でOCR（元画像直接クロップ） / 生OCR：${raw}</div>${candidates||'<div class="note">該当候補なし</div>'}</div>`;
 }
@@ -2501,89 +2895,100 @@ function v412Nms(cands,limit=1800){
   return out;
 }
 function v432DetectIconComponents(src){
-  // v4.3.3: detect the actual dark icon core from the screenshot itself.
-  // No DB template matching and no row-pitch assumption.
-  const w=src.w,h=src.h;
-  const id=src.data instanceof ImageData ? src.data : null;
+  // v4.3.7: detect the FULL equipment icon frame, not a small dark interior core.
+  // Coordinate space is the actual ImageData/canvas pixel space only.
+  // DB template matching remains disabled.
+  const w=Number(src?.w||0),h=Number(src?.h||0);
+  const id=src?.data instanceof ImageData ? src.data : null;
   if(!id) throw new Error('元画像のImageDataがありません');
-  const d=id.data;
-  const gray=new Uint8Array(w*h);
-  for(let i=0,p=0;i<gray.length;i++,p+=4){
-    gray[i]=Math.round(.299*d[p]+.587*d[p+1]+.114*d[p+2]);
-  }
-  // v4.3.4: icon/core size is scale-aware. The verified portrait reference
-  // uses roughly 30px cores at 1536px image height. Do not keep the old
-  // 20..45px bounds when the capture is rendered at another pixel scale.
-  // Height is used as the primary scale axis because the equipment list is a
-  // vertical UI structure; this also avoids letting a wide 16:9 capture
-  // inflate the icon size merely because its width is large.
-  const refHeight=1536;
-  const uiScale=Math.max(0.55,Math.min(3.0,h/refHeight));
-  const minCore=Math.round(20*uiScale);
-  const maxCore=Math.round(45*uiScale);
-  // Keep a modest safety margin around the scaled bounds.
-  const minW=Math.max(14,Math.round(minCore*.80));
-  const maxW=Math.max(minW+4,Math.round(maxCore*1.20));
-  const minH=Math.max(14,Math.round(minCore*.80));
-  const maxH=Math.max(minH+4,Math.round(maxCore*1.20));
-  // The previous 12% search width was tied to the old capture geometry.
-  // Keep it narrow enough to avoid the text column, but make it scale with
-  // the actual image layout instead of assuming one fixed pixel width.
-  const xMax=Math.min(w,Math.max(Math.round(84*uiScale),Math.round(w*.18)));
-  const yMin=Math.max(0,Math.round(h*.06));
-  const yMax=Math.min(h,Math.round(h*.96));
-  const threshold=70;
-  const seen=new Uint8Array(w*h);
+  if(!Number.isFinite(w)||!Number.isFinite(h)||w<1||h<1) throw new Error(`実画像サイズが不正です：${w}×${h}`);
+
+  // v4.3.8: the icon size must scale with BOTH capture dimensions, not
+  // height alone. A portrait 706×1536 capture and a landscape 3840×2160
+  // capture can have very different heights while the UI icon scale follows
+  // the display's short-side scale more reliably.
+  // Reference capture: 706×1536, icon frame ≈60～65 px.
+  // Therefore use the shorter image dimension as the scale basis.
+  // This also fixes the previous 3840×2160 case where h/1536=1.406 made
+  // the detector search only 70～115 px objects, far below the actual UI icon.
+  const refShort=706;
+  const shortSide=Math.min(w,h);
+  const scale=Math.max(.55,Math.min(5.0,shortSide/refShort));
+  const minS=Math.round(50*scale);
+  const maxS=Math.round(82*scale);
+  const step=Math.max(2,Math.round(2*scale));
+
+  // The icon itself extends beyond 15% of this 706 px image (~106 px).
+  // Therefore 15% is used as the candidate LEFT-edge zone, while the full
+  // square is allowed to extend rightward. This preserves the strong left-UI
+  // constraint without truncating the icon frame.
+  const searchLeftMax=Math.max(1,Math.min(w,Math.round(w*.15)));
+  const xStart=0;
+  const xEnd=Math.min(w- minS, searchLeftMax + Math.round(maxS*.55));
+  const yMin=Math.max(0,Math.round(h*.10));
+  const yMax=Math.min(h-maxS,Math.round(h*.90));
+
+  const F=v412BuildFeatureImage(src,2);
+  const ds=2;
   const candidates=[];
-  const qx=new Int32Array(w*h), qy=new Int32Array(w*h);
-  for(let sy=yMin;sy<yMax;sy++){
-    for(let sx=0;sx<xMax;sx++){
-      const si=sy*w+sx;
-      if(seen[si]||gray[si]>=threshold){continue;}
-      let head=0,tail=0; qx[tail]=sx;qy[tail]=sy;tail++;seen[si]=1;
-      let minX=sx,maxX=sx,minY=sy,maxY=sy,area=0;
-      while(head<tail){
-        const x=qx[head],y=qy[head];head++;area++;
-        if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;
-        for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
-          if(dx===0&&dy===0)continue;
-          const nx=x+dx,ny=y+dy;
-          if(nx<0||nx>=xMax||ny<yMin||ny>=yMax)continue;
-          const ni=ny*w+nx;
-          if(!seen[ni]&&gray[ni]<threshold){seen[ni]=1;qx[tail]=nx;qy[tail]=ny;tail++;}
-        }
+  const minSd=Math.max(20,Math.floor(minS/ds)), maxSd=Math.max(minSd+1,Math.ceil(maxS/ds));
+  const xEndD=Math.floor(xEnd/ds), yMinD=Math.floor(yMin/ds), yMaxD=Math.floor(yMax/ds);
+
+  // Scan square windows for the characteristic rounded icon frame:
+  // strong edge energy around the perimeter + meaningful interior structure.
+  for(let sd=minSd;sd<=maxSd;sd+=Math.max(1,Math.round(step/ds))){
+    const s=sd*ds;
+    const bw=Math.max(2,Math.round(sd*.12));
+    for(let y=yMinD;y<=yMaxD;y+=Math.max(1,Math.round(step/ds))){
+      for(let x=0;x<=xEndD;x+=Math.max(1,Math.round(step/ds))){
+        const ring=(
+          v412RectSum(F.Ig,F.w,x,y,sd,bw)+
+          v412RectSum(F.Ig,F.w,x,y+sd-bw,sd,bw)+
+          v412RectSum(F.Ig,F.w,x,y,bw,sd)+
+          v412RectSum(F.Ig,F.w,x+sd-bw,y,bw,sd)
+        )/(4*bw*sd);
+        const ix=x+bw,iy=y+bw,iw=Math.max(2,sd-2*bw),n=iw*iw;
+        const sm=v412RectSum(F.Is,F.w,ix,iy,iw,iw)/n;
+        const sm2=v412RectSum(F.Is2,F.w,ix,iy,iw,iw)/n;
+        const std=Math.sqrt(Math.max(0,sm2-sm*sm));
+        // Reject weak/plain background first.
+        if(ring<20 || std<10)continue;
+        const score=Math.min(1.5,
+          .56*Math.min(ring/75,1.5)+
+          .24*Math.min(sm/110,1.5)+
+          .20*Math.min(std/65,1.5)
+        );
+        if(score<.62)continue;
+        candidates.push({x:x*ds,y:y*ds,w:s,h:s,score,ring,std,sm});
       }
-      const bw=maxX-minX+1,bh=maxY-minY+1;
-      if(bw<minW||bw>maxW||bh<minH||bh>maxH||area<Math.round(150*uiScale*uiScale)||area>Math.round(1800*uiScale*uiScale))continue;
-      // Reject very thin/solid UI borders.
-      const fill=area/(bw*bh);
-      if(fill<0.35||fill>0.95)continue;
-      // Require some lighter/color variation inside the dark body.
-      let minG=255,maxG=0,minSat=255,maxSat=0,count=0;
-      for(let y=minY;y<=maxY;y++)for(let x=minX;x<=maxX;x++){
-        const p=(y*w+x)*4,r=d[p],g=d[p+1],b=d[p+2];
-        const v=Math.max(r,g,b)-Math.min(r,g,b);
-        if(gray[y*w+x]<130){minG=Math.min(minG,gray[y*w+x]);maxG=Math.max(maxG,gray[y*w+x]);minSat=Math.min(minSat,v);maxSat=Math.max(maxSat,v);count++;}
-      }
-      if(count<100||maxG-minG<18||maxSat-minSat<15)continue;
-      candidates.push({x:minX,y:minY,w:bw,h:bh,area,fill,score:Math.min(1.2,.55+Math.min(.25,area/3000)+Math.min(.20,(maxG-minG)/160)+Math.min(.20,(maxSat-minSat)/180))});
     }
   }
-  // NMS for overlapping connected pieces; keep one physical icon per Y band.
+
+  // Non-maximum suppression. Keep only spatially distinct square frames.
   candidates.sort((a,b)=>b.score-a.score);
   const kept=[];
   for(const c of candidates){
     const overlap=kept.some(q=>{
       const ix=Math.max(0,Math.min(c.x+c.w,q.x+q.w)-Math.max(c.x,q.x));
       const iy=Math.max(0,Math.min(c.y+c.h,q.y+q.h)-Math.max(c.y,q.y));
-      return ix*iy/Math.max(1,c.w*c.h+q.w*q.h-ix*iy)>.35;
+      const inter=ix*iy, union=c.w*c.h+q.w*q.h-inter;
+      return inter/Math.max(1,union)>.55;
     });
     if(!overlap)kept.push(c);
+    if(kept.length>=80)break;
   }
-  kept.sort((a,b)=>a.y-b.y);
-  kept.uiScale=uiScale;
-  kept.searchXMax=xMax;
-  kept.coreRange={minW,maxW,minH,maxH};
+  kept.sort((a,b)=>a.y-b.y || a.x-b.x);
+  kept.searchRatio=.15;
+  kept.searchXMax=searchLeftMax;
+  kept.searchXEnd=xEnd;
+  kept.coreRange={minW:minS,maxW:maxS,minH:minS,maxH:maxS};
+  kept.scaleBasis='short-side';
+  kept.shortSide=shortSide;
+  kept.refShort=refShort;
+  kept.sceneWidth=w;
+  kept.sceneHeight=h;
+  kept.detector='full-icon-frame-scan-v4.3.7';
+  kept.scale=scale;
   return kept;
 }
 
@@ -2639,7 +3044,11 @@ function v435GridScore(candidates, seedX, seedY, pitch, width, height){
       picks.push(best);matched++;
       const cx=best.x+best.w*.5,cy=best.y+best.h*.5;
       xErr+=Math.abs(cx-seedX)/xTol;
-      if(i>0){const prev=picks[picks.length-2];const py=prev.y+prev.h*.5;pitchErr+=Math.abs((cy-py)-pitch)/Math.max(1,pitch);}
+      const prev = picks.length >= 2 ? picks[picks.length - 2] : null;
+      if(prev && Number.isFinite(prev.y) && Number.isFinite(prev.h)){
+        const py=prev.y+prev.h*.5;
+        pitchErr+=Math.abs((cy-py)-pitch)/Math.max(1,pitch);
+      }
     }
   }
   const coverage=matched/9;
@@ -2666,7 +3075,7 @@ function v435FindVerticalGrid(candidates,width,height){
     if(dx>Math.max(12,2.0*medW))continue;
     for(let steps=1;steps<=8;steps++){
       const pitch=dy/steps;
-      if(pitch<Math.max(2.2*medH,28)||pitch>Math.min(height/4,7.0*medH))continue;
+      if(pitch<Math.max(1.65*medH,45)||pitch>Math.min(height/4,7.0*medH))continue;
       const y0=steps===1?Math.min(ya,yb):Math.min(ya,yb);
       seeds.push({x:(xa+xb)/2,y:y0,pitch});
       seeds.push({x:(xa+xb)/2,y:Math.max(0,Math.max(ya,yb)-pitch*steps),pitch});
@@ -2679,7 +3088,7 @@ function v435FindVerticalGrid(candidates,width,height){
     const dy=ys[j]-ys[i];
     for(let steps=1;steps<=8;steps++){
       const pitch=dy/steps;
-      if(pitch>=Math.max(2.2*medH,28)&&pitch<=Math.min(height/4,7.0*medH)){
+      if(pitch>=Math.max(1.65*medH,45)&&pitch<=Math.min(height/4,7.0*medH)){
         for(let k=0;k<9;k++){
           const y=ys[i]-pitch*k;
           if(y>=0&&y<=height){seeds.push({x:medianX,y,pitch});}
@@ -2752,9 +3161,9 @@ function v432Draw(img,grid,cands){
 
 function v432Render(cands,grid){
   const dbCount=v400IconItems.length;
-  const head=`<div class="result ok"><b>v4.3.5 アイコン構造検出＋サイズ適応＋縦列Grid検証</b><br><span class="mono">DB一致検索=0回 / DB geometry samples=${dbCount} / 縦列Grid/RANSAC検証 / 左側UI探索（サイズ適応） / DB役割=geometry-calibration-only</span></div>`;
+  const head=`<div class="result ok"><b>v4.3.8 短辺基準スケール適応＋フルアイコン枠検出＋左端15%＋縦列Grid検証</b><br><span class="mono">DB一致検索=0回 / DB geometry samples=${dbCount} / 縦列Grid/RANSAC検証 / 実画像座標・左端15%基準＋アイコン全体探索 / DB役割=geometry-calibration-only</span></div>`;
   const candText=cands.map((c,i)=>`${i+1}. core (${c.x},${c.y}) ${c.w}x${c.h} / score=${c.score.toFixed(4)}`).join('\n');
-  const scaleText=`uiScale=${Number(cands.uiScale||1).toFixed(3)} / 探索X=${cands.searchXMax||'-'}px / core範囲=${cands.coreRange?`${cands.coreRange.minW}～${cands.coreRange.maxW} × ${cands.coreRange.minH}～${cands.coreRange.maxH}px`:'-'}`;
+  const scaleText=`scene=${cands.sceneWidth||'-'}×${cands.sceneHeight||'-'}px / 短辺=${cands.shortSide||'-'}px / 短辺基準=${cands.scaleBasis||'-'} / scale=${Number(cands.scale||0).toFixed(3)} / 左端基準X=${cands.searchXMax||'-'}px (15%) / 実探索X終端=${cands.searchXEnd||'-'}px / アイコン枠=${cands.coreRange?`${cands.coreRange.minW}～${cands.coreRange.maxW} × ${cands.coreRange.minH}～${cands.coreRange.maxH}px`:'-'}`;
   let html=head+`<div class="result"><b>サイズ補正</b><div class="mono">${scaleText}</div></div><div class="result"><b>検出候補 ${cands.length}個</b><div class="mono">${candText||'候補なし'}</div></div>`;
   if(grid){
     html+=`<div class="result"><b>縦列Grid検証＋Geometry補正</b><div class="mono">matched=${grid.grid.matched}/9 / score=${grid.grid.score.toFixed(3)} / X偏差=${grid.grid.xResidual.toFixed(1)}px / pitch=${grid.grid.pitch.toFixed(1)}px / pitchSD=${grid.grid.pitchSd.toFixed(1)}px<br>core→anchor: +${grid.calibration.offsetXRatio}W / +${grid.calibration.offsetYRatio}H / OCR幅=${grid.calibration.ocrWidthRatio}W / OCR高=${grid.calibration.ocrHeightRatio}H</div></div>`;
@@ -2779,20 +3188,1537 @@ async function v432Detect(){
       v400IconCandidates=cands.slice(0,9).map((c,i)=>({...c,name:`検出アイコン${i+1}`,row:i}));
       v400IconGrid=grid;window.v400IconGrid=grid;window.lastEquipmentRegions=v400RegionsFromGrid(grid);
       $('recognizeEquipment').disabled=false;
-      $('layoutStatus').textContent='v4.3.5：9個のcore＋縦列Grid検証＋サイズ適応＋DB geometry補正が成立';
-      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9行生成 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / サイズ適応＋core基準＋縦列Grid検証＋geometry補正`;
+      $('layoutStatus').textContent='v4.3.8：9個のアイコン枠＋短辺基準スケール適応＋縦列Grid検証＋DB geometry補正が成立';
+      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9行生成 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / 短辺基準スケール＋実画像座標＋左端15%＋フルアイコン枠＋縦列Grid検証＋geometry補正`;
     }else{
       v400IconCandidates=[];v400IconGrid=null;window.lastEquipmentRegions=[];$('recognizeEquipment').disabled=true;
-      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9個未成立 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / サイズ適応＋縦列Grid検証`;
+      $('iconAnchorStatus').textContent=`完了：アイコン候補${cands.length}個 / 9個未成立 / ${(performance.now()-t0).toFixed(0)}ms / DB一致検索0回  / 縦列Grid pitch評価 / 短辺基準スケール＋実画像座標＋左端15%＋フルアイコン枠＋縦列Grid検証`;
     }
   }catch(e){console.error(e);$('iconAnchorStatus').textContent='アイコン検出エラー：'+e.message}
   finally{btn.disabled=false}
 }
+// ==============================
+// ==============================
+// v4.4.1 coordinate audit retained in v4.4.2
+// ==============================
+function auditCoordinates(){
+  const im=$('img');
+  if(!im || !im.src){
+    $('coordinateAuditStatus').textContent='先に画像を選択してください。';
+    return;
+  }
+  const rawW=Number(im.naturalWidth||im.width);
+  const rawH=Number(im.naturalHeight||im.height);
+
+  // Exact analysis path used by v4.4.0:
+  // natural size -> same-size canvas -> ImageData.
+  const c=document.createElement('canvas');
+  c.width=rawW; c.height=rawH;
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  ctx.drawImage(im,0,0);
+  const id=ctx.getImageData(0,0,rawW,rawH);
+
+  const rect=im.getBoundingClientRect();
+  const top=$('topDownView');
+  const topRect=top?top.getBoundingClientRect():null;
+  const r=window.topDownGridResult||null;
+
+  const sceneW=r?.sceneWidth ?? null;
+  const sceneH=r?.sceneHeight ?? null;
+  const sx=(sceneW&&rawW)?rawW/sceneW:null;
+  const sy=(sceneH&&rawH)?rawH/sceneH:null;
+  const pitchNorm=(r?.pitch&&sceneH)?r.pitch/sceneH:null;
+
+  const lines=[
+    `RAW IMAGE       natural=${rawW}×${rawH}`,
+    `IMG CSS         client=${rect.width.toFixed(1)}×${rect.height.toFixed(1)}`,
+    `ANALYSIS        ImageData=${id.width}×${id.height}`,
+    `RAW→ANALYSIS    X=${(id.width/rawW).toFixed(6)} / Y=${(id.height/rawH).toFixed(6)}`,
+    `TOPDOWN CANVAS  buffer=${top?top.width+'×'+top.height:'-'} / CSS=${topRect?topRect.width.toFixed(1)+'×'+topRect.height.toFixed(1):'-'}`,
+    `GRID SOURCE     ${sceneW&&sceneH?sceneW+'×'+sceneH:'未実行'}`,
+    `GRID→RAW        ${sx!==null?'X='+sx.toFixed(6)+' / Y='+sy.toFixed(6):'未算出'}`,
+    `GRID NORMALIZED ${pitchNorm!==null?'pitch/H='+pitchNorm.toFixed(6):'未実行'}`
+  ];
+
+  const mismatch=sceneW&&sceneH&&(sceneW!==rawW||sceneH!==rawH);
+  $('coordinateAuditStatus').textContent=mismatch
+    ? '要確認：Gridの座標系とRaw画像サイズが一致していません。'
+    : '監査完了：Raw画像と解析ImageDataの座標を確認しました。';
+
+  let out=`<div class="result ${mismatch?'warn':'ok'}"><b>=== 座標系 統合監査ログ ===</b><div class="mono">${lines.join('\n')}</div></div>`;
+
+  if(r?.ok){
+    out+=`<div class="result"><b>Grid境界 / 9行</b><div class="mono">境界=${(r.separators||[]).join(', ')}
+pitch=${Number(r.pitch).toFixed(3)}
+9行=${(r.rows||[]).map(x=>`${x.row+1}: y=${x.y}, h=${x.height}`).join(' / ')}</div></div>`;
+  }
+  $('coordinateAuditOut').innerHTML=out;
+  return {rawW,rawH,analysisW:id.width,analysisH:id.height,sceneW,sceneH,sx,sy,pitchNorm};
+}
+$('auditCoordinates').onclick=()=>{
+  try{auditCoordinates()}catch(e){
+    console.error(e);
+    $('coordinateAuditStatus').textContent='座標監査エラー：'+e.message;
+  }
+};
+// ==============================
+// v4.4.2 Top-down equipment-row detector
+// Coordinate rule: RAW image pixels only.
+// Core idea:
+//   1) find the left equipment-panel candidate width from vertical luminance structure
+//   2) inside each candidate panel width, score a 10-boundary / 9-row grid
+//   3) use long horizontal separator occupancy rather than generic edge magnitude
+//   4) require all 9 rows to stay inside the image
+//   5) reject grids whose normalized pitch/span are implausible
+// No icon DB matching is used here.
+// ==============================
+function tdClamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function tdMedian(a){const v=a.filter(Number.isFinite).slice().sort((x,y)=>x-y);if(!v.length)return 0;const m=Math.floor(v.length/2);return v.length%2?v[m]:(v[m-1]+v[m])/2;}
+function tdSmooth(a,r){if(r<=0)return a.slice();const out=new Float64Array(a.length);for(let i=0;i<a.length;i++){let st=Math.max(0,i-r),en=Math.min(a.length-1,i+r),s=0;for(let j=st;j<=en;j++)s+=a[j];out[i]=s/(en-st+1);}return out;}
+function tdPercentile(a,p){const v=Array.from(a).filter(Number.isFinite).sort((x,y)=>x-y);if(!v.length)return 0;const k=tdClamp(Math.round((v.length-1)*p),0,v.length-1);return v[k];}
+
+function tdHorizontalOccupancy(src,x0,x1,threshold){
+  const w=src.w,h=src.h,d=src.data;
+  const p=new Float32Array(h);
+  const span=Math.max(1,x1-x0);
+  for(let y=1;y<h;y++){
+    let hit=0;
+    for(let x=x0;x<x1;x++){
+      const i=(y*w+x)*4, j=((y-1)*w+x)*4;
+      const a=.299*d[i]+.587*d[i+1]+.114*d[i+2];
+      const b=.299*d[j]+.587*d[j+1]+.114*d[j+2];
+      if(Math.abs(a-b)>=threshold)hit++;
+    }
+    p[y]=hit/span;
+  }
+  return p;
+}
+
+function tdHorizontalMeanGradient(src,x0,x1){
+  const w=src.w,h=src.h,d=src.data,p=new Float32Array(h),span=Math.max(1,x1-x0);
+  for(let y=1;y<h;y++){
+    let s=0;
+    for(let x=x0;x<x1;x++){
+      const i=(y*w+x)*4,j=((y-1)*w+x)*4;
+      const a=.299*d[i]+.587*d[i+1]+.114*d[i+2];
+      const b=.299*d[j]+.587*d[j+1]+.114*d[j+2];
+      s+=Math.abs(a-b);
+    }
+    p[y]=s/span;
+  }
+  return p;
+}
+
+function tdVerticalMeanGradient(src){
+  const w=src.w,h=src.h,d=src.data,p=new Float32Array(w);
+  const y0=Math.max(1,Math.round(h*.08)),y1=Math.min(h-1,Math.round(h*.92));
+  for(let x=1;x<w;x++){
+    let s=0;
+    for(let y=y0;y<y1;y++){
+      const i=(y*w+x)*4,j=(y*w+x-1)*4;
+      const a=.299*d[i]+.587*d[i+1]+.114*d[i+2];
+      const b=.299*d[j]+.587*d[j+1]+.114*d[j+2];
+      s+=Math.abs(a-b);
+    }
+    p[x]=s/Math.max(1,y1-y0);
+  }
+  return p;
+}
+
+function tdCandidatePanelXs(src){
+  const w=src.w, vp=tdVerticalMeanGradient(src);
+  const lo=Math.max(1,Math.round(w*.10)), hi=Math.min(w-2,Math.round(w*.75));
+  const peaks=[];
+  for(let x=lo+1;x<hi-1;x++){
+    if(vp[x]>=vp[x-1]&&vp[x]>=vp[x+1])peaks.push({x,score:vp[x]});
+  }
+  peaks.sort((a,b)=>b.score-a.score);
+  const kept=[];
+  const minDist=Math.max(8,Math.round(w*.018));
+  for(const p of peaks){
+    if(kept.every(q=>Math.abs(q.x-p.x)>=minDist))kept.push(p);
+    if(kept.length>=18)break;
+  }
+  // A few normalized probes protect against a weak panel edge.
+  for(const f of [.14,.18,.22,.28,.34,.42,.52,.62,.70]){
+    const x=Math.round(w*f);
+    if(x>=lo&&x<=hi&&kept.every(q=>Math.abs(q.x-x)>=minDist))kept.push({x,score:vp[x]||0});
+  }
+  kept.sort((a,b)=>a.x-b.x);
+  return {candidates:kept,profile:vp};
+}
+
+function tdFindPeaks(profile,minY,maxY,minDist,threshold){
+  const peaks=[];
+  for(let y=Math.max(1,minY);y<=Math.min(profile.length-2,maxY);y++){
+    const v=profile[y];
+    if(v<threshold||v<profile[y-1]||v<profile[y+1])continue;
+    peaks.push({y,score:v});
+  }
+  peaks.sort((a,b)=>b.score-a.score);
+  const kept=[];
+  for(const p of peaks){
+    if(kept.every(q=>Math.abs(q.y-p.y)>=minDist))kept.push(p);
+  }
+  return kept.sort((a,b)=>a.y-b.y);
+}
+
+function tdBestGridForPanel(src,panelX){
+  const w=src.w,h=src.h,x0=Math.max(1,Math.round(w*.018)),x1=Math.max(x0+20,panelX);
+  const minPitch=h*.070,maxPitch=h*.095;
+  const thresholdSet=[8,16,24];
+  let best=null;
+
+  for(const threshold of thresholdSet){
+    const occ=tdSmooth(tdHorizontalOccupancy(src,x0,x1,threshold),Math.max(1,Math.round(Math.min(w,h)/900)));
+    const mean=tdSmooth(tdHorizontalMeanGradient(src,x0,x1),Math.max(1,Math.round(Math.min(w,h)/900)));
+    const occQ=tdPercentile(Array.from(occ).slice(Math.round(h*.05),Math.round(h*.95)),.85)||1;
+    const meanQ=tdPercentile(Array.from(mean).slice(Math.round(h*.05),Math.round(h*.95)),.90)||1;
+
+    // Ten boundaries describe nine rows: top edge + 8 internal separators + bottom edge.
+    // Outer edges may be weaker; internal separators carry most of the score.
+    const pitchSteps=72, ySteps=100;
+    for(let pi=0;pi<=pitchSteps;pi++){
+      const pitch=minPitch+(maxPitch-minPitch)*pi/pitchSteps;
+      const yMin=h*.08, yMax=Math.min(h*.22,h-pitch*9.2);
+      for(let yi=0;yi<=ySteps;yi++){
+        const y0=yMin+(yMax-yMin)*yi/ySteps;
+        const ys=new Array(10);
+        for(let k=0;k<10;k++)ys[k]=y0+pitch*k;
+        if(ys[0]<0||ys[9]>=h)continue;
+
+        let score=0,residual=0;
+        const vals=[];
+        for(let k=0;k<10;k++){
+          const target=ys[k];
+          const radius=Math.max(2,Math.round(pitch*.018));
+          const lo=Math.max(1,Math.floor(target-radius));
+          const hi=Math.min(h-2,Math.ceil(target+radius));
+          let bestY=lo,bestV=-1;
+          for(let y=lo;y<=hi;y++){
+            // Occupancy is the primary separator signal; mean gradient is secondary.
+            const v=.72*Math.min(1,occ[y]/Math.max(.05,occQ))+
+                    .28*Math.min(1,mean[y]/Math.max(1,meanQ));
+            if(v>bestV){bestV=v;bestY=y;}
+          }
+          vals.push(bestV);
+          residual+=Math.abs(bestY-target)/Math.max(1,pitch);
+          score += bestV*(k===0||k===9?0.45:1.0);
+        }
+
+        const internalMean=vals.slice(1,9).reduce((a,b)=>a+b,0)/8;
+        const outerMean=(vals[0]+vals[9])/2;
+        const internalMin=Math.min(...vals.slice(1,9));
+        const fit=Math.max(0,1-residual/10);
+        const consistency=Math.max(0,1-(Math.max(...vals.slice(1,9))-Math.min(...vals.slice(1,9))));
+        const normalizedPitch=pitch/h;
+        const pitchPrior=Math.max(0,1-Math.abs(normalizedPitch-.083)/.018);
+        const spanPrior=Math.max(0,1-Math.abs((pitch*8/h)-.666)/.145);
+
+        const total =
+          internalMean*0.52 +
+          internalMin*0.18 +
+          fit*0.10 +
+          consistency*0.06 +
+          pitchPrior*0.08 +
+          spanPrior*0.06 +
+          outerMean*0.03;
+
+        if(!best||total>best.score){
+          best={score:total,panelX,pitch,y0,ys,vals,residual,internalMean,internalMin,
+            normalizedPitch,span:pitch*8/h,threshold};
+        }
+      }
+    }
+  }
+  return best;
+}
+
+function tdValidateGrid(g,src){
+  if(!g)return {ok:false,reason:'Grid候補なし'};
+  const h=src.h,w=src.w;
+  const rows=[];
+  for(let i=0;i<9;i++){
+    const y=Math.round(g.y0+g.pitch*i);
+    const bottom=Math.round(y+g.pitch);
+    if(y<0||bottom>h)return {ok:false,reason:`行${i+1}が画像外（y=${y}, bottom=${bottom}, H=${h}）`,candidate:g};
+    rows.push({
+      row:i,
+      label:['メイン武器','サブ武器','頭防具','胴防具','腕防具','腰防具','脚防具','護石','装衣'][i],
+      x:Math.round(w*.018),
+      y,
+      width:Math.max(1,Math.round(g.panelX-w*.018)),
+      height:Math.round(g.pitch)
+    });
+  }
+  if(g.normalizedPitch<.070||g.normalizedPitch>.095)
+    return {ok:false,reason:`正規化pitch範囲外（pitch/H=${g.normalizedPitch.toFixed(4)}）`,candidate:g};
+  if(g.span<.56||g.span>.78)
+    return {ok:false,reason:`9行全体の高さが不自然（8pitch/H=${g.span.toFixed(4)}）`,candidate:g};
+  if(g.internalMin<.42)
+    return {ok:false,reason:`内部境界の連続性不足（min=${g.internalMin.toFixed(2)}）`,candidate:g};
+  if(g.internalMean<.58)
+    return {ok:false,reason:`内部境界の平均強度不足（mean=${g.internalMean.toFixed(2)}）`,candidate:g};
+  if(g.score<.64)
+    return {ok:false,reason:`Grid総合スコア不足（${g.score.toFixed(3)}）`,candidate:g};
+  return {ok:true,rows};
+}
+
+function tdDetectTopDown(src){
+  const pc=tdCandidatePanelXs(src);
+  const trials=[];
+  for(const p of pc.candidates){
+    const g=tdBestGridForPanel(src,p.x);
+    if(g)trials.push(g);
+  }
+  trials.sort((a,b)=>b.score-a.score);
+
+  for(const g of trials){
+    const v=tdValidateGrid(g,src);
+    if(v.ok){
+      return {
+        ok:true,
+        sceneWidth:src.w,sceneHeight:src.h,
+        profileX:[Math.round(src.w*.018),g.panelX],
+        smoothRadius:Math.max(1,Math.round(Math.min(src.w,src.h)/900)),
+        separators:g.ys.slice(1,9).map(y=>Math.round(y)),
+        boundaries:g.ys.map(y=>Math.round(y)),
+        pitch:g.pitch,pitchSd:0,
+        rows:v.rows,top:g.y0,bottom:g.y0+g.pitch*9,
+        panelX:g.panelX,panelWidth:g.panelX-Math.round(src.w*.018),
+        score:g.score,internalMean:g.internalMean,internalMin:g.internalMin,
+        normalizedPitch:g.normalizedPitch,span:g.span,threshold:g.threshold,
+        panelCandidates:pc.candidates.map(p=>({x:p.x,score:p.score})),
+        rejectedCandidates:trials.filter(x=>x!==g).slice(0,8).map(x=>({panelX:x.panelX,score:x.score,pitch:x.pitch,y0:x.y0}))
+      };
+    }
+  }
+  const top=trials[0];
+  return {
+    ok:false,
+    sceneWidth:src.w,sceneHeight:src.h,
+    profileX:[Math.round(src.w*.018),top?.panelX||Math.round(src.w*.2)],
+    smoothRadius:Math.max(1,Math.round(Math.min(src.w,src.h)/900)),
+    reason:top ? tdValidateGrid(top,src).reason : '候補Gridなし',
+    candidate:top||null,
+    panelCandidates:pc.candidates.map(p=>({x:p.x,score:p.score}))
+  };
+}
+
+function tdDraw(img,result){
+  const host=$('topDownStage'),c=$('topDownView');host.style.display='block';
+  const iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;c.width=iw;c.height=ih;
+  const ctx=c.getContext('2d');ctx.clearRect(0,0,iw,ih);ctx.drawImage(img,0,0);
+  if(!result||!result.ok)return;
+  for(const y of result.boundaries){
+    ctx.strokeStyle='#ff3b30';ctx.lineWidth=Math.max(2,Math.round(Math.min(iw,ih)/500));
+    ctx.beginPath();ctx.moveTo(result.profileX[0],y);ctx.lineTo(result.panelX,y);ctx.stroke();
+  }
+  result.rows.forEach(r=>{
+    ctx.strokeStyle='#00d5ff';ctx.lineWidth=2;ctx.strokeRect(r.x,r.y,r.width,r.height);
+    ctx.fillStyle='#ffd000';ctx.font=`bold ${Math.max(12,Math.round(Math.min(iw,ih)/55))}px sans-serif`;
+    ctx.fillText(`${r.row+1}:${r.label}`,r.x+4,r.y+18);
+  });
+  ctx.strokeStyle='#00ff80';ctx.lineWidth=Math.max(2,Math.round(Math.min(iw,ih)/450));
+  ctx.strokeRect(result.profileX[0],result.top,result.panelWidth,result.bottom-result.top);
+}
+
+function tdRender(result){
+  if(!result){$('topDownOut').innerHTML='';return;}
+  const base=`<div class="result ok"><b>v4.4.2 トップダウン装備9行グリッド</b><br><span class="mono">アイコン検出=0回 / DB一致検索=0回 / 10境界候補→9行検証 / RAW座標のみ</span></div>`;
+  const scene=`<div class="result"><b>入力座標</b><div class="mono">raw=${result.sceneWidth||'-'}×${result.sceneHeight||'-'}px / 解析X=${result.profileX?result.profileX[0]+'～'+result.profileX[1]:'-'} / 平滑化半径=${result.smoothRadius||'-'}px</div></div>`;
+  if(!result.ok){
+    $('topDownOut').innerHTML=base+scene+`<div class="result warn"><b>9行グリッド未成立</b><div class="mono">${result.reason||'不成立'}<br>${result.candidate?`候補: panelX=${Math.round(result.candidate.panelX)}, pitch=${result.candidate.pitch.toFixed(1)}, pitch/H=${result.candidate.normalizedPitch.toFixed(4)}, score=${result.candidate.score.toFixed(3)}`:''}</div></div>`;
+    return;
+  }
+  const rows=result.rows.map(r=>`${r.row+1}. ${r.label}: x=${r.x}, y=${r.y}, ${r.width}×${r.height}`).join('\n');
+  const cand=(result.panelCandidates||[]).map(p=>`${p.x}(${p.score.toFixed(1)})`).join(', ');
+  $('topDownOut').innerHTML=base+scene+
+    `<div class="result"><b>装備UI領域</b><div class="mono">panelX=${result.panelX} / panelWidth=${result.panelWidth} / GridScore=${result.score.toFixed(3)} / 境界強度mean=${result.internalMean.toFixed(2)} min=${result.internalMin.toFixed(2)}</div></div>`+
+    `<div class="result"><b>Yグリッド</b><div class="mono">内部境界8本=${result.separators.join(', ')}<br>pitch=${result.pitch.toFixed(1)}px / pitch/H=${result.normalizedPitch.toFixed(4)} / 8pitch/H=${result.span.toFixed(4)}<br>10境界=${result.boundaries.join(', ')}</div></div>`+
+    `<div class="result"><b>パネル候補X</b><div class="mono">${cand}</div></div>`+
+    `<div class="result"><b>生成された9行</b><div class="mono">${rows}</div></div>`;
+}
+
+async function tdRun(){
+  if(!$('img').src){$('topDownStatus').textContent='先に画像を選択してください。';return;}
+  const btn=$('detectTopDownGrid');btn.disabled=true;const t0=performance.now();
+  try{
+    $('topDownStatus').textContent='装備UI領域→10境界→9行Gridを総当たり検証中（速度より正確性優先）…';
+    const scene=v400ImageData($('img'));
+    const result=tdDetectTopDown(scene);
+    tdDraw($('img'),result);tdRender(result);
+    $('topDownStatus').textContent=result.ok
+      ? `完了：9行グリッド成立 / ${(performance.now()-t0).toFixed(0)}ms / アイコン検出0回 / DB一致0回`
+      : `完了：9行グリッド未成立 / ${(performance.now()-t0).toFixed(0)}ms / ${result.reason||'不成立'}`;
+    window.topDownGridResult=result;
+  }catch(e){console.error(e);$('topDownStatus').textContent='トップダウン検出エラー：'+e.message;}
+  finally{btn.disabled=false}
+}
+
+
+// ============================================================
+// v4.4.3 Gemini引継ぎ：装備名OCR ROI計算
+// - 16:9有効ゲーム領域を先に確定
+// - 7部位のみ対象（サブ武器・装衣は除外）
+// - 固定pxではなくゲーム領域比率で計算
+// - OCR本体への自動接続は、ROI位置検証完了後に行う
+// ============================================================
+const TARGET_EQUIPMENTS = [
+  { key: 'weaponMain', label: 'メイン武器', row: 0, yOffsetRatio: -0.004 },
+  { key: 'head',       label: '頭防具',     row: 2, yOffsetRatio:  0.000 },
+  { key: 'chest',      label: '胴防具',     row: 3, yOffsetRatio:  0.000 },
+  { key: 'arm',        label: '腕防具',     row: 4, yOffsetRatio:  0.000 },
+  { key: 'waist',      label: '腰防具',     row: 5, yOffsetRatio:  0.000 },
+  { key: 'leg',        label: '脚防具',     row: 6, yOffsetRatio:  0.000 },
+  { key: 'charm',      label: '護石',       row: 7, yOffsetRatio:  0.004 }
+];
+
+function calculate16by9Area(imgW, imgH) {
+  const targetRatio = 16 / 9;
+  const currentAspect = imgW / imgH;
+
+  if (currentAspect > targetRatio) {
+    // 横長：左右に黒帯相当の余白があるものとして中央16:9を使用
+    const gameH = imgH;
+    const gameW = imgH * targetRatio;
+    const offsetX = (imgW - gameW) / 2;
+    return { x: offsetX, y: 0, w: gameW, h: gameH };
+  }
+
+  if (currentAspect < targetRatio) {
+    // 縦長：上下に黒帯相当の余白があるものとして中央16:9を使用
+    const gameW = imgW;
+    const gameH = imgW / targetRatio;
+    const offsetY = (imgH - gameH) / 2;
+    return { x: 0, y: offsetY, w: gameW, h: gameH };
+  }
+
+  return { x: 0, y: 0, w: imgW, h: imgH };
+}
+
+function calculateEquipmentROIs(imgW, imgH) {
+  const gameArea = calculate16by9Area(imgW, imgH);
+
+  const startXRatio = 0.048;
+  const startYRatio = 0.147;
+  const pitchYRatio = 0.0904;
+  const widthRatio = 0.123;
+  const heightRatio = 0.032;
+
+  const cropX = gameArea.x + (gameArea.w * startXRatio);
+  const cropW = gameArea.w * widthRatio;
+  const cropH = gameArea.h * heightRatio;
+
+  const rois = {};
+  for (const item of TARGET_EQUIPMENTS) {
+    const calculatedYRatio =
+      startYRatio +
+      (item.row * pitchYRatio) +
+      item.yOffsetRatio;
+
+    rois[item.key] = {
+      key: item.key,
+      label: item.label,
+      row: item.row,
+      x: Math.round(cropX),
+      y: Math.round(gameArea.y + (gameArea.h * calculatedYRatio)),
+      w: Math.round(cropW),
+      h: Math.round(cropH),
+      // 浮動小数点の基準値も保持して監査可能にする
+      xExact: cropX,
+      yExact: gameArea.y + (gameArea.h * calculatedYRatio),
+      wExact: cropW,
+      hExact: cropH
+    };
+  }
+
+  return { gameArea, rois };
+}
+
+function equipmentROIValidation(imgW, imgH, result) {
+  const errors = [];
+  const g = result.gameArea;
+
+  if (!(g.w > 0 && g.h > 0)) errors.push('16:9ゲーム領域が0以下');
+  if (Math.abs((g.w / g.h) - (16 / 9)) > 1e-9) errors.push('ゲーム領域のアスペクト比が16:9ではない');
+
+  for (const item of Object.values(result.rois)) {
+    if (item.x < 0 || item.y < 0 ||
+        item.x + item.w > imgW ||
+        item.y + item.h > imgH) {
+      errors.push(`${item.label}: ROIが画像外`);
+    }
+    if (item.x < g.x || item.x + item.w > g.x + g.w ||
+        item.y < g.y || item.y + item.h > g.y + g.h) {
+      errors.push(`${item.label}: ROIが16:9ゲーム領域外`);
+    }
+  }
+
+  return errors;
+}
+
+function drawEquipmentROIs(img, result) {
+  const host = $('equipmentROIStage');
+  const canvas = $('equipmentROIView');
+  host.style.display = 'block';
+
+  const iw = img.naturalWidth || img.width;
+  const ih = img.naturalHeight || img.height;
+  canvas.width = iw;
+  canvas.height = ih;
+
+  const c = canvas.getContext('2d');
+  c.clearRect(0, 0, iw, ih);
+  c.drawImage(img, 0, 0);
+
+  // 16:9有効ゲーム領域
+  c.strokeStyle = '#00ff80';
+  c.lineWidth = Math.max(2, Math.round(Math.min(iw, ih) / 450));
+  c.strokeRect(
+    Math.round(result.gameArea.x),
+    Math.round(result.gameArea.y),
+    Math.round(result.gameArea.w),
+    Math.round(result.gameArea.h)
+  );
+
+  const fontSize = Math.max(12, Math.round(Math.min(iw, ih) / 55));
+  c.font = `bold ${fontSize}px sans-serif`;
+
+  for (const item of TARGET_EQUIPMENTS) {
+    const r = result.rois[item.key];
+    c.strokeStyle = '#00d5ff';
+    c.lineWidth = Math.max(2, Math.round(Math.min(iw, ih) / 500));
+    c.strokeRect(r.x, r.y, r.w, r.h);
+
+    c.fillStyle = '#00d5ff';
+    c.fillText(
+      `${r.label} (row ${r.row})`,
+      r.x,
+      Math.max(fontSize + 2, r.y - 4)
+    );
+  }
+}
+
+function renderEquipmentROIResult(result, selfTestRows = null) {
+  const img = $('img');
+  const iw = img.naturalWidth || img.width;
+  const ih = img.naturalHeight || img.height;
+  const errors = equipmentROIValidation(iw, ih, result);
+
+  const g = result.gameArea;
+  let html =
+    `<div class="result ${errors.length ? 'warn' : 'ok'}">` +
+    `<b>v4.5.5 7部位ROI＋装飾品24スロット切出し</b><br>` +
+    `<span class="mono">` +
+    `入力=${iw}×${ih} / ` +
+    `16:9領域=x:${g.x.toFixed(2)}, y:${g.y.toFixed(2)}, ` +
+    `w:${g.w.toFixed(2)}, h:${g.h.toFixed(2)}` +
+    `</span></div>`;
+
+  html += `<div class="result"><b>ROI座標（7部位）</b><div class="mono">`;
+  html += TARGET_EQUIPMENTS.map(item => {
+    const r = result.rois[item.key];
+    const base = result.baselineROIs?.[item.key];
+    const refine = r.refined ? ` / 基準Y=${base?.y ?? r.y}→補正Y=${r.y} (Δ${r.refineDelta>=0?'+':''}${r.refineDelta}px, score=${r.refineScore})` : ` / 補正なし (score=${r.refineScore||0})`;
+    return `${item.row}. ${item.label}: x=${r.x}, y=${r.y}, ${r.w}×${r.h}${refine}`;
+  }).join('<br>');
+  html += `</div></div>`;
+
+  html += `<div class="result"><b>計算比率</b><div class="mono">` +
+    `X=4.8% / Y開始=14.7% / pitch=9.04% / W=12.3% / H=3.2% / ` +
+    `武器Y補正=-0.4% / 護石Y補正=+0.4%` +
+    `</div></div>`;
+
+  if (errors.length) {
+    html += `<div class="result warn"><b>ROI検証NG</b><div class="mono">${errors.join('<br>')}</div></div>`;
+  } else {
+    html += `<div class="result ok"><b>ROI検証OK</b><div class="mono">全7部位が画像内かつ16:9ゲーム領域内に収まっています。</div></div>`;
+  }
+
+  if (selfTestRows) {
+    html += `<div class="result"><b>サイズ自己検証</b><div class="mono">${selfTestRows.join('<br>')}</div></div>`;
+  }
+
+  $('equipmentROIOut').innerHTML = html;
+}
+
+
+function refineEquipmentNameROI(img, baseROI, gameArea) {
+  const iw = img.naturalWidth || img.width;
+  const ih = img.naturalHeight || img.height;
+  const canvas = document.createElement('canvas');
+  canvas.width = iw; canvas.height = ih;
+  const c = canvas.getContext('2d', {willReadFrequently:true});
+  c.drawImage(img, 0, 0);
+
+  // v4.5.1: The base ROI is a layout anchor, not the final OCR crop.
+  // In the Wilds equipment UI the category label and equipment name are two
+  // lines. The old refinement found the name-line peak correctly, but the
+  // downstream crop helper shifted it a second time and often cut the glyphs.
+  // Here the detected peak is carried explicitly as nameAnchor so OCR consumes
+  // the same band that the refinement actually detected.
+  const baseY = Number(baseROI?.yExact ?? baseROI?.y ?? 0);
+  const baseH = Number(baseROI?.hExact ?? baseROI?.h ?? gameArea.h*0.032);
+  const searchTop = Math.max(gameArea.y, baseY + gameArea.h * 0.012);
+  const searchBottom = Math.min(gameArea.y + gameArea.h, baseY + gameArea.h * 0.070);
+  const x0 = Math.max(0, Math.floor(baseROI.x));
+  const x1 = Math.min(iw, Math.ceil(baseROI.x + baseROI.w));
+  const y0 = Math.max(0, Math.floor(searchTop));
+  const y1 = Math.min(ih, Math.ceil(searchBottom));
+  if (x1 <= x0 || y1 <= y0) return {...baseROI, refined:false, refineScore:0};
+
+  const data = c.getImageData(x0, y0, x1-x0, y1-y0).data;
+  const w=x1-x0, h=y1-y0;
+  const profile=new Float64Array(h);
+  for(let y=0;y<h;y++){
+    let hit=0;
+    for(let x=0;x<w;x++){
+      const i=(y*w+x)*4, r=data[i],g=data[i+1],b=data[i+2];
+      const mx=Math.max(r,g,b), mn=Math.min(r,g,b);
+      const lum=.299*r+.587*g+.114*b;
+      // White/gray glyphs on the dark translucent UI. Keep a second, softer
+      // luminance contribution so anti-aliased edges are not discarded.
+      if(lum>=125 && (mx-mn)<=68) hit += lum>=160 ? 1.0 : 0.45;
+    }
+    profile[y]=hit;
+  }
+  const smooth=new Float64Array(h);
+  for(let y=0;y<h;y++){
+    let sum=0,n=0;
+    for(let k=-2;k<=2;k++){const yy=y+k;if(yy>=0&&yy<h){sum+=profile[yy];n++;}}
+    smooth[y]=sum/Math.max(1,n);
+  }
+  let peak=-1,score=0;
+  for(let y=1;y<h-1;y++){
+    if(smooth[y]>=smooth[y-1] && smooth[y]>=smooth[y+1] && smooth[y]>score){score=smooth[y];peak=y;}
+  }
+  if(peak<0 || score<1.5) return {...baseROI, refined:false, refineScore:Number(score.toFixed(2))};
+
+  const peakY=y0+peak;
+  // Estimate the glyph band from game height. At 760px this is ~14px; at
+  // 2160px it is ~39px, matching the UI text scale much better than baseH.
+  const glyphH=Math.max(10, Math.min(gameArea.h*0.022, gameArea.h*0.032));
+  const bandH=Math.max(14, glyphH*1.55);
+  const bandY=Math.max(gameArea.y, Math.round(peakY-bandH*0.48));
+  const refined={
+    ...baseROI,
+    x:Math.round(baseROI.x), y:bandY,
+    w:Math.round(baseROI.w), h:Math.round(bandH),
+    xExact:baseROI.x, yExact:bandY, wExact:baseROI.w, hExact:bandH,
+    refined:true, baselineY:baseROI.y, refinePeakY:peakY,
+    refineScore:Number(score.toFixed(2)), refineDelta:bandY-baseROI.y,
+    nameAnchor:{x:baseROI.x,y:bandY,width:baseROI.w,height:bandH}
+  };
+  if(refined.y<0 || refined.y+refined.h>ih) return {...baseROI, refined:false, refineScore:Number(score.toFixed(2))};
+  return refined;
+}
+
+function calculateEquipmentROIsRefined(img) {
+  const iw = img.naturalWidth || img.width;
+  const ih = img.naturalHeight || img.height;
+  const base = calculateEquipmentROIs(iw, ih);
+  const refined = {};
+  for(const item of TARGET_EQUIPMENTS){
+    refined[item.key]=refineEquipmentNameROI(img, base.rois[item.key], base.gameArea);
+  }
+  return {gameArea:base.gameArea, rois:refined, baselineROIs:base.rois};
+}
+
+function calculateEquipmentROI() {
+  const img = $('img');
+  if (!img || !img.src) {
+    $('equipmentROIStatus').textContent = '先に画像を選択してください。';
+    return;
+  }
+
+  try {
+    const imgW = Number(img.naturalWidth || img.width);
+    const imgH = Number(img.naturalHeight || img.height);
+    const result = calculateEquipmentROIsRefined(img);
+
+    drawEquipmentROIs(img, result);
+    renderEquipmentROIResult(result);
+    window.equipmentROIResult = result;
+
+    const errors = equipmentROIValidation(imgW, imgH, result);
+    $('equipmentROIStatus').textContent = errors.length
+      ? `ROI算出完了：検証NG ${errors.length}件`
+      : `ROI算出完了：7部位 / ${imgW}×${imgH} / 16:9補正済み`;
+  } catch (e) {
+    console.error(e);
+    $('equipmentROIStatus').textContent = 'ROI算出エラー：' + e.message;
+  }
+}
+
+function runEquipmentROISelfTest() {
+  const sizes = [
+    [1920,1080],
+    [3840,2160],
+    [2560,1440],
+    [2560,1080],
+    [3440,1440],
+    [706,1536],
+    [1080,1920],
+    [1340,760]
+  ];
+
+  const rows = [];
+  let totalErrors = 0;
+
+  for (const [w,h] of sizes) {
+    const result = calculateEquipmentROIs(w,h);
+    const errors = equipmentROIValidation(w,h,result);
+    totalErrors += errors.length;
+
+    const g = result.gameArea;
+    const r = result.rois.weaponMain;
+    const c = result.rois.charm;
+
+    rows.push(
+      `${w}×${h}: ` +
+      `game=${Math.round(g.x)},${Math.round(g.y)},${Math.round(g.w)}×${Math.round(g.h)} / ` +
+      `武器=${r.x},${r.y},${r.w}×${r.h} / ` +
+      `護石=${c.x},${c.y},${c.w}×${c.h} / ` +
+      `${errors.length ? 'NG' : 'OK'}`
+    );
+  }
+
+  const status = totalErrors === 0
+    ? '自己検証完了：8サイズすべてROI範囲OK'
+    : `自己検証完了：${totalErrors}件の範囲エラー`;
+
+  $('equipmentROIStatus').textContent = status;
+
+  const img = $('img');
+  if (img && img.src) {
+    const iw = Number(img.naturalWidth || img.width);
+    const ih = Number(img.naturalHeight || img.height);
+    const current = calculateEquipmentROIsRefined(img);
+    drawEquipmentROIs(img, current);
+    renderEquipmentROIResult(current, rows);
+    window.equipmentROIResult = current;
+  } else {
+    $('equipmentROIOut').innerHTML =
+      `<div class="result ${totalErrors === 0 ? 'ok' : 'warn'}">` +
+      `<b>${status}</b><div class="mono">${rows.join('<br>')}</div></div>`;
+  }
+
+  return {totalErrors, rows};
+}
+
+function calculateEquipmentROIBase(){
+  const img=$('img');
+  if(!img || !img.src){$('equipmentROIStatus').textContent='先に画像を選択してください。';return;}
+  try{
+    const result=calculateEquipmentROIs(img.naturalWidth||img.width,img.naturalHeight||img.height);
+    drawEquipmentROIs(img,result);renderEquipmentROIResult(result);window.equipmentROIResult=result;
+    $('equipmentROIStatus').textContent='比率ROI（補正前）を表示しました。';
+  }catch(e){console.error(e);$('equipmentROIStatus').textContent='基準ROI算出エラー：'+e.message;}
+}
+
+// ============================================================
+// v4.5.1 装飾品グループ解析
+//
+// 方針:
+// 1) 16:9ゲーム領域を確定
+// 2) 左側装飾品パネルの横罫線を画像から検出
+// 3) 25本の境界 = 最大24スロットを動的に確定
+// 4) 各境界間を1スロットROIとして切り出す
+// 5) 実際に珠が入っているかは、この段階では判定しない
+// 6) 後段の珠DB照合で「一致 / 対照なし」を決める
+//
+// 「24行固定のY比率」ではなく、同一画像内の実測境界を使う。
+// したがって小さな累積Yズレを24行分積み上げない。
+// ============================================================
+
+const DECORATION_SLOT_CONFIG = {
+  maxSlots: 24,
+
+  // 16:9ゲーム領域に対する装飾品パネル探索範囲。
+  // 今回の1536x864基準画像では概ね x=30～300px に相当。
+  panelX0Ratio: 0.020,
+  panelX1Ratio: 0.200,
+  panelY0Ratio: 0.060,
+  panelY1Ratio: 0.880,
+
+  // 行境界の期待ピッチ。基準画像では約26.3px / 864px = 3.04%。
+  pitchRatio: 0.0304,
+  minPitchRatio: 0.021,
+  maxPitchRatio: 0.039,
+
+  // 名前ROIは各境界の内側に少し余白を取る。
+  roiInsetRatio: 0.0042,
+
+  // 装飾品名はアイコンの右側から始まる。
+  nameXRatio: 0.071,
+  nameWidthRatio: 0.125
+};
+
+function smooth1D(arr, radius) {
+  if (!arr.length) return [];
+  const r = Math.max(1, Math.round(radius));
+  const out = new Array(arr.length);
+  let sum = 0;
+  const win = r * 2 + 1;
+
+  for (let i = 0; i < arr.length; i++) {
+    sum += arr[Math.min(arr.length - 1, i + r)];
+    if (i - r - 1 >= 0) sum -= arr[i - r - 1];
+
+    // 上の簡易窓は端部の重複を含むため、実際の要素数で割る。
+    let count = 0;
+    const a = Math.max(0, i - r);
+    const b = Math.min(arr.length - 1, i + r);
+    count = b - a + 1;
+    out[i] = sum / count;
+  }
+  return out;
+}
+
+function percentile1D(arr, q) {
+  if (!arr.length) return 0;
+  const a = Array.from(arr).sort((x, y) => x - y);
+  const pos = (a.length - 1) * q;
+  const lo = Math.floor(pos);
+  const hi = Math.ceil(pos);
+  if (lo === hi) return a[lo];
+  return a[lo] + (a[hi] - a[lo]) * (pos - lo);
+}
+
+function localPeaks1D(values, minDistance, minProminence) {
+  const raw = [];
+  for (let i = 1; i < values.length - 1; i++) {
+    if (values[i] < values[i - 1] || values[i] < values[i + 1]) continue;
+
+    // 簡易prominence:
+    // 近傍の低い側との差が小さいノイズピークを落とす。
+    const left = Math.max(0, i - Math.max(3, minDistance));
+    const right = Math.min(values.length - 1, i + Math.max(3, minDistance));
+    let leftMin = values[i];
+    let rightMin = values[i];
+
+    for (let k = left; k < i; k++) leftMin = Math.min(leftMin, values[k]);
+    for (let k = i + 1; k <= right; k++) rightMin = Math.min(rightMin, values[k]);
+
+    const prominence = values[i] - Math.max(leftMin, rightMin);
+    if (prominence >= minProminence) {
+      raw.push({ index: i, value: values[i], prominence });
+    }
+  }
+
+  raw.sort((a, b) => b.value - a.value);
+
+  const selected = [];
+  for (const p of raw) {
+    if (selected.every(q => Math.abs(q.index - p.index) >= minDistance)) {
+      selected.push(p);
+    }
+  }
+
+  selected.sort((a, b) => a.index - b.index);
+  return selected;
+}
+
+function detectDecorationBoundariesFromImage(sourceCanvas, gameArea) {
+  const W = Math.round(gameArea.w);
+  const H = Math.round(gameArea.h);
+
+  const x0 = Math.max(0, Math.floor(gameArea.x + W * DECORATION_SLOT_CONFIG.panelX0Ratio));
+  const x1 = Math.min(sourceCanvas.width, Math.ceil(gameArea.x + W * DECORATION_SLOT_CONFIG.panelX1Ratio));
+  const y0 = Math.max(0, Math.floor(gameArea.y + H * DECORATION_SLOT_CONFIG.panelY0Ratio));
+  const y1 = Math.min(sourceCanvas.height, Math.ceil(gameArea.y + H * DECORATION_SLOT_CONFIG.panelY1Ratio));
+
+  const ctx = sourceCanvas.getContext('2d', { willReadFrequently: true });
+  const data = ctx.getImageData(x0, y0, Math.max(1, x1 - x0), Math.max(1, y1 - y0));
+  const pw = data.width;
+  const ph = data.height;
+
+  // 横罫線は「同一行の上下で画素が急変する」ため、
+  // X方向に平均したY方向の輝度差を使う。
+  const profile = new Array(Math.max(0, ph - 1)).fill(0);
+
+  for (let y = 0; y < ph - 1; y++) {
+    let sum = 0;
+    const rowA = y * pw * 4;
+    const rowB = (y + 1) * pw * 4;
+
+    for (let x = 0; x < pw; x++) {
+      const a = rowA + x * 4;
+      const b = rowB + x * 4;
+
+      const la = data.data[a] * 0.299 +
+                 data.data[a + 1] * 0.587 +
+                 data.data[a + 2] * 0.114;
+      const lb = data.data[b] * 0.299 +
+                 data.data[b + 1] * 0.587 +
+                 data.data[b + 2] * 0.114;
+
+      sum += Math.abs(lb - la);
+    }
+
+    profile[y] = sum / pw;
+  }
+
+  const smoothed = smooth1D(profile, Math.max(1, H / 900));
+  const expectedPitch = H * DECORATION_SLOT_CONFIG.pitchRatio;
+  const minPitch = H * DECORATION_SLOT_CONFIG.minPitchRatio;
+  const maxPitch = H * DECORATION_SLOT_CONFIG.maxPitchRatio;
+
+  const peakThreshold = Math.max(
+    5,
+    percentile1D(smoothed, 0.65) * 0.55
+  );
+
+  const peaks = localPeaks1D(
+    smoothed,
+    Math.max(4, Math.round(H * 0.012)),
+    Math.max(2, percentile1D(smoothed, 0.55) * 0.20)
+  ).filter(p => p.value >= peakThreshold);
+
+  const candidates = peaks.map(p => ({
+    y: y0 + p.index,
+    strength: p.value,
+    prominence: p.prominence
+  }));
+
+  // 25境界を選ぶ動的計画。
+  // 「25本のピークが見つかったらそれを使う」という決め打ちではなく、
+  // 候補が多い場合は24区間のピッチ整合性が最も高い系列を選択する。
+  const N = DECORATION_SLOT_CONFIG.maxSlots + 1;
+  const M = candidates.length;
+
+  let best = null;
+
+  if (M >= N) {
+    const dp = Array.from({ length: N }, () => new Array(M).fill(Infinity));
+    const prev = Array.from({ length: N }, () => new Array(M).fill(-1));
+
+    for (let j = 0; j < M; j++) dp[0][j] = 0;
+
+    for (let k = 1; k < N; k++) {
+      for (let j = 0; j < M; j++) {
+        for (let i = 0; i < j; i++) {
+          const d = candidates[j].y - candidates[i].y;
+          if (d < minPitch || d > maxPitch) continue;
+
+          // ピッチ誤差を主スコアにする。
+          // 強い境界を少し優先するが、強さだけで系列を決めない。
+          const pitchCost = Math.pow((d - expectedPitch) / expectedPitch, 2);
+          const strengthBonus = 0.02 / Math.max(1, candidates[j].strength);
+          const cost = dp[k - 1][i] + pitchCost + strengthBonus;
+
+          if (cost < dp[k][j]) {
+            dp[k][j] = cost;
+            prev[k][j] = i;
+          }
+        }
+      }
+    }
+
+    let end = -1;
+    let bestCost = Infinity;
+    for (let j = 0; j < M; j++) {
+      if (dp[N - 1][j] < bestCost) {
+        bestCost = dp[N - 1][j];
+        end = j;
+      }
+    }
+
+    if (end >= 0 && Number.isFinite(bestCost)) {
+      const ys = [];
+      let j = end;
+      for (let k = N - 1; k >= 0; k--) {
+        ys.push(candidates[j].y);
+        j = prev[k][j];
+      }
+      ys.reverse();
+
+      const diffs = [];
+      for (let i = 1; i < ys.length; i++) diffs.push(ys[i] - ys[i - 1]);
+
+      const meanPitch = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+      const variance = diffs.reduce((a, b) => a + Math.pow(b - meanPitch, 2), 0) / diffs.length;
+      const pitchSD = Math.sqrt(variance);
+
+      best = {
+        boundaries: ys,
+        meanPitch,
+        pitchSD,
+        normalizedPitch: meanPitch / H,
+        score: bestCost
+      };
+    }
+  }
+
+  return {
+    panel: { x: x0, y: y0, w: x1 - x0, h: y1 - y0 },
+    expectedPitch,
+    candidates,
+    best
+  };
+}
+
+function decorationRowTextureMetrics(img, roi) {
+  const sw=Math.max(1,Math.round(roi.w)), sh=Math.max(1,Math.round(roi.h));
+  const c=document.createElement('canvas'); c.width=sw; c.height=sh;
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  ctx.drawImage(img,roi.x,roi.y,sw,sh,0,0,sw,sh);
+  const d=ctx.getImageData(0,0,sw,sh).data;
+  let edgeSum=0, edgeN=0, sum=0, sum2=0;
+  for(let y=0;y<sh;y++){
+    for(let x=0;x<sw;x++){
+      const i=(y*sw+x)*4; const g=.299*d[i]+.587*d[i+1]+.114*d[i+2];
+      sum+=g; sum2+=g*g;
+      if(x>0){ const j=i-4; const g0=.299*d[j]+.587*d[j+1]+.114*d[j+2]; edgeSum+=Math.abs(g-g0); edgeN++; }
+    }
+  }
+  const mean=sum/(sw*sh); const sd=Math.sqrt(Math.max(0,sum2/(sw*sh)-mean*mean));
+  return {edge:edgeSum/Math.max(1,edgeN),sd};
+}
+
+function classifyDecorationRows(img, rois) {
+  const metrics=rois.map(r=>decorationRowTextureMetrics(img,r));
+  const medEdge=percentile1D(metrics.map(m=>m.edge),0.5);
+  const medSD=percentile1D(metrics.map(m=>m.sd),0.5);
+  return rois.map((r,i)=>{
+    const m=metrics[i];
+    const separator = m.edge <= Math.max(2.5,medEdge*0.30) && m.sd <= Math.max(30,medSD*0.75);
+    return {...r,isSeparator:separator,rowTexture:m};
+  });
+}
+
+// 装飾品画面のビルド反映対象は8グループ。
+// サブ武器は現在の装飾品ビルド反映モデルには含めず、9番目の固定枠として
+// 扱わない。これにより、サブ武器の有無で以降の装備グループがずれることを防ぐ。
+const DECORATION_GROUP_ORDER = [
+  // 実際の装飾品画面の上からの並び順。
+  // サブ武器は物理グループとして位置合わせに必要だが、ビルド反映対象外。
+  // 装衣には装飾品スロットがないため、このグループ列には含めない。
+  {key:'mainWeapon',label:'メイン武器',reflect:true},
+  {key:'subWeapon',label:'サブ武器',reflect:false},
+  {key:'head',label:'頭防具',reflect:true},
+  {key:'chest',label:'胴防具',reflect:true},
+  {key:'arms',label:'腕防具',reflect:true},
+  {key:'waist',label:'腰防具',reflect:true},
+  {key:'legs',label:'脚防具',reflect:true},
+  {key:'charm',label:'護石',reflect:true}
+];
+
+function parseDecorationSlotLevel(raw) {
+  const s=String(raw||'');
+  const m=s.match(/[\[【]\s*([1-3])\s*[\]】]/);
+  return m ? Number(m[1]) : null;
+}
+
+function buildDecorationGroupsFromRows(img, rois) {
+  const classified=classifyDecorationRows(img,rois);
+  const blocks=[]; let current=[];
+  const flush=()=>{ if(current.length){blocks.push(current);current=[];} };
+  for(const r of classified){
+    if(r.isSeparator){ flush(); }
+    else current.push(r);
+  }
+  flush();
+
+  // Wildsの装飾品画面では、区切り線のない先頭ブロックに複数装備が連続して
+  // 表示されることがあります。1装備最大3スロットという仕様を守り、
+  // 3件ずつ分割します。以降の区切りブロックは1グループとして保持します。
+  const logicalBlocks=[];
+  for(const block of blocks){
+    if(block.length<=3){ logicalBlocks.push(block); continue; }
+    for(let i=0;i<block.length;i+=3) logicalBlocks.push(block.slice(i,i+3));
+  }
+
+  if(logicalBlocks.length>DECORATION_GROUP_ORDER.length){
+    throw new Error(`装備グループが${logicalBlocks.length}件あります（表示上限${DECORATION_GROUP_ORDER.length}件）`);
+  }
+
+  const groups=logicalBlocks.map((block,groupIndex)=>{
+    const def=DECORATION_GROUP_ORDER[groupIndex];
+    if(!def) throw new Error(`装備グループ${groupIndex+1}を8グループ定義へ対応付けできません`);
+    const expected=getEquipmentExpectedGroupSlots(def.key);
+    const slots=block.map((r,j)=>{
+      r.groupIndex=groupIndex;
+      r.slotInGroup=j;
+      r.logicalGroupLabel=def.label;
+      r.isSeparator=false;
+      r.slotLevel=null;
+      return r;
+    });
+    return {groupIndex,key:def.key,label:def.label,equipmentKey:def.key,reflect:def.reflect!==false,expectedSlotLevels:expected,slots};
+  });
+  // OCRはgroups.slotsを唯一の正規データ源とし、同じROIオブジェクトを
+  // result.roisにも戻す。別配列へのコピーでgroup/slot IDが消える事故を防止する。
+  const slotRois=groups.flatMap(g=>g.slots);
+  return {rois:slotRois,groups};
+}
+
+function renderDecorationGroups(result) {
+  const groups=result.groups||[];
+  if(!groups.length) return `<div class="result warn"><b>装飾品グループを確定できません</b></div>`;
+  return `<div class="result ok"><b>装飾品グループ：${groups.length}グループ / ${groups.reduce((n,g)=>n+g.slots.length,0)}スロット</b>`+
+    groups.map(g=>`<div style="border:1px solid #c8baa0;border-radius:8px;padding:8px;margin-top:6px"><b>${g.groupIndex+1}. ${g.label}</b>`+
+      ` / 実スロット${g.slots.length}`+
+      `${g.expectedSlotLevels.length?` / スロット上限[${g.expectedSlotLevels.join(',')}]`:' / スロット上限情報なし'}`+
+      `<div class="mono">${g.slots.map((r,i)=>`${i+1}番：行${r.slotIndex+1} / OCR前 / Lv${r.slotLevel||'未確定'}`).join('<br>')}</div></div>`).join('')+
+    `</div>`;
+}
+
+function buildDecorationSlotROIs(gameArea, boundaries) {
+  const rois = [];
+  const W = gameArea.w;
+  const H = gameArea.h;
+
+  for (let i = 0; i < DECORATION_SLOT_CONFIG.maxSlots; i++) {
+    const top = boundaries[i];
+    const bottom = boundaries[i + 1];
+    const pitch = bottom - top;
+
+    const inset = Math.max(2, H * DECORATION_SLOT_CONFIG.roiInsetRatio);
+
+    rois.push({
+      slotIndex: i,
+      // 後段で装備DBのスロット情報と対応付けるための論理ID。
+      groupIndex: null,
+      slotInGroup: null,
+
+      x: Math.round(gameArea.x + W * DECORATION_SLOT_CONFIG.nameXRatio),
+      y: Math.round(top + inset),
+      w: Math.round(W * DECORATION_SLOT_CONFIG.nameWidthRatio),
+      h: Math.max(8, Math.round(pitch - inset * 2)),
+
+      boundaryTop: top,
+      boundaryBottom: bottom,
+      pitch
+    });
+  }
+
+  return rois;
+}
+
+function drawDecorationSlotROIs(img, result) {
+  const canvas = $('decorationSlotView');
+  $('decorationSlotStage').style.display = 'block';
+
+  const W = img.naturalWidth || img.width;
+  const H = img.naturalHeight || img.height;
+
+  canvas.width = W;
+  canvas.height = H;
+
+  const c = canvas.getContext('2d');
+  c.clearRect(0, 0, W, H);
+  c.drawImage(img, 0, 0);
+
+  // ゲーム領域
+  c.strokeStyle = '#00ff80';
+  c.lineWidth = Math.max(2, Math.round(Math.min(W, H) / 450));
+  c.strokeRect(
+    Math.round(result.gameArea.x),
+    Math.round(result.gameArea.y),
+    Math.round(result.gameArea.w),
+    Math.round(result.gameArea.h)
+  );
+
+  // パネル
+  c.strokeStyle = '#ffd000';
+  c.lineWidth = Math.max(2, Math.round(Math.min(W, H) / 600));
+  c.strokeRect(
+    result.detect.panel.x,
+    result.detect.panel.y,
+    result.detect.panel.w,
+    result.detect.panel.h
+  );
+
+  // 25本の境界
+  c.strokeStyle = '#ff4dff';
+  c.lineWidth = Math.max(1, Math.round(Math.min(W, H) / 800));
+  for (const y of result.detect.best.boundaries) {
+    c.beginPath();
+    c.moveTo(result.detect.panel.x, y);
+    c.lineTo(result.detect.panel.x + result.detect.panel.w, y);
+    c.stroke();
+  }
+
+  const fs = Math.max(11, Math.round(Math.min(W, H) / 65));
+  c.font = `bold ${fs}px sans-serif`;
+
+  for (const r of result.rois) {
+    c.strokeStyle = '#00d5ff';
+    c.strokeRect(r.x, r.y, r.w, r.h);
+
+    c.fillStyle = '#00d5ff';
+    c.fillText(
+      String(r.slotIndex + 1),
+      r.x + 2,
+      Math.max(fs + 2, r.y + fs)
+    );
+  }
+}
+
+function renderDecorationSlotResult(result) {
+  const d = result.detect;
+  const b = d.best;
+  const emptyCount = result.rois.filter(r => r.slotIndex >= 0).length;
+
+  let html =
+    `<div class="result ${b ? 'ok' : 'warn'}">` +
+    `<b>v4.5.5 装飾品グループ構造検証</b><br>` +
+    `<span class="mono">` +
+    `入力=${result.imageW}×${result.imageH} / ` +
+    `16:9=${result.gameArea.x.toFixed(1)},${result.gameArea.y.toFixed(1)},` +
+    `${result.gameArea.w.toFixed(1)}×${result.gameArea.h.toFixed(1)}` +
+    `</span></div>`;
+
+  html += `<div class="result"><b>検出条件</b><div class="mono">` +
+    `候補境界=${d.candidates.length}本 / 必要境界=25本 / ` +
+    `論理スロット=24 / OCR=未実行 / 珠DB=取得後に照合` +
+    `</div></div>`;
+
+  if (!b) {
+    html += `<div class="result warn"><b>24スロットGrid未成立</b><div class="mono">25本の境界をピッチ整合性付きで確定できませんでした。安全のためスロットROIは生成していません。</div></div>`;
+    $('decorationSlotOut').innerHTML = html;
+    return;
+  }
+
+  html += `<div class="result ok"><b>24スロットGrid成立</b><div class="mono">` +
+    `pitch=${b.meanPitch.toFixed(2)}px / pitchSD=${b.pitchSD.toFixed(2)}px / ` +
+    `pitch/H=${b.normalizedPitch.toFixed(5)} / score=${b.score.toFixed(5)}` +
+    `</div></div>`;
+
+  html += `<div class="result"><b>スロットROI</b><div class="mono">`;
+  for (const r of result.rois) {
+    html += `${String(r.slotIndex + 1).padStart(2,'0')}: x=${r.x}, y=${r.y}, ${r.w}×${r.h} / pitch=${r.pitch.toFixed(1)}px<br>`;
+  }
+  html += `</div></div>`;
+
+  html += renderDecorationGroups(result);
+  html += `<div class="result"><b>グループ化ルール</b><div class="mono">区切り行を検出してグループを分離 / 1グループ最大3スロット / 画面上は最大8グループ（メイン武器→サブ武器→頭→胴→腕→腰→脚→護石）。サブ武器は位置合わせ用に保持するがビルド反映対象外。装衣には装飾品スロットがないためグループ化しない。区切り行はスロット数に含めません。装備DBのスロットLvは照合情報として保持します。</div></div>`;
+
+  $('decorationSlotOut').innerHTML = html;
+}
+
+async function recognizeDecorationOCR(){
+  const result=window.decorationSlotResult;
+  if(!result || !Array.isArray(result.groups) || !result.groups.length){
+    $('decorationSlotStatus').textContent='先に「24スロットを切り出す」を実行してください。';
+    $('workflowDecorationStatus').textContent='先に装飾品スロットROIを確定してください。';
+    return;
+  }
+  const img=$('decorationImg');
+  const btn=$('workflowDecorationOCR');
+  btn.disabled=true;
+  const started=performance.now();
+  try{
+    $('workflowDecorationStatus').textContent=`装飾品${result.groups.length}グループ / ${result.groups.reduce((n,g)=>n+g.slots.length,0)}スロットをOCR中…（珠DBは並行取得）`;
+    // Decoration OCR is independent from the remote DB. Start the DB load in
+    // parallel so cached data can be used immediately and a fresh DB can join
+    // candidate matching without making OCR itself a prerequisite.
+    const decoDBPromise=loadDecorationDB(false).catch(e=>{
+      console.warn('装飾品DB取得失敗：',e);
+      return null;
+    });
+    const worker=await Tesseract.createWorker('jpn');
+    await worker.setParameters({tessedit_pageseg_mode:'7',preserve_interword_spaces:'1'});
+    const out=[];
+    for(const roi of result.rois.filter(r=>!r.isSeparator)){
+      const group=result.groups.find(g=>g.groupIndex===roi.groupIndex);
+      if(!group) continue;
+      const c=document.createElement('canvas');
+      const sw=Math.max(1,Math.round(roi.w)), sh=Math.max(1,Math.round(roi.h));
+      const scale=Math.max(3,Math.min(6,Math.round(900/Math.max(1,sw))));
+      c.width=sw*scale; c.height=sh*scale;
+      const ctx=c.getContext('2d',{willReadFrequently:true});
+      ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+      ctx.drawImage(img,roi.x,roi.y,sw,sh,0,0,c.width,c.height);
+      const passes=[];
+      for(const mode of ['gray','white']){
+        const pc=document.createElement('canvas'); pc.width=c.width; pc.height=c.height;
+        const pctx=pc.getContext('2d',{willReadFrequently:true}); pctx.drawImage(c,0,0);
+        const d=pctx.getImageData(0,0,pc.width,pc.height);
+        for(let i=0;i<d.data.length;i+=4){
+          const g=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
+          const z=mode==='gray' ? clampNumber(128+(g-128)*1.35,0,255) : (g>=145?255:0);
+          d.data[i]=d.data[i+1]=d.data[i+2]=Math.round(z);
+        }
+        pctx.putImageData(d,0,0);
+        const padded=addPaddingCustom(pc,Math.max(16,Math.round(pc.width*.05)),Math.max(16,Math.round(pc.height*.18)),'#000000');
+        const r=await worker.recognize(padded);
+        const raw=cleanOCR(r?.data?.text||'');
+        const conf=Number(r?.data?.confidence||0);
+        passes.push({mode,raw,confidence:conf});
+      }
+      const usable=passes.filter(x=>x.raw).sort((a,b)=>b.confidence-a.confidence);
+      const best=usable[0]||{raw:'',confidence:0,mode:'none'};
+      const slotLevel=parseDecorationSlotLevel(best.raw);
+      const expectedLevels=group?.expectedSlotLevels||[];
+      const maxSlot=expectedLevels[roi.slotInGroup]??null;
+      const equipmentKey=group?.equipmentKey||null;
+      const expectedKind=decorationKindForEquipmentKey(equipmentKey);
+      const candidates=matchDecorationCandidates(best.raw,maxSlot,expectedKind);
+      roi.slotLevel=slotLevel;
+      roi.decorationCandidates=candidates;
+      roi.decorationBest=candidates[0]||null;
+      if(group){ const gs=group.slots.find(x=>x.slotIndex===roi.slotIndex); if(gs){ gs.slotLevel=slotLevel; gs.ocr={slotIndex:roi.slotIndex,groupIndex:roi.groupIndex,slotInGroup:roi.slotInGroup,slotLevel,maxSlot,raw:best.raw,confidence:best.confidence,mode:best.mode,candidates,dbBest:candidates[0]||null}; gs.jewel=candidates[0]||null; } }
+      out.push({slotIndex:roi.slotIndex,groupIndex:roi.groupIndex,slotInGroup:roi.slotInGroup,slotLevel,maxSlot,equipmentKey,expectedKind,roi,passes,raw:best.raw,confidence:best.confidence,mode:best.mode,candidates,dbBest:candidates[0]||null});
+      if((out.length)%4===0) $('workflowDecorationStatus').textContent=`装飾品OCR中… ${out.length}/${result.groups.reduce((n,g)=>n+g.slots.length,0)}`;
+    }
+    await worker.terminate();
+    // Fresh DB may have completed while OCR was running. Re-score every OCR row
+    // once more so late-arriving DB data is reflected without rerunning OCR.
+    await decoDBPromise;
+    for(const r of out){
+      const group=result.groups.find(g=>g.groupIndex===r.groupIndex);
+      const expectedLevels=group?.expectedSlotLevels||[];
+      const maxSlot=expectedLevels[r.slotInGroup]??null;
+      r.maxSlot=maxSlot;
+      r.expectedKind=decorationKindForEquipmentKey(group?.equipmentKey||null);
+      r.candidates=matchDecorationCandidates(r.raw,maxSlot,r.expectedKind);
+      r.dbBest=r.candidates[0]||null;
+      r.roi.decorationCandidates=r.candidates;
+      r.roi.decorationBest=r.dbBest;
+      const gs=group?.slots?.find(x=>x.slotIndex===r.slotIndex);
+      if(gs){ gs.ocr={...(gs.ocr||{}),maxSlot,candidates:r.candidates,dbBest:r.dbBest}; gs.jewel=r.dbBest||null; }
+    }
+    window.lastDecorationOCR=out;
+    window.decorationSlotResult.ocr=out;
+    updateDecorationContext();
+    renderDecorationOCRResult(out);
+    const recognized=out.filter(x=>x.raw && x.confidence>=25).length;
+    const elapsed=(performance.now()-started)/1000;
+    $('workflowDecorationStatus').textContent=`装飾品OCR完了：${result.groups.length}グループ / ${out.length}スロット / 文字候補${recognized}件 / ${elapsed.toFixed(1)}秒`;
+  }catch(e){
+    console.error(e);
+    $('workflowDecorationStatus').textContent='装飾品OCRエラー：'+e.message;
+  }finally{btn.disabled=false}
+}
+function renderDecorationOCRResult(rows){
+  const byGroup=new Map();
+  rows.forEach(r=>{if(!byGroup.has(r.groupIndex))byGroup.set(r.groupIndex,[]);byGroup.get(r.groupIndex).push(r);});
+  const groups=Array.from(byGroup.entries()).sort((a,b)=>a[0]-b[0]).map(([gi,rs])=>{
+    const g=window.decorationSlotResult?.groups?.find(x=>x.groupIndex===gi);
+    const lines=rs.map(r=>{
+      const raw=r.raw||'（空／認識なし）';
+      const slotLabel=(Number.isFinite(Number(r.slotInGroup))?`${Number(r.slotInGroup)+1}番スロット`:'スロット未割当');
+      const state=r.raw?(r.confidence>=25?'候補':'低信頼'):'空・未認識';
+      const db=r.dbBest;
+      const dbLine=db?`<br><span class="note">DB候補：${db.name} / slot${db.slot??'?'} / ${db.kind||'?'} / DB一致 ${Math.round(db.matchScore*100)}%</span>`:'<br><span class="note">DB候補：未照合（DB未取得または候補なし）</span>';
+      const dbMismatch=(r.maxSlot!=null&&r.dbBest&&Number(r.dbBest.slot)>Number(r.maxSlot));
+      const ocrMismatch=(r.maxSlot!=null&&r.slotLevel!=null&&Number(r.slotLevel)>Number(r.maxSlot));
+      const matchMode=r.dbBest?.exactCore?'核一致':(r.dbBest?'類似核':'未照合');
+      return `<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${slotLabel}</b>　${raw} <span class="note">${state} / ${Math.round(r.confidence)}%${r.slotLevel?` / OCR Lv${r.slotLevel}`:''}${r.maxSlot!=null?` / 上限Lv${r.maxSlot}`:''}${ocrMismatch?' / ⚠上限超過':''}</span>${dbLine}${r.dbBest?`<br><span class="note">DB照合方式：${matchMode}</span>`:''}${dbMismatch?' / ⚠DB Lv不一致':''}</div>`;
+    }).join('');
+    return `<div style="border:1px solid #88775c;border-radius:10px;padding:8px;margin-top:8px"><b>${g?.label||`装備グループ${gi+1}`}</b>${g?.expectedSlotLevels?.length?` / スロット上限[${g.expectedSlotLevels.join(',')}]`:''}${lines}</div>`;
+  }).join('');
+  const html=`<div class="result"><b>装飾品OCR：グループ単位</b><div class="note">区切り行を除外し、実際の装着スロットだけをOCRしています。各グループは最大3スロットです。</div>${groups}</div>`;
+  $('decorationOCROut').innerHTML=html;
+  $('workflowDecorationOut').innerHTML=html;
+}
+
+async function runDecorationGroupSelfTest(){
+  const path='decoration_reference_IMG_9323_1.jpeg';
+  const img=document.createElement('img');
+  img.src=path;
+  try{
+    await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(new Error('同梱参照画像を読み込めませんでした'));});
+    const W=img.naturalWidth||img.width,H=img.naturalHeight||img.height;
+    const tmp=document.createElement('canvas'); tmp.width=W;tmp.height=H;tmp.getContext('2d').drawImage(img,0,0);
+    const gameArea=calculate16by9Area(W,H); const detect=detectDecorationBoundariesFromImage(tmp,gameArea);
+    if(!detect.best) throw new Error('25境界を確定できません');
+    const rois=buildDecorationSlotROIs(gameArea,detect.best.boundaries); const grouped=buildDecorationGroupsFromRows(img,rois);
+    const sizes=grouped.groups.map(g=>g.slots.length);
+    const ok=grouped.groups.length===8 && sizes.join(',')==='3,3,2,2,2,2,2,3';
+    $('decorationSlotStatus').textContent=ok?'実画像グループ自己検証OK':'実画像グループ自己検証NG';
+    $('decorationSlotOut').innerHTML=`<div class="result ${ok?'ok':'warn'}"><b>実画像グループ自己検証</b><div class="mono">入力=${W}×${H} / 境界=${detect.best.boundaries.length} / グループ=${grouped.groups.length} / 構成=[${sizes.join(',')}] / 期待=[3,3,2,2,2,2,2,3]</div></div>`;
+    return {ok,groupCount:grouped.groups.length,sizes};
+  }catch(e){
+    $('decorationSlotStatus').textContent='実画像グループ自己検証エラー：'+e.message;
+    $('decorationSlotOut').innerHTML=`<div class="result warn"><b>実画像グループ自己検証失敗</b><div class="mono">${e.message}</div></div>`;
+    return {ok:false,error:e.message};
+  }
+}
+
+function calculateDecorationSlots() {
+  const img = $('decorationImg');
+  if (!img || !img.src) {
+    $('decorationSlotStatus').textContent = '先に装飾品画像を選択してください。';
+    return;
+  }
+
+  try {
+    const W = img.naturalWidth || img.width;
+    const H = img.naturalHeight || img.height;
+
+    const tmp = document.createElement('canvas');
+    tmp.width = W;
+    tmp.height = H;
+    const tctx = tmp.getContext('2d', { willReadFrequently: true });
+    tctx.drawImage(img, 0, 0);
+
+    const gameArea = calculate16by9Area(W, H);
+    const detect = detectDecorationBoundariesFromImage(tmp, gameArea);
+
+    if (!detect.best) {
+      $('decorationSlotStage').style.display = 'none';
+      $('decorationSlotOut').innerHTML =
+        `<div class="result warn"><b>24スロットGrid未成立</b><div class="mono">` +
+        `候補境界=${detect.candidates.length} / 必要25本。` +
+        `安全のため24個のROIは生成しません。</div></div>`;
+      $('decorationSlotStatus').textContent =
+        `検証失敗：候補境界${detect.candidates.length}本 / 25本必要`;
+      window.decorationSlotResult = null;
+      return;
+    }
+
+    const rois = buildDecorationSlotROIs(gameArea, detect.best.boundaries);
+    const grouped = buildDecorationGroupsFromRows(img, rois);
+
+    const result = {
+      imageW: W,
+      imageH: H,
+      gameArea,
+      detect,
+      rois: grouped.rois,
+      groups: grouped.groups
+    };
+
+    window.decorationSlotResult = result;
+    updateDecorationContext();
+
+    drawDecorationSlotROIs(img, result);
+    renderDecorationSlotResult(result);
+
+    $('decorationSlotStatus').textContent =
+      `24スロットGrid成立：pitch=${detect.best.meanPitch.toFixed(1)}px / SD=${detect.best.pitchSD.toFixed(1)}px`;
+  } catch (e) {
+    console.error(e);
+    $('decorationSlotStatus').textContent = '装飾品スロット検出エラー：' + e.message;
+  }
+}
+
+function runDecorationSlotSelfTest() {
+  const sizes = [
+    [1536,864],
+    [1920,1080],
+    [2560,1440],
+    [3840,2160],
+    [2560,1080],
+    [3440,1440],
+    [1080,1920],
+    [706,1536]
+  ];
+
+  const lines = [];
+  for (const [w,h] of sizes) {
+    // 数式系の自己検証。画像内容を必要としない部分について、
+    // 16:9領域が正しく求まることと24スロットROIが領域内に入ることを確認する。
+    const g = calculate16by9Area(w,h);
+    const x = g.x + g.w * DECORATION_SLOT_CONFIG.nameXRatio;
+    const ww = g.w * DECORATION_SLOT_CONFIG.nameWidthRatio;
+    const inside = x >= g.x && x + ww <= g.x + g.w;
+
+    lines.push(
+      `${w}×${h}: game=${Math.round(g.x)},${Math.round(g.y)},` +
+      `${Math.round(g.w)}×${Math.round(g.h)} / ` +
+      `名前X=${Math.round(x)} W=${Math.round(ww)} / ${inside ? 'OK' : 'NG'}`
+    );
+  }
+
+  $('decorationSlotStatus').textContent = '自己検証完了：8サイズの座標範囲OK';
+  $('decorationSlotOut').innerHTML =
+    `<div class="result ok"><b>装飾品ROIサイズ自己検証</b><div class="mono">${lines.join('<br>')}</div></div>`;
+
+  return lines;
+}
+
+$('detectDecorationSlots').onclick=calculateDecorationSlots;
+$('runDecorationSlotSelfTest').onclick=runDecorationSlotSelfTest;
+$('runDecorationGroupSelfTest').onclick=runDecorationGroupSelfTest;
+$('reflectBuild').onclick=reflectAnalysisToBuild;
+$('workflowEquipmentROI').onclick=()=>calculateEquipmentROI();
+$('workflowEquipmentOCR').onclick=async()=>{await recognizeEquipmentAll(); $('workflowEquipmentStatus').textContent=$('equipmentOCRStatus').textContent; $('workflowEquipmentOut').innerHTML=$('equipmentResults').innerHTML || `<div class="note">装備OCR結果を確認してください。</div>`; const n=Array.isArray(window.lastEquipmentOCR)?window.lastEquipmentOCR.length:(window.equipmentContext?.results?.length||0); $('workflowEquipmentResultMetric').textContent=`${Math.min(n,7)} / 7`; const d=$('workflowEquipmentDot'); if(d)d.className='workflow-dot done';};
+$('workflowDecorationROI').onclick=()=>{calculateDecorationSlots(); setTimeout(()=>{ $('workflowDecorationStatus').textContent=$('decorationSlotStatus').textContent; $('workflowDecorationOut').innerHTML=$('decorationSlotOut').innerHTML; },0);};
+$('workflowDecorationOCR').onclick=async()=>{await recognizeDecorationOCR(); const n=window.decorationSlotResult?.groups?.reduce((a,g)=>a+g.slots.length,0)||0; $('workflowDecorationResultMetric').textContent=`${n} / 19`; const d=$('workflowDecorationDot'); if(d)d.className='workflow-dot done';};
+$('workflowReflectBuild').onclick=()=>{reflectAnalysisToBuild(); $('workflowReflectionStatus').textContent=$('buildReflectionStatus').textContent; $('workflowReflectionOut').innerHTML=$('buildReflectionOut').innerHTML;};
+
+$('decorationFile').addEventListener('change',()=>{
+  const f=$('decorationFile').files?.[0];
+  window.decorationContext=null;
+  window.decorationSlotResult=null;
+  window.decorationContext=null;
+  window.lastDecorationOCR=[];
+  $('decorationSlotStage').style.display='none';
+  $('decorationSlotOut').innerHTML='';
+  $('decorationSlotStatus').textContent='未実行';
+  if(!f){
+    $('decorationFileStatus').textContent='装飾品画像：未選択';
+    $('decorationImg').removeAttribute('src');
+    return;
+  }
+  const url=URL.createObjectURL(f);
+  $('decorationImg').onload=()=>{
+    URL.revokeObjectURL(url);
+    const w=$('decorationImg').naturalWidth,h=$('decorationImg').naturalHeight;
+    $('decorationFileStatus').innerHTML='<span id="workflowDecorationDot" class="workflow-dot ready"></span><span>装飾品画像：'+f.name+'</span>';
+    $('workflowDecorationImageMetric').textContent=`${w} × ${h}`;
+    const preview=$('workflowDecorationPreview'); preview.classList.remove('empty'); preview.innerHTML=''; const pv=document.createElement('img'); pv.src=$('decorationImg').src; pv.alt='装飾品画像プレビュー'; preview.appendChild(pv);
+    $('workflowDecorationStatus').textContent='装飾品画像を読み込みました。'; $('workflowDecorationOut').innerHTML='';
+  };
+  $('decorationImg').src=url;
+});
+
+$('calcEquipmentROI').onclick=calculateEquipmentROI;
+$('calcEquipmentROIBase').onclick=calculateEquipmentROIBase;
+$('runEquipmentROISelfTest').onclick=runEquipmentROISelfTest;
+
+$('detectTopDownGrid').onclick=tdRun;
 $('detectIconAnchor').onclick=v432Detect;
 (async()=>{try{await v400LoadBundledIcons();}catch(e){$('anchorDBStatus').textContent='DBアイコン読み込み失敗：'+e.message;console.error(e);}})();
 
-$('file').addEventListener('change',()=>{v400IconGrid=null;v400IconCandidates=[];window.lastEquipmentRegions=[];$('iconAnchorStatus').textContent='画像を読み込みました。DBアイコンアンカーを実行してください。';$('iconAnchorStage').style.display='none';});
+$('file').addEventListener('change',()=>{
+  v400IconGrid=null;v400IconCandidates=[];
+  window.lastEquipmentRegions=[];window.lastEquipmentOCR=[];window.equipmentContext=null;
+  window.topDownGridResult=null;window.equipmentROIResult=null;
+  $('iconAnchorStatus').textContent='装備画像を読み込みました。DBアイコンアンカーを実行してください。';
+  $('iconAnchorStage').style.display='none';$('topDownStage').style.display='none';
+  $('equipmentROIStage').style.display='none';$('equipmentROIOut').innerHTML='';$('equipmentROIStatus').textContent='未実行';
+  $('equipmentResults').innerHTML='';$('equipmentOCRStatus').textContent='未実行';
+  const f=$('file').files?.[0];
+  $('fileStatus').innerHTML=f?'<span id="workflowEquipmentDot" class="workflow-dot ready"></span><span>装備画像：'+f.name+'</span>':'<span id="workflowEquipmentDot" class="workflow-dot"></span><span>装備画像：未選択</span>';
+  $('workflowEquipmentImageMetric').textContent='—'; $('workflowEquipmentResultMetric').textContent='0 / 7';
+  const preview=$('workflowEquipmentPreview'); preview.classList.toggle('empty',!f); preview.innerHTML='';
+  if(f){const url2=URL.createObjectURL(f); const pv=document.createElement('img'); pv.alt='装備画像プレビュー'; pv.onload=()=>{URL.revokeObjectURL(url2); $('workflowEquipmentImageMetric').textContent=`${pv.naturalWidth} × ${pv.naturalHeight}`}; pv.src=url2; preview.appendChild(pv);}
+  $('workflowEquipmentStatus').textContent=f?'装備画像を読み込みました。':'未実行'; $('workflowEquipmentOut').innerHTML='';
+});
 
+window.equipmentContext=null;
+window.decorationContext=null;
+window.buildReflectionState=null;
+
+// v4.6.0 production UI: keep the public surface focused on the three-step workflow.
+function updateProductionState(){
+  const eq=window.equipmentContext?.results?.length||0;
+  const deco=window.lastDecorationOCR?.length||0;
+  const eqDot=$('workflowEquipmentDot'), deDot=$('workflowDecorationDot');
+  if(eqDot && eq) eqDot.className='workflow-dot done';
+  if(deDot && deco) deDot.className='workflow-dot done';
+  $('workflowEquipmentResultMetric').textContent=`${Math.min(eq,7)} / 7`;
+  $('workflowDecorationResultMetric').textContent=`${deco} / ${window.decorationSlotResult?.groups?.reduce((n,g)=>n+g.slots.length,0)||0}`;
+}
+$('resetAnalysis')?.addEventListener('click',()=>{
+  if(!confirm('解析結果と選択画像をすべてリセットします。よろしいですか？')) return;
+  location.reload();
+});
+$('workflowReflectBuild')?.addEventListener('click',()=>{
+  reflectAnalysisToBuild();
+  $('workflowReflectionStatus').textContent=$('buildReflectionStatus').textContent;
+  $('workflowReflectionOut').innerHTML=$('buildReflectionOut').innerHTML;
+});
+const _eqOCR=$('workflowEquipmentOCR');
+if(_eqOCR){ const oldEq=_eqOCR.onclick; _eqOCR.onclick=async()=>{await oldEq?.(); updateProductionState();}; }
+const _decoOCR=$('workflowDecorationOCR');
+if(_decoOCR){ const oldDeco=_decoOCR.onclick; _decoOCR.onclick=async()=>{await oldDeco?.(); updateProductionState();}; }
 </script>
 </body>
 </html>
