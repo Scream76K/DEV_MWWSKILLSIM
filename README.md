@@ -1,4 +1,4 @@
-# MHWilds OCR v4.4.2
+# MHWilds OCR v4.4.4
 - RAW画像ピクセル座標を解析座標として使用。
 - アイコンDB検索は0回。
 - 装備UIの右境界候補を複数探索。
@@ -21,10 +21,27 @@
 
 ### 今回の4K誤検出に対する安全確認
 
-旧v4.4.0が実際に検出した `pitch=129 / H=2160 = 0.0597` のような周期は、v4.4.2の `pitch/H=0.070～0.095` 条件では9行Gridとして採用しない。
+旧v4.4.0が実際に検出した `pitch=129 / H=2160 = 0.0597` のような周期は、v4.4.4の `pitch/H=0.070～0.095` 条件では9行Gridとして採用しない。
 
 また、9行全体が画像内に収まること、内部8境界の連続性、9行全体の高さ（8pitch/H）も同時に検証する。
 
 ### 重要
 
 これは「OCR成功版」ではない。まず9行の幾何検出を安全に成立させるための版であり、9行が成立しない場合は後段OCRへ渡さない。
+
+
+## v4.4.4 ROI integration
+- Gemini-derived 16:9 effective game-area calculation.
+- 7 equipment-name ROIs only: main weapon, head, chest, arm, waist, leg, charm.
+- Sub-weapon and mantle are excluded from OCR targets.
+- ROI uses normalized ratios, not fixed pixels.
+- Added ROI preview and 8-size self-test.
+- Fixed the v4.4.2 top-down grid button click hook.
+- The new ROI calculation is kept separate from legacy OCR assignment until position validation is complete.
+
+
+## v4.4.4 internal validation change
+- Gemini's normalized 16:9 ROI is retained as the baseline.
+- Internal simulation against `sample_game.png` showed the baseline Y positions aligned with the category labels rather than the equipment-name line.
+- Added a local name-line refinement: search below each baseline ROI for the lower white/neutral text band and shift the OCR ROI to that line.
+- The original ratio ROI remains available for direct comparison.
