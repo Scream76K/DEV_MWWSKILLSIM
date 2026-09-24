@@ -185,24 +185,30 @@
 
 <script>
   /* --------------------------------------------------
-   * 16:9領域算出
+   * 堅牢な16:9ゲームエリア算出（どのような縦横比画像でも中央ゲーム画面を正確補正）
    * -------------------------------------------------- */
-  function calculate16by9AreaFromImage(imgW, imgH) {
-    const targetAspect = 16 / 9;
-    const currentAspect = imgW / imgH;
-    let gameW = imgW, gameH = imgH, offsetX = 0, offsetY = 0;
+  function getGameArea(imgW, imgH) {
+    const targetRatio = 16 / 9;
+    const currentRatio = imgW / imgH;
 
-    if (Math.abs(currentAspect - targetAspect) > 0.01) {
-      if (currentAspect > targetAspect) {
-        gameW = imgH * targetAspect;
-        offsetX = (imgW - gameW) / 2;
+    let w = imgW;
+    let h = imgH;
+    let x = 0;
+    let y = 0;
+
+    if (Math.abs(currentRatio - targetRatio) > 0.02) {
+      if (currentRatio > targetRatio) {
+        // 横長すぎる場合（左右に黒帯）
+        w = imgH * targetRatio;
+        x = (imgW - w) / 2;
       } else {
-        gameH = imgW / targetAspect;
-        offsetY = (imgH - gameH) / 2;
+        // 縦長すぎる場合（スマホスクショ：上下に黒帯/UI）
+        h = imgW / targetRatio;
+        y = (imgH - h) / 2;
       }
     }
 
-    return { x: offsetX, y: offsetY, w: gameW, h: gameH };
+    return { x, y, w, h };
   }
 
   /* --------------------------------------------------
@@ -239,7 +245,7 @@
       stage.height = img.height;
       ctx.drawImage(img, 0, 0);
 
-      const gameArea = calculate16by9AreaFromImage(img.width, img.height);
+      const gameArea = getGameArea(img.width, img.height);
       computedROIs = calculatePercentageROIs(gameArea);
       drawROIBounds(ctx, computedROIs);
 
@@ -251,7 +257,7 @@
   });
 
   function calculatePercentageROIs(gameArea) {
-    const startXRatio  = 0.048, startYRatio  = 0.147, pitchYRatio  = 0.0904, widthRatio   = 0.123, heightRatio  = 0.032;
+    const startXRatio  = 0.045, startYRatio  = 0.145, pitchYRatio  = 0.0904, widthRatio   = 0.140, heightRatio  = 0.035;
     const cropX = gameArea.x + (gameArea.w * startXRatio);
     const cropW = gameArea.w * widthRatio;
     const cropH = gameArea.h * heightRatio;
@@ -289,10 +295,12 @@
 
     try {
       const worker = await Tesseract.createWorker('jpn');
+      await worker.setParameters({ tessedit_pageseg_mode: '7' });
+
       resultCard.style.display = 'flex';
 
       for (const [key, rect] of Object.entries(computedROIs)) {
-        const processedCanvas = preprocessCropImage(currentImg, rect);
+        const processedCanvas = createHighResCrop(currentImg, rect);
         const ret = await worker.recognize(processedCanvas);
         const cleanText = ret.data.text.replace(/[\s\n\r\t|="'_.,;:-]+/g, '').trim();
         const el = document.getElementById(`res_${key}`);
@@ -307,34 +315,16 @@
     }
   });
 
-  function preprocessCropImage(sourceImg, rect) {
-    const canvas = document.createElement('canvas');
-    const scale = 3;
-    canvas.width = rect.w * scale; canvas.height = rect.h * scale;
-    const pCtx = canvas.getContext('2d');
-    pCtx.imageSmoothingEnabled = false;
-    pCtx.drawImage(sourceImg, rect.x, rect.y, rect.w, rect.h, 0, 0, canvas.width, canvas.height);
-    const imgData = pCtx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imgData.data;
-    for (let i = 0; i < data.length; i += 4) {
-      const avg = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-      const val = avg > 120 ? 0 : 255;
-      data[i] = val; data[i + 1] = val; data[i + 2] = val;
-    }
-    pCtx.putImageData(imgData, 0, 0);
-    return canvas;
-  }
-
   /* --------------------------------------------------
-   * 【2】装飾品画面スキャナー (image_4.png 100%基準パラメータ)
+   * 【2】装飾品画面スキャナー（文字欠けを絶対に防ぐワイド枠設計）
    * -------------------------------------------------- */
   const DECORATION_GRID_CONFIG = {
     maxRows: 24,
-    startXRatio: 0.091,    // 9.1%: アイコン直後から開始
-    startYRatio: 0.101,    // 10.1%: 1行目「攻撃珠III」上端
-    pitchYRatio: 0.0338,   // 3.38%: 24行の精密行間ピッチ
-    widthRatio:  0.072,    // 7.2%: 最大5文字ジャスト幅
-    heightRatio: 0.026     // 2.6%: 1行高さ
+    startXRatio: 0.082,    // ★十分左に寄せて「攻」の左端切れを100%防止
+    startYRatio: 0.098,    // ★1行目の上端にゆとりを付与
+    pitchYRatio: 0.0337,   // ★24行追従ピッチ
+    widthRatio:  0.100,    // ★横幅を広げて右端【3】や「業物・匠珠」の切れを完全防止
+    heightRatio: 0.030     // ★縦幅を太くして上下ズレを吸収
   };
 
   const decoImageInput = document.getElementById('decoImageInput');
@@ -358,13 +348,13 @@
       decoStage.height = img.height;
       decoCtx.drawImage(img, 0, 0);
 
-      const gameArea = calculate16by9AreaFromImage(img.width, img.height);
+      const gameArea = getGameArea(img.width, img.height);
 
       decoComputedROIs = calculateDecorationROIs(gameArea);
       drawDecoROIBounds(decoCtx, decoComputedROIs);
 
       decoRunBtn.disabled = false;
-      decoStatusText.textContent = "24行枠線の重なりを確認し、「装飾品をOCR解析」を押してください";
+      decoStatusText.textContent = "24行枠線を確認し、「装飾品をOCR解析」を押してください";
       decoResultCard.style.display = 'none';
     };
     img.src = URL.createObjectURL(file);
@@ -412,11 +402,13 @@
 
     try {
       const worker = await Tesseract.createWorker('jpn');
+      await worker.setParameters({ tessedit_pageseg_mode: '7' });
+
       decoResultCard.style.display = 'flex';
       decoResultCard.innerHTML = '';
 
       for (const rect of decoComputedROIs) {
-        const processedCanvas = preprocessDecoCropImage(decoCurrentImg, rect);
+        const processedCanvas = createHighResCrop(decoCurrentImg, rect);
         const ret = await worker.recognize(processedCanvas);
         const cleanText = ret.data.text.replace(/[\s\n\r\t|="'_.,;:-]+/g, '').trim();
 
@@ -434,29 +426,26 @@
     }
   });
 
-  function preprocessDecoCropImage(sourceImg, rect) {
+  /* --------------------------------------------------
+   * 【共通】高解像度クロップ（二値化を行わずアンチエイリアスを保持）
+   * -------------------------------------------------- */
+  function createHighResCrop(sourceImg, rect) {
     const canvas = document.createElement('canvas');
     const scale = 3;
-    canvas.width = rect.w * scale; canvas.height = rect.h * scale;
+
+    canvas.width = rect.w * scale;
+    canvas.height = rect.h * scale;
+
     const pCtx = canvas.getContext('2d');
-    pCtx.imageSmoothingEnabled = false;
-    pCtx.drawImage(sourceImg, rect.x, rect.y, rect.w, rect.h, 0, 0, canvas.width, canvas.height);
+    pCtx.imageSmoothingEnabled = true;
+    pCtx.imageSmoothingQuality = 'high';
 
-    const imgData = pCtx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imgData.data;
+    pCtx.drawImage(
+      sourceImg,
+      rect.x, rect.y, rect.w, rect.h,
+      0, 0, canvas.width, canvas.height
+    );
 
-    let totalLum = 0;
-    for (let i = 0; i < data.length; i += 4) {
-      totalLum += data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-    }
-    const isBrightBg = (totalLum / (data.length / 4)) > 120;
-
-    for (let i = 0; i < data.length; i += 4) {
-      const lum = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-      let val = isBrightBg ? (lum < 120 ? 0 : 255) : (lum > 120 ? 0 : 255);
-      data[i] = val; data[i + 1] = val; data[i + 2] = val;
-    }
-    pCtx.putImageData(imgData, 0, 0);
     return canvas;
   }
 </script>
