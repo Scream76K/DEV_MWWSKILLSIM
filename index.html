@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.5.4：装飾品グループ／スロット再構築＋DB名前照合強化</title>
+<title>MH Wilds OCR — Step 1.25-C v4.5.5：装飾品グループ／スロットDB整合＋名前枝分け強化</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}
@@ -41,7 +41,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;pad
 <body>
 <main>
 <div class="card">
-<h1>MH Wilds OCR — Step 1.25-C v4.5.4：装飾品グループ／スロット再構築＋DB名前照合強化</h1>
+<h1>MH Wilds OCR — Step 1.25-C v4.5.5：装飾品グループ／スロットDB整合＋名前枝分け強化</h1>
 <div class="note">
 <b>v4.3.8：短辺基準スケール適応＋フルアイコン枠検出＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
 <strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
@@ -2287,12 +2287,25 @@ function decorationBaseName(raw){
     .replace(/[0-9]+$/g,''));
 }
 function decorationCoreName(raw){
-  // 装飾品名の識別に使う「珠」までの核を抽出する。
-  // I/IIやOCR末尾ノイズは核に含めないため、攻撃珠II・攻撃珠【1】などを
-  // 同じシリーズ名として扱い、最終的なLv/slotで枝分かれさせる。
+  // 「珠」までをシリーズ核として扱う。
   const s=decorationBaseName(raw).replace(/[|｜]/g,'');
   const i=s.indexOf('珠');
   return i>=0 ? s.slice(0,i+1) : s.replace(/(?:I{1,3}|V|[１２３]|[旧昌号告])$/,'');
+}
+function decorationVariantKey(raw){
+  // 同じ核・同じslotでも II / III のような別DB行があるため、
+  // 核だけで選ばず枝番号も照合する。認識不能な末尾は空文字にして
+  // 勝手にIII等へ決め打ちしない。
+  const s=normJPLoose(String(raw||'')).replace(/[【［\[].*?[】］\]]/g,'').trim();
+  const m=s.match(/(?:珠)\s*(I{1,3}|V|[1-3]|[１２３])/i);
+  if(!m)return '';
+  const v=m[1].toUpperCase().replace(/[１２３]/g,x=>({'１':'1','２':'2','３':'3'}[x]));
+  return v==='1'?'I':v==='2'?'II':v==='3'?'III':v;
+}
+function decorationVariantCompatible(raw,cand){
+  const a=decorationVariantKey(raw), b=decorationVariantKey(cand?.name);
+  if(!a || !b)return null;
+  return a===b;
 }
 function searchDecorationItems(raw, expectedSlot=null, expectedKind=null){
   if(!decorationDB.length)return [];
@@ -2308,12 +2321,14 @@ function scoreDecorationCandidate(raw,cand,expectedSlot=null,expectedKind=null){
   const edit=1-lev(a,b)/Math.max(a.length,b.length,1);
   const coreScore=1-lev(ac,bc)/Math.max(ac.length,bc.length,1);
   const exactCore=ac===bc;
+  const variant=decorationVariantCompatible(raw,cand);
   const contain=(a.includes(b)||b.includes(a))?0.05:0;
   const exact=a===b?0.20:0;
+  const variantBonus=variant===true?0.24:(variant===false?-0.28:0);
   const slot=(expectedSlot!=null && Number(cand.slot)===Number(expectedSlot))?0.10:0;
   const kind=(expectedKind && cand.kind===expectedKind)?0.05:0;
-  const score=Math.max(0,Math.min(1,coreScore*0.70+edit*0.20+contain+exact+slot+kind));
-  return {score,coreScore,exactCore};
+  const score=Math.max(0,Math.min(1,coreScore*0.55+edit*0.16+contain+exact+variantBonus+slot+kind));
+  return {score,coreScore,exactCore,variant};
 }
 function matchDecorationCandidates(raw,expectedSlot=null,expectedKind=null){
   if(!raw||!decorationDB.length)return [];
@@ -2324,31 +2339,54 @@ function matchDecorationCandidates(raw,expectedSlot=null,expectedKind=null){
   const targetPool=exactCorePool.length ? exactCorePool : pool;
   const scored=targetPool.map(c=>{
     const m=scoreDecorationCandidate(raw,c,expectedSlot,expectedKind);
-    return {...c,matchScore:m.score,coreMatchScore:m.coreScore,exactCore:m.exactCore};
-  }).sort((a,b)=>b.matchScore-a.matchScore);
+    return {...c,matchScore:m.score,coreMatchScore:m.coreScore,exactCore:m.exactCore,variantMatch:m.variant};
+  });
+  // 枝番号をOCRから取得できた場合、同一核の別枝を候補上位に残さない。
+  const rawVariant=decorationVariantKey(raw);
+  const variantPool=rawVariant ? scored.filter(c=>c.variantMatch===true) : scored;
+  const finalPool=rawVariant && variantPool.length ? variantPool : (rawVariant ? [] : scored);
+  finalPool.sort((a,b)=>b.matchScore-a.matchScore);
+  if(rawVariant && !variantPool.length) return [];
   // 名前の核が一致しない曖昧候補は、誤った珠を確定候補として表示しない。
   // 低信頼時は「候補なし」として上位工程に判断を委ねる。
-  if(!exactCorePool.length && (!scored[0] || scored[0].coreMatchScore<0.62)) return [];
-  return scored.slice(0,5);
+  if(!exactCorePool.length && (!finalPool[0] || finalPool[0].coreMatchScore<0.62)) return [];
+  return finalPool.slice(0,5);
 }
 $('loadDecorationDB')?.addEventListener('click',async()=>{const b=$('loadDecorationDB');b.disabled=true;try{await loadDecorationDB(true)}catch(e){}finally{b.disabled=false}});
 $('clearDecorationDB')?.addEventListener('click',()=>{try{localStorage.removeItem(DECORATION_CACHE_KEY)}catch(e){} decorationDB=[];decorationDBReady=false;decorationDBPromise=null;decorationGramIndex=new Map();setDecorationDBStatus('未取得')});
 
 function normalizeDecorationSlotLevels(value) {
   const out=[];
-  const push=(v)=>{
-    if(v==null)return;
+  const seen=new Set();
+  const push=(v,depth=0)=>{
+    if(v==null || depth>6)return;
     if(typeof v==='number' && Number.isFinite(v)){ const n=Math.round(v); if(n>=1&&n<=3) out.push(n); return; }
-    if(typeof v==='string'){ const m=v.match(/[1-3]/); if(m) out.push(Number(m[0])); return; }
-    if(Array.isArray(v)){ v.forEach(push); return; }
+    if(typeof v==='string'){
+      const ms=v.match(/[1-3]/g)||[];
+      ms.forEach(m=>out.push(Number(m)));
+      return;
+    }
+    if(Array.isArray(v)){ v.forEach(x=>push(x,depth+1)); return; }
     if(typeof v==='object'){
-      for(const k of ['level','slotLevel','size','rank','value']) if(v[k]!=null){ push(v[k]); return; }
-      for(const k of ['slots','decorationSlots','slotLevels','levels']) if(v[k]!=null){ push(v[k]); return; }
+      if(seen.has(v))return; seen.add(v);
+      // Prefer the actual slot collections. Do not stop after the first key:
+      // a previous implementation returned after the first nested value and
+      // could reduce [2,1] to [2].
+      let usedCollection=false;
+      for(const k of ['slotLevels','decorationSlots','slots','levels']){
+        if(v[k]!=null){ usedCollection=true; push(v[k],depth+1); }
+      }
+      if(!usedCollection){
+        for(const k of ['level','slotLevel','size','rank','value']){
+          if(v[k]!=null) push(v[k],depth+1);
+        }
+      }
     }
   };
   push(value);
   return out.slice(0,3);
 }
+
 
 function extractDecorationSlotLevels(row) {
   if(!row)return [];
@@ -2459,7 +2497,7 @@ function renderBuildReflectionState(state) {
 function reflectAnalysisToBuild() {
   const equipment = updateEquipmentContext();
   const decoration = updateDecorationContext();
-  const state = { version: '4.5.3', reflectedAt: new Date().toISOString(), equipment, decoration };
+  const state = { version: '4.5.5', reflectedAt: new Date().toISOString(), equipment, decoration };
   window.buildReflectionState = state;
 
   // 将来のスキルシミュレータ本体が接続された場合も、この1つの入口だけを呼び出せるようにする。
@@ -3803,7 +3841,7 @@ function renderEquipmentROIResult(result, selfTestRows = null) {
   const g = result.gameArea;
   let html =
     `<div class="result ${errors.length ? 'warn' : 'ok'}">` +
-    `<b>v4.5.4 7部位ROI＋装飾品24スロット切出し</b><br>` +
+    `<b>v4.5.5 7部位ROI＋装飾品24スロット切出し</b><br>` +
     `<span class="mono">` +
     `入力=${iw}×${ih} / ` +
     `16:9領域=x:${g.x.toFixed(2)}, y:${g.y.toFixed(2)}, ` +
@@ -4458,7 +4496,7 @@ function renderDecorationSlotResult(result) {
 
   let html =
     `<div class="result ${b ? 'ok' : 'warn'}">` +
-    `<b>v4.5.4 装飾品グループ構造検証</b><br>` +
+    `<b>v4.5.5 装飾品グループ構造検証</b><br>` +
     `<span class="mono">` +
     `入力=${result.imageW}×${result.imageH} / ` +
     `16:9=${result.gameArea.x.toFixed(1)},${result.gameArea.y.toFixed(1)},` +
