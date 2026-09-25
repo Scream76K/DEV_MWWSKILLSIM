@@ -1,9 +1,6 @@
-MH Wilds OCR 修正版 r1.1.15 開発者セルフチェック
-- index.html JavaScript syntax: PASS (node --check)
-- Version display/title: v7.1.0 / OCR統合 r1.1.15
-- OCR確定武器→Build State bridge: existing DB-record-first bridge retained and explicitly documented
-- Equipment name OCR width: 7.0x icon width -> 6.6x
-- Decoration ROI search panel right boundary: 0.200 -> 0.230
-- Decoration name ROI width: 0.125 -> 0.150
-- No change to weapon OCR matching/ranking algorithm
-- No change to armor/charm OCR matching algorithm
+MH Wilds OCR r1.1.16 修正テスト
+- OCR確定武器を最後に強制UI選択する forceSelectWeaponRecord を追加
+- 武器種select→武器option→build.weapon/App.state.build.weapon を同一DBレコードで再確定
+- applyOCRImportPayload終端のrenderWeapon()を除去し、後段renderによる選択解除を防止
+- JavaScript構文チェック: PASS
+- ZIP整合性チェック: PASS
