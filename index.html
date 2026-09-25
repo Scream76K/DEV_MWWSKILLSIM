@@ -536,7 +536,7 @@ function loadDataCache(){
     if(!weaponIndexComplete()){ try{localStorage.removeItem(sourceKey)}catch(e){}; weaponRows=[]; weaponIndexByKind=Object.create(null); return false; }
     dataState=emptyDataState(); App.data.set(DB,dataState);
     for(const x of DATASETS){const count=Array.isArray(DB[x.key])?DB[x.key].length:0; dataState[x.key]={status:count?'cached':'none',count,error:'',updatedAt:pack.savedAt||''};} dataState.weapons={status:weaponRows.length?'cached':'none',count:weaponRows.length,error:weaponRows.length?'':'保存済み武器データがありません',updatedAt:pack.savedAt||''};
-    normalizeCharm();sanitizeDecorationSelections();renderDataStatus();stat(`保存済みデータを読み込みました（${new Date(pack.savedAt||Date.now()).toLocaleString('ja-JP')}）${sourceKey!==DATA_CACHE?'（旧キャッシュから移行）':''}`,'warn');renderAll();renderSkillMaxAudit();renderGroupProposalOptions();renderArchitectureStatus();return true;
+    normalizeCharm();sanitizeDecorationSelections();renderDataStatus();stat(`保存済みデータを読み込みました（${new Date(pack.savedAt||Date.now()).toLocaleString('ja-JP')}）${sourceKey!==DATA_CACHE?'（旧キャッシュから移行）':''}`,'warn');renderAll();renderSkillMaxAudit();renderGroupProposalOptions();renderArchitectureStatus();window.__syncEmbeddedOCRDB?.();return true;
   }catch(e){return false}
 }
 function clearWeaponBuckets(){weaponRows=[];weaponIndexByKind=Object.create(null);try{localStorage.removeItem(WEAPON_CACHE_VERSION)}catch(e){}}
