@@ -3,125 +3,315 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.6.5</title>
+<title>MH Wilds OCR — Step 1.25-C v4.6.6：DB資産パッケージ化＋OCR保全版</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
-:root{--ink:#25221d;--muted:#71695d;--line:#d8cdb9;--paper:#fbf7ee;--paper2:#f3ecdd;--accent:#5d6848;--accent2:#7d6a45;--warn:#9a6a22;--danger:#8b5148}
-*{box-sizing:border-box}html{background:#eee9df}body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;background:linear-gradient(#f5f1e8,#e9e3d7);font-size:14px}main{max-width:920px;margin:0 auto;padding:12px}.card{background:rgba(255,253,247,.96);border:1px solid var(--line);border-radius:16px;box-shadow:0 3px 14px rgba(54,45,31,.07);padding:16px;margin-bottom:12px}h1,h2,h3{margin:0;font-weight:800;letter-spacing:.01em}h1{font-size:23px}h2{font-size:18px}h3{font-size:15px}.eyebrow{font-size:10px;letter-spacing:.16em;color:#777060;font-weight:800}.version{font-size:10px;color:#958a78;margin:3px 0 0}.hero{padding:17px}.hero-top{display:flex;justify-content:space-between;align-items:flex-start}.hero-note{margin:10px 0 0;color:var(--muted);line-height:1.6}.production-badge{font-size:10px;font-weight:800;background:#e9eedf;color:#586744;border-radius:999px;padding:6px 9px}.stepbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:14px}.stepbar div{padding:7px 8px;border-radius:9px;background:var(--paper2);color:#817765;font-size:11px;font-weight:800;text-align:center}.stepbar .active{background:#697653;color:#fff}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.step-label{font-size:10px;letter-spacing:.13em;font-weight:900;color:var(--accent)}.subtle,.note,.status{color:var(--muted);font-size:12px;line-height:1.55}.input-panel{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fffdf8}.input-panel+.input-panel{margin-top:10px}.input-title{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}.badge{font-size:10px;background:var(--paper2);padding:4px 7px;border-radius:999px;color:#71634f}.file-row{display:flex;gap:8px;align-items:center}.file-button{display:block;flex:1;text-align:center;padding:12px;border:1px dashed #aa9a7d;border-radius:10px;background:#f8f2e6;font-weight:800;color:#4e483e;cursor:pointer}.file-button input{display:none}.file-name{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.preview-wrap{display:flex;gap:10px;align-items:center;margin-top:10px}.thumb{width:92px;height:68px;border-radius:8px;border:1px solid var(--line);overflow:hidden;background:#e8e2d7;display:none}.thumb img{width:100%;height:100%;object-fit:cover}.preview-wrap.has-image .thumb{display:block}.preview-actions{display:flex;flex-direction:column;gap:3px}.link-btn{border:0;background:none;color:#5f6d48;padding:4px 0;text-align:left;font-size:12px;font-weight:800}.analysis-button{width:100%;min-height:48px;margin-top:12px;border:0;border-radius:11px;background:#5f6b49;color:white;font-weight:900;font-size:15px;box-shadow:0 2px 5px rgba(47,52,34,.16)}button{font-family:inherit;cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}.progress{margin-top:11px;display:none}.progress.show{display:block}.progress-track{height:7px;border-radius:99px;background:#e7e0d3;overflow:hidden}.progress-bar{height:100%;width:0;background:#7b875f;border-radius:99px;transition:width .25s ease}.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:5px}.stages{display:flex;gap:5px;margin-top:8px}.stage{flex:1;text-align:center;padding:5px 3px;border-radius:7px;background:#eee9df;color:#938979;font-size:10px}.stage.active{background:#dfe6d4;color:#53603e;font-weight:800}.stage.done{background:#e9eee1;color:#596748}.result-box{margin-top:12px}.confirm-summary{padding:10px 12px;background:#f2eee4;border-radius:10px;font-size:12px;margin-bottom:10px}.confirm-item{border:1px solid var(--line);border-radius:11px;padding:10px;margin:8px 0;background:#fffdf9}.confirm-item.warning{border-color:#d6b47b;background:#fffaf0}.confirm-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.confirm-state{font-size:10px;padding:4px 7px;border-radius:999px;background:#e8eedf;color:#566642;font-weight:800}.confirm-state.warn{background:#f3e2c3;color:#8b6429}.candidate-list{display:grid;gap:5px;margin-top:8px}.candidate-choice{display:flex;gap:8px;align-items:flex-start;padding:8px;border:1px solid #d8cdb9;border-radius:8px;background:#fff}.candidate-choice.selected{border-color:#78865d;background:#f1f5eb}.candidate-choice input{margin-top:3px}.candidate-name{font-weight:800}.candidate-meta{font-size:10px;color:var(--muted);margin-top:2px}.confirm-apply{margin-top:8px;padding:8px 12px;border:1px solid #a99b82;background:#f4eee1;border-radius:8px;font-weight:800;font-size:12px}.skip{border:0;background:none;color:#766c5d;font-size:12px;text-decoration:underline;padding:8px 0}.final-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.build-col{border:1px solid var(--line);border-radius:12px;overflow:hidden}.build-col-title{padding:10px 12px;background:#eee8da;font-weight:900}.build-row{display:grid;grid-template-columns:42% 58%;border-top:1px solid #e4dccd}.build-equip{padding:9px 10px;font-weight:800}.build-jewels{padding:9px 10px;color:#4e493f;font-size:12px;line-height:1.55}.reflect-button{width:100%;min-height:54px;font-size:17px;border:0;border-radius:12px;background:#596747;color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(47,52,34,.18);margin-top:12px}.secondary{border:1px solid var(--line);background:#f4eee2;border-radius:9px;padding:8px 10px;font-weight:800;color:#61584d}.db-test-card{border-color:#c9c0ad}.db-counts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}.db-count{padding:7px 8px;border-radius:8px;background:#f1ede4;text-align:center;font-size:11px}.db-count b{display:block;font-size:13px;color:#4f493f}@media(max-width:700px){.db-counts{grid-template-columns:repeat(2,1fr)}}.compact-help summary{cursor:pointer;font-weight:800}.help-body{font-size:12px;line-height:1.6;color:var(--muted)}.help-card{margin:0 0 12px;border:1px solid var(--line);border-radius:13px;background:#fbf8f0;overflow:hidden}.help-card summary{cursor:pointer;list-style:none;padding:12px 13px;font-weight:900;color:#4f493f;display:flex;justify-content:space-between;align-items:center}.help-card summary::-webkit-details-marker{display:none}.help-card summary::after{content:"＋";font-size:17px;color:#82745f}.help-card[open] summary::after{content:"−"}.help-body{padding:0 13px 14px;font-size:12px;line-height:1.65;color:var(--muted)}.help-lead{margin:0 0 10px}.help-section{border-top:1px solid #e5ddcf;padding-top:10px;margin-top:10px}.help-section h3{font-size:13px;margin:0 0 6px;color:#4f493f}.help-list{margin:5px 0 0;padding-left:18px}.help-list li{margin:3px 0}.help-ok{background:#eef2e8;border-radius:9px;padding:8px 10px;color:#596546}.help-ng{background:#f6ebe2;border-radius:9px;padding:8px 10px;color:#79584a}.help-example-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:8px}.help-example{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}.help-example img{display:block;width:100%;height:145px;object-fit:contain;background:#e9e4da}.help-example figcaption{padding:7px 8px;font-size:11px;line-height:1.45;color:#655d51}.help-link{color:#5f6d48;font-weight:800;text-decoration:underline}@media(max-width:700px){.help-example-grid{grid-template-columns:1fr}.help-example img{height:180px}}.modal{position:fixed;inset:0;background:rgba(20,18,14,.72);z-index:50;display:none;align-items:center;justify-content:center;padding:14px}.modal.show{display:flex}.modal-card{width:min(900px,100%);height:min(90vh,900px);background:#f8f4eb;border-radius:14px;display:flex;flex-direction:column;overflow:hidden}.modal-head{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}.modal-close{border:0;background:#e8e1d4;border-radius:8px;padding:7px 10px;font-weight:800}.modal-body{flex:1;display:flex;align-items:center;justify-content:center;overflow:auto;padding:10px}.modal-body img{max-width:100%;max-height:100%;object-fit:contain}.hidden-dev{display:none!important}@media(max-width:700px){main{padding:8px}.card{padding:13px;border-radius:14px}.hero{padding:14px}h1{font-size:21px}.production-badge{display:none}.stepbar div{font-size:10px;padding:7px 3px}.final-grid{grid-template-columns:1fr}.build-row{grid-template-columns:45% 55%}.thumb{width:78px;height:58px}}
+*{box-sizing:border-box}
+body{margin:0;background:#f4efe1;color:#302b23;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}
+main{max-width:980px;margin:auto;padding:16px}
+h1{font-size:22px;margin:0 0 8px}
+h2{font-size:18px;margin:20px 0 10px}
+.card{background:#fffaf0;border:1px solid #b9a98b;border-radius:14px;padding:14px;margin-bottom:14px}
+.note{font-size:13px;line-height:1.6;color:#625b50}
+button,input{font:inherit}
+button{border:1px solid #88775c;border-radius:10px;background:#fffaf0;padding:10px 14px}
+button.primary{background:#536b3f;color:white;border-color:#435631;font-weight:700}
+input[type=file]{width:100%}
+#stage{position:relative;overflow:auto;background:#222;border-radius:10px;padding:8px}
+#img{display:block;max-width:none;width:100%;height:auto}
+#box{position:absolute;border:3px solid #e64b2f;background:rgba(230,75,47,.12);touch-action:none;cursor:move}
+.handle{position:absolute;width:18px;height:18px;background:#e64b2f;border-radius:50%}
+.tl{left:-9px;top:-9px}.tr{right:-9px;top:-9px}.bl{left:-9px;bottom:-9px}.br{right:-9px;bottom:-9px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.workflow-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.workflow-panel{background:#fffdf7;border:1px solid #c8baa0;border-radius:12px;padding:12px}
+.workflow-panel h3{font-size:17px;margin:0 0 8px}
+.workflow-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.workflow-result{margin-top:10px}
+.workflow-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.workflow-card-head h3{margin:0}
+.workflow-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:#ece6d7;color:#625b50;font-size:11px;font-weight:700;white-space:nowrap}
+.workflow-preview{margin-top:10px;border:1px solid #c8baa0;border-radius:10px;background:#201d18;overflow:hidden;min-height:120px;display:flex;align-items:center;justify-content:center}
+.workflow-preview img{display:block;width:100%;max-height:260px;object-fit:contain}
+.workflow-preview.empty{background:linear-gradient(135deg,#f0eadc,#e5dcc9);color:#7a705f;min-height:120px}
+.workflow-preview.empty::before{content:'画像プレビュー';font-size:13px;font-weight:700}
+.workflow-summary{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.workflow-metric{padding:8px 9px;border-radius:9px;background:#f1ede3;border:1px solid #ddd2bd;font-size:12px;line-height:1.35}
+.workflow-metric b{display:block;font-size:15px;margin-bottom:2px}
+.workflow-statusline{display:flex;align-items:center;gap:7px;margin-top:9px;font-size:12px}
+.workflow-dot{width:8px;height:8px;border-radius:50%;background:#9a8e78;flex:0 0 auto}
+.workflow-dot.ready{background:#6d8d55}
+.workflow-dot.busy{background:#c28a3b}
+.workflow-dot.done{background:#3e6e52}
+.workflow-actions button{min-height:42px}
+.workflow-reflect{border-top:1px solid #c8baa0;margin-top:14px;padding-top:14px}
+@media(max-width:760px){.workflow-preview img{max-height:210px}.workflow-summary{grid-template-columns:1fr 1fr}.workflow-panel{padding:10px}}
+
+.workflow-divider{height:1px;background:#c8baa0;margin:14px 0}
+@media(max-width:760px){.workflow-grid{grid-template-columns:1fr}}
+label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}
+input[type=number]{width:100%;padding:8px;border:1px solid #b9a98b;border-radius:8px;background:white}
+pre{white-space:pre-wrap;word-break:break-word;background:#201d18;color:#eee;padding:12px;border-radius:10px;min-height:90px}
+.result{font-size:18px;font-weight:700;padding:12px;background:#eef2e8;border-radius:10px}
+.status{font-size:13px;margin-top:8px}
+@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}main{padding:10px}}
 </style>
 </head>
 <body>
 <main>
-  <header class="hero card">
-  <div class="hero-top"><div><div class="eyebrow">MONSTER HUNTER WILDS</div><h1>スクショからビルドを取り込む</h1><p class="version">v4.6.5</p></div><span class="production-badge">BUILD IMPORT</span></div>
-  <p class="hero-note">装備と装飾品のスクショを順番に解析して、ビルドとして取り込みます。</p>
-  <div class="stepbar"><div class="active">STEP 1　装備</div><div>STEP 2　装飾品</div><div>STEP 3　取り込み</div></div>
-</header>
+<div class="card">
+<h1>MH Wilds OCR — Step 1.25-C v4.6.6：DB資産パッケージ化＋OCR保全版</h1>
+<div class="note">
+<b>v4.3.8：短辺基準スケール適応＋フルアイコン枠検出＋左端15%＋縦列Grid検証＋DB geometry版</b><br>
+<strong>絶対条件：上段のメイン武器だけを対象にし、下段のサブ武器は一切反映しません。</strong><br>
+まだシミュレータ本体には接続しません。装備名を個別OCRし、部位限定DB候補まで確認します。<br><b>DB取得・正規化は共通Data Repositoryに集約し、OCRは取得済みDBを利用します。</b>
+</div>
+</div>
 
-<section class="card db-test-card">
-  <div class="section-head"><div><span class="step-label">TEST ENVIRONMENT</span><h2>① テスト用DBを取得</h2></div><span class="subtle">この画面ではここだけ実行</span></div>
-  <p class="subtle" style="margin:0 0 10px">OCRで使用する共通DBを先に取得します。取得後、Step 1のOCRが有効になります。</p>
-  <button id="testLoadAllDB" class="analysis-button" type="button">📥 DBを取得（テスト用）</button>
-  <div id="testDBProgress" class="progress"><div class="progress-track"><div id="testDBProgressBar" class="progress-bar"></div></div><div class="progress-label"><span id="testDBProgressLabel">準備中…</span><span id="testDBProgressPct">0%</span></div></div>
-  <div id="testDBStatus" class="status" style="margin-top:8px">DB未取得：先に「DBを取得（テスト用）」を押してください</div>
-  <div id="testDBCounts" class="db-counts" style="display:none"></div>
-</section>
-
-<details class="help-card" id="captureHelp">
-  <summary>📖 どんなスクショを使えばいい？（初めての方はこちら）</summary>
-  <div class="help-body">
-    <p class="help-lead">この機能は、ゲーム内の<strong>装備一覧画面</strong>と<strong>装飾品一覧画面</strong>を読み取ります。迷ったら、まず下の「良い例」と同じような画面を撮ってください。</p>
-    <div class="help-example-grid">
-      <figure class="help-example"><img src="examples/equipment_example.jpg" alt="装備画面の例"><figcaption><strong>装備スクショの例</strong><br>武器・防具・護石の名前が縦に並んでいる画面。</figcaption></figure>
-      <figure class="help-example"><img src="examples/decoration_example.jpg" alt="装飾品画面の例"><figcaption><strong>装飾品スクショの例</strong><br>装備ごとの装飾品スロットと珠の名前が見える画面。</figcaption></figure>
+<div class="card">
+<h2>1. 装備ビルド解析</h2>
+<div class="note">装備画面と装飾品画面を左右に並べ、同じ画面上で「どの装備に、どの装飾品が付いているか」を確認できる構成です。左右は完全に独立して解析できます。装飾品は「24個の独立スロット」ではなく、<b>最大8装備グループ × 1～3スロット</b>として保持します。グループ間の区切り行を使って実際の装着数を確定し、装備DBのスロット情報が取得できる場合は照合します。最後のビルド反映だけを1ボタンに統一します。</div>
+<div class="workflow-grid" style="margin-top:12px">
+  <section class="workflow-panel">
+    <div class="workflow-card-head"><h3>🛡️ 装備ビルド</h3><span class="workflow-badge">7部位</span></div>
+    <input id="file" type="file" accept="image/*">
+    <div id="fileStatus" class="workflow-statusline"><span id="workflowEquipmentDot" class="workflow-dot"></span><span>装備画像：未選択</span></div>
+    <div id="workflowEquipmentPreview" class="workflow-preview empty"></div>
+    <div class="workflow-summary">
+      <div class="workflow-metric"><b id="workflowEquipmentImageMetric">—</b>画像サイズ</div>
+      <div class="workflow-metric"><b id="workflowEquipmentResultMetric">0 / 7</b>解析部位</div>
     </div>
-    <div class="help-section"><h3>① 気をつける点</h3><ul class="help-list">
-      <li><strong>ゲーム画面全体が入ったスクショ</strong>がおすすめ。名前部分だけを切り抜く必要はありません。</li>
-      <li>文字が<strong>小さすぎない・ぼやけていない</strong>画像を使ってください。ゲーム機やPCの画面をスマホで撮影するより、ゲーム内のスクショ機能がおすすめです。</li>
-      <li>装備名・装飾品名の<strong>左右や上下を切らない</strong>でください。ブラウザや動画プレーヤーのUIが重なっている画像も避けてください。</li>
-      <li>16:9のゲーム画面が基本ですが、<strong>スマホ縦長のスクショでも解析できます</strong>。ゲーム画面が小さくなるほど文字は小さくなるため不利です。</li>
-      <li>装備と装飾品は<strong>別々のスクショ</strong>にしてください。</li>
-    </ul><div class="help-ok">✓ 迷ったら「ゲーム内スクショ → 元画像のままアップロード」が基本です。</div></div>
-    <div class="help-section"><h3>② PS5なら「PS App」がおすすめ</h3><ol class="help-list">
-      <li>PS5で装備画面を開き、コントローラーの<strong>クリエイトボタン</strong>からスクリーンショットを撮る。</li>
-      <li>PS5とPS Appを連携し、ゲームキャプチャーを有効にする。</li>
-      <li>PS Appの<strong>［ライブラリー］→［キャプチャー］</strong>から画像を開く。</li>
-      <li><strong>［ダウンロード］</strong>してiPhoneなどに保存し、この画面からアップロードする。</li>
-    </ol><p>PS Appでは対応するPS5キャプチャーをクラウド経由で確認・端末保存できます。自動アップロードを使う場合はPS5側の設定も確認してください。<a class="help-link" href="https://www.playstation.com/ja-jp/support/games/ps5-game-captures-ps-app/" target="_blank" rel="noopener">PlayStation公式の手順を見る</a>。</p></div>
-    <div class="help-section"><h3>③ Steam（PC）なら</h3><ol class="help-list">
-      <li>ゲーム内で<strong>F12</strong>を押してSteamのスクリーンショットを撮る（キーはSteam設定で変更できます）。</li>
-      <li>Steamのスクリーンショット管理から画像を確認し、必要なら<strong>「ディスク上で表示」</strong>して元画像を取得する。</li>
-      <li>PCでこのページを開いて、そのPNG/JPGをそのままアップロードするのが簡単です。</li>
-    </ol><p>Steam公式仕様では、スクリーンショットの標準ショートカットはF12です。<a class="help-link" href="https://partner.steamgames.com/doc/features/screenshots?language=english" target="_blank" rel="noopener">Steam公式ドキュメントを見る</a>。</p></div>
-    <div class="help-section"><h3>④ こういう場合はうまくいかないことがあります</h3><div class="help-ng"><ul class="help-list">
-      <li>スマホでテレビ画面を撮影して<strong>反射・ピンぼけ・モアレ</strong>がある</li>
-      <li>画像を強く圧縮して、装備名の文字が<strong>つぶれている</strong></li>
-      <li>装備名や装飾品名の<strong>端が切れている</strong></li>
-      <li>YouTube等の動画から切り出した画像で、<strong>字幕・再生UI・黒帯</strong>が画面に重なっている</li>
-      <li>ゲーム画面が極端に小さく、周囲に大量の余白がある</li>
-      <li>装備画面ではなく、装備の<strong>詳細説明だけ</strong>が表示されている</li>
-    </ul></div><p style="margin:8px 0 0">うまく読めなくても、すぐにやり直す必要はありません。解析後の<strong>「要確認」</strong>で候補を選べるようにしています。</p></div>
+    <div class="workflow-actions">
+      <button id="workflowEquipmentROI" class="primary">🧾 7部位を切り出す</button>
+      <button id="workflowEquipmentOCR" class="primary">🔎 OCR→候補確認</button>
+    </div>
+    <div id="workflowEquipmentStatus" class="status">未実行</div>
+    <div id="workflowEquipmentOut" class="workflow-result"></div>
+  </section>
+  <section class="workflow-panel">
+    <div class="workflow-card-head"><h3>💎 装飾品</h3><span class="workflow-badge">最大8グループ</span></div>
+    <input id="decorationFile" type="file" accept="image/*">
+    <div id="decorationFileStatus" class="workflow-statusline"><span id="workflowDecorationDot" class="workflow-dot"></span><span>装飾品画像：未選択</span></div>
+    <div id="workflowDecorationPreview" class="workflow-preview empty"></div>
+    <div class="workflow-summary">
+      <div class="workflow-metric"><b id="workflowDecorationImageMetric">—</b>画像サイズ</div>
+      <div class="workflow-metric"><b id="workflowDecorationResultMetric">0 / 19</b>実スロット</div>
+    </div>
+    <div id="decorationDBStatus" class="status">装飾品DB：未取得</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <button id="loadDecorationDB">💎 装飾品DBを読み込む</button>
+      <button id="clearDecorationDB">DBキャッシュ削除</button>
+    </div>
+    <div class="workflow-actions">
+      <button id="workflowDecorationROI" class="primary">💎 グループを検出</button>
+      <button id="workflowDecorationOCR" class="primary">🔎 OCR→グループ照合</button>
+    </div>
+    <div id="workflowDecorationStatus" class="status">未実行</div>
+    <div id="workflowDecorationOut" class="workflow-result"></div>
+  </section>
+</div>
+<div class="workflow-divider"></div>
+<div class="workflow-panel workflow-reflect">
+  <div class="workflow-card-head"><h3>🔄 ビルドへ反映</h3><span class="workflow-badge">共通入口</span></div>
+  <div class="note">装備だけ、装飾品だけ、両方のどの状態でも反映できます。解析結果を確定させた後、このボタンだけで現在のビルドへ渡します。</div>
+  <div class="workflow-actions">
+    <button id="workflowReflectBuild" class="primary">🔄 解析結果をビルドへ反映</button>
   </div>
-</details>
+  <div id="workflowReflectionStatus" class="status">未実行</div>
+  <div id="workflowReflectionOut" class="workflow-result"></div>
+</div>
+</div>
 
-<section class="card">
-  <div class="section-head"><div><span class="step-label">STEP 1</span><h2>武器・防具・護石を取り込む</h2></div><span class="subtle">7部位</span></div>
-  <div class="input-panel">
-    <div class="input-title"><b>① スクショを選ぶ</b><span class="badge">装備画面</span></div>
-    <div class="file-row"><label class="file-button">📷 装備スクショを選ぶ<input id="file" type="file" accept="image/*"></label></div>
-    <div id="fileStatus" class="file-name">画像はまだ選択されていません</div>
-    <div id="equipmentPreviewWrap" class="preview-wrap"><div id="workflowEquipmentPreview" class="thumb"></div><div class="preview-actions"><button id="equipmentPreviewButton" class="link-btn" type="button" disabled>画像を確認する</button><span id="workflowEquipmentImageMetric" class="subtle">—</span></div></div>
-    <button id="workflowEquipmentOCR" class="analysis-button" disabled>② 装備の画像解析を開始</button>
-    <div id="equipmentProgress" class="progress"><div class="progress-track"><div id="equipmentProgressBar" class="progress-bar"></div></div><div class="progress-label"><span id="equipmentProgressLabel">準備中…</span><span id="equipmentProgressPct">0%</span></div><div class="stages"><span id="eqStage1" class="stage active">画像確認</span><span id="eqStage2" class="stage">装備検出</span><span id="eqStage3" class="stage">OCR</span><span id="eqStage4" class="stage">DB照合</span></div></div>
-    <div id="workflowEquipmentStatus" class="status" style="margin-top:8px">装備スクショを選択してください</div>
-    <div id="workflowEquipmentOut" class="result-box"></div>
+<div class="card">
+<h2>2. DBアイコンアンカーで装備位置を確定</h2>
+<div class="note">v4.3.8では、入力画像の実ピクセル座標を基準にし、装備アイコンの最小・最大サイズをキャプチャの短辺に比例して同時に調整します。基準は706px短辺で50～82px。小さな暗部coreではなくフルアイコン枠を探索し、左端15%をアイコン左端の探索基準として維持します。候補群はv4.3.5のX軸整合・Y軸等間隔の9行縦列Gridで検証し、9行が成立しない場合は装備行を生成しません。DB画像は検索・置換には使わず、検出アイコン枠→右下アンカーのgeometry補正だけに使用します。</div>
+<div id="anchorDBStatus" class="status">DBアイコン：準備中</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button id="detectIconAnchor" class="primary">🎯 アイコン検出→DBアンカー補正→9行生成</button>
+</div>
+<div id="iconAnchorStatus" class="status">未実行</div>
+<div id="iconAnchorOut" style="margin-top:8px"></div>
+<div id="iconAnchorStage" class="stage" style="margin-top:10px;display:none"><canvas id="iconAnchorView"></canvas></div>
+</div>
+
+<div class="card">
+<h2>2-A. トップダウン装備9行グリッド（v4.4.2 検証版）</h2>
+<div class="note">アイコンを探して行を決めるのではなく、左側UIに現れる装備UI領域を先に候補化し、10本の境界（上下端＋内部8本）から9行を検証します。v4.3.xのアイコン検出・DB検索はこのプロトタイプでは使用しません。単なる等間隔パターンを装備欄と誤認しないよう、境界の連続性・正規化pitch・9行全体の画像内収まりまで検証します。</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button id="detectTopDownGrid" class="primary">📐 装備UI＋9行を厳密検証</button>
+</div>
+<div id="topDownStatus" class="status">未実行</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+  <button id="auditCoordinates" class="primary">🧭 座標系を監査</button>
+</div>
+<div id="coordinateAuditStatus" class="status">未実行</div>
+<div id="coordinateAuditOut" style="margin-top:8px"></div>
+<div id="topDownOut" style="margin-top:8px"></div>
+<div id="topDownStage" class="stage" style="margin-top:10px;display:none"><canvas id="topDownView"></canvas></div>
+</div>
+
+
+<div class="card dev-workflow-card" style="display:none">
+<h2>2-B. 装備名OCR ROI（Gemini引継ぎ・7部位）</h2>
+<div class="note">
+16:9の実ゲーム領域を先に算出し、その領域内の比率から
+「メイン武器／頭／胴／腕／腰／脚／護石」の7部位だけを切り出します。
+サブ武器(row=1)と装衣(row=8)は対象外です。
+黒帯・横長キャプチャ・縦長スクショを同じ計算系で扱い、固定pxには依存しません。
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button id="calcEquipmentROI" class="primary">🧾 7部位ROIを算出・表示</button>
+  <button id="runEquipmentROISelfTest" class="primary">🧪 ROIサイズ自己検証</button>
+  <button id="calcEquipmentROIBase" class="primary">📐 比率ROI（補正前）</button>
+</div>
+<div id="equipmentROIStatus" class="status">未実行</div>
+<div id="equipmentROIOut" style="margin-top:8px"></div>
+<div id="equipmentROIStage" class="stage" style="margin-top:10px;display:none">
+  <canvas id="equipmentROIView"></canvas>
+</div>
+</div>
+
+
+<div class="card dev-workflow-card" style="display:none">
+<h2>2-C. 装飾品スロット切り出し（最大24スロット）</h2>
+<div class="note">
+装飾品は24個の独立スロットとして扱いません。
+まず画面上の最大24行を検出し、その中にある「区切り行」を識別して
+<b>最大8グループ × 1～3スロット</b>へ再構成します。
+実際に装着されている珠だけを各グループへ保持し、区切り行はスロットとして扱いません。
+装備解析が先に済んでいる場合は、装備DBから得たスロットLv列も照合情報として保持します。
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button id="detectDecorationSlots" class="primary">💎 装飾品グループを検出</button>
+  <button id="runDecorationSlotSelfTest" class="primary">🧪 装飾品サイズ自己検証</button>
+  <button id="runDecorationGroupSelfTest" class="primary">🧪 実画像グループ自己検証</button>
+</div>
+<div id="decorationSlotStatus" class="status">未実行</div>
+<img id="decorationImg" alt="" style="display:none">
+<div id="decorationSlotOut" style="margin-top:8px"></div>
+<div id="decorationSlotStage" class="stage" style="margin-top:10px;display:none">
+  <canvas id="decorationSlotView"></canvas>
+</div>
+<div id="decorationOCROut" style="margin-top:10px"></div>
+</div>
+
+<div class="card dev-workflow-card" style="display:none">
+<h2>2-D. ビルドへの反映</h2>
+<div class="note">装備解析結果と装飾品解析結果は別々に保持します。ここだけを共通の入口にし、ボタンを押した時点で存在する解析結果だけを現在のビルドへ反映します。装備だけ、装飾品だけ、両方のいずれでも実行できます。</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button id="reflectBuild" class="primary">🔄 解析結果をビルドへ反映</button>
+</div>
+<div id="buildReflectionStatus" class="status">未実行</div>
+<div id="buildReflectionOut" style="margin-top:8px"></div>
+</div>
+
+<div class="card">
+<h2>3. 画面構造を自動検出（従来方式）</h2>
+<div class="note">画面全体を1回OCRし、「メイン武器／サブ武器／頭・胴・腕・腰・脚／護石／装衣」の位置を自動推定します。サブ武器と装衣は検出しても認識対象から除外します。</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button id="detectLayout" class="primary">🔎 画面構造を自動検出</button>
+</div>
+<div id="layoutStatus" class="status">未実行</div>
+<div id="layoutOut" style="margin-top:8px"></div>
+</div>
+
+<div class="card">
+<h2>4. OCR前処理を確認</h2>
+<div class="note">v4.3.3検証：まずcore検出→geometry補正→OCR切り出し境界を確認し、その後に既存OCR処理を確認します。</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button id="previewCropOnly" class="primary">✂️ 切り出しだけ確認</button>
+  <button id="previewPreprocess" class="primary">🖼️ 前処理画像を確認</button>
+  <button id="runPreprocessSpike" class="primary">🧪 前処理Spikeを実行</button>
+</div>
+<div id="preprocessStatus" class="status">未実行</div>
+<div id="preprocessPreview" style="margin-top:10px"></div>
+</div>
+
+<div class="card">
+<h2>5. 装備名を一括OCR</h2>
+<div class="note">Step 1.25-Aで得た9領域を使い、メイン武器・5防具・護石を個別OCRします。サブ武器と装衣はOCR結果を取得してもシミュレーターには反映しません。各部位は対応するDBだけを候補検索対象にします。</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+  <button id="recognizeEquipment" class="primary">🔎 装備名を一括認識</button>
+</div>
+<div id="equipmentDBStatus" class="status">装備DB：未取得</div>
+<div id="equipmentOCRStatus" class="status">未実行</div>
+<div id="equipmentResults" style="margin-top:10px"></div>
+</div>
+
+<div class="card">
+<h2>6. メイン武器領域（従来診断）</h2>
+<div class="note">
+赤枠が今回OCRする範囲です。まず初期値を試し、必要なら枠をドラッグして調整します。OCRは元画像から直接3倍拡大して処理します。
+このStepでは「画面全体OCR」は行いません。
+</div>
+<div id="stage">
+  <img id="img" alt="">
+  <div id="box">
+    <div class="handle tl"></div><div class="handle tr"></div>
+    <div class="handle bl"></div><div class="handle br"></div>
   </div>
-</section>
+</div>
+<div class="grid" style="margin-top:10px">
+  <div><label>左 %</label><input id="x" type="number" step="0.1"></div>
+  <div><label>上 %</label><input id="y" type="number" step="0.1"></div>
+  <div><label>幅 %</label><input id="w" type="number" step="0.1"></div>
+  <div><label>高さ %</label><input id="h" type="number" step="0.1"></div>
+</div>
+<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+  <button id="default">初期範囲に戻す</button>
+  <button id="ocr" class="primary">🔎 この範囲だけOCR</button>
+</div>
+</div>
 
-<section class="card">
-  <div class="section-head"><div><span class="step-label">STEP 2</span><h2>装飾品を取り込む</h2></div><button id="skipDecoration" class="skip">スキップする</button></div>
-  <div class="input-panel">
-    <div class="input-title"><b>① スクショを選ぶ</b><span class="badge">任意</span></div>
-    <div class="file-row"><label class="file-button">📷 装飾品スクショを選ぶ<input id="decorationFile" type="file" accept="image/*"></label></div>
-    <div id="decorationFileStatus" class="file-name">画像はまだ選択されていません</div>
-    <div id="decorationPreviewWrap" class="preview-wrap"><div id="workflowDecorationPreview" class="thumb"></div><div class="preview-actions"><button id="decorationPreviewButton" class="link-btn" type="button" disabled>画像を確認する</button><span id="workflowDecorationImageMetric" class="subtle">—</span></div></div>
-    <button id="workflowDecorationOCR" class="analysis-button" disabled>② 装飾品の画像解析を開始</button>
-    <div id="decorationProgress" class="progress"><div class="progress-track"><div id="decorationProgressBar" class="progress-bar"></div></div><div class="progress-label"><span id="decorationProgressLabel">準備中…</span><span id="decorationProgressPct">0%</span></div><div class="stages"><span id="decoStage1" class="stage active">画像確認</span><span id="decoStage2" class="stage">グループ検出</span><span id="decoStage3" class="stage">OCR</span><span id="decoStage4" class="stage">DB照合</span></div></div>
-    <div id="workflowDecorationStatus" class="status" style="margin-top:8px">装飾品スクショはスキップできます</div>
-    <div id="workflowDecorationOut" class="result-box"></div>
+<div class="card">
+<h2>7. 切り出した画像</h2>
+<canvas id="crop" style="max-width:100%;display:block;border-radius:8px;background:#222"></canvas>
+<div style="margin-top:14px;padding-top:12px;border-top:1px solid #c8baa0">
+  <div style="font-weight:700;margin-bottom:5px">武器名だけのOCR領域</div>
+  <div class="note">上段の「メイン武器」というラベルや右側のスロット・アイコンを除き、武器名の行だけを自動で切り出します。ここも必要なら数値で微調整できます。</div>
+  <div class="grid" style="margin-top:8px">
+    <div><label>領域内 左 %</label><input id="nx" type="number" step="0.5" value="12"></div>
+    <div><label>領域内 上 %</label><input id="ny" type="number" step="0.5" value="38"></div>
+    <div><label>領域内 幅 %</label><input id="nw" type="number" step="0.5" value="58"></div>
+    <div><label>領域内 高さ %</label><input id="nh" type="number" step="0.5" value="48"></div>
   </div>
-</section>
+  <canvas id="nameCrop" style="max-width:100%;display:block;margin-top:8px;border-radius:8px;background:#222"></canvas>
+</div>
+</div>
 
-<section class="card">
-  <div class="section-head"><div><span class="step-label">STEP 3</span><h2>ビルドを確定させて取り込む</h2></div></div>
-  <div id="finalBuildPreview" class="result-box"><div class="confirm-summary">Step 1・2で確定した内容がここに表示されます。</div></div>
-  <button id="workflowReflectBuild" class="reflect-button">ビルドを取り込む</button>
-  <div id="workflowReflectionStatus" class="status" style="margin-top:8px">装備を解析すると、ここに最終確認が表示されます</div>
-  <div id="workflowReflectionOut" class="result-box"></div>
-</section>
+<div class="card">
+<h2>8. 全武器DB（従来診断）</h2>
+<div class="note">MHDBの日本語版「武器」データを全件取得して候補検索に使用します。数件だけの固定辞書には戻しません。取得済みデータは端末内にキャッシュします。</div>
+<div id="dbStatus" class="status">武器DB：未取得</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+  <button id="loadDB">全武器DBを読み込む</button>
+  <button id="clearDB">武器DBキャッシュを削除</button>
+</div>
+</div>
 
-<section class="card compact-help"><details><summary>使い方と注意</summary><div class="help-body"><p>装備・装飾品DBはシミュレータのトップで一括取得します。この画面ではDB取得操作は行いません。</p><p>自動確定できない装備・装飾品だけ確認をお願いします。スロットLvは装備側の「上限」であり、装着した珠のLvを強制しません。</p></div></details></section>
+<div class="card">
+<h2>9. OCR結果（従来のメイン武器診断）</h2>
+<div id="recognized" class="result">未実行</div>
+<div class="status" id="ocrStatus"></div>
+<pre id="raw"></pre>
+<div style="margin-top:12px;padding-top:12px;border-top:1px solid #c8baa0">
+  <div style="font-weight:700;margin-bottom:5px">MHDB候補・証拠統合</div>
+  <div class="note">「一番近い名前」を無条件に正解にはしません。複数の切り出し・前処理で同じ候補が支持された回数、OCR信頼度、文字列類似度を統合し、差が小さい場合は判定保留にします。</div>
+  <div id="candidateOut" style="margin-top:8px"></div>
+</div>
+</div>
 
-<div id="imageModal" class="modal" role="dialog" aria-modal="true"><div class="modal-card"><div class="modal-head"><b id="modalTitle">スクショを確認</b><button id="modalClose" class="modal-close">閉じる</button></div><div class="modal-body"><img id="modalImage" alt="スクショ"></div></div></div>
-
-  <div id="equipmentDBStatus" hidden></div><div id="equipmentOCRStatus" hidden></div><div id="equipmentResults" hidden></div>
-  <div id="decorationSlotStatus" hidden></div><div id="decorationSlotOut" hidden></div><div id="decorationOCROut" hidden></div>
-
-  <!-- Legacy diagnostic DOM is retained only as an internal compatibility surface; it is not part of the product UI. -->
-  <div hidden id="legacyCompat">
-    <div id="anchorDBStatus"></div><div id="iconAnchorStatus"></div><div id="iconAnchorOut"></div><div id="iconAnchorStage"><canvas id="iconAnchorView"></canvas></div>
-    <div id="topDownStatus"></div><div id="coordinateAuditStatus"></div><div id="coordinateAuditOut"></div><div id="topDownOut"></div><div id="topDownStage"><canvas id="topDownView"></canvas></div>
-    <div id="equipmentROIStatus"></div><div id="equipmentROIOut"></div><div id="equipmentROIStage"><canvas id="equipmentROIView"></canvas></div>
-    <img id="decorationImg" alt=""><div id="decorationSlotStage"><canvas id="decorationSlotView"></canvas></div>
-    <div id="preprocessStatus"></div><div id="preprocessPreview"></div><div id="layoutStatus"></div><div id="layoutOut"></div>
-    <div id="stage"><img id="img"><div id="box"><div class="handle tl"></div><div class="handle tr"></div><div class="handle bl"></div><div class="handle br"></div></div></div>
-    <input id="x"><input id="y"><input id="w"><input id="h"><input id="nx"><input id="ny"><input id="nw"><input id="nh">
-    <canvas id="crop"></canvas><canvas id="nameCrop"></canvas><div id="dbStatus"></div><div id="recognized"></div><div id="ocrStatus"></div><pre id="raw"></pre><div id="candidateOut"></div>
-    <button id="default"></button><button id="ocr"></button><button id="loadDB"></button><button id="clearDB"></button><button id="calcEquipmentROI"></button><button id="calcEquipmentROIBase"></button><button id="runEquipmentROISelfTest"></button>
-    <button id="detectIconAnchor"></button><button id="detectTopDownGrid"></button><button id="auditCoordinates"></button><button id="detectDecorationSlots"></button><button id="runDecorationSlotSelfTest"></button><button id="runDecorationGroupSelfTest"></button><button id="reflectBuild"></button><button id="detectLayout"></button><button id="previewCropOnly"></button><button id="previewPreprocess"></button><button id="runPreprocessSpike"></button><button id="recognizeEquipment"></button>
-    <div id="buildReflectionStatus"></div><div id="buildReflectionOut"></div>
-  </div>
+<div class="card">
+<h2>Step 1.25-C v4.2.0 の検証ポイント</h2>
+<div class="note">
+① 赤枠が上段のメイン武器名だけを含む<br>
+② 下段のサブ武器名を含まない<br>
+③ 4方式のうち少なくとも1方式で、日本語の武器名が読める<br>
+④ DBに十分近い候補がない場合は、無理に別の武器名を候補にしない<br>⑤ 「クビドバイン」→「亡国のクピドバイン」のような部分一致を正しく評価する
+</div>
+</div>
 </main>
+
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
@@ -1037,11 +1227,11 @@ async function loadWeaponDB(force=false){
 }
 async function ensureWeaponDB(){
   if(weaponDBReady&&weaponDB.length)return weaponDB;
-  return loadWeaponDB(false);
+  return MHWildsDataRepository.loadWeapon({force:false});
 }
 $('loadDB').onclick=async()=>{
   $('loadDB').disabled=true;
-  try{await loadWeaponDB(true)}catch(e){}
+  try{await MHWildsDataRepository.loadWeapon({force:true})}catch(e){}
   finally{$('loadDB').disabled=false}
 };
 $('clearDB').onclick=()=>{
@@ -2231,7 +2421,59 @@ function matchDecorationCandidates(raw,maxSlot=null,expectedKind=null){
   if(!exactCorePool.length && (!finalPool[0] || finalPool[0].coreMatchScore<0.62))return [];
   return finalPool.slice(0,5);
 }
-$('loadDecorationDB')?.addEventListener('click',async()=>{const b=$('loadDecorationDB');b.disabled=true;try{await loadDecorationDB(true)}catch(e){}finally{b.disabled=false}});
+// ============================================================
+// MHWilds Data Repository
+// 既存のβ版/これまでのOCRで育ててきたDB取得・正規化処理を、
+// OCR側の各処理から直接呼ばず、1つのオブジェクトに集約する。
+// ここでは取得ロジックそのものを再実装・変更しない。
+// ============================================================
+const MHWildsDataRepository = Object.freeze({
+  async loadWeapon(options={}) {
+    return loadWeaponDB(options.force === true);
+  },
+  async loadArmor(options={}) {
+    return loadArmorDB(options.force === true);
+  },
+  async loadCharm(options={}) {
+    return loadCharmDB(options.force === true);
+  },
+  async loadDecoration(options={}) {
+    return loadDecorationDB(options.force === true);
+  },
+  async ensureEquipment() {
+    const [weapons, armor, charms] = await Promise.all([
+      MHWildsDataRepository.loadWeapon({force:false}),
+      MHWildsDataRepository.loadArmor({force:false}),
+      MHWildsDataRepository.loadCharm({force:false})
+    ]);
+    return { weapons, armor, charms };
+  },
+  async ensureAll() {
+    const [weapons, armor, charms, decorations] = await Promise.all([
+      MHWildsDataRepository.loadWeapon({force:false}),
+      MHWildsDataRepository.loadArmor({force:false}),
+      MHWildsDataRepository.loadCharm({force:false}),
+      MHWildsDataRepository.loadDecoration({force:false})
+    ]);
+    return { weapons, armor, charms, decorations };
+  },
+  getSnapshot() {
+    return {
+      weapons: Array.isArray(weaponDB) ? weaponDB : [],
+      armor: Array.isArray(armorDB) ? armorDB : [],
+      charms: Array.isArray(charmDB) ? charmDB : [],
+      decorations: Array.isArray(decorationDB) ? decorationDB : []
+    };
+  }
+});
+
+// 既存UIのDBボタンもRepository経由に統一。
+$('loadDecorationDB')?.addEventListener('click',async()=>{
+  const b=$('loadDecorationDB');
+  b.disabled=true;
+  try{await MHWildsDataRepository.loadDecoration({force:true})}catch(e){}
+  finally{b.disabled=false}
+});
 $('clearDecorationDB')?.addEventListener('click',()=>{try{localStorage.removeItem(DECORATION_CACHE_KEY)}catch(e){} decorationDB=[];decorationDBReady=false;decorationDBPromise=null;decorationGramIndex=new Map();setDecorationDBStatus('未取得')});
 
 function normalizeDecorationSlotLevels(value) {
@@ -2408,7 +2650,7 @@ function renderBuildReflectionState(state) {
 function reflectAnalysisToBuild() {
   const equipment = updateEquipmentContext();
   const decoration = updateDecorationContext();
-  const state = { version: '4.6.0', reflectedAt: new Date().toISOString(), equipment, decoration };
+  const state = { version: '4.5.10', reflectedAt: new Date().toISOString(), equipment, decoration };
   window.buildReflectionState = state;
 
   // 将来のスキルシミュレータ本体が接続された場合も、この1つの入口だけを呼び出せるようにする。
@@ -2453,13 +2695,24 @@ async function recognizeEquipmentAll(){
   const started=performance.now();
   let dbErrors=[];
   try{
-    // v4.6.5: DB取得はこの画面の外（テスト用DB取得）で先に完了させる。
-    // OCR開始時にネットワーク取得を発生させず、テスト時の再現性を優先する。
-    if(!weaponDBReady || !armorReady || !charmReady){
-      throw new Error('先に「DBを取得（テスト用）」を実行してください。武器・防具・護石DBが必要です。');
-    }
-    $('equipmentOCRStatus').textContent='装備OCR準備中…（取得済みDBを使用）';
-    setEquipmentDBStatus(`武器 ${weaponDB.length.toLocaleString()}件 / 防具 ${armorDB.length.toLocaleString()}件 / 護石 ${charmDB.length.toLocaleString()}件`,'ok');
+    // v4.5.1: OCR itself must never be blocked by a remote DB failure.
+    // Start DB loading in parallel, but begin OCR immediately. Candidate ranking
+    // is performed with whatever DB data is available when each slot finishes.
+    $('equipmentOCRStatus').textContent='装備OCR準備中…（DBは並行取得）';
+    const dbPromise=Promise.allSettled([
+      ensureWeaponDB(),
+      MHWildsDataRepository.loadArmor({force:false}),
+      MHWildsDataRepository.loadCharm({force:false})
+    ]).then(results=>{
+      const labels=['武器DB','防具DB','護石DB'];
+      dbErrors=results.map((r,i)=>r.status==='rejected'?`${labels[i]}：${r.reason?.message||r.reason}`:null).filter(Boolean);
+      if(dbErrors.length){
+        setEquipmentDBStatus(`一部DB取得失敗（OCRは継続） / 武器${weaponDB.length.toLocaleString()}件・防具${armorDB.length.toLocaleString()}件・護石${charmDB.length.toLocaleString()}件`,'bad');
+      }else{
+        setEquipmentDBStatus(`武器 ${weaponDB.length.toLocaleString()}件 / 防具 ${armorDB.length.toLocaleString()}件 / 護石 ${charmDB.length.toLocaleString()}件`,'ok');
+      }
+      return results;
+    });
 
     const worker=await Tesseract.createWorker('jpn');
     // DB未取得でも漢字を欠落させないため、v4.5.1では装備OCRに文字whitelistを掛けない。
@@ -2501,7 +2754,8 @@ async function recognizeEquipmentAll(){
       $('equipmentResults').innerHTML=output.map(renderEquipmentResult).join('');
     }
     await worker.terminate();
-    // Re-rank once with the same already-loaded DB state, without re-running OCR.
+    await dbPromise;
+    // Re-rank once with the final DB state, without re-running OCR.
     for(const x of output){
       const key=x.key;
       const items=equipmentRowsForSlot(key);
@@ -4446,7 +4700,7 @@ async function recognizeDecorationOCR(){
     // Decoration OCR is independent from the remote DB. Start the DB load in
     // parallel so cached data can be used immediately and a fresh DB can join
     // candidate matching without making OCR itself a prerequisite.
-    const decoDBPromise=loadDecorationDB(false).catch(e=>{
+    const decoDBPromise=MHWildsDataRepository.loadDecoration({force:false}).catch(e=>{
       console.warn('装飾品DB取得失敗：',e);
       return null;
     });
@@ -4720,161 +4974,12 @@ $('file').addEventListener('change',()=>{
   $('workflowEquipmentImageMetric').textContent='—'; $('workflowEquipmentResultMetric').textContent='0 / 7';
   const preview=$('workflowEquipmentPreview'); preview.classList.toggle('empty',!f); preview.innerHTML='';
   if(f){const url2=URL.createObjectURL(f); const pv=document.createElement('img'); pv.alt='装備画像プレビュー'; pv.onload=()=>{URL.revokeObjectURL(url2); $('workflowEquipmentImageMetric').textContent=`${pv.naturalWidth} × ${pv.naturalHeight}`}; pv.src=url2; preview.appendChild(pv);}
-  const dbReadyForOCR=weaponDBReady&&armorReady&&charmReady; $('workflowEquipmentStatus').textContent=f?(dbReadyForOCR?'装備画像を読み込みました。OCRを開始できます。':'装備画像を読み込みました。先にテスト用DBを取得してください。'):'未実行'; $('workflowEquipmentOCR').disabled=!(f&&dbReadyForOCR); $('workflowEquipmentOut').innerHTML='';
+  $('workflowEquipmentStatus').textContent=f?'装備画像を読み込みました。':'未実行'; $('workflowEquipmentOut').innerHTML='';
 });
 
 window.equipmentContext=null;
 window.decorationContext=null;
 window.buildReflectionState=null;
-
-// v4.6.2 production UI: keep the public surface focused on the three-step workflow.
-function updateProductionState(){
-  const eq=window.equipmentContext?.results?.length||0;
-  const deco=window.lastDecorationOCR?.length||0;
-  const eqDot=$('workflowEquipmentDot'), deDot=$('workflowDecorationDot');
-  if(eqDot && eq) eqDot.className='workflow-dot done';
-  if(deDot && deco) deDot.className='workflow-dot done';
-  $('workflowEquipmentResultMetric').textContent=`${Math.min(eq,7)} / 7`;
-  $('workflowDecorationResultMetric').textContent=`${deco} / ${window.decorationSlotResult?.groups?.reduce((n,g)=>n+g.slots.length,0)||0}`;
-}
-function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-async function loadAllTestDB(){
-  const btn=$('testLoadAllDB'), progress=$('testDBProgress'), bar=$('testDBProgressBar'), label=$('testDBProgressLabel'), pct=$('testDBProgressPct'), status=$('testDBStatus'), counts=$('testDBCounts');
-  if(!btn)return;
-  btn.disabled=true; progress?.classList.add('show'); if(bar)bar.style.width='0%'; if(label)label.textContent='DB取得を準備中…'; if(pct)pct.textContent='0%'; if(counts){counts.style.display='grid';counts.innerHTML=['武器','防具','護石','装飾品'].map(n=>`<div class="db-count"><span>${n}</span><b>取得中…</b></div>`).join('');}
-  // v4.6.5: 既存のDB取得ローダーをそのまま使用する。
-  // ここでは /version の事前疎通確認を行わない。β版/既存取得処理と同じく、
-  // 実際の各DB API取得結果をエラーとして扱う。事前確認APIの有無で全DB取得を止めない。
-  if(status){status.textContent='既存のDB取得処理を開始します…';status.style.color='var(--muted)';}
-  const jobs=[
-    ['武器DB',()=>loadWeaponDB(true)],
-    ['防具DB',()=>loadArmorDB(true)],
-    ['護石DB',()=>loadCharmDB(true)],
-    ['装飾品DB',()=>loadDecorationDB(true)]
-  ];
-  const results=[];
-  for(let i=0;i<jobs.length;i++){
-    const [name,fn]=jobs[i];
-    const start=Math.round((i/jobs.length)*92);
-    const endPct=Math.round(((i+1)/jobs.length)*92);
-    if(bar)bar.style.width=start+'%'; if(pct)pct.textContent=start+'%'; if(label)label.textContent=`${name}を取得中… (${i+1}/${jobs.length})`;
-    try{
-      const rows=await fn();
-      results.push({name,ok:true,count:Array.isArray(rows)?rows.length:0});
-    }catch(e){
-      const message=e?.message||String(e);
-      results.push({name,ok:false,count:0,error:message});
-    }
-    if(bar)bar.style.width=endPct+'%'; if(pct)pct.textContent=endPct+'%';
-    if(counts){counts.innerHTML=results.map(x=>`<div class="db-count"><span>${x.name}</span><b>${x.ok?x.count.toLocaleString()+'件':'失敗'}</b></div>`).join('')+jobs.slice(results.length).map(x=>`<div class="db-count"><span>${x[0]}</span><b>待機</b></div>`).join('');}
-  }
-  const failed=results.filter(x=>!x.ok);
-  const equipmentReady=weaponDBReady&&armorReady&&charmReady;
-  if(bar)bar.style.width='100%'; if(pct)pct.textContent='100%';
-  if(equipmentReady){
-    if(label)label.textContent=failed.length?'DB取得完了（一部失敗）':'DB取得完了';
-    if(status){status.innerHTML=failed.length
-      ? `装備OCRに必要なDBは揃いました。失敗：${failed.map(x=>`${x.name}（${escapeHtml(x.error||'不明なエラー')}）`).join('、')}`
-      : '4種類のDB取得が完了しました。Step 1の装備OCRを実行できます。';
-      status.style.color=failed.length?'var(--warn)':'var(--muted)';}
-    const b=$('workflowEquipmentOCR'); if(b)b.disabled=!$('file').files?.[0];
-  }else{
-    if(label)label.textContent='装備用DB取得未完了';
-    if(status){status.innerHTML=`武器・防具・護石のいずれかが取得できませんでした。${failed.map(x=>`<br>・${x.name}: ${escapeHtml(x.error||'不明なエラー')}`).join('')}`;status.style.color='var(--danger)';}
-    const b=$('workflowEquipmentOCR'); if(b)b.disabled=true;
-  }
-  btn.disabled=false;
-}
-$('testLoadAllDB')?.addEventListener('click',loadAllTestDB);
-
-$('resetAnalysis')?.addEventListener('click',()=>{
-  if(!confirm('解析結果と選択画像をすべてリセットします。よろしいですか？')) return;
-  location.reload();
-});
-$('workflowReflectBuild')?.addEventListener('click',()=>{
-  reflectAnalysisToBuild();
-  $('workflowReflectionStatus').textContent=$('buildReflectionStatus').textContent;
-  $('workflowReflectionOut').innerHTML=$('buildReflectionOut').innerHTML;
-});
-const _eqOCR=$('workflowEquipmentOCR');
-if(_eqOCR){ const oldEq=_eqOCR.onclick; _eqOCR.onclick=async()=>{await oldEq?.(); updateProductionState();}; }
-const _decoOCR=$('workflowDecorationOCR');
-if(_decoOCR){ const oldDeco=_decoOCR.onclick; _decoOCR.onclick=async()=>{await oldDeco?.(); updateProductionState();}; }
-
-// v4.6.2 UI layer: the public workflow is deliberately separate from the OCR engine.
-function setAnalysisProgress(kind,pct,label,stage){
-  const p=$(kind==='eq'?'equipmentProgress':'decorationProgress'); if(!p)return;
-  const safe=Math.max(0,Math.min(100,Number(pct)||0));
-  p.classList.add('show');
-  const bar=$(kind==='eq'?'equipmentProgressBar':'decorationProgressBar');
-  const labelEl=$(kind==='eq'?'equipmentProgressLabel':'decorationProgressLabel');
-  const pctEl=$(kind==='eq'?'equipmentProgressPct':'decorationProgressPct');
-  if(bar)bar.style.width=safe+'%';
-  if(labelEl)labelEl.textContent=label||'';
-  if(pctEl)pctEl.textContent=Math.round(safe)+'%';
-  const ids=kind==='eq'?['eqStage1','eqStage2','eqStage3','eqStage4']:['decoStage1','decoStage2','decoStage3','decoStage4'];
-  ids.forEach((id,i)=>{
-    const e=$(id); if(!e)return;
-    e.className='stage '+(safe>=100 || i<stage?'done':i===stage?'active':'');
-  });
-}
-function showImageModal(src,title){if(!src)return;$('modalTitle').textContent=title||'スクショを確認';$('modalImage').src=src;$('imageModal').classList.add('show')}
-$('modalClose').onclick=()=>{$('imageModal').classList.remove('show');$('modalImage').removeAttribute('src')};
-$('imageModal').addEventListener('click',e=>{if(e.target.id==='imageModal')$('modalClose').click()});
-function refreshFinalBuildPreview(){
-  const eq=window.equipmentContext?.results||[]; const de=window.decorationContext?.buildGroups||[];
-  if(!eq.length&&!de.length){$('finalBuildPreview').innerHTML='<div class="confirm-summary">Step 1・2で確定した内容がここに表示されます。</div>';return;}
-  const jewels=new Map(de.map(g=>[g.equipmentKey,g]));
-  const rows=eq.map(x=>{const g=jewels.get(x.key);const js=(g?.slots||[]).map(s=>s.jewel?.name||s.ocr?.raw||'未確定').join('<br>')||'—';return `<div class="build-row"><div class="build-equip">${equipmentSlotLabel(x.key)}<br><span class="subtle">${x.best?.name||'未確定'}</span></div><div class="build-jewels">${js}</div></div>`}).join('');
-  $('finalBuildPreview').innerHTML=`<div class="build-col" style="grid-column:1/-1"><div class="build-row" style="border-top:0"><div class="build-equip" style="background:#eee8da"><b>装備</b></div><div class="build-jewels" style="background:#eee8da"><b>対応する装飾品</b></div></div>${rows||'<div class="confirm-summary">装備未解析</div>'}</div>`;
-}
-// Candidate selection: only non-auto results need a user decision.
-function selectEquipmentCandidate(key,index){
-  const row=(window.lastEquipmentOCR||[]).find(x=>x.key===key); if(!row||!row.ranked?.[index])return;
-  row.best=row.ranked[index];
-  row.best.decision={level:'user',label:'ユーザー確定',reason:'ユーザーが候補を選択'};
-  updateEquipmentContext(); renderProductionEquipment(); refreshFinalBuildPreview();
-}
-function renderProductionEquipment(){
-  const rows=window.lastEquipmentOCR||[]; if(!rows.length){$('workflowEquipmentOut').innerHTML='';return;}
-  const needs=rows.filter(x=>x.best?.decision?.level!=='auto').length;
-  let html=`<div class="confirm-summary"><b>③ 装備の確認</b><br>${rows.length-needs}部位を自動確定 / ${needs}部位を確認してください。</div>`;
-  for(const x of rows){const b=x.best;const need=b?.decision?.level!=='auto';const cs=(x.ranked||[]).slice(0,3).map((c,i)=>`<label class="candidate-choice ${i===0?'selected':''}"><input type="radio" name="eq-${x.key}" ${i===0?'checked':''} onchange="selectEquipmentCandidate('${x.key}',${i})"><span><span class="candidate-name">${c.name}</span><span class="candidate-meta">総合 ${Math.round((c.totalScore??0)*100)}pt / OCR ${Math.round(c.confAvg||0)}%</span></span></label>`).join('');html+=`<div class="confirm-item ${need?'warning':''}"><div class="confirm-head"><b>${equipmentSlotLabel(x.key)}</b><span class="confirm-state ${need?'warn':''}">${need?'要確認':'自動確定'}</span></div><div style="margin-top:5px;font-weight:800">${b?.name||'候補なし'}</div>${need&&x.ranked?.length?`<div class="candidate-list">${cs}</div>`:''}</div>`;}
-  $('workflowEquipmentOut').innerHTML=html;
-}
-window.selectEquipmentCandidate=selectEquipmentCandidate;
-const _renderEquipmentResultOrig=renderEquipmentResult;
-const _oldEqHandler=$('workflowEquipmentOCR')?.onclick;
-if($('workflowEquipmentOCR'))$('workflowEquipmentOCR').onclick=async()=>{
-  if(!$('file').files?.[0])return;
-  $('workflowEquipmentOCR').disabled=true;setAnalysisProgress('eq',8,'画像を確認中…',0);
-  await new Promise(r=>setTimeout(r,80));setAnalysisProgress('eq',25,'装備位置を検出中…',1);
-  await calculateEquipmentROI();
-  setAnalysisProgress('eq',45,'装備名をOCR中…',2);
-  await recognizeEquipmentAll();
-  setAnalysisProgress('eq',82,'DB候補を照合中…',3);
-  renderProductionEquipment();
-  setAnalysisProgress('eq',100,'解析完了',4);
-  $('workflowEquipmentStatus').textContent='装備の解析が完了しました。下の候補を確認してください。';
-  $('workflowEquipmentOCR').disabled=false;refreshFinalBuildPreview();
-};
-if($('workflowDecorationOCR'))$('workflowDecorationOCR').onclick=async()=>{
-  if(!$('decorationFile').files?.[0])return;
-  $('workflowDecorationOCR').disabled=true;setAnalysisProgress('deco',8,'画像を確認中…',0);
-  await new Promise(r=>setTimeout(r,80));setAnalysisProgress('deco',25,'装飾品グループを検出中…',1);
-  await calculateDecorationSlots();
-  if(!window.decorationSlotResult?.groups?.length){$('workflowDecorationOCR').disabled=false;return;}
-  setAnalysisProgress('deco',45,'装飾品をOCR中…',2);
-  await recognizeDecorationOCR();
-  setAnalysisProgress('deco',82,'装飾品DBを照合中…',3);
-  updateDecorationContext();renderDecorationOCRResult(window.lastDecorationOCR||[]);
-  setAnalysisProgress('deco',100,'解析完了',4);
-  $('workflowDecorationStatus').textContent='装飾品の解析が完了しました。下の候補を確認してください。';
-  $('workflowDecorationOCR').disabled=false;refreshFinalBuildPreview();
-};
-$('equipmentPreviewButton').onclick=()=>showImageModal($('img').src,'装備スクショ');
-$('decorationPreviewButton').onclick=()=>showImageModal($('decorationImg').src,'装飾品スクショ');
-$('skipDecoration').onclick=()=>{$('workflowDecorationStatus').textContent='装飾品の取り込みをスキップしました。';$('decorationProgress').classList.remove('show');refreshFinalBuildPreview()};
 </script>
 </body>
 </html>
