@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.6.8</title>
+<title>MH Wilds OCR — Step 1.25-C v4.6.9</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 :root{--ink:#25221d;--muted:#71695d;--line:#d8cdb9;--paper:#fbf7ee;--paper2:#f3ecdd;--accent:#5d6848;--accent2:#7d6a45;--warn:#9a6a22;--danger:#8b5148}
@@ -908,14 +908,16 @@ function normalizeArmorRows(rows){
     .concat(normalizeEquipmentCandidateRows(rows,'chest'),normalizeEquipmentCandidateRows(rows,'arms'),normalizeEquipmentCandidateRows(rows,'waist'),normalizeEquipmentCandidateRows(rows,'legs'));
 }
 async function fetchEquipmentPage(api, offset){
-  const u=`${api}?limit=250&offset=${offset}`;
+  const projection={id:true,gameId:true,kind:true,name:true,rarity:true,slots:true,decorationSlots:true,slotLevels:true,limitBreakSlotLevels:true};
+  const u=`${api}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify(projection))}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'}); if(!r.ok) throw new Error(`装備DB HTTP ${r.status}`);
   const data=await r.json(); if(!Array.isArray(data)) throw new Error('装備DBの応答が配列ではありません'); return data;
 }
 async function fetchCharmPage(offset){
   // Charm names live on ranks, not on the top-level Charm object. Keep ranks
   // in this projection or OCR candidate construction would silently get zero rows.
-  const u=`${CHARM_API}?limit=250&offset=${offset}`;
+  const projection={id:true,gameId:true,ranks:true};
+  const u=`${CHARM_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify(projection))}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'}); if(!r.ok) throw new Error(`護石DB HTTP ${r.status}`);
   const data=await r.json(); if(!Array.isArray(data)) throw new Error('護石DBの応答が配列ではありません'); return data;
 }
@@ -1039,7 +1041,8 @@ function searchWeaponItems(raw){
   return ranked.length?ranked:weaponDB;
 }
 async function fetchWeaponPage(offset){
-  const u=`${WEAPON_API}?limit=250&offset=${offset}`;
+  const projection={id:true,gameId:true,kind:true,name:true,slots:true,decorationSlots:true,slotLevels:true};
+  const u=`${WEAPON_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify(projection))}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'});
   if(!r.ok)throw new Error(`武器DB HTTP ${r.status}`);
   const data=await r.json();
@@ -2158,7 +2161,8 @@ function rebuildDecorationGramIndex(){
   });
 }
 async function fetchDecorationPage(offset){
-  const u=`${DECORATION_API}?limit=250&offset=${offset}`;
+  const projection={id:true,gameId:true,name:true,description:true,value:true,slot:true,rarity:true,kind:true,skills:true,icon:true};
+  const u=`${DECORATION_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify(projection))}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'});
   if(!r.ok)throw new Error(`装飾品DB HTTP ${r.status}`);
   const data=await r.json();
@@ -4768,7 +4772,7 @@ async function loadAllTestDB(){
   const btn=$('testLoadAllDB'), progress=$('testDBProgress'), bar=$('testDBProgressBar'), label=$('testDBProgressLabel'), pct=$('testDBProgressPct'), status=$('testDBStatus'), counts=$('testDBCounts');
   if(!btn)return;
   btn.disabled=true; progress?.classList.add('show'); if(bar)bar.style.width='0%'; if(label)label.textContent='DB取得を準備中…'; if(pct)pct.textContent='0%'; if(counts){counts.style.display='grid';counts.innerHTML=['武器','防具','護石','装飾品'].map(n=>`<div class="db-count"><span>${n}</span><b>取得中…</b></div>`).join('');}
-  // v4.6.8: β版系のDB取得・保存データを優先して再利用し、未保存時のみ最新取得する。
+  // v4.6.9: β版系のDB取得・保存データを優先して再利用し、未保存時のみ最新取得する。
   // ここでは /version の事前疎通確認を行わない。β版/既存取得処理と同じく、
   // 実際の各DB API取得結果をエラーとして扱う。事前確認APIの有無で全DB取得を止めない。
   if(status){status.textContent='既存のDB取得処理を開始します…';status.style.color='var(--muted)';}
