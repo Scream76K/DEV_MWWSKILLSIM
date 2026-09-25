@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.6.3</title>
+<title>MH Wilds OCR — Step 1.25-C v4.6.5</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 :root{--ink:#25221d;--muted:#71695d;--line:#d8cdb9;--paper:#fbf7ee;--paper2:#f3ecdd;--accent:#5d6848;--accent2:#7d6a45;--warn:#9a6a22;--danger:#8b5148}
@@ -13,7 +13,7 @@
 <body>
 <main>
   <header class="hero card">
-  <div class="hero-top"><div><div class="eyebrow">MONSTER HUNTER WILDS</div><h1>スクショからビルドを取り込む</h1><p class="version">v4.6.3</p></div><span class="production-badge">BUILD IMPORT</span></div>
+  <div class="hero-top"><div><div class="eyebrow">MONSTER HUNTER WILDS</div><h1>スクショからビルドを取り込む</h1><p class="version">v4.6.5</p></div><span class="production-badge">BUILD IMPORT</span></div>
   <p class="hero-note">装備と装飾品のスクショを順番に解析して、ビルドとして取り込みます。</p>
   <div class="stepbar"><div class="active">STEP 1　装備</div><div>STEP 2　装飾品</div><div>STEP 3　取り込み</div></div>
 </header>
@@ -2453,7 +2453,7 @@ async function recognizeEquipmentAll(){
   const started=performance.now();
   let dbErrors=[];
   try{
-    // v4.6.3: DB取得はこの画面の外（テスト用DB取得）で先に完了させる。
+    // v4.6.5: DB取得はこの画面の外（テスト用DB取得）で先に完了させる。
     // OCR開始時にネットワーク取得を発生させず、テスト時の再現性を優先する。
     if(!weaponDBReady || !armorReady || !charmReady){
       throw new Error('先に「DBを取得（テスト用）」を実行してください。武器・防具・護石DBが必要です。');
@@ -4737,37 +4737,53 @@ function updateProductionState(){
   $('workflowEquipmentResultMetric').textContent=`${Math.min(eq,7)} / 7`;
   $('workflowDecorationResultMetric').textContent=`${deco} / ${window.decorationSlotResult?.groups?.reduce((n,g)=>n+g.slots.length,0)||0}`;
 }
+function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 async function loadAllTestDB(){
   const btn=$('testLoadAllDB'), progress=$('testDBProgress'), bar=$('testDBProgressBar'), label=$('testDBProgressLabel'), pct=$('testDBProgressPct'), status=$('testDBStatus'), counts=$('testDBCounts');
-  btn.disabled=true; progress.classList.add('show'); bar.style.width='5%'; label.textContent='DB取得を準備中…'; pct.textContent='5%'; counts.style.display='none';
+  if(!btn)return;
+  btn.disabled=true; progress?.classList.add('show'); if(bar)bar.style.width='0%'; if(label)label.textContent='DB取得を準備中…'; if(pct)pct.textContent='0%'; if(counts){counts.style.display='grid';counts.innerHTML=['武器','防具','護石','装飾品'].map(n=>`<div class="db-count"><span>${n}</span><b>取得中…</b></div>`).join('');}
+  // v4.6.5: 既存のDB取得ローダーをそのまま使用する。
+  // ここでは /version の事前疎通確認を行わない。β版/既存取得処理と同じく、
+  // 実際の各DB API取得結果をエラーとして扱う。事前確認APIの有無で全DB取得を止めない。
+  if(status){status.textContent='既存のDB取得処理を開始します…';status.style.color='var(--muted)';}
   const jobs=[
-    ['武器DB',()=>loadWeaponDB(false)],
-    ['防具DB',()=>loadArmorDB(false)],
-    ['護石DB',()=>loadCharmDB(false)],
-    ['装飾品DB',()=>loadDecorationDB(false)]
+    ['武器DB',()=>loadWeaponDB(true)],
+    ['防具DB',()=>loadArmorDB(true)],
+    ['護石DB',()=>loadCharmDB(true)],
+    ['装飾品DB',()=>loadDecorationDB(true)]
   ];
   const results=[];
-  try{
-    for(let i=0;i<jobs.length;i++){
-      const [name,fn]=jobs[i]; const start=5+i*22; bar.style.width=start+'%'; label.textContent=`${name}を取得中…`; pct.textContent=start+'%';
-      try{const rows=await fn(); results.push({name,ok:true,count:rows.length});}
-      catch(e){results.push({name,ok:false,count:0,error:e?.message||String(e)});}
-      const done=27+i*22; bar.style.width=done+'%'; pct.textContent=done+'%';
+  for(let i=0;i<jobs.length;i++){
+    const [name,fn]=jobs[i];
+    const start=Math.round((i/jobs.length)*92);
+    const endPct=Math.round(((i+1)/jobs.length)*92);
+    if(bar)bar.style.width=start+'%'; if(pct)pct.textContent=start+'%'; if(label)label.textContent=`${name}を取得中… (${i+1}/${jobs.length})`;
+    try{
+      const rows=await fn();
+      results.push({name,ok:true,count:Array.isArray(rows)?rows.length:0});
+    }catch(e){
+      const message=e?.message||String(e);
+      results.push({name,ok:false,count:0,error:message});
     }
-    const failed=results.filter(x=>!x.ok);
-    const equipmentReady=weaponDBReady&&armorReady&&charmReady;
-    if(equipmentReady){
-      bar.style.width='100%'; label.textContent=failed.length?'装備用DB取得完了（一部失敗）':'DB取得完了'; pct.textContent='100%';
-      status.textContent=failed.length?`装備OCRは実行できます。失敗：${failed.map(x=>x.name).join('、')}`:'武器・防具・護石DBが揃いました。Step 1の装備OCRを実行できます。';
-      status.style.color=failed.length?'var(--warn)':'var(--muted)';
-      counts.innerHTML=results.map(x=>`<div class="db-count"><span>${x.name}</span><b>${x.ok?x.count.toLocaleString():'取得失敗'}</b></div>`).join(''); counts.style.display='grid';
-      const b=$('workflowEquipmentOCR'); if(b)b.disabled=!$('file').files?.[0];
-    }else{
-      bar.style.width='100%'; label.textContent='DB取得未完了'; pct.textContent='100%';
-      status.textContent='武器・防具・護石DBが揃わなかったため、装備OCRは実行できません。';
-      counts.innerHTML=results.map(x=>`<div class="db-count"><span>${x.name}</span><b>${x.ok?x.count.toLocaleString():'取得失敗'}</b></div>`).join(''); counts.style.display='grid';
-    }
-  }finally{btn.disabled=false;}
+    if(bar)bar.style.width=endPct+'%'; if(pct)pct.textContent=endPct+'%';
+    if(counts){counts.innerHTML=results.map(x=>`<div class="db-count"><span>${x.name}</span><b>${x.ok?x.count.toLocaleString()+'件':'失敗'}</b></div>`).join('')+jobs.slice(results.length).map(x=>`<div class="db-count"><span>${x[0]}</span><b>待機</b></div>`).join('');}
+  }
+  const failed=results.filter(x=>!x.ok);
+  const equipmentReady=weaponDBReady&&armorReady&&charmReady;
+  if(bar)bar.style.width='100%'; if(pct)pct.textContent='100%';
+  if(equipmentReady){
+    if(label)label.textContent=failed.length?'DB取得完了（一部失敗）':'DB取得完了';
+    if(status){status.innerHTML=failed.length
+      ? `装備OCRに必要なDBは揃いました。失敗：${failed.map(x=>`${x.name}（${escapeHtml(x.error||'不明なエラー')}）`).join('、')}`
+      : '4種類のDB取得が完了しました。Step 1の装備OCRを実行できます。';
+      status.style.color=failed.length?'var(--warn)':'var(--muted)';}
+    const b=$('workflowEquipmentOCR'); if(b)b.disabled=!$('file').files?.[0];
+  }else{
+    if(label)label.textContent='装備用DB取得未完了';
+    if(status){status.innerHTML=`武器・防具・護石のいずれかが取得できませんでした。${failed.map(x=>`<br>・${x.name}: ${escapeHtml(x.error||'不明なエラー')}`).join('')}`;status.style.color='var(--danger)';}
+    const b=$('workflowEquipmentOCR'); if(b)b.disabled=true;
+  }
+  btn.disabled=false;
 }
 $('testLoadAllDB')?.addEventListener('click',loadAllTestDB);
 
@@ -4788,11 +4804,19 @@ if(_decoOCR){ const oldDeco=_decoOCR.onclick; _decoOCR.onclick=async()=>{await o
 // v4.6.2 UI layer: the public workflow is deliberately separate from the OCR engine.
 function setAnalysisProgress(kind,pct,label,stage){
   const p=$(kind==='eq'?'equipmentProgress':'decorationProgress'); if(!p)return;
-  p.classList.add('show'); $(kind==='eq'?'equipmentProgressBar':'decorationProgressBar').style.width=Math.max(0,Math.min(100,pct))+'%';
-  $(kind==='eq'?'equipmentProgressLabel':'decorationProgressLabel').textContent=label;
-  $(kind==='eq'?'equipmentProgressPct':'decorationProgressPct').textContent=Math.round(pct)+'%';
+  const safe=Math.max(0,Math.min(100,Number(pct)||0));
+  p.classList.add('show');
+  const bar=$(kind==='eq'?'equipmentProgressBar':'decorationProgressBar');
+  const labelEl=$(kind==='eq'?'equipmentProgressLabel':'decorationProgressLabel');
+  const pctEl=$(kind==='eq'?'equipmentProgressPct':'decorationProgressPct');
+  if(bar)bar.style.width=safe+'%';
+  if(labelEl)labelEl.textContent=label||'';
+  if(pctEl)pctEl.textContent=Math.round(safe)+'%';
   const ids=kind==='eq'?['eqStage1','eqStage2','eqStage3','eqStage4']:['decoStage1','decoStage2','decoStage3','decoStage4'];
-  ids.forEach((id,i)=>{const e=$(id);if(e)e.className='stage '+(i<stage?'done':i===stage?'active':'');});
+  ids.forEach((id,i)=>{
+    const e=$(id); if(!e)return;
+    e.className='stage '+(safe>=100 || i<stage?'done':i===stage?'active':'');
+  });
 }
 function showImageModal(src,title){if(!src)return;$('modalTitle').textContent=title||'スクショを確認';$('modalImage').src=src;$('imageModal').classList.add('show')}
 $('modalClose').onclick=()=>{$('imageModal').classList.remove('show');$('modalImage').removeAttribute('src')};
