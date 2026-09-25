@@ -2224,8 +2224,14 @@ function searchDecorationItems(raw, maxSlot=null, expectedKind=null){
   if(!decorationDB.length)return [];
   let pool=decorationDB;
   if(expectedKind) pool=pool.filter(x=>String(x.kind)===String(expectedKind));
-  // 装備側のslotは上限値。実際の装飾品Lvを拘束しない。
+  // 装備側のslotは「装着可能な上限」。装飾品自身のslotとは別情報。
   if(maxSlot!=null) pool=pool.filter(x=>Number(x.slot)<=Number(maxSlot));
+  // OCRで【1】【2】【3】を読めた場合は装飾品自身のslot/Lv情報として強く利用する。
+  const ocrSlot=parseDecorationSlotLevel(raw);
+  if(ocrSlot!=null){
+    const exactSlot=pool.filter(x=>Number(x.slot)===Number(ocrSlot));
+    if(exactSlot.length) pool=exactSlot;
+  }
   return pool;
 }
 function scoreDecorationCandidate(raw,cand,maxSlot=null,expectedKind=null){
@@ -2240,10 +2246,12 @@ function scoreDecorationCandidate(raw,cand,maxSlot=null,expectedKind=null){
   const contain=(a.includes(b)||b.includes(a))?0.05:0;
   const exact=a===b?0.20:0;
   const variantBonus=variant===true?0.24:(variant===false?-0.28:0);
-  const slot=(rawLv!=null && Number(cand.slot)===Number(rawLv))?0.10:0;
+  // OCRで明示された【3】等は候補slotとの一致を強く評価する。
+  const slotMatch=(rawLv!=null && Number(cand.slot)===Number(rawLv));
+  const slot=(rawLv!=null) ? (slotMatch ? 0.28 : -0.35) : 0;
   const kind=(expectedKind && cand.kind===expectedKind)?0.05:0;
   const score=Math.max(0,Math.min(1,coreScore*0.55+edit*0.16+contain+exact+variantBonus+slot+kind));
-  return {score,coreScore,exactCore,variant,rawLv};
+  return {score,coreScore,exactCore,variant,rawLv,slotMatch};
 }
 function matchDecorationCandidates(raw,maxSlot=null,expectedKind=null){
   if(!raw||!decorationDB.length)return [];
@@ -4566,9 +4574,10 @@ function renderDecorationOCRResult(rows){
       const db=r.dbBest;
       const dbLine=db?`<br><span class="note">DB候補：${db.name} / slot${db.slot??'?'} / ${db.kind||'?'} / DB一致 ${Math.round(db.matchScore*100)}%</span>`:'<br><span class="note">DB候補：未照合（DB未取得または候補なし）</span>';
       const dbMismatch=(r.maxSlot!=null&&r.dbBest&&Number(r.dbBest.slot)>Number(r.maxSlot));
+      const jewelLvMismatch=(r.slotLevel!=null&&r.dbBest&&Number(r.dbBest.slot)!==Number(r.slotLevel));
       const ocrMismatch=(r.maxSlot!=null&&r.slotLevel!=null&&Number(r.slotLevel)>Number(r.maxSlot));
       const matchMode=r.dbBest?.exactCore?'核一致':(r.dbBest?'類似核':'未照合');
-      return `<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${slotLabel}</b>　${raw} <span class="note">${state} / ${Math.round(r.confidence)}%${r.slotLevel?` / OCR Lv${r.slotLevel}`:''}${r.maxSlot!=null?` / 上限Lv${r.maxSlot}`:''}${ocrMismatch?' / ⚠上限超過':''}</span>${dbLine}${r.dbBest?`<br><span class="note">DB照合方式：${matchMode}</span>`:''}${dbMismatch?' / ⚠DB Lv不一致':''}</div>`;
+      return `<div style="border:1px solid #c8baa0;border-radius:8px;padding:7px;margin-top:5px"><b>${slotLabel}</b>　${raw} <span class="note">${state} / ${Math.round(r.confidence)}%${r.slotLevel?` / OCR Lv${r.slotLevel}`:''}${r.maxSlot!=null?` / 上限Lv${r.maxSlot}`:''}${ocrMismatch?' / ⚠上限超過':''}</span>${dbLine}${r.dbBest?`<br><span class="note">DB照合方式：${matchMode}</span>`:''}${dbMismatch?' / ⚠装備スロット上限超過':''}${jewelLvMismatch?' / ⚠OCR LvとDB slot不一致':''}</div>`;
     }).join('');
     return `<div style="border:1px solid #88775c;border-radius:10px;padding:8px;margin-top:8px"><b>${g?.label||`装備グループ${gi+1}`}</b>${g?.expectedSlotLevels?.length?` / スロット上限[${g.expectedSlotLevels.join(',')}]`:''}${lines}</div>`;
   }).join('');
