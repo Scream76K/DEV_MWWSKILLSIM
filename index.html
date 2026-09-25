@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.6.10</title>
+<title>MH Wilds OCR — Step 1.25-C v4.6.11</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 :root{--ink:#25221d;--muted:#71695d;--line:#d8cdb9;--paper:#fbf7ee;--paper2:#f3ecdd;--accent:#5d6848;--accent2:#7d6a45;--warn:#9a6a22;--danger:#8b5148}
@@ -4697,10 +4697,10 @@ $('detectDecorationSlots').onclick=calculateDecorationSlots;
 $('runDecorationSlotSelfTest').onclick=runDecorationSlotSelfTest;
 $('runDecorationGroupSelfTest').onclick=runDecorationGroupSelfTest;
 $('reflectBuild').onclick=reflectAnalysisToBuild;
-$('workflowEquipmentROI').onclick=()=>calculateEquipmentROI();
-$('workflowEquipmentOCR').onclick=async()=>{await recognizeEquipmentAll(); $('workflowEquipmentStatus').textContent=$('equipmentOCRStatus').textContent; $('workflowEquipmentOut').innerHTML=$('equipmentResults').innerHTML || `<div class="note">装備OCR結果を確認してください。</div>`; const n=Array.isArray(window.lastEquipmentOCR)?window.lastEquipmentOCR.length:(window.equipmentContext?.results?.length||0); $('workflowEquipmentResultMetric').textContent=`${Math.min(n,7)} / 7`; const d=$('workflowEquipmentDot'); if(d)d.className='workflow-dot done';};
-$('workflowDecorationROI').onclick=()=>{calculateDecorationSlots(); setTimeout(()=>{ $('workflowDecorationStatus').textContent=$('decorationSlotStatus').textContent; $('workflowDecorationOut').innerHTML=$('decorationSlotOut').innerHTML; },0);};
-$('workflowDecorationOCR').onclick=async()=>{await recognizeDecorationOCR(); const n=window.decorationSlotResult?.groups?.reduce((a,g)=>a+g.slots.length,0)||0; $('workflowDecorationResultMetric').textContent=`${n} / 19`; const d=$('workflowDecorationDot'); if(d)d.className='workflow-dot done';};
+$('workflowEquipmentROI')?.addEventListener('click',()=>calculateEquipmentROI());
+$('workflowEquipmentOCR').onclick=async()=>{await recognizeEquipmentAll(); $('workflowEquipmentStatus').textContent=$('equipmentOCRStatus').textContent; $('workflowEquipmentOut').innerHTML=$('equipmentResults').innerHTML || `<div class="note">装備OCR結果を確認してください。</div>`; const n=Array.isArray(window.lastEquipmentOCR)?window.lastEquipmentOCR.length:(window.equipmentContext?.results?.length||0); if($('workflowEquipmentResultMetric'))$('workflowEquipmentResultMetric').textContent=`${Math.min(n,7)} / 7`; const d=$('workflowEquipmentDot'); if(d)d.className='workflow-dot done';};
+$('workflowDecorationROI')?.addEventListener('click',()=>{calculateDecorationSlots(); setTimeout(()=>{ $('workflowDecorationStatus').textContent=$('decorationSlotStatus').textContent; $('workflowDecorationOut').innerHTML=$('decorationSlotOut').innerHTML; },0);});
+$('workflowDecorationOCR').onclick=async()=>{await recognizeDecorationOCR(); const n=window.decorationSlotResult?.groups?.reduce((a,g)=>a+g.slots.length,0)||0; if($('workflowDecorationResultMetric'))$('workflowDecorationResultMetric').textContent=`${n} / 19`; const d=$('workflowDecorationDot'); if(d)d.className='workflow-dot done';};
 $('workflowReflectBuild').onclick=()=>{reflectAnalysisToBuild(); $('workflowReflectionStatus').textContent=$('buildReflectionStatus').textContent; $('workflowReflectionOut').innerHTML=$('buildReflectionOut').innerHTML;};
 
 $('decorationFile').addEventListener('change',()=>{
@@ -4747,7 +4747,7 @@ $('file').addEventListener('change',()=>{
   $('equipmentResults').innerHTML='';$('equipmentOCRStatus').textContent='未実行';
   const f=$('file').files?.[0];
   $('fileStatus').innerHTML=f?'<span id="workflowEquipmentDot" class="workflow-dot ready"></span><span>装備画像：'+f.name+'</span>':'<span id="workflowEquipmentDot" class="workflow-dot"></span><span>装備画像：未選択</span>';
-  $('workflowEquipmentImageMetric').textContent='—'; $('workflowEquipmentResultMetric').textContent='0 / 7';
+  $('workflowEquipmentImageMetric').textContent='—'; if($('workflowEquipmentResultMetric'))$('workflowEquipmentResultMetric').textContent='0 / 7';
   const preview=$('workflowEquipmentPreview'); preview.classList.toggle('empty',!f); preview.innerHTML='';
   if(f){const url2=URL.createObjectURL(f); const pv=document.createElement('img'); pv.alt='装備画像プレビュー'; pv.onload=()=>{URL.revokeObjectURL(url2); $('workflowEquipmentImageMetric').textContent=`${pv.naturalWidth} × ${pv.naturalHeight}`}; pv.src=url2; preview.appendChild(pv);}
   const dbReadyForOCR=weaponDBReady&&armorReady&&charmReady; $('workflowEquipmentStatus').textContent=f?(dbReadyForOCR?'装備画像を読み込みました。OCRを開始できます。':'装備画像を読み込みました。先にテスト用DBを取得してください。'):'未実行'; $('workflowEquipmentOCR').disabled=!(f&&dbReadyForOCR); $('workflowEquipmentOut').innerHTML='';
@@ -4764,8 +4764,8 @@ function updateProductionState(){
   const eqDot=$('workflowEquipmentDot'), deDot=$('workflowDecorationDot');
   if(eqDot && eq) eqDot.className='workflow-dot done';
   if(deDot && deco) deDot.className='workflow-dot done';
-  $('workflowEquipmentResultMetric').textContent=`${Math.min(eq,7)} / 7`;
-  $('workflowDecorationResultMetric').textContent=`${deco} / ${window.decorationSlotResult?.groups?.reduce((n,g)=>n+g.slots.length,0)||0}`;
+  if($('workflowEquipmentResultMetric'))$('workflowEquipmentResultMetric').textContent=`${Math.min(eq,7)} / 7`;
+  if($('workflowDecorationResultMetric'))$('workflowDecorationResultMetric').textContent=`${deco} / ${window.decorationSlotResult?.groups?.reduce((n,g)=>n+g.slots.length,0)||0}`;
 }
 function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 // ---- β版DB取得処理の移植 ----
