@@ -2303,4 +2303,93 @@ renderComboKinds();dataState=emptyDataState();App.data.set(DB,dataState);renderD
 
 
 try{const v=document.getElementById('appVersionText');if(v)v.textContent=App.version;}catch(e){}
+// OCR integration bridge (β版)
+function readOCRImport(){
+  try{return JSON.parse(localStorage.getItem('MHW_OCR_IMPORT_V1')||'null')}catch(e){return null}
+}
+function renderOCRImportStatus(){
+  const box=$('ocrImportStatus'); if(!box)return;
+  const x=readOCRImport();
+  box.textContent=x ? 'OCR解析結果があります。「OCR結果を反映」で現在の装備セットへ反映できます。' : 'OCR解析結果はありません。';
+  box.className='muted small'+(x?' ok':'');
+}
+function findArmorForOCR(r){
+  const id=r?.id, name=String(r?.name||'').trim();
+  return DB.armor.find(a=>id!=null && String(a.id)===String(id)) || DB.armor.find(a=>name && String(a.name)===name) || null;
+}
+function findWeaponForOCR(r){
+  const id=r?.id, name=String(r?.name||'').trim();
+  return DB.weapons.find(w=>id!=null && String(w.id)===String(id)) || DB.weapons.find(w=>name && String(w.name)===name) || null;
+}
+function findCharmRankForOCR(r){
+  const id=r?.id, name=String(r?.name||'').trim();
+  for(const c of (DB.charms||[])){
+    if(id!=null && String(c.id)===String(id)) return {charm:c,rank:c.ranks?.[0]||null};
+    for(const rank of (c.ranks||[])) if(name && String(rank.name||c.name||'')===name) return {charm:c,rank};
+  }
+  for(const c of (DB.charms||[])) for(const rank of (c.ranks||[])){
+    if(name && String(c.name||'')===name) return {charm:c,rank};
+  }
+  return null;
+}
+function charmPatternFromLevels(levels){
+  const a=(levels||[]).map(Number).filter(n=>n>0).slice(0,2);
+  if(a.length===0)return [0,0];
+  if(a.length===1)return [a[0],0];
+  return [a[0],a[1]];
+}
+function applyOCRImport(){
+  const x=readOCRImport();
+  if(!x){renderOCRImportStatus();return alert('OCR解析結果がありません。先にOCR画面でビルドを解析してください。');}
+  if(!DB.weapons.length||!DB.armor.length){return alert('β版のゲームデータが未取得です。先に「最新データを取得 / 更新」を実行してください。');}
+  const eq=Array.isArray(x.equipment)?x.equipment:[];
+  const main=eq.find(r=>r.key==='mainWeapon' || r.key==='weapon');
+  const w=findWeaponForOCR(main);
+  if(w){
+    const kind=canonicalWeaponKind(w);
+    $('weaponKind').value=kind||'';
+    setWeaponKindSelection(kind||'');
+    setWeaponSelectionById(String(w.id));
+  }
+  for(const k of ['head','chest','arms','waist','legs']){
+    const r=eq.find(v=>v.key===k);
+    const a=findArmorForOCR(r);
+    build.armor[k]=a;
+  }
+  const charmR=eq.find(v=>v.key==='charm');
+  const cr=findCharmRankForOCR(charmR);
+  if(cr){
+    const rank=cr.rank;
+    const skills=(rank?.skills||[]).map(s=>({name:String(s.name||''),level:Number(s.level)||1,type:'armor'})).filter(s=>s.name);
+    const slots=charmPatternFromLevels(charmR?.slotLevels || rank?.slots || []);
+    build.charm=cr.charm;
+    build.charmCustom={skills:[0,1,2].map(i=>skills[i]||{name:'',level:1,type:'armor'}),slots,weaponSlots:[],weaponSlot:false};
+  }
+  const decoList=Array.isArray(x.decorations)?x.decorations:[];
+  build.decos={};
+  for(const g of decoList){
+    const target=g.equipmentKey;
+    if(target==='subWeapon')continue;
+    const prefix=target==='mainWeapon'?'w':(['head','chest','arms','waist','legs'].includes(target)?target:target==='charm'?'c':null);
+    if(!prefix)continue;
+    for(const s of (g.slots||[])){
+      const idx=Number.isFinite(Number(s.slotInGroup))?Number(s.slotInGroup):Number(s.slotIndex);
+      if(!Number.isFinite(idx))continue;
+      if(s.id!=null) build.decos[`${prefix}${idx}`]=String(s.id);
+    }
+  }
+  App.state.build.armor=build.armor;
+  App.state.build.charm=build.charm;
+  App.state.build.charmCustom=build.charmCustom;
+  App.state.build.decos=build.decos;
+  normalizeCharm();
+  renderArmor(); renderCharmEditor(); renderWeapon(); updateWeaponInfo(); calcBuild(); renderSavedBuilds();
+  localStorage.removeItem('MHW_OCR_IMPORT_V1');
+  renderOCRImportStatus();
+  const box=$('ocrImportStatus'); if(box)box.textContent='OCRで解析したビルドを現在の装備セットへ反映しました。';
+}
+$('openOCRImport')?.addEventListener('click',()=>{location.href='ocr.html'});
+$('applyOCRImport')?.addEventListener('click',applyOCRImport);
+renderOCRImportStatus();
+
 </script></body></html>
