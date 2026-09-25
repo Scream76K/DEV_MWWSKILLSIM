@@ -4715,6 +4715,8 @@ $('decorationFile').addEventListener('change',()=>{
   if(!f){
     $('decorationFileStatus').textContent='装飾品画像：未選択';
     $('decorationImg').removeAttribute('src');
+    $('workflowDecorationOCR').disabled=true;
+    $('decorationPreviewButton').disabled=true;
     return;
   }
   const url=URL.createObjectURL(f);
@@ -4724,7 +4726,7 @@ $('decorationFile').addEventListener('change',()=>{
     $('decorationFileStatus').innerHTML='<span id="workflowDecorationDot" class="workflow-dot ready"></span><span>装飾品画像：'+f.name+'</span>';
     $('workflowDecorationImageMetric').textContent=`${w} × ${h}`;
     const preview=$('workflowDecorationPreview'); preview.classList.remove('empty'); preview.innerHTML=''; const pv=document.createElement('img'); pv.src=$('decorationImg').src; pv.alt='装飾品画像プレビュー'; preview.appendChild(pv);
-    $('workflowDecorationStatus').textContent='装飾品画像を読み込みました。'; $('workflowDecorationOut').innerHTML='';
+    $('workflowDecorationStatus').textContent='装飾品画像を読み込みました。解析を開始できます。'; $('workflowDecorationOut').innerHTML=''; $('workflowDecorationOCR').disabled=false; $('decorationPreviewButton').disabled=false;
   };
   $('decorationImg').src=url;
 });
