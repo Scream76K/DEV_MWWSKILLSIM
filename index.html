@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.6.7</title>
+<title>MH Wilds OCR — Step 1.25-C v4.6.8</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 :root{--ink:#25221d;--muted:#71695d;--line:#d8cdb9;--paper:#fbf7ee;--paper2:#f3ecdd;--accent:#5d6848;--accent2:#7d6a45;--warn:#9a6a22;--danger:#8b5148}
@@ -893,6 +893,10 @@ const ARMOR_API='https://wilds.mhdb.io/ja/armor';
 const CHARM_API='https://wilds.mhdb.io/ja/charms';
 const ARMOR_CACHE_KEY='DEV_MWWSKILLSIM_OCR_ARMOR_V4';
 const CHARM_CACHE_KEY='DEV_MWWSKILLSIM_OCR_CHARMS_V2';
+// β版互換：旧版で保存されたDBも候補として読む。新しい保存先は既存キーを維持する。
+const LEGACY_ARMOR_CACHE_KEYS=['DEV_MWWSKILLSIM_OCR_ARMOR_V4','DEV_MWWSKILLSIM_OCR_ARMOR_V1'];
+const LEGACY_CHARM_CACHE_KEYS=['DEV_MWWSKILLSIM_OCR_CHARMS_V2','DEV_MWWSKILLSIM_OCR_CHARMS_V1'];
+const LEGACY_WEAPON_CACHE_KEYS=['DEV_MWWSKILLSIM_OCR_WEAPONS_V1'];
 let armorDB=[], charmDB=[];
 let armorReady=false, charmReady=false;
 let armorPromise=null, charmPromise=null;
@@ -904,28 +908,34 @@ function normalizeArmorRows(rows){
     .concat(normalizeEquipmentCandidateRows(rows,'chest'),normalizeEquipmentCandidateRows(rows,'arms'),normalizeEquipmentCandidateRows(rows,'waist'),normalizeEquipmentCandidateRows(rows,'legs'));
 }
 async function fetchEquipmentPage(api, offset){
-  const u=`${api}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true,rarity:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
+  const u=`${api}?limit=250&offset=${offset}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'}); if(!r.ok) throw new Error(`装備DB HTTP ${r.status}`);
   const data=await r.json(); if(!Array.isArray(data)) throw new Error('装備DBの応答が配列ではありません'); return data;
 }
 async function fetchCharmPage(offset){
   // Charm names live on ranks, not on the top-level Charm object. Keep ranks
   // in this projection or OCR candidate construction would silently get zero rows.
-  const u=`${CHARM_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,ranks:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
+  const u=`${CHARM_API}?limit=250&offset=${offset}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'}); if(!r.ok) throw new Error(`護石DB HTTP ${r.status}`);
   const data=await r.json(); if(!Array.isArray(data)) throw new Error('護石DBの応答が配列ではありません'); return data;
 }
+function readRowsFromCacheKeys(keys, normalizer){
+  for(const key of keys){
+    try{
+      const raw=JSON.parse(localStorage.getItem(key)||'null');
+      const rows=normalizer(raw?.rows||raw);
+      if(Array.isArray(rows)&&rows.length)return rows;
+    }catch(e){}
+  }
+  return [];
+}
+
 async function loadArmorDB(force=false){
   if(armorReady&&!force)return armorDB;
   if(armorPromise&&!force)return armorPromise;
   armorPromise=(async()=>{
-    let cachedRows=null;
-    try{
-      const c=JSON.parse(localStorage.getItem(ARMOR_CACHE_KEY)||'null');
-      const rows=normalizeArmorRows(c?.rows||c);
-      if(rows.length)cachedRows=rows;
-    }catch(e){}
-    if(!force && cachedRows){ armorDB=cachedRows; armorReady=true; return armorDB; }
+    const cachedRows=readRowsFromCacheKeys(LEGACY_ARMOR_CACHE_KEYS, normalizeArmorRows);
+    if(!force && cachedRows.length){armorDB=cachedRows;armorReady=true;setEquipmentDBStatus(`${armorDB.length.toLocaleString()}件（保存済みDB）`,'ok');return armorDB;}
     try{
       const all=[];let offset=0;
       for(let page=0;page<100;page++){
@@ -938,27 +948,18 @@ async function loadArmorDB(force=false){
       try{localStorage.setItem(ARMOR_CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),rows:armorDB}));}catch(e){}
       return armorDB;
     }catch(e){
-      if(cachedRows?.length){
-        armorDB=cachedRows;armorReady=true;
-        return armorDB;
-      }
+      if(cachedRows.length){armorDB=cachedRows;armorReady=true;setEquipmentDBStatus(`${armorDB.length.toLocaleString()}件（保存済みDBを使用）`,'warn');return armorDB;}
       throw e;
     }
   })();
-  try{return await armorPromise}
-  catch(e){armorPromise=null;armorReady=false;throw e}
-  finally{armorPromise=null}
+  try{return await armorPromise}catch(e){armorPromise=null;armorReady=false;throw e}finally{armorPromise=null}
 }
 async function loadCharmDB(force=false){
   if(charmReady&&!force)return charmDB;
   if(charmPromise&&!force)return charmPromise;
   charmPromise=(async()=>{
-    let cachedRows=null;
-    try{
-      const c=JSON.parse(localStorage.getItem(CHARM_CACHE_KEY)||'null');
-      if(Array.isArray(c?.rows)&&c.rows.length)cachedRows=c.rows;
-    }catch(e){}
-    if(!force && cachedRows){ charmDB=cachedRows;charmReady=true;return charmDB; }
+    let cachedRows=readRowsFromCacheKeys(LEGACY_CHARM_CACHE_KEYS, x=>Array.isArray(x)?x:(x?.rows||[]));
+    if(!force && cachedRows.length){charmDB=cachedRows;charmReady=true;setEquipmentDBStatus(`${charmDB.length.toLocaleString()}件（保存済みDB）`,'ok');return charmDB;}
     try{
       const all=[];let offset=0;
       for(let page=0;page<100;page++){
@@ -966,25 +967,21 @@ async function loadCharmDB(force=false){
         if(part.length<250)break;offset+=250;
       }
       const rows=[];const seen=new Set();
-      for(const c of all){
-        for(const rank of Array.isArray(c?.ranks)?c.ranks:[]){
-          const name=String(rank?.name||'').trim();if(!name)continue;
-          const row={id:c?.id??null,gameId:c?.gameId??null,kind:'charm',name,rankLevel:rank?.level??null,slots:rank?.slots??c?.slots??null,decorationSlots:rank?.decorationSlots??c?.decorationSlots??null,slotLevels:normalizeDecorationSlotLevels(rank?.slotLevels??rank?.decorationSlots??rank?.slots??c?.slotLevels??c?.decorationSlots??c?.slots)};
-          const key=`${row.id}\u0000${row.rankLevel}\u0000${row.name}`;if(seen.has(key))continue;seen.add(key);rows.push(row);
-        }
-      }
+      for(const c of all){for(const rank of Array.isArray(c?.ranks)?c.ranks:[]){
+        const name=String(rank?.name||'').trim();if(!name)continue;
+        const row={id:c?.id??null,gameId:c?.gameId??null,kind:'charm',name,rankLevel:rank?.level??null,slots:rank?.slots??c?.slots??null,decorationSlots:rank?.decorationSlots??c?.decorationSlots??null,slotLevels:normalizeDecorationSlotLevels(rank?.slotLevels??rank?.decorationSlots??rank?.slots??c?.slotLevels??c?.decorationSlots??c?.slots)};
+        const key=`${row.id}\u0000${row.rankLevel}\u0000${row.name}`;if(seen.has(key))continue;seen.add(key);rows.push(row);
+      }}
       if(!rows.length)throw new Error('護石DBが0件でした');
       charmDB=rows;charmReady=true;
       try{localStorage.setItem(CHARM_CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),rows:charmDB}));}catch(e){}
       return charmDB;
     }catch(e){
-      if(cachedRows?.length){charmDB=cachedRows;charmReady=true;return charmDB;}
+      if(cachedRows.length){charmDB=cachedRows;charmReady=true;setEquipmentDBStatus(`${charmDB.length.toLocaleString()}件（保存済みDBを使用）`,'warn');return charmDB;}
       throw e;
     }
   })();
-  try{return await charmPromise}
-  catch(e){charmPromise=null;charmReady=false;throw e}
-  finally{charmPromise=null}
+  try{return await charmPromise}catch(e){charmPromise=null;charmReady=false;throw e}finally{charmPromise=null}
 }
 function equipmentRowsForSlot(slot){
   if(slot==='mainWeapon')return weaponDB;
@@ -1042,7 +1039,7 @@ function searchWeaponItems(raw){
   return ranked.length?ranked:weaponDB;
 }
 async function fetchWeaponPage(offset){
-  const u=`${WEAPON_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify({id:true,gameId:true,kind:true,name:true,rarity:true,slots:true,decorationSlots:true,slotLevels:true}))}`;
+  const u=`${WEAPON_API}?limit=250&offset=${offset}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'});
   if(!r.ok)throw new Error(`武器DB HTTP ${r.status}`);
   const data=await r.json();
@@ -1053,43 +1050,25 @@ async function loadWeaponDB(force=false){
   if(weaponDBReady&&!force)return weaponDB;
   if(weaponDBPromise&&!force)return weaponDBPromise;
   weaponDBPromise=(async()=>{
-    let cachedRows=null;
-    try{
-      const cached=JSON.parse(localStorage.getItem(WEAPON_CACHE_KEY)||'null');
-      const rows=normalizeWeaponRows(cached?.rows||cached);
-      if(rows.length)cachedRows=rows;
-    }catch(e){}
-    if(!force && cachedRows){
-      weaponDB=cachedRows;rebuildWeaponGramIndex();weaponDBReady=true;
-      setDBStatus(`${weaponDB.length.toLocaleString()}件（端末キャッシュ）`,'ok');
-      return weaponDB;
-    }
+    const cachedRows=readRowsFromCacheKeys(LEGACY_WEAPON_CACHE_KEYS, normalizeWeaponRows);
+    if(!force && cachedRows.length){weaponDB=cachedRows;rebuildWeaponGramIndex();weaponDBReady=true;setDBStatus(`${weaponDB.length.toLocaleString()}件（保存済みDB）`,'ok');return weaponDB;}
     try{
       setDBStatus('全件取得中…','info');
       const all=[];let offset=0;
       for(let page=0;page<100;page++){
-        const part=await fetchWeaponPage(offset);all.push(...part);
-        setDBStatus(`全件取得中… ${all.length.toLocaleString()}件`,'info');
+        const part=await fetchWeaponPage(offset);all.push(...part);setDBStatus(`全件取得中… ${all.length.toLocaleString()}件`,'info');
         if(part.length<250)break;offset+=250;
       }
       const rows=normalizeWeaponRows(all);if(!rows.length)throw new Error('武器DBが0件でした');
       weaponDB=rows;rebuildWeaponGramIndex();weaponDBReady=true;
-      try{localStorage.setItem(WEAPON_CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),rows:weaponDB}));}catch(e){}
-      setDBStatus(`${weaponDB.length.toLocaleString()}件（最新取得）`,'ok');
-      return weaponDB;
+      try{localStorage.setItem(WEAPON_CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),rows}));}catch(e){}
+      setDBStatus(`${weaponDB.length.toLocaleString()}件（最新取得）`,'ok');return weaponDB;
     }catch(e){
-      if(cachedRows?.length){
-        weaponDB=cachedRows;rebuildWeaponGramIndex();weaponDBReady=true;
-        setDBStatus(`${weaponDB.length.toLocaleString()}件（保存済みデータを使用）`,'warn');
-        return weaponDB;
-      }
-      setDBStatus('取得失敗：'+e.message,'bad');
-      throw e;
+      if(cachedRows.length){weaponDB=cachedRows;rebuildWeaponGramIndex();weaponDBReady=true;setDBStatus(`${weaponDB.length.toLocaleString()}件（保存済みDBを使用）`,'warn');return weaponDB;}
+      setDBStatus('取得失敗：'+e.message,'bad');throw e;
     }
   })();
-  try{return await weaponDBPromise}
-  catch(e){weaponDBPromise=null;weaponDBReady=false;throw e}
-  finally{weaponDBPromise=null}
+  try{return await weaponDBPromise}catch(e){weaponDBPromise=null;weaponDBReady=false;throw e}finally{weaponDBPromise=null}
 }
 async function ensureWeaponDB(){
   if(weaponDBReady&&weaponDB.length)return weaponDB;
@@ -2179,8 +2158,7 @@ function rebuildDecorationGramIndex(){
   });
 }
 async function fetchDecorationPage(offset){
-  const projection={id:true,gameId:true,name:true,description:true,value:true,slot:true,rarity:true,kind:true,skills:true,icon:true};
-  const u=`${DECORATION_API}?limit=250&offset=${offset}&p=${encodeURIComponent(JSON.stringify(projection))}`;
+  const u=`${DECORATION_API}?limit=250&offset=${offset}`;
   const r=await fetch(u,{cache:'no-store',mode:'cors'});
   if(!r.ok)throw new Error(`装飾品DB HTTP ${r.status}`);
   const data=await r.json();
@@ -2191,43 +2169,22 @@ async function loadDecorationDB(force=false){
   if(decorationDBReady&&!force)return decorationDB;
   if(decorationDBPromise&&!force)return decorationDBPromise;
   decorationDBPromise=(async()=>{
-    let cachedRows=null;
+    let cachedRows=[];
+    try{const c=JSON.parse(localStorage.getItem(DECORATION_CACHE_KEY)||'null');cachedRows=normalizeDecorationRows(c?.rows||c);}catch(e){}
+    if(!force&&cachedRows.length){decorationDB=cachedRows;rebuildDecorationGramIndex();decorationDBReady=true;setDecorationDBStatus(`${decorationDB.length.toLocaleString()}件（保存済みDB）`,'ok');return decorationDB;}
     try{
-      const c=JSON.parse(localStorage.getItem(DECORATION_CACHE_KEY)||'null');
-      const rows=normalizeDecorationRows(c?.rows||c);
-      if(rows.length)cachedRows=rows;
-    }catch(e){}
-    if(!force && cachedRows){
-      decorationDB=cachedRows;rebuildDecorationGramIndex();decorationDBReady=true;
-      setDecorationDBStatus(`${decorationDB.length.toLocaleString()}件（端末キャッシュ）`,'ok');
-      return decorationDB;
-    }
-    try{
-      setDecorationDBStatus('全件取得中…','info');
-      const all=[];let offset=0;
-      for(let page=0;page<100;page++){
-        const part=await fetchDecorationPage(offset);all.push(...part);
-        setDecorationDBStatus(`全件取得中… ${all.length.toLocaleString()}件`,'info');
-        if(part.length<250)break;offset+=250;
-      }
+      setDecorationDBStatus('全件取得中…','info');const all=[];let offset=0;
+      for(let page=0;page<100;page++){const part=await fetchDecorationPage(offset);all.push(...part);setDecorationDBStatus(`全件取得中… ${all.length.toLocaleString()}件`,'info');if(part.length<250)break;offset+=250;}
       const rows=normalizeDecorationRows(all);if(!rows.length)throw new Error('装飾品DBが0件でした');
       decorationDB=rows;rebuildDecorationGramIndex();decorationDBReady=true;
       try{localStorage.setItem(DECORATION_CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),rows}));}catch(e){}
-      setDecorationDBStatus(`${decorationDB.length.toLocaleString()}件（最新取得）`,'ok');
-      return decorationDB;
+      setDecorationDBStatus(`${decorationDB.length.toLocaleString()}件（最新取得）`,'ok');return decorationDB;
     }catch(e){
-      if(cachedRows?.length){
-        decorationDB=cachedRows;rebuildDecorationGramIndex();decorationDBReady=true;
-        setDecorationDBStatus(`${decorationDB.length.toLocaleString()}件（保存済みデータを使用）`,'warn');
-        return decorationDB;
-      }
-      setDecorationDBStatus('取得失敗：'+e.message,'bad');
-      throw e;
+      if(cachedRows.length){decorationDB=cachedRows;rebuildDecorationGramIndex();decorationDBReady=true;setDecorationDBStatus(`${decorationDB.length.toLocaleString()}件（保存済みDBを使用）`,'warn');return decorationDB;}
+      setDecorationDBStatus('取得失敗：'+e.message,'bad');throw e;
     }
   })();
-  try{return await decorationDBPromise}
-  catch(e){decorationDBPromise=null;decorationDBReady=false;throw e}
-  finally{decorationDBPromise=null}
+  try{return await decorationDBPromise}catch(e){decorationDBPromise=null;decorationDBReady=false;throw e}finally{decorationDBPromise=null}
 }
 function decorationKindForEquipmentKey(key){
   return key==='mainWeapon'||key==='subWeapon'?'weapon':'armor';
@@ -4811,15 +4768,15 @@ async function loadAllTestDB(){
   const btn=$('testLoadAllDB'), progress=$('testDBProgress'), bar=$('testDBProgressBar'), label=$('testDBProgressLabel'), pct=$('testDBProgressPct'), status=$('testDBStatus'), counts=$('testDBCounts');
   if(!btn)return;
   btn.disabled=true; progress?.classList.add('show'); if(bar)bar.style.width='0%'; if(label)label.textContent='DB取得を準備中…'; if(pct)pct.textContent='0%'; if(counts){counts.style.display='grid';counts.innerHTML=['武器','防具','護石','装飾品'].map(n=>`<div class="db-count"><span>${n}</span><b>取得中…</b></div>`).join('');}
-  // v4.6.7: β版のDB取得方針。最新取得を試み、失敗時は保存済みデータを利用する。
+  // v4.6.8: β版系のDB取得・保存データを優先して再利用し、未保存時のみ最新取得する。
   // ここでは /version の事前疎通確認を行わない。β版/既存取得処理と同じく、
   // 実際の各DB API取得結果をエラーとして扱う。事前確認APIの有無で全DB取得を止めない。
-  if(status){status.textContent='β版DB取得処理を開始します…';status.style.color='var(--muted)';}
+  if(status){status.textContent='既存のDB取得処理を開始します…';status.style.color='var(--muted)';}
   const jobs=[
-    ['武器DB',()=>loadWeaponDB(true)],
-    ['防具DB',()=>loadArmorDB(true)],
-    ['護石DB',()=>loadCharmDB(true)],
-    ['装飾品DB',()=>loadDecorationDB(true)]
+    ['武器DB',()=>loadWeaponDB(false)],
+    ['防具DB',()=>loadArmorDB(false)],
+    ['護石DB',()=>loadCharmDB(false)],
+    ['装飾品DB',()=>loadDecorationDB(false)]
   ];
   const results=[];
   for(let i=0;i<jobs.length;i++){
