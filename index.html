@@ -3,20 +3,66 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MH Wilds OCR — Step 1.25-C v4.6.1</title>
+<title>MH Wilds OCR — Step 1.25-C v4.6.3</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 :root{--ink:#25221d;--muted:#71695d;--line:#d8cdb9;--paper:#fbf7ee;--paper2:#f3ecdd;--accent:#5d6848;--accent2:#7d6a45;--warn:#9a6a22;--danger:#8b5148}
-*{box-sizing:border-box}html{background:#eee9df}body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;background:linear-gradient(#f5f1e8,#e9e3d7);font-size:14px}main{max-width:920px;margin:0 auto;padding:12px}.card{background:rgba(255,253,247,.96);border:1px solid var(--line);border-radius:16px;box-shadow:0 3px 14px rgba(54,45,31,.07);padding:16px;margin-bottom:12px}h1,h2,h3{margin:0;font-weight:800;letter-spacing:.01em}h1{font-size:23px}h2{font-size:18px}h3{font-size:15px}.eyebrow{font-size:10px;letter-spacing:.16em;color:#777060;font-weight:800}.version{font-size:10px;color:#958a78;margin:3px 0 0}.hero{padding:17px}.hero-top{display:flex;justify-content:space-between;align-items:flex-start}.hero-note{margin:10px 0 0;color:var(--muted);line-height:1.6}.production-badge{font-size:10px;font-weight:800;background:#e9eedf;color:#586744;border-radius:999px;padding:6px 9px}.stepbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:14px}.stepbar div{padding:7px 8px;border-radius:9px;background:var(--paper2);color:#817765;font-size:11px;font-weight:800;text-align:center}.stepbar .active{background:#697653;color:#fff}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.step-label{font-size:10px;letter-spacing:.13em;font-weight:900;color:var(--accent)}.subtle,.note,.status{color:var(--muted);font-size:12px;line-height:1.55}.input-panel{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fffdf8}.input-panel+.input-panel{margin-top:10px}.input-title{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}.badge{font-size:10px;background:var(--paper2);padding:4px 7px;border-radius:999px;color:#71634f}.file-row{display:flex;gap:8px;align-items:center}.file-button{display:block;flex:1;text-align:center;padding:12px;border:1px dashed #aa9a7d;border-radius:10px;background:#f8f2e6;font-weight:800;color:#4e483e;cursor:pointer}.file-button input{display:none}.file-name{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.preview-wrap{display:flex;gap:10px;align-items:center;margin-top:10px}.thumb{width:92px;height:68px;border-radius:8px;border:1px solid var(--line);overflow:hidden;background:#e8e2d7;display:none}.thumb img{width:100%;height:100%;object-fit:cover}.preview-wrap.has-image .thumb{display:block}.preview-actions{display:flex;flex-direction:column;gap:3px}.link-btn{border:0;background:none;color:#5f6d48;padding:4px 0;text-align:left;font-size:12px;font-weight:800}.analysis-button{width:100%;min-height:48px;margin-top:12px;border:0;border-radius:11px;background:#5f6b49;color:white;font-weight:900;font-size:15px;box-shadow:0 2px 5px rgba(47,52,34,.16)}button{font-family:inherit;cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}.progress{margin-top:11px;display:none}.progress.show{display:block}.progress-track{height:7px;border-radius:99px;background:#e7e0d3;overflow:hidden}.progress-bar{height:100%;width:0;background:#7b875f;border-radius:99px;transition:width .25s ease}.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:5px}.stages{display:flex;gap:5px;margin-top:8px}.stage{flex:1;text-align:center;padding:5px 3px;border-radius:7px;background:#eee9df;color:#938979;font-size:10px}.stage.active{background:#dfe6d4;color:#53603e;font-weight:800}.stage.done{background:#e9eee1;color:#596748}.result-box{margin-top:12px}.confirm-summary{padding:10px 12px;background:#f2eee4;border-radius:10px;font-size:12px;margin-bottom:10px}.confirm-item{border:1px solid var(--line);border-radius:11px;padding:10px;margin:8px 0;background:#fffdf9}.confirm-item.warning{border-color:#d6b47b;background:#fffaf0}.confirm-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.confirm-state{font-size:10px;padding:4px 7px;border-radius:999px;background:#e8eedf;color:#566642;font-weight:800}.confirm-state.warn{background:#f3e2c3;color:#8b6429}.candidate-list{display:grid;gap:5px;margin-top:8px}.candidate-choice{display:flex;gap:8px;align-items:flex-start;padding:8px;border:1px solid #d8cdb9;border-radius:8px;background:#fff}.candidate-choice.selected{border-color:#78865d;background:#f1f5eb}.candidate-choice input{margin-top:3px}.candidate-name{font-weight:800}.candidate-meta{font-size:10px;color:var(--muted);margin-top:2px}.confirm-apply{margin-top:8px;padding:8px 12px;border:1px solid #a99b82;background:#f4eee1;border-radius:8px;font-weight:800;font-size:12px}.skip{border:0;background:none;color:#766c5d;font-size:12px;text-decoration:underline;padding:8px 0}.final-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.build-col{border:1px solid var(--line);border-radius:12px;overflow:hidden}.build-col-title{padding:10px 12px;background:#eee8da;font-weight:900}.build-row{display:grid;grid-template-columns:42% 58%;border-top:1px solid #e4dccd}.build-equip{padding:9px 10px;font-weight:800}.build-jewels{padding:9px 10px;color:#4e493f;font-size:12px;line-height:1.55}.reflect-button{width:100%;min-height:54px;font-size:17px;border:0;border-radius:12px;background:#596747;color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(47,52,34,.18);margin-top:12px}.secondary{border:1px solid var(--line);background:#f4eee2;border-radius:9px;padding:8px 10px;font-weight:800;color:#61584d}.compact-help summary{cursor:pointer;font-weight:800}.help-body{font-size:12px;line-height:1.6;color:var(--muted)}.modal{position:fixed;inset:0;background:rgba(20,18,14,.72);z-index:50;display:none;align-items:center;justify-content:center;padding:14px}.modal.show{display:flex}.modal-card{width:min(900px,100%);height:min(90vh,900px);background:#f8f4eb;border-radius:14px;display:flex;flex-direction:column;overflow:hidden}.modal-head{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}.modal-close{border:0;background:#e8e1d4;border-radius:8px;padding:7px 10px;font-weight:800}.modal-body{flex:1;display:flex;align-items:center;justify-content:center;overflow:auto;padding:10px}.modal-body img{max-width:100%;max-height:100%;object-fit:contain}.hidden-dev{display:none!important}@media(max-width:700px){main{padding:8px}.card{padding:13px;border-radius:14px}.hero{padding:14px}h1{font-size:21px}.production-badge{display:none}.stepbar div{font-size:10px;padding:7px 3px}.final-grid{grid-template-columns:1fr}.build-row{grid-template-columns:45% 55%}.thumb{width:78px;height:58px}}
+*{box-sizing:border-box}html{background:#eee9df}body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;background:linear-gradient(#f5f1e8,#e9e3d7);font-size:14px}main{max-width:920px;margin:0 auto;padding:12px}.card{background:rgba(255,253,247,.96);border:1px solid var(--line);border-radius:16px;box-shadow:0 3px 14px rgba(54,45,31,.07);padding:16px;margin-bottom:12px}h1,h2,h3{margin:0;font-weight:800;letter-spacing:.01em}h1{font-size:23px}h2{font-size:18px}h3{font-size:15px}.eyebrow{font-size:10px;letter-spacing:.16em;color:#777060;font-weight:800}.version{font-size:10px;color:#958a78;margin:3px 0 0}.hero{padding:17px}.hero-top{display:flex;justify-content:space-between;align-items:flex-start}.hero-note{margin:10px 0 0;color:var(--muted);line-height:1.6}.production-badge{font-size:10px;font-weight:800;background:#e9eedf;color:#586744;border-radius:999px;padding:6px 9px}.stepbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:14px}.stepbar div{padding:7px 8px;border-radius:9px;background:var(--paper2);color:#817765;font-size:11px;font-weight:800;text-align:center}.stepbar .active{background:#697653;color:#fff}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.step-label{font-size:10px;letter-spacing:.13em;font-weight:900;color:var(--accent)}.subtle,.note,.status{color:var(--muted);font-size:12px;line-height:1.55}.input-panel{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fffdf8}.input-panel+.input-panel{margin-top:10px}.input-title{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}.badge{font-size:10px;background:var(--paper2);padding:4px 7px;border-radius:999px;color:#71634f}.file-row{display:flex;gap:8px;align-items:center}.file-button{display:block;flex:1;text-align:center;padding:12px;border:1px dashed #aa9a7d;border-radius:10px;background:#f8f2e6;font-weight:800;color:#4e483e;cursor:pointer}.file-button input{display:none}.file-name{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.preview-wrap{display:flex;gap:10px;align-items:center;margin-top:10px}.thumb{width:92px;height:68px;border-radius:8px;border:1px solid var(--line);overflow:hidden;background:#e8e2d7;display:none}.thumb img{width:100%;height:100%;object-fit:cover}.preview-wrap.has-image .thumb{display:block}.preview-actions{display:flex;flex-direction:column;gap:3px}.link-btn{border:0;background:none;color:#5f6d48;padding:4px 0;text-align:left;font-size:12px;font-weight:800}.analysis-button{width:100%;min-height:48px;margin-top:12px;border:0;border-radius:11px;background:#5f6b49;color:white;font-weight:900;font-size:15px;box-shadow:0 2px 5px rgba(47,52,34,.16)}button{font-family:inherit;cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}.progress{margin-top:11px;display:none}.progress.show{display:block}.progress-track{height:7px;border-radius:99px;background:#e7e0d3;overflow:hidden}.progress-bar{height:100%;width:0;background:#7b875f;border-radius:99px;transition:width .25s ease}.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:5px}.stages{display:flex;gap:5px;margin-top:8px}.stage{flex:1;text-align:center;padding:5px 3px;border-radius:7px;background:#eee9df;color:#938979;font-size:10px}.stage.active{background:#dfe6d4;color:#53603e;font-weight:800}.stage.done{background:#e9eee1;color:#596748}.result-box{margin-top:12px}.confirm-summary{padding:10px 12px;background:#f2eee4;border-radius:10px;font-size:12px;margin-bottom:10px}.confirm-item{border:1px solid var(--line);border-radius:11px;padding:10px;margin:8px 0;background:#fffdf9}.confirm-item.warning{border-color:#d6b47b;background:#fffaf0}.confirm-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.confirm-state{font-size:10px;padding:4px 7px;border-radius:999px;background:#e8eedf;color:#566642;font-weight:800}.confirm-state.warn{background:#f3e2c3;color:#8b6429}.candidate-list{display:grid;gap:5px;margin-top:8px}.candidate-choice{display:flex;gap:8px;align-items:flex-start;padding:8px;border:1px solid #d8cdb9;border-radius:8px;background:#fff}.candidate-choice.selected{border-color:#78865d;background:#f1f5eb}.candidate-choice input{margin-top:3px}.candidate-name{font-weight:800}.candidate-meta{font-size:10px;color:var(--muted);margin-top:2px}.confirm-apply{margin-top:8px;padding:8px 12px;border:1px solid #a99b82;background:#f4eee1;border-radius:8px;font-weight:800;font-size:12px}.skip{border:0;background:none;color:#766c5d;font-size:12px;text-decoration:underline;padding:8px 0}.final-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.build-col{border:1px solid var(--line);border-radius:12px;overflow:hidden}.build-col-title{padding:10px 12px;background:#eee8da;font-weight:900}.build-row{display:grid;grid-template-columns:42% 58%;border-top:1px solid #e4dccd}.build-equip{padding:9px 10px;font-weight:800}.build-jewels{padding:9px 10px;color:#4e493f;font-size:12px;line-height:1.55}.reflect-button{width:100%;min-height:54px;font-size:17px;border:0;border-radius:12px;background:#596747;color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(47,52,34,.18);margin-top:12px}.secondary{border:1px solid var(--line);background:#f4eee2;border-radius:9px;padding:8px 10px;font-weight:800;color:#61584d}.db-test-card{border-color:#c9c0ad}.db-counts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}.db-count{padding:7px 8px;border-radius:8px;background:#f1ede4;text-align:center;font-size:11px}.db-count b{display:block;font-size:13px;color:#4f493f}@media(max-width:700px){.db-counts{grid-template-columns:repeat(2,1fr)}}.compact-help summary{cursor:pointer;font-weight:800}.help-body{font-size:12px;line-height:1.6;color:var(--muted)}.help-card{margin:0 0 12px;border:1px solid var(--line);border-radius:13px;background:#fbf8f0;overflow:hidden}.help-card summary{cursor:pointer;list-style:none;padding:12px 13px;font-weight:900;color:#4f493f;display:flex;justify-content:space-between;align-items:center}.help-card summary::-webkit-details-marker{display:none}.help-card summary::after{content:"＋";font-size:17px;color:#82745f}.help-card[open] summary::after{content:"−"}.help-body{padding:0 13px 14px;font-size:12px;line-height:1.65;color:var(--muted)}.help-lead{margin:0 0 10px}.help-section{border-top:1px solid #e5ddcf;padding-top:10px;margin-top:10px}.help-section h3{font-size:13px;margin:0 0 6px;color:#4f493f}.help-list{margin:5px 0 0;padding-left:18px}.help-list li{margin:3px 0}.help-ok{background:#eef2e8;border-radius:9px;padding:8px 10px;color:#596546}.help-ng{background:#f6ebe2;border-radius:9px;padding:8px 10px;color:#79584a}.help-example-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:8px}.help-example{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}.help-example img{display:block;width:100%;height:145px;object-fit:contain;background:#e9e4da}.help-example figcaption{padding:7px 8px;font-size:11px;line-height:1.45;color:#655d51}.help-link{color:#5f6d48;font-weight:800;text-decoration:underline}@media(max-width:700px){.help-example-grid{grid-template-columns:1fr}.help-example img{height:180px}}.modal{position:fixed;inset:0;background:rgba(20,18,14,.72);z-index:50;display:none;align-items:center;justify-content:center;padding:14px}.modal.show{display:flex}.modal-card{width:min(900px,100%);height:min(90vh,900px);background:#f8f4eb;border-radius:14px;display:flex;flex-direction:column;overflow:hidden}.modal-head{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}.modal-close{border:0;background:#e8e1d4;border-radius:8px;padding:7px 10px;font-weight:800}.modal-body{flex:1;display:flex;align-items:center;justify-content:center;overflow:auto;padding:10px}.modal-body img{max-width:100%;max-height:100%;object-fit:contain}.hidden-dev{display:none!important}@media(max-width:700px){main{padding:8px}.card{padding:13px;border-radius:14px}.hero{padding:14px}h1{font-size:21px}.production-badge{display:none}.stepbar div{font-size:10px;padding:7px 3px}.final-grid{grid-template-columns:1fr}.build-row{grid-template-columns:45% 55%}.thumb{width:78px;height:58px}}
 </style>
 </head>
 <body>
 <main>
   <header class="hero card">
-  <div class="hero-top"><div><div class="eyebrow">MONSTER HUNTER WILDS</div><h1>スクショからビルドを取り込む</h1><p class="version">v4.6.1</p></div><span class="production-badge">BUILD IMPORT</span></div>
+  <div class="hero-top"><div><div class="eyebrow">MONSTER HUNTER WILDS</div><h1>スクショからビルドを取り込む</h1><p class="version">v4.6.3</p></div><span class="production-badge">BUILD IMPORT</span></div>
   <p class="hero-note">装備と装飾品のスクショを順番に解析して、ビルドとして取り込みます。</p>
   <div class="stepbar"><div class="active">STEP 1　装備</div><div>STEP 2　装飾品</div><div>STEP 3　取り込み</div></div>
 </header>
+
+<section class="card db-test-card">
+  <div class="section-head"><div><span class="step-label">TEST ENVIRONMENT</span><h2>① テスト用DBを取得</h2></div><span class="subtle">この画面ではここだけ実行</span></div>
+  <p class="subtle" style="margin:0 0 10px">OCRで使用する共通DBを先に取得します。取得後、Step 1のOCRが有効になります。</p>
+  <button id="testLoadAllDB" class="analysis-button" type="button">📥 DBを取得（テスト用）</button>
+  <div id="testDBProgress" class="progress"><div class="progress-track"><div id="testDBProgressBar" class="progress-bar"></div></div><div class="progress-label"><span id="testDBProgressLabel">準備中…</span><span id="testDBProgressPct">0%</span></div></div>
+  <div id="testDBStatus" class="status" style="margin-top:8px">DB未取得：先に「DBを取得（テスト用）」を押してください</div>
+  <div id="testDBCounts" class="db-counts" style="display:none"></div>
+</section>
+
+<details class="help-card" id="captureHelp">
+  <summary>📖 どんなスクショを使えばいい？（初めての方はこちら）</summary>
+  <div class="help-body">
+    <p class="help-lead">この機能は、ゲーム内の<strong>装備一覧画面</strong>と<strong>装飾品一覧画面</strong>を読み取ります。迷ったら、まず下の「良い例」と同じような画面を撮ってください。</p>
+    <div class="help-example-grid">
+      <figure class="help-example"><img src="examples/equipment_example.jpg" alt="装備画面の例"><figcaption><strong>装備スクショの例</strong><br>武器・防具・護石の名前が縦に並んでいる画面。</figcaption></figure>
+      <figure class="help-example"><img src="examples/decoration_example.jpg" alt="装飾品画面の例"><figcaption><strong>装飾品スクショの例</strong><br>装備ごとの装飾品スロットと珠の名前が見える画面。</figcaption></figure>
+    </div>
+    <div class="help-section"><h3>① 気をつける点</h3><ul class="help-list">
+      <li><strong>ゲーム画面全体が入ったスクショ</strong>がおすすめ。名前部分だけを切り抜く必要はありません。</li>
+      <li>文字が<strong>小さすぎない・ぼやけていない</strong>画像を使ってください。ゲーム機やPCの画面をスマホで撮影するより、ゲーム内のスクショ機能がおすすめです。</li>
+      <li>装備名・装飾品名の<strong>左右や上下を切らない</strong>でください。ブラウザや動画プレーヤーのUIが重なっている画像も避けてください。</li>
+      <li>16:9のゲーム画面が基本ですが、<strong>スマホ縦長のスクショでも解析できます</strong>。ゲーム画面が小さくなるほど文字は小さくなるため不利です。</li>
+      <li>装備と装飾品は<strong>別々のスクショ</strong>にしてください。</li>
+    </ul><div class="help-ok">✓ 迷ったら「ゲーム内スクショ → 元画像のままアップロード」が基本です。</div></div>
+    <div class="help-section"><h3>② PS5なら「PS App」がおすすめ</h3><ol class="help-list">
+      <li>PS5で装備画面を開き、コントローラーの<strong>クリエイトボタン</strong>からスクリーンショットを撮る。</li>
+      <li>PS5とPS Appを連携し、ゲームキャプチャーを有効にする。</li>
+      <li>PS Appの<strong>［ライブラリー］→［キャプチャー］</strong>から画像を開く。</li>
+      <li><strong>［ダウンロード］</strong>してiPhoneなどに保存し、この画面からアップロードする。</li>
+    </ol><p>PS Appでは対応するPS5キャプチャーをクラウド経由で確認・端末保存できます。自動アップロードを使う場合はPS5側の設定も確認してください。<a class="help-link" href="https://www.playstation.com/ja-jp/support/games/ps5-game-captures-ps-app/" target="_blank" rel="noopener">PlayStation公式の手順を見る</a>。</p></div>
+    <div class="help-section"><h3>③ Steam（PC）なら</h3><ol class="help-list">
+      <li>ゲーム内で<strong>F12</strong>を押してSteamのスクリーンショットを撮る（キーはSteam設定で変更できます）。</li>
+      <li>Steamのスクリーンショット管理から画像を確認し、必要なら<strong>「ディスク上で表示」</strong>して元画像を取得する。</li>
+      <li>PCでこのページを開いて、そのPNG/JPGをそのままアップロードするのが簡単です。</li>
+    </ol><p>Steam公式仕様では、スクリーンショットの標準ショートカットはF12です。<a class="help-link" href="https://partner.steamgames.com/doc/features/screenshots?language=english" target="_blank" rel="noopener">Steam公式ドキュメントを見る</a>。</p></div>
+    <div class="help-section"><h3>④ こういう場合はうまくいかないことがあります</h3><div class="help-ng"><ul class="help-list">
+      <li>スマホでテレビ画面を撮影して<strong>反射・ピンぼけ・モアレ</strong>がある</li>
+      <li>画像を強く圧縮して、装備名の文字が<strong>つぶれている</strong></li>
+      <li>装備名や装飾品名の<strong>端が切れている</strong></li>
+      <li>YouTube等の動画から切り出した画像で、<strong>字幕・再生UI・黒帯</strong>が画面に重なっている</li>
+      <li>ゲーム画面が極端に小さく、周囲に大量の余白がある</li>
+      <li>装備画面ではなく、装備の<strong>詳細説明だけ</strong>が表示されている</li>
+    </ul></div><p style="margin:8px 0 0">うまく読めなくても、すぐにやり直す必要はありません。解析後の<strong>「要確認」</strong>で候補を選べるようにしています。</p></div>
+  </div>
+</details>
 
 <section class="card">
   <div class="section-head"><div><span class="step-label">STEP 1</span><h2>武器・防具・護石を取り込む</h2></div><span class="subtle">7部位</span></div>
@@ -2407,24 +2453,13 @@ async function recognizeEquipmentAll(){
   const started=performance.now();
   let dbErrors=[];
   try{
-    // v4.5.1: OCR itself must never be blocked by a remote DB failure.
-    // Start DB loading in parallel, but begin OCR immediately. Candidate ranking
-    // is performed with whatever DB data is available when each slot finishes.
-    $('equipmentOCRStatus').textContent='装備OCR準備中…（DBは並行取得）';
-    const dbPromise=Promise.allSettled([
-      ensureWeaponDB(),
-      loadArmorDB(false),
-      loadCharmDB(false)
-    ]).then(results=>{
-      const labels=['武器DB','防具DB','護石DB'];
-      dbErrors=results.map((r,i)=>r.status==='rejected'?`${labels[i]}：${r.reason?.message||r.reason}`:null).filter(Boolean);
-      if(dbErrors.length){
-        setEquipmentDBStatus(`一部DB取得失敗（OCRは継続） / 武器${weaponDB.length.toLocaleString()}件・防具${armorDB.length.toLocaleString()}件・護石${charmDB.length.toLocaleString()}件`,'bad');
-      }else{
-        setEquipmentDBStatus(`武器 ${weaponDB.length.toLocaleString()}件 / 防具 ${armorDB.length.toLocaleString()}件 / 護石 ${charmDB.length.toLocaleString()}件`,'ok');
-      }
-      return results;
-    });
+    // v4.6.3: DB取得はこの画面の外（テスト用DB取得）で先に完了させる。
+    // OCR開始時にネットワーク取得を発生させず、テスト時の再現性を優先する。
+    if(!weaponDBReady || !armorReady || !charmReady){
+      throw new Error('先に「DBを取得（テスト用）」を実行してください。武器・防具・護石DBが必要です。');
+    }
+    $('equipmentOCRStatus').textContent='装備OCR準備中…（取得済みDBを使用）';
+    setEquipmentDBStatus(`武器 ${weaponDB.length.toLocaleString()}件 / 防具 ${armorDB.length.toLocaleString()}件 / 護石 ${charmDB.length.toLocaleString()}件`,'ok');
 
     const worker=await Tesseract.createWorker('jpn');
     // DB未取得でも漢字を欠落させないため、v4.5.1では装備OCRに文字whitelistを掛けない。
@@ -2466,8 +2501,7 @@ async function recognizeEquipmentAll(){
       $('equipmentResults').innerHTML=output.map(renderEquipmentResult).join('');
     }
     await worker.terminate();
-    await dbPromise;
-    // Re-rank once with the final DB state, without re-running OCR.
+    // Re-rank once with the same already-loaded DB state, without re-running OCR.
     for(const x of output){
       const key=x.key;
       const items=equipmentRowsForSlot(key);
@@ -4686,14 +4720,14 @@ $('file').addEventListener('change',()=>{
   $('workflowEquipmentImageMetric').textContent='—'; $('workflowEquipmentResultMetric').textContent='0 / 7';
   const preview=$('workflowEquipmentPreview'); preview.classList.toggle('empty',!f); preview.innerHTML='';
   if(f){const url2=URL.createObjectURL(f); const pv=document.createElement('img'); pv.alt='装備画像プレビュー'; pv.onload=()=>{URL.revokeObjectURL(url2); $('workflowEquipmentImageMetric').textContent=`${pv.naturalWidth} × ${pv.naturalHeight}`}; pv.src=url2; preview.appendChild(pv);}
-  $('workflowEquipmentStatus').textContent=f?'装備画像を読み込みました。':'未実行'; $('workflowEquipmentOut').innerHTML='';
+  const dbReadyForOCR=weaponDBReady&&armorReady&&charmReady; $('workflowEquipmentStatus').textContent=f?(dbReadyForOCR?'装備画像を読み込みました。OCRを開始できます。':'装備画像を読み込みました。先にテスト用DBを取得してください。'):'未実行'; $('workflowEquipmentOCR').disabled=!(f&&dbReadyForOCR); $('workflowEquipmentOut').innerHTML='';
 });
 
 window.equipmentContext=null;
 window.decorationContext=null;
 window.buildReflectionState=null;
 
-// v4.6.1 production UI: keep the public surface focused on the three-step workflow.
+// v4.6.2 production UI: keep the public surface focused on the three-step workflow.
 function updateProductionState(){
   const eq=window.equipmentContext?.results?.length||0;
   const deco=window.lastDecorationOCR?.length||0;
@@ -4703,6 +4737,40 @@ function updateProductionState(){
   $('workflowEquipmentResultMetric').textContent=`${Math.min(eq,7)} / 7`;
   $('workflowDecorationResultMetric').textContent=`${deco} / ${window.decorationSlotResult?.groups?.reduce((n,g)=>n+g.slots.length,0)||0}`;
 }
+async function loadAllTestDB(){
+  const btn=$('testLoadAllDB'), progress=$('testDBProgress'), bar=$('testDBProgressBar'), label=$('testDBProgressLabel'), pct=$('testDBProgressPct'), status=$('testDBStatus'), counts=$('testDBCounts');
+  btn.disabled=true; progress.classList.add('show'); bar.style.width='5%'; label.textContent='DB取得を準備中…'; pct.textContent='5%'; counts.style.display='none';
+  const jobs=[
+    ['武器DB',()=>loadWeaponDB(false)],
+    ['防具DB',()=>loadArmorDB(false)],
+    ['護石DB',()=>loadCharmDB(false)],
+    ['装飾品DB',()=>loadDecorationDB(false)]
+  ];
+  const results=[];
+  try{
+    for(let i=0;i<jobs.length;i++){
+      const [name,fn]=jobs[i]; const start=5+i*22; bar.style.width=start+'%'; label.textContent=`${name}を取得中…`; pct.textContent=start+'%';
+      try{const rows=await fn(); results.push({name,ok:true,count:rows.length});}
+      catch(e){results.push({name,ok:false,count:0,error:e?.message||String(e)});}
+      const done=27+i*22; bar.style.width=done+'%'; pct.textContent=done+'%';
+    }
+    const failed=results.filter(x=>!x.ok);
+    const equipmentReady=weaponDBReady&&armorReady&&charmReady;
+    if(equipmentReady){
+      bar.style.width='100%'; label.textContent=failed.length?'装備用DB取得完了（一部失敗）':'DB取得完了'; pct.textContent='100%';
+      status.textContent=failed.length?`装備OCRは実行できます。失敗：${failed.map(x=>x.name).join('、')}`:'武器・防具・護石DBが揃いました。Step 1の装備OCRを実行できます。';
+      status.style.color=failed.length?'var(--warn)':'var(--muted)';
+      counts.innerHTML=results.map(x=>`<div class="db-count"><span>${x.name}</span><b>${x.ok?x.count.toLocaleString():'取得失敗'}</b></div>`).join(''); counts.style.display='grid';
+      const b=$('workflowEquipmentOCR'); if(b)b.disabled=!$('file').files?.[0];
+    }else{
+      bar.style.width='100%'; label.textContent='DB取得未完了'; pct.textContent='100%';
+      status.textContent='武器・防具・護石DBが揃わなかったため、装備OCRは実行できません。';
+      counts.innerHTML=results.map(x=>`<div class="db-count"><span>${x.name}</span><b>${x.ok?x.count.toLocaleString():'取得失敗'}</b></div>`).join(''); counts.style.display='grid';
+    }
+  }finally{btn.disabled=false;}
+}
+$('testLoadAllDB')?.addEventListener('click',loadAllTestDB);
+
 $('resetAnalysis')?.addEventListener('click',()=>{
   if(!confirm('解析結果と選択画像をすべてリセットします。よろしいですか？')) return;
   location.reload();
@@ -4717,7 +4785,7 @@ if(_eqOCR){ const oldEq=_eqOCR.onclick; _eqOCR.onclick=async()=>{await oldEq?.()
 const _decoOCR=$('workflowDecorationOCR');
 if(_decoOCR){ const oldDeco=_decoOCR.onclick; _decoOCR.onclick=async()=>{await oldDeco?.(); updateProductionState();}; }
 
-// v4.6.1 UI layer: the public workflow is deliberately separate from the OCR engine.
+// v4.6.2 UI layer: the public workflow is deliberately separate from the OCR engine.
 function setAnalysisProgress(kind,pct,label,stage){
   const p=$(kind==='eq'?'equipmentProgress':'decorationProgress'); if(!p)return;
   p.classList.add('show'); $(kind==='eq'?'equipmentProgressBar':'decorationProgressBar').style.width=Math.max(0,Math.min(100,pct))+'%';
