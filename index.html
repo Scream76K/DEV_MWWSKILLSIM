@@ -46,17 +46,20 @@ textarea:focus,select:focus,input:focus,button:focus{outline:2px solid #3b82f6;o
   .skill-workspace-right .skill-game-name{font-size:12px;}
 }
 .skill-game-name .skill-level{font-weight:800;white-space:nowrap}.skill-game-name .skill-level.over{color:#ef4444;animation:skillOverBlink 1.2s ease-in-out infinite}@keyframes skillOverBlink{0%,100%{opacity:1}50%{opacity:.25}}
-/* r1.1.19 fix6: armor pane compact spacing / one-column equipment */
-#armorSelectors{display:grid!important;grid-template-columns:1fr!important;gap:5px!important;min-width:0}
-#armorSelectors .equip-inline{margin:0!important;padding:5px 6px!important;border-radius:8px}
-#armorSelectors .equip-title{font-size:14px!important;margin-bottom:4px!important}
-#armorSelectors .inline-skill{font-size:11px!important;margin:2px 0 4px!important;line-height:1.25}
-#armorSelectors .slot-lines{gap:3px!important;margin:3px 0 4px!important}
-#armorSelectors .slot-line{padding:3px 4px!important;gap:4px!important;border-radius:6px}
-#armorSelectors .slot-line .slot-size{font-size:13px!important;padding:3px 1px!important}
-#armorSelectors .slot-line select{min-height:32px!important;height:32px!important;padding:3px 5px!important;font-size:13px!important}
-#armorSelectors .armorSlotLines>.equip-title{font-size:13px!important;margin:2px 0!important}
-@media(max-width:760px){#armorSelectors .equip-inline{padding:4px 5px!important}#armorSelectors .slot-line{grid-template-columns:34px minmax(0,1fr)!important}#armorSelectors .slot-line .slot-size{width:34px!important;min-width:34px!important;max-width:34px!important}#armorSelectors .slot-line select{font-size:12px!important}}
+/* r1.1.19 fix7: decoration binding + tighter armor spacing */
+#armorSelectors{display:grid!important;grid-template-columns:1fr!important;gap:2px!important;min-width:0}
+#armorSelectors .equip-inline{margin:0!important;padding:3px 4px!important;border-radius:7px}
+#armorSelectors .equip-title{font-size:14px!important;margin-bottom:2px!important}
+#armorSelectors .inline-skill{font-size:11px!important;margin:1px 0 2px!important;line-height:1.2}
+#armorSelectors .slot-lines{gap:2px!important;margin:2px 0 2px!important}
+#armorSelectors .slot-line{padding:2px 3px!important;gap:2px!important;border-radius:5px}
+#armorSelectors .slot-line .slot-size{font-size:12px!important;padding:2px 0!important}
+#armorSelectors .slot-line select{min-height:30px!important;height:30px!important;padding:2px 4px!important;font-size:12px!important}
+#armorSelectors .armorSlotLines>.equip-title{font-size:12px!important;margin:1px 0!important}
+.armor-editor-card .card-details-body{padding:6px 7px!important}
+.armor-editor-card .section-title{margin:5px 0 3px!important}
+.armor-build-workspace{gap:4px!important}
+@media(max-width:760px){#armorSelectors .equip-inline{padding:2px 3px!important}#armorSelectors .slot-line{grid-template-columns:28px minmax(0,1fr)!important}#armorSelectors .slot-line .slot-size{width:28px!important;min-width:28px!important;max-width:28px!important}#armorSelectors .slot-line select{font-size:11px!important}}
 </style><style>.inline-slot-list .inline-slot{grid-template-columns:minmax(88px,auto) 44px minmax(0,1fr);gap:6px}.slot-size-label{font-weight:800;white-space:nowrap}.inline-slot-list .inline-slot:has(>select.chSlot){grid-template-columns:minmax(88px,1fr) 56px}
 /* v7.1.0 Hunter's Note visual theme: parchment + ink, optimized for mobile readability */
 :root{
@@ -1065,7 +1068,23 @@ function refreshWeaponListForCurrentKind(){
   renderWeapon();
 }
 function inlineDecoRows(slots,prefix){const a=slotLevels(slots);if(!a.length)return '<div class="muted small">スロットなし</div>';return `<div class="slot-lines">${a.map((lv,i)=>{const key=prefix+i;const kind=(prefix==='w' || prefix==='cw')?'weapon':'armor'; const opts=decorationCandidates(lv,kind);return `<div class="slot-line"><span class="slot-size">${lv?'['+lv+']':'－'}</span><select class="decoSel" data-slot="${key}" data-deco-kind="${kind}"><option value="">空き</option>${opts.map(d=>{const score=decorationRecommendationScore(d,(prefix==='w'||prefix==='cw')?(canonicalWeaponKind(selectedWeapon())||''):'');return `<option value="${d.id}">${score>0?'★ ':''}${esc(d.name)}</option>`}).join('')}</select></div>`}).join('')}</div>`}
-function bindInlineDecos(root){(root||document).querySelectorAll('.decoSel').forEach(s=>{s.value=build.decos[s.dataset.slot]||'';s.onchange=()=>{const key=String(s.dataset.slot||'');build.decos[key]=s.value||'';if(!s.value)delete build.decos[key];calcBuild();}})}
+function bindInlineDecos(root){
+  (root||document).querySelectorAll('.decoSel').forEach(s=>{
+    const key=String(s.dataset.slot||'');
+    s.value=build.decos[key]||'';
+    s.onchange=()=>{
+      const value=String(s.value||'');
+      if(value) build.decos[key]=value;
+      else delete build.decos[key];
+      // 選択値をBuild Stateへ確実に反映してから再計算する。
+      // calcBuild() 内のselect再構築で値を失わないよう、現在値を先に保持する。
+      s.dataset.selectedDeco=value;
+      calcBuild();
+      const next=document.querySelector(`.decoSel[data-slot=\"${CSS.escape(key)}\"]`);
+      if(next) next.value=build.decos[key]||'';
+    };
+  });
+}
 function renderCharmDecos(){const box=$('charmDecos');if(!box)return;const slots=charmSlotEntries(build.charmCustom);if(!slots.length){box.innerHTML='';return}box.innerHTML='<div class="equip-title" style="margin-top:10px">護石装飾品</div><div class="charm-deco-list">'+slots.map(x=>`<div class="charm-deco-row"><span>${x.owner}</span><span class="slot-size">[${x.level}]</span><select class="decoSel" data-slot="${x.key}" data-deco-kind="${x.kind}"><option value="">空き</option>${decorationCandidates(x.level,x.kind).map(d=>{const score=decorationRecommendationScore(d,x.kind==='weapon'?(canonicalWeaponKind(selectedWeapon())||''):'');return `<option value="${d.id}">${score>0?'★ ':''}${esc(d.name)}</option>`}).join('')}</select></div>`).join('')+'</div>';bindInlineDecos(box)}
 function syncWeaponStateFromUI(){
   const id=$('weapon')?.value||'';
@@ -1346,27 +1365,14 @@ function decorationSkillKinds(d){
   return [...new Set(kinds)];
 }
 function decorationEquipmentKind(d){
-  // MHDBではDecoration.kindが装着先の一次データだが、保存済みキャッシュや
-  // API形状の差でkindが不整合になる可能性があるため、内包Skill.kindも照合する。
-  // Skill.kindが一意ならこちらを優先する。これにより「超会心(武器)なのに
-  // Decoration.kindだけarmorになっている」ような不整合を防ぐ。
-  const direct=normalizeDecorationKind(d?.kind);
-  const ks=decorationSkillKinds(d);
-  if(ks.length===1)return ks[0];
-  if(ks.length>1){
-    // 混在スキル珠は、ゲーム側のDecoration.kindを採用する。
-    return direct;
-  }
-  return direct;
+  // 装着先はMHDBのDecoration.kindを正とする。
+  // Skill.kindから再推定すると、テンプレート読込後や保存済みDBの形状差で
+  // 正しい防具用装飾品まで候補から消してしまうため、ここでは推測しない。
+  return normalizeDecorationKind(d?.kind);
 }
 function decorationCompatibleWithSlot(d,kind){
   const wantedKind=normalizeDecorationKind(kind)==='weapon'?'weapon':'armor';
-  const equipmentKind=decorationEquipmentKind(d);
-  if(equipmentKind!==wantedKind)return false;
-  const skillKinds=decorationSkillKinds(d);
-  // 解決できた全スキルが装着先と同じ側であることを必須にする。
-  if(skillKinds.length && skillKinds.some(k=>k!==wantedKind))return false;
-  return true;
+  return decorationEquipmentKind(d)===wantedKind;
 }
 function decorationCandidates(slotLevel,kind){
   const level=Number(slotLevel)||0;
