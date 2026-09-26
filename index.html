@@ -247,7 +247,26 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
 .armorSlotLines .slot-line .slot-size{width:24px!important;min-width:24px!important;max-width:24px!important;padding-left:0!important;padding-right:0!important;}
 .armorSlotLines .slot-line select{min-width:0!important;width:100%!important;}
 @media(max-width:760px){.armorSlotLines .slot-line{grid-template-columns:24px minmax(0,1fr)!important}.armorSlotLines .slot-line .slot-size{width:24px!important;min-width:24px!important;max-width:24px!important;}}
-</style><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script></head><body>
+</style><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+/* r1.1.19 fix9: armor/skill workspace horizontal padding reduction + readable armor skills */
+.armor-workspace-left>.armor-editor-card{padding:5px!important;}
+.armor-workspace-left>.armor-editor-card>.card-details-body{padding:2px 3px!important;}
+.skill-workspace-right>.card{padding:5px!important;}
+.skill-workspace-right>.card>.card-details-body{padding:2px 3px!important;}
+.armorSkillPreview.inline-skill{color:var(--accent)!important;font-weight:700!important;}
+@media(max-width:760px){
+  .armor-workspace-left>.armor-editor-card{padding:4px!important;}
+  .armor-workspace-left>.armor-editor-card>.card-details-body{padding:1px 2px!important;}
+  .skill-workspace-right>.card{padding:4px!important;}
+  .skill-workspace-right>.card>.card-details-body{padding:1px 2px!important;}
+}
+</style>
+<style>
+/* r1.1.19_fix10: series/group skills are intentionally text-only; no level blocks. */
+.skill-game-binary .skill-game-name{margin-bottom:0;min-height:20px;align-items:center;}
+</style>
+</head><body>
 <div class="notice"><b>v7.1.0 テスト版 / OCR統合 r1.1.15</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">VERSION <span id="appVersionText">7.1.0 / OCR統合 r1.1.15</span></div>
 <header><div class="wrap"><h1>⚔️ MH Wilds 装備セット＆火力シミュレーター v7.1.0 / OCR統合 r1.1.19 / ビルドテンプレート</h1><div class="muted">①〜⑤ ハンターズノート：装備を作る・記録する　｜　⑥〜⑧ ハンターズサポート：分析・提案・相談</div></div></header>
 <main class="wrap"><div class="grid"><aside>
@@ -1691,7 +1710,7 @@ function addArtiaConditionalSkills(total){
   }
   return activated;
 }
-function renderBonusSkillGameBlock(name,current=1,required=1){const cur=Math.max(0,Number(current)||0),req=Math.max(1,Number(required)||1);return `<div class="skill-game skill-game-binary"><div class="skill-game-name"><span>${esc(name)}</span><span class="skill-level">${cur}/${req}</span></div><div class="skill-blocks">${Array.from({length:req},(_,i)=>`<span class="skill-block ${i<Math.min(cur,req)?'on':''}"></span>`).join('')}</div></div>`;}
+function renderBonusSkillGameBlock(name,current=1,required=1){const cur=Math.max(0,Number(current)||0),req=Math.max(1,Number(required)||1);return `<div class="skill-game skill-game-binary"><div class="skill-game-name"><span>${esc(name)}</span><span class="skill-level">${cur}/${req}</span></div></div>`;}
 function renderSkillGameBlock(name,level,rawLevel=level){
   const sk=(DB.skills||[]).find(x=>String(x.name)===String(name));
   const binary=isBinaryBonusSkill(sk);
