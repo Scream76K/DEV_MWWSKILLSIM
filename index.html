@@ -45,7 +45,19 @@ textarea:focus,select:focus,input:focus,button:focus{outline:2px solid #3b82f6;o
   .skill-workspace-right .game-status .gs-row:nth-child(odd){border-right:0;}
   .skill-workspace-right .skill-game-name{font-size:12px;}
 }
-.skill-game-name .skill-level{font-weight:800;white-space:nowrap}.skill-game-name .skill-level.over{color:#ef4444;animation:skillOverBlink 1.2s ease-in-out infinite}@keyframes skillOverBlink{0%,100%{opacity:1}50%{opacity:.25}}</style><style>.inline-slot-list .inline-slot{grid-template-columns:minmax(88px,auto) 44px minmax(0,1fr);gap:6px}.slot-size-label{font-weight:800;white-space:nowrap}.inline-slot-list .inline-slot:has(>select.chSlot){grid-template-columns:minmax(88px,1fr) 56px}
+.skill-game-name .skill-level{font-weight:800;white-space:nowrap}.skill-game-name .skill-level.over{color:#ef4444;animation:skillOverBlink 1.2s ease-in-out infinite}@keyframes skillOverBlink{0%,100%{opacity:1}50%{opacity:.25}}
+/* r1.1.19 fix6: armor pane compact spacing / one-column equipment */
+#armorSelectors{display:grid!important;grid-template-columns:1fr!important;gap:5px!important;min-width:0}
+#armorSelectors .equip-inline{margin:0!important;padding:5px 6px!important;border-radius:8px}
+#armorSelectors .equip-title{font-size:14px!important;margin-bottom:4px!important}
+#armorSelectors .inline-skill{font-size:11px!important;margin:2px 0 4px!important;line-height:1.25}
+#armorSelectors .slot-lines{gap:3px!important;margin:3px 0 4px!important}
+#armorSelectors .slot-line{padding:3px 4px!important;gap:4px!important;border-radius:6px}
+#armorSelectors .slot-line .slot-size{font-size:13px!important;padding:3px 1px!important}
+#armorSelectors .slot-line select{min-height:32px!important;height:32px!important;padding:3px 5px!important;font-size:13px!important}
+#armorSelectors .armorSlotLines>.equip-title{font-size:13px!important;margin:2px 0!important}
+@media(max-width:760px){#armorSelectors .equip-inline{padding:4px 5px!important}#armorSelectors .slot-line{grid-template-columns:34px minmax(0,1fr)!important}#armorSelectors .slot-line .slot-size{width:34px!important;min-width:34px!important;max-width:34px!important}#armorSelectors .slot-line select{font-size:12px!important}}
+</style><style>.inline-slot-list .inline-slot{grid-template-columns:minmax(88px,auto) 44px minmax(0,1fr);gap:6px}.slot-size-label{font-weight:800;white-space:nowrap}.inline-slot-list .inline-slot:has(>select.chSlot){grid-template-columns:minmax(88px,1fr) 56px}
 /* v7.1.0 Hunter's Note visual theme: parchment + ink, optimized for mobile readability */
 :root{
   --paper:#e9dfc8;--paper2:#f4ecd9;--paper3:#d8c8a8;--ink:#2f271f;--ink2:#5a4a38;
@@ -1053,7 +1065,7 @@ function refreshWeaponListForCurrentKind(){
   renderWeapon();
 }
 function inlineDecoRows(slots,prefix){const a=slotLevels(slots);if(!a.length)return '<div class="muted small">スロットなし</div>';return `<div class="slot-lines">${a.map((lv,i)=>{const key=prefix+i;const kind=(prefix==='w' || prefix==='cw')?'weapon':'armor'; const opts=decorationCandidates(lv,kind);return `<div class="slot-line"><span class="slot-size">${lv?'['+lv+']':'－'}</span><select class="decoSel" data-slot="${key}" data-deco-kind="${kind}"><option value="">空き</option>${opts.map(d=>{const score=decorationRecommendationScore(d,(prefix==='w'||prefix==='cw')?(canonicalWeaponKind(selectedWeapon())||''):'');return `<option value="${d.id}">${score>0?'★ ':''}${esc(d.name)}</option>`}).join('')}</select></div>`}).join('')}</div>`}
-function bindInlineDecos(root){(root||document).querySelectorAll('.decoSel').forEach(s=>{s.value=build.decos[s.dataset.slot]||'';s.onchange=()=>{build.decos[s.dataset.slot]=s.value;calcBuild()}})}
+function bindInlineDecos(root){(root||document).querySelectorAll('.decoSel').forEach(s=>{s.value=build.decos[s.dataset.slot]||'';s.onchange=()=>{const key=String(s.dataset.slot||'');build.decos[key]=s.value||'';if(!s.value)delete build.decos[key];calcBuild();}})}
 function renderCharmDecos(){const box=$('charmDecos');if(!box)return;const slots=charmSlotEntries(build.charmCustom);if(!slots.length){box.innerHTML='';return}box.innerHTML='<div class="equip-title" style="margin-top:10px">護石装飾品</div><div class="charm-deco-list">'+slots.map(x=>`<div class="charm-deco-row"><span>${x.owner}</span><span class="slot-size">[${x.level}]</span><select class="decoSel" data-slot="${x.key}" data-deco-kind="${x.kind}"><option value="">空き</option>${decorationCandidates(x.level,x.kind).map(d=>{const score=decorationRecommendationScore(d,x.kind==='weapon'?(canonicalWeaponKind(selectedWeapon())||''):'');return `<option value="${d.id}">${score>0?'★ ':''}${esc(d.name)}</option>`}).join('')}</select></div>`).join('')+'</div>';bindInlineDecos(box)}
 function syncWeaponStateFromUI(){
   const id=$('weapon')?.value||'';
@@ -1562,10 +1574,14 @@ function calcBuild(){renderCharmLegality();
   if(w) stats.defense+=Number(w?.defenseBonus)||0;
   add(total,currentCharmSkills());
   for(const s of allEquipSlots()){let id=build.decos[s.key];if(id){let d=DB.decorations.find(x=>String(x.id)===String(id));if(d)addSkillEntries(total,d.skills)}}
+  // 装飾品・装備で実際に積んだLvは、表示上の最大Lvに丸める前に保持する。
+  // 例：超会心を6積み、最大Lv5なら「Lv5」を表示しつつ5の数字だけ点滅させる。
+  // シリーズ/グループ判定用の値は従来どおりその後でクランプする。
   // シリーズ/グループスキルは、武器＋防具の必要部位数を満たした場合だけ合算する。
   // 発動結果は calcState.bonusDisplay にも保持し、表示区分と計算値を一致させる。
   calcState.bonusDisplay={series:[],group:[]};
   calcSetSkills(total);
+  const rawTotal={...total};
   total=clampSkillTotals(total);
   if(isArtia(w) && $('aSkillStatus')){let lines=[];for(const [label,skill,type] of [['シリーズ',skillById(build.artia.seriesSkill),'series'],['グループ',skillById(build.artia.groupSkill),'group']]){if(skill){const a=artiaSkillActivation(skill,type);lines.push(`${label}：${esc(skill.name)} → ${a.active?`発動（${a.count}/${a.required||"条件"}）`:`未発動（${a.count}/${a.required||"条件"}）`}`)}}$('aSkillStatus').innerHTML=lines.length?lines.join('<br>'):'シリーズ/グループスキル未選択';}
   // Always-on/selected-state combat stats
@@ -1579,7 +1595,7 @@ function calcBuild(){renderCharmLegality();
   const elem=calcElementSkill(total,stats.elementType); stats.element=stats.element*elem.mult+elem.add;
   // Defense skill contribution (common levels)
   const dl=skillLevel(total,['防御','Defense']); const dFlat=[0,5,10,10,20,20,35,35][Math.min(7,dl)]||0; const dMult=dl>=7?1.10:dl>=6?1.08:dl>=4?1.05:1; stats.defense=(stats.defense+dFlat)*dMult;
-  calcState={total,stats,bonusDisplay:calcState.bonusDisplay||{series:[],group:[]}};renderSummary();renderDetail();syncDamage();renderMonsterInfo();refreshDecorationSelects();updateWeaponCoeffDisplay();
+  calcState={total,rawTotal,stats,bonusDisplay:calcState.bonusDisplay||{series:[],group:[]}};renderSummary();renderDetail();syncDamage();renderMonsterInfo();refreshDecorationSelects();updateWeaponCoeffDisplay();
 }
 function sortedSkills(o){const kindRank=name=>{const k=skillByIdByName(name)?.kind;return k==='weapon'?0:k==='armor'?1:2;};return Object.entries(o).sort((a,b)=>kindRank(a[0])-kindRank(b[0])||Number(b[1])-Number(a[1])||jpSort(a[0],b[0]));}
 function skillOptionSort(arr){return [...arr].sort((a,b)=>{const la=skillMax(a),lb=skillMax(b);return lb-la||jpSort(a?.name,b?.name);});}
@@ -1660,10 +1676,10 @@ function addArtiaConditionalSkills(total){
   return activated;
 }
 function renderBonusSkillGameBlock(name,current=1,required=1){const cur=Math.max(0,Number(current)||0),req=Math.max(1,Number(required)||1);return `<div class="skill-game skill-game-binary"><div class="skill-game-name"><span>${esc(name)}</span><span class="skill-level">${cur}/${req}</span></div><div class="skill-blocks">${Array.from({length:req},(_,i)=>`<span class="skill-block ${i<Math.min(cur,req)?'on':''}"></span>`).join('')}</div></div>`;}
-function renderSkillGameBlock(name,level){
+function renderSkillGameBlock(name,level,rawLevel=level){
   const sk=(DB.skills||[]).find(x=>String(x.name)===String(name));
   const binary=isBinaryBonusSkill(sk);
-  const actual=Math.max(0,Number(level)||0);
+  const actual=Math.max(0,Number(rawLevel ?? level)||0);
   const max=binary?1:Math.max(1,skillMax(sk)||actual||1);
   const shown=binary?1:Math.min(max,actual);
   const over=!binary&&actual>max;
@@ -1762,6 +1778,7 @@ function calcSetSkills(total){
 function skillLevel(o,names){for(let n of names)if(o[n]!=null)return o[n];return 0}
 function renderSummary(){
   let t=calcState.total,s=calcState.stats;
+  const raw=calcState.rawTotal||t;
   let entries=sortedSkills(t);
   const aff=Math.round(Math.min(100,Math.max(-100,s.affinity))), maxAff=Math.round(s.maxAffinity);
   $('buildSummary').innerHTML=`<div class="game-status" style="grid-column:1/-1">
@@ -1775,7 +1792,7 @@ function renderSummary(){
   const normalEntries=entries.filter(([n,l])=>!bonusNames.has(n)&&Number(l)>0);
   const seriesEntries=[...bonus.series].sort((a,b)=>Number(b.count||0)-Number(a.count||0)||jpSort(a.name,b.name));
   const groupEntries=[...bonus.group].sort((a,b)=>Number(b.count||0)-Number(a.count||0)||jpSort(a.name,b.name));
-  const bucket=(title,arr,type)=>`<div class="skill-bucket"><div class="skill-bucket-title">${title}</div>${arr.length?`<div class="skill-game-grid">${arr.map(x=>{if(type==='normal')return renderSkillGameBlock(x[0],x[1]);return renderBonusSkillGameBlock(x.name,x.count,x.required)}).join('')}</div>`:''}</div>`;
+  const bucket=(title,arr,type)=>`<div class="skill-bucket"><div class="skill-bucket-title">${title}</div>${arr.length?`<div class="skill-game-grid">${arr.map(x=>{if(type==='normal')return renderSkillGameBlock(x[0],x[1],raw[x[0]]);return renderBonusSkillGameBlock(x.name,x.count,x.required)}).join('')}</div>`:''}</div>`;
   $('skillOutput').innerHTML=bucket('通常スキル',normalEntries,'normal')+bucket('シリーズスキル',seriesEntries,'series')+bucket('グループスキル',groupEntries,'group');
 }
 
@@ -2614,7 +2631,18 @@ renderBuildTemplateUI();
 /* r1.1.19: skill workspace refresh hook. Existing calcBuild remains the calculation source. */
 window.__refreshSkillWorkspace=()=>{try{calcBuild();return true}catch(e){console.error('skill workspace calc error',e);const out=$('skillOutput');if(out)out.innerHTML='<div class=\"notice bad\">スキル再計算エラー：'+esc(e?.message||e)+'</div>';return false;}};
 const __skillWorkspace=$('armorWorkspaceLeft');
-if(__skillWorkspace){__skillWorkspace.addEventListener('change',()=>window.__refreshSkillWorkspace(),true);__skillWorkspace.addEventListener('input',()=>window.__refreshSkillWorkspace(),true);}
+if(__skillWorkspace){
+  __skillWorkspace.addEventListener('change',(ev)=>{
+    const el=ev.target;
+    if(el?.classList?.contains('decoSel')){
+      const key=String(el.dataset.slot||'');
+      build.decos[key]=el.value||'';
+      if(!el.value)delete build.decos[key];
+    }
+    window.__refreshSkillWorkspace();
+  },true);
+  __skillWorkspace.addEventListener('input',()=>window.__refreshSkillWorkspace(),true);
+}
 
 })();
 </script></body></html>

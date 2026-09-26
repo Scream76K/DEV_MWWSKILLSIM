@@ -1,6 +1,7 @@
-# r1.1.19 fix5 test report
-- Base: r1.1.19 fix4 (working interactive armor/skill split)
-- UI change: armor equipment cards changed from 2 columns to 1 vertical column.
-- Mobile media query also keeps 1 column.
-- Existing armor/charm/decoration event logic was not changed.
-- HTML/JS static syntax structure preserved.
+# r1.1.19_fix6 test report
+- Base: r1.1.19_fix5
+- JS syntax: PASS (Node.js --check on extracted script)
+- Armor selector: forced one-column and compact spacing
+- Decoration change: explicit delegated change handler updates build.decos before calcBuild; bindInlineDecos also synchronizes state
+- Template load: existing templateApply path preserved; decoration state is retained through renderArmor/calcBuild
+- Over-max skill display: raw skill totals preserved before clampSkillTotals; render uses raw level so max-level number can blink red while blocks/displayed Lv remain capped
