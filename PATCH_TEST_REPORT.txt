@@ -1,13 +1,39 @@
-MH Wilds Simulator OCR/Build Template Patch Test Report
-Version: v7.1.0 / OCR統合 r1.1.17 / ビルドテンプレート
+MH Wilds 装備セット＆火力シミュレーター
+OCR統合 r1.1.18 修正テストレポート
 
-PASS: index.html main JavaScript syntax check (node --check)
-PASS: Build Template DB syntax check
-PASS: Build Template UI exists in section ②
-PASS: 14 weapon-type template groups are embedded
-PASS: Template loading resolves equipment against existing MHDB records
-PASS: Weapon resolution is constrained by official MHDB kind; no inferred kind overwrite
-PASS: Template load writes the resolved weapon to Build State and re-renders the existing weapon UI
-PASS: Armor/decorations are resolved through existing MHDB data; unresolved items are reported, not guessed
-PASS: Existing OCR bridge and OCR r1.1.16 changes were retained
-NOTE: Template source/creator fields are seed metadata in this build. Replace/update them with verified YouTube/blog source information as actual expert builds are collected.
+■ 修正内容
+ゴグマジオス防具のように、1部位が
+「共通シリーズスキル」＋「部位固有シリーズスキル」
+を同時に持つケースを正しく集計できるよう修正。
+
+修正前：
+- armorSet.setBonusSkill を中心にシリーズスキルを集計
+- 防具個体の複数シリーズスキルを発動判定へ正しく取り込めない
+
+修正後：
+- 防具の skills から DB.skills.kind === "set" を抽出
+- 同一防具の複数シリーズスキルをそれぞれ独立した1部位分として加算
+- armorSet.setBonusSkill / groupBonusSkill はDB形状によって防具skillsに含まれない場合のフォールバックとして使用
+- 巨戟アーティアのシリーズ/グループスキルとの部位数合算も維持
+- 既存の単一シリーズスキル構造も従来通り処理
+
+■ テスト
+1. JavaScript構文チェック：OK
+2. 単一シリーズスキルの旧来構造：OK
+3. 1防具に複数シリーズスキルを持つ構造：OK
+4. ゴグマジオス想定
+   - ゴグ頭：巨戟龍の黙示録 + 白熾龍の脈動
+   - ゴグ腕：巨戟龍の黙示録 + 雷顎竜の闘志
+   → 巨戟龍の黙示録 = 2部位
+   → 白熾龍の脈動 = 1部位
+   → 雷顎竜の闘志 = 1部位
+   となることを構造テストで確認
+5. 4部位時の共通シリーズスキル部位数集計：同様の方式で4部位として扱える構造を確認
+
+■ バージョン
+表示：
+MH Wilds 装備セット＆火力シミュレーター v7.1.0 / OCR統合 r1.1.18 / ビルドテンプレート
+
+■ 注意
+今回の自動テストはHTML/JavaScriptの構文確認とシリーズスキル集計ロジックの構造テスト。
+実際のブラウザ上でMHDBからゴグマジオス装備を取得して画面操作するE2Eテストは、この実行環境では実施していない。
