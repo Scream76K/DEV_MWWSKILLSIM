@@ -1,31 +1,15 @@
-# MH Wilds 装備セット＆火力シミュレーター r1.1.19 UI改修テスト
+# MHWilds Beta OCR Integrated r1.1.19 fix1
 
-## 対象
-- ベース: r1.1.18（ゴグマジオス複数シリーズスキル修正版）
-- 今回の主目的: 防具ビルドUIを左右2分割化し、右側にリアルタイムのスキル構成を常時表示
-
-## 実装内容
-- 武器ビルドUIは既存の選択構造を維持し、独立した「③ 武器ビルド」として上段に配置。
-- 防具・護石を左ペインに縦一列で配置。
-- スキル構成を右ペインに配置。
-- 左右ペインをそれぞれ独立スクロール領域化。
-- iPhone幅では左右ペインを維持したまま幅を圧縮し、スキル名が折り返せる構造にした。
-- 通常スキルは「スキル名 / Lv」＋Lvブロックの2段表示。
-- 最大Lv超過時は表示Lvを最大Lvで固定し、Lv表示を赤字＋点滅。
-- シリーズ/グループスキルは発動中のみ表示し、`現在部位数/必要部位数`（例 `3/2`）を表示。
-- 通常スキルの並びは既存のMHDB `kind` を利用し、武器系→防具系の順序を維持。
-- 既存のDB/OCR/計算ロジック、ゴグマジオス複数シリーズスキル処理は変更していない。
+## UI修正
+- 既存の防具・護石エディタ本体（#armorSelectors / #charmEditor）を、④スキル構成と同じワークスペース内の左ペインへ実移動。
+- ③装備登録には武器UIだけを残し、防具・護石UIの重複表示を解消。
+- 左ペインは頭→胴→腕→腰→脚→護石の縦1列。
+- 左右ペインを独立スクロール。
+- 既存のDOMノードを移動する方式のため、既存のrenderArmor/renderCharmEditorとイベントを維持。
+- VERSION表示のOCR統合番号をr1.1.19へ統一。
 
 ## 静的テスト
-- JavaScript構文チェック: OK（抽出したscriptを `node --check`）
-- HTML解析: OK
-- 必須IDの重複: なし
-- 既存IDの欠落: なし
-- `#armorBuildWorkspace`: 1件
-- `#armorWorkspaceLeft`: 1件
-- `#armorSelectors`: 1件
-- `#skillOutput`: 1件
-- `#weapon`: 1件
-
-## 制約
-- この環境ではiOS Safari実機操作は実施できないため、最終的なiPhoneでの視認性・スクロール感は実機確認が必要。
+- JavaScript `node --check`: OK
+- #armorBuildWorkspace / #armorWorkspaceLeft / .skill-workspace-panel: OK
+- 既存 #armorSelectors / #charmEditor / #charmLegality / #decorEditor をワークスペースへ移動する実装を確認。
+- weapon UIは③装備登録側に残ることを確認。
