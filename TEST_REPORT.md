@@ -1,12 +1,6 @@
-r1.1.19_fix4
-
-Base: stable r1.1.18.
-UI change: moved the existing armor/charm editor DOM and existing ④ status/skill DOM into a real two-pane workspace. No new calculation engine was introduced.
-
-Static checks:
-- index.html parsed successfully
-- exactly one armorSelectors/charmEditor/skillOutput/calcBuild ID
-- renderArmor/renderCharmEditor still target the same IDs
-- existing calcBuild function retained
-- workspace has independent overflow containers
-- version text unified to r1.1.19
+# r1.1.19 fix5 test report
+- Base: r1.1.19 fix4 (working interactive armor/skill split)
+- UI change: armor equipment cards changed from 2 columns to 1 vertical column.
+- Mobile media query also keeps 1 column.
+- Existing armor/charm/decoration event logic was not changed.
+- HTML/JS static syntax structure preserved.
