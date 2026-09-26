@@ -1,12 +1,12 @@
-# r1.1.19_fix3 TEST REPORT
+r1.1.19_fix4
 
-- Source: r1.1.19_fix2
-- Architecture change: armor/charm editor is placed in the final ④ left-pane DOM statically; no post-render DOM moving.
-- Existing `renderArmor()`, `renderCharmEditor()`, `calcBuild()` paths are preserved.
-- Added capture-phase `change`/`input` refresh on the armor workspace as a safety net.
-- JavaScript syntax check: PASS (`node --check` on the main inline script).
-- HTML parse / duplicate ID check: PASS.
-- Verified unique IDs for `armorSelectors`, `charmEditor`, `skillOutput`, `buildSummary`, `buildDetail`.
-- Weapon UI logic was not intentionally changed.
+Base: stable r1.1.18.
+UI change: moved the existing armor/charm editor DOM and existing ④ status/skill DOM into a real two-pane workspace. No new calculation engine was introduced.
 
-Note: live iPhone interaction requires deployment/browser testing; no claim of full device-runtime verification is made here.
+Static checks:
+- index.html parsed successfully
+- exactly one armorSelectors/charmEditor/skillOutput/calcBuild ID
+- renderArmor/renderCharmEditor still target the same IDs
+- existing calcBuild function retained
+- workspace has independent overflow containers
+- version text unified to r1.1.19
