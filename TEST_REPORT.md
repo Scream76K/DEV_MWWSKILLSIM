@@ -1,15 +1,11 @@
-# MHWilds Beta OCR Integrated r1.1.19 fix1
+# r1.1.19_fix2 TEST REPORT
 
-## UI修正
-- 既存の防具・護石エディタ本体（#armorSelectors / #charmEditor）を、④スキル構成と同じワークスペース内の左ペインへ実移動。
-- ③装備登録には武器UIだけを残し、防具・護石UIの重複表示を解消。
-- 左ペインは頭→胴→腕→腰→脚→護石の縦1列。
-- 左右ペインを独立スクロール。
-- 既存のDOMノードを移動する方式のため、既存のrenderArmor/renderCharmEditorとイベントを維持。
-- VERSION表示のOCR統合番号をr1.1.19へ統一。
-
-## 静的テスト
-- JavaScript `node --check`: OK
-- #armorBuildWorkspace / #armorWorkspaceLeft / .skill-workspace-panel: OK
-- 既存 #armorSelectors / #charmEditor / #charmLegality / #decorEditor をワークスペースへ移動する実装を確認。
-- weapon UIは③装備登録側に残ることを確認。
+- Base: r1.1.18 stable logic + r1.1.19 workspace work
+- Main fix: ④ skill workspace is explicitly recalculated after armor/charm changes.
+- Main fix: normal skill entries with calculated level 0 are excluded from the display, preventing empty `Lv0` skill cards.
+- Existing armor/charm change handlers are preserved; workspace-level change hook provides a final synchronization path.
+- Initial `calcBuild()` is forced after workspace mounting.
+- Mobile split adjusted slightly to give the skill pane more usable width.
+- Weapon editor remains outside the armor/charm workspace.
+- Node.js syntax check: PASS.
+- Duplicate HTML id check: PASS (95 ids, no duplicates).
