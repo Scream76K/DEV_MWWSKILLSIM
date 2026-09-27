@@ -1,8 +1,7 @@
-# r1.1.19 fix11 test report
-- Base: r1.1.19 fix10
-- Workspace ratio: build 60% / skill 40% via 3fr:2fr, including mobile media rule.
-- Armor name select font/height adjusted for alpha/beta/gamma visibility.
-- Skill pane text slightly compacted to preserve usable width.
-- Existing decoration binding/calculation logic unchanged from fix10.
-- HTML structure: armorWorkspaceLeft=1, skillWorkspaceRight=1.
-- All inline JavaScript blocks passed `node --check` extraction test.
+# r1.1.19 fix12
+- ① データ取得：statusより下の情報を非表示、スキル最大Lv監査を非表示
+- ② ビルドテンプレート初期最小化、読込ボタン文言変更、OCR装飾品表示をDB候補名中心に簡略化
+- 既知OCR補正：綾衝珠/耐衝珠→緩衝珠、攻撃珠【1】・撫→攻撃珠【1】
+- ③ 巨戟アーティア順序：属性→生産→巨戟変異→復元→シリーズ→グループ→武器スロット
+- 復元左、シリーズ/グループ右
+- JavaScript構文チェック：PASS
