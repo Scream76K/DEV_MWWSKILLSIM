@@ -1,0 +1,221 @@
+{
+  "test_version": "v7.2.1-template-v14-artia-fix2",
+  "confirmed_changes": [
+    "Artian mutation bonus is automatically derived from weapon type and mutation type.",
+    "Attack mutation: attack +10, affinity -15%.",
+    "Affinity mutation: attack -10, affinity +10%, sharpness -10, element weapon-specific.",
+    "Element mutation: affinity -5%, element weapon-specific.",
+    "Element values follow the user-confirmed weapon-type table.",
+    "Artia element augmentation is treated as always active; amount remains data-verified separately."
+  ],
+  "remaining_verification": [
+    "Gunlance and any weapon type not present in the supplied element table require later verification.",
+    "Element augmentation base/status-up amount remains separate from mutation bonus and requires source verification."
+  ],
+  "build_reference": "mhwilds_expert_build_db_v1_verification_ready_v14",
+  "confirmed_artia_weapon_data": {
+    "大剣": {
+      "攻撃激化": {
+        "attack": 10,
+        "affinity": -15
+      },
+      "会心激化": {
+        "attack": -10,
+        "affinity": 10,
+        "element": -10,
+        "sharpness": -10
+      },
+      "属性激化": {
+        "affinity": -5,
+        "element": 50
+      }
+    },
+    "太刀": {
+      "攻撃激化": {
+        "attack": 10,
+        "affinity": -15
+      },
+      "会心激化": {
+        "attack": -10,
+        "affinity": 10,
+        "element": -20,
+        "sharpness": -10
+      },
+      "属性激化": {
+        "affinity": -5,
+        "element": 50
+      }
+    },
+    "片手剣": {
+      "攻撃激化": {
+        "attack": 10,
+        "affinity": -15
+      },
+      "会心激化": {
+        "attack": -10,
+        "affinity": 10,
+        "element": -20,
+        "sharpness": -10
+      },
+      "属性激化": {
+        "affinity": -5,
+        "element": 40
+      }
+    },
+    "双剣": {
+      "攻撃激化": {
+        "attack": 10,
+        "affinity": -15
+      },
+      "会心激化": {
+        "attack": -10,
+        "affinity": 10,
+        "element": -20,
+        "sharpness": -10
+      },
+      "属性激化": {
+        "affinity": -5,
+        "element": 30
+      }
+    },
+    "ハンマー": {
+      "攻撃激化": {
+        "attack": 10,
+        "affinity": -15
+      },
+      "会心激化": {
+        "attack": -10,
+        "affinity": 10,
+        "element": -10,
+        "sharpness": -10
+      },
+      "属性激化": {
+        "affinity": -5,
+        "element": 40
+      }
+    },
+    "狩猟笛": {
+      "攻撃激化": {
+        "attack": 10,
+        "affinity": -15
+      },
+      "会心激化": {
+        "attack": -10,
+        "affinity": 10,
+        "element": 20,
+        "sharpness": -10
+      },
+      "属性激化": {
+        "affinity": -5,
+        "element": 80
+      }
+    },
+    "ランス": {
+      "攻撃激化": {
+        "attack": 10,
+        "affinity": -15
+      },
+      "会心激化": {
+        "attack": -10,
+        "affinity": 10,
+        "element": -20,
+        "sharpness": -10
+      },
+      "属性激化": {
+        "affinity": -5,
+        "element": 50
+      }
+    },
+    "ガンランス": {
+      "攻撃激化": {
+        "attack": 10,
+        "affinity": -15
+      },
+      "会心激化": {
+        "attack": -10,
+        "affinity": 10,
+        "element": 30,
+        "sharpness": -10
+      },
+      "属性激化": {
+        "affinity": -5,
+        "element": 80
+      }
+    },
+    "スラッシュアックス": {
+      "攻撃激化": {
+        "attack": 10,
+        "affinity": -15
+      },
+      "会心激化": {
+        "attack": -10,
+        "affinity": 10,
+        "element": -20,
+        "sharpness": -10
+      },
+      "属性激化": {
+        "affinity": -5,
+        "element": 40
+      }
+    },
+    "チャージアックス": {
+      "攻撃激化": {
+        "attack": 10,
+        "affinity": -15
+      },
+      "会心激化": {
+        "attack": -10,
+        "affinity": 10,
+        "element": -20,
+        "sharpness": -10
+      },
+      "属性激化": {
+        "affinity": -5,
+        "element": 50
+      }
+    },
+    "操虫棍": {
+      "攻撃激化": {
+        "attack": 10,
+        "affinity": -15
+      },
+      "会心激化": {
+        "attack": -10,
+        "affinity": 10,
+        "element": -20,
+        "sharpness": -10
+      },
+      "属性激化": {
+        "affinity": -5,
+        "element": 40
+      }
+    },
+    "弓": {
+      "攻撃激化": {
+        "attack": 10,
+        "affinity": -15
+      },
+      "会心激化": {
+        "attack": -10,
+        "affinity": 10,
+        "element": -20,
+        "sharpness": -10
+      },
+      "属性激化": {
+        "affinity": -5,
+        "element": 30
+      }
+    },
+    "ライトボウガン": {
+      "artia_mutation_element_data": null
+    },
+    "ヘビィボウガン": {
+      "artia_mutation_element_data": null
+    }
+  },
+  "data_policy": [
+    "ガンランスは確定データとして扱う。",
+    "ライトボウガン・ヘビィボウガンには今回の変異属性補正値を設定しない。",
+    "未提示の数値を推測補完しない。"
+  ]
+}
