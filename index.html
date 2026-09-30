@@ -2753,34 +2753,51 @@ function templateFindByName(arr,name){const n=templateNorm(name);if(!n)return nu
 function templateFindWeapon(t){const kind=t.weapon_type_id;const rows=(DB.weapons||[]).filter(w=>canonicalWeaponKind(w)===kind);let x=templateFindByName(rows,t.weapon?.name||t.weapons);if(x)return x;if(t.weapon?.name){const n=templateNorm(t.weapon.name);x=rows.find(w=>n.includes(templateNorm(w.name))||templateNorm(w.name).includes(n));}return x||null;}
 function templateFindArmor(name,kind){return templateFindByName((DB.armor||[]).filter(a=>a.kind===kind&&a.rank!=='low'),name);}
 function templateFindCharm(name,sourceSkills=[]){const n=templateCharmNorm(name);const wanted=(sourceSkills||[]).filter(x=>x?.name).map(x=>[templateNorm(x.name),Number(x.level)||1]).sort((a,b)=>a[0].localeCompare(b[0]));let fallback=null;for(const c of (DB.charms||[])){for(const r of (c.ranks||[])){const rn=templateCharmNorm(r.name||c.name);if(rn!==n)continue;if(!fallback)fallback={base:c,rank:r};const got=(r.skills||[]).map(x=>[templateNorm(x.name||x.skill?.name||''),Number(x.level||x.skill?.level||1)]).filter(x=>x[0]).sort((a,b)=>a[0].localeCompare(b[0]));if(wanted.length===got.length&&wanted.every((x,i)=>x[0]===got[i][0]&&x[1]===got[i][1]))return {base:c,rank:r,skillExact:true};}}return fallback?{...fallback,skillExact:false}:null;}
+function templateDecorationCanonical(v){
+  return String(v??'').normalize('NFKC')
+    .replace(/[［］]/g,'【').replace(/\[/g,'【').replace(/\]/g,'】')
+    .replace(/\s+/g,'').trim()
+    // MHDB names may include the placement slot in the display name.
+    .replace(/【[1-9]】$/,'')
+    .replace(/\[[1-9]\]$/,'')
+    .replace(/[（(][1-9][)）]$/,'');
+}
+function templateDecorationStem(v){
+  return templateDecorationCanonical(v)
+    .replace(/(?:IV|III|II|I)$/,'');
+}
 function templateFindDecoration(name,slot,kind='armor'){
   const wantedKind=normalizeDecorationKind(kind)==='weapon'?'weapon':'armor';
   const want=Number(slot||0);
   const all=Array.isArray(DB.decorations)?DB.decorations:[];
   const rows=all.filter(d=>{
-    const k=normalizeDecorationKind(d?.kind);
-    const kindOK=k ? k===wantedKind : true;
+    const dk=normalizeDecorationKind(d?.kind);
+    const kindOK=dk ? dk===wantedKind : true;
     const slotOK=want>0 ? Number(d?.slot??d?.level??0)===want : true;
-    return kindOK && slotOK;
+    return kindOK&&slotOK;
   });
   const pool=rows.length?rows:all.filter(d=>want>0?Number(d?.slot??d?.level??0)===want:true);
-  const raw=String(name||'').normalize('NFKC').replace(/[［］]/g,'【').replace(/[\[\]]/g,'【').trim();
-  // Template names are canonical decoration names; an optional trailing 1/2/3
-  // is a slot annotation, not part of the decoration name.
-  const base=raw.replace(/[123]$/,'');
-  const norm=v=>String(v||'').normalize('NFKC').replace(/[［］]/g,'【').replace(/[\[\]]/g,'【').replace(/\s+/g,'').trim();
-  const n=norm(base);
+  const n=templateDecorationCanonical(name);
   if(!n)return null;
-  // 1) exact canonical name. This prevents 攻撃珠III from becoming 鼓笛・攻撃珠.
-  let hit=pool.find(d=>norm(d?.name)===n);
+
+  // 1) Canonical name match, ignoring only MHDB's display-slot suffix.
+  let hit=pool.find(d=>templateDecorationCanonical(d?.name)===n);
   if(hit)return hit;
-  // 2) For names such as 防音珠 where MHDB may expose 防音珠II,
-  // remove only the final roman numeral and compare the stem within the same slot.
-  const stem=x=>norm(x).replace(/(?:III|II|IV|V|I)$/,'');
-  const ns=stem(base);
-  hit=pool.find(d=>stem(d?.name)===ns);
+
+  // 2) Same decoration family with Roman-numeral level notation.
+  const ns=templateDecorationStem(name);
+  hit=pool.find(d=>templateDecorationStem(d?.name)===ns);
   if(hit)return hit;
-  return null;
+
+  // 3) Some MHDB/localized records expose the decoration name with a
+  //    trailing slot marker but without the Roman numeral. Match the exact
+  //    family and required slot; never use fuzzy includes here.
+  hit=pool.find(d=>{
+    const dn=templateDecorationCanonical(d?.name);
+    return dn===n.replace(/(?:IV|III|II|I)$/,'') ||
+           templateDecorationStem(d?.name)===n.replace(/(?:IV|III|II|I)$/,'');
+  });
+  return hit||null;
 }
 function templateSetDecos(entries,slots,kind,prefix,unresolved){
   const levels=slotLevels(slots);
@@ -2863,6 +2880,12 @@ function renderBuildTemplateUI(){const ks=$('buildTemplateWeaponKind'),sel=$('bu
     t.artia.parts=['attack','attack','attack'];
   }
 })();
+window.__buildDecorationResolverRegression=()=>{
+  const checks=[['集中・匠珠',3,'weapon'],['攻撃珠III',3,'weapon'],['超心珠III',3,'weapon'],['防音珠',2,'armor'],['耐絶珠',1,'armor'],['超心珠',1,'armor']];
+  const out={};
+  for(const [n,slot,kind] of checks){const d=templateFindDecoration(n,slot,kind);out[n]=d?{id:d.id,name:d.name,slot:d.slot,kind:d.kind}:null;}
+  return out;
+};
 window.__buildTemplateRegression=()=>{
   const t=BUILD_TEMPLATE_DB.templates.flatMap(x=>x.builds||[]).find(x=>x.id==='KOTATU_GS_01');
   if(!t)throw new Error('KOTATU_GS_01 missing');
