@@ -1,326 +1,4 @@
-<!DOCTYPE html>
 
-<html lang="ja"><head>
-<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
-<meta content="#2b2118" name="theme-color"/><link href="manifest.webmanifest" rel="manifest"/>
-<title>MH Wilds 装備セット＆火力シミュレーター v7.1.8 / OCR統合 r1.1.19 fix12 / ビルドテンプレート</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#0a0f1e;color:#eef2ff;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}header{padding:18px;background:#111827;border-bottom:1px solid #334155}.wrap{max-width:1100px;margin:auto;padding:12px}h1{font-size:22px;margin:0 0 5px}.muted{color:#94a3b8;font-size:12px}.grid{display:grid;grid-template-columns:300px 1fr;gap:12px}.card{background:#151d33;border:1px solid #334155;border-radius:14px;padding:14px;margin-bottom:12px}h2{font-size:17px;margin:0 0 10px}h3{font-size:14px;margin:12px 0 7px}label{font-size:12px;color:#cbd5e1;display:block;margin:7px 0 4px}select,input,button{width:100%;min-height:42px;padding:8px 10px;border:1px solid #475569;border-radius:9px;background:#0b1020;color:#fff;font:inherit}button{cursor:pointer}button.primary{background:#2563eb;border-color:#2563eb}button.good{background:#166534;border-color:#166534}button.danger{background:#7f1d1d;border-color:#7f1d1d}.two{display:grid;grid-template-columns:1fr 1fr;gap:7px}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}.slotgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.slot{border:1px solid #475569;border-radius:8px;padding:6px;background:#0b1020}.equip{border:1px solid #334155;border-radius:10px;padding:9px;margin:8px 0;background:#0b1020}.equip b{font-size:13px}.tag{display:inline-block;padding:3px 7px;border:1px solid #475569;border-radius:999px;margin:2px;font-size:11px}.notice{padding:9px;border:1px solid #475569;border-radius:9px;background:#0f172a;margin-top:8px}.ok{color:#86efac}.warn{color:#fbbf24}.bad{color:#fca5a5}.info{color:#93c5fd}.sticky{position:sticky;bottom:10px;z-index:5}.summarygrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.metric{border:1px solid #334155;border-radius:9px;padding:10px;background:#0b1020}.metric b{display:block;font-size:19px;margin-top:3px}.affline{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:12px}.affline span{font-size:12px;color:#cbd5e1}.affline b{font-size:19px;margin-top:0}.game-status{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid #475569;border-radius:10px;overflow:hidden;background:#0b1020}.game-status .gs-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #334155}.game-status .gs-row:nth-child(odd){border-right:1px solid #334155}.game-status .gs-label{font-size:13px;color:#cbd5e1}.game-status .gs-value{font-size:20px;font-weight:700}.game-status .gs-sub{font-size:11px;color:#94a3b8;margin-left:5px;font-weight:400}.skill-order-note{font-size:11px;color:#94a3b8;margin-top:5px}.skill-game-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.skill-bucket{margin-top:9px}.skill-bucket-title{font-size:13px;font-weight:800;border-left:4px solid #64748b;padding:5px 8px;background:#0f172a;border-radius:4px}.skill-game{border:1px solid #475569;border-radius:8px;padding:8px 9px;background:#0b1020}.skill-game-name{font-size:13px;font-weight:700;margin-bottom:6px}.skill-game-binary .skill-game-name{margin-bottom:0}.skill-blocks{display:flex;gap:3px;flex-wrap:wrap}.skill-block{width:13px;height:13px;border:1px solid #64748b;border-radius:2px;background:#111827}.skill-block.on{background:#facc15;border-color:#fde047;box-shadow:0 0 5px rgba(250,204,21,.35)} .equip-title{font-size:16px;font-weight:800;letter-spacing:.02em;margin-bottom:7px}.equip-inline{border:1px solid #334155;border-radius:10px;padding:9px;margin:7px 0;background:#0b1020}.equip-inline .equip-title{margin-bottom:6px}.inline-slot-list{display:grid;gap:4px;margin-top:6px}.inline-slot{display:grid;grid-template-columns:42px minmax(0,1fr);gap:5px;align-items:center}.inline-slot .slot-num{font-weight:800;text-align:center}.inline-slot .slot-size{font-weight:800;text-align:center;border:1px solid #475569;border-radius:6px;padding:5px 2px;background:#111827}.inline-slot select{min-height:36px;padding:6px 8px}.inline-skill{font-size:12px;color:#cbd5e1;margin:4px 0 6px}.armor-equip-grid{display:grid;grid-template-columns:1fr;gap:8px}.armor-equip-grid .equip-inline{margin:0}.section-title{font-size:16px;font-weight:800;margin:12px 0 6px}@media(max-width:760px){.armor-equip-grid{grid-template-columns:1fr}.inline-slot{grid-template-columns:22px 38px minmax(0,1fr)}}.slot-lines{display:grid;gap:4px;margin:4px 0 8px}.slot-line{font-size:14px;font-weight:700;padding:5px 8px;border:1px solid #334155;border-radius:7px;background:#0b1020}.slot-line{display:grid;grid-template-columns:40px minmax(0,1fr);gap:7px;align-items:center}.slot-line .slot-num{font-size:20px;font-weight:800;text-align:center}.slot-line select{min-height:36px;padding:6px 8px}.equip-skill-preview{font-size:12px;color:#cbd5e1;margin-top:6px}@media(max-width:760px){.slot-line{grid-template-columns:40px minmax(0,1fr)!important}.slot-line .slot-size{width:40px;min-width:40px;max-width:40px;padding-left:0;padding-right:0}.game-status{grid-template-columns:1fr}.game-status .gs-row:nth-child(odd){border-right:0}}table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:7px;border-bottom:1px solid #334155;text-align:left;vertical-align:top}.hidden{display:none}progress{width:100%;height:10px}.small{font-size:11px}.dangerText{color:#fca5a5}.searchbox{margin-bottom:6px}.save-build-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:end}.save-build-row button{min-width:78px}.saved-build-list{display:grid;gap:5px;margin-top:7px}.compare-list{display:grid;gap:6px;margin-top:8px}.compare-item{display:grid;grid-template-columns:28px minmax(0,1fr);gap:7px;align-items:center;border:1px solid #334155;border-radius:8px;padding:7px 9px;background:#0b1020}.compare-item input{width:18px;min-height:18px}.compare-item .compare-meta{font-size:11px;color:#94a3b8;margin-top:2px}.compare-table{overflow:auto;margin-top:9px}.compare-table table{min-width:680px}.compare-table th{background:#0f172a;white-space:nowrap}.compare-best{font-weight:800}.compare-note{font-size:11px;color:#94a3b8;margin-top:6px}
-.saved-build-item{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:5px;align-items:center}.buildslot{margin-top:6px}.skilllist{display:grid;gap:4px;max-height:520px;overflow:auto}.skillrow{display:flex;justify-content:space-between;gap:8px;padding:7px 9px;border:1px solid #334155;border-radius:8px;background:#0b1020}.skillrow .lv{font-weight:700}.checkline{display:flex;align-items:center;gap:7px;font-size:12px}.checkline input{width:auto;min-height:0}.tabs{display:flex;gap:5px;overflow:auto;margin-bottom:10px}.tab{white-space:nowrap;padding:9px 12px;border:1px solid #475569;border-radius:999px;background:#0b1020}.tab.active{background:#2563eb;border-color:#2563eb}@media(max-width:760px){.grid{grid-template-columns:1fr}.summarygrid{grid-template-columns:1fr 1fr}.two,.three{grid-template-columns:1fr}.slotgrid{grid-template-columns:1fr 1fr}}
-.charm-slot-list,.charm-deco-list{display:grid;gap:5px}.charm-slot-row{display:grid;grid-template-columns:1fr 90px;gap:7px;align-items:center;border:1px solid #334155;border-radius:7px;padding:6px 8px}.charm-slot-row span{font-size:13px;font-weight:700}.charm-slot-row select{min-height:36px}.charm-deco-row{display:grid;grid-template-columns:110px 50px minmax(0,1fr);gap:6px;align-items:center;border:1px solid #334155;border-radius:7px;padding:6px 8px}.charm-deco-row .slot-size{text-align:center;font-weight:800}.charm-deco-row select{min-height:36px}@media(max-width:760px){.charm-deco-row{grid-template-columns:90px 48px minmax(0,1fr)}}
-textarea:focus,select:focus,input:focus,button:focus{outline:2px solid #3b82f6;outline-offset:1px}#aiAdvisorCard .aiQuick{font-size:12px}#aiAdvisorCard pre{margin:0;background:#0b1020;border-color:#334155}
-
-/* v7.1.0 UI: collapsible step cards */
-.card-details>summary.card-summary{list-style:none;cursor:pointer;font-size:17px;font-weight:800;display:flex;align-items:center;gap:7px;user-select:none;}
-.card-details>summary.card-summary::-webkit-details-marker{display:none}
-.card-details>summary.card-summary::before{content:'▾';font-size:15px;line-height:1;color:#cbd5e1;transition:transform .15s}
-.card-details:not([open])>summary.card-summary::before{content:'▸'}
-.card-details[open]>summary.card-summary{margin-bottom:10px}
-.card-details-body{min-width:0}
-.support-divider{margin:2px 0 12px;padding:9px 10px;text-align:center;font-size:12px;font-weight:800;color:#cbd5e1;border-top:1px solid #475569;border-bottom:1px solid #475569;background:#0f172a;border-radius:8px}
-#groupProposalNushi{width:18px;min-width:18px;height:18px;min-height:18px;margin:0;flex:0 0 18px;padding:0}
-.saved-build-item{grid-template-columns:68px minmax(0,1fr) 68px}
-.saved-build-item button{min-width:0;min-height:36px;padding:6px 8px}
-.ai-quick-row{display:flex!important;gap:6px}
-.ai-quick-row .aiQuick{width:auto!important;min-height:36px;padding:6px 12px;white-space:nowrap;flex:0 0 auto}
-@media(max-width:760px){.ai-quick-row{justify-content:flex-start;overflow-x:auto}.ai-quick-row .aiQuick{font-size:12px}}
-
-/* r1.1.19: real armor/charm + skill split workspace. Existing editors remain untouched. */
-.armor-build-workspace{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.85fr);gap:12px;align-items:start;margin-bottom:12px;}
-.armor-workspace-left,.skill-workspace-right{min-width:0;max-height:calc(100vh - 78px);overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
-.armor-workspace-left{padding-right:2px;}
-.skill-workspace-right>.card{margin-bottom:0;}
-.skill-workspace-right .card-details-body{min-width:0;}
-.skill-workspace-right .summarygrid{grid-template-columns:1fr 1fr;}
-.skill-workspace-right .skill-game-grid{grid-template-columns:1fr;}
-.skill-workspace-right .skill-order-note{display:none;}
-.skill-workspace-right .skill-game{padding:9px 10px;}
-.skill-workspace-right .skill-block{width:14px;height:14px;}
-.skill-workspace-right .sticky{position:static;}
-@media(max-width:760px){
-  .armor-build-workspace{grid-template-columns:minmax(0,1.25fr) minmax(190px,.75fr);gap:8px;}
-  .armor-workspace-left,.skill-workspace-right{max-height:calc(100vh - 72px);}
-  .skill-workspace-right .summarygrid{grid-template-columns:1fr;}
-  .skill-workspace-right .game-status{grid-template-columns:1fr;}
-  .skill-workspace-right .game-status .gs-row:nth-child(odd){border-right:0;}
-  .skill-workspace-right .skill-game-name{font-size:12px;}
-}
-.skill-game-name .skill-level{font-weight:800;white-space:nowrap}.skill-game-name .skill-level.over{color:#ef4444;animation:skillOverBlink 1.2s ease-in-out infinite}@keyframes skillOverBlink{0%,100%{opacity:1}50%{opacity:.25}}
-/* r1.1.19 fix7: decoration binding + tighter armor spacing */
-#armorSelectors{display:grid!important;grid-template-columns:1fr!important;gap:2px!important;min-width:0}
-#armorSelectors .equip-inline{margin:0!important;padding:3px 4px!important;border-radius:7px}
-#armorSelectors .equip-title{font-size:14px!important;margin-bottom:2px!important}
-#armorSelectors .inline-skill{font-size:11px!important;margin:1px 0 2px!important;line-height:1.2}
-#armorSelectors .slot-lines{gap:2px!important;margin:2px 0 2px!important}
-#armorSelectors .slot-line{padding:2px 3px!important;gap:2px!important;border-radius:5px}
-#armorSelectors .slot-line .slot-size{font-size:12px!important;padding:2px 0!important}
-#armorSelectors .slot-line select{min-height:30px!important;height:30px!important;padding:2px 4px!important;font-size:12px!important}
-#armorSelectors .armorSlotLines>.equip-title{font-size:12px!important;margin:1px 0!important}
-.armor-editor-card .card-details-body{padding:6px 7px!important}
-.armor-editor-card .section-title{margin:5px 0 3px!important}
-.armor-build-workspace{gap:4px!important}
-@media(max-width:760px){#armorSelectors .equip-inline{padding:2px 3px!important}#armorSelectors .slot-line{grid-template-columns:28px minmax(0,1fr)!important}#armorSelectors .slot-line .slot-size{width:28px!important;min-width:28px!important;max-width:28px!important}#armorSelectors .slot-line select{font-size:11px!important}}
-
-.hidden-ui-section,.hidden-ui-below-status{display:none!important}
-#ocrEmbeddedHost .result-box,#ocrEmbeddedHost #workflowEquipmentOut,#ocrEmbeddedHost #workflowDecorationOut,#ocrEmbeddedHost #finalBuildPreview,#ocrEmbeddedHost #buildReflectionOut{display:none!important}
-.artia-two-pane{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
-.artia-left,.artia-right{min-width:0}.artia-right-bottom{margin-top:8px}
-.ocr-deco-simple-group{border:1px solid #c8baa0;border-radius:9px;padding:7px;margin-top:6px}.ocr-deco-simple-row{padding:3px 0;border-top:1px solid #eee5d7}.ocr-deco-simple-row:first-of-type{border-top:0}
-@media(max-width:700px){.artia-two-pane{gap:6px}.artia-right-bottom{margin-top:6px}}
-</style><style>/* r1.1.19 fix8: armor cards compacted to approximately one-third of previous inter-card spacing */
-#armorSelectors{gap:1px!important}
-#armorSelectors .equip-inline{padding:1px 2px!important;margin:0!important}
-#armorSelectors .equip-title{margin:0 0 1px!important}
-#armorSelectors .inline-skill{margin:0 0 1px!important;line-height:1.1!important}
-#armorSelectors .slot-lines{gap:1px!important;margin:1px 0!important}
-#armorSelectors .slot-line{padding:1px 2px!important;gap:1px!important}
-#armorSelectors .slot-line select{height:28px!important;min-height:28px!important;padding:1px 3px!important}
-.armor-editor-card .card-details-body{padding:4px 5px!important}
-.armor-editor-card .section-title{margin:3px 0 2px!important}
-.armor-build-workspace{gap:2px!important}
-@media(max-width:760px){#armorSelectors .equip-inline{padding:1px 2px!important}#armorSelectors .slot-line{grid-template-columns:24px minmax(0,1fr)!important}#armorSelectors .slot-line .slot-size{width:24px!important;min-width:24px!important;max-width:24px!important}}
-</style><style>.inline-slot-list .inline-slot{grid-template-columns:minmax(88px,auto) 44px minmax(0,1fr);gap:6px}.slot-size-label{font-weight:800;white-space:nowrap}.inline-slot-list .inline-slot:has(>select.chSlot){grid-template-columns:minmax(88px,1fr) 56px}
-/* v7.1.0 Hunter's Note visual theme: parchment + ink, optimized for mobile readability */
-:root{
-  --paper:#e9dfc8;--paper2:#f4ecd9;--paper3:#d8c8a8;--ink:#2f271f;--ink2:#5a4a38;
-  --line:#8c7656;--accent:#7a4b22;--accent2:#a56d2d;--deep:#241b15;
-}
-body{
-  background:
-    radial-gradient(circle at 20% 10%,rgba(255,255,255,.08),transparent 28%),
-    linear-gradient(135deg,#201812 0%,#302419 48%,#1d1712 100%);
-  color:var(--paper2);
-  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif;
-}
-header{
-  background:linear-gradient(180deg,#38291d,#211913);
-  border-bottom:2px solid var(--accent2);
-  box-shadow:0 3px 14px rgba(0,0,0,.35);
-}
-header .muted{color:#d4c4a4}
-h1{letter-spacing:.02em}
-.card{
-  background:
-    linear-gradient(rgba(244,236,217,.96),rgba(228,216,190,.96));
-  color:var(--ink);
-  border:1px solid var(--line);
-  border-radius:10px;
-  box-shadow:0 4px 14px rgba(0,0,0,.24),inset 0 0 0 1px rgba(255,255,255,.28);
-  position:relative;
-}
-.card:before{
-  content:"";display:block;height:3px;margin:-14px -14px 11px;
-  background:linear-gradient(90deg,transparent,var(--accent2),transparent);opacity:.8;
-}
-.card-summary{color:var(--ink)!important;text-shadow:0 1px rgba(255,255,255,.35)}
-.card-details>summary.card-summary::before{color:var(--accent)!important}
-.muted,.small{color:var(--ink2)}
-label{color:var(--ink2)}
-select,input,button,textarea{
-  background:linear-gradient(180deg,#fbf5e7,#e8dcc2)!important;
-  color:var(--ink)!important;
-  border-color:var(--line)!important;
-  box-shadow:inset 0 1px rgba(255,255,255,.55);
-}
-select:focus,input:focus,textarea:focus,button:focus{outline-color:var(--accent2)!important}
-button.primary{background:linear-gradient(180deg,#9a5c24,#704018)!important;color:#fff!important;border-color:#6a3c17!important}
-button.good{background:linear-gradient(180deg,#657047,#485334)!important;color:#fff!important;border-color:#3f4a2f!important}
-button.danger{background:linear-gradient(180deg,#9b4638,#6f2d25)!important;color:#fff!important;border-color:#63251e!important}
-.notice,.metric,.equip,.equip-inline,.slot,.slot-line,.skill-game,.skillrow,.compare-item,.game-status,.charm-slot-row,.charm-deco-row{
-  background:linear-gradient(180deg,rgba(247,239,221,.94),rgba(224,211,184,.94))!important;
-  color:var(--ink);border-color:var(--line)!important;
-}
-.notice .muted,.notice .small,.compare-meta,.skill-order-note{color:var(--ink2)!important}
-.ok{color:#3e6b3d}.warn{color:#8a5a1e}.bad{color:#8b3b31}.info{color:#48657b}
-.game-status .gs-row{border-color:#b6a384}.game-status .gs-label{color:var(--ink2)}
-.skill-bucket-title{background:#d9c8a7;border-left-color:var(--accent);color:var(--ink)}
-.skill-block{background:#c9b996;border-color:#8f7a59}.skill-block.on{background:#b88628;border-color:#765116;box-shadow:0 0 5px rgba(120,75,20,.3)}
-.slot-line .slot-size,.inline-slot .slot-size{background:#d8c8a8;border-color:var(--line);color:var(--ink)}
-.tab{background:#d9c8a7;border-color:var(--line);color:var(--ink)}.tab.active{background:#8a5528;border-color:#704018;color:#fff}
-.support-divider{
-  color:#f0e4cc;border-color:#a77a43;
-  background:linear-gradient(90deg,transparent,rgba(87,55,28,.78),transparent);
-  border-radius:0;font-family:serif;letter-spacing:.08em;
-}
-#appVersionBadge{background:rgba(44,32,22,.94)!important;color:#eadfc9!important;border-color:#7e5d3a!important}
-#groupProposalNushi{accent-color:#7a4b22}
-.ai-quick-row .aiQuick{border-radius:7px!important}
-/* v7.1.0: comparison table readability */
-.compare-table{border:1px solid var(--line);border-radius:9px;overflow:auto;background:var(--paper2)}
-.compare-table table{min-width:680px;color:var(--ink)}
-.compare-table th{background:#3f3022!important;color:#fff!important;border-bottom:2px solid var(--accent2)!important;font-weight:800}
-.compare-table td{background:rgba(244,236,217,.98);color:var(--ink)!important;border-bottom:1px solid #b6a384!important}
-.compare-table tr:nth-child(even) td{background:rgba(233,223,200,.98)}
-.compare-table .compare-best{font-weight:900;color:#5a3515!important}
-.compare-note{color:var(--ink2)!important}
-/* Notebook accents without image assets */
-.support-divider:before,.support-divider:after{content:"◆";margin:0 10px;color:#b88a4a}
-@media(max-width:760px){
-  .card{border-radius:9px}
-  .card:before{margin:-14px -14px 10px}
-  h1{font-size:20px}
-}
-
-/* v7.1.0: original weapon icon UI based on the approved concept sheet */
-.weapon-kind-icons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:7px}
-.weapon-kind-icon{border:1px solid var(--line);border-radius:9px;background:rgba(244,236,217,.82);padding:5px 3px 4px;min-height:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform .08s,box-shadow .08s,border-color .08s,background .08s}
-.weapon-kind-icon:active{transform:scale(.98)}
-.weapon-kind-icon img{width:48px;height:48px;object-fit:contain;display:block}
-.weapon-kind-icon span{font-size:10px;font-weight:800;color:var(--ink);line-height:1.15;text-align:center;margin-top:2px;white-space:nowrap}
-.weapon-kind-icon.is-selected{border:2px solid var(--accent2);background:rgba(216,200,168,.95);box-shadow:inset 0 0 0 1px rgba(122,75,34,.18)}
-.weapon-kind-icon.is-selected span{color:var(--accent);font-weight:900}
-@media(max-width:760px){.weapon-kind-icons{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.weapon-kind-icon{min-height:70px}.weapon-kind-icon img{width:44px;height:44px}.weapon-kind-icon span{font-size:9px}}
-
-/* v7.1.0 visual direction: Hunter's Note for build creation, modern support for analysis */
-body{
-  background:
-    radial-gradient(ellipse at 50% -10%,rgba(120,82,44,.26),transparent 48%),
-    radial-gradient(circle at 10% 30%,rgba(255,236,190,.05),transparent 25%),
-    linear-gradient(135deg,#17100c 0%,#2b1b12 46%,#160f0b 100%);
-}
-header{
-  position:relative;overflow:hidden;
-  background:
-    linear-gradient(90deg,rgba(32,22,16,.98) 0%,rgba(42,27,18,.94) 48%,rgba(35,24,18,.72) 100%),
-    url('assets/wyvern-banner.png') right center/auto 100% no-repeat;
-  border-bottom:3px solid #9b6a37;
-  box-shadow:0 4px 18px rgba(0,0,0,.48),inset 0 -1px rgba(244,216,164,.25);
-}
-header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:rgba(240,205,145,.45);pointer-events:none}
-header .wrap{position:relative;z-index:1}
-header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spacing:.035em;text-shadow:0 2px 3px rgba(0,0,0,.65)}
-/* aged-paper treatment for the build side */
-.card:not(.support-card){
-  background:
-    radial-gradient(circle at 12% 18%,rgba(111,76,42,.07),transparent 23%),
-    radial-gradient(circle at 88% 82%,rgba(111,76,42,.06),transparent 24%),
-    linear-gradient(180deg,rgba(248,239,217,.98),rgba(220,205,177,.98));
-  border-color:#806848;
-  box-shadow:0 5px 16px rgba(0,0,0,.30),inset 0 0 0 1px rgba(255,248,225,.38),inset 0 0 22px rgba(102,72,38,.07);
-}
-.card:not(.support-card):after{content:"";position:absolute;inset:5px;border:1px solid rgba(111,76,42,.12);border-radius:7px;pointer-events:none}
-.card:not(.support-card) .card-summary{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;font-size:18px;letter-spacing:.015em}
-/* build/support chapter divider */
-.support-divider{
-  position:relative;margin:5px 0 14px;padding:12px 12px;
-  color:#eadfc9;
-  background:linear-gradient(90deg,transparent,rgba(87,55,28,.92) 18%,rgba(87,55,28,.92) 82%,transparent);
-  border-top:1px solid #b4864d;border-bottom:1px solid #b4864d;
-  box-shadow:0 3px 10px rgba(0,0,0,.25);
-  letter-spacing:.14em;font-size:13px;
-}
-.support-divider:before{content:"◆  HUNTER'S SUPPORT  ◆";margin:0 10px;color:#d3a15b}
-.support-divider:after{content:"";display:none}
-/* support cards intentionally switch language: dark field, compact information, blue accents */
-.support-card{
-  background:
-    radial-gradient(circle at 82% 12%,rgba(67,104,139,.16),transparent 25%),
-    linear-gradient(180deg,#182332,#0e1621)!important;
-  color:#e7edf3!important;
-  border:1px solid #536779!important;
-  border-radius:11px!important;
-  box-shadow:0 5px 18px rgba(0,0,0,.42),inset 0 0 0 1px rgba(196,214,230,.06)!important;
-}
-.support-card:before{height:2px;margin:-14px -14px 11px;background:linear-gradient(90deg,transparent,#7c9bb8,transparent);opacity:.75}
-.support-card:after{content:"";position:absolute;inset:5px;border:1px solid rgba(139,171,198,.10);border-radius:7px;pointer-events:none}
-.support-card .card-summary{color:#edf2f6!important;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif;font-size:17px!important;text-shadow:0 1px 2px rgba(0,0,0,.5)}
-.support-card .card-details>summary.card-summary::before{color:#9eb7cb!important}
-.support-card .muted,.support-card .small,.support-card label{color:#b7c5d1!important}
-.support-card select,.support-card input,.support-card textarea,.support-card button:not(.primary){
-  background:linear-gradient(180deg,#26384a,#182535)!important;color:#edf2f6!important;border-color:#536b80!important;
-  box-shadow:inset 0 1px rgba(255,255,255,.07)!important;
-}
-.support-card .notice,.support-card .metric,.support-card .equip,.support-card .equip-inline,.support-card .slot,.support-card .slot-line,.support-card .skill-game,.support-card .skillrow,.support-card .compare-item,.support-card .game-status,.support-card .charm-slot-row,.support-card .charm-deco-row{
-  background:linear-gradient(180deg,rgba(31,45,59,.98),rgba(19,29,40,.98))!important;color:#e7edf3!important;border-color:#52697c!important;
-}
-.support-card .section-title{color:#e3edf4}
-.support-card .primary{background:linear-gradient(180deg,#3d79a7,#2c587d)!important;border-color:#6f9fc3!important}
-.support-card .good{background:linear-gradient(180deg,#536d55,#3b513e)!important}
-.support-card .danger{background:linear-gradient(180deg,#8d4a42,#66332f)!important}
-.support-card .ai-quick-row .aiQuick{background:linear-gradient(180deg,#2c4053,#1c2c3a)!important}
-.support-card .compare-table th{background:#111b27!important;color:#fff!important;border-bottom-color:#7895ad!important}
-.support-card .compare-table td{background:#e8dfcf!important;color:#2f271f!important}
-.support-card .compare-table tr:nth-child(even) td{background:#dcd0bb!important}
-/* make the support boundary obvious without adding another navigation layer */
-.support-card details[open] .card-details-body{border-top:1px solid rgba(137,165,187,.18);padding-top:3px}
-@media(max-width:760px){
-  header{background-position:72% center;background-size:auto 100%}
-  header .muted{max-width:82%;line-height:1.45}
-  .card:not(.support-card):after,.support-card:after{inset:4px}
-}
-
-/* OCR integration r1.1.15: armor decoration slot size. */
-.armorSlotLines .slot-line{grid-template-columns:24px minmax(0,1fr)!important;gap:6px!important;}
-.armorSlotLines .slot-line .slot-size{width:24px!important;min-width:24px!important;max-width:24px!important;padding-left:0!important;padding-right:0!important;}
-.armorSlotLines .slot-line select{min-width:0!important;width:100%!important;}
-@media(max-width:760px){.armorSlotLines .slot-line{grid-template-columns:24px minmax(0,1fr)!important}.armorSlotLines .slot-line .slot-size{width:24px!important;min-width:24px!important;max-width:24px!important;}}
-</style><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<style>
-/* r1.1.19 fix9: armor/skill workspace horizontal padding reduction + readable armor skills */
-.armor-workspace-left>.armor-editor-card{padding:5px!important;}
-.armor-workspace-left>.armor-editor-card>.card-details-body{padding:2px 3px!important;}
-.skill-workspace-right>.card{padding:5px!important;}
-.skill-workspace-right>.card>.card-details-body{padding:2px 3px!important;}
-.armorSkillPreview.inline-skill{color:var(--accent)!important;font-weight:700!important;}
-@media(max-width:760px){
-  .armor-workspace-left>.armor-editor-card{padding:4px!important;}
-  .armor-workspace-left>.armor-editor-card>.card-details-body{padding:1px 2px!important;}
-  .skill-workspace-right>.card{padding:4px!important;}
-  .skill-workspace-right>.card>.card-details-body{padding:1px 2px!important;}
-}
-</style>
-<style>
-/* r1.1.19_fix10: series/group skills are intentionally text-only; no level blocks. */
-.skill-game-binary .skill-game-name{margin-bottom:0;min-height:20px;align-items:center;}
-</style>
-
-<style>
-/* r1.1.19 fix11: build/skill workspace ratio 6:4 and armor-name readability */
-.armor-build-workspace{grid-template-columns:minmax(0,3fr) minmax(0,2fr)!important;gap:2px!important;}
-.armor-workspace-left{min-width:0;}
-.skill-workspace-right{min-width:0;}
-#armorSelectors .equip-inline>select[data-armor]{
-  width:100%!important;
-  min-width:0!important;
-  font-size:13.5px!important;
-  font-weight:700!important;
-  min-height:34px!important;
-  height:34px!important;
-  padding:2px 6px!important;
-}
-#armorSelectors .equip-title{font-size:15px!important;font-weight:800!important;}
-#armorSelectors .inline-skill{font-size:11.5px!important;line-height:1.25!important;}
-#armorSelectors .slot-line select{font-size:11.5px!important;}
-.skill-workspace-right .skill-game-name{font-size:12.5px;}
-@media(max-width:760px){
-  .armor-build-workspace{grid-template-columns:minmax(0,3fr) minmax(0,2fr)!important;gap:2px!important;}
-  #armorSelectors .equip-inline>select[data-armor]{font-size:13px!important;}
-  .skill-workspace-right .skill-game-name{font-size:11.5px;}
-}
-</style>
-</head><body>
-<div class="notice"><b>v7.2.1 テスト版 / OCR統合 r1.1.19 fix12</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">VERSION <span id="appVersionText">7.2.1 / OCR統合 r1.1.19 fix12</span></div>
-<header><div class="wrap"><h1>⚔️ MH Wilds 装備セット＆火力シミュレーター v7.1.6 / OCR統合 r1.1.19 / ビルドテンプレート</h1><div class="muted">①〜⑤ ハンターズノート：装備を作る・記録する　｜　⑥〜⑧ ハンターズサポート：分析・提案・相談</div></div></header>
-<main class="wrap"><div class="grid"><aside>
-<section class="card"><details class="card-details" open="True"><summary class="card-summary">① データ取得</summary><div class="card-details-body"><div class="muted">ゲームデータの取得・検証・保存は装備セット計算とは独立して管理します。取得済みデータがあれば、APIへ再接続できない場合でも利用できます。</div><div class="two" style="margin-top:8px"><button class="primary" id="load" onclick="window.__startDataLoad &amp;&amp; window.__startDataLoad()" type="button">最新データを取得 / 更新</button><button id="clearDataCache">取得データを削除</button></div><progress id="prog" max="100" style="display:none;margin-top:8px" value="0"></progress><div class="muted" id="status" style="margin-top:7px">未取得</div><div class="game-status hidden-ui-below-status" id="dataStatus" style="margin-top:8px"></div><div class="notice small hidden-ui-below-status" id="architectureStatus" style="margin-top:8px">V6構造チェック待機中</div><div class="notice small hidden-ui-below-status" id="diag"></div></div></details></section><section class="card hidden-ui-section"><details><summary class="small"><b>スキル最大Lv監査</b></summary><div class="notice small" id="skillMaxAudit">データ取得後に監査します。</div></details></section><section class="card" id="buildLoadCard"><details class="card-details" open="True"><summary class="card-summary">② 装備セット読込</summary><div class="card-details-body"><div class="muted">保存済みの装備セットを呼び出します。初めて使う場合は、③ 装備登録から新しい装備セットを作成できます。</div><div class="saved-build-list" id="savedBuilds"></div><section class="card card-details" id="buildTemplateCard"><details><summary class="card-summary">📚 ビルドテンプレート</summary><div class="card-details-body"><div class="muted">登録済みのビルドテンプレートを選択し、現在の装備セットへ読み込みます。テンプレートはMHDBの実データへ照合してBuild Stateへ反映します。</div><div class="two" style="margin-top:8px"><div><label>武器種</label><select id="buildTemplateWeaponKind"><option value="">武器種を選択</option></select></div><div><label>テンプレート</label><select disabled="" id="buildTemplateSelect"><option value="">武器種を選択してください</option></select></div></div><div class="notice small" id="buildTemplateInfo" style="margin-top:8px">テンプレートを選択してください。</div><div class="two" style="margin-top:8px"><button class="primary" disabled="" id="loadBuildTemplate" type="button">このビルドを読込•反映</button><button id="clearBuildTemplate" type="button">選択解除</button></div><div class="notice small hidden" id="buildTemplateStatus" style="margin-top:8px"></div></div></details></section><section class="card card-details" id="ocrImportCard"><details><summary class="card-summary">📷 スクショからビルドを取り込む</summary><div class="card-details-body"><div class="muted" style="margin-bottom:8px">ゲーム内スクショから武器・防具・装飾品を読み取り、現在の装備セットへ直接反映できます。β版と同じDBを使用します。</div><div id="ocrEmbeddedHost"></div></div></details></section></div></details></section><section class="card"><details class="card-details" open="True"><summary class="card-summary">③ 装備登録</summary><div class="card-details-body"><div class="muted">武器・防具・護石を登録し、そのまま各スロットへ装飾品を割り当てます。防具は限界突破後として扱います。</div><h3>武器</h3><label>武器種</label><select id="weaponKind"></select><div aria-label="武器種を選択" class="weapon-kind-icons" id="weaponKindIcons"></div><div class="muted small" style="margin-top:5px">アイコンをタップして武器種を選択できます。</div><label>武器</label><select id="weapon"></select><div class="muted small" id="weaponDataState"></div><div class="muted small" id="weaponKindDiag"></div><div class="equip-skill-preview hidden" id="weaponSkillPreview"></div><div class="equip-skill-preview hidden" id="weaponSlotPreview"></div><div class="notice hidden" id="artiaBox"></div><div class="notice small">防具・護石は④の左ペインで編集します。</div></div></details></section><section class="armor-build-workspace" id="armorBuildWorkspace"><div class="armor-workspace-left" id="armorWorkspaceLeft"><section class="card armor-editor-card"><details class="card-details" open=""><summary class="card-summary">防具・護石</summary><div class="card-details-body armor-editor-body"><div class="muted small armor-workspace-note">装備を変更すると、右側のスキル構成へリアルタイムに反映されます。</div><div class="section-title">防具</div><div class="armor-equip-grid" id="armorSelectors"></div><div class="section-title">護石</div><div id="charmEditor"></div><div class="notice small" id="charmLegality" style="margin-top:8px"></div><div class="muted small" id="decorEditor" style="display:none"></div></div></details></section></div><div class="skill-workspace-right" id="skillWorkspaceRight"><section class="card"><details class="card-details" open="True"><summary class="card-summary">④ スキル構成</summary><div class="card-details-body"><div class="checkline" style="margin:9px 0"><input checked="" id="useWeaponCoeff" type="checkbox"/><label for="useWeaponCoeff" style="margin:0">武器係数を適用して攻撃力を表示</label></div><div class="muted small" id="weaponCoeffState">ON：ゲーム内表示攻撃力（武器係数あり）</div><div class="muted small">この切替は<strong>表示上の攻撃力</strong>だけを変更します。ダメージ計算は真攻撃力を基準にします。属性値には武器係数を掛けません。</div><button class="primary sticky" id="calcBuild">🔄 装備セットを計算</button><div class="summarygrid" id="buildSummary" style="margin-top:9px"></div><div class="notice" id="skillOutput">データ取得後、装備を選んでください。</div><div class="section-title">現在の装備セット</div><div class="muted" id="buildDetail">未計算</div></div></details></section></div></section></aside><section>
-<section class="card"><details class="card-details" open="True"><summary class="card-summary">⑤ 装備セット保存・比較</summary><div class="card-details-body"><div class="muted">現在の武器・防具・護石・装飾品・巨戟アーティア設定を名前付きで保存できます。</div><div class="save-build-row"><div><label>装備セット名</label><input id="buildName" maxlength="40" placeholder="例：クピドバイン 弓装備" type="text"/></div><button class="good" id="saveBuild" type="button">保存</button><button id="clearBuildName" type="button">消去</button></div><div class="notice small hidden" id="buildSaveStatus"></div><div class="section-title">装備セット比較</div><div class="muted small">保存した装備セットを最大3件まで選び、攻撃力・会心率・属性・1ヒット期待値・DPSを比較します。</div><div class="compare-list" id="compareBuilds"></div><div class="two" style="margin-top:7px"><button id="selectAllCompare">保存した装備セットを全選択</button><button id="clearAllCompare">選択解除</button></div><button class="primary" id="runCompare" style="margin-top:7px">📊 選択した装備セットを比較</button><div class="notice" id="compareOut">比較する装備セットを選択してください。</div></div></details></section><section class="card"><details class="card-details" open="True"><summary class="card-summary">対象モンスター・部位</summary><div class="card-details-body"><div class="muted">選択した部位の物理・属性肉質を期待値計算へ自動反映します。</div><label>モンスター</label><select id="monster"><option value="">モンスターを選択</option></select><label>部位</label><select id="monsterPart"><option value="">部位を選択</option></select><div class="notice" id="monsterInfo">未選択</div></div></details></section><div class="support-divider">ここからサポート機能</div><section class="card support-card"><details class="card-details"><summary class="card-summary">⑥ コンボDPS</summary><div class="card-details-body"><div class="muted">③ 装備登録で選択した武器をそのまま使用します。武器をここで再選択する必要はありません。その武器に対応する技を選び、コンボの順番をユーザーが決めて、コンボ全体のダメージ・所要時間・DPSを計算します。同じ技を複数回使う場合は、同じ技をその回数だけ追加します。</div><div class="notice" id="comboWeaponInfo"><b>使用武器：</b>③ 装備登録で武器を選択してください。</div><div class="two"><div><label>技を選択</label><select id="comboMovePicker"></select></div><div><label>プリセット</label><select id="comboPreset"><option value="">なし（自分で組む）</option></select></div></div><div class="notice small" id="comboDataStatus">③ 装備登録の武器を確認しています…</div>
-<details class="notice small" id="techniqueEditor" style="margin-top:8px">
-<summary><b>技データを登録・管理</b></summary>
-<div class="muted" style="margin:6px 0">現在選択中の武器種に技を登録できます。モーション値は公式API値ではなく、検証値として扱います。</div>
-<div class="two">
-<div><label for="techName">技名</label><input id="techName" maxlength="60" placeholder="例：溜め斬り Lv3" type="text"/></div>
-<div><label for="techTime">所要時間（秒）</label><input id="techTime" min="0.01" placeholder="2.40" step="0.01" type="number"/></div>
-</div>
-<div class="two" style="margin-top:7px">
-<div><label for="techMV">モーション値（複数はカンマ区切り）</label><input id="techMV" placeholder="160 または 15,201" type="text"/></div>
-<div><label for="techSource">データ種別</label><select id="techSource"><option value="verified">検証値</option><option value="community">コミュニティ資料</option></select></div>
-</div>
-<button class="good" id="addTechnique" style="margin-top:7px" type="button">＋この武器種に技を登録</button>
-<div class="notice small" id="techniqueEditorStatus" style="margin-top:7px">登録した技はこの端末に保存されます。</div>
-<div id="techniqueCustomList" style="margin-top:7px"></div>
-</details>
-<div id="combo"></div><button id="addCombo">＋選択した技を追加</button><button class="primary" id="calcDps" style="margin-top:7px">📈 コンボDPSを計算</button><div class="two" style="margin-top:10px"><div><label>攻撃稼働率 (%)</label><input id="uptime" type="number" value="85"/></div><div><label>非攻撃時間を含める</label><select id="uptimeMode"><option value="1">含める（実戦DPS）</option><option value="0">含めない（理論DPS）</option></select></div></div><div class="notice" id="dpsOut">未計算</div><div style="display:none"><input id="dAttack" value="300"/><input id="dAff" value="0"/><input id="dElem" value="0"/><input id="dMV" value="100"/><input id="dHZ" value="80"/><input id="dEHZ" value="30"/><input id="dSharp" value="1.32"/><input id="dESharp" value="1.15"/><input id="dCB" value="0"/><select id="dECrit"><option value="0">なし</option></select></div></div></details></section><section class="card support-card" id="groupProposalCard"><details class="card-details"><summary class="card-summary">⑦ シリーズスキルから装備を提案 v7.1.0</summary><div class="card-details-body"><div class="muted">「このシリーズスキルを採用したい」を起点に、全防具から候補を探索し、目的スキルとの相性・武器種適性・装飾品スロット・現在装備の維持度を推論して複数案を作ります。<b>巨戟アーティアのシリーズ/グループスキルも武器1部位として考慮</b>します。<b>ヌシの魂</b>は重要なグループスキルとして、必要な場合だけ別途指定できます。候補の決定・採用はユーザーが行います。</div><div class="two" style="margin-top:8px"><div><label for="groupProposalSkill">採用したいシリーズスキル</label><select id="groupProposalSkill"><option value="">データ取得後に選択</option></select></div><div><label for="groupProposalLevel">目標Lv</label><select id="groupProposalLevel"><option value="1">Lv1</option><option value="2">Lv2</option><option value="3">Lv3</option></select></div></div><div class="notice small" style="margin-top:7px"><label style="display:flex;align-items:center;gap:8px;margin:0"><input id="groupProposalNushi" type="checkbox"/> <span><b>ヌシの魂を採用する</b></span></label><div class="muted" style="margin-top:4px">ONにすると、シリーズスキルに加えて「ヌシの魂」の発動条件も満たす候補だけを提示します。</div></div><div class="two" style="margin-top:7px"><div><label for="groupProposalMode">提案の考え方</label><select id="groupProposalMode"><option value="balance">バランス</option><option value="dps">火力重視</option><option value="flex">スキル自由度重視</option></select></div><div><label for="groupProposalCount">候補数</label><select id="groupProposalCount"><option selected="" value="3">3案</option><option value="5">5案</option></select></div></div><button class="primary" id="groupProposalRun" style="margin-top:8px">🔎 この条件で装備候補を作る</button><div class="notice" id="groupProposalOut" style="margin-top:8px">例：「無尽蔵 Lv1」を選んで、必要なら「ヌシの魂」をONにして試してください。</div></div></details></section><section class="card support-card" id="aiAdvisorCard"><details class="card-details"><summary class="card-summary">⑧ AI装備相談</summary><div class="card-details-body"><div class="muted">現在の装備・スキル・⑤の火力条件をAIに渡して、装備構築を相談できる機能です。現在の装備セットをAI相談用データに変換します。AIは候補提示・比較・評価を行い、最終的な装備セットはユーザーが決定します。</div><div class="ai-quick-row" style="margin-top:6px"><button class="aiQuick" data-ai="この武器で火力重視の装備を組んでください。" type="button">🔥 火力重視</button><button class="aiQuick" data-ai="この武器で属性火力を重視した装備を組んでください。" type="button">🧊 属性重視</button></div><div class="ai-quick-row" style="margin-top:6px"><button class="aiQuick" data-ai="この装備をベースに、DPSを上げる方法を提案してください。" type="button">📈 DPS改善</button><button class="aiQuick" data-ai="現在の装備について、改善できる点を教えてください。" type="button">🔎 装備診断</button></div><label for="aiPrompt" style="margin-top:9px">相談内容</label><textarea id="aiPrompt" placeholder="例：この武器でDPS最大の装備を作って。会心率100%は維持したい。" rows="4" style="width:100%;padding:9px;border:1px solid #475569;border-radius:9px;background:#0b1020;color:#fff;font:inherit;resize:vertical"></textarea><div class="two" style="margin-top:7px"><button class="primary" id="aiPrepare" type="button">🤖 AI相談データを作成</button><button id="aiCopy" type="button">📋 送信用データをコピー</button></div><div class="notice" id="aiOut">相談内容を入力して「AI相談データを作成」を押してください。</div><details style="margin-top:7px"><summary class="small">AIに送る現在の装備セットデータを確認</summary><pre class="notice small" id="aiPayload" style="white-space:pre-wrap;overflow:auto;max-height:360px"></pre></details></div></details></section></section></div></main>
-<script>
 const API='https://wilds.mhdb.io/ja';
 const DATA_CACHE='mhwilds-data-v700';
 // v7.1.0 intentionally keeps v7.0.0 storage/cache keys for compatibility. Previous versions could
@@ -544,7 +222,7 @@ build.artia.parts=build.artia.parts.slice(0,3); while(build.artia.parts.length<3
  * access state through App.* APIs rather than DOM or raw API objects.
  */
 const App={
-  version:'7.2.1',
+  version:'7.1.4',
   state:{
     db:DB, dataState:null, build:build, calc:calcState,
     hunt:{monsterId:'',partId:''}, combo:{moves:[],uptime:85,uptimeMode:'1'},
@@ -1864,33 +1542,24 @@ function renderDetail(){let w=selectedWeapon(),rows=[];if(w)rows.push(`<tr><th>�
 function monsterHZ(){let p=selectedPart(),w=selectedWeapon(),x=p?.multipliers||{};let phys=canonicalWeaponKind(w)==='heavy-bowgun'||canonicalWeaponKind(w)==='light-bowgun'||canonicalWeaponKind(w)==='bow'?x.pierce:x.slash;if(canonicalWeaponKind(w)==='hammer'||canonicalWeaponKind(w)==='hunting-horn')phys=x.blunt;return {hz:(phys||0)*100,ehz:(x[calcState.stats.elementType]||0)*100};}
 function syncDamage(){let s=calcState.stats;if(s.attackTrue!=null)$('dAttack').value=Math.round(s.attackTrue);$('dAff').value=Math.round(s.maxAffinity ?? s.affinity);$('dElem').value=Math.round(s.element);let h=monsterHZ();if(h.hz)$('dHZ').value=Math.round(h.hz);if(h.ehz)$('dEHZ').value=Math.round(h.ehz)}
 function roundDamage2(x){return Math.round((Number(x)||0)*100)/100}
-function criticalMultiplierForState(affinity, critBonus, state='expected'){
-  const a=Math.max(-100,Math.min(100,Number(affinity)||0))/100;
-  const cb=Math.max(0,Math.min(5,Number(critBonus)||0));
-  const bonus=[0,0.03,0.06,0.09,0.12,0.15][cb];
-  if(state==='noncritical') return 1;
-  if(state==='critical') return 1+(0.25+bonus);
-  if(state==='negative-critical') return 1-0.25;
-  return a>=0 ? 1+a*(0.25+bonus) : 1+a*(-0.25);
-}
 function damageFromParams(params){
   // MH Wilds damage formula reference: macaron's game memo (2025-04-30).
-  // Physical/elemental are independently rounded to 2 decimals before total.
-  // criticalState: expected | noncritical | critical | negative-critical
-  const raw=Number(params.attack)||0;
-  const aff=Math.max(-100,Math.min(100,Number(params.affinity)||0));
+  // Physical/elemental are independently rounded to 2 decimals before summation.
+  const raw=Number(params.attack)||0; // true attack / weapon倍率 input
+  const aff=Math.max(-100,Math.min(100,Number(params.affinity)||0))/100;
   const elem=(Number(params.element)||0)/10;
   const mv=(Number(params.mv)||100)/100;
   const hz=(Number(params.hz)||45)/100;
   const ehz=(Number(params.ehz)||20)/100;
   const sharp=Number(params.sharp)||1;
   const esharp=Number(params.esharp)||1;
-  const critState=params.criticalState||'expected';
-  const crit=criticalMultiplierForState(aff,params.critBonus,critState);
+  const cb=Math.max(0,Math.min(5,Number(params.critBonus)||0));
+  const critBonus=[0,0.03,0.06,0.09,0.12,0.15][cb];
+  const crit=aff>=0?(1+aff*(0.25+critBonus)):1+aff*(-0.25);
   const ec=params.elementCrit?crit:1;
   const p=roundDamage2(raw*mv*sharp*hz*crit);
   const e=roundDamage2(elem*esharp*ehz*ec);
-  return {p,e,total:roundDamage2(p+e),critMultiplier:crit,criticalState:critState};
+  return {p,e,total:roundDamage2(p+e),critMultiplier:crit};
 }
 function damage(){return damageFromParams({
   attack:$('dAttack').value,affinity:$('dAff').value,element:$('dElem').value,mv:$('dMV').value,
@@ -1901,16 +1570,15 @@ function showDamage(){let d=damage();$('damageOut').innerHTML=`<b>1ヒット期�
 class Technique {
   constructor({id,name,mvs,time,source='verified',custom=false,damageType='physical',elementRatio=1,fixedDamage=0,notes=''}){
     this.id=String(id); this.name=String(name||'');
-    this.hitsData=Array.isArray(mvs)?mvs.map((h)=>typeof h==='object'&&h!==null?{mv:Number(h.mv)||0,damageType:h.damageType||damageType||'physical',elementRatio:Number.isFinite(Number(h.elementRatio))?Number(h.elementRatio):1,fixedDamage:Number(h.fixedDamage)||0,criticalState:h.criticalState||'expected',notes:String(h.notes||'')}:{mv:Number(h)||0,damageType:damageType||'physical',elementRatio:Number.isFinite(Number(elementRatio))?Number(elementRatio):1,fixedDamage:Number(fixedDamage)||0,criticalState:'expected',notes:''}).filter(h=>Number.isFinite(h.mv)):[];
-    this.mvs=this.hitsData.map(h=>h.mv);
+    this.mvs=Array.isArray(mvs)?mvs.map(Number).filter(Number.isFinite):[];
     this.time=Number(time)||0; this.source=source; this.custom=!!custom;
     this.damageType=damageType||'physical';
     this.elementRatio=Number.isFinite(Number(elementRatio))?Number(elementRatio):1;
     this.fixedDamage=Number.isFinite(Number(fixedDamage))?Number(fixedDamage):0;
     this.notes=String(notes||'');
   }
-  get hits(){return this.hitsData.length;}
-  get motionValue(){return this.hitsData.reduce((a,b)=>a+Number(b.mv||0),0);}
+  get hits(){return this.mvs.length;}
+  get motionValue(){return this.mvs.reduce((a,b)=>a+Number(b||0),0);}
 }
 
 class TechniqueBook {
@@ -2079,10 +1747,10 @@ function calcDps(){
   const breakdown=[];
   for(const item of rows){
     const m=comboMove(item.techniqueId); if(!m)continue;
-    const hits=(m.hitsData||[]).map(h=>damageFromTechnique({...m,...h},h.mv,ctx));
+    const hits=(m.mvs||[]).map(mv=>damageFromTechnique(m,mv,ctx));
     const d=hits.reduce((sum,x)=>sum+x.total,0);
     sumD+=d; sumT+=Number(m.time)||0;
-    breakdown.push({id:m.id,name:m.name,mv:m.motionValue,hits:hits.length,time:Number(m.time)||0,damage:d,hitDetails:hits.map((h,i)=>({hit:i+1,damage:h.total,criticalState:h.criticalState||'expected'}))});
+    breakdown.push({id:m.id,name:m.name,mv:m.motionValue,hits:hits.length,time:Number(m.time)||0,damage:d});
   }
   const theoretical=sumT?sumD/sumT:0;
   const up=Math.max(1,Math.min(100,Number(App.state.combo.uptime)||85))/100;
@@ -2127,12 +1795,6 @@ function damageFromTechnique(technique,mv,ctx){
   return d;
 }
 function damageForMV(mv,ctx=comboDamageContext()){return damageFromParams({...ctx,mv}).total}
-function damageForCriticalState(mv,state,ctx=comboDamageContext()){
-  return damageFromParams({...ctx,mv,criticalState:state});
-}
-function buildHitObservation({mv,damage,criticalState='unknown',timestamp=null,notes=''}){
-  return {mv:Number(mv)||0,damage:Number(damage)||0,criticalState,timestamp,notes:String(notes||'')};
-}
 
 function groupProposalSnapshot(){return {armor:Object.fromEntries(Object.entries(build.armor).map(([k,a])=>[k,a?.id||''])),charmCustom:JSON.parse(JSON.stringify(build.charmCustom||{})),artia:JSON.parse(JSON.stringify(build.artia||{})),decos:JSON.parse(JSON.stringify(build.decos||{}))};}
 function groupProposalRestore(base){build.armor=Object.fromEntries(Object.entries(base.armor||{}).map(([k,id])=>[k,id?DB.armor.find(a=>String(a.id)===String(id))||null:null]));build.charmCustom=JSON.parse(JSON.stringify(base.charmCustom||{}));build.artia=JSON.parse(JSON.stringify(base.artia||{}));build.decos=JSON.parse(JSON.stringify(base.decos||{}));calcBuild();renderArmor();}
@@ -2740,7 +2402,7 @@ window.applyOCRImportPayload=applyOCRImportPayload;
 // ========================= Build Template DB =========================
 // External creator/source metadata is kept separate from the official MHDB.
 // The template's equipment names are only lookup keys; resolved MHDB records remain authoritative.
-const BUILD_TEMPLATE_DB={"db_name":"mhwilds_expert_build_templates","version":"2.1","templates":[{"weapon_type":"大剣","weapon_type_id":"great-sword","builds":[{"id":"KOTATU_GS_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/D_UsyLgoF-Y?si=Y2iKchVdR-SZQLWI","weapon":{"name":"忘却のオストランツァ","decorations":["集中・匠珠","攻撃珠III","超心珠III"]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["逆襲珠","耐絶珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["痛撃珠","逆襲珠"]},"arms":{"name":"ベイルガントレットα","decorations":["連撃珠"]},"waist":{"name":"ラギアコイルβ","decorations":["逆襲珠","渾身珠","耐絶珠","防音珠","防音珠"]},"legs":{"name":"シュバルカグリーヴγ","decorations":["超心珠","耐絶珠"]}},"charm":{"name":"栄世","decorations":["超心珠","耐絶珠"],"slot_levels":[1,1,1]},"skills":{"攻撃":2,"爆破属性強化":1,"挑戦者":1},"usage":["タックル","強溜め斬り","相殺"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["暗黒騎士の証","ヌシの魂"]}]},{"weapon_type":"太刀","weapon_type_id":"long-sword","builds":[{"id":"KOTATU_LS_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/RnrPtG407wg?si=Gq3FHwiUpuPrOzMI","weapon":{"name":"斬罪のエルガンシオ","decorations":["超心珠III","超心珠III","達芸珠"]},"armor":{"head":{"name":"クイーンピアスα","decorations":["挑戦珠","耐絶珠","耐絶珠"]},"chest":{"name":"エグゾルスメイルγ","decorations":["挑戦珠","逆襲珠"]},"arms":{"name":"エグゾルスアームγ","decorations":["渾身珠","抗狂珠","抗狂珠"]},"waist":{"name":"ブランゴコイルβ","decorations":["渾身珠","渾身珠"]},"legs":{"name":"トゥナムルグリーヴγ","decorations":["反攻珠","抗狂珠"]}},"charm":{"name":"栄世","decorations":["抜刀珠","耐絶珠","耐絶珠"],"slot_levels":[1,1,1]},"skills":{"見切り":3,"鎖刃刺撃":1},"usage":["居合カウンター","赤刃ループ"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["黒蝕竜の力","ヌシの魂"]}]},{"weapon_type":"片手剣","weapon_type_id":"sword-and-shield","builds":[{"id":"KOTATU_SNS_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/1KLm0lGgmJo?si=YYfQy6FeO6aZ-78P","weapon":{"name":"破滅のキリエヴェルド","decorations":["超心珠III","守勢・匠珠","破龍・匠珠"]},"armor":{"head":{"name":"護火竜ヘルムβ","decorations":["挑戦珠","挑戦珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["痛撃珠","渾身珠"]},"arms":{"name":"護火竜アームβ","decorations":["痛撃珠","渾身珠","耐術珠","耐術珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"シュバルカグリーヴγ","decorations":["渾身珠","連撃珠"]}},"charm":{"name":"栄世","decorations":["超心珠","耐衝珠"],"slot_levels":[1,1,1]},"skills":{"達人芸":1,"弱点特効":1},"usage":["通常攻撃","旋回ループ"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["凍峰竜の反逆","革細工の滑性"]}]},{"weapon_type":"双剣","weapon_type_id":"dual-blades","builds":[{"id":"KOTATU_DB_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/cSVV_fxchpU?si=xGhqHZyxMPRmg1nb","weapon":{"name":"永訣のクラウクライス","decorations":["超心珠III","連撃珠","雷光・昂揚珠"]},"armor":{"head":{"name":"蒼世ノ侍【艶髪】α","decorations":["抗狂珠","抗狂珠","抗狂珠"]},"chest":{"name":"ゴアメイルβ","decorations":["連撃珠","体術珠"]},"arms":{"name":"シュバルカアームγ","decorations":["体術珠","体術珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"シュバルカグリーヴγ","decorations":["挑戦珠","刺撃珠","超心珠"]}},"charm":{"name":"栄世","decorations":["超心珠","耐絶珠","耐絶珠"],"slot_levels":[1,1,1]},"skills":{"見切り":3,"挑戦者":1},"usage":["見躱し","ジャストスライサー","鬼人乱舞"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["黒蝕竜の力","ヌシの魂"]}]},{"weapon_type":"ハンマー","weapon_type_id":"hammer","builds":[{"id":"KOTATU_HAM_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/AyZGTssKhG8?si=HrjeqJ_dzbV43StY","weapon":{"name":"禁戒のデスヴァンケル","decorations":["超心珠III","超心珠III","攻撃珠III"]},"armor":{"head":{"name":"ラギアヘルムβ","decorations":["痛撃珠","逆襲珠","耐絶珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["痛撃珠","逆襲珠"]},"arms":{"name":"シュバルカアームγ","decorations":["耐絶珠","耐絶珠"]},"waist":{"name":"ラギアコイルβ","decorations":["逆襲珠","防音珠","耐衝珠"]},"legs":{"name":"シュバルカグリーヴγ","decorations":["連撃珠","防音珠"]}},"charm":{"name":"栄世","decorations":["攻撃珠","耐衝珠","耐衝珠"],"slot_levels":[1,1,1]},"skills":{"見切り":3,"鎖刃刺撃":1},"usage":[],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["鎖刃竜の飢餓","ヌシの憤激"]}]},{"weapon_type":"狩猟笛","weapon_type_id":"hunting-horn","builds":[{"id":"KOTATU_HH_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/im88oEoqs44?si=Enfx29NDknuUhgnO","weapon":{"name":"闇黒のテルプリティカ","decorations":["攻撃珠III","攻撃珠III","破龍・KO珠"]},"armor":{"head":{"name":"エグゾルスヘルムγ","decorations":[]},"chest":{"name":"シュバルカメイルγ","decorations":["刺撃珠","渾身珠"]},"arms":{"name":"ゴグアームα","decorations":["逆襲珠"]},"waist":{"name":"ゴグコイルα","decorations":["逆襲珠"]},"legs":{"name":"シュバルカグリーヴγ","decorations":["刺撃珠","刺撃珠"]}},"charm":{"name":"史伝","decorations":["逆襲珠"],"slot_levels":[2,1]},"skills":{"笛吹き名人":2,"耳栓":2},"usage":["安定火力","回復","カスタム性が高い"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["兇爪竜の力","ヌシの魂"]}]},{"weapon_type":"ランス","weapon_type_id":"lance","builds":[{"id":"KOTATU_LAN_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/PY9rcu2NlPA?si=uTlx22k9-WI4bY80","weapon":{"name":"天涯のゲガルンロウ","decorations":["超心珠III","達芸珠","守勢・鉄壁珠"]},"armor":{"head":{"name":"護火竜ヘルムβ","decorations":["挑戦珠","挑戦珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["痛撃珠","渾身珠"]},"arms":{"name":"護火竜アームβ","decorations":["痛撃珠","渾身珠","耐術珠","耐術珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"シュバルカグリーヴγ","decorations":["渾身珠","連撃珠"]}},"charm":{"name":"栄世","decorations":["超心珠","耐衝珠"],"slot_levels":[1,1,1]},"skills":{"見切り":3,"弱点特効":1},"usage":["属性変換","溜めカウンター主体"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["凍峰竜の反逆","毛皮の昂揚"]}]},{"weapon_type":"ガンランス","weapon_type_id":"gunlance","builds":[{"id":"KOTATU_GL_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/g9Fh3j5hmko?si=WxC0q33pbF2WVPgE","weapon":{"name":"前兆のプロフェネシス","decorations":["集中・匠珠","守勢・鉄壁珠","砲術珠III"]},"armor":{"head":{"name":"護児爪竜ヘルムβ","decorations":["挑戦珠","速納珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["挑戦珠","防音珠"]},"arms":{"name":"護児爪竜アームβ","decorations":["連撃珠","防音珠","速納珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"シュバルカグリーヴγ","decorations":["連撃珠","逆襲珠","渾身珠","速納珠"]}},"charm":{"name":"史伝","decorations":["渾身珠","速納珠"],"slot_levels":[2,1]},"skills":{"砲弾装填":2,"逆襲":2},"usage":["拡散型"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["凍峰竜の反逆","先達の導き"]}]},{"weapon_type":"スラッシュアックス","weapon_type_id":"switch-axe","builds":[{"id":"KOTATU_SA_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/igX-HrYZrX8?si=GZRJ1iuvunQQhqWd","weapon":{"name":"邪執のコンキエレガン","decorations":["速変・匠珠","超心珠III","達芸珠"]},"armor":{"head":{"name":"クイーンピアスα","decorations":["痛撃珠","抗狂珠","抗狂珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["痛撃珠","逆襲珠"]},"arms":{"name":"シュバルカアームγ","decorations":["抗狂珠","耐絶珠"]},"waist":{"name":"ラギアコイルβ","decorations":["逆襲珠","逆襲珠","耐絶珠","渾身珠","渾身珠"]},"legs":{"name":"シュバルカグリーヴγ","decorations":["超心珠","耐絶珠"]}},"charm":{"name":"栄世","decorations":["超心珠","耐絶珠"],"slot_levels":[1,1,1]},"skills":{"見切り":3,"鎖刃刺撃":1},"usage":["変形ループ主体"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["黒蝕竜の力","ヌシの魂"]}]},{"weapon_type":"チャージアックス","weapon_type_id":"charge-blade","builds":[{"id":"KOTATU_CB_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/SwQFWvvDVNM?si=U9J1iSxjpKuBdSp","weapon":{"name":"代償のネイディ・ギア","decorations":["砲術珠III","速変・KO珠","業物・匠珠"]},"armor":{"head":{"name":"クイーンピアスα","decorations":["挑戦珠","抗狂珠","抗狂珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["刺撃珠","渾身珠"]},"arms":{"name":"ゴグアームα","decorations":["防音珠","抗狂珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"シュバルカグリーヴγ","decorations":["刺撃珠","刺撃珠"]}},"charm":{"name":"史伝","decorations":["防音珠"],"slot_levels":[2,1]},"skills":{"砲弾装填":2,"回避性能":2,"回避距離UP":1},"usage":["榴弾瓶","スタン狙い","高出力属性解放斬り＋追撃主体","超高出力属性解放斬りはあまり使用しない"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["黒蝕竜の力","ヌシの魂"]}]},{"weapon_type":"操虫棍","weapon_type_id":"insect-glaive","builds":[{"id":"KOTATU_IG_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/a52yCzHhI7Q?si=SgrM6RjkO41u45fI","weapon":{"name":"堕在のラクリエリカ","decorations":["飛燕・達人珠","超心珠III","超心珠III"]},"armor":{"head":{"name":"クイーンピアスα","decorations":["挑戦珠","抗狂珠","抗狂珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["逆襲珠","逆襲珠"]},"arms":{"name":"ゴグアームα","decorations":["逆襲珠","抗狂珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"シュバルカグリーヴγ","decorations":["渾身珠","防音珠"]}},"charm":{"name":"秘歴","decorations":["耐絶珠","耐絶珠"],"slot_levels":[2,1]},"skills":{"見切り":3,"弱点特効":1},"usage":["地上戦主体","相殺はおまけ程度"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["黒蝕竜の力","護竜の守り"]}]},{"weapon_type":"ライトボウガン","weapon_type_id":"light-bowgun","builds":[{"id":"KOTATU_LBG_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/BT23wPxdxOw?si=kWCa29B1hFNaNXSG","weapon":{"name":"荊冠のデストレーター","decorations":["超心珠III","強弾珠","速射珠"]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["渾身珠","耐衝珠"]},"chest":{"name":"ダハディラメイルγ","decorations":["渾身珠","渾身珠"]},"arms":{"name":"シュバルカアームγ","decorations":[]},"waist":{"name":"ブランゴコイルβ","decorations":["挑戦珠","挑戦珠"]},"legs":{"name":"レウスグリーヴβ","decorations":["挑戦珠","連撃珠"]}},"charm":{"name":"栄世","decorations":["超心珠"],"slot_levels":[1,1,1]},"skills":{"見切り":3,"巧撃":1},"usage":["通常弾","通常弾速射メイン"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["火竜の力","ヌシの魂"]}]},{"weapon_type":"ヘビィボウガン","weapon_type_id":"heavy-bowgun","builds":[{"id":"KOTATU_HBG_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/ddjskVB28AY?si=yqKkePgzKyJPe4OK","weapon":{"name":"叛砲アルシャマリ","decorations":["散弾珠","超心珠II","超心珠"]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["跳躍珠","持続珠"]},"chest":{"name":"ゴグメイルβ","decorations":["反攻珠","無傷珠"]},"arms":{"name":"シュバルカアームγ","decorations":["持続珠","持続珠"]},"waist":{"name":"ダハディラコイルγ","decorations":["速納珠"]},"legs":{"name":"レウスグリーヴβ","decorations":["挑戦珠","挑戦珠","速納珠"]}},"charm":{"name":"栄世","decorations":["射法珠","速納珠"],"slot_levels":[1,1]},"skills":{"弾道強化":2,"連撃":1,"ファーストショット":1},"usage":["散弾ヘビィ","散弾メイン","相殺弾を使用"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":[]}]},{"weapon_type":"弓","weapon_type_id":"bow","builds":[{"id":"KOTATU_BOW_01","creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/DwI8h8fHCRc?si=XnwZ-qDWhSYfEHZg","weapon":{"name":"亡国のクピドバイン","decorations":["超心珠III","達人珠III","破龍・積弾"]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["無傷珠","抗狂珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["挑戦珠","無傷珠"]},"arms":{"name":"ゴアアームα","decorations":["無傷珠","抗狂珠","抗狂珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"ゴググリーヴα","decorations":["反攻珠","回避珠","体術珠","超心珠"]}},"charm":{"name":"栄世","decorations":["超心珠","体術珠","体術珠"],"slot_levels":[1,1,1]},"skills":{"弾道強化":3,"連撃":1},"usage":["貫通弓"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["黒蝕竜の力","護竜の脈動"]},{"id":"SALADA_BOW_01","creator":"さらだ","build_name":"物理特化型 - 黒蝕一体Ⅰ｜灼熱化Ⅰ｜根性果敢","source":"https://youtu.be/E5vkLlVN7gI","weapon":{"name":"亡国のクピドバイン","decorations":[]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["流水・積弾","超心珠III","超心珠II","雷光・積弾","超心珠III","散弾珠","早気珠","抗狂珠"]},"chest":{"name":"ゴグメイルβ","decorations":["挑戦珠","早気珠"]},"arms":{"name":"護火竜アームβ","decorations":["痛撃珠","早気珠","抗狂珠","体術珠"]},"waist":{"name":"ダハディラコイルγ","decorations":["挑戦珠","体術珠","体術珠","体術珠","体術珠"]},"legs":{"name":"ゴアグリーヴβ","decorations":[]}},"charm":{"name":"秘歴","decorations":[]},"skills":{"見切り":3,"連撃":1},"usage":["物理特化型 - 黒蝕一体Ⅰ｜灼熱化Ⅰ｜根性果敢"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["黒蝕竜の力","ヌシの魂"]},{"id":"SALADA_BOW_02","creator":"さらだ","build_name":"属性特化型 - 宣戦呼応Ⅱ｜根性果敢","source":"https://youtu.be/E5vkLlVN7gI","weapon":{"name":"亡国のクピドバイン","decorations":[]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["流水・射法","属会・射法","積弾・射法","鼓笛・攻撃","鼓笛"]},"chest":{"name":"ゴグメイルβ","decorations":["早気珠","適応珠"]},"arms":{"name":"ゴグアームβ","decorations":["痛撃珠","早気珠"]},"waist":{"name":"ダハディラコイルγ","decorations":["適応珠","体術珠","体術珠"]},"legs":{"name":"ゴググリーヴβ","decorations":["痛撃珠","早気珠","体術珠","体術珠","体術珠"]}},"charm":{"name":"秘歴","decorations":[]},"skills":{"チャージマスター":3,"連撃":1},"usage":["属性特化型 - 宣戦呼応Ⅱ｜根性果敢"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["黒蝕竜の力","ヌシの魂"]},{"id":"SALADA_BOW_03","creator":"さらだ","build_name":"バランス型 - 黒蝕一体Ⅰ｜宣戦呼応Ⅰ｜根性果敢","source":"https://youtu.be/E5vkLlVN7gI","weapon":{"name":"亡国のクピドバイン","decorations":[]},"armor":{"head":{"name":"クイーンピアスα","decorations":["流水・積弾","超心珠III","達人珠III"]},"chest":{"name":"ゴグメイルβ","decorations":["火炎・積弾","超心珠III","達人珠III"]},"arms":{"name":"シュバルカアームγ","decorations":["痛撃珠","体術珠","体術珠"]},"waist":{"name":"ダハディラコイルγ","decorations":["痛撃珠","早気珠","体術珠"]},"legs":{"name":"ゴググリーヴβ","decorations":["挑戦珠","早気珠","抗狂珠","抗狂珠","抗狂珠","抗狂珠"]}},"charm":{"name":"秘歴","decorations":[]},"skills":{"チャージマスター":3,"弱点特効":1},"usage":["バランス型 - 黒蝕一体Ⅰ｜宣戦呼応Ⅰ｜根性果敢"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["黒蝕竜の力","ヌシの魂"]},{"id":"SALADA_BOW_04","creator":"さらだ","build_name":"属性変換型 - 黒蝕一体Ⅰ｜灼熱化Ⅰ｜根性果敢","source":"https://youtu.be/E5vkLlVN7gI","weapon":{"name":"亡国のクピドバイン","decorations":[]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["流水・積弾","超心珠III","散弾珠","雷光・積弾","超心珠III","散弾珠","早気珠","抗狂珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["挑戦珠","早気珠"]},"arms":{"name":"護火竜アームβ","decorations":["連撃珠","早気珠","抗狂珠","挑戦珠","体術珠"]},"waist":{"name":"ゴアコイルα","decorations":["痛撃珠","挑戦珠","体術珠","超心珠","体術珠"]},"legs":{"name":"レウスグリーヴβ","decorations":[]}},"charm":{"name":"栄世","decorations":[]},"skills":{"見切り":3,"巧撃":1},"usage":["属性変換型 - 黒蝕一体Ⅰ｜灼熱化Ⅰ｜根性果敢"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["黒蝕竜の力","ヌシの魂"]},{"id":"SALADA_BOW_05","creator":"さらだ","build_name":"破壊王型 - 黒蝕一体Ⅰ｜灼熱化Ⅰ｜根性果敢","source":"https://youtu.be/E5vkLlVN7gI","weapon":{"name":"亡国のクピドバイン","decorations":[]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["流水・積弾","超心珠III","散弾珠","雷光・積弾","超心珠III","散弾珠","回避珠","体術珠"]},"chest":{"name":"ゴグメイルβ","decorations":["痛撃珠","早気珠"]},"arms":{"name":"護火竜アームβ","decorations":["連撃珠","重撃珠","体術珠","体術珠"]},"waist":{"name":"ダハディラコイルγ","decorations":["挑戦珠","重撃珠"]},"legs":{"name":"クイーンブーツα","decorations":["超心珠","体術珠","体術珠"]}},"charm":{"name":"栄世","decorations":[]},"skills":{"見切り":3,"無我の境地":3},"usage":["破壊王型 - 黒蝕一体Ⅰ｜灼熱化Ⅰ｜根性果敢"],"expert_rank":"expert","source_confirmed":true,"weapon_skills":["黒蝕竜の力","ヌシの魂"]}]}]};
+const BUILD_TEMPLATE_DB={"db_name":"mhwilds_expert_build_templates","version":"v14-test","source_schema":"mhwilds_expert_build_verification_v14","build_count":19,"templates":[{"weapon_type":"大剣","weapon_type_id":"great-sword","builds":[{"weapon_type":"大剣","weapon_type_id":"great-sword","weapon":{"name":"忘却のオストランツァ","decorations":["集中・匠珠","攻撃珠III","超心珠III"]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["逆襲珠","耐絶珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["痛撃珠","逆襲珠"]},"arms":{"name":"ベイルガントレットα","decorations":["連撃珠"]},"waist":{"name":"ラギアコイルβ","decorations":["逆襲珠","渾身珠","耐絶珠","防音珠","防音珠"]},"legs":{"name":"シュバルカグリーヴγ","decorations":["超心珠","耐絶珠"]}},"charm":{"name":"栄世","decorations":["超心珠","耐絶珠"],"slot_levels":[1,1,1]},"skills":{"攻撃":2,"爆破属性強化":1,"挑戦者":1},"usage":["タックル","強溜め斬り","相殺"],"weapon_skills":["暗黒騎士の証","ヌシの魂"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/D_UsyLgoF-Y?si=Y2iKchVdR-SZQLWI","id":"KOTATU_GS_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"太刀","weapon_type_id":"long-sword","builds":[{"weapon_type":"太刀","weapon_type_id":"long-sword","weapon":{"name":"斬罪のエルガンシオ","decorations":["超心珠III","超心珠III","達芸珠"]},"armor":{"head":{"name":"クイーンピアスα","decorations":["挑戦珠","耐絶珠","耐絶珠"]},"chest":{"name":"エグゾルスメイルγ","decorations":["挑戦珠","逆襲珠"]},"arms":{"name":"エグゾルスアームγ","decorations":["渾身珠","抗狂珠","抗狂珠"]},"waist":{"name":"ブランゴコイルβ","decorations":["渾身珠","渾身珠"]},"legs":{"name":"トゥナムルグリーヴγ","decorations":["反攻珠","抗狂珠"]}},"charm":{"name":"栄世","decorations":["抜刀珠","耐絶珠","耐絶珠"],"slot_levels":[1,1,1]},"skills":{"見切り":3,"鎖刃刺撃":1},"usage":["居合カウンター","赤刃ループ"],"weapon_skills":["黒蝕竜の力","ヌシの魂"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/RnrPtG407wg?si=Gq3FHwiUpuPrOzMI","id":"KOTATU_LS_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"片手剣","weapon_type_id":"sword-and-shield","builds":[{"weapon_type":"片手剣","weapon_type_id":"sword-and-shield","weapon":{"name":"破滅のキリエヴェルド","decorations":["超心珠III","守勢・匠珠","破龍・匠珠"]},"armor":{"head":{"name":"護火竜ヘルムβ","decorations":["挑戦珠","挑戦珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["痛撃珠","渾身珠"]},"arms":{"name":"護火竜アームβ","decorations":["痛撃珠","渾身珠","耐術珠","耐術珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"シュバルカグリーヴγ","decorations":["渾身珠","連撃珠"]}},"charm":{"name":"栄世","decorations":["超心珠","耐衝珠"],"slot_levels":[1,1,1]},"skills":{"達人芸":1,"弱点特効":1},"usage":["通常攻撃","旋回ループ"],"weapon_skills":["凍峰竜の反逆","革細工の滑性"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/1KLm0lGgmJo?si=YYfQy6FeO6aZ-78P","id":"KOTATU_SNS_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"双剣","weapon_type_id":"dual-blades","builds":[{"weapon_type":"双剣","weapon_type_id":"dual-blades","weapon":{"name":"永訣のクラウクライス","decorations":["超心珠III","連撃珠","雷光・昂揚珠"]},"armor":{"head":{"name":"蒼世ノ侍【艶髪】α","decorations":["抗狂珠","抗狂珠","抗狂珠"]},"chest":{"name":"ゴアメイルβ","decorations":["連撃珠","体術珠"]},"arms":{"name":"シュバルカアームγ","decorations":["体術珠","体術珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"シュバルカグリーヴγ","decorations":["挑戦珠","刺撃珠","超心珠"]}},"charm":{"name":"栄世","decorations":["超心珠","耐絶珠","耐絶珠"],"slot_levels":[1,1,1]},"skills":{"見切り":3,"挑戦者":1},"usage":["見躱し","ジャストスライサー","鬼人乱舞"],"weapon_skills":["黒蝕竜の力","ヌシの魂"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/cSVV_fxchpU?si=xGhqHZyxMPRmg1nb","id":"KOTATU_DB_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"ハンマー","weapon_type_id":"hammer","builds":[{"weapon_type":"ハンマー","weapon_type_id":"hammer","weapon":{"name":"禁戒のデスヴァンケル","decorations":["超心珠III","超心珠III","攻撃珠III"]},"armor":{"head":{"name":"ラギアヘルムβ","decorations":["痛撃珠","逆襲珠","耐絶珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["痛撃珠","逆襲珠"]},"arms":{"name":"シュバルカアームγ","decorations":["耐絶珠","耐絶珠"]},"waist":{"name":"ラギアコイルβ","decorations":["逆襲珠","防音珠","耐衝珠"]},"legs":{"name":"シュバルカグリーヴγ","decorations":["連撃珠","防音珠"]}},"charm":{"name":"栄世","decorations":["攻撃珠","耐衝珠","耐衝珠"],"slot_levels":[1,1,1]},"skills":{"見切り":3,"鎖刃刺撃":1},"usage":[],"weapon_skills":["鎖刃竜の飢餓","ヌシの憤激"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/AyZGTssKhG8?si=HrjeqJ_dzbV43StY","id":"KOTATU_HAM_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"狩猟笛","weapon_type_id":"hunting-horn","builds":[{"weapon_type":"狩猟笛","weapon_type_id":"hunting-horn","weapon":{"name":"闇黒のテルプリティカ","decorations":["攻撃珠III","攻撃珠III","破龍・KO珠"]},"armor":{"head":{"name":"エグゾルスヘルムγ","decorations":[]},"chest":{"name":"シュバルカメイルγ","decorations":["刺撃珠","渾身珠"]},"arms":{"name":"ゴグアームα","decorations":["逆襲珠"]},"waist":{"name":"ゴグコイルα","decorations":["逆襲珠"]},"legs":{"name":"シュバルカグリーヴγ","decorations":["刺撃珠","刺撃珠"]}},"charm":{"name":"史伝","decorations":["逆襲珠"],"slot_levels":[2,1]},"skills":{"笛吹き名人":2,"耳栓":2},"usage":["安定火力","回復","カスタム性が高い"],"weapon_skills":["兇爪竜の力","ヌシの魂"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/im88oEoqs44?si=Enfx29NDknuUhgnO","id":"KOTATU_HH_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"ランス","weapon_type_id":"lance","builds":[{"weapon_type":"ランス","weapon_type_id":"lance","weapon":{"name":"天涯のゲガルンロウ","decorations":["超心珠III","達芸珠","守勢・鉄壁珠"]},"armor":{"head":{"name":"護火竜ヘルムβ","decorations":["挑戦珠","挑戦珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["痛撃珠","渾身珠"]},"arms":{"name":"護火竜アームβ","decorations":["痛撃珠","渾身珠","耐術珠","耐術珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"シュバルカグリーヴγ","decorations":["渾身珠","連撃珠"]}},"charm":{"name":"栄世","decorations":["超心珠","耐衝珠"],"slot_levels":[1,1,1]},"skills":{"見切り":3,"弱点特効":1},"usage":["属性変換","溜めカウンター主体"],"weapon_skills":["凍峰竜の反逆","毛皮の昂揚"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/PY9rcu2NlPA?si=uTlx22k9-WI4bY80","id":"KOTATU_LAN_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"ガンランス","weapon_type_id":"gunlance","builds":[{"weapon_type":"ガンランス","weapon_type_id":"gunlance","weapon":{"name":"前兆のプロフェネシス","decorations":["集中・匠珠","守勢・鉄壁珠","砲術珠III"]},"armor":{"head":{"name":"護児爪竜ヘルムβ","decorations":["挑戦珠","速納珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["挑戦珠","防音珠"]},"arms":{"name":"護児爪竜アームβ","decorations":["連撃珠","防音珠","速納珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"シュバルカグリーヴγ","decorations":["連撃珠","逆襲珠","渾身珠","速納珠"]}},"charm":{"name":"史伝","decorations":["渾身珠","速納珠"],"slot_levels":[2,1]},"skills":{"砲弾装填":2,"逆襲":2},"usage":["拡散型"],"weapon_skills":["凍峰竜の反逆","先達の導き"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/g9Fh3j5hmko?si=WxC0q33pbF2WVPgE","id":"KOTATU_GL_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"スラッシュアックス","weapon_type_id":"switch-axe","builds":[{"weapon_type":"スラッシュアックス","weapon_type_id":"switch-axe","weapon":{"name":"邪執のコンキエレガン","decorations":["速変・匠珠","超心珠III","達芸珠"]},"armor":{"head":{"name":"クイーンピアスα","decorations":["痛撃珠","抗狂珠","抗狂珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["痛撃珠","逆襲珠"]},"arms":{"name":"シュバルカアームγ","decorations":["抗狂珠","耐絶珠"]},"waist":{"name":"ラギアコイルβ","decorations":["逆襲珠","逆襲珠","耐絶珠","渾身珠","渾身珠"]},"legs":{"name":"シュバルカグリーヴγ","decorations":["超心珠","耐絶珠"]}},"charm":{"name":"栄世","decorations":["超心珠","耐絶珠"],"slot_levels":[1,1,1]},"skills":{"見切り":3,"鎖刃刺撃":1},"usage":["変形ループ主体"],"weapon_skills":["黒蝕竜の力","ヌシの魂"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/igX-HrYZrX8?si=GZRJ1iuvunQQhqWd","id":"KOTATU_SA_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"チャージアックス","weapon_type_id":"charge-blade","builds":[{"weapon_type":"チャージアックス","weapon_type_id":"charge-blade","weapon":{"name":"代償のネイディ・ギア","decorations":["砲術珠III","速変・KO珠","業物・匠珠"]},"armor":{"head":{"name":"クイーンピアスα","decorations":["挑戦珠","抗狂珠","抗狂珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["刺撃珠","渾身珠"]},"arms":{"name":"ゴグアームα","decorations":["防音珠","抗狂珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"シュバルカグリーヴγ","decorations":["刺撃珠","刺撃珠"]}},"charm":{"name":"史伝","decorations":["防音珠"],"slot_levels":[2,1]},"skills":{"砲弾装填":2,"回避性能":2,"回避距離UP":1},"usage":["榴弾瓶","スタン狙い","高出力属性解放斬り＋追撃主体","超高出力属性解放斬りはあまり使用しない"],"weapon_skills":["黒蝕竜の力","ヌシの魂"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/SwQFWvvDVNM?si=U9J1iSxjpKuBdSp","id":"KOTATU_CB_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"操虫棍","weapon_type_id":"insect-glaive","builds":[{"weapon_type":"操虫棍","weapon_type_id":"insect-glaive","weapon":{"name":"堕在のラクリエリカ","decorations":["飛燕・達人珠","超心珠III","超心珠III"]},"armor":{"head":{"name":"クイーンピアスα","decorations":["挑戦珠","抗狂珠","抗狂珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["逆襲珠","逆襲珠"]},"arms":{"name":"ゴグアームα","decorations":["逆襲珠","抗狂珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"シュバルカグリーヴγ","decorations":["渾身珠","防音珠"]}},"charm":{"name":"秘歴","decorations":["耐絶珠","耐絶珠"],"slot_levels":[2,1]},"skills":{"見切り":3,"弱点特効":1},"usage":["地上戦主体","相殺はおまけ程度"],"weapon_skills":["黒蝕竜の力","護竜の守り"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/a52yCzHhI7Q?si=SgrM6RjkO41u45fI","id":"KOTATU_IG_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"ライトボウガン","weapon_type_id":"light-bowgun","builds":[{"weapon_type":"ライトボウガン","weapon_type_id":"light-bowgun","weapon":{"name":"荊冠のデストレーター","decorations":["超心珠III","強弾珠","速射珠"]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["渾身珠","耐衝珠"]},"chest":{"name":"ダハディラメイルγ","decorations":["渾身珠","渾身珠"]},"arms":{"name":"シュバルカアームγ","decorations":[]},"waist":{"name":"ブランゴコイルβ","decorations":["挑戦珠","挑戦珠"]},"legs":{"name":"レウスグリーヴβ","decorations":["挑戦珠","連撃珠"]}},"charm":{"name":"栄世","decorations":["超心珠"],"slot_levels":[1,1,1]},"skills":{"見切り":3,"巧撃":1},"usage":["通常弾","通常弾速射メイン"],"weapon_skills":["火竜の力","ヌシの魂"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/BT23wPxdxOw?si=kWCa29B1hFNaNXSG","id":"KOTATU_LBG_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"ヘビィボウガン","weapon_type_id":"heavy-bowgun","builds":[{"weapon_type":"ヘビィボウガン","weapon_type_id":"heavy-bowgun","weapon":{"name":"叛砲アルシャマリ","decorations":["散弾珠","超心珠II","超心珠"]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["跳躍珠","持続珠"]},"chest":{"name":"ゴグメイルβ","decorations":["反攻珠","無傷珠"]},"arms":{"name":"シュバルカアームγ","decorations":["持続珠","持続珠"]},"waist":{"name":"ダハディラコイルγ","decorations":["速納珠"]},"legs":{"name":"レウスグリーヴβ","decorations":["挑戦珠","挑戦珠","速納珠"]}},"charm":{"name":"栄世","decorations":["射法珠","速納珠"],"slot_levels":[1,1]},"skills":{"弾道強化":2,"連撃":1,"ファーストショット":1},"usage":["散弾ヘビィ","散弾メイン","相殺弾を使用"],"weapon_skills":[],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/ddjskVB28AY?si=yqKkePgzKyJPe4OK","id":"KOTATU_HBG_01","expert_rank":"expert","source_confirmed":true}]},{"weapon_type":"弓","weapon_type_id":"bow","builds":[{"weapon_type":"弓","weapon_type_id":"bow","weapon":{"name":"亡国のクピドバイン","decorations":["超心珠III","達人珠III","破龍・積弾"]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["無傷珠","抗狂珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["挑戦珠","無傷珠"]},"arms":{"name":"ゴアアームα","decorations":["無傷珠","抗狂珠","抗狂珠"]},"waist":{"name":"ダハディラコイルγ","decorations":[]},"legs":{"name":"ゴググリーヴα","decorations":["反攻珠","回避珠","体術珠","超心珠"]}},"charm":{"name":"栄世","decorations":["超心珠","体術珠","体術珠"],"slot_levels":[1,1,1]},"skills":{"弾道強化":3,"連撃":1},"usage":["貫通弓"],"weapon_skills":["黒蝕竜の力","護竜の脈動"],"creator":"こたつ","build_name":"簡単厳選ver","source":"https://youtu.be/DwI8h8fHCRc?si=XnwZ-qDWhSYfEHZg","id":"KOTATU_BOW_01","expert_rank":"expert","source_confirmed":true},{"weapon_type":"弓","weapon_type_id":"bow","weapon":{"name":"亡国のクピドバイン","decorations":[]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["流水・積弾","超心珠III","超心珠II","雷光・積弾","超心珠III","散弾珠","早気珠","抗狂珠"]},"chest":{"name":"ゴグメイルβ","decorations":["挑戦珠","早気珠"]},"arms":{"name":"護火竜アームβ","decorations":["痛撃珠","早気珠","抗狂珠","体術珠"]},"waist":{"name":"ダハディラコイルγ","decorations":["挑戦珠","体術珠","体術珠","体術珠","体術珠"]},"legs":{"name":"ゴアグリーヴβ","decorations":[]}},"charm":{"name":"秘歴","decorations":[]},"skills":{"見切り":3,"連撃":1},"usage":["物理特化型 - 黒蝕一体Ⅰ｜灼熱化Ⅰ｜根性果敢"],"weapon_skills":["黒蝕竜の力","ヌシの魂"],"creator":"さらだ","build_name":"物理特化型 - 黒蝕一体Ⅰ｜灼熱化Ⅰ｜根性果敢","source":"https://youtu.be/E5vkLlVN7gI","id":"SALADA_BOW_01","expert_rank":"expert","source_confirmed":true},{"weapon_type":"弓","weapon_type_id":"bow","weapon":{"name":"亡国のクピドバイン","decorations":[]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["流水・射法","属会・射法","積弾・射法","鼓笛・攻撃","鼓笛"]},"chest":{"name":"ゴグメイルβ","decorations":["早気珠","適応珠"]},"arms":{"name":"ゴグアームβ","decorations":["痛撃珠","早気珠"]},"waist":{"name":"ダハディラコイルγ","decorations":["適応珠","体術珠","体術珠"]},"legs":{"name":"ゴググリーヴβ","decorations":["痛撃珠","早気珠","体術珠","体術珠","体術珠"]}},"charm":{"name":"秘歴","decorations":[]},"skills":{"チャージマスター":3,"連撃":1},"usage":["属性特化型 - 宣戦呼応Ⅱ｜根性果敢"],"weapon_skills":["黒蝕竜の力","ヌシの魂"],"creator":"さらだ","build_name":"属性特化型 - 宣戦呼応Ⅱ｜根性果敢","source":"https://youtu.be/E5vkLlVN7gI","id":"SALADA_BOW_02","expert_rank":"expert","source_confirmed":true},{"weapon_type":"弓","weapon_type_id":"bow","weapon":{"name":"亡国のクピドバイン","decorations":[]},"armor":{"head":{"name":"クイーンピアスα","decorations":["流水・積弾","超心珠III","達人珠III"]},"chest":{"name":"ゴグメイルβ","decorations":["火炎・積弾","超心珠III","達人珠III"]},"arms":{"name":"シュバルカアームγ","decorations":["痛撃珠","体術珠","体術珠"]},"waist":{"name":"ダハディラコイルγ","decorations":["痛撃珠","早気珠","体術珠"]},"legs":{"name":"ゴググリーヴβ","decorations":["挑戦珠","早気珠","抗狂珠","抗狂珠","抗狂珠","抗狂珠"]}},"charm":{"name":"秘歴","decorations":[]},"skills":{"チャージマスター":3,"弱点特効":1},"usage":["バランス型 - 黒蝕一体Ⅰ｜宣戦呼応Ⅰ｜根性果敢"],"weapon_skills":["黒蝕竜の力","ヌシの魂"],"creator":"さらだ","build_name":"バランス型 - 黒蝕一体Ⅰ｜宣戦呼応Ⅰ｜根性果敢","source":"https://youtu.be/E5vkLlVN7gI","id":"SALADA_BOW_03","expert_rank":"expert","source_confirmed":true},{"weapon_type":"弓","weapon_type_id":"bow","weapon":{"name":"亡国のクピドバイン","decorations":[]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["流水・積弾","超心珠III","散弾珠","雷光・積弾","超心珠III","散弾珠","早気珠","抗狂珠"]},"chest":{"name":"シュバルカメイルγ","decorations":["挑戦珠","早気珠"]},"arms":{"name":"護火竜アームβ","decorations":["連撃珠","早気珠","抗狂珠","挑戦珠","体術珠"]},"waist":{"name":"ゴアコイルα","decorations":["痛撃珠","挑戦珠","体術珠","超心珠","体術珠"]},"legs":{"name":"レウスグリーヴβ","decorations":[]}},"charm":{"name":"栄世","decorations":[]},"skills":{"見切り":3,"巧撃":1},"usage":["属性変換型 - 黒蝕一体Ⅰ｜灼熱化Ⅰ｜根性果敢"],"weapon_skills":["黒蝕竜の力","ヌシの魂"],"creator":"さらだ","build_name":"属性変換型 - 黒蝕一体Ⅰ｜灼熱化Ⅰ｜根性果敢","source":"https://youtu.be/E5vkLlVN7gI","id":"SALADA_BOW_04","expert_rank":"expert","source_confirmed":true},{"weapon_type":"弓","weapon_type_id":"bow","weapon":{"name":"亡国のクピドバイン","decorations":[]},"armor":{"head":{"name":"シュバルカヘルムγ","decorations":["流水・積弾","超心珠III","散弾珠","雷光・積弾","超心珠III","散弾珠","回避珠","体術珠"]},"chest":{"name":"ゴグメイルβ","decorations":["痛撃珠","早気珠"]},"arms":{"name":"護火竜アームβ","decorations":["連撃珠","重撃珠","体術珠","体術珠"]},"waist":{"name":"ダハディラコイルγ","decorations":["挑戦珠","重撃珠"]},"legs":{"name":"クイーンブーツα","decorations":["超心珠","体術珠","体術珠"]}},"charm":{"name":"栄世","decorations":[]},"skills":{"見切り":3,"無我の境地":3},"usage":["破壊王型 - 黒蝕一体Ⅰ｜灼熱化Ⅰ｜根性果敢"],"weapon_skills":["黒蝕竜の力","ヌシの魂"],"creator":"さらだ","build_name":"破壊王型 - 黒蝕一体Ⅰ｜灼熱化Ⅰ｜根性果敢","source":"https://youtu.be/E5vkLlVN7gI","id":"SALADA_BOW_05","expert_rank":"expert","source_confirmed":true}]}]};
 function templateNorm(v){return String(v??'').normalize('NFKC').replace(/[【】\[\]（）()\s・:：]/g,'').toLowerCase();}
 function templateFindByName(arr,name){const n=templateNorm(name);if(!n)return null;let x=arr.find(a=>templateNorm(a?.name)===n);if(x)return x;x=arr.find(a=>{const an=templateNorm(a?.name);return an&&((an.includes(n)&&n.length>=4)||(n.includes(an)&&an.length>=4));});return x||null;}
 function templateFindWeapon(t){const kind=t.weapon_type_id;const rows=(DB.weapons||[]).filter(w=>canonicalWeaponKind(w)===kind);let x=templateFindByName(rows,t.weapon?.name||t.weapons);if(x)return x;if(t.weapon?.name){const n=templateNorm(t.weapon.name);x=rows.find(w=>n.includes(templateNorm(w.name))||templateNorm(w.name).includes(n));}return x||null;}
@@ -2775,4 +2437,3 @@ const __skillWorkspace=$('armorWorkspaceLeft');
 // 装飾品変更は bindInlineDecos() が単独で処理する。二重change監視は行わない。
 
 })();
-</script></body></html>
