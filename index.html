@@ -67,6 +67,19 @@ textarea:focus,select:focus,input:focus,button:focus{outline:2px solid #3b82f6;o
 .artia-left,.artia-right{min-width:0}.artia-right-bottom{margin-top:8px}
 .ocr-deco-simple-group{border:1px solid #c8baa0;border-radius:9px;padding:7px;margin-top:6px}.ocr-deco-simple-row{padding:3px 0;border-top:1px solid #eee5d7}.ocr-deco-simple-row:first-of-type{border-top:0}
 @media(max-width:700px){.artia-two-pane{gap:6px}.artia-right-bottom{margin-top:6px}}
+
+/* r1.1.19 charm skill compact UI: keep skill name and level on separate lines without the redundant Lv label. */
+#charmSkills{display:grid;gap:4px}
+#charmSkills .charm-skill-editor{border:1px solid var(--line);border-radius:8px;padding:4px 6px;margin:0;background:linear-gradient(180deg,rgba(247,239,221,.94),rgba(224,211,184,.94));}
+#charmSkills .charm-skill-editor label{font-size:12px;font-weight:700;margin:0 0 2px;line-height:1.15}
+#charmSkills .charm-skill-editor .chSkill{min-height:34px;height:34px;padding:4px 7px;margin:0 0 2px;font-size:13px}
+#charmSkills .charm-skill-editor .chLv{min-height:32px;height:32px;padding:3px 7px;margin:0;font-size:12px}
+@media(max-width:760px){
+  #charmSkills{gap:3px}
+  #charmSkills .charm-skill-editor{padding:3px 5px}
+  #charmSkills .charm-skill-editor .chSkill{min-height:33px;height:33px;font-size:12px}
+  #charmSkills .charm-skill-editor .chLv{min-height:31px;height:31px;font-size:12px}
+}
 </style><style>/* r1.1.19 fix8: armor cards compacted to approximately one-third of previous inter-card spacing */
 #armorSelectors{gap:1px!important}
 #armorSelectors .equip-inline{padding:1px 2px!important;margin:0!important}
@@ -1237,7 +1250,7 @@ function renderCharmEditor(){
   build.charmCustom.skills=skills;const possibleSlots=charmPossibleSlotValues(skills);let current=charmSlotPattern(build.charmCustom);if(current==='不正なスロット構成'||current==='不正な武器スロット')current='';if(current&&!possibleSlots.includes(current)){build.charmCustom.slots=[0,0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;current='';}
   const slotOptions=['防1','防1-防1','防2','防2-防1','防3','武1','武1-防1','武1-防1-防1'].filter(x=>possibleSlots.includes(x));
   let h='<div class="muted small"><b>護石スキルとスロットは完全連動します。</b> 1個目→2個目→3個目の順番で判定し、現在のスキル構成から実現可能なスロットだけを表示します。レア度ごとの生成テーブルも反映します。</div><label>既存の護石</label><select id="charmPreset"><option value="">自由設定</option></select><div id="charmSkills">';
-  for(let i=0;i<3;i++){const choices=charmSkillChoiceList(i,skills,all),v=skills[i]||{name:'',level:1,type:'armor'},opts=choices.map(x=>`<option value="${esc(x.name)}" ${x.name===v.name?'selected':''}>${esc(x.name)}</option>`).join(''),selectedChoice=choices.find(x=>x.name===v.name),levels=(selectedChoice?.levels||[]).map(l=>`<option value="${l}" ${l===Number(v.level)?'selected':''}>Lv${l}</option>`).join('');h+=`<div class="equip-inline"><div class="two"><div><label>護石スキル${i+1}</label><select class="chSkill" data-i="${i}"><option value="">なし</option>${opts}</select></div><div><label>Lv</label><select class="chLv" data-i="${i}" ${selectedChoice?'':'disabled'}>${levels}</select></div></div></div>`;}
+  for(let i=0;i<3;i++){const choices=charmSkillChoiceList(i,skills,all),v=skills[i]||{name:'',level:1,type:'armor'},opts=choices.map(x=>`<option value="${esc(x.name)}" ${x.name===v.name?'selected':''}>${esc(x.name)}</option>`).join(''),selectedChoice=choices.find(x=>x.name===v.name),levels=(selectedChoice?.levels||[]).map(l=>`<option value="${l}" ${l===Number(v.level)?'selected':''}>Lv${l}</option>`).join('');h+=`<div class="charm-skill-editor"><label>護石スキル${i+1}</label><select class="chSkill" data-i="${i}"><option value="">なし</option>${opts}</select><select class="chLv" data-i="${i}" aria-label="護石スキル${i+1} レベル" ${selectedChoice?'':'disabled'}>${levels}</select></div>`;}
   h+='</div><div class="equip-inline"><div class="equip-title">護石スロット</div><label>スロット構成</label><select id="charmSlotPattern"><option value="">なし</option>'+slotOptions.map(x=>`<option value="${x}" ${current===x?'selected':''}>${x}</option>`).join('')+'</select><div class="muted small" style="margin-top:5px">候補： '+(slotOptions.join(' / ')||'なし')+'</div><div id="charmDecos"></div></div>';$('charmEditor').innerHTML=h;
   const charms=DB.charms||[],preset=$('charmPreset');preset.innerHTML='<option value="">自由設定</option>'+charms.flatMap(c=>(c.ranks||[]).map(r=>({id:c.id+'|'+r.id,name:r.name}))).map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');
   for(let i=0;i<3;i++){const se=document.querySelector(`.chSkill[data-i="${i}"]`),le=document.querySelector(`.chLv[data-i="${i}"]`);se.onchange=()=>{const v=build.charmCustom.skills[i];v.name=se.value;v.type='armor';v.level=1;for(let j=i+1;j<3;j++)build.charmCustom.skills[j]={name:'',level:1,type:'armor'};build.charmCustom.slots=[0,0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;renderCharmEditor();calcBuild()};le.onchange=()=>{build.charmCustom.skills[i].level=+le.value||1;for(let j=i+1;j<3;j++)build.charmCustom.skills[j]={name:'',level:1,type:'armor'};build.charmCustom.slots=[0,0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;renderCharmEditor();calcBuild()};}
