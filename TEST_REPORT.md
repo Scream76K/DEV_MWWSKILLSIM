@@ -1,11 +1,6 @@
-# MHWilds Simulator v7.2.1 Test Report
-
-- Base: v7.2.0 damage formula / combo schema
-- Version badge/title consistency: PASS (7.2.1)
-- JavaScript syntax: PASS (Node.js `--check`)
-- Critical-state calculation modes added: expected / noncritical / critical / negative-critical
-- Multi-hit technique schema: each hit can now carry MV, damage type, element ratio, fixed damage, critical state, and notes while preserving legacy numeric MV arrays
-- Combo engine: evaluates each hit independently and retains per-hit critical-state metadata
-- Existing damageType routing preserved
-- Existing OCR/build/template functions retained
-- No game-measured values promoted to verified status
+v7.2.1 template v14 test4
+- Decoration entries carry explicit jewel levels; slot capacity is no longer treated as jewel level.
+- Charm supports 3 armor Lv1 slots.
+- Charm name is ignored for template application; skills/decorations/slots are source-driven.
+- Artia production/parts/restores/weapon skills are applied after weapon selection and before render.
+- 19 templates retained.
