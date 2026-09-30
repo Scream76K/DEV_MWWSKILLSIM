@@ -9,6 +9,3 @@
 - Existing damageType routing preserved
 - Existing OCR/build/template functions retained
 - No game-measured values promoted to verified status
-
-- v14 template DB embedded as v14-test: 19 builds / 14 weapon types.
-- JS syntax check: PASS.
