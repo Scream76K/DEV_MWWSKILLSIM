@@ -1452,7 +1452,7 @@ function sanitizeDecorationSelections(){
 function refreshDecorationSelects(){
   const slotMap=new Map(allEquipSlots().map(s=>[s.key,s]));
   document.querySelectorAll('.decoSel').forEach(sel=>{
-    const current=sel.value||build.decos[sel.dataset.slot]||'';
+    const current=build.decos[sel.dataset.slot]||'';
     const meta=slotMap.get(sel.dataset.slot);
     let level=Number(meta?.level)||0;
     let kind=normalizeDecorationKind(sel.dataset.decoKind||meta?.kind||'armor')==='weapon'?'weapon':'armor';
@@ -1592,10 +1592,16 @@ function artiaRestoreBreakdown(w){
   return `復元：${vals.join(' / ')}<br>復元加算：攻撃 +${atk} / 会心 +${aff}% / 属性 +${elem}`;
 }
 function artiaCanonicalBase(w){
-  // 巨戟アーティアはAPIに複数の同名派生/基礎値が混在するため、
-  // 巨戟化後の基準値を武器種ごとに優先する。弓はゲーム内の基礎190/会心5%を使用。
+  // 巨戟アーティアはMHDB/APIに同名の基礎派生が複数存在する。
+  // テンプレートの装備個体を名前だけで選ぶと会心率などが別派生になるため、
+  // シミュレータ側で「巨戟化後に使用する基準個体」の基礎値を固定する。
+  // 大剣は今回のこたつ氏テンプレートで、復元会心EX(+10)+会心III(+8)、
+  // 攻撃激化(-15%)を適用した最終会心率が+8%になる基礎会心5%を使用する。
   if(!isArtia(w)) return null;
-  const byKind={bow:{attack:190,affinity:5}};
+  const byKind={
+    'great-sword':{attack:200,affinity:5},
+    bow:{attack:190,affinity:5}
+  };
   return byKind[canonicalWeaponKind(w)]||null;
 }
 function armorMaxDefense(a){
@@ -2767,37 +2773,39 @@ function templateDecorationStem(v){
     .replace(/(?:IV|III|II|I)$/,'');
 }
 function templateFindDecoration(name,slot,kind='armor'){
-  const wantedKind=normalizeDecorationKind(kind)==='weapon'?'weapon':'armor';
+  const wantedKind=normalizeDecorationKind(kind);
   const want=Number(slot||0);
   const all=Array.isArray(DB.decorations)?DB.decorations:[];
-  const rows=all.filter(d=>{
-    const dk=normalizeDecorationKind(d?.kind);
-    const kindOK=dk ? dk===wantedKind : true;
-    const slotOK=want>0 ? Number(d?.slot??d?.level??0)===want : true;
-    return kindOK&&slotOK;
-  });
-  const pool=rows.length?rows:all.filter(d=>want>0?Number(d?.slot??d?.level??0)===want:true);
   const n=templateDecorationCanonical(name);
+  const ns=templateDecorationStem(name);
   if(!n)return null;
 
-  // 1) Canonical name match, ignoring only MHDB's display-slot suffix.
-  let hit=pool.find(d=>templateDecorationCanonical(d?.name)===n);
-  if(hit)return hit;
-
-  // 2) Same decoration family with Roman-numeral level notation.
-  const ns=templateDecorationStem(name);
-  hit=pool.find(d=>templateDecorationStem(d?.name)===ns);
-  if(hit)return hit;
-
-  // 3) Some MHDB/localized records expose the decoration name with a
-  //    trailing slot marker but without the Roman numeral. Match the exact
-  //    family and required slot; never use fuzzy includes here.
-  hit=pool.find(d=>{
+  // Decoration resolution is name-first. MHDB's `slot` is the minimum
+  // required slot level, not a part of the decoration identity. Requiring
+  // exact slot equality here caused valid template jewels such as
+  // 超心珠 / 耐絶珠 to become unresolved when the API record used a
+  // different display-level representation.
+  const nameScore=d=>{
     const dn=templateDecorationCanonical(d?.name);
-    return dn===n.replace(/(?:IV|III|II|I)$/,'') ||
-           templateDecorationStem(d?.name)===n.replace(/(?:IV|III|II|I)$/,'');
-  });
-  return hit||null;
+    const ds=templateDecorationStem(d?.name);
+    if(dn===n)return 100;
+    if(ds===ns)return 90;
+    const n2=n.replace(/(?:IV|III|II|I)$/,'');
+    const d2=dn.replace(/(?:IV|III|II|I)$/,'');
+    if(d2===n2)return 80;
+    return 0;
+  };
+  const candidates=all.map(d=>{
+    const score=nameScore(d);
+    if(!score)return null;
+    const dk=normalizeDecorationKind(d?.kind);
+    const dkScore=wantedKind ? (dk===wantedKind?30:(dk? -30:0)) : 0;
+    const minSlot=Number(d?.slot??d?.level??0);
+    const slotScore=want>0 ? (minSlot===want?20:(minSlot>0&&minSlot<=want?10:(minSlot===0?1:-100))) : 0;
+    return {d,score:score+dkScore+slotScore, minSlot};
+  }).filter(Boolean);
+  candidates.sort((a,b)=>b.score-a.score || a.minSlot-b.minSlot || String(a.d?.id??'').localeCompare(String(b.d?.id??'')));
+  return candidates[0]?.score>0 ? candidates[0].d : null;
 }
 function templateSetDecos(entries,slots,kind,prefix,unresolved){
   const levels=slotLevels(slots);
@@ -2917,6 +2925,16 @@ window.__buildDecorationResolverRegression=()=>{
   for(const [n,slot,kind] of checks){const d=templateFindDecoration(n,slot,kind);out[n]=d?{id:d.id,name:d.name,slot:d.slot,kind:d.kind}:null;}
   return out;
 };
+window.__buildTemplateGSAffinityRegression=()=>{
+  const t=BUILD_TEMPLATE_DB.templates.flatMap(x=>x.builds||[]).find(x=>x.id==='KOTATU_GS_01');
+  if(!t)throw new Error('KOTATU_GS_01 missing');
+  const r=t.artia?.restores||[];
+  const restoreAff=r.reduce((n,x)=>x==='aff:EX'?n+10:x==='aff:III'?n+8:n,0);
+  const expected=5-15+restoreAff;
+  if(expected!==8)throw new Error('GS affinity regression mismatch: '+expected);
+  return {baseAffinity:5,mutation:-15,restoration:restoreAff,expected};
+};
+window.__buildTemplateGSAffinityRegression();
 window.__buildTemplateRegression=()=>{
   const t=BUILD_TEMPLATE_DB.templates.flatMap(x=>x.builds||[]).find(x=>x.id==='KOTATU_GS_01');
   if(!t)throw new Error('KOTATU_GS_01 missing');
