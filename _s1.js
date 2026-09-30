@@ -222,7 +222,7 @@ build.artia.parts=build.artia.parts.slice(0,3); while(build.artia.parts.length<3
  * access state through App.* APIs rather than DOM or raw API objects.
  */
 const App={
-  version:'7.2.1-template-v14-test4',
+  version:'7.2.1-template-v14-test5',
   state:{
     db:DB, dataState:null, build:build, calc:calcState,
     hunt:{monsterId:'',partId:''}, combo:{moves:[],uptime:85,uptimeMode:'1'},
@@ -907,15 +907,17 @@ function charmSkillChoiceList(pos,skills,all){
 function charmPossibleSlotValues(skills){const rules=charmPrefixRules(skills);const out=new Set();for(const r of rules)r.slotPatterns.forEach(x=>out.add(x));return [...out];}
 function charmSlotLabel(key){return key||'なし';}
 function renderCharmEditor(){
+  const templateMode=!!build.charmCustom?.templateLocked;
   const armorOpts=sortedSkillChoices((DB.skills||[]).filter(s=>s.kind==='armor')).map(s=>({name:s.name,max:skillMax(s)}));
   const weaponOpts=sortedSkillChoices((DB.skills||[]).filter(s=>s.kind==='weapon')).map(s=>({name:s.name,max:skillMax(s)}));
   const all=[...armorOpts.map(x=>({...x,type:'armor'})),...weaponOpts.map(x=>({...x,type:'weapon'}))].sort((a,b)=>b.max-a.max||jpSort(a.name,b.name)); normalizeCharm();
   const skills=build.charmCustom.skills.map(x=>({...x}));
-  for(let i=0;i<3;i++){if(!skills[i]?.name)continue;const choices=charmSkillChoiceList(i,skills,all),chosen=choices.find(x=>x.name===skills[i].name);if(!chosen||!chosen.levels.includes(Number(skills[i].level))){for(let j=i;j<3;j++)skills[j]={name:'',level:1,type:'armor'};break;}}
-  build.charmCustom.skills=skills;const possibleSlots=charmPossibleSlotValues(skills);let current=charmSlotPattern(build.charmCustom);if(current==='不正なスロット構成'||current==='不正な武器スロット')current='';if(current&&!possibleSlots.includes(current)){build.charmCustom.slots=[0,0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;current='';}
-  const slotOptions=['防1','防1-防1','防2','防2-防1','防3','武1','武1-防1','武1-防1-防1'].filter(x=>possibleSlots.includes(x));
-  let h='<div class="muted small"><b>護石スキルとスロットは完全連動します。</b> 1個目→2個目→3個目の順番で判定し、現在のスキル構成から実現可能なスロットだけを表示します。レア度ごとの生成テーブルも反映します。</div><label>既存の護石</label><select id="charmPreset"><option value="">自由設定</option></select><div id="charmSkills">';
-  for(let i=0;i<3;i++){const choices=charmSkillChoiceList(i,skills,all),v=skills[i]||{name:'',level:1,type:'armor'},opts=choices.map(x=>`<option value="${esc(x.name)}" data-type="${x.type}" ${x.name===v.name?'selected':''}>${esc(x.name)}</option>`).join(''),selectedChoice=choices.find(x=>x.name===v.name),levels=(selectedChoice?.levels||[]).map(l=>`<option value="${l}" ${l===Number(v.level)?'selected':''}>Lv${l}</option>`).join('');h+=`<div class="equip-inline"><div class="two"><div><label>護石スキル${i+1}</label><select class="chSkill" data-i="${i}"><option value="">なし</option>${opts}</select></div><div><label>Lv</label><select class="chLv" data-i="${i}" ${selectedChoice?'':'disabled'}>${levels}</select></div></div></div>`;}
+  for(let i=0;i<3;i++){if(!skills[i]?.name)continue;const choices=templateMode?all.filter(x=>x.type===skills[i].type):charmSkillChoiceList(i,skills,all);const chosen=choices.find(x=>x.name===skills[i].name);if(!chosen||(!templateMode&&!chosen.levels.includes(Number(skills[i].level)))){if(!templateMode){for(let j=i;j<3;j++)skills[j]={name:'',level:1,type:'armor'};break;}}}
+  build.charmCustom.skills=skills;const possibleSlots=templateMode?['防1','防1-防1','防2','防2-防1','防3','防1-防1-防1','武1','武1-防1','武1-防1-防1']:charmPossibleSlotValues(skills);let current=charmSlotPattern(build.charmCustom);if(current==='不正なスロット構成'||current==='不正な武器スロット')current='';if(current&&!possibleSlots.includes(current)){if(!templateMode){build.charmCustom.slots=[0,0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;current='';}}
+  const slotOptions=['防1','防1-防1','防2','防2-防1','防3','防1-防1-防1','武1','武1-防1','武1-防1-防1'].filter(x=>templateMode||possibleSlots.includes(x));
+  const charmTemplateNotice=templateMode?'<b>テンプレート復元モード：</b>DBに記録された護石スキル・スロットをそのまま表示します。護石名や生成テーブルの完全一致は要求しません.':'<b>護石スキルとスロットは完全連動します。</b> 1個目→2個目→3個目の順番で判定し、現在のスキル構成から実現可能なスロットだけを表示します。レア度ごとの生成テーブルも反映します。';
+  let h=`<div class="muted small">${charmTemplateNotice}</div><label>既存の護石</label><select id="charmPreset"><option value="">自由設定</option></select><div id="charmSkills">`;
+  for(let i=0;i<3;i++){const choices=templateMode?all.filter(x=>x.type===((skills[i]||{}).type||'armor')):charmSkillChoiceList(i,skills,all),v=skills[i]||{name:'',level:1,type:'armor'},opts=choices.map(x=>`<option value="${esc(x.name)}" data-type="${x.type}" ${x.name===v.name?'selected':''}>${esc(x.name)}</option>`).join(''),selectedChoice=choices.find(x=>x.name===v.name),levels=(templateMode&&selectedChoice?Array.from({length:selectedChoice.max},(_,n)=>n+1):(selectedChoice?.levels||[])).map(l=>`<option value="${l}" ${l===Number(v.level)?'selected':''}>Lv${l}</option>`).join('');h+=`<div class="equip-inline"><div class="two"><div><label>護石スキル${i+1}</label><select class="chSkill" data-i="${i}"><option value="">なし</option>${opts}</select></div><div><label>Lv</label><select class="chLv" data-i="${i}" ${selectedChoice?'':'disabled'}>${levels}</select></div></div></div>`;}
   h+='</div><div class="equip-inline"><div class="equip-title">護石スロット</div><label>スロット構成</label><select id="charmSlotPattern"><option value="">なし</option>'+slotOptions.map(x=>`<option value="${x}" ${current===x?'selected':''}>${x}</option>`).join('')+'</select><div class="muted small" style="margin-top:5px">候補： '+(slotOptions.join(' / ')||'なし')+'</div><div id="charmDecos"></div></div>';$('charmEditor').innerHTML=h;
   const charms=DB.charms||[],preset=$('charmPreset');preset.innerHTML='<option value="">自由設定</option>'+charms.flatMap(c=>(c.ranks||[]).map(r=>({id:c.id+'|'+r.id,name:r.name}))).map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');
   for(let i=0;i<3;i++){const se=document.querySelector(`.chSkill[data-i="${i}"]`),le=document.querySelector(`.chLv[data-i="${i}"]`);se.onchange=()=>{const v=build.charmCustom.skills[i];v.name=se.value;v.type=se.selectedOptions[0]?.dataset?.type||'armor';v.level=1;for(let j=i+1;j<3;j++)build.charmCustom.skills[j]={name:'',level:1,type:'armor'};build.charmCustom.slots=[0,0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;renderCharmEditor();calcBuild()};le.onchange=()=>{build.charmCustom.skills[i].level=+le.value||1;for(let j=i+1;j<3;j++)build.charmCustom.skills[j]={name:'',level:1,type:'armor'};build.charmCustom.slots=[0,0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;renderCharmEditor();calcBuild()};}
@@ -968,7 +970,9 @@ function selectedWeapon(){
 }
 function renderArtia(){
   let w=selectedWeapon(),box=$('artiaBox');
-  if(!isArtia(w)){box.classList.add('hidden');return;}
+  const templateArtiaActive=!!build.artia?.templateSourceActive;
+  if(!isArtia(w)&&!templateArtiaActive){box.classList.add('hidden');return;}
+  if(!w&&templateArtiaActive){box.classList.remove('hidden');}
   box.classList.remove('hidden');
   const elems=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'];
   const ej={fire:'火',water:'水',ice:'氷',thunder:'雷',dragon:'龍',poison:'毒',paralysis:'麻痺',sleep:'睡眠',blast:'爆破'};
@@ -2418,7 +2422,7 @@ function templateDecorationLevel(e, fallbackSlot){
 }
 function templateSetDecos(entries,slots,kind,prefix,unresolved){const levels=slotLevels(slots);let i=0;(entries||[]).forEach(entry=>{if(i>=levels.length)return;const e=typeof entry==='string'?{name:entry}:entry||{};if(e.free_slot){i++;return;}const capacity=levels[i];const jewelLevel=templateDecorationLevel(e,capacity);const d=templateFindDecoration(e.name,jewelLevel);if(d)build.decos[prefix+i]=String(d.id);else unresolved.push(`${e.name}（${prefix}${i} / 装飾品Lv${jewelLevel} / スロットLv${capacity}）`);i++;});}
 function templateSetCharmDecos(entries,charmCustom,unresolved){const slots=charmSlotEntries(charmCustom);let i=0;(entries||[]).forEach(entry=>{if(i>=slots.length)return;const e=typeof entry==='string'?{name:entry}:entry||{};const slot=slots[i];if(e.free_slot){i++;return;}const jewelLevel=templateDecorationLevel(e,slot.level);const d=templateFindDecoration(e.name,jewelLevel);if(d)build.decos[slot.key]=String(d.id);else unresolved.push(`${e.name}（${slot.key} / 装飾品Lv${jewelLevel} / スロットLv${slot.level} / ${slot.kind}）`);i++;});}
-function templateArtiaFromSource(t,weapon,unresolved){if(!isArtia(weapon))return;const a=t.artia||{};build.artia={...build.artia,production:a.production||'attack',element:a.element||'fire',parts:Array.isArray(a.parts)?a.parts.slice(0,3):['none','none','none'],restores:Array.isArray(a.restores)?a.restores.slice(0,5):['none','none','none','none','none'],seriesSkill:'',groupSkill:''};while(build.artia.parts.length<3)build.artia.parts.push('none');while(build.artia.restores.length<5)build.artia.restores.push('none');const skills=Array.isArray(a.weapon_skills)?a.weapon_skills:[];for(const name of skills){const sk=skillByIdByName(name);if(!sk){unresolved.push(`巨戟スキル：${name}`);continue;}if(sk.kind==='set'&&!build.artia.seriesSkill)build.artia.seriesSkill=sk.id;else if(sk.kind==='group'&&!build.artia.groupSkill)build.artia.groupSkill=sk.id;else unresolved.push(`巨戟スキル種別：${name}`);}}
+function templateArtiaFromSource(t,weapon,unresolved){const a=t.artia||{};if(!a||typeof a!=='object')return;build.artia={...build.artia,templateSourceActive:true,production:a.production||'attack',element:a.element||'fire',parts:Array.isArray(a.parts)?a.parts.slice(0,3):['none','none','none'],restores:Array.isArray(a.restores)?a.restores.slice(0,5):['none','none','none','none','none'],seriesSkill:'',groupSkill:''};while(build.artia.parts.length<3)build.artia.parts.push('none');while(build.artia.restores.length<5)build.artia.restores.push('none');const skills=Array.isArray(a.weapon_skills)?a.weapon_skills:[];for(const name of skills){const sk=skillByIdByName(name);if(!sk){unresolved.push(`巨戟スキル：${name}`);continue;}if(sk.kind==='set'&&!build.artia.seriesSkill)build.artia.seriesSkill=sk.id;else if(sk.kind==='group'&&!build.artia.groupSkill)build.artia.groupSkill=sk.id;else unresolved.push(`巨戟スキル種別：${name}`);}}
 function templateApply(t){
   const unresolved=[]; const weapon=templateFindWeapon(t); if(!weapon)unresolved.push(`武器：${t.weapon?.name||t.weapons||''}`);
   if(weapon){setWeaponKindSelection(t.weapon_type_id);refreshWeaponListForCurrentKind();const sel=$('weapon');if(sel){sel.value=String(weapon.id);syncWeaponStateFromUI();}}
@@ -2429,14 +2433,19 @@ function templateApply(t){
   build.charm=null;
   const charmSkills=Object.entries(tc.skills||t.skills||{}).slice(0,3).map(([name,level])=>({name:String(name),level:Number(level)||1,type:'armor'}));
   while(charmSkills.length<3)charmSkills.push({name:'',level:1,type:'armor'});
-  build.charmCustom={skills:charmSkills,slots:Array.isArray(tc.slot_levels)?tc.slot_levels.slice(0,3).map(Number):[0,0,0],weaponSlots:[],weaponSlot:false};
+  build.charmCustom={skills:charmSkills,slots:Array.isArray(tc.slot_levels)?tc.slot_levels.slice(0,3).map(Number):[0,0,0],weaponSlots:[],weaponSlot:false,templateLocked:true};
   normalizeCharm();
   const cdecos=Array.isArray(tc.decorations)?tc.decorations:[];
   templateSetCharmDecos(cdecos,build.charmCustom,unresolved);
   if(cdecos.length>charmSlotEntries(build.charmCustom).length)unresolved.push(`護石装飾品：記録${cdecos.length}件 / 現行UI反映可能${charmSlotEntries(build.charmCustom).length}枠`);
   renderWeapon();if(weapon){$('weapon').value=String(weapon.id);App.build.setWeapon(weapon);}
   if(weapon){templateArtiaFromSource(t,weapon,unresolved);}
+  // テンプレート値を最後に確定してから各UIを描画する。UI側の正規化でソース値を消さない。
+  build.charmCustom.templateLocked=true;
   renderArmor();renderCharmEditor();renderArtia();updateWeaponInfo();renderComboForWeapon();renderTechniqueEditor();calcBuild();
+  // render系が再構築しても、テンプレートのアーティア状態を最後に再適用する。
+  if(weapon){$('weapon').value=String(weapon.id);build.weapon=weapon;App.state.build.weapon=weapon;}
+  renderArtia();
   return {unresolved,weapon,template:t};
 }
 function renderBuildTemplateUI(){const ks=$('buildTemplateWeaponKind'),sel=$('buildTemplateSelect');if(!ks||!sel)return;ks.innerHTML='<option value="">武器種を選択</option>'+BUILD_TEMPLATE_DB.templates.map(t=>`<option value="${esc(t.weapon_type_id)}">${esc(t.weapon_type)}</option>`).join('');const fill=()=>{const t=BUILD_TEMPLATE_DB.templates.find(x=>x.weapon_type_id===ks.value);sel.innerHTML=t?'<option value="">テンプレートを選択</option>'+t.builds.map(b=>`<option value="${esc(b.id)}">${esc(b.build_name)}${b.creator?' / '+esc(b.creator):''}</option>`).join(''):'<option value="">武器種を選択してください</option>';sel.disabled=!t;updateBuildTemplateInfo();};ks.onchange=fill;sel.onchange=updateBuildTemplateInfo;function updateBuildTemplateInfo(){const t=BUILD_TEMPLATE_DB.templates.find(x=>x.weapon_type_id===ks.value),b=t?.builds.find(x=>x.id===sel.value),box=$('buildTemplateInfo'),btn=$('loadBuildTemplate');if(!b){box.textContent='テンプレートを選択してください。';btn.disabled=true;return;}const skills=Object.entries(b.skills||{}).map(([n,l])=>`${esc(n)} Lv${esc(l)}`).join(' / ');box.innerHTML=`<b>${esc(b.build_name)}</b> / ${esc(b.creator||'登録テンプレート')}<br><span class="muted small">出典：${esc(b.source||'未設定')}</span><br><span class="small">主要スキル：${skills||'未設定'}</span>`;btn.disabled=false;}$('loadBuildTemplate').onclick=()=>{const t=BUILD_TEMPLATE_DB.templates.find(x=>x.weapon_type_id===ks.value),b=t?.builds.find(x=>x.id===sel.value);if(!b)return;if(!confirm(`「${b.build_name}」を現在の装備セットへ読み込みます。現在の装備・装飾品は置き換わります。よろしいですか？`))return;const r=templateApply({...b,weapon_type_id:t.weapon_type_id});const st=$('buildTemplateStatus');st.classList.remove('hidden');st.innerHTML=r.unresolved.length?`<b>テンプレートを読み込みました。</b><br>MHDBで照合できなかった項目：${r.unresolved.map(esc).join(' / ')}<br><span class="muted small">未照合項目は推測で補完していません。</span>`:`<b>テンプレートを読み込みました。</b><br>全装備をMHDBへ照合してBuild Stateへ反映しました。`;renderBuildTemplateUI();};$('clearBuildTemplate').onclick=()=>{ks.value='';ks.onchange();$('buildTemplateStatus').classList.add('hidden');};fill();}
