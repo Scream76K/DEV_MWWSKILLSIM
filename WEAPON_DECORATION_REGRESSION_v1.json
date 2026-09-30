@@ -1,0 +1,18 @@
+{
+  "weapon_deco_policy": "template value is copied verbatim; slot capacity is separate from jewel level",
+  "great_sword": {
+    "weapon": "忘却のオストランツァ",
+    "decorations": [
+      "集中・匠珠3",
+      "攻撃珠III3",
+      "超心珠III3"
+    ]
+  },
+  "slot_rule": "[3,3,1] permits lower-level jewels; slot level does not constrain jewel level",
+  "required_checks": [
+    "templateApply invokes applyTemplateWeaponDecorationsDirect",
+    "weapon decorations survive final render/build-state normalization",
+    "no invented free-slot decorations",
+    "great sword weapon decorations exactly match source-confirmed template"
+  ]
+}
