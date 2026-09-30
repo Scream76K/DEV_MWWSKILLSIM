@@ -2447,6 +2447,8 @@ function templateApply(t){
   if(weapon){$('weapon').value=String(weapon.id);build.weapon=weapon;App.state.build.weapon=weapon;}
   renderArtia();
   return {unresolved,weapon,template:t};
+
+  normalizeArtiaMutationState(build);
 }
 function renderBuildTemplateUI(){const ks=$('buildTemplateWeaponKind'),sel=$('buildTemplateSelect');if(!ks||!sel)return;ks.innerHTML='<option value="">武器種を選択</option>'+BUILD_TEMPLATE_DB.templates.map(t=>`<option value="${esc(t.weapon_type_id)}">${esc(t.weapon_type)}</option>`).join('');const fill=()=>{const t=BUILD_TEMPLATE_DB.templates.find(x=>x.weapon_type_id===ks.value);sel.innerHTML=t?'<option value="">テンプレートを選択</option>'+t.builds.map(b=>`<option value="${esc(b.id)}">${esc(b.build_name)}${b.creator?' / '+esc(b.creator):''}</option>`).join(''):'<option value="">武器種を選択してください</option>';sel.disabled=!t;updateBuildTemplateInfo();};ks.onchange=fill;sel.onchange=updateBuildTemplateInfo;function updateBuildTemplateInfo(){const t=BUILD_TEMPLATE_DB.templates.find(x=>x.weapon_type_id===ks.value),b=t?.builds.find(x=>x.id===sel.value),box=$('buildTemplateInfo'),btn=$('loadBuildTemplate');if(!b){box.textContent='テンプレートを選択してください。';btn.disabled=true;return;}const skills=Object.entries(b.skills||{}).map(([n,l])=>`${esc(n)} Lv${esc(l)}`).join(' / ');box.innerHTML=`<b>${esc(b.build_name)}</b> / ${esc(b.creator||'登録テンプレート')}<br><span class="muted small">出典：${esc(b.source||'未設定')}</span><br><span class="small">主要スキル：${skills||'未設定'}</span>`;btn.disabled=false;}$('loadBuildTemplate').onclick=()=>{const t=BUILD_TEMPLATE_DB.templates.find(x=>x.weapon_type_id===ks.value),b=t?.builds.find(x=>x.id===sel.value);if(!b)return;if(!confirm(`「${b.build_name}」を現在の装備セットへ読み込みます。現在の装備・装飾品は置き換わります。よろしいですか？`))return;const r=templateApply({...b,weapon_type_id:t.weapon_type_id});const st=$('buildTemplateStatus');st.classList.remove('hidden');st.innerHTML=r.unresolved.length?`<b>テンプレートを読み込みました。</b><br>MHDBで照合できなかった項目：${r.unresolved.map(esc).join(' / ')}<br><span class="muted small">未照合項目は推測で補完していません。</span>`:`<b>テンプレートを読み込みました。</b><br>全装備をMHDBへ照合してBuild Stateへ反映しました。`;renderBuildTemplateUI();};$('clearBuildTemplate').onclick=()=>{ks.value='';ks.onchange();$('buildTemplateStatus').classList.add('hidden');};fill();}
 window.__buildTemplateDB=BUILD_TEMPLATE_DB;
@@ -2464,54 +2466,109 @@ const __skillWorkspace=$('armorWorkspaceLeft');
 
 
 
-/* v7.2.1 template v14 Artian correction
-   Source: user-confirmed Giant Artia mutation values.
-   Mutation bonuses are calculated automatically from weapon type.
-*/
-const ARTIA_MUTATION_BONUS_V1 = Object.freeze({
-  "大剣": { "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
-           "会心激化": {attack:-10, affinity:10, element:-10, sharpness:-10},
-           "属性激化": {attack:0, affinity:-5, element:50, sharpness:0} },
-  "太刀": { "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
-           "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
-           "属性激化": {attack:0, affinity:-5, element:50, sharpness:0} },
-  "片手剣": { "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
-           "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
-           "属性激化": {attack:0, affinity:-5, element:40, sharpness:0} },
-  "双剣": { "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
-           "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
-           "属性激化": {attack:0, affinity:-5, element:30, sharpness:0} },
-  "ハンマー": { "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
-           "会心激化": {attack:-10, affinity:10, element:-10, sharpness:-10},
-           "属性激化": {attack:0, affinity:-5, element:40, sharpness:0} },
-  "狩猟笛": { "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
-           "会心激化": {attack:-10, affinity:10, element:20, sharpness:-10},
-           "属性激化": {attack:0, affinity:-5, element:80, sharpness:0} },
-  "ランス": { "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
-           "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
-           "属性激化": {attack:0, affinity:-5, element:50, sharpness:0} },
-  "ガンランス": { "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
-           "会心激化": {attack:-10, affinity:10, element:30, sharpness:-10},
-           "属性激化": {attack:0, affinity:-5, element:80, sharpness:0} },
-  "スラッシュアックス": { "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
-           "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
-           "属性激化": {attack:0, affinity:-5, element:40, sharpness:0} },
-  "チャージアックス": { "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
-           "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
-           "属性激化": {attack:0, affinity:-5, element:50, sharpness:0} },
-  "操虫棍": { "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
-           "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
-           "属性激化": {attack:0, affinity:-5, element:40, sharpness:0} },
-  "弓": { "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
-           "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
-           "属性激化": {attack:0, affinity:-5, element:30, sharpness:0} }
+
+
+
+/* === v7.2.1 v14 REAL FIX: Artia + Great Sword template state === */
+const ARTIA_MUTATION_REAL = Object.freeze({
+  "大剣": {
+    "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
+    "会心激化": {attack:-10, affinity:10, element:-10, sharpness:-10},
+    "属性激化": {attack:0, affinity:-5, element:50, sharpness:0}
+  },
+  "太刀": {
+    "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
+    "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
+    "属性激化": {attack:0, affinity:-5, element:50, sharpness:0}
+  },
+  "片手剣": {
+    "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
+    "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
+    "属性激化": {attack:0, affinity:-5, element:40, sharpness:0}
+  },
+  "双剣": {
+    "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
+    "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
+    "属性激化": {attack:0, affinity:-5, element:30, sharpness:0}
+  },
+  "ハンマー": {
+    "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
+    "会心激化": {attack:-10, affinity:10, element:-10, sharpness:-10},
+    "属性激化": {attack:0, affinity:-5, element:40, sharpness:0}
+  },
+  "狩猟笛": {
+    "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
+    "会心激化": {attack:-10, affinity:10, element:20, sharpness:-10},
+    "属性激化": {attack:0, affinity:-5, element:80, sharpness:0}
+  },
+  "ランス": {
+    "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
+    "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
+    "属性激化": {attack:0, affinity:-5, element:50, sharpness:0}
+  },
+  "ガンランス": {
+    "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
+    "会心激化": {attack:-10, affinity:10, element:30, sharpness:-10},
+    "属性激化": {attack:0, affinity:-5, element:80, sharpness:0}
+  },
+  "スラッシュアックス": {
+    "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
+    "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
+    "属性激化": {attack:0, affinity:-5, element:40, sharpness:0}
+  },
+  "チャージアックス": {
+    "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
+    "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
+    "属性激化": {affinity:-5, element:50, attack:0, sharpness:0}
+  },
+  "操虫棍": {
+    "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
+    "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
+    "属性激化": {attack:0, affinity:-5, element:40, sharpness:0}
+  },
+  "弓": {
+    "攻撃激化": {attack:10, affinity:-15, element:0, sharpness:0},
+    "会心激化": {attack:-10, affinity:10, element:-20, sharpness:-10},
+    "属性激化": {attack:0, affinity:-5, element:30, sharpness:0}
+  },
+  "ライトボウガン": null,
+  "ヘビィボウガン": null
 });
 
-function applyArtiaMutationBonusV1(build) {
-  if (!build || !build.weapon) return;
-  const type = build.weapon.kind || build.weapon.type || build.weapon.weaponType;
-  const mutation = build.weapon.artiaMutation || build.weapon.artiaType || build.weapon.mutationType;
-  const row = ARTIA_MUTATION_BONUS_V1[type]?.[mutation];
-  if (!row) return;
-  build.weapon.artiaMutationBonus = {...row};
+function normalizeArtiaMutationState(build) {
+  if (!build) return build;
+  const w=build.weapon || (build.weaponData || {});
+  const weaponType=w.weaponType || w.type || w.kind || build.weaponType;
+  const mutation=w.artiaMutation || w.artiaType || w.mutationType || build.artiaMutation;
+  if (!weaponType || !mutation) return build;
+  const row=ARTIA_MUTATION_REAL[weaponType]?.[mutation];
+  if (!row) return build;
+  build.artiaMutation={type:mutation, weaponType, ...row};
+  build.weaponArtiaMutation=build.artiaMutation;
+  return build;
 }
+
+function applyTemplateDecorationsDirect(build, template) {
+  if (!build || !template) return build;
+  // Decoration levels are jewel levels; slot arrays remain capacity only.
+  const copySlots = (x)=>Array.isArray(x)?x.map(v=>v==null?"":v):x;
+  if (template.charm) {
+    build.charm = build.charm || {};
+    build.charm.skills = Array.isArray(template.charm.skills) ? template.charm.skills.map(x=>({...x})) : template.charm.skills;
+    build.charm.slots = copySlots(template.charm.slots);
+    build.charm.decorations = Array.isArray(template.charm.decorations)
+      ? template.charm.decorations.map(x=>({...x}))
+      : template.charm.decorations;
+  }
+  if (Array.isArray(template.armor)) {
+    build.armor = template.armor.map(a=>({
+      ...a,
+      decorations:Array.isArray(a.decorations)?a.decorations.map(x=>({...x})):a.decorations
+    }));
+  }
+  if (build.legs && template.legs?.decorations) {
+    build.legs.decorations=template.legs.decorations.map(x=>({...x}));
+  }
+  return build;
+}
+
