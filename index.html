@@ -1295,7 +1295,9 @@ function renderArtia(){
   const elems=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'];
   const ej={fire:'火',water:'水',ice:'氷',thunder:'雷',dragon:'龍',poison:'毒',paralysis:'麻痺',sleep:'睡眠',blast:'爆破'};
   const opts=[['attack','攻撃激化'],['affinity','会心激化'],['element','属性激化']];
-  const partOpts=[['none','未設定'],['attack','基礎攻撃力増強'],['affinity','会心率増強'],['element','属性増強']];
+  // 生産ボーナスは「基礎攻撃力増強」「会心率増強」のみを手動選択。
+  // 属性増強は条件成立時に付与されるため、テンプレート/シミュレータでは常時発動前提として別管理する。
+  const partOpts=[['none','未設定'],['attack','基礎攻撃力増強'],['affinity','会心率増強']];
   const setSkills=skillOptionSort((DB.skills||[]).filter(x=>x.kind==='set'));
   const groupSkills=skillOptionSort((DB.skills||[]).filter(x=>x.kind==='group'));
   box.innerHTML=`<b>★ 巨戟アーティア設定</b>
@@ -1518,7 +1520,10 @@ function artiaProductionStats(w){
   const parts=build.artia.parts||[];
   st.attack += parts.filter(x=>x==='attack').length*5;
   st.affinity += parts.filter(x=>x==='affinity').length*5;
-  st.element += parts.filter(x=>x==='element').length*30;
+  // 属性増強はテンプレートでは常時発動前提。値は武器種/武器ごとに異なるため、
+  // source DBの確認済み値を weapon.artiaElementProductionBonus に保持して使用する。
+  const alwaysOn=Number(w?.artiaElementProductionBonus);
+  if(Number.isFinite(alwaysOn)) st.element += alwaysOn;
   return st;
 }
 function artiaMutationStats(w){
@@ -1576,7 +1581,7 @@ function calcMaxAffinity(total, baseAffinity, w, part){
   return Math.min(100,Math.max(-100,v));
 }
 function selectedMonsterName(){const m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value);return String(m?.name||'');}
-function artiaProductionBreakdown(w){if(!isArtia(w))return '';const m={attack:'攻撃増強',affinity:'会心増強',element:'属性増強',none:'未設定'};const a=build.artia.parts||[];return `生産：${a.map(x=>m[x]||x).join(' / ')}（攻撃+${a.filter(x=>x==='attack').length*5} / 会心+${a.filter(x=>x==='affinity').length*5}% / 属性パーツ${a.filter(x=>x==='element').length}）`;}
+function artiaProductionBreakdown(w){if(!isArtia(w))return '';const m={attack:'攻撃増強',affinity:'会心増強',none:'未設定'};const a=(build.artia.parts||[]).map(x=>x==='element'?'none':x);const elem=Number(w?.artiaElementProductionBonus)||0;return `生産：${a.map(x=>m[x]||x).join(' / ')}（攻撃+${a.filter(x=>x==='attack').length*5} / 会心+${a.filter(x=>x==='affinity').length*5}% / 属性増強+${elem}【常時発動前提】）`;}
 function artiaRestoreBreakdown(w){
   if(!isArtia(w)) return '';
   const labels={ 'atk:I':'+5攻撃','atk:II':'+6攻撃','atk:III':'+9攻撃','atk:EX':'+12攻撃','aff:I':'+5%会心','aff:II':'+6%会心','aff:III':'+8%会心','aff:EX':'+10%会心','sharp:I':'+30斬れ味','sharp:EX':'+50斬れ味'};
@@ -2748,14 +2753,33 @@ function templateFindByName(arr,name){const n=templateNorm(name);if(!n)return nu
 function templateFindWeapon(t){const kind=t.weapon_type_id;const rows=(DB.weapons||[]).filter(w=>canonicalWeaponKind(w)===kind);let x=templateFindByName(rows,t.weapon?.name||t.weapons);if(x)return x;if(t.weapon?.name){const n=templateNorm(t.weapon.name);x=rows.find(w=>n.includes(templateNorm(w.name))||templateNorm(w.name).includes(n));}return x||null;}
 function templateFindArmor(name,kind){return templateFindByName((DB.armor||[]).filter(a=>a.kind===kind&&a.rank!=='low'),name);}
 function templateFindCharm(name,sourceSkills=[]){const n=templateCharmNorm(name);const wanted=(sourceSkills||[]).filter(x=>x?.name).map(x=>[templateNorm(x.name),Number(x.level)||1]).sort((a,b)=>a[0].localeCompare(b[0]));let fallback=null;for(const c of (DB.charms||[])){for(const r of (c.ranks||[])){const rn=templateCharmNorm(r.name||c.name);if(rn!==n)continue;if(!fallback)fallback={base:c,rank:r};const got=(r.skills||[]).map(x=>[templateNorm(x.name||x.skill?.name||''),Number(x.level||x.skill?.level||1)]).filter(x=>x[0]).sort((a,b)=>a[0].localeCompare(b[0]));if(wanted.length===got.length&&wanted.every((x,i)=>x[0]===got[i][0]&&x[1]===got[i][1]))return {base:c,rank:r,skillExact:true};}}return fallback?{...fallback,skillExact:false}:null;}
-function templateFindDecoration(name,slot){const want=Number(slot||0);const all=(DB.decorations||[]);const exactSlot=want>0?all.filter(d=>Number(d.slot||d.level||0)===want):all;const rows=exactSlot.length?exactSlot:all.filter(d=>Number(d.slot||d.level||0)<=want);let x=templateFindByName(rows,name);if(x)return x;const n=templateDecorationNorm(name);if(!n)return null;let exact=rows.find(d=>templateDecorationNorm(d?.name)===n);if(exact)return exact;return rows.find(d=>{const dn=templateDecorationNorm(d?.name);return dn&&((dn.includes(n)&&n.length>=2)||(n.includes(dn)&&dn.length>=2));})||null;}
-function templateSetDecos(entries,slots,kind,prefix,unresolved){const levels=slotLevels(slots);let i=0;(entries||[]).forEach(entry=>{if(i>=levels.length)return;const e=typeof entry==='string'?{name:entry}:entry||{};if(e.free_slot){i++;return;}const lv=Number(e.slot||0);if(!lv){unresolved.push(`${e.name}（${prefix}${i} / 装飾品Lv不明）`);i++;return;}if(lv>Number(levels[i]||0)){unresolved.push(`${e.name}（${prefix}${i} / 装飾品Lv${lv} > スロット${levels[i]||0}）`);i++;return;}const d=templateFindDecoration(e.name,lv);if(d)build.decos[prefix+i]=String(d.id);else unresolved.push(`${e.name}（${prefix}${i} / Lv${lv}）`);i++;});}
+function templateFindDecoration(name,slot,kind='armor'){
+  const want=Number(slot||0);
+  const wantedKind=normalizeDecorationKind(kind)==='weapon'?'weapon':'armor';
+  const all=(DB.decorations||[]);
+  // MHDBのkindが存在するDBでは装着先を厳密に限定する。旧DBでkindが無い場合は、
+  // 既存の名称・スロット照合をフォールバックしてテンプレートを消さない。
+  const kindRows=all.filter(d=>normalizeDecorationKind(d?.kind)===wantedKind);
+  const rowsBase=kindRows.length?kindRows:all;
+  const exactSlot=want>0?rowsBase.filter(d=>Number(d.slot||d.level||0)===want):rowsBase;
+  const rows=exactSlot.length?exactSlot:all.filter(d=>Number(d.slot||d.level||0)<=want);
+  const n=templateDecorationNorm(name); if(!n)return null;
+  // 完全一致を最優先。これによりLv1の「超心珠」とLv3の「超心珠III」等を取り違えない。
+  let x=rows.find(d=>templateDecorationNorm(d?.name)===n); if(x)return x;
+  x=rows.find(d=>templateNorm(d?.name)===templateNorm(name)); if(x)return x;
+  return rows.find(d=>{const dn=templateDecorationNorm(d?.name);return dn&&((dn.includes(n)&&n.length>=2)||(n.includes(dn)&&dn.length>=2));})||null;
+}
+function templateSetDecos(entries,slots,kind,prefix,unresolved){const levels=slotLevels(slots);let i=0;(entries||[]).forEach(entry=>{if(i>=levels.length)return;const e=typeof entry==='string'?{name:entry}:entry||{};if(e.free_slot){i++;return;}const lv=Number(e.slot||0);if(!lv){unresolved.push(`${e.name}（${prefix}${i} / 装飾品Lv不明）`);i++;return;}if(lv>Number(levels[i]||0)){unresolved.push(`${e.name}（${prefix}${i} / 装飾品Lv${lv} > スロット${levels[i]||0}）`);i++;return;}const d=templateFindDecoration(e.name,lv,kind);if(d)build.decos[prefix+i]=String(d.id);else unresolved.push(`${e.name}（${prefix}${i} / Lv${lv}）`);i++;});}
 function templateSetCharmDecos(entries,charmCustom,unresolved){const slots=charmSlotEntries(charmCustom);let i=0;(entries||[]).forEach(entry=>{if(i>=slots.length)return;const e=typeof entry==='string'?{name:entry}:entry||{};const slot=slots[i];if(e.free_slot){i++;return;}const lv=Number(e.slot||slot.level||0);const d=templateFindDecoration(e.name,lv);if(d)build.decos[slot.key]=String(d.id);else unresolved.push(`${e.name}（${slot.key} / Lv${lv} / ${slot.kind}）`);i++;});}
 function templateArtiaFromSource(t,weapon,unresolved){if(!isArtia(weapon))return;const a=t.artia||{};build.artia={...build.artia,production:a.production||'attack',element:a.element||'fire',parts:Array.isArray(a.parts)?a.parts.slice(0,3):['none','none','none'],restores:Array.isArray(a.restores)?a.restores.slice(0,5):['none','none','none','none','none'],seriesSkill:'',groupSkill:''};while(build.artia.parts.length<3)build.artia.parts.push('none');while(build.artia.restores.length<5)build.artia.restores.push('none');const skills=Array.isArray(a.weapon_skills)?a.weapon_skills:[];for(const name of skills){const sk=skillByIdByName(name);if(!sk){unresolved.push(`巨戟スキル：${name}`);continue;}if(sk.kind==='set'&&!build.artia.seriesSkill)build.artia.seriesSkill=sk.id;else if(sk.kind==='group'&&!build.artia.groupSkill)build.artia.groupSkill=sk.id;else unresolved.push(`巨戟スキル種別：${name}`);}}
 function templateArtiaFromSource(t,weapon,unresolved){if(!isArtia(weapon))return;const a=t.artia||{};build.artia={...build.artia,production:a.production||'attack',element:a.element||'fire',parts:Array.isArray(a.parts)?a.parts.slice(0,3):['none','none','none'],restores:Array.isArray(a.restores)?a.restores.slice(0,5):['none','none','none','none','none'],seriesSkill:'',groupSkill:''};while(build.artia.parts.length<3)build.artia.parts.push('none');while(build.artia.restores.length<5)build.artia.restores.push('none');const skills=Array.isArray(a.weapon_skills)?a.weapon_skills:[];for(const name of skills){const sk=skillByIdByName(name);if(!sk){unresolved.push(`巨戟スキル：${name}`);continue;}if(sk.kind==='set'&&!build.artia.seriesSkill)build.artia.seriesSkill=sk.id;else if(sk.kind==='group'&&!build.artia.groupSkill)build.artia.groupSkill=sk.id;else unresolved.push(`巨戟スキル種別：${name}`);}}
 function templateApply(t){
   const unresolved=[];
   const weapon=templateFindWeapon(t);
+  if(weapon){
+    const sourceElementBonus=Number(t.artia?.attributeProductionBonus);
+    if(Number.isFinite(sourceElementBonus)) weapon.artiaElementProductionBonus=sourceElementBonus;
+  }
   if(!weapon)unresolved.push(`武器：${t.weapon?.name||''}`);
   if(weapon){setWeaponKindSelection(t.weapon_type_id);refreshWeaponListForCurrentKind();const sel=$('weapon');if(sel){sel.value=String(weapon.id);syncWeaponStateFromUI();}}
   build.decos={};
@@ -2787,16 +2811,32 @@ function templateApply(t){
     const lv=Number(e.slot||0);
     if(!lv){unresolved.push(`${e.name}（${slot.key} / 装飾品Lv不明）`);continue;}
     if(lv>Number(slot.level||0)){unresolved.push(`${e.name}（${slot.key} / 装飾品Lv${lv} > スロット${slot.level}）`);continue;}
-    const deco=templateFindDecoration(e.name,lv);
+    const deco=templateFindDecoration(e.name,lv,slot.kind);
     if(deco)build.decos[slot.key]=String(deco.id);else unresolved.push(`${e.name}（${slot.key} / Lv${lv}）`);
   }
   if(decoEntries.length>charmSlots.length)unresolved.push(`護石装飾品：記録${decoEntries.length}件 / 現行UI反映可能${charmSlots.length}枠`);
   normalizeCharm();
+  build.charmCustom.templateLocked=true;
   renderWeapon();if(weapon){$('weapon').value=String(weapon.id);App.build.setWeapon(weapon);}
   renderArmor();renderCharmEditor();renderArtia();updateWeaponInfo();renderComboForWeapon();renderTechniqueEditor();calcBuild();
   return {unresolved,weapon,template:t};
 }
 function renderBuildTemplateUI(){const ks=$('buildTemplateWeaponKind'),sel=$('buildTemplateSelect');if(!ks||!sel)return;ks.innerHTML='<option value="">武器種を選択</option>'+BUILD_TEMPLATE_DB.templates.map(t=>`<option value="${esc(t.weapon_type_id)}">${esc(t.weapon_type)}</option>`).join('');const fill=()=>{const t=BUILD_TEMPLATE_DB.templates.find(x=>x.weapon_type_id===ks.value);sel.innerHTML=t?'<option value="">テンプレートを選択</option>'+t.builds.map(b=>`<option value="${esc(b.id)}">${esc(b.build_name)}${b.creator?' / '+esc(b.creator):''}</option>`).join(''):'<option value="">武器種を選択してください</option>';sel.disabled=!t;updateBuildTemplateInfo();};ks.onchange=fill;sel.onchange=updateBuildTemplateInfo;function updateBuildTemplateInfo(){const t=BUILD_TEMPLATE_DB.templates.find(x=>x.weapon_type_id===ks.value),b=t?.builds.find(x=>x.id===sel.value),box=$('buildTemplateInfo'),btn=$('loadBuildTemplate');if(!b){box.textContent='テンプレートを選択してください。';btn.disabled=true;return;}const skills=Object.entries(b.skills||{}).map(([n,l])=>`${esc(n)} Lv${esc(l)}`).join(' / ');box.innerHTML=`<b>${esc(b.build_name)}</b> / ${esc(b.creator||'登録テンプレート')}<br><span class="muted small">出典：${esc(b.source||'未設定')}</span><br><span class="small">主要スキル：${skills||'未設定'}</span>`;btn.disabled=false;}$('loadBuildTemplate').onclick=()=>{const t=BUILD_TEMPLATE_DB.templates.find(x=>x.weapon_type_id===ks.value),b=t?.builds.find(x=>x.id===sel.value);if(!b)return;if(!confirm(`「${b.build_name}」を現在の装備セットへ読み込みます。現在の装備・装飾品は置き換わります。よろしいですか？`))return;const r=templateApply({...b,weapon_type_id:t.weapon_type_id});const st=$('buildTemplateStatus');st.classList.remove('hidden');st.innerHTML=r.unresolved.length?`<b>テンプレートを読み込みました。</b><br>MHDBで照合できなかった項目：${r.unresolved.map(esc).join(' / ')}<br><span class="muted small">未照合項目は推測で補完していません。</span>`:`<b>テンプレートを読み込みました。</b><br>全装備をMHDBへ照合してBuild Stateへ反映しました。`;renderBuildTemplateUI();};$('clearBuildTemplate').onclick=()=>{ks.value='';ks.onchange();$('buildTemplateStatus').classList.add('hidden');};fill();}
+// v7.2.1 template normalization: production slots are only attack/affinity; attribute enhancement is always-on.
+(function normalizeTemplateArtiaProduction(){
+  const bonusByWeapon={"忘却のオストランツァ":30,"斬罪のエルガンシオ":30,"破滅のキリエヴェルド":20,"永訣のクラウクライス":20,"禁戒のデスヴァンケル":30,"闇黒のテルプリティカ":30,"天涯のゲガルンロウ":30,"前兆のプロフェネシス":30,"邪執のコンキエレガン":20,"代償のネイディ・ギア":30,"堕在のラクリエリカ":20,"荊冠のデストレーター":1,"叛砲アルシャマリ":null,"亡国のクピドバイン":20};
+  for(const group of (BUILD_TEMPLATE_DB.templates||[])) for(const t of (group.builds||[])){
+    const n=t.weapon?.name; const b=Number(bonusByWeapon[n]);
+    if(t.artia && Number.isFinite(b)){
+      t.artia.attributeProductionBonus=b;
+      // All currently registered Kotatsu Artian templates use base attack +5 x3.
+      const p=String((t.weapon?.production||'')).replace(/\s/g,'');
+      if(p.includes('基礎攻撃力増強+5×3') || p.includes('基礎攻撃力増強+5x3') || group.weapon_type_id!=='heavy-bowgun'){
+        t.artia.parts=['attack','attack','attack'];
+      }
+    }
+  }
+})();
 window.__buildTemplateDB=BUILD_TEMPLATE_DB;
 window.__renderBuildTemplateUI=renderBuildTemplateUI;
 
