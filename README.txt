@@ -1,9 +1,1 @@
-MH Wilds OCR — アイコン起点テスト v0.9
-
-RARE色判定の色取得範囲を候補矩形全体から、アイコン中央のコアROIへ縮小。
-- 外周14%/12%を除外
-- 候補の中央62%×70%を色判定
-- 彩度の高い画素から支配的な色相クラスターを抽出
-- RGB平均ではなく色相を主判定
-- 3/4、6/7は近い場合に曖昧表示
-- 判定結果に色ROI座標、サンプル数、支配的色相を表示
+Parallel build+combo development. Restored the last confirmed charm UI layout/compact skill editor and compact decoration labels while retaining the parallel build/decoration/combo root changes. 2026-10-01.
