@@ -14,3 +14,10 @@ R3 UI LAYOUT GATES
 - title / App.version / visible version synchronized: REQUIRED
 
 [UI-CANDIDATE] 護石装飾品行は 攻【Lv】/防【Lv】 + 装飾品select。長い「防具スロットN」ラベルを表示しない。
+
+r5 TEMPLATE GATES
+- Template decoration source order MUST NOT be interpreted as physical slot order.
+- Slot placement MUST use capacity semantics: jewel Lv <= slot capacity.
+- Unresolved template entries MUST be reported; never silently dropped.
+- Template source data MUST NOT be mutated merely to force successful apply.
+- Charm badge format MUST be ASCII: 攻[n] / 防[n].
