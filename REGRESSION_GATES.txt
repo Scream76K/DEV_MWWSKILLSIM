@@ -7,3 +7,8 @@ PASS criteria:
 - affinity fixture BOW_01_ARTIA_BASE=18
 - affinity fixture GS_ATTACK_ARTIA_BASE=8
 - no wholesale rollback to reference source
+R3 UI LAYOUT GATES
+- charm-deco-row select min-width:0 + width:100%: PASS
+- charm-deco-row 3-column grid remains intact on <=760px: PASS
+- charm slot/deco generation JS unchanged from r2: REQUIRED
+- title / App.version / visible version synchronized: REQUIRED

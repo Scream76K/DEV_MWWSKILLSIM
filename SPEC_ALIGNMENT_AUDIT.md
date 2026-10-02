@@ -22,3 +22,10 @@ Reference evidence: `v7.2.1_SAVE_SUPPORT_ROOTSAFE` was used only for the previou
 ## Important boundary
 
 The reference ZIP was not copied wholesale. OCR, current databases, current Combo/Technique implementation and unrelated current-source code were retained.
+
+## r3 iPhone charm-slot layout correction
+- User verified slot-pattern dropdown contents and behavior in r2.
+- Remaining defect was presentation-only: the decoration select in `.charm-deco-row` collapsed/overflowed in the narrow left pane on iPhone.
+- r3 changes CSS sizing only for this row (`min-width:0`, bounded select width, responsive grid columns).
+- Charm rule generation, slot-pattern mapping, decoration candidate generation, and state mutation logic are intentionally unchanged from r2.
+- Version surfaces were synchronized because the r2 real-device screenshot still displayed `VERSION 7.2.1`, violating the project release/version invariant.
