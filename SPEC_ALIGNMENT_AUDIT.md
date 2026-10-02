@@ -1,34 +1,24 @@
-# v7.2.2-spec-align-r1 — Spec Alignment Audit
+# Spec alignment audit — v7.2.2-spec-recovery-r2
 
-Baseline source: uploaded v7.2.1 / OCR r1.1.19 fix12.
-Normative references: S30-S33, S32 domain/event contracts, S68-S69 comparison/evaluation decisions.
+Reference evidence: `v7.2.1_SAVE_SUPPORT_ROOTSAFE` was used only for the previously working UI/behavior regions. The current source remains the implementation base.
 
-## Corrected mismatches
-- Talisman render no longer erases/replaces user talisman state merely because current local legality rules reject it.
-- Existing invalid/current talisman values remain visible with a `要確認` projection so the user can correct them explicitly.
-- Build comparison now uses an explicit baseline (current or saved build) = 100.
-- Build comparison primary output is limited to: Firepower Index, Physical Change, Elemental Change, Affinity, Maximum Affinity.
-- Removed “largest number = best” presentation from build comparison.
-- Monster/part starts truly unselected; training-room/front is no longer silently selected.
-- Target-dependent affinity uses normal affinity when target is absent; Weakness Exploit base affinity is applied only when a selected target part has physical hitzone >=45.
-- Maximum Affinity remains a separate display metric.
-- Monster/part changes recalculate target-dependent combo result when a combo exists.
-- Combo context no longer always substitutes Maximum Affinity for actual/effective affinity.
+## Regression findings and corrections
 
-## Intentionally not changed
-- OCR engine and embedded OCR UI.
-- 14-weapon Technique/Combo datasets.
-- save/load storage schema.
-- equipment/decorations master-data pipeline.
-- talisman generation rules themselves; this patch changes render ownership, not rule truth.
-- Expected Damage Index / Expected DPS Index naming and Additional Damage engine are deferred to the Combo development patch.
+1. **Affinity** — restored the adopted Artia canonical great-sword base and added deterministic affinity regression guards. Bow BOW_01 unconditional Artia base affinity fixture = 18% before skill affinity; great-sword attack-mutation fixture = 8%. Existing current calculation/data remains otherwise intact.
+2. **Talisman UI** — restored the compact `charm-skill-editor` layout from the known-good reference. Preserved the newer skill type metadata. Rendering no longer erases user talisman state merely because the local generation rule rejects it.
+3. **Save vs Compare** — Step ⑤ is save-only. Comparison is removed from Step ⑤.
+4. **Monster/Compare support location** — the support divider precedes Step ⑥. Step ⑥ contains target monster/body-part and build comparison. Combo is Step ⑦; proposal is Step ⑧.
 
-## Static gates
-- JavaScript syntax check: PASS.
-- App/version marker: PASS.
-- Baseline selector present: PASS.
-- Five comparison metrics present: PASS.
-- Old unconditional max-affinity combo context removed: PASS.
-- Silent training-room default removed: PASS.
-- Target-change combo recalculation hook present: PASS.
-- Old max-value/bold comparison note removed: PASS.
+## UI invariants (regression gates)
+
+- Steps ①–⑤ are the equipment/create-and-record flow.
+- `ここからサポート機能` MUST occur after Step ⑤ and before Step ⑥.
+- Step ⑤ MUST NOT contain `compareBuilds`, `runCompare`, `monster`, or `monsterPart`.
+- Step ⑥ MUST contain monster/body-part and build comparison controls.
+- Step ⑦ is Combo DPS.
+- Talisman skill rows MUST use the compact `charm-skill-editor` structure.
+- `renderCharmEditor()` MUST NOT clear skill/slot state as a side effect of rendering.
+
+## Important boundary
+
+The reference ZIP was not copied wholesale. OCR, current databases, current Combo/Technique implementation and unrelated current-source code were retained.
