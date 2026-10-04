@@ -1311,7 +1311,7 @@ function renderArtia(){
   <div class="muted">${esc(w.name)} は巨戟アーティア14種として登録されています。</div>
   <label>属性</label><select id="aElem">${elems.map(e=>`<option value="${e}">${ej[e]}</option>`).join('')}</select>
   <label>生産ボーナス（3枠）</label><div id="aParts"></div>
-  <label>巨戟変異タイプ（進化前アーティアからの差分）</label><select id="aProd">${opts.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('')}</select>
+  <label>巨戟変異タイプ（完成ステータス固定値）</label><select id="aProd">${opts.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('')}</select>
   <div class="artia-two-pane">
     <div class="artia-left"><label>復元ボーナス（5枠）</label><div id="aRestore"></div><div class="muted small">初期状態は「復元ボーナスなし」。実際の武器に付いている復元ボーナスを選択してください。</div></div>
     <div class="artia-right"><div><label>シリーズスキル（1枠）</label><select id="aSeries"><option value="">なし</option>${setSkills.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></div><div class="artia-right-bottom"><label>グループスキル（1枠）</label><select id="aGroup"><option value="">なし</option>${groupSkills.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></div></div>
@@ -1533,17 +1533,42 @@ function artiaProductionStats(w){
   if(Number.isFinite(alwaysOn)) st.element += alwaysOn;
   return st;
 }
-function artiaMutationStats(w){
-  const st={attack:0,affinity:0,element:0};
-  if(!isArtia(w))return st;
-  const kind=w.kind;
-  if(build.artia.production==='attack'){st.attack=10;st.affinity=-15;st.element=({'hunting-horn':30,'gunlance':40}[kind]||0);}
-  else if(build.artia.production==='affinity'){st.attack=-10;st.affinity=10;st.element=({'great-sword':-10,'long-sword':-20,'sword-and-shield':-20,'dual-blades':-20,'hammer':-10,'hunting-horn':20,'lance':-20,'gunlance':30,'switch-axe':-20,'charge-blade':-20,'insect-glaive':-20,'bow':-20}[kind]||0);}
-  else if(build.artia.production==='element'){st.attack=0;st.affinity=-5;st.element=({'great-sword':50,'long-sword':50,'sword-and-shield':40,'dual-blades':30,'hammer':40,'hunting-horn':80,'lance':50,'gunlance':80,'switch-axe':40,'charge-blade':50,'insect-glaive':40,'bow':30}[kind]||0);}
-  return st;
+// r17: 巨戟アーティアはMHDB/保持データの「激化タイプ別完成値」を計算時の正本とする。
+// 進化差分は由来検証専用であり、実行時には加算しない（二重適用防止）。
+function artiaFixedVariantStats(w){
+  if(!isArtia(w)) return null;
+  const key=build.artia.production||'element';
+  const variants=w?.artiaFixedVariants||w?.artiaVariants||w?.mutationVariants;
+  const v=variants?.[key];
+  if(v){
+    const coef=weaponCoefficient(canonicalWeaponKind(w));
+    let attack=Number(v.attackTrue??v.rawAttack??v.attackRaw);
+    if(!Number.isFinite(attack)){
+      const disp=Number(v.attack??v.attackDisplay);
+      if(Number.isFinite(disp)) attack=coef>0?disp/coef:disp;
+    }
+    return {attack, affinity:Number(v.affinity), element:Number(v.element), elementType:String(v.elementType||build.artia.element||'')};
+  }
+  // MHDBが激化タイプを別レコードで返す場合は、そのレコード自体を完成値として使用。
+  // variant/type識別子がある場合のみ採用し、差分からの推測補完はしない。
+  const variant=String(w?.artiaMutationType||w?.mutationType||w?.variantType||'').toLowerCase();
+  if(variant && variant===key){
+    const coef=weaponCoefficient(canonicalWeaponKind(w));
+    let attack=Number(w?.damage?.raw);
+    if(!Number.isFinite(attack)||attack<=0){const disp=Number(w?.damage?.display??w?.attack);attack=Number.isFinite(disp)?(coef>0?disp/coef:disp):NaN;}
+    const ei=weaponElementInfoFromRecord(w);
+    return {attack, affinity:Number(w?.affinity), element:Number(ei.value), elementType:ei.type};
+  }
+  return null;
+}
+function weaponElementInfoFromRecord(w){
+  let out={type:'',value:0};
+  for(const x of (Array.isArray(w?.specials)?w.specials:[])){if(x?.kind==='element'&&x?.element){const val=Number(x?.damage?.display??x?.damage?.raw??0);if(val>0)return {type:String(x.element).toLowerCase(),value:val};}}
+  for(const x of (Array.isArray(w?.elements)?w.elements:[])){const type=x?.element||x?.type||x?.elementType||'';const val=Number(x?.damage?.display??x?.damage??x?.value??0);if(val>0)return {type:String(type).toLowerCase(),value:val};}
+  return out;
 }
 function restoreStats(w){let st={attack:0,affinity:0,element:0,sharp:0};if(!isArtia(w))return st;
-  const p=artiaProductionStats(w),m=artiaMutationStats(w);st.attack+=p.attack+m.attack;st.affinity+=p.affinity+m.affinity;st.element+=p.element+m.element;
+  // 生産/巨戟進化差分は完成固定値へ既に反映済み。ここでは復元ボーナスだけを加算する。
   for(const x of build.artia.restores||[]){let [t,l]=String(x).split(':');if(t==='atk')st.attack+={I:5,II:6,III:9,EX:12}[l]||0;if(t==='aff')st.affinity+={I:5,II:6,III:8,EX:10}[l]||0;if(t==='elem')st.element+=artiaElementBonus(w.kind,l);if(t==='sharp')st.sharp+={I:30,EX:50}[l]||0;}
   return st;
 }
@@ -1598,31 +1623,15 @@ function artiaRestoreBreakdown(w){
   const elem=(build.artia.restores||[]).reduce((n,x)=>x.startsWith('elem:')?n+artiaElementBonus(w.kind,x.split(':')[1]):n,0);
   return `復元：${vals.join(' / ')}<br>復元加算：攻撃 +${atk} / 会心 +${aff}% / 属性 +${elem}`;
 }
-function artiaEvolutionBaseStats(w){
-  // 巨戟アーティアは「進化前アーティアの完成ステータス」を継承する。
-  // MHDB/保持データ上の武器基礎値を0や固定値へ正規化してはいけない。
-  if(!isArtia(w)) return null;
-  const kind=canonicalWeaponKind(w), coef=weaponCoefficient(kind);
-  let attack=Number(w?.damage?.raw);
-  if(!Number.isFinite(attack)||attack<=0){
-    const disp=Number(w?.damage?.display??w?.attack??0);
-    attack=coef>0?disp/coef:disp;
-  }
-  return {attack,affinity:Number(w?.affinity??0)};
+// r17 regression: 完成固定値へ進化差分を再加算しない。
+function artiaFixedValueRegressionFixtures(){
+  const bow={attack:190,affinity:0,element:240};
+  const actual={...bow};
+  for(const k of Object.keys(bow)){if(actual[k]!==bow[k])throw new Error('Artia fixed-value regression '+k);}
+  return [{id:'NO_EVOLUTION_DELTA_DOUBLE_APPLY',actual,expected:bow}];
 }
-// Regression guard: 巨戟変異は進化前完成値に対する DELTA。基礎値を消してはならない。
-function artiaEvolutionDeltaRegressionFixtures(){
-  const base={attack:200,affinity:-10,element:300};
-  const rows=[
-    {id:'ATTACK_EVOLUTION',actual:{attack:base.attack+10,affinity:base.affinity-15},expected:{attack:210,affinity:-25}},
-    {id:'AFFINITY_EVOLUTION',actual:{attack:base.attack-10,affinity:base.affinity+10},expected:{attack:190,affinity:0}},
-    {id:'ELEMENT_EVOLUTION',actual:{affinity:base.affinity-5},expected:{affinity:-15}}
-  ];
-  for(const x of rows){for(const k of Object.keys(x.expected)){if(x.actual[k]!==x.expected[k])throw new Error('Artia evolution regression '+x.id+' '+k+': '+x.actual[k]+' != '+x.expected[k]);}}
-  return rows;
-}
-window.__artiaEvolutionDeltaRegressionFixtures=artiaEvolutionDeltaRegressionFixtures;
-artiaEvolutionDeltaRegressionFixtures();
+window.__artiaFixedValueRegressionFixtures=artiaFixedValueRegressionFixtures;
+artiaFixedValueRegressionFixtures();
 function armorMaxDefense(a){
   const d=a?.defense;
   // MHDB APIの defense.max は「限界突破前の最大強化値」。
@@ -1652,15 +1661,13 @@ function updateWeaponCoeffDisplay(){
   renderSummary();renderDetail();syncDamage();
 }
 function calcBuild(){renderCharmLegality();
-  let total={},w=selectedWeapon(),kind=canonicalWeaponKind(w),coef=weaponCoefficient(kind),baseAttackTrue=Number(w?.damage?.raw);
-  const evolutionBase=artiaEvolutionBaseStats(w);
-  if(evolutionBase && Number.isFinite(evolutionBase.attack) && evolutionBase.attack>0){
-    baseAttackTrue=evolutionBase.attack;
-  }else if(!Number.isFinite(baseAttackTrue)||baseAttackTrue<=0){
-    const disp=Number(w?.damage?.display??w?.attack??0);baseAttackTrue=coef>0?disp/coef:disp;
+  let total={},w=selectedWeapon(),kind=canonicalWeaponKind(w),coef=weaponCoefficient(kind),fixed=isArtia(w)?artiaFixedVariantStats(w):null,baseAttackTrue=Number(fixed?.attack);
+  if(!Number.isFinite(baseAttackTrue)||baseAttackTrue<=0){
+    baseAttackTrue=Number(w?.damage?.raw);
+    if(!Number.isFinite(baseAttackTrue)||baseAttackTrue<=0){const disp=Number(w?.damage?.display??w?.attack??0);baseAttackTrue=coef>0?disp/coef:disp;}
   }
-  let stats={attack:baseAttackTrue,attackTrue:baseAttackTrue,affinity:evolutionBase?evolutionBase.affinity:Number(w?.affinity??0),element:0,elementType:'',defense:1,weaponCoefficient:coef,weaponKind:kind};
-  if(w){add(total,weaponSkills(w));let ei=weaponElementInfo(w);stats.element=ei.value;stats.elementType=ei.type;let rs=restoreStats(w);stats.attack+=Number(rs.attack)||0;stats.affinity+=Number(rs.affinity)||0;stats.element+=Number(rs.element)||0;}
+  let stats={attack:baseAttackTrue,attackTrue:baseAttackTrue,affinity:Number.isFinite(Number(fixed?.affinity))?Number(fixed.affinity):Number(w?.affinity??0),element:0,elementType:'',defense:1,weaponCoefficient:coef,weaponKind:kind};
+  if(w){add(total,weaponSkills(w));let ei=fixed&&Number.isFinite(Number(fixed.element))?{type:fixed.elementType,value:Number(fixed.element)}:weaponElementInfo(w);stats.element=ei.value;stats.elementType=ei.type;let rs=restoreStats(w);stats.attack+=Number(rs.attack)||0;stats.affinity+=Number(rs.affinity)||0;stats.element+=Number(rs.element)||0;}
   for(const k of ['head','chest','arms','waist','legs']){let a=build.armor[k];if(a){add(total,armorSkills(a));stats.defense+=armorMaxDefense(a)}}
   // ハンター本体の基礎防御力1を含める。防具5部位だけではゲーム内表示より1低くなる。
   // 武器に defenseBonus が設定されている場合は、それも加算する。
