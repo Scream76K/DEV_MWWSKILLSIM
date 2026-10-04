@@ -706,6 +706,60 @@ function rebuildWeaponIndex(rows){
   weaponIndexByKind=index;
   return index;
 }
+// r18: 巨戟アーティア完成固定値レジストリをMHDBの同名3レコードから構築する。
+// 進化差分を実行時に加算しない。3タイプが揃わない場合は固定値未確定として fail-closed。
+function mhdbTrueAttack(w){
+  const raw=Number(w?.damage?.raw);
+  if(Number.isFinite(raw)&&raw>0)return raw;
+  const kind=Object.entries(API_WEAPON_KIND).find(([,api])=>api===String(w?.kind||''))?.[0]||String(w?.kind||'');
+  const coef=weaponCoefficient(kind);
+  const disp=Number(w?.damage?.display??w?.attack);
+  return Number.isFinite(disp)&&disp>0?(coef>0?disp/coef:disp):NaN;
+}
+function mhdbRecordElementValue(w){
+  let best=0;
+  for(const x of (Array.isArray(w?.specials)?w.specials:[])){
+    if(x?.kind==='element'&&x?.element){const v=Number(x?.damage?.display??x?.damage?.raw??0);if(v>best)best=v;}
+  }
+  for(const x of (Array.isArray(w?.elements)?w.elements:[])){
+    const v=Number(x?.damage?.display??x?.damage??x?.value??0);if(v>best)best=v;
+  }
+  return best;
+}
+function artiaFixedRecord(w){return {attack:mhdbTrueAttack(w),affinity:Number(w?.affinity??0),element:mhdbRecordElementValue(w),sourceId:w?.id??null};}
+function consolidateArtiaFixedVariantRows(rows){
+  const src=Array.isArray(rows)?rows:[];
+  const groups=new Map(), passthrough=[];
+  for(const w of src){
+    if(!isArtia(w)){passthrough.push(w);continue;}
+    const key=String(w?.kind||'')+'\u0000'+String(w?.name||'');
+    if(!groups.has(key))groups.set(key,[]);groups.get(key).push(w);
+  }
+  for(const group of groups.values()){
+    // MHDB completion records are identified by the verified Artia evolution invariant:
+    // attack intensification = highest true attack; affinity intensification = lowest;
+    // element intensification = middle. This classification is done once at DB ingest;
+    // downstream calculations consume only the fixed completed values.
+    const sorted=group.slice().sort((a,b)=>mhdbTrueAttack(b)-mhdbTrueAttack(a));
+    const canonical={...sorted[0]};
+    if(sorted.length===3 && sorted.every(x=>Number.isFinite(mhdbTrueAttack(x)))){
+      canonical.artiaFixedVariants={
+        attack:artiaFixedRecord(sorted[0]),
+        element:artiaFixedRecord(sorted[1]),
+        affinity:artiaFixedRecord(sorted[2])
+      };
+      canonical.artiaFixedValueStatus='MHDB_FIXED_COMPLETE';
+      canonical.artiaVariantSourceIds=sorted.map(x=>x?.id??null);
+    }else{
+      canonical.artiaFixedVariants=null;
+      canonical.artiaFixedValueStatus='MHDB_FIXED_INCOMPLETE';
+      canonical.artiaVariantSourceIds=sorted.map(x=>x?.id??null);
+    }
+    passthrough.push(canonical);
+  }
+  return passthrough;
+}
+
 function weaponIndexCounts(){
   return Object.fromEntries(KINDS.map(([ui])=>{const k=API_WEAPON_KIND[ui];return [ui,Array.isArray(weaponIndexByKind[k])?weaponIndexByKind[k].length:0]}));
 }
@@ -727,6 +781,9 @@ async function fetchDataset(ds){
       if(foreign) console.warn('武器一覧に未定義kindが含まれています',foreign);
       const seen=new Set();
       rows=rows.filter(w=>{const key=String(w?.kind||'')+'\u0000'+String(w?.id??'');if(seen.has(key))return false;seen.add(key);return true;});
+      // r18: MHDB は巨戟アーティアを同名3レコード（攻撃/属性/会心激化の完成値）で保持する。
+      // UI/計算では1武器へ束ね、完成値を artiaFixedVariants に固定保持する。
+      rows=consolidateArtiaFixedVariantRows(rows);
       const idx=rebuildWeaponIndex(rows);
       const missing=KINDS.map(([ui])=>API_WEAPON_KIND[ui]).filter(k=>!Array.isArray(idx[k])||idx[k].length===0);
       if(missing.length) throw Error(`公式武器データが不足しています：${missing.join(', ')}`);
@@ -1533,33 +1590,17 @@ function artiaProductionStats(w){
   if(Number.isFinite(alwaysOn)) st.element += alwaysOn;
   return st;
 }
-// r17: 巨戟アーティアはMHDB/保持データの「激化タイプ別完成値」を計算時の正本とする。
+// r18: 巨戟アーティアはMHDB同名3レコードを取り込み時に1武器へ束ね、激化タイプ別完成固定値を計算時の正本とする。
 // 進化差分は由来検証専用であり、実行時には加算しない（二重適用防止）。
 function artiaFixedVariantStats(w){
   if(!isArtia(w)) return null;
   const key=build.artia.production||'element';
-  const variants=w?.artiaFixedVariants||w?.artiaVariants||w?.mutationVariants;
+  const variants=w?.artiaFixedVariants;
   const v=variants?.[key];
-  if(v){
-    const coef=weaponCoefficient(canonicalWeaponKind(w));
-    let attack=Number(v.attackTrue??v.rawAttack??v.attackRaw);
-    if(!Number.isFinite(attack)){
-      const disp=Number(v.attack??v.attackDisplay);
-      if(Number.isFinite(disp)) attack=coef>0?disp/coef:disp;
-    }
-    return {attack, affinity:Number(v.affinity), element:Number(v.element), elementType:String(v.elementType||build.artia.element||'')};
-  }
-  // MHDBが激化タイプを別レコードで返す場合は、そのレコード自体を完成値として使用。
-  // variant/type識別子がある場合のみ採用し、差分からの推測補完はしない。
-  const variant=String(w?.artiaMutationType||w?.mutationType||w?.variantType||'').toLowerCase();
-  if(variant && variant===key){
-    const coef=weaponCoefficient(canonicalWeaponKind(w));
-    let attack=Number(w?.damage?.raw);
-    if(!Number.isFinite(attack)||attack<=0){const disp=Number(w?.damage?.display??w?.attack);attack=Number.isFinite(disp)?(coef>0?disp/coef:disp):NaN;}
-    const ei=weaponElementInfoFromRecord(w);
-    return {attack, affinity:Number(w?.affinity), element:Number(ei.value), elementType:ei.type};
-  }
-  return null;
+  if(!v) return null; // r18 fail-closed: 旧MHDB値/進化差分へフォールバックしない。
+  const attack=Number(v.attack), affinity=Number(v.affinity), element=Number(v.element);
+  if(!Number.isFinite(attack)||attack<=0||!Number.isFinite(affinity)||!Number.isFinite(element))return null;
+  return {attack,affinity,element,elementType:String(build.artia.element||''),sourceId:v.sourceId??null,fixed:true};
 }
 function weaponElementInfoFromRecord(w){
   let out={type:'',value:0};
@@ -1661,13 +1702,18 @@ function updateWeaponCoeffDisplay(){
   renderSummary();renderDetail();syncDamage();
 }
 function calcBuild(){renderCharmLegality();
-  let total={},w=selectedWeapon(),kind=canonicalWeaponKind(w),coef=weaponCoefficient(kind),fixed=isArtia(w)?artiaFixedVariantStats(w):null,baseAttackTrue=Number(fixed?.attack);
-  if(!Number.isFinite(baseAttackTrue)||baseAttackTrue<=0){
+  let total={},w=selectedWeapon(),kind=canonicalWeaponKind(w),coef=weaponCoefficient(kind),fixed=isArtia(w)?artiaFixedVariantStats(w):null;
+  if(isArtia(w)&&!fixed){
+    calcState.fixedValueError='巨戟アーティアの激化タイプ別完成固定値がMHDBから3種類揃っていません。旧値へのフォールバックを停止しました。';
+  }else calcState.fixedValueError='';
+  let baseAttackTrue=Number(fixed?.attack);
+  if(!isArtia(w)&&(!Number.isFinite(baseAttackTrue)||baseAttackTrue<=0)){
     baseAttackTrue=Number(w?.damage?.raw);
     if(!Number.isFinite(baseAttackTrue)||baseAttackTrue<=0){const disp=Number(w?.damage?.display??w?.attack??0);baseAttackTrue=coef>0?disp/coef:disp;}
   }
-  let stats={attack:baseAttackTrue,attackTrue:baseAttackTrue,affinity:Number.isFinite(Number(fixed?.affinity))?Number(fixed.affinity):Number(w?.affinity??0),element:0,elementType:'',defense:1,weaponCoefficient:coef,weaponKind:kind};
-  if(w){add(total,weaponSkills(w));let ei=fixed&&Number.isFinite(Number(fixed.element))?{type:fixed.elementType,value:Number(fixed.element)}:weaponElementInfo(w);stats.element=ei.value;stats.elementType=ei.type;let rs=restoreStats(w);stats.attack+=Number(rs.attack)||0;stats.affinity+=Number(rs.affinity)||0;stats.element+=Number(rs.element)||0;}
+  if(isArtia(w)&&!fixed) baseAttackTrue=0;
+  let stats={attack:baseAttackTrue,attackTrue:baseAttackTrue,affinity:isArtia(w)?(fixed?Number(fixed.affinity):0):(Number(w?.affinity??0)),element:0,elementType:'',defense:1,weaponCoefficient:coef,weaponKind:kind};
+  if(w){add(total,weaponSkills(w));let ei=isArtia(w)?(fixed?{type:fixed.elementType,value:Number(fixed.element)}:{type:'',value:0}):weaponElementInfo(w);stats.element=ei.value;stats.elementType=ei.type;if(!isArtia(w)||fixed){let rs=restoreStats(w);stats.attack+=Number(rs.attack)||0;stats.affinity+=Number(rs.affinity)||0;stats.element+=Number(rs.element)||0;}}
   for(const k of ['head','chest','arms','waist','legs']){let a=build.armor[k];if(a){add(total,armorSkills(a));stats.defense+=armorMaxDefense(a)}}
   // ハンター本体の基礎防御力1を含める。防具5部位だけではゲーム内表示より1低くなる。
   // 武器に defenseBonus が設定されている場合は、それも加算する。
