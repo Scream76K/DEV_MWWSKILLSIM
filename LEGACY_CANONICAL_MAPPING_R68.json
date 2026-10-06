@@ -1,0 +1,2420 @@
+{
+  "release": "r68",
+  "purpose": "Identity inspection only; compatibility outputs unchanged",
+  "counts": {
+    "MATCHED": 35,
+    "AMBIGUOUS": 21,
+    "UNMAPPED": 4
+  },
+  "rows": [
+    {
+      "weaponType": "great-sword",
+      "legacyId": "gs_draw",
+      "legacyName": "抜刀斬り",
+      "identityStatus": "MATCHED",
+      "identityReason": "抜刀斬りは抜刀斬り/縦斬りの明示別名。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "GS_DRAW_VERTICAL_SLASH",
+      "candidates": [
+        {
+          "techniqueId": "GS_DRAW_VERTICAL_SLASH",
+          "name": "抜刀斬り/縦斬り",
+          "mvTotal": 81,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_GS_R47_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 77,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "great-sword",
+      "legacyId": "gs_charge3",
+      "legacyName": "溜め斬り Lv3",
+      "identityStatus": "MATCHED",
+      "identityReason": "溜め段階3が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "GS_CHARGED_SLASH_3",
+      "candidates": [
+        {
+          "techniqueId": "GS_CHARGED_SLASH_3",
+          "name": "溜め斬りⅢ",
+          "mvTotal": 176,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_GREAT_SWORD_VER1040"
+          ]
+        }
+      ],
+      "legacyMvTotal": 160,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": true,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "great-sword",
+      "legacyId": "gs_strong3",
+      "legacyName": "強溜め斬り Lv3",
+      "identityStatus": "MATCHED",
+      "identityReason": "強溜め・段階3が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "GS_STRONG_CHARGED_SLASH_3",
+      "candidates": [
+        {
+          "techniqueId": "GS_STRONG_CHARGED_SLASH_3",
+          "name": "強溜め斬りⅢ",
+          "mvTotal": 187,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_GREAT_SWORD_VER1040"
+          ]
+        }
+      ],
+      "legacyMvTotal": 175,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": true,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "great-sword",
+      "legacyId": "gs_tcs3",
+      "legacyName": "真・溜め斬り Lv3",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "段階3は明示されるが強撃の有無が不明。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "GS_TRUE_CHARGED_SLASH_3",
+          "name": "真・溜め斬りⅢ",
+          "mvTotal": 225,
+          "registeredHitEntries": 2,
+          "stateRequirement": {
+            "strongHit": false
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GS_R47_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GS_TRUE_CHARGED_SLASH_3_STRONG",
+          "name": "真・溜め斬りⅢ(強撃)",
+          "mvTotal": 283,
+          "registeredHitEntries": 2,
+          "stateRequirement": {
+            "strongHit": true
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GS_R47_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 216,
+      "legacyEntryCount": 2,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "great-sword",
+      "legacyId": "gs_offset3",
+      "legacyName": "相殺斬り上げ Lv3",
+      "identityStatus": "MATCHED",
+      "identityReason": "相殺斬り上げ・段階3が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "GS_OFFSET_RISING_SLASH_3",
+      "candidates": [
+        {
+          "techniqueId": "GS_OFFSET_RISING_SLASH_3",
+          "name": "相殺斬り上げⅢ",
+          "mvTotal": 151,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_GS_R47_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 137,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "long-sword",
+      "legacyId": "ls_base1",
+      "legacyName": "縦斬り",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "縦斬りの連携位置が不明。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "LS_VERTICAL_SLASH",
+          "name": "縦斬り",
+          "mvTotal": 24,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LS_R47_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "LS_VERTICAL_SLASH_2",
+          "name": "縦斬り(2)",
+          "mvTotal": 18,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LS_R47_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 25,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "long-sword",
+      "legacyId": "ls_base2",
+      "legacyName": "突き",
+      "identityStatus": "MATCHED",
+      "identityReason": "突きの技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "LS_THRUST",
+      "candidates": [
+        {
+          "techniqueId": "LS_THRUST",
+          "name": "突き",
+          "mvTotal": 18,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LS_R47_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 18,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "long-sword",
+      "legacyId": "ls_base3",
+      "legacyName": "斬り上げ",
+      "identityStatus": "MATCHED",
+      "identityReason": "斬り上げの技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "LS_RISING_SLASH",
+      "candidates": [
+        {
+          "techniqueId": "LS_RISING_SLASH",
+          "name": "斬り上げ",
+          "mvTotal": 18,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LS_R47_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 30,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "long-sword",
+      "legacyId": "ls_fade",
+      "legacyName": "見切り斬り",
+      "identityStatus": "MATCHED",
+      "identityReason": "旧IDのfadeではなく表示名の見切り斬りを根拠とする。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "LS_FORESIGHT_SLASH",
+      "candidates": [
+        {
+          "techniqueId": "LS_FORESIGHT_SLASH",
+          "name": "見切り斬り",
+          "mvTotal": 11,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LS_R47_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 25,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "long-sword",
+      "legacyId": "ls_helm",
+      "legacyName": "兜割（赤）",
+      "identityStatus": "MATCHED",
+      "identityReason": "兜割・赤ゲージの明示が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "LS_HELM_BREAKER_RED",
+      "candidates": [
+        {
+          "techniqueId": "LS_HELM_BREAKER_RED",
+          "name": "気刃兜割赤",
+          "mvTotal": 161,
+          "registeredHitEntries": 7,
+          "stateRequirement": {
+            "spiritColor": "RED"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_LS_R47_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 175,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "long-sword",
+      "legacyId": "ls_release",
+      "legacyName": "練気解放無双斬り（赤）",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "旧技は赤を明示するが対象の状態補正との対応確認が必要。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "LS_SPIRIT_RELEASE",
+          "name": "練気解放無双斬り",
+          "mvTotal": 261,
+          "registeredHitEntries": 15,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LS_R47_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 285,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "sword-and-shield",
+      "legacyId": "sns_slash",
+      "legacyName": "斬り下ろし",
+      "identityStatus": "MATCHED",
+      "identityReason": "技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "SNS_DOWNWARD_SLASH",
+      "candidates": [
+        {
+          "techniqueId": "SNS_DOWNWARD_SLASH",
+          "name": "斬り下ろし",
+          "mvTotal": 18,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "GAME8_2025_06_30_SNS_NERF",
+            "MACARONGAMEMO_SNS_VER1020_HISTORY"
+          ]
+        }
+      ],
+      "legacyMvTotal": 20,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": true,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "sword-and-shield",
+      "legacyId": "sns_horizontal",
+      "legacyName": "水平斬り",
+      "identityStatus": "MATCHED",
+      "identityReason": "技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "SNS_HORIZONTAL_SLASH",
+      "candidates": [
+        {
+          "techniqueId": "SNS_HORIZONTAL_SLASH",
+          "name": "水平斬り",
+          "mvTotal": 27,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "KUROYONHON_SNS_DAMAGE_CURRENT"
+          ]
+        }
+      ],
+      "legacyMvTotal": 20,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": true,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "sword-and-shield",
+      "legacyId": "sns_shield",
+      "legacyName": "盾攻撃",
+      "identityStatus": "MATCHED",
+      "identityReason": "技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "SNS_SHIELD_ATTACK",
+      "candidates": [
+        {
+          "techniqueId": "SNS_SHIELD_ATTACK",
+          "name": "盾攻撃",
+          "mvTotal": 16,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_SNS_R47_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 8,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "sword-and-shield",
+      "legacyId": "sns_falling",
+      "legacyName": "フォールバッシュ",
+      "identityStatus": "MATCHED",
+      "identityReason": "技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "SNS_FALLING_BASH",
+      "candidates": [
+        {
+          "techniqueId": "SNS_FALLING_BASH",
+          "name": "フォールバッシュ",
+          "mvTotal": 99,
+          "registeredHitEntries": 2,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_SNS_R47_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 60,
+      "legacyEntryCount": 2,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "dual-blades",
+      "legacyId": "db_double",
+      "legacyName": "二段斬り",
+      "identityStatus": "MATCHED",
+      "identityReason": "二段斬りであり鬼人二段斬りとは区別する。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "DB_DOUBLE_SLASH",
+      "candidates": [
+        {
+          "techniqueId": "DB_DOUBLE_SLASH",
+          "name": "二段斬り",
+          "mvTotal": 18,
+          "registeredHitEntries": 2,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_DB_R48_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 18,
+      "legacyEntryCount": 2,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "dual-blades",
+      "legacyId": "db_dance1",
+      "legacyName": "鬼人連斬 I",
+      "identityStatus": "MATCHED",
+      "identityReason": "表示名は鬼人連斬Ⅰ。乱舞Ⅰではない。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "DB_DEMON_FLURRY_I",
+      "candidates": [
+        {
+          "techniqueId": "DB_DEMON_FLURRY_I",
+          "name": "鬼人連斬Ⅰ",
+          "mvTotal": 60,
+          "registeredHitEntries": 4,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_DB_R48_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 120,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "dual-blades",
+      "legacyId": "db_dance2",
+      "legacyName": "鬼人連斬 II",
+      "identityStatus": "MATCHED",
+      "identityReason": "表示名は鬼人連斬Ⅱ。乱舞Ⅱではない。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "DB_DEMON_FLURRY_II",
+      "candidates": [
+        {
+          "techniqueId": "DB_DEMON_FLURRY_II",
+          "name": "鬼人連斬Ⅱ",
+          "mvTotal": 50,
+          "registeredHitEntries": 4,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_DB_R48_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 135,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "dual-blades",
+      "legacyId": "db_dance3",
+      "legacyName": "鬼人連斬 III",
+      "identityStatus": "UNMAPPED",
+      "identityReason": "鬼人連斬Ⅲに一致する登録技なし。乱舞Ⅲへの置換を禁止。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [],
+      "legacyMvTotal": 138,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "dual-blades",
+      "legacyId": "db_flurry",
+      "legacyName": "鬼人突進連斬",
+      "identityStatus": "MATCHED",
+      "identityReason": "鬼人突進連斬の技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "DB_DEMON_ADVANCING_SLASH",
+      "candidates": [
+        {
+          "techniqueId": "DB_DEMON_ADVANCING_SLASH",
+          "name": "鬼人突進連斬",
+          "mvTotal": 40,
+          "registeredHitEntries": 6,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_DB_R48_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 110,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "hammer",
+      "legacyId": "hm_swing",
+      "legacyName": "縦振り",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "縦振りの連携段階が不明。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "HAM_VERTICAL_I",
+          "name": "縦振りⅠ",
+          "mvTotal": 41,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HAM_R48_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "HAM_VERTICAL_II",
+          "name": "縦振りⅡ",
+          "mvTotal": 45,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HAMMER_VER1011"
+          ]
+        }
+      ],
+      "legacyMvTotal": 37,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "hammer",
+      "legacyId": "hm_side",
+      "legacyName": "横振り",
+      "identityStatus": "MATCHED",
+      "identityReason": "横振りの技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "HAM_SIDE_SWING",
+      "candidates": [
+        {
+          "techniqueId": "HAM_SIDE_SWING",
+          "name": "横振り",
+          "mvTotal": 23,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HAMMER_VER1011"
+          ]
+        }
+      ],
+      "legacyMvTotal": 15,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": true,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "hammer",
+      "legacyId": "hm_charge2",
+      "legacyName": "溜め2攻撃",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "溜め2攻撃という汎用名だけでは入力と状態の確定が不十分。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "HAM_CHARGED_UPPERCUT",
+          "name": "溜めアッパー",
+          "mvTotal": 70,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HAM_R48_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 45,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "hammer",
+      "legacyId": "hm_big",
+      "legacyName": "アッパー",
+      "identityStatus": "MATCHED",
+      "identityReason": "アッパーの技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "HAM_UPPERCUT",
+      "candidates": [
+        {
+          "techniqueId": "HAM_UPPERCUT",
+          "name": "アッパー",
+          "mvTotal": 95,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HAMMER_VER1011"
+          ]
+        }
+      ],
+      "legacyMvTotal": 48,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": true,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "hunting-horn",
+      "legacyId": "hh_left",
+      "legacyName": "左ぶん回し",
+      "identityStatus": "MATCHED",
+      "identityReason": "左ぶん回しの技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "HH_LEFT_SWING",
+      "candidates": [
+        {
+          "techniqueId": "HH_LEFT_SWING",
+          "name": "左ぶん回し",
+          "mvTotal": 33,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HH_MOTION"
+          ]
+        }
+      ],
+      "legacyMvTotal": 30,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": true,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "hunting-horn",
+      "legacyId": "hh_forward",
+      "legacyName": "前方攻撃",
+      "identityStatus": "MATCHED",
+      "identityReason": "前方攻撃の技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "HH_FORWARD_ATTACK",
+      "candidates": [
+        {
+          "techniqueId": "HH_FORWARD_ATTACK",
+          "name": "前方攻撃",
+          "mvTotal": 32,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HH_MOTION"
+          ]
+        }
+      ],
+      "legacyMvTotal": 30,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": true,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "hunting-horn",
+      "legacyId": "hh_slam",
+      "legacyName": "叩きつけ",
+      "identityStatus": "MATCHED",
+      "identityReason": "叩きつけ。叩きつけ・追撃とは区別する。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "HH_SLAM",
+      "candidates": [
+        {
+          "techniqueId": "HH_SLAM",
+          "name": "叩きつけ",
+          "mvTotal": 56,
+          "registeredHitEntries": 2,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HH_R48_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 30,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "hunting-horn",
+      "legacyId": "hh_melody",
+      "legacyName": "演奏攻撃",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "旋律と音波を含む範囲が不明。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "HH_PERFORMANCE_BODY",
+          "name": "演奏",
+          "mvTotal": 35,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HH_R48_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "HH_SELF_IMPROVEMENT_PERFORMANCE",
+          "name": "自分強化旋律",
+          "mvTotal": 35,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HH_MOTION"
+          ]
+        }
+      ],
+      "legacyMvTotal": 35,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "lance",
+      "legacyId": "ln_mid",
+      "legacyName": "中段突き",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "中段突きの連携段階が不明。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "LAN_MID_THRUST_I",
+          "name": "中段突きⅠ",
+          "mvTotal": 26,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LANCE_VER1021",
+            "MACARONGAMEMO_LANCE_VER1040"
+          ]
+        },
+        {
+          "techniqueId": "LAN_MID_THRUST_II",
+          "name": "中段突きⅡ",
+          "mvTotal": 26,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LANCE_VER1021",
+            "MACARONGAMEMO_LANCE_VER1040"
+          ]
+        },
+        {
+          "techniqueId": "LAN_MID_THRUST_III",
+          "name": "中段突きⅢ",
+          "mvTotal": 35,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LANCE_VER1021",
+            "MACARONGAMEMO_LANCE_VER1040"
+          ]
+        }
+      ],
+      "legacyMvTotal": 20,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "lance",
+      "legacyId": "ln_high",
+      "legacyName": "上段突き",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "上段突きの連携段階が不明。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "LAN_HIGH_THRUST_I",
+          "name": "上段突きⅠ",
+          "mvTotal": 31,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LAN_R48_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "LAN_HIGH_THRUST_II",
+          "name": "上段突きⅡ",
+          "mvTotal": 31,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LAN_R48_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "LAN_HIGH_THRUST_III",
+          "name": "上段突きⅢ",
+          "mvTotal": 42,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LAN_R48_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 22,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "lance",
+      "legacyId": "ln_counter",
+      "legacyName": "カウンター突き",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "旧カウンター突きの入力・溜め・反撃経路が不明。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "LAN_CHARGED_COUNTER",
+          "name": "溜めカウンター",
+          "mvTotal": 43,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LAN_R48_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "LAN_COUNTER_DOUBLE_THRUST",
+          "name": "カウンター二連突き",
+          "mvTotal": 83,
+          "registeredHitEntries": 2,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LAN_R48_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "LAN_RETURN_THRUST",
+          "name": "返し突き",
+          "mvTotal": 24,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LAN_R48_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 35,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "lance",
+      "legacyId": "ln_charge",
+      "legacyName": "突進",
+      "identityStatus": "MATCHED",
+      "identityReason": "表示名の突進が一致。可変Hitは別途保留。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "LAN_DASH",
+      "candidates": [
+        {
+          "techniqueId": "LAN_DASH",
+          "name": "突進",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LAN_R48_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 16,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "gunlance",
+      "legacyId": "gl_thrust",
+      "legacyName": "踏み込み突き上げ",
+      "identityStatus": "MATCHED",
+      "identityReason": "踏み込み突き上げの技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "GL_ADVANCING_RISING",
+      "candidates": [
+        {
+          "techniqueId": "GL_ADVANCING_RISING",
+          "name": "踏み込み突き上げ",
+          "mvTotal": 38,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 24,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "gunlance",
+      "legacyId": "gl_shell",
+      "legacyName": "水平砲撃",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "砲撃タイプと威力区分が旧技にない。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "GL_SHELL_NORMAL_LOW",
+          "name": "砲撃（通常／やや弱い）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "NORMAL",
+            "shellingPower": "LOW"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_SHELL_NORMAL_MEDIUM",
+          "name": "砲撃（通常／ふつう）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "NORMAL",
+            "shellingPower": "MEDIUM"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_SHELL_NORMAL_HIGH",
+          "name": "砲撃（通常／やや強い）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "NORMAL",
+            "shellingPower": "HIGH"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_SHELL_LONG_LOW",
+          "name": "砲撃（放射／やや弱い）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "LONG",
+            "shellingPower": "LOW"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_SHELL_LONG_MEDIUM",
+          "name": "砲撃（放射／ふつう）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "LONG",
+            "shellingPower": "MEDIUM"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_SHELL_LONG_HIGH",
+          "name": "砲撃（放射／やや強い）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "LONG",
+            "shellingPower": "HIGH"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_SHELL_WIDE_LOW",
+          "name": "砲撃（拡散／やや弱い）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "WIDE",
+            "shellingPower": "LOW"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_SHELL_WIDE_MEDIUM",
+          "name": "砲撃（拡散／ふつう）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "WIDE",
+            "shellingPower": "MEDIUM"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_SHELL_WIDE_HIGH",
+          "name": "砲撃（拡散／やや強い）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "WIDE",
+            "shellingPower": "HIGH"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 20,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "gunlance",
+      "legacyId": "gl_burst",
+      "legacyName": "フルバースト",
+      "identityStatus": "UNMAPPED",
+      "identityReason": "フルバーストの経路と弾数が不明。竜杭フルバーストとは同一視しない。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [],
+      "legacyMvTotal": 60,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "gunlance",
+      "legacyId": "gl_wyvern",
+      "legacyName": "竜撃砲",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "砲撃タイプと威力区分が旧技にない。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "GL_WYVERN_FIRE_NORMAL_LOW",
+          "name": "竜撃砲（通常／やや弱い）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "NORMAL",
+            "shellingPower": "LOW"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_WYVERN_FIRE_NORMAL_MEDIUM",
+          "name": "竜撃砲（通常／ふつう）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "NORMAL",
+            "shellingPower": "MEDIUM"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_WYVERN_FIRE_NORMAL_HIGH",
+          "name": "竜撃砲（通常／やや強い）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "NORMAL",
+            "shellingPower": "HIGH"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_WYVERN_FIRE_LONG_LOW",
+          "name": "竜撃砲（放射／やや弱い）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "LONG",
+            "shellingPower": "LOW"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_WYVERN_FIRE_LONG_MEDIUM",
+          "name": "竜撃砲（放射／ふつう）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "LONG",
+            "shellingPower": "MEDIUM"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_WYVERN_FIRE_LONG_HIGH",
+          "name": "竜撃砲（放射／やや強い）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "LONG",
+            "shellingPower": "HIGH"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_WYVERN_FIRE_WIDE_LOW",
+          "name": "竜撃砲（拡散／やや弱い）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "WIDE",
+            "shellingPower": "LOW"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_WYVERN_FIRE_WIDE_MEDIUM",
+          "name": "竜撃砲（拡散／ふつう）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "WIDE",
+            "shellingPower": "MEDIUM"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "GL_WYVERN_FIRE_WIDE_HIGH",
+          "name": "竜撃砲（拡散／やや強い）",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {
+            "shellingType": "WIDE",
+            "shellingPower": "HIGH"
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_GL_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 140,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "switch-axe",
+      "legacyId": "sa_vertical",
+      "legacyName": "縦斬り",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "斧/剣モードが旧技にない。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "SA_AXE_VERTICAL",
+          "name": "縦斬り(斧)",
+          "mvTotal": 45,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_SA_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "SA_SWORD_VERTICAL",
+          "name": "剣：縦斬り",
+          "mvTotal": 33,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_SWITCH_AXE_CURRENT"
+          ]
+        }
+      ],
+      "legacyMvTotal": 25,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "switch-axe",
+      "legacyId": "sa_horizontal",
+      "legacyName": "横斬り",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "斧モードの明示が旧技にないため候補のみ。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "SA_AXE_HORIZONTAL",
+          "name": "横斬り",
+          "mvTotal": 23,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_SA_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 20,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "switch-axe",
+      "legacyId": "sa_heavy",
+      "legacyName": "斧強化叩きつけ",
+      "identityStatus": "MATCHED",
+      "identityReason": "斧強化叩きつけの明示が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "SA_AXE_POWER_SLAM",
+      "candidates": [
+        {
+          "techniqueId": "SA_AXE_POWER_SLAM",
+          "name": "強化叩きつけ",
+          "mvTotal": 87,
+          "registeredHitEntries": 2,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_SA_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 35,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "switch-axe",
+      "legacyId": "sa_element",
+      "legacyName": "属性解放突き",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "継続回数・フィニッシュ・零距離の有無が不明。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "SA_ELEMENT_DISCHARGE_FINISH",
+          "name": "属性解放フィニッシュ",
+          "mvTotal": 251,
+          "registeredHitEntries": 10,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_SA_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "SA_ELEMENT_DISCHARGE_SHORT",
+          "name": "簡易属性解放フィニッシュ",
+          "mvTotal": 121,
+          "registeredHitEntries": 5,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_SA_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "SA_ZERO_SUM_FINISH",
+          "name": "零距離解放フィニッシュ",
+          "mvTotal": 332,
+          "registeredHitEntries": 14,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_SA_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "SA_ZERO_SUM_SHORT",
+          "name": "簡易零距離解放フィニッシュ",
+          "mvTotal": 139,
+          "registeredHitEntries": 5,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_SA_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 100,
+      "legacyEntryCount": 4,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "charge-blade",
+      "legacyId": "cb_check",
+      "legacyName": "牽制斬り",
+      "identityStatus": "MATCHED",
+      "identityReason": "牽制斬りの技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "CB_SWORD_WEAK_SLASH",
+      "candidates": [
+        {
+          "techniqueId": "CB_SWORD_WEAK_SLASH",
+          "name": "牽制斬り",
+          "mvTotal": 12,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_CB_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 20,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "charge-blade",
+      "legacyId": "cb_spin",
+      "legacyName": "回転斬り",
+      "identityStatus": "MATCHED",
+      "identityReason": "回転斬り。属性強化回転斬りとは区別する。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "CB_SWORD_ROUND_SLASH",
+      "candidates": [
+        {
+          "techniqueId": "CB_SWORD_ROUND_SLASH",
+          "name": "回転斬り",
+          "mvTotal": 30,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_CB_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 30,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "charge-blade",
+      "legacyId": "cb_axe",
+      "legacyName": "斧：強化叩きつけ",
+      "identityStatus": "UNMAPPED",
+      "identityReason": "斧：強化叩きつけに一致する登録技なし。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [],
+      "legacyMvTotal": 40,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "charge-blade",
+      "legacyId": "cb_saed",
+      "legacyName": "高出力属性解放斬り",
+      "identityStatus": "MATCHED",
+      "identityReason": "旧IDのsaedではなく表示名の高出力を根拠とする。超高出力とは区別。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "CB_AED",
+      "candidates": [
+        {
+          "techniqueId": "CB_AED",
+          "name": "斧：高出力属性解放斬り",
+          "mvTotal": 68,
+          "registeredHitEntries": 1,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+            "KUROYONHON_CB_CURRENT"
+          ]
+        }
+      ],
+      "legacyMvTotal": 120,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": true,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "insect-glaive",
+      "legacyId": "ig_slash",
+      "legacyName": "飛円斬り",
+      "identityStatus": "MATCHED",
+      "identityReason": "飛円斬りの技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "IG_TORNADO_SLASH",
+      "candidates": [
+        {
+          "techniqueId": "IG_TORNADO_SLASH",
+          "name": "飛円斬り",
+          "mvTotal": 70,
+          "registeredHitEntries": 2,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_IG_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 30,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "insect-glaive",
+      "legacyId": "ig_combo",
+      "legacyName": "強化連続斬り上げ",
+      "identityStatus": "MATCHED",
+      "identityReason": "強化連続斬り上げの技名が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "IG_ENHANCED_RISING_COMBO",
+      "candidates": [
+        {
+          "techniqueId": "IG_ENHANCED_RISING_COMBO",
+          "name": "強化連続斬り上げ",
+          "mvTotal": 60,
+          "registeredHitEntries": 3,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_IG_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 40,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "insect-glaive",
+      "legacyId": "ig_jump",
+      "legacyName": "飛燕",
+      "identityStatus": "UNMAPPED",
+      "identityReason": "飛燕は具体的な技の入力・名称として確定できない。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [],
+      "legacyMvTotal": 24,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "insect-glaive",
+      "legacyId": "ig_rising",
+      "legacyName": "急襲突き",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "急襲突きのエキス・溜め・舞踏跳躍状態が不明。強化急襲斬りとは区別。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "IG_DESCENDING_THRUST",
+          "name": "急襲突き",
+          "mvTotal": 57,
+          "registeredHitEntries": 3,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_IG_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "IG_ENHANCED_DESCENDING_THRUST_SOURCE",
+          "name": "強化急襲突き",
+          "mvTotal": 107,
+          "registeredHitEntries": 6,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_IG_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 60,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "light-bowgun",
+      "legacyId": "lbg_normal3",
+      "legacyName": "通常弾 Lv3",
+      "identityStatus": "MATCHED",
+      "identityReason": "通常弾Lv3が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "LBG_NORMAL_AMMO_3",
+      "candidates": [
+        {
+          "techniqueId": "LBG_NORMAL_AMMO_3",
+          "name": "Lv3通常弾",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LBG_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 10,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "SPECIAL_HANDLER_REQUIRED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "light-bowgun",
+      "legacyId": "lbg_pierce2",
+      "legacyName": "貫通弾 Lv2",
+      "identityStatus": "MATCHED",
+      "identityReason": "貫通弾Lv2が一致。Hit数は別途保留。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "LBG_PIERCE_AMMO_2",
+      "candidates": [
+        {
+          "techniqueId": "LBG_PIERCE_AMMO_2",
+          "name": "Lv2貫通弾",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_LBG_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 21,
+      "legacyEntryCount": 3,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "light-bowgun",
+      "legacyId": "lbg_rapid",
+      "legacyName": "速射",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "速射の対象弾・速射仕様が不明。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [],
+      "legacyMvTotal": 30,
+      "legacyEntryCount": 3,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "light-bowgun",
+      "legacyId": "lbg_special",
+      "legacyName": "特殊弾",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "特殊弾の種類が特定されていない。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [],
+      "legacyMvTotal": 35,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "heavy-bowgun",
+      "legacyId": "hbg_normal3",
+      "legacyName": "通常弾 Lv3",
+      "identityStatus": "MATCHED",
+      "identityReason": "通常弾Lv3が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "HBG_NORMAL_AMMO_3",
+      "candidates": [
+        {
+          "techniqueId": "HBG_NORMAL_AMMO_3",
+          "name": "Lv3通常弾",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HBG_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 10,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "SPECIAL_HANDLER_REQUIRED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "heavy-bowgun",
+      "legacyId": "hbg_pierce2",
+      "legacyName": "貫通弾 Lv2",
+      "identityStatus": "MATCHED",
+      "identityReason": "貫通弾Lv2が一致。Hit数は別途保留。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "HBG_PIERCE_AMMO_2",
+      "candidates": [
+        {
+          "techniqueId": "HBG_PIERCE_AMMO_2",
+          "name": "Lv2貫通弾",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HBG_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 21,
+      "legacyEntryCount": 3,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "heavy-bowgun",
+      "legacyId": "hbg_cluster",
+      "legacyName": "徹甲榴弾",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "表示名は徹甲榴弾。旧IDのclusterから拡散弾へ推測しない。Lv不明。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "HBG_STICKY_AMMO_1",
+          "name": "Lv1徹甲榴弾",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HBG_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "HBG_STICKY_AMMO_2",
+          "name": "Lv2徹甲榴弾",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HBG_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "HBG_STICKY_AMMO_3",
+          "name": "Lv3徹甲榴弾",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HBG_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 35,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "heavy-bowgun",
+      "legacyId": "hbg_special",
+      "legacyName": "機関竜弾",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "機関竜弾と竜熱機関竜弾の経路・条件の対応確認が必要。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "HBG_IGNITION_MACHINE",
+          "name": "竜熱機関竜弾",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_HBG_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 100,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "bow",
+      "legacyId": "bow_shot",
+      "legacyName": "射撃 Lv3",
+      "identityStatus": "MATCHED",
+      "identityReason": "射撃Lv3と溜め3の段階が一致。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "BOW_SHOT_3",
+      "candidates": [
+        {
+          "techniqueId": "BOW_SHOT_3",
+          "name": "射撃（溜め3）",
+          "mvTotal": 36,
+          "registeredHitEntries": 3,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_BOW_MOTION_CURRENT"
+          ]
+        }
+      ],
+      "legacyMvTotal": 24,
+      "legacyEntryCount": 1,
+      "canonicalHitsReady": true,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "bow",
+      "legacyId": "bow_spread",
+      "legacyName": "剛射",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "剛射の溜め段階が不明。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "BOW_POWER_SHOT_1",
+          "name": "剛射1",
+          "mvTotal": 30,
+          "registeredHitEntries": 3,
+          "stateRequirement": {
+            "chargeLevel": 1
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_BOW_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "BOW_POWER_SHOT_2",
+          "name": "剛射2",
+          "mvTotal": 44,
+          "registeredHitEntries": 4,
+          "stateRequirement": {
+            "chargeLevel": 2
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_BOW_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "BOW_POWER_SHOT_3",
+          "name": "剛射3",
+          "mvTotal": 60,
+          "registeredHitEntries": 5,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_BOW_MOTION_CURRENT"
+          ]
+        }
+      ],
+      "legacyMvTotal": 40,
+      "legacyEntryCount": 2,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "bow",
+      "legacyId": "bow_arc",
+      "legacyName": "曲射",
+      "identityStatus": "AMBIGUOUS",
+      "identityReason": "曲射の溜め段階・炸裂を含む範囲が不明。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": null,
+      "candidates": [
+        {
+          "techniqueId": "BOW_ARC_SHOT_1",
+          "name": "曲射1",
+          "mvTotal": 62,
+          "registeredHitEntries": 6,
+          "stateRequirement": {
+            "chargeLevel": 1
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_BOW_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "BOW_ARC_SHOT_2",
+          "name": "曲射2",
+          "mvTotal": 89,
+          "registeredHitEntries": 8,
+          "stateRequirement": {
+            "chargeLevel": 2
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_BOW_R49_SOURCE"
+          ]
+        },
+        {
+          "techniqueId": "BOW_ARC_SHOT_3",
+          "name": "曲射3",
+          "mvTotal": 129,
+          "registeredHitEntries": 11,
+          "stateRequirement": {
+            "chargeLevel": 3
+          },
+          "evidenceRefs": [
+            "MACARONGAMEMO_BOW_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 30,
+      "legacyEntryCount": 3,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "LEGACY_IDENTITY_UNRESOLVED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    },
+    {
+      "weaponType": "bow",
+      "legacyId": "bow_power",
+      "legacyName": "竜の一矢",
+      "identityStatus": "MATCHED",
+      "identityReason": "竜の一矢の技名が一致。可変Hitは別途保留。",
+      "identityEvidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ],
+      "canonicalTechniqueId": "BOW_DRAGON_PIERCER",
+      "candidates": [
+        {
+          "techniqueId": "BOW_DRAGON_PIERCER",
+          "name": "竜の一矢",
+          "mvTotal": null,
+          "registeredHitEntries": 0,
+          "stateRequirement": {},
+          "evidenceRefs": [
+            "MACARONGAMEMO_BOW_R49_SOURCE"
+          ]
+        }
+      ],
+      "legacyMvTotal": 60,
+      "legacyEntryCount": 4,
+      "canonicalHitsReady": false,
+      "dpsReady": false,
+      "blockers": [
+        "LEGACY_TIMING_UNVERIFIED",
+        "CANONICAL_EVIDENCE_GATED"
+      ],
+      "canonicalReadScope": "REGISTERED_NORMAL_HITS_ONLY",
+      "completeTechniqueReady": false
+    }
+  ]
+}

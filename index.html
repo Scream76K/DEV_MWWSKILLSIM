@@ -3,7 +3,7 @@
 <html lang="ja"><head>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <meta content="#2b2118" name="theme-color"/><link href="manifest.webmanifest" rel="manifest"/>
-<title>MH Wilds 装備セット＆火力シミュレーター r65 / v7.2.2-template-rootfix-r7 / OCR統合 r1.1.19 fix12 / ビルドテンプレート</title>
+<title>MH Wilds 装備セット＆火力シミュレーター r73 / v7.2.2-template-rootfix-r7 / OCR統合 r1.1.19 fix12 / ビルドテンプレート</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#0a0f1e;color:#eef2ff;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif}header{padding:18px;background:#111827;border-bottom:1px solid #334155}.wrap{max-width:1100px;margin:auto;padding:12px}h1{font-size:22px;margin:0 0 5px}.muted{color:#94a3b8;font-size:12px}.grid{display:grid;grid-template-columns:300px 1fr;gap:12px}.card{background:#151d33;border:1px solid #334155;border-radius:14px;padding:14px;margin-bottom:12px}h2{font-size:17px;margin:0 0 10px}h3{font-size:14px;margin:12px 0 7px}label{font-size:12px;color:#cbd5e1;display:block;margin:7px 0 4px}select,input,button{width:100%;min-height:42px;padding:8px 10px;border:1px solid #475569;border-radius:9px;background:#0b1020;color:#fff;font:inherit}button{cursor:pointer}button.primary{background:#2563eb;border-color:#2563eb}button.good{background:#166534;border-color:#166534}button.danger{background:#7f1d1d;border-color:#7f1d1d}.two{display:grid;grid-template-columns:1fr 1fr;gap:7px}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}.slotgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.slot{border:1px solid #475569;border-radius:8px;padding:6px;background:#0b1020}.equip{border:1px solid #334155;border-radius:10px;padding:9px;margin:8px 0;background:#0b1020}.equip b{font-size:13px}.tag{display:inline-block;padding:3px 7px;border:1px solid #475569;border-radius:999px;margin:2px;font-size:11px}.notice{padding:9px;border:1px solid #475569;border-radius:9px;background:#0f172a;margin-top:8px}.ok{color:#86efac}.warn{color:#fbbf24}.bad{color:#fca5a5}.info{color:#93c5fd}.sticky{position:sticky;bottom:10px;z-index:5}.summarygrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.metric{border:1px solid #334155;border-radius:9px;padding:10px;background:#0b1020}.metric b{display:block;font-size:19px;margin-top:3px}.affline{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:12px}.affline span{font-size:12px;color:#cbd5e1}.affline b{font-size:19px;margin-top:0}.game-status{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid #475569;border-radius:10px;overflow:hidden;background:#0b1020}.game-status .gs-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #334155}.game-status .gs-row:nth-child(odd){border-right:1px solid #334155}.game-status .gs-label{font-size:13px;color:#cbd5e1}.game-status .gs-value{font-size:20px;font-weight:700}.game-status .gs-sub{font-size:11px;color:#94a3b8;margin-left:5px;font-weight:400}.skill-order-note{font-size:11px;color:#94a3b8;margin-top:5px}.skill-game-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.skill-bucket{margin-top:9px}.skill-bucket-title{font-size:13px;font-weight:800;border-left:4px solid #64748b;padding:5px 8px;background:#0f172a;border-radius:4px}.skill-game{border:1px solid #475569;border-radius:8px;padding:8px 9px;background:#0b1020}.skill-game-name{font-size:13px;font-weight:700;margin-bottom:6px}.skill-game-binary .skill-game-name{margin-bottom:0}.skill-blocks{display:flex;gap:3px;flex-wrap:wrap}.skill-block{width:13px;height:13px;border:1px solid #64748b;border-radius:2px;background:#111827}.skill-block.on{background:#facc15;border-color:#fde047;box-shadow:0 0 5px rgba(250,204,21,.35)} .equip-title{font-size:16px;font-weight:800;letter-spacing:.02em;margin-bottom:7px}.equip-inline{border:1px solid #334155;border-radius:10px;padding:9px;margin:7px 0;background:#0b1020}.equip-inline .equip-title{margin-bottom:6px}.inline-slot-list{display:grid;gap:4px;margin-top:6px}.inline-slot{display:grid;grid-template-columns:42px minmax(0,1fr);gap:5px;align-items:center}.inline-slot .slot-num{font-weight:800;text-align:center}.inline-slot .slot-size{font-weight:800;text-align:center;border:1px solid #475569;border-radius:6px;padding:5px 2px;background:#111827}.inline-slot select{min-height:36px;padding:6px 8px}.inline-skill{font-size:12px;color:#cbd5e1;margin:4px 0 6px}.armor-equip-grid{display:grid;grid-template-columns:1fr;gap:8px}.armor-equip-grid .equip-inline{margin:0}.section-title{font-size:16px;font-weight:800;margin:12px 0 6px}@media(max-width:760px){.armor-equip-grid{grid-template-columns:1fr}.inline-slot{grid-template-columns:22px 38px minmax(0,1fr)}}.slot-lines{display:grid;gap:4px;margin:4px 0 8px}.slot-line{font-size:14px;font-weight:700;padding:5px 8px;border:1px solid #334155;border-radius:7px;background:#0b1020}.slot-line{display:grid;grid-template-columns:40px minmax(0,1fr);gap:7px;align-items:center}.slot-line .slot-num{font-size:20px;font-weight:800;text-align:center}.slot-line select{min-height:36px;padding:6px 8px}.equip-skill-preview{font-size:12px;color:#cbd5e1;margin-top:6px}@media(max-width:760px){.slot-line{grid-template-columns:40px minmax(0,1fr)!important}.slot-line .slot-size{width:40px;min-width:40px;max-width:40px;padding-left:0;padding-right:0}.game-status{grid-template-columns:1fr}.game-status .gs-row:nth-child(odd){border-right:0}}table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:7px;border-bottom:1px solid #334155;text-align:left;vertical-align:top}.hidden{display:none}progress{width:100%;height:10px}.small{font-size:11px}.dangerText{color:#fca5a5}.searchbox{margin-bottom:6px}.save-build-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:end}.save-build-row button{min-width:78px}.saved-build-list{display:grid;gap:5px;margin-top:7px}.compare-list{display:grid;gap:6px;margin-top:8px}.compare-item{display:grid;grid-template-columns:28px minmax(0,1fr);gap:7px;align-items:center;border:1px solid #334155;border-radius:8px;padding:7px 9px;background:#0b1020}.compare-item input{width:18px;min-height:18px}.compare-item .compare-meta{font-size:11px;color:#94a3b8;margin-top:2px}.compare-table{overflow:auto;margin-top:9px}.compare-table table{min-width:680px}.compare-table th{background:#0f172a;white-space:nowrap}.compare-best{font-weight:800}.compare-note{font-size:11px;color:#94a3b8;margin-top:6px}
 .saved-build-item{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:5px;align-items:center}.buildslot{margin-top:6px}.skilllist{display:grid;gap:4px;max-height:520px;overflow:auto}.skillrow{display:flex;justify-content:space-between;gap:8px;padding:7px 9px;border:1px solid #334155;border-radius:8px;background:#0b1020}.skillrow .lv{font-weight:700}.checkline{display:flex;align-items:center;gap:7px;font-size:12px}.checkline input{width:auto;min-height:0}.tabs{display:flex;gap:5px;overflow:auto;margin-bottom:10px}.tab{white-space:nowrap;padding:9px 12px;border:1px solid #475569;border-radius:999px;background:#0b1020}.tab.active{background:#2563eb;border-color:#2563eb}@media(max-width:760px){.grid{grid-template-columns:1fr}.summarygrid{grid-template-columns:1fr 1fr}.two,.three{grid-template-columns:1fr}.slotgrid{grid-template-columns:1fr 1fr}}
@@ -152,10 +152,7 @@ button.danger{background:linear-gradient(180deg,#9b4638,#6f2d25)!important;color
 .ai-quick-row .aiQuick{border-radius:7px!important}
 /* v7.1.0: comparison table readability */
 .compare-table{border:1px solid var(--line);border-radius:9px;overflow:auto;background:var(--paper2)}
-.compare-table{--compare-item-width:112px;--compare-build-width:120px}
-.compare-table table{table-layout:fixed;width:calc(var(--compare-item-width) + var(--compare-build-count) * var(--compare-build-width));min-width:0;color:var(--ink)}
-.compare-table col.compare-item-col{width:var(--compare-item-width)}
-.compare-table col.compare-build-col{width:var(--compare-build-width)}
+.compare-table table{table-layout:fixed;min-width:0;color:var(--ink)}
 .compare-table th,.compare-table td{white-space:normal;overflow-wrap:anywhere}
 .compare-table th{background:#3f3022!important;color:#fff!important;border-bottom:2px solid var(--accent2)!important;font-weight:800}
 .compare-table td{background:rgba(244,236,217,.98);color:var(--ink)!important;border-bottom:1px solid #b6a384!important}
@@ -314,11 +311,12 @@ window.R45_RELEASE=Object.freeze({version:'r45',gameVersion:'1.042.00.02',techni
 .grid{grid-template-columns:300px minmax(0,1fr)}
 .grid>*{min-width:0}
 #compareOut{min-width:0;max-width:100%}
+.compare-results{width:100%;max-width:474px;display:grid;gap:12px}
 .compare-table{width:max-content;min-width:0;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media(max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head><body>
-<div class="notice"><b>v7.2.2-template-rootfix-r7 / OCR統合 r1.1.19 fix12</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">r65 Compact Fixed Comparison Columns / Game Ver.1.042.00.02</div>
+<div class="notice"><b>v7.2.2-template-rootfix-r7 / OCR統合 r1.1.19 fix12</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">r73 Backup and Verification Kit / Game Ver.1.042.00.02</div>
 <header><div class="wrap"><h1>⚔️ MH Wilds 装備セット＆火力シミュレーター v7.2.1 / OCR統合 r1.1.19 / ビルドテンプレート</h1><div class="muted">①〜⑤ ハンターズノート：装備を作る・記録する　｜　⑥〜⑧ ハンターズサポート：分析・提案・相談</div></div></header>
 <section class="wrap" style="margin:12px auto"><details class="card" id="techAuditPanel"><summary><b>技DBの数値・確認状況</b></summary><p class="small">登録値、資料の候補値、STANDARDの保留理由を確認できます。候補値は計算には使用しません。「未記載」の補正を1として扱うことはありません。</p><div class="two"><div><label for="techAuditKind">武器種</label><select id="techAuditKind"></select></div><div><label for="techAuditId">技</label><select id="techAuditId"></select></div></div><div id="techAuditSummary"></div><div id="techAuditOut"></div></details></section>
 <section class="wrap" style="margin:12px auto"><details class="card" id="hhReferencePanel"><summary><b>狩猟笛の音波・固定ダメージ参考計算</b></summary><p>発生するイベントの回数を明示して、資料の式による未丸めの参考値を確認します。本体攻撃を含みません。狩猟笛全体の火力・DPSやビルド比較には使用しません。</p><p class="small">全欄に入力してください。発生しないイベントは0です。確認済みの追撃4回から、イベントの種類や回数を自動補完しません。</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px"><label for="hhRefAttack">攻撃力（武器係数なし・計算に使う値）<input id="hhRefAttack" type="number" min="0" step="any" inputmode="decimal" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefElement">表示属性値（無属性は0）<input id="hhRefElement" type="number" min="0" step="any" inputmode="decimal" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefElementHz">属性肉質（%）<input id="hhRefElementHz" type="number" min="0" step="any" inputmode="decimal" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefPerformance">演奏衝撃波の回数<input id="hhRefPerformance" type="number" min="0" step="1" inputmode="numeric" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefNormalEcho">通常攻撃時の響玉追撃の回数<input id="hhRefNormalEcho" type="number" min="0" step="1" inputmode="numeric" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefMelodyEcho">旋律成立時の響玉追撃の回数<input id="hhRefMelodyEcho" type="number" min="0" step="1" inputmode="numeric" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefFixed">重ね掛け時の固定10ダメージの回数<input id="hhRefFixed" type="number" min="0" step="1" inputmode="numeric" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label></div><button type="button" id="hhRefCalculate" style="margin-top:12px">参考値を計算</button><output id="hhRefOut" aria-live="polite" style="display:block;white-space:pre-line;margin-top:12px">入力して「参考値を計算」を押してください。</output><p class="small">ゲーム表示の丸め・発生条件・基準版の照合は未確定です。</p></details></section>
@@ -339,8 +337,16 @@ window.R45_RELEASE=Object.freeze({version:'r45',gameVersion:'1.042.00.02',techni
 <button class="good" id="addTechnique" style="margin-top:7px" type="button">＋この武器種に技を登録</button>
 <div class="notice small" id="techniqueEditorStatus" style="margin-top:7px">登録した技はこの端末に保存されます。</div>
 <div id="techniqueCustomList" style="margin-top:7px"></div>
+<details id="canonicalTimingPanel" style="margin-top:10px"><summary>正規技の実測時間を登録</summary><p class="small">入力開始から次の技を入力できるまでの秒数を登録します。連続技では派生方法もメモしてください。登録時間は参考値として単純合算します。技DBと同じゲーム版の記録を使用します。チャージアックスは盾・斧強化と高速変形Lvも一致する場合に適用します。</p>
+<label for="canonicalTimingTechnique">技</label><select id="canonicalTimingTechnique"></select>
+<div class="two"><div><label for="canonicalTimingSeconds">所要時間（秒）</label><input id="canonicalTimingSeconds" type="number" min="0.001" step="any" inputmode="decimal"></div><div><label for="canonicalTimingVersion">測定したゲーム版</label><input id="canonicalTimingVersion" type="text" placeholder="例：1.042.00.02"></div></div>
+<label for="canonicalTimingNote">測定メモ（派生・測定区間など）</label><textarea id="canonicalTimingNote" rows="2" style="width:100%;box-sizing:border-box" placeholder="例：前の技から派生、入力開始〜次の技の入力可能時点"></textarea>
+<div class="two"><button id="canonicalTimingSave" type="button">実測時間を保存</button><button id="canonicalTimingRemove" type="button">登録時間を削除</button></div><div class="notice small" id="canonicalTimingStatus" role="status">武器を選択してください。</div></details>
+
 </details>
-<div id="combo"></div><button id="addCombo">＋選択した技を追加</button><button class="primary" id="calcDps" style="margin-top:7px">📈 コンボDPSを計算</button><div class="two" style="margin-top:10px"><div><label>攻撃稼働率 (%)</label><input id="uptime" type="number" value="85"/></div><div><label>非攻撃時間を含める</label><select id="uptimeMode"><option value="1">含める（実戦DPS）</option><option value="0">含めない（理論DPS）</option></select></div></div><div class="notice" id="dpsOut">未計算</div><div style="display:none"><input id="dAttack" value="300"/><input id="dAff" value="0"/><input id="dElem" value="0"/><input id="dMV" value="100"/><input id="dHZ" value="80"/><input id="dEHZ" value="30"/><input id="dSharp" value="1.32"/><input id="dESharp" value="1.15"/><input id="dCB" value="0"/><select id="dECrit"><option value="0">なし</option></select></div></div></details></section><section class="card support-card" id="groupProposalCard"><details class="card-details"><summary class="card-summary">⑧ シリーズスキルから装備を提案 v7.1.0</summary><div class="card-details-body"><div class="muted">「このシリーズスキルを採用したい」を起点に、全防具から候補を探索し、目的スキルとの相性・武器種適性・装飾品スロット・現在装備の維持度を推論して複数案を作ります。<b>巨戟アーティアのシリーズ/グループスキルも武器1部位として考慮</b>します。<b>ヌシの魂</b>は重要なグループスキルとして、必要な場合だけ別途指定できます。候補の決定・採用はユーザーが行います。</div><div class="two" style="margin-top:8px"><div><label for="groupProposalSkill">採用したいシリーズスキル</label><select id="groupProposalSkill"><option value="">データ取得後に選択</option></select></div><div><label for="groupProposalLevel">目標Lv</label><select id="groupProposalLevel"><option value="1">Lv1</option><option value="2">Lv2</option><option value="3">Lv3</option></select></div></div><div class="notice small" style="margin-top:7px"><label style="display:flex;align-items:center;gap:8px;margin:0"><input id="groupProposalNushi" type="checkbox"/> <span><b>ヌシの魂を採用する</b></span></label><div class="muted" style="margin-top:4px">ONにすると、シリーズスキルに加えて「ヌシの魂」の発動条件も満たす候補だけを提示します。</div></div><div class="two" style="margin-top:7px"><div><label for="groupProposalMode">提案の考え方</label><select id="groupProposalMode"><option value="balance">バランス</option><option value="dps">火力重視</option><option value="flex">スキル自由度重視</option></select></div><div><label for="groupProposalCount">候補数</label><select id="groupProposalCount"><option selected="" value="3">3案</option><option value="5">5案</option></select></div></div><button class="primary" id="groupProposalRun" style="margin-top:8px">🔎 この条件で装備候補を作る</button><div class="notice" id="groupProposalOut" style="margin-top:8px">例：「無尽蔵 Lv1」を選んで、必要なら「ヌシの魂」をONにして試してください。</div></div></details></section><section class="card support-card" id="aiAdvisorCard"><details class="card-details"><summary class="card-summary">⑧ AI装備相談</summary><div class="card-details-body"><div class="muted">現在の装備・スキル・⑤の火力条件をAIに渡して、装備構築を相談できる機能です。現在の装備セットをAI相談用データに変換します。AIは候補提示・比較・評価を行い、最終的な装備セットはユーザーが決定します。</div><div class="ai-quick-row" style="margin-top:6px"><button class="aiQuick" data-ai="この武器で火力重視の装備を組んでください。" type="button">🔥 火力重視</button><button class="aiQuick" data-ai="この武器で属性火力を重視した装備を組んでください。" type="button">🧊 属性重視</button></div><div class="ai-quick-row" style="margin-top:6px"><button class="aiQuick" data-ai="この装備をベースに、DPSを上げる方法を提案してください。" type="button">📈 DPS改善</button><button class="aiQuick" data-ai="現在の装備について、改善できる点を教えてください。" type="button">🔎 装備診断</button></div><label for="aiPrompt" style="margin-top:9px">相談内容</label><textarea id="aiPrompt" placeholder="例：この武器でDPS最大の装備を作って。会心率100%は維持したい。" rows="4" style="width:100%;padding:9px;border:1px solid #475569;border-radius:9px;background:#0b1020;color:#fff;font:inherit;resize:vertical"></textarea><div class="two" style="margin-top:7px"><button class="primary" id="aiPrepare" type="button">🤖 AI相談データを作成</button><button id="aiCopy" type="button">📋 送信用データをコピー</button></div><div class="notice" id="aiOut">相談内容を入力して「AI相談データを作成」を押してください。</div><details style="margin-top:7px"><summary class="small">AIに送る現在の装備セットデータを確認</summary><pre class="notice small" id="aiPayload" style="white-space:pre-wrap;overflow:auto;max-height:360px"></pre></details></div></details></section></section></div></main>
+<div id="comboCBStatePanel" class="notice" hidden><b>チャージアックスの強化状態</b><p class="small">正規技の専用計算に使います。高速変形Lvは装備の発動スキルから取得します。ビン回数が未確認の技は計算保留です。</p><div class="two"><div><label for="comboCBShield">盾強化</label><select id="comboCBShield"><option value="">選択してください</option><option value="0">なし</option><option value="1">あり</option></select></div><div><label for="comboCBAxe">斧強化</label><select id="comboCBAxe"><option value="">選択してください</option><option value="0">なし</option><option value="1">あり</option></select></div></div></div><div id="combo"></div><button id="addCombo">＋選択した技を追加</button><button class="primary" id="calcDps" style="margin-top:7px">📈 コンボDPSを計算</button><div class="two" style="margin-top:10px"><div><label>攻撃稼働率 (%)</label><input id="uptime" type="number" value="85"/></div><div><label>非攻撃時間を含める</label><select id="uptimeMode"><option value="1">含める（実戦DPS）</option><option value="0">含めない（理論DPS）</option></select></div></div><div class="notice" id="dpsOut">未計算</div><div style="display:none"><input id="dAttack" value="300"/><input id="dAff" value="0"/><input id="dElem" value="0"/><input id="dMV" value="100"/><input id="dHZ" value="80"/><input id="dEHZ" value="30"/><input id="dSharp" value="1.32"/><input id="dESharp" value="1.15"/><input id="dCB" value="0"/><select id="dECrit"><option value="0">なし</option></select></div></div></details></section><section class="card support-card" id="groupProposalCard"><details class="card-details"><summary class="card-summary">⑧ シリーズスキルから装備を提案 v7.1.0</summary><div class="card-details-body"><div class="muted">「このシリーズスキルを採用したい」を起点に、全防具から候補を探索し、目的スキルとの相性・武器種適性・装飾品スロット・現在装備の維持度を推論して複数案を作ります。<b>巨戟アーティアのシリーズ/グループスキルも武器1部位として考慮</b>します。<b>ヌシの魂</b>は重要なグループスキルとして、必要な場合だけ別途指定できます。候補の決定・採用はユーザーが行います。</div><div class="two" style="margin-top:8px"><div><label for="groupProposalSkill">採用したいシリーズスキル</label><select id="groupProposalSkill"><option value="">データ取得後に選択</option></select></div><div><label for="groupProposalLevel">目標Lv</label><select id="groupProposalLevel"><option value="1">Lv1</option><option value="2">Lv2</option><option value="3">Lv3</option></select></div></div><div class="notice small" style="margin-top:7px"><label style="display:flex;align-items:center;gap:8px;margin:0"><input id="groupProposalNushi" type="checkbox"/> <span><b>ヌシの魂を採用する</b></span></label><div class="muted" style="margin-top:4px">ONにすると、シリーズスキルに加えて「ヌシの魂」の発動条件も満たす候補だけを提示します。</div></div><div class="two" style="margin-top:7px"><div><label for="groupProposalMode">提案の考え方</label><select id="groupProposalMode"><option value="balance">バランス</option><option value="dps">火力重視</option><option value="flex">スキル自由度重視</option></select></div><div><label for="groupProposalCount">候補数</label><select id="groupProposalCount"><option selected="" value="3">3案</option><option value="5">5案</option></select></div></div><button class="primary" id="groupProposalRun" style="margin-top:8px">🔎 この条件で装備候補を作る</button><div class="notice" id="groupProposalOut" style="margin-top:8px">例：「無尽蔵 Lv1」を選んで、必要なら「ヌシの魂」をONにして試してください。</div></div></details></section><section class="card support-card" id="aiAdvisorCard"><details class="card-details"><summary class="card-summary">⑧ AI装備相談</summary><div class="card-details-body"><div class="muted">現在の装備・スキル・⑤の火力条件をAIに渡して、装備構築を相談できる機能です。現在の装備セットをAI相談用データに変換します。AIは候補提示・比較・評価を行い、最終的な装備セットはユーザーが決定します。</div><div class="ai-quick-row" style="margin-top:6px"><button class="aiQuick" data-ai="この武器で火力重視の装備を組んでください。" type="button">🔥 火力重視</button><button class="aiQuick" data-ai="この武器で属性火力を重視した装備を組んでください。" type="button">🧊 属性重視</button></div><div class="ai-quick-row" style="margin-top:6px"><button class="aiQuick" data-ai="この装備をベースに、DPSを上げる方法を提案してください。" type="button">📈 DPS改善</button><button class="aiQuick" data-ai="現在の装備について、改善できる点を教えてください。" type="button">🔎 装備診断</button></div><label for="aiPrompt" style="margin-top:9px">相談内容</label><textarea id="aiPrompt" placeholder="例：この武器でDPS最大の装備を作って。会心率100%は維持したい。" rows="4" style="width:100%;padding:9px;border:1px solid #475569;border-radius:9px;background:#0b1020;color:#fff;font:inherit;resize:vertical"></textarea><div class="two" style="margin-top:7px"><button class="primary" id="aiPrepare" type="button">🤖 AI相談データを作成</button><button id="aiCopy" type="button">📋 送信用データをコピー</button></div><div class="notice" id="aiOut">相談内容を入力して「AI相談データを作成」を押してください。</div><details style="margin-top:7px"><summary class="small">AIに送る現在の装備セットデータを確認</summary><pre class="notice small" id="aiPayload" style="white-space:pre-wrap;overflow:auto;max-height:360px"></pre></details></div></details></section></section></div></main>
+<section class="wrap" style="margin:12px auto"><details class="card" id="simBackupPanel"><summary><b>保存データのバックアップ・追加復元</b></summary><p class="small">保存ビルド・追加登録技・正規技の実測時間をJSONに保存します。復元は追加方式です。同名ビルドは別名にし、既存時間は維持します。同じ追加技IDの内容が違う場合は中止します。現在の編集内容や公式DBを置換しません。</p><button type="button" id="simBackupExport" onclick="downloadSimulatorBackup()">バックアップJSONを保存</button><label for="simBackupFile">復元するバックアップJSON</label><input id="simBackupFile" type="file" accept=".json,application/json" onchange="previewSimulatorBackupFile(this.files[0])"><div class="notice small" id="simBackupPreview" role="status">内容の確認後に、追加復元を実行できます。</div><button type="button" id="simBackupRestore" disabled onclick="commitPreparedSimulatorBackup()">確認した内容を追加復元</button></details></section>
+<section class="wrap" style="margin:12px auto"><details class="card" id="comboReportPanel"><summary><b>コンボの検証データを出力</b></summary><p class="small">現在の装備・コンボ・条件から毎回再計算し、Hit内訳、実測時間、資料の確認状態、保留理由をJSONに出力します。外部へ自動送信しません。装備情報と測定メモを含むため、共有前に内容を確認してください。</p><label for="comboReportObservedVersion">ゲーム画面で確認したバージョン（未確認なら空欄）</label><input id="comboReportObservedVersion" type="text" placeholder="例：1.042.00.02"><div class="two"><button type="button" id="comboReportCreate" onclick="prepareComboVerificationReport()">検証データを作成</button><button type="button" id="comboReportDownload" onclick="downloadComboVerificationReport()">検証JSONを保存</button></div><button type="button" id="comboReportCopy" onclick="copyComboVerificationReport()">検証データをコピー</button><div class="notice small" id="comboReportStatus" role="status">食事・アイテム・エキスなど、ゲーム側の追加状態も記録してください。</div><pre id="comboReportOut" class="notice small" style="max-height:360px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere"></pre></details></section>
 <script>
 const API='https://wilds.mhdb.io/ja';
 const DATA_CACHE='mhwilds-data-v700';
@@ -584,7 +590,7 @@ const App={
   },
   combo:{
     reset(){App.state.combo.moves=[];},
-    syncFromDOM(){App.state.combo.moves=[...document.querySelectorAll('.comboRow')].map(r=>({techniqueId:r.querySelector('.cmove')?.value||''})); App.state.combo.uptime=Number($('uptime')?.value)||85; App.state.combo.uptimeMode=$('uptimeMode')?.value||'1';},
+    syncFromDOM(){App.state.combo.chargeBladeState=comboCBStoredState();App.state.combo.moves=[...document.querySelectorAll('.comboRow')].map(r=>({techniqueId:r.querySelector('.cmove')?.value||''})); App.state.combo.uptime=Number($('uptime')?.value)||85; App.state.combo.uptimeMode=$('uptimeMode')?.value||'1';},
     get(){return App.state.combo}
   },
   normalize(){App.state.db=normalizeDB(App.state.db);DB=App.state.db;App.state.build=build;App.state.calc=calcState;},
@@ -1754,6 +1760,7 @@ function calcBuild(){renderCharmLegality();
   // アーティア基礎会心5%や生産・復元会心を w.affinity から再計算すると、
   // APIの基礎値と二重計上/取りこぼしが起きるため、ここでは計算済み stats.affinity をそのまま渡す。
   stats.maxAffinity=calcMaxAffinity(total, stats.affinity, w, p);
+  stats.rapidMorphLevel=Math.max(0,Math.min(3,skillLevel(total,['高速変形','Rapid Morph'])));
   const elem=calcElementSkill(total,stats.elementType); stats.element=stats.element*elem.mult+elem.add;
   // Defense skill contribution (common levels)
   const dl=skillLevel(total,['防御','Defense']); const dFlat=[0,5,10,10,20,20,35,35][Math.min(7,dl)]||0; const dMult=dl>=7?1.10:dl>=6?1.08:dl>=4?1.05:1; stats.defense=(stats.defense+dFlat)*dMult;
@@ -1961,9 +1968,14 @@ function renderSummary(){
 
 function renderArtiaSkillDetail(){if(!isArtia(selectedWeapon()))return '';let out=[];for(const [label,id,type] of [['シリーズ',build.artia.seriesSkill,'series'],['グループ',build.artia.groupSkill,'group']]){const skill=skillById(id);if(!skill)continue;const a=artiaSkillActivation(skill,type);out.push(`${label}スキル：${esc(skill.name)} ${a.active?`発動（${a.count}/${a.required}）`:`未発動（${a.count}/${a.required}）`}`)}return out.join('<br>')||'シリーズ/グループスキル：なし';}
 function renderDetail(){let w=selectedWeapon(),rows=[];if(w)rows.push(`<tr><th>武器</th><td>${esc(w.name)}<br>攻撃 ${Math.round(calcState.stats.attack)}（真攻撃力 ${Math.round(calcState.stats.attackTrue)} / ${$('useWeaponCoeff')?.checked!==false?`係数×${calcState.stats.weaponCoefficient}`:`係数なし`}） / 会心 ${Math.round(calcState.stats.affinity)}% / 最大会心 ${Math.round(calcState.stats.maxAffinity)}% / 属性 ${Math.round(calcState.stats.element)} ${esc(calcState.stats.elementType||'')} / スロット ${slotText(w.slots)}${isArtia(w)?`<br>巨戟：${esc({attack:'攻撃激化',affinity:'会心激化',element:'属性激化'}[build.artia.production])}<br>${artiaProductionBreakdown(w)}<br>${artiaRestoreBreakdown(w)}<br>${renderArtiaSkillDetail()}`:''}</td></tr>`);for(let [k,n] of [['head','頭'],['chest','胴'],['arms','腕'],['waist','腰'],['legs','脚']]){let a=build.armor[k];if(a)rows.push(`<tr><th>${n}</th><td>${esc(a.name)}<br>限界突破スロット ${slotText(maxBreakSlots(a))}</td></tr>`)}rows.push(`<tr><th>護石</th><td>${$('charmPreset')?.selectedOptions[0]?.textContent||'自由設定'}<br>スキル ${Object.entries(currentCharmSkills()).map(x=>esc(x[0])+' Lv'+x[1]).join(' / ')||'なし'}<br>スロット ${esc(charmSlotPattern(build.charmCustom))}</td></tr>`);$('buildDetail').innerHTML=`<table>${rows.join('')}</table>`}
-function monsterHZ(){let p=selectedPart(),w=selectedWeapon(),x=p?.multipliers||{};let phys=canonicalWeaponKind(w)==='heavy-bowgun'||canonicalWeaponKind(w)==='light-bowgun'||canonicalWeaponKind(w)==='bow'?x.pierce:x.slash;if(canonicalWeaponKind(w)==='hammer'||canonicalWeaponKind(w)==='hunting-horn')phys=x.blunt;return {hz:(phys||0)*100,ehz:(x[calcState.stats.elementType]||0)*100};}
-function syncDamage(){let s=calcState.stats;if(s.attackTrue!=null)$('dAttack').value=Math.round(s.attackTrue);$('dAff').value=Math.round(s.maxAffinity ?? s.affinity);$('dElem').value=Math.round(s.element);let h=monsterHZ();if(h.hz)$('dHZ').value=Math.round(h.hz);if(h.ehz)$('dEHZ').value=Math.round(h.ehz)}
+function monsterHZ(){let p=selectedPart(),w=selectedWeapon(),x=p?.multipliers||{};let phys=canonicalWeaponKind(w)==='heavy-bowgun'||canonicalWeaponKind(w)==='light-bowgun'||canonicalWeaponKind(w)==='bow'?x.pierce:x.slash;if(canonicalWeaponKind(w)==='hammer'||canonicalWeaponKind(w)==='hunting-horn')phys=x.blunt;const elem=x[calcState.stats.elementType];return {hz:typeof phys==='number'&&Number.isFinite(phys)?phys*100:null,ehz:typeof elem==='number'&&Number.isFinite(elem)?elem*100:null};}
+function syncDamage(){let s=calcState.stats;if(s.attackTrue!=null)$('dAttack').value=Math.round(s.attackTrue);$('dAff').value=Math.round(s.maxAffinity ?? s.affinity);$('dElem').value=Math.round(s.element);let h=monsterHZ();if(h.hz!=null)$('dHZ').value=Math.round(h.hz);if(h.ehz!=null)$('dEHZ').value=Math.round(h.ehz)}
 function roundDamage2(x){return Math.round((Number(x)||0)*100)/100}
+function damageNumericValue(value,fallback){
+  if(value==null||value==='')return fallback;
+  const n=Number(value);if(!Number.isFinite(n))throw new Error('INVALID_DAMAGE_VALUE');
+  return n;
+}
 function criticalMultiplierForState(affinity, critBonus, state='expected'){
   const a=Math.max(-100,Math.min(100,Number(affinity)||0))/100;
   const cb=Math.max(0,Math.min(5,Number(critBonus)||0));
@@ -1971,7 +1983,7 @@ function criticalMultiplierForState(affinity, critBonus, state='expected'){
   if(state==='noncritical') return 1;
   if(state==='critical') return 1+(0.25+bonus);
   if(state==='negative-critical') return 1-0.25;
-  return a>=0 ? 1+a*(0.25+bonus) : 1+a*(-0.25);
+  return a>=0 ? 1+a*(0.25+bonus) : 1+(-a)*(-0.25);
 }
 function damageFromParams(params){
   // MH Wilds damage formula reference: macaron's game memo (2025-04-30).
@@ -1980,11 +1992,11 @@ function damageFromParams(params){
   const raw=Number(params.attack)||0;
   const aff=Math.max(-100,Math.min(100,Number(params.affinity)||0));
   const elem=(Number(params.element)||0)/10;
-  const mv=(Number(params.mv)||100)/100;
-  const hz=(Number(params.hz)||45)/100;
-  const ehz=(Number(params.ehz)||20)/100;
-  const sharp=Number(params.sharp)||1;
-  const esharp=Number(params.esharp)||1;
+  const mv=damageNumericValue(params.mv,100)/100;
+  const hz=damageNumericValue(params.hz,45)/100;
+  const ehz=damageNumericValue(params.ehz,20)/100;
+  const sharp=damageNumericValue(params.sharp,1);
+  const esharp=damageNumericValue(params.esharp,1);
   const critState=params.criticalState||'expected';
   const crit=criticalMultiplierForState(aff,params.critBonus,critState);
   const ec=params.elementCrit?crit:1;
@@ -2016,127 +2028,1799 @@ class Technique {
 class TechniqueBook {
   constructor(seed){this.seed=seed;this.storageKey='mhwilds-techniques-v700';this.custom=this.load();}
   load(){try{const x=JSON.parse(localStorage.getItem(this.storageKey)||'{}');return x&&typeof x==='object'?x:{}}catch(e){return {}}}
-  save(){try{localStorage.setItem(this.storageKey,JSON.stringify(this.custom))}catch(e){}}
+  save(next=this.custom){try{localStorage.setItem(this.storageKey,JSON.stringify(next));this.custom=next;return true}catch(e){return false}}
   kindList(kind){return Array.isArray(this.custom[kind])?this.custom[kind]:[]}
   get(kind){const base=this.seed[kind]||null;const customs=this.kindList(kind).map(x=>new Technique({...x,custom:true}));if(!base&&!customs.length)return null;return {label:base?.label||JP_KIND[kind]||kind,moves:[...(base?.moves||[]).map(x=>x instanceof Technique?x:new Technique(x)),...customs],presets:base?.presets||[]}}
-  add(kind,data){if(!kind||!data?.name||!data?.mvs?.length||!(data.time>0))return false;const list=this.kindList(kind);list.push({...data,id:`custom_${Date.now()}_${Math.random().toString(36).slice(2,7)}`});this.custom[kind]=list;this.save();return true}
-  remove(kind,id){this.custom[kind]=this.kindList(kind).filter(x=>String(x.id)!==String(id));this.save()}
+  add(kind,data){if(!kind||!data?.name||!data?.mvs?.length||!Number.isFinite(Number(data.time))||!(data.time>0))return false;const list=[...this.kindList(kind),{...data,id:`custom_${Date.now()}_${Math.random().toString(36).slice(2,7)}`}];return this.save({...this.custom,[kind]:list})}
+  remove(kind,id){return this.save({...this.custom,[kind]:this.kindList(kind).filter(x=>String(x.id)!==String(id))})}
 }
 
-const COMBO_DATA={
-  // 初期参考値。公式MHDBのMotion Valueではありません。後続版で実測・資料により精度を上げます。
-  'great-sword':{label:'大剣',moves:[
-    {id:'gs_draw',name:'抜刀斬り',mvs:[77],time:1.20,source:'community'},
-    {id:'gs_charge3',name:'溜め斬り Lv3',mvs:[160],time:2.40,source:'community'},
-    {id:'gs_strong3',name:'強溜め斬り Lv3',mvs:[175],time:2.90,source:'community'},
-    {id:'gs_tcs3',name:'真・溜め斬り Lv3',mvs:[15,201],time:3.40,source:'community'},
-    {id:'gs_offset3',name:'相殺斬り上げ Lv3',mvs:[137],time:1.55,source:'community'}
-  ],presets:[{id:'gs_tcs',name:'基本：溜め斬り→強溜め→真溜め',moves:['gs_charge3','gs_strong3','gs_tcs3']}]},
-  'long-sword':{label:'太刀',moves:[
-    {id:'ls_base1',name:'縦斬り',mvs:[25],time:.55,source:'community'},
-    {id:'ls_base2',name:'突き',mvs:[18],time:.45,source:'community'},
-    {id:'ls_base3',name:'斬り上げ',mvs:[30],time:.60,source:'community'},
-    {id:'ls_fade',name:'見切り斬り',mvs:[25],time:.70,source:'community'},
-    {id:'ls_helm',name:'兜割（赤）',mvs:[175],time:2.30,source:'community'},
-    {id:'ls_release',name:'練気解放無双斬り（赤）',mvs:[285],time:3.20,source:'community'}
-  ],presets:[{id:'ls_basic',name:'基本：縦→突き→斬り上げ',moves:['ls_base1','ls_base2','ls_base3']}]},
-  'sword-and-shield':{label:'片手剣',moves:[
-    {id:'sns_slash',name:'斬り下ろし',mvs:[20],time:.45,source:'community'},
-    {id:'sns_horizontal',name:'水平斬り',mvs:[20],time:.45,source:'community'},
-    {id:'sns_shield',name:'盾攻撃',mvs:[8],time:.40,source:'community'},
-    {id:'sns_falling',name:'フォールバッシュ',mvs:[20,40],time:1.15,source:'community'}
-  ],presets:[{id:'sns_basic',name:'基本：斬り下ろし→水平斬り→盾攻撃',moves:['sns_slash','sns_horizontal','sns_shield']}]},
-  'dual-blades':{label:'双剣',moves:[
-    {id:'db_double',name:'二段斬り',mvs:[9,9],time:.65,source:'community'},
-    {id:'db_dance1',name:'鬼人連斬 I',mvs:[120],time:1.05,source:'community'},
-    {id:'db_dance2',name:'鬼人連斬 II',mvs:[135],time:1.20,source:'community'},
-    {id:'db_dance3',name:'鬼人連斬 III',mvs:[138],time:1.30,source:'community'},
-    {id:'db_flurry',name:'鬼人突進連斬',mvs:[110],time:1.10,source:'community'}
-  ],presets:[{id:'db_dance',name:'鬼人連斬 I→II→III',moves:['db_dance1','db_dance2','db_dance3']}]},
-  'hammer':{label:'ハンマー',moves:[
-    {id:'hm_swing',name:'縦振り',mvs:[37],time:.65,source:'community'},
-    {id:'hm_side',name:'横振り',mvs:[15],time:.45,source:'community'},
-    {id:'hm_charge2',name:'溜め2攻撃',mvs:[45],time:.90,source:'community'},
-    {id:'hm_big',name:'アッパー',mvs:[48],time:1.00,source:'community'}
-  ],presets:[{id:'hm_basic',name:'基本：縦振り→横振り→溜め2',moves:['hm_swing','hm_side','hm_charge2']}]},
-  'hunting-horn':{label:'狩猟笛',moves:[
-    {id:'hh_left',name:'左ぶん回し',mvs:[30],time:.65,source:'community'},
-    {id:'hh_forward',name:'前方攻撃',mvs:[30],time:.65,source:'community'},
-    {id:'hh_slam',name:'叩きつけ',mvs:[30],time:.80,source:'community'},
-    {id:'hh_melody',name:'演奏攻撃',mvs:[35],time:1.00,source:'community'}
-  ],presets:[{id:'hh_basic',name:'基本：前方→左ぶん回し→叩きつけ',moves:['hh_forward','hh_left','hh_slam']}]},
-  'lance':{label:'ランス',moves:[
-    {id:'ln_mid',name:'中段突き',mvs:[20],time:.55,source:'community'},
-    {id:'ln_high',name:'上段突き',mvs:[22],time:.55,source:'community'},
-    {id:'ln_counter',name:'カウンター突き',mvs:[35],time:.85,source:'community'},
-    {id:'ln_charge',name:'突進',mvs:[16],time:.60,source:'community'}
-  ],presets:[{id:'ln_basic',name:'基本：中段→上段→中段',moves:['ln_mid','ln_high','ln_mid']}]},
-  'gunlance':{label:'ガンランス',moves:[
-    {id:'gl_thrust',name:'踏み込み突き上げ',mvs:[24],time:.65,source:'community'},
-    {id:'gl_shell',name:'水平砲撃',mvs:[20],time:.55,source:'community'},
-    {id:'gl_burst',name:'フルバースト',mvs:[60],time:1.25,source:'community'},
-    {id:'gl_wyvern',name:'竜撃砲',mvs:[140],time:2.80,source:'community'}
-  ],presets:[{id:'gl_basic',name:'基本：突き→砲撃→フルバースト',moves:['gl_thrust','gl_shell','gl_burst']}]},
-  'switch-axe':{label:'スラッシュアックス',moves:[
-    {id:'sa_vertical',name:'縦斬り',mvs:[25],time:.55,source:'community'},
-    {id:'sa_horizontal',name:'横斬り',mvs:[20],time:.55,source:'community'},
-    {id:'sa_heavy',name:'斧強化叩きつけ',mvs:[35],time:.90,source:'community'},
-    {id:'sa_element',name:'属性解放突き',mvs:[15,15,15,55],time:2.00,source:'community'}
-  ],presets:[{id:'sa_basic',name:'基本：縦→横→斧強化叩きつけ',moves:['sa_vertical','sa_horizontal','sa_heavy']}]},
-  'charge-blade':{label:'チャージアックス',moves:[
-    {id:'cb_check',name:'牽制斬り',mvs:[20],time:.55,source:'community'},
-    {id:'cb_spin',name:'回転斬り',mvs:[30],time:.75,source:'community'},
-    {id:'cb_axe',name:'斧：強化叩きつけ',mvs:[40],time:.90,source:'community'},
-    {id:'cb_saed',name:'高出力属性解放斬り',mvs:[120],time:1.90,source:'community'}
-  ],presets:[{id:'cb_basic',name:'基本：牽制→回転斬り→高出力',moves:['cb_check','cb_spin','cb_saed']}]},
-  'insect-glaive':{label:'操虫棍',moves:[
-    {id:'ig_slash',name:'飛円斬り',mvs:[30],time:.65,source:'community'},
-    {id:'ig_combo',name:'強化連続斬り上げ',mvs:[40],time:.90,source:'community'},
-    {id:'ig_jump',name:'飛燕',mvs:[24],time:.60,source:'community'},
-    {id:'ig_rising',name:'急襲突き',mvs:[60],time:1.05,source:'community'}
-  ],presets:[{id:'ig_basic',name:'基本：飛円→連続斬り上げ→飛燕',moves:['ig_slash','ig_combo','ig_jump']}]},
-  'light-bowgun':{label:'ライトボウガン',moves:[
-    {id:'lbg_normal3',name:'通常弾 Lv3',mvs:[10],time:.35,source:'community'},
-    {id:'lbg_pierce2',name:'貫通弾 Lv2',mvs:[7,7,7],time:.50,source:'community'},
-    {id:'lbg_rapid',name:'速射',mvs:[10,10,10],time:.85,source:'community'},
-    {id:'lbg_special',name:'特殊弾',mvs:[35],time:1.10,source:'community'}
-  ],presets:[{id:'lbg_basic',name:'基本：通常弾 Lv3',moves:['lbg_normal3']}]},
-  'heavy-bowgun':{label:'ヘビィボウガン',moves:[
-    {id:'hbg_normal3',name:'通常弾 Lv3',mvs:[10],time:.40,source:'community'},
-    {id:'hbg_pierce2',name:'貫通弾 Lv2',mvs:[7,7,7],time:.55,source:'community'},
-    {id:'hbg_cluster',name:'徹甲榴弾',mvs:[35],time:.90,source:'community'},
-    {id:'hbg_special',name:'機関竜弾',mvs:[100],time:2.20,source:'community'}
-  ],presets:[{id:'hbg_basic',name:'基本：通常弾 Lv3',moves:['hbg_normal3']}]},
-  'bow':{label:'弓',moves:[
-    {id:'bow_shot',name:'射撃 Lv3',mvs:[24],time:.45,source:'community'},
-    {id:'bow_spread',name:'剛射',mvs:[20,20],time:.75,source:'community'},
-    {id:'bow_arc',name:'曲射',mvs:[10,10,10],time:1.10,source:'community'},
-    {id:'bow_power',name:'竜の一矢',mvs:[10,10,10,30],time:1.80,source:'community'}
-  ],presets:[{id:'bow_basic',name:'基本：射撃→剛射',moves:['bow_shot','bow_spread']}]}
-};
-for(const data of Object.values(COMBO_DATA)){data.moves=data.moves.map(m=>m instanceof Technique?m:new Technique(m));}
+// Archived initial reference values only. Never read by canonical hits() or STANDARD handlers.
+const LEGACY_COMBO_TECHNIQUE_DB=techniqueDbDeepFreeze({
+  "great-sword": {
+    "gs_draw": {
+      "weaponType": "great-sword",
+      "techniqueId": "gs_draw",
+      "techniqueName": "抜刀斬り",
+      "mvs": [
+        77
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "gs_charge3": {
+      "weaponType": "great-sword",
+      "techniqueId": "gs_charge3",
+      "techniqueName": "溜め斬り Lv3",
+      "mvs": [
+        160
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "gs_strong3": {
+      "weaponType": "great-sword",
+      "techniqueId": "gs_strong3",
+      "techniqueName": "強溜め斬り Lv3",
+      "mvs": [
+        175
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "gs_tcs3": {
+      "weaponType": "great-sword",
+      "techniqueId": "gs_tcs3",
+      "techniqueName": "真・溜め斬り Lv3",
+      "mvs": [
+        15,
+        201
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "gs_offset3": {
+      "weaponType": "great-sword",
+      "techniqueId": "gs_offset3",
+      "techniqueName": "相殺斬り上げ Lv3",
+      "mvs": [
+        137
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "long-sword": {
+    "ls_base1": {
+      "weaponType": "long-sword",
+      "techniqueId": "ls_base1",
+      "techniqueName": "縦斬り",
+      "mvs": [
+        25
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "ls_base2": {
+      "weaponType": "long-sword",
+      "techniqueId": "ls_base2",
+      "techniqueName": "突き",
+      "mvs": [
+        18
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "ls_base3": {
+      "weaponType": "long-sword",
+      "techniqueId": "ls_base3",
+      "techniqueName": "斬り上げ",
+      "mvs": [
+        30
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "ls_fade": {
+      "weaponType": "long-sword",
+      "techniqueId": "ls_fade",
+      "techniqueName": "見切り斬り",
+      "mvs": [
+        25
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "ls_helm": {
+      "weaponType": "long-sword",
+      "techniqueId": "ls_helm",
+      "techniqueName": "兜割（赤）",
+      "mvs": [
+        175
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "ls_release": {
+      "weaponType": "long-sword",
+      "techniqueId": "ls_release",
+      "techniqueName": "練気解放無双斬り（赤）",
+      "mvs": [
+        285
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "sword-and-shield": {
+    "sns_slash": {
+      "weaponType": "sword-and-shield",
+      "techniqueId": "sns_slash",
+      "techniqueName": "斬り下ろし",
+      "mvs": [
+        20
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "sns_horizontal": {
+      "weaponType": "sword-and-shield",
+      "techniqueId": "sns_horizontal",
+      "techniqueName": "水平斬り",
+      "mvs": [
+        20
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "sns_shield": {
+      "weaponType": "sword-and-shield",
+      "techniqueId": "sns_shield",
+      "techniqueName": "盾攻撃",
+      "mvs": [
+        8
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "sns_falling": {
+      "weaponType": "sword-and-shield",
+      "techniqueId": "sns_falling",
+      "techniqueName": "フォールバッシュ",
+      "mvs": [
+        20,
+        40
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "dual-blades": {
+    "db_double": {
+      "weaponType": "dual-blades",
+      "techniqueId": "db_double",
+      "techniqueName": "二段斬り",
+      "mvs": [
+        9,
+        9
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "db_dance1": {
+      "weaponType": "dual-blades",
+      "techniqueId": "db_dance1",
+      "techniqueName": "鬼人連斬 I",
+      "mvs": [
+        120
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "db_dance2": {
+      "weaponType": "dual-blades",
+      "techniqueId": "db_dance2",
+      "techniqueName": "鬼人連斬 II",
+      "mvs": [
+        135
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "db_dance3": {
+      "weaponType": "dual-blades",
+      "techniqueId": "db_dance3",
+      "techniqueName": "鬼人連斬 III",
+      "mvs": [
+        138
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "db_flurry": {
+      "weaponType": "dual-blades",
+      "techniqueId": "db_flurry",
+      "techniqueName": "鬼人突進連斬",
+      "mvs": [
+        110
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "hammer": {
+    "hm_swing": {
+      "weaponType": "hammer",
+      "techniqueId": "hm_swing",
+      "techniqueName": "縦振り",
+      "mvs": [
+        37
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "hm_side": {
+      "weaponType": "hammer",
+      "techniqueId": "hm_side",
+      "techniqueName": "横振り",
+      "mvs": [
+        15
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "hm_charge2": {
+      "weaponType": "hammer",
+      "techniqueId": "hm_charge2",
+      "techniqueName": "溜め2攻撃",
+      "mvs": [
+        45
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "hm_big": {
+      "weaponType": "hammer",
+      "techniqueId": "hm_big",
+      "techniqueName": "アッパー",
+      "mvs": [
+        48
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "hunting-horn": {
+    "hh_left": {
+      "weaponType": "hunting-horn",
+      "techniqueId": "hh_left",
+      "techniqueName": "左ぶん回し",
+      "mvs": [
+        30
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "hh_forward": {
+      "weaponType": "hunting-horn",
+      "techniqueId": "hh_forward",
+      "techniqueName": "前方攻撃",
+      "mvs": [
+        30
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "hh_slam": {
+      "weaponType": "hunting-horn",
+      "techniqueId": "hh_slam",
+      "techniqueName": "叩きつけ",
+      "mvs": [
+        30
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "hh_melody": {
+      "weaponType": "hunting-horn",
+      "techniqueId": "hh_melody",
+      "techniqueName": "演奏攻撃",
+      "mvs": [
+        35
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "lance": {
+    "ln_mid": {
+      "weaponType": "lance",
+      "techniqueId": "ln_mid",
+      "techniqueName": "中段突き",
+      "mvs": [
+        20
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "ln_high": {
+      "weaponType": "lance",
+      "techniqueId": "ln_high",
+      "techniqueName": "上段突き",
+      "mvs": [
+        22
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "ln_counter": {
+      "weaponType": "lance",
+      "techniqueId": "ln_counter",
+      "techniqueName": "カウンター突き",
+      "mvs": [
+        35
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "ln_charge": {
+      "weaponType": "lance",
+      "techniqueId": "ln_charge",
+      "techniqueName": "突進",
+      "mvs": [
+        16
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "gunlance": {
+    "gl_thrust": {
+      "weaponType": "gunlance",
+      "techniqueId": "gl_thrust",
+      "techniqueName": "踏み込み突き上げ",
+      "mvs": [
+        24
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "gl_shell": {
+      "weaponType": "gunlance",
+      "techniqueId": "gl_shell",
+      "techniqueName": "水平砲撃",
+      "mvs": [
+        20
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "gl_burst": {
+      "weaponType": "gunlance",
+      "techniqueId": "gl_burst",
+      "techniqueName": "フルバースト",
+      "mvs": [
+        60
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "gl_wyvern": {
+      "weaponType": "gunlance",
+      "techniqueId": "gl_wyvern",
+      "techniqueName": "竜撃砲",
+      "mvs": [
+        140
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "switch-axe": {
+    "sa_vertical": {
+      "weaponType": "switch-axe",
+      "techniqueId": "sa_vertical",
+      "techniqueName": "縦斬り",
+      "mvs": [
+        25
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "sa_horizontal": {
+      "weaponType": "switch-axe",
+      "techniqueId": "sa_horizontal",
+      "techniqueName": "横斬り",
+      "mvs": [
+        20
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "sa_heavy": {
+      "weaponType": "switch-axe",
+      "techniqueId": "sa_heavy",
+      "techniqueName": "斧強化叩きつけ",
+      "mvs": [
+        35
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "sa_element": {
+      "weaponType": "switch-axe",
+      "techniqueId": "sa_element",
+      "techniqueName": "属性解放突き",
+      "mvs": [
+        15,
+        15,
+        15,
+        55
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "charge-blade": {
+    "cb_check": {
+      "weaponType": "charge-blade",
+      "techniqueId": "cb_check",
+      "techniqueName": "牽制斬り",
+      "mvs": [
+        20
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "cb_spin": {
+      "weaponType": "charge-blade",
+      "techniqueId": "cb_spin",
+      "techniqueName": "回転斬り",
+      "mvs": [
+        30
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "cb_axe": {
+      "weaponType": "charge-blade",
+      "techniqueId": "cb_axe",
+      "techniqueName": "斧：強化叩きつけ",
+      "mvs": [
+        40
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "cb_saed": {
+      "weaponType": "charge-blade",
+      "techniqueId": "cb_saed",
+      "techniqueName": "高出力属性解放斬り",
+      "mvs": [
+        120
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "insect-glaive": {
+    "ig_slash": {
+      "weaponType": "insect-glaive",
+      "techniqueId": "ig_slash",
+      "techniqueName": "飛円斬り",
+      "mvs": [
+        30
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "ig_combo": {
+      "weaponType": "insect-glaive",
+      "techniqueId": "ig_combo",
+      "techniqueName": "強化連続斬り上げ",
+      "mvs": [
+        40
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "ig_jump": {
+      "weaponType": "insect-glaive",
+      "techniqueId": "ig_jump",
+      "techniqueName": "飛燕",
+      "mvs": [
+        24
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "ig_rising": {
+      "weaponType": "insect-glaive",
+      "techniqueId": "ig_rising",
+      "techniqueName": "急襲突き",
+      "mvs": [
+        60
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "light-bowgun": {
+    "lbg_normal3": {
+      "weaponType": "light-bowgun",
+      "techniqueId": "lbg_normal3",
+      "techniqueName": "通常弾 Lv3",
+      "mvs": [
+        10
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "lbg_pierce2": {
+      "weaponType": "light-bowgun",
+      "techniqueId": "lbg_pierce2",
+      "techniqueName": "貫通弾 Lv2",
+      "mvs": [
+        7,
+        7,
+        7
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "lbg_rapid": {
+      "weaponType": "light-bowgun",
+      "techniqueId": "lbg_rapid",
+      "techniqueName": "速射",
+      "mvs": [
+        10,
+        10,
+        10
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "lbg_special": {
+      "weaponType": "light-bowgun",
+      "techniqueId": "lbg_special",
+      "techniqueName": "特殊弾",
+      "mvs": [
+        35
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "heavy-bowgun": {
+    "hbg_normal3": {
+      "weaponType": "heavy-bowgun",
+      "techniqueId": "hbg_normal3",
+      "techniqueName": "通常弾 Lv3",
+      "mvs": [
+        10
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "hbg_pierce2": {
+      "weaponType": "heavy-bowgun",
+      "techniqueId": "hbg_pierce2",
+      "techniqueName": "貫通弾 Lv2",
+      "mvs": [
+        7,
+        7,
+        7
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "hbg_cluster": {
+      "weaponType": "heavy-bowgun",
+      "techniqueId": "hbg_cluster",
+      "techniqueName": "徹甲榴弾",
+      "mvs": [
+        35
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "hbg_special": {
+      "weaponType": "heavy-bowgun",
+      "techniqueId": "hbg_special",
+      "techniqueName": "機関竜弾",
+      "mvs": [
+        100
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  },
+  "bow": {
+    "bow_shot": {
+      "weaponType": "bow",
+      "techniqueId": "bow_shot",
+      "techniqueName": "射撃 Lv3",
+      "mvs": [
+        24
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "bow_spread": {
+      "weaponType": "bow",
+      "techniqueId": "bow_spread",
+      "techniqueName": "剛射",
+      "mvs": [
+        20,
+        20
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "bow_arc": {
+      "weaponType": "bow",
+      "techniqueId": "bow_arc",
+      "techniqueName": "曲射",
+      "mvs": [
+        10,
+        10,
+        10
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    },
+    "bow_power": {
+      "weaponType": "bow",
+      "techniqueId": "bow_power",
+      "techniqueName": "竜の一矢",
+      "mvs": [
+        10,
+        10,
+        10,
+        30
+      ],
+      "source": "community",
+      "numericStatus": "LEGACY_REFERENCE_ONLY",
+      "verificationStatus": "UNVERIFIED",
+      "calculationScope": "LEGACY_COMPATIBILITY_ONLY",
+      "originRelease": "r66",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED"
+      ]
+    }
+  }
+});
+// Built-in combo timing and ID references contain no motion values.
+const LEGACY_COMBO_TEMPLATES=techniqueDbDeepFreeze({
+  "great-sword": {
+    "label": "大剣",
+    "moves": [
+      {
+        "id": "gs_draw",
+        "techniqueId": "gs_draw",
+        "time": 1.2,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "gs_charge3",
+        "techniqueId": "gs_charge3",
+        "time": 2.4,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "gs_strong3",
+        "techniqueId": "gs_strong3",
+        "time": 2.9,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "gs_tcs3",
+        "techniqueId": "gs_tcs3",
+        "time": 3.4,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "gs_offset3",
+        "techniqueId": "gs_offset3",
+        "time": 1.55,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "gs_tcs",
+        "name": "基本：溜め斬り→強溜め→真溜め",
+        "moves": [
+          "gs_charge3",
+          "gs_strong3",
+          "gs_tcs3"
+        ]
+      }
+    ]
+  },
+  "long-sword": {
+    "label": "太刀",
+    "moves": [
+      {
+        "id": "ls_base1",
+        "techniqueId": "ls_base1",
+        "time": 0.55,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "ls_base2",
+        "techniqueId": "ls_base2",
+        "time": 0.45,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "ls_base3",
+        "techniqueId": "ls_base3",
+        "time": 0.6,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "ls_fade",
+        "techniqueId": "ls_fade",
+        "time": 0.7,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "ls_helm",
+        "techniqueId": "ls_helm",
+        "time": 2.3,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "ls_release",
+        "techniqueId": "ls_release",
+        "time": 3.2,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "ls_basic",
+        "name": "基本：縦→突き→斬り上げ",
+        "moves": [
+          "ls_base1",
+          "ls_base2",
+          "ls_base3"
+        ]
+      }
+    ]
+  },
+  "sword-and-shield": {
+    "label": "片手剣",
+    "moves": [
+      {
+        "id": "sns_slash",
+        "techniqueId": "sns_slash",
+        "time": 0.45,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "sns_horizontal",
+        "techniqueId": "sns_horizontal",
+        "time": 0.45,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "sns_shield",
+        "techniqueId": "sns_shield",
+        "time": 0.4,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "sns_falling",
+        "techniqueId": "sns_falling",
+        "time": 1.15,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "sns_basic",
+        "name": "基本：斬り下ろし→水平斬り→盾攻撃",
+        "moves": [
+          "sns_slash",
+          "sns_horizontal",
+          "sns_shield"
+        ]
+      }
+    ]
+  },
+  "dual-blades": {
+    "label": "双剣",
+    "moves": [
+      {
+        "id": "db_double",
+        "techniqueId": "db_double",
+        "time": 0.65,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "db_dance1",
+        "techniqueId": "db_dance1",
+        "time": 1.05,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "db_dance2",
+        "techniqueId": "db_dance2",
+        "time": 1.2,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "db_dance3",
+        "techniqueId": "db_dance3",
+        "time": 1.3,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "db_flurry",
+        "techniqueId": "db_flurry",
+        "time": 1.1,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "db_dance",
+        "name": "鬼人連斬 I→II→III",
+        "moves": [
+          "db_dance1",
+          "db_dance2",
+          "db_dance3"
+        ]
+      }
+    ]
+  },
+  "hammer": {
+    "label": "ハンマー",
+    "moves": [
+      {
+        "id": "hm_swing",
+        "techniqueId": "hm_swing",
+        "time": 0.65,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "hm_side",
+        "techniqueId": "hm_side",
+        "time": 0.45,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "hm_charge2",
+        "techniqueId": "hm_charge2",
+        "time": 0.9,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "hm_big",
+        "techniqueId": "hm_big",
+        "time": 1,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "hm_basic",
+        "name": "基本：縦振り→横振り→溜め2",
+        "moves": [
+          "hm_swing",
+          "hm_side",
+          "hm_charge2"
+        ]
+      }
+    ]
+  },
+  "hunting-horn": {
+    "label": "狩猟笛",
+    "moves": [
+      {
+        "id": "hh_left",
+        "techniqueId": "hh_left",
+        "time": 0.65,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "hh_forward",
+        "techniqueId": "hh_forward",
+        "time": 0.65,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "hh_slam",
+        "techniqueId": "hh_slam",
+        "time": 0.8,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "hh_melody",
+        "techniqueId": "hh_melody",
+        "time": 1,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "hh_basic",
+        "name": "基本：前方→左ぶん回し→叩きつけ",
+        "moves": [
+          "hh_forward",
+          "hh_left",
+          "hh_slam"
+        ]
+      }
+    ]
+  },
+  "lance": {
+    "label": "ランス",
+    "moves": [
+      {
+        "id": "ln_mid",
+        "techniqueId": "ln_mid",
+        "time": 0.55,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "ln_high",
+        "techniqueId": "ln_high",
+        "time": 0.55,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "ln_counter",
+        "techniqueId": "ln_counter",
+        "time": 0.85,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "ln_charge",
+        "techniqueId": "ln_charge",
+        "time": 0.6,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "ln_basic",
+        "name": "基本：中段→上段→中段",
+        "moves": [
+          "ln_mid",
+          "ln_high",
+          "ln_mid"
+        ]
+      }
+    ]
+  },
+  "gunlance": {
+    "label": "ガンランス",
+    "moves": [
+      {
+        "id": "gl_thrust",
+        "techniqueId": "gl_thrust",
+        "time": 0.65,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "gl_shell",
+        "techniqueId": "gl_shell",
+        "time": 0.55,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "gl_burst",
+        "techniqueId": "gl_burst",
+        "time": 1.25,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "gl_wyvern",
+        "techniqueId": "gl_wyvern",
+        "time": 2.8,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "gl_basic",
+        "name": "基本：突き→砲撃→フルバースト",
+        "moves": [
+          "gl_thrust",
+          "gl_shell",
+          "gl_burst"
+        ]
+      }
+    ]
+  },
+  "switch-axe": {
+    "label": "スラッシュアックス",
+    "moves": [
+      {
+        "id": "sa_vertical",
+        "techniqueId": "sa_vertical",
+        "time": 0.55,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "sa_horizontal",
+        "techniqueId": "sa_horizontal",
+        "time": 0.55,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "sa_heavy",
+        "techniqueId": "sa_heavy",
+        "time": 0.9,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "sa_element",
+        "techniqueId": "sa_element",
+        "time": 2,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "sa_basic",
+        "name": "基本：縦→横→斧強化叩きつけ",
+        "moves": [
+          "sa_vertical",
+          "sa_horizontal",
+          "sa_heavy"
+        ]
+      }
+    ]
+  },
+  "charge-blade": {
+    "label": "チャージアックス",
+    "moves": [
+      {
+        "id": "cb_check",
+        "techniqueId": "cb_check",
+        "time": 0.55,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "cb_spin",
+        "techniqueId": "cb_spin",
+        "time": 0.75,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "cb_axe",
+        "techniqueId": "cb_axe",
+        "time": 0.9,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "cb_saed",
+        "techniqueId": "cb_saed",
+        "time": 1.9,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "cb_basic",
+        "name": "基本：牽制→回転斬り→高出力",
+        "moves": [
+          "cb_check",
+          "cb_spin",
+          "cb_saed"
+        ]
+      }
+    ]
+  },
+  "insect-glaive": {
+    "label": "操虫棍",
+    "moves": [
+      {
+        "id": "ig_slash",
+        "techniqueId": "ig_slash",
+        "time": 0.65,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "ig_combo",
+        "techniqueId": "ig_combo",
+        "time": 0.9,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "ig_jump",
+        "techniqueId": "ig_jump",
+        "time": 0.6,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "ig_rising",
+        "techniqueId": "ig_rising",
+        "time": 1.05,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "ig_basic",
+        "name": "基本：飛円→連続斬り上げ→飛燕",
+        "moves": [
+          "ig_slash",
+          "ig_combo",
+          "ig_jump"
+        ]
+      }
+    ]
+  },
+  "light-bowgun": {
+    "label": "ライトボウガン",
+    "moves": [
+      {
+        "id": "lbg_normal3",
+        "techniqueId": "lbg_normal3",
+        "time": 0.35,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "lbg_pierce2",
+        "techniqueId": "lbg_pierce2",
+        "time": 0.5,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "lbg_rapid",
+        "techniqueId": "lbg_rapid",
+        "time": 0.85,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "lbg_special",
+        "techniqueId": "lbg_special",
+        "time": 1.1,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "lbg_basic",
+        "name": "基本：通常弾 Lv3",
+        "moves": [
+          "lbg_normal3"
+        ]
+      }
+    ]
+  },
+  "heavy-bowgun": {
+    "label": "ヘビィボウガン",
+    "moves": [
+      {
+        "id": "hbg_normal3",
+        "techniqueId": "hbg_normal3",
+        "time": 0.4,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "hbg_pierce2",
+        "techniqueId": "hbg_pierce2",
+        "time": 0.55,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "hbg_cluster",
+        "techniqueId": "hbg_cluster",
+        "time": 0.9,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "hbg_special",
+        "techniqueId": "hbg_special",
+        "time": 2.2,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "hbg_basic",
+        "name": "基本：通常弾 Lv3",
+        "moves": [
+          "hbg_normal3"
+        ]
+      }
+    ]
+  },
+  "bow": {
+    "label": "弓",
+    "moves": [
+      {
+        "id": "bow_shot",
+        "techniqueId": "bow_shot",
+        "time": 0.45,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "bow_spread",
+        "techniqueId": "bow_spread",
+        "time": 0.75,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "bow_arc",
+        "techniqueId": "bow_arc",
+        "time": 1.1,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      },
+      {
+        "id": "bow_power",
+        "techniqueId": "bow_power",
+        "time": 1.8,
+        "timingStatus": "LEGACY_REFERENCE_ONLY"
+      }
+    ],
+    "presets": [
+      {
+        "id": "bow_basic",
+        "name": "基本：射撃→剛射",
+        "moves": [
+          "bow_shot",
+          "bow_spread"
+        ]
+      }
+    ]
+  }
+});
+function legacyComboTechniqueRecord(kind,id){
+  if(!Object.hasOwn(LEGACY_COMBO_TECHNIQUE_DB,kind))return null;
+  const records=LEGACY_COMBO_TECHNIQUE_DB[kind];
+  return Object.hasOwn(records,id)?records[id]:null;
+}
+function hydrateLegacyComboData(){
+  return Object.fromEntries(Object.entries(LEGACY_COMBO_TEMPLATES).map(([kind,data])=>[kind,{
+    label:data.label,presets:data.presets,
+    moves:data.moves.map(ref=>{
+      const record=legacyComboTechniqueRecord(kind,ref.techniqueId);
+      if(!record)throw new Error('LEGACY_COMBO_REFERENCE_MISSING:'+kind+':'+ref.techniqueId);
+      return new Technique({id:ref.id,name:record.techniqueName,mvs:record.mvs,time:ref.time,source:record.source});
+    })
+  }]));
+}
+const COMBO_DATA=hydrateLegacyComboData();
 const TECHNIQUES=new TechniqueBook(COMBO_DATA);
 function comboKind(){return canonicalWeaponKind(selectedWeapon())}
-function comboData(){return TECHNIQUES.get(comboKind())}
-function comboMove(id){return (comboData()?.moves||[]).find(x=>x.id===id)}
+// Explicitly adopted ordinary body techniques; dedicated routes stay separate.
+const CANONICAL_COMBO_ADOPTION=techniqueDbDeepFreeze({
+  'great-sword':['gs_charge3','gs_strong3'],
+  'sword-and-shield':['sns_slash','sns_horizontal'],
+  'hammer':['hm_side','hm_big'],
+  'hunting-horn':['hh_left','hh_forward']
+});
+const DIRECT_CANONICAL_COMBO_CATALOG=techniqueDbDeepFreeze({
+  'great-sword':['GS_STRONG_WIDE_SLASH_3'],
+  'long-sword':['LS_RED_BLADE_I','LS_RED_BLADE_II','LS_RED_BLADE_III'],
+  'sword-and-shield':['SNS_SIDE_SLASH','SNS_RETURN_SLASH'],
+  'dual-blades':['DB_DEMON_DANCE_I','DB_DEMON_DANCE_II','DB_DEMON_DANCE_III'],
+  'hammer':['HAM_VERTICAL_II','HAM_MIGHTY_CHARGE_UPPERCUT'],
+  'lance':['LAN_MID_THRUST_I','LAN_MID_THRUST_II','LAN_MID_THRUST_III','LAN_TRIPLE_THRUST'],
+  'gunlance':['GL_SLAM','GL_SWEEP'],
+  'charge-blade':['CB_SWORD_TO_AXE_MORPH','CB_SHIELD_THRUST','CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED']
+});
+function directCanonicalComboTechnique(kind,id){
+  const record=techniqueDbGet(kind,id),meta={numericOrigin:'CANONICAL_DB',canonicalKind:kind,canonicalTechniqueId:id,timingStatus:'PENDING',...(kind==='charge-blade'?{handler:'ChargeBladeHandler'}:{})};
+  const moveId='canonical:'+id;
+  try{
+    const hits=readCanonicalComboHits({...meta,id:moveId,custom:false});
+    if(kind==='charge-blade'&&CHARGE_BLADE_TECHNIQUES[id]?.phial)throw new Error(chargeBladeEvidencePhialCount(id)===null?'CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED':'CB_COMBO_PHIAL_ROUTE_PENDING');
+    return Object.assign(new Technique({id:moveId,name:record.techniqueName,time:0,source:record.verificationStatus==='VERIFIED'?'verified':'community',mvs:hits.map(h=>({mv:h.mv,elementRatio:h.elementModifier}))}),meta);
+  }catch(e){return Object.assign(new Technique({id:moveId,name:record?.techniqueName||id,time:0,mvs:[],source:'community'}),meta,{calculationBlocked:true,blockedReason:String(e.message||e)});}
+}
+function readCanonicalComboHits(move){
+  if(move.custom)throw new Error('CANONICAL_COMBO_NOT_ADOPTED');
+  if(move.id==='canonical:'+move.canonicalTechniqueId){
+    if(!DIRECT_CANONICAL_COMBO_CATALOG[move.canonicalKind]?.includes(move.canonicalTechniqueId))throw new Error('CANONICAL_COMBO_NOT_ADOPTED');
+    const record=techniqueDbGet(move.canonicalKind,move.canonicalTechniqueId);
+    if(!record||record.specialComponents?.length||record.calculationScope==='HP_BODY_ONLY')throw new Error('CANONICAL_COMBO_SPECIAL_ROUTE_PENDING');
+    const hits=techniqueDbHits(move.canonicalKind,move.canonicalTechniqueId);
+    if(!hits.length||hits.some(h=>!Number.isFinite(h.elementModifier)||h.damageStatsState!=null))throw new Error('CANONICAL_COMBO_STATE_OR_ELEMENT_PENDING');
+    return hits;
+  }
+  if(!CANONICAL_COMBO_ADOPTION[move.canonicalKind]?.includes(move.id))throw new Error('CANONICAL_COMBO_NOT_ADOPTED');
+  const mapping=legacyCanonicalMapping(move.canonicalKind,move.id);
+  if(mapping?.canonicalTechniqueId!==move.canonicalTechniqueId)throw new Error('CANONICAL_COMBO_IDENTITY_CHANGED');
+  return legacyCanonicalHits(move.canonicalKind,move.id);
+}
+const CANONICAL_TIMING_STORAGE_KEY='mhwilds-canonical-timing-v1';
+function canonicalTimingStore(){
+  try{const data=JSON.parse(localStorage.getItem(CANONICAL_TIMING_STORAGE_KEY)||'null');return data?.schemaVersion===1&&data.records&&typeof data.records==='object'&&!Array.isArray(data.records)?data:{schemaVersion:1,records:{}};}catch(e){return {schemaVersion:1,records:{}};}
+}
+function canonicalTimingFingerprint(move){
+  const record=techniqueDbGet(move.canonicalKind,move.canonicalTechniqueId);
+  return JSON.stringify({kind:move.canonicalKind,id:move.canonicalTechniqueId,revision:record.revision,baseline:record.baselineGameVersion||TECHNIQUE_DB_SPEC.gameVersion,hits:readCanonicalComboHits(move),...(move.handler==='ChargeBladeHandler'?{handler:CHARGE_BLADE_TECHNIQUES[move.canonicalTechniqueId],timingCondition:move.timingCondition}:{} )});
+}
+function canonicalTimingEvidence(move){
+  if(move.numericOrigin!=='CANONICAL_DB'||move.calculationBlocked)return null;
+  if(move.handler==='ChargeBladeHandler'&&!move.timingCondition)return null;
+  const entry=canonicalTimingStore().records[move.canonicalKind+':'+move.id];
+  if(!entry||!Number.isFinite(entry.seconds)||entry.seconds<=0||typeof entry.note!=='string'||!entry.note.trim()||typeof entry.gameVersion!=='string')return null;
+  try{
+    const record=techniqueDbGet(move.canonicalKind,move.canonicalTechniqueId);
+    if(entry.gameVersion!==(record.baselineGameVersion||TECHNIQUE_DB_SPEC.gameVersion)||entry.fingerprint!==canonicalTimingFingerprint(move))return null;
+    return {seconds:entry.seconds,gameVersion:entry.gameVersion,note:entry.note,savedAt:entry.savedAt||null,timingCondition:entry.timingCondition||null};
+  }catch(e){return null;}
+}
+function withCanonicalTiming(move,stats=calcState?.stats||{}){
+  if(move.handler==='ChargeBladeHandler')move.timingCondition=comboCBCondition(stats);
+  const evidence=canonicalTimingEvidence(move);
+  return evidence?Object.assign(move,{time:evidence.seconds,timingStatus:'USER_MEASURED_REFERENCE',timingEvidence:evidence}):move;
+}
+function saveCanonicalTiming(kind,id,input){
+  const move=comboKind()===kind?comboMove(id):null;
+  if(!move||move.numericOrigin!=='CANONICAL_DB'||move.calculationBlocked)return {ok:false,reason:'この技は時間登録の対象ではありません。'};
+  if(move.handler==='ChargeBladeHandler'&&!move.timingCondition)return {ok:false,reason:'先に盾・斧の強化状態を選択してください。'};
+  const seconds=Number(input?.seconds),gameVersion=String(input?.gameVersion||'').trim(),note=String(input?.note||'').trim();
+  if(!Number.isFinite(seconds)||seconds<=0||!/^\d+\.\d+\.\d+\.\d+$/.test(gameVersion)||!note)return {ok:false,reason:'正の秒数、測定したゲーム版、測定メモを入力してください。'};
+  try{
+    const data=canonicalTimingStore();data.records[kind+':'+id]={seconds,gameVersion,note,fingerprint:canonicalTimingFingerprint(move),savedAt:new Date().toISOString(),timingCondition:move.timingCondition||null};
+    localStorage.setItem(CANONICAL_TIMING_STORAGE_KEY,JSON.stringify(data));
+    refreshCanonicalTimingViews();return {ok:true,applied:Boolean(canonicalTimingEvidence(move))};
+  }catch(e){return {ok:false,reason:'時間を保存できませんでした。端末の保存領域を確認してください。'};}
+}
+function removeCanonicalTiming(kind,id){
+  try{const data=canonicalTimingStore();delete data.records[kind+':'+id];localStorage.setItem(CANONICAL_TIMING_STORAGE_KEY,JSON.stringify(data));refreshCanonicalTimingViews();return {ok:true};}catch(e){return {ok:false,reason:'時間を削除できませんでした。'};}
+}
+function refreshCanonicalTimingViews(message='時間の登録内容が変わりました。'){
+  lastBuildComparisonRows=null;
+  App.combo.syncFromDOM();renderComboForWeapon();restoreComboRows();renderCanonicalTimingEditor();
+  if($('compareOut'))$('compareOut').textContent=message+'もう一度比較してください。';
+  if($('groupProposalOut'))$('groupProposalOut').textContent=message+'候補をもう一度作成してください。';
+  if($('aiPayload'))$('aiPayload').textContent='';
+}
+function renderCanonicalTimingEditor(){
+  const picker=$('canonicalTimingTechnique'),status=$('canonicalTimingStatus');if(!picker||!status)return;
+  const moves=(comboData()?.moves||[]).filter(m=>m.numericOrigin==='CANONICAL_DB'&&!m.calculationBlocked),old=picker.value;
+  picker.innerHTML=moves.map(m=>`<option value="${esc(m.id)}">${comboMoveLabel(m)}</option>`).join('');
+  if(moves.some(m=>m.id===old))picker.value=old;
+  picker.disabled=!moves.length;$('canonicalTimingSave').disabled=!moves.length;$('canonicalTimingRemove').disabled=!moves.length;
+  const fill=()=>{
+    const move=comboMove(picker.value),entry=move?canonicalTimingStore().records[comboKind()+':'+move.id]:null;
+    $('canonicalTimingSeconds').value=entry?.seconds??'';$('canonicalTimingVersion').value=entry?.gameVersion||'';$('canonicalTimingNote').value=entry?.note||'';
+    const record=move?techniqueDbGet(move.canonicalKind,move.canonicalTechniqueId):null;
+    $('canonicalTimingVersion').placeholder=record?.baselineGameVersion||TECHNIQUE_DB_SPEC.gameVersion;
+    status.textContent=!move?'この武器に時間登録できる正規技はありません。':entry&&!canonicalTimingEvidence(move)?'保存した時間はゲーム版・技データ・強化状態または高速変形Lvが一致しないため未適用です。':entry?'登録した実測参考時間を使用します。':'未登録です。既存の参考時間がある技は、その値を使用します。';
+  };
+  picker.onchange=fill;fill();
+  $('canonicalTimingSave').onclick=()=>{const result=saveCanonicalTiming(comboKind(),picker.value,{seconds:$('canonicalTimingSeconds').value,gameVersion:$('canonicalTimingVersion').value,note:$('canonicalTimingNote').value});status.textContent=result.ok?(result.applied?'実測参考時間を保存しました。DPSを再計算してください。':'時間を保存しました。技DBの基準ゲーム版と異なるため未適用です。'):result.reason;};
+  $('canonicalTimingRemove').onclick=()=>{const result=removeCanonicalTiming(comboKind(),picker.value);status.textContent=result.ok?'登録時間を削除しました。':result.reason;};
+}
+
+function comboCBStoredState(){
+  const value=id=>$(id)?.value==='1'?true:$(id)?.value==='0'?false:null;
+  return {shieldBoosted:value('comboCBShield'),axeBoosted:value('comboCBAxe')};
+}
+function comboCBCondition(stats={}){
+  const state=comboCBStoredState(),level=Number(stats.rapidMorphLevel??0);
+  if(state.shieldBoosted===null||state.axeBoosted===null)return null;
+  if(!Number.isInteger(level)||level<0||level>3)throw new Error('CB_COMBO_RAPID_MORPH_LEVEL');
+  return {...state,rapidMorphLevel:level};
+}
+function renderComboCBState(){
+  const panel=$('comboCBStatePanel');if(!panel)return;panel.hidden=comboKind()!=='charge-blade';
+  for(const id of ['comboCBShield','comboCBAxe'])$(id).onchange=()=>{App.combo.syncFromDOM();refreshCanonicalTimingViews('強化状態が変わりました。');};
+}
+function chargeBladeComboDamage(move,ctx){
+  if(move.canonicalKind!=='charge-blade'||move.canonicalTechniqueId!=='CB_SWORD_TO_AXE_MORPH')throw new Error('CB_COMBO_PHIAL_ROUTE_PENDING');
+  const state=ctx.chargeBladeState;if(!state||typeof state.shieldBoosted!=='boolean'||typeof state.axeBoosted!=='boolean')throw new Error('盾・斧の強化状態を選択してください。');
+  const level=Number(state.rapidMorphLevel);if(!Number.isInteger(level)||level<0||level>3)throw new Error('CB_COMBO_RAPID_MORPH_LEVEL');
+  const critLevel=Number(ctx.critBonus)||0;if(!Number.isInteger(critLevel)||critLevel<0||critLevel>5)throw new Error('CANONICAL_COMBO_CRIT_LEVEL');
+  // The dedicated resolver owns component applicability and phial evidence gates.
+  chargeBladeResolveTechniqueDamage(move.canonicalTechniqueId,{baseAttack:ctx.attack,displayedElement:ctx.element,physicalHitzone:ctx.hz,elementalHitzone:ctx.ehz,sharpnessPhysical:ctx.sharp,sharpnessElement:ctx.esharp,affinity:ctx.affinity,criticalMultiplier:1.25+[0,.03,.06,.09,.12,.15][critLevel],negativeCriticalMultiplier:.75},state);
+  const parts=chargeBladeTechniqueComponents(move.canonicalTechniqueId,state);
+  const pair=(physical,element,component)=>physical.map((p,i)=>{
+    const e=element[i];if(!e)throw new Error('CB_COMBO_COMPONENT_PAIR');
+    return {...damageFromParams({...ctx,attack:ctx.attack*p.multiplier,element:ctx.element*e.elementModifier*e.multiplier,mv:p.mv}),component,mv:p.mv,elementModifier:e.elementModifier,partModifierAppliedToHp:false};
+  });
+  const hits=[...pair(parts.physicalBody,parts.elementalBody,'BODY'),...pair(parts.axeBoostPhysical,parts.axeBoostElement,'AXE_BOOST')];
+  return {hits,total:hits.reduce((sum,h)=>sum+h.total,0),handler:'ChargeBladeHandler',components:parts,chargeBladeState:{...state}};
+}
+
+function comboBlockedMessage(reason){if(String(reason||'').includes('PHIAL_ROUTE_PENDING'))return 'ビンを含む技全体のコンボ計算への接続は保留です。';return String(reason||'').includes('PHIAL_EXPLOSION_COUNT_UNVERIFIED')?'ビン爆発回数が未確認のため、この技全体の計算は保留です。':String(reason||'計算条件を確認してください。');}
+function comboMoveLabel(move){
+  if(move.calculationBlocked)return esc(move.name)+'（計算保留）';
+  return esc(move.name)+'（'+(move.handler==='ChargeBladeHandler'?'本体MV ':'MV ')+move.motionValue+' / '+(move.time>0?move.time.toFixed(2)+'s':'時間未確認')+'）';
+}
+function canonicalComboTechnique(kind,move){
+  if(move.custom||!CANONICAL_COMBO_ADOPTION[kind]?.includes(move.id))return move;
+  const mapping=legacyCanonicalMapping(kind,move.id);
+  const meta={numericOrigin:'CANONICAL_DB',canonicalKind:kind,canonicalTechniqueId:mapping?.canonicalTechniqueId||null,timingStatus:'LEGACY_REFERENCE_ONLY'};
+  try{
+    const hits=legacyCanonicalHits(kind,move.id);
+    if(hits.some(h=>!Number.isFinite(h.elementModifier)||h.damageStatsState!=null))throw new Error('CANONICAL_COMBO_STATE_OR_ELEMENT_PENDING');
+    const adapted=new Technique({id:move.id,name:move.name,time:move.time,source:'verified',mvs:hits.map(h=>({mv:h.mv,elementRatio:h.elementModifier}))});
+    return Object.assign(adapted,meta);
+  }catch(e){return Object.assign(new Technique({id:move.id,name:move.name,time:move.time,mvs:[],source:'verified'}),meta,{calculationBlocked:true,blockedReason:String(e.message||e)});}
+}
+function comboData(stats=calcState?.stats||{}){
+  const kind=comboKind(),data=TECHNIQUES.get(kind);
+  return data?{...data,moves:[...data.moves.map(move=>canonicalComboTechnique(kind,move)),...(DIRECT_CANONICAL_COMBO_CATALOG[kind]||[]).map(id=>directCanonicalComboTechnique(kind,id))].map(move=>withCanonicalTiming(move,stats))}:null;
+}
+function comboMove(id,stats=calcState?.stats||{}){return (comboData(stats)?.moves||[]).find(x=>x.id===id)}
 function renderComboKinds(){renderComboForWeapon();renderTechniqueEditor();}
 function renderTechniqueEditor(){
+  renderCanonicalTimingEditor();
   const list=$('techniqueCustomList'),status=$('techniqueEditorStatus'),kind=comboKind();
   if(!list||!status)return;
   if(!kind){list.innerHTML='<div class="muted small">武器を選択すると登録できます。</div>';return}
   const items=TECHNIQUES.kindList(kind);
   status.textContent=items.length?`${items.length}件の登録技があります。端末内に保存されています。`:'登録した技はこの端末に保存されます。';
   list.innerHTML=items.length?items.map(x=>`<div class="equip" style="margin-top:6px"><b>${esc(x.name)}</b>（MV ${x.mvs.join('+')} / ${Number(x.time).toFixed(2)}秒） <span class="muted small">${x.source==='community'?'コミュニティ資料':'検証値'}</span><button type="button" class="danger tech-del" data-tech-id="${esc(x.id)}" style="float:right">削除</button></div>`).join(''):'<div class="muted small">この武器種には追加登録された技はありません。</div>';
-  list.querySelectorAll('.tech-del').forEach(b=>b.onclick=()=>{TECHNIQUES.remove(kind,b.dataset.techId);renderTechniqueEditor();renderComboForWeapon();});
+  list.querySelectorAll('.tech-del').forEach(b=>b.onclick=()=>{if(!TECHNIQUES.remove(kind,b.dataset.techId)){status.textContent='削除を保存できませんでした。登録技は維持しています。';return;}renderTechniqueEditor();renderComboForWeapon();});
 }
 function registerTechnique(){
   const kind=comboKind(),name=($('techName')?.value||'').trim(),time=Number($('techTime')?.value),mvs=($('techMV')?.value||'').split(',').map(x=>Number(x.trim())).filter(Number.isFinite);
   if(!kind){$('techniqueEditorStatus').textContent='先に武器を選択してください。';return}
   if(!name||!mvs.length||!(time>0)||mvs.some(x=>x<0)){$('techniqueEditorStatus').textContent='技名・モーション値・所要時間を正しく入力してください。';return}
   const ok=TECHNIQUES.add(kind,{name,mvs,time,source:$('techSource')?.value||'verified'});
-  if(ok){$('techName').value='';$('techMV').value='';$('techTime').value='';$('techniqueEditorStatus').textContent='技を登録しました。';renderTechniqueEditor();renderComboForWeapon();}
+  if(ok){$('techName').value='';$('techMV').value='';$('techTime').value='';$('techniqueEditorStatus').textContent='技を登録しました。';renderTechniqueEditor();renderComboForWeapon();}else $('techniqueEditorStatus').textContent='技を保存できませんでした。入力内容は維持しています。';
 }
 function renderComboForWeapon(){
+  renderComboCBState();
+  renderCanonicalTimingEditor();
   const w=selectedWeapon(),data=comboData();
   const info=$('comboWeaponInfo'),picker=$('comboMovePicker'),preset=$('comboPreset'),status=$('comboDataStatus');
   if(!info||!picker||!preset||!status)return;
@@ -2154,20 +3838,36 @@ function renderComboForWeapon(){
     status.innerHTML='<span class="bad">この武器種の技データはまだ登録されていません。下の「技データを登録・管理」から登録できます。</span>'; $('addCombo').disabled=true; return;
   }
   picker.disabled=false; preset.disabled=false; $('addCombo').disabled=false;
-  const old=picker.value; picker.innerHTML=data.moves.map(m=>`<option value="${m.id}">${esc(m.name)}（MV ${m.motionValue} / ${m.time.toFixed(2)}s）</option>`).join('');
+  const old=picker.value; picker.innerHTML=data.moves.map(m=>`<option value="${m.id}">${comboMoveLabel(m)}</option>`).join('');
   if(data.moves.some(m=>m.id===old))picker.value=old;
   preset.innerHTML='<option value="">なし（自分で組む）</option>'+data.presets.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
-  status.innerHTML=`<b>${esc(data.label)}</b>：${data.moves.length}技を登録。技データは現時点では初期参考値です。公式Motion Valueではありません。`;
+  const adopted=data.moves.filter(m=>m.numericOrigin==='CANONICAL_DB'&&!m.calculationBlocked).length;
+  status.innerHTML=`<b>${esc(data.label)}</b>：${data.moves.length}技を登録。${adopted?`うち${adopted}技は技DBの採用値を使用。`:''}他の技は初期参考値または追加登録値です。時間未確認の技はダメージのみ計算します。所要時間がある技も時間は参考値です。`;
 }
-function addCombo(moveId=null){
-  const data=comboData(); if(!data){renderComboForWeapon();renderTechniqueEditor();return}
-  const id=moveId||$('comboMovePicker')?.value||data.moves[0]?.id; const m0=data.moves.find(x=>x.id===id); if(!m0)return;
-  let div=document.createElement('div');div.className='equip comboRow';
-  const opts=data.moves.map(m=>`<option value="${m.id}">${esc(m.name)}（MV ${m.motionValue} / ${m.time.toFixed(2)}s）</option>`).join('');
+function addCombo(moveId=null,{allowMissing=false}={}){
+  const data=comboData()||(allowMissing?{moves:[]}:null);
+  if(!data){renderComboForWeapon();renderTechniqueEditor();return;}
+  const id=moveId||$('comboMovePicker')?.value||data.moves[0]?.id||'';
+  const available=data.moves.some(m=>m.id===id);if(!available&&!allowMissing)return;
+  const div=document.createElement('div');div.className='equip comboRow';
+  let opts=data.moves.map(m=>`<option value="${esc(m.id)}">${comboMoveLabel(m)}</option>`).join('');
+  if(!available)opts=`<option value="${esc(id)}">未登録の保存技：${esc(id)}</option>`+opts;
   div.innerHTML=`<label>技</label><select class="cmove">${opts}</select><div class="two" style="margin-top:7px"><div class="muted small comboMeta"></div><div><button class="danger del" type="button">削除</button></div></div>`;
-  let sel=div.querySelector('.cmove');sel.value=id;
-  const sync=()=>{let m=data.moves.find(x=>x.id===sel.value)||data.moves[0];div.querySelector('.comboMeta').textContent=`MV ${m.motionValue} / ${m.hits}ヒット / 所要 ${m.time.toFixed(2)} 秒`;};
-  sel.onchange=sync; div.querySelector('.del').onclick=()=>{div.remove();App.combo.syncFromDOM();$('dpsOut').textContent='未計算';}; $('combo').appendChild(div); App.combo.syncFromDOM(); sync();
+  const sel=div.querySelector('.cmove');sel.value=id;
+  const sync=()=>{
+    const m=comboMove(sel.value);
+    div.querySelector('.comboMeta').textContent=!m?'保存技を確認できません。別の技を選択してください。':m.calculationBlocked?'計算保留：'+comboBlockedMessage(m.blockedReason):`MV ${m.motionValue} / ${m.hits}ヒット / ${m.time>0?'所要 '+m.time.toFixed(2)+' 秒'+(m.timingStatus==='USER_MEASURED_REFERENCE'?'（実測参考）':''):'所要時間未確認（DPS保留）'}`;
+  };
+  sel.onchange=()=>{sync();App.combo.syncFromDOM();$('dpsOut').textContent='未計算';};
+  div.querySelector('.del').onclick=()=>{div.remove();App.combo.syncFromDOM();$('dpsOut').textContent='未計算';};
+  $('combo').appendChild(div);App.combo.syncFromDOM();sync();$('dpsOut').textContent='未計算';
+}
+function restoreComboRows(){
+  const moves=(App.state.combo.moves||[]).map(item=>({...item})),uptime=App.state.combo.uptime,uptimeMode=App.state.combo.uptimeMode;
+  $('combo').innerHTML='';App.combo.reset();
+  $('uptime').value=String(uptime??85);$('uptimeMode').value=uptimeMode||'1';
+  moves.forEach(item=>addCombo(item.techniqueId,{allowMissing:true}));
+  App.combo.syncFromDOM();$('dpsOut').textContent='未計算';
 }
 function applyComboPreset(){let p=($('comboPreset')?.value||'');if(!p)return;let data=comboData(),preset=data?.presets?.find(x=>x.id===p);if(!preset)return;$('combo').innerHTML='';App.combo.reset();preset.moves.forEach(id=>addCombo(id))}
 function calcDps(){
@@ -2176,20 +3876,27 @@ function calcDps(){
   if(!rows.length){$('dpsOut').innerHTML='<span class="bad">技を追加してください。</span>';return null}
   const ctx=comboDamageContext();
   let sumD=0,sumT=0;
-  const breakdown=[];
-  for(const item of rows){
-    const m=comboMove(item.techniqueId); if(!m)continue;
-    const hits=(m.hitsData||[]).map(h=>damageFromTechnique({...m,...h},h.mv,ctx));
-    const d=hits.reduce((sum,x)=>sum+x.total,0);
-    sumD+=d; sumT+=Number(m.time)||0;
-    breakdown.push({id:m.id,name:m.name,mv:m.motionValue,hits:hits.length,time:Number(m.time)||0,damage:d,hitDetails:hits.map((h,i)=>({hit:i+1,damage:h.total,criticalState:h.criticalState||'expected'}))});
+  const breakdown=[],pendingTimeTechniqueIds=[];
+  try{for(const item of rows){
+    const m=comboMove(item.techniqueId); if(!m)throw new Error('COMBO_TECHNIQUE_UNAVAILABLE:'+item.techniqueId);
+    const calculated=comboTechniqueDamage(m,ctx),hits=calculated.hits;
+    const d=calculated.total;
+    sumD+=d;
+    const time=Number(m.time);
+    if(!Number.isFinite(time)||time<=0)pendingTimeTechniqueIds.push(m.id);else sumT+=time;
+    breakdown.push({id:m.id,name:m.name,mv:m.motionValue,hits:hits.length,time:Number(m.time)>0?Number(m.time):null,damage:d,hitDetails:hits.map((h,i)=>({hit:i+1,damage:h.total,criticalState:h.criticalState||'expected'}))});
+  }
+  }catch(e){$('dpsOut').textContent='計算保留：'+comboBlockedMessage(e.message||e);return null;}
+  const detail=breakdown.map((x,i)=>`${i+1}. ${esc(x.name)}：${x.damage.toFixed(2)} / ${x.hits}Hit / ${x.time==null?'時間未確認':x.time.toFixed(2)+'秒'}`).join('<br>');
+  if(pendingTimeTechniqueIds.length){
+    $('dpsOut').innerHTML=`<b>1コンボ ${sumD.toFixed(2)} ダメージ</b><br>所要時間が未確認のためDPSは算出できません。<div class="muted small" style="margin-top:7px">${detail}</div>`;
+    return {damage:sumD,time:null,knownTime:sumT,theoreticalDps:null,practicalDps:null,oneMinute:null,timingStatus:'PENDING',pendingTimeTechniqueIds,context:ctx,breakdown};
   }
   const theoretical=sumT?sumD/sumT:0;
   const up=Math.max(1,Math.min(100,Number(App.state.combo.uptime)||85))/100;
   const practical=App.state.combo.uptimeMode==='1'?theoretical*up:theoretical;
   const result={damage:sumD,time:sumT,theoreticalDps:theoretical,practicalDps:practical,oneMinute:practical*60,context:ctx,breakdown};
-  const detail=breakdown.map((x,i)=>`${i+1}. ${esc(x.name)}：${x.damage.toFixed(2)} / ${x.time.toFixed(2)}秒`).join('<br>');
-  $('dpsOut').innerHTML=`<b>実戦DPS：${practical.toFixed(2)}</b><br>理論DPS：${theoretical.toFixed(2)}<br>1コンボ ${sumD.toFixed(2)} ダメージ / ${sumT.toFixed(2)}秒<br>1分期待値 ${(practical*60).toFixed(0)} ダメージ<div class="muted small" style="margin-top:7px">${detail}</div>`;
+  $('dpsOut').innerHTML=`<b>実戦DPS：${practical.toFixed(2)}</b><br>理論DPS：${theoretical.toFixed(2)}<br>1コンボ ${sumD.toFixed(2)} ダメージ / ${sumT.toFixed(2)}秒<br>1分期待値 ${(practical*60).toFixed(0)} ダメージ<div class="muted small" style="margin-top:7px">${detail}</div><div class="muted small">所要時間は参考値のため、DPSは参考計算です。</div>`;
   return result;
 }
 
@@ -2197,15 +3904,37 @@ function comboDamageContext(){
   const st=calcState?.stats||{};
   const h=monsterHZ();
   return {attack:Number(st.attackTrue??st.attack)||0,affinity:Number(st.maxAffinity??st.affinity)||0,element:Number(st.element)||0,
-    hz:Number(h.hz)||45,ehz:Number(h.ehz)||20,sharp:Number($('dSharp')?.value)||1.32,esharp:Number($('dESharp')?.value)||1.15,
-    critBonus:Number($('dCB')?.value)||0,elementCrit:Boolean(+$('dECrit')?.value)};
+    hz:h.hz??45,ehz:h.ehz??20,sharp:Number($('dSharp')?.value)||1.32,esharp:Number($('dESharp')?.value)||1.15,
+    critBonus:Number($('dCB')?.value)||0,elementCrit:Boolean(+$('dECrit')?.value),chargeBladeState:comboKind()==='charge-blade'?comboCBCondition(st):null};
+}
+// One canonical ordinary-hit path is shared by combo UI and saved-build DPS.
+function comboTechniqueDamage(move,ctx){
+  if(move.calculationBlocked)throw new Error(move.blockedReason||'CANONICAL_COMBO_BLOCKED');
+  if(move.handler==='ChargeBladeHandler')return chargeBladeComboDamage(move,ctx);
+  if(move.numericOrigin!=='CANONICAL_DB'){
+    const hits=(move.hitsData||[]).map(h=>damageFromTechnique({...move,...h},h.mv,ctx));
+    return {hits,total:hits.reduce((sum,h)=>sum+h.total,0)};
+  }
+  const registered=readCanonicalComboHits(move);
+  if(registered.some(h=>h.damageStatsState!=null))throw new Error('CANONICAL_COMBO_STATE_STATS_PENDING');
+  const level=Math.max(0,Math.min(5,Number(ctx.critBonus)||0));
+  if(!Number.isInteger(level))throw new Error('CANONICAL_COMBO_CRIT_LEVEL');
+  const criticalMultiplier=1.25+[0,.03,.06,.09,.12,.15][level];
+  const stats={baseAttack:ctx.attack,displayedElement:ctx.element,physicalHitzone:ctx.hz,elementalHitzone:ctx.ehz,sharpnessPhysical:ctx.sharp,sharpnessElement:ctx.esharp,affinity:ctx.affinity,maxAffinity:ctx.affinity,criticalMultiplier,negativeCriticalMultiplier:.75};
+  const raw=genericProfileDamage({status:'ADOPTED',hits:registered},stats);
+  const elementCrit=ctx.elementCrit?genericExpectedCritMultiplier(ctx.affinity,criticalMultiplier,.75):1;
+  const hits=raw.trace.map(h=>{
+    const p=roundDamage2(h.physical),e=roundDamage2(h.element*elementCrit);
+    return {p,e,total:roundDamage2(p+e),criticalState:'expected',mv:h.mv,elementModifier:h.elementModifier,partModifierAppliedToHp:false};
+  });
+  return {hits,total:hits.reduce((sum,h)=>sum+h.total,0),numericOrigin:'CANONICAL_DB',canonicalTechniqueId:move.canonicalTechniqueId};
 }
 function damageFromTechnique(technique,mv,ctx){
   const t=technique||{};
-  const profile={...ctx,mv:Number(mv)||0};
+  const profile={...ctx,mv:Number(mv)||0,criticalState:t.criticalState||'expected'};
   if(t.damageType==='hunting-horn-wave'){
     const p=roundDamage2((Number(ctx.attack)||0)*Number(mv||0)/100);
-    const e=roundDamage2((Number(ctx.element)||0)/10*Number(t.elementRatio||1)*(Number(ctx.ehz)||0));
+    const e=roundDamage2((Number(ctx.element)||0)/10*damageNumericValue(t.elementRatio,1)*(Number(ctx.ehz)||0)/100);
     return {p,e,total:roundDamage2(p+e),critMultiplier:1};
   }
   if(t.damageType==='great-sword-kick'){
@@ -2214,10 +3943,10 @@ function damageFromTechnique(technique,mv,ctx){
   }
   if(t.damageType==='fixed') return {p:0,e:0,total:Number(t.fixedDamage)||0,critMultiplier:1};
   if(t.damageType==='element-only'){
-    const e=damageFromParams({...profile,mv:0,element:(Number(ctx.element)||0)*Number(t.elementRatio||1)});
+    const e=damageFromParams({...profile,mv:0,element:(Number(ctx.element)||0)*damageNumericValue(t.elementRatio,1)});
     return {p:0,e:e.e,total:e.e,critMultiplier:e.critMultiplier};
   }
-  const d=damageFromParams(profile);
+  const d=damageFromParams({...profile,element:(Number(ctx.element)||0)*damageNumericValue(t.elementRatio,1)});
   if(t.damageType==='physical-fixed'){
     d.total+=Number(t.fixedDamage)||0; d.p+=Number(t.fixedDamage)||0;
   }
@@ -2431,7 +4160,12 @@ function groupProposalBuildReasonScore(map,info,nushiInfo,mode,targetEffect,base
   return score;
 }
 function groupProposalEvaluate(candidateMap,base,cond,targetInfo){for(const k of ['head','chest','arms','waist','legs'])build.armor[k]=candidateMap[k]||null;calcBuild();const st=JSON.parse(JSON.stringify(calcState.stats||{})),tot=JSON.parse(JSON.stringify(calcState.total||{}));const targetEffect=targetInfo?.effectName||targetInfo?.parentSkill?.name||'';const directSeriesCount=groupProposalCountBonus(candidateMap,targetInfo,'series');const targetLv=directSeriesCount>=Number(targetInfo?.required||999)?Number(targetInfo?.rank?.level||targetInfo?.requestedLevel||1):0;return {armor:Object.fromEntries(Object.entries(candidateMap).map(([k,a])=>[k,a?.id||''])),stats:st,total:tot,targetLv,targetEffect,directSeriesCount,dps:dpsForStats(st,cond),damage:damageForStats(st,cond.mv,cond),skills:groupProposalSkillSummary(tot,targetEffect),reasonScore:groupProposalBuildReasonScore(candidateMap,targetInfo,null,'balance',targetEffect,base)};}
-function groupProposalRenderCandidate(r,i){const names=[['head','頭'],['chest','胴'],['arms','腕'],['waist','腰'],['legs','脚']];let armorHtml=names.map(([k,n])=>{const a=DB.armor.find(x=>String(x.id)===String(r.armor[k]||''));return `<div><b>${n}</b>：${a?esc(a.name):'—'}</div>`}).join('');const target=$('groupProposalSkill')?.selectedOptions[0]?.textContent||'';const seriesParts=Number(r.directSeriesCount)||0;return `<div class="equip" style="margin-top:9px"><div class="equip-title">案${i+1}：${i===0?'バランス候補':i===1?'火力寄り候補':'スキル自由度寄り候補'}</div>${armorHtml}<div class="notice small"><b>${esc(target)}</b> → Lv${r.targetLv} / シリーズ部位 ${seriesParts}（武器を含む） / 1ヒット ${Number(r.damage).toFixed(2)} / DPS ${Number(r.dps).toFixed(2)} / 現在比 ${r.dps>=0?'+':''}${Number(r.dps).toFixed(2)}</div><div class="small">主なスキル：${r.skills.length?r.skills.map(esc).join(' / '):'—'}</div><button type="button" class="good group-proposal-apply" data-group-proposal-index="${i}" style="margin-top:7px">この案を採用</button></div>`;}
+function groupProposalDpsCompare(a,b){
+  const ak=typeof a.dps==='number'&&Number.isFinite(a.dps),bk=typeof b.dps==='number'&&Number.isFinite(b.dps);
+  if(ak!==bk)return ak?-1:1;
+  return ak?b.dps-a.dps:0;
+}
+function groupProposalRenderCandidate(r,i){const names=[['head','頭'],['chest','胴'],['arms','腕'],['waist','腰'],['legs','脚']];let armorHtml=names.map(([k,n])=>{const a=DB.armor.find(x=>String(x.id)===String(r.armor[k]||''));return `<div><b>${n}</b>：${a?esc(a.name):'—'}</div>`}).join('');const target=$('groupProposalSkill')?.selectedOptions[0]?.textContent||'';const seriesParts=Number(r.directSeriesCount)||0;const known=typeof r.dps==='number'&&Number.isFinite(r.dps),baseKnown=typeof r.baseDps==='number'&&Number.isFinite(r.baseDps),delta=known&&baseKnown?r.dps-r.baseDps:null;const dpsText=known?r.dps.toFixed(2):'—',deltaText=delta==null?'—':(delta>=0?'+':'')+delta.toFixed(2);return `<div class="equip" style="margin-top:9px"><div class="equip-title">案${i+1}：${i===0?'バランス候補':i===1?'火力寄り候補':'スキル自由度寄り候補'}</div>${armorHtml}<div class="notice small"><b>${esc(target)}</b> → Lv${r.targetLv} / シリーズ部位 ${seriesParts}（武器を含む） / 1ヒット ${Number(r.damage).toFixed(2)} / DPS ${dpsText} / 現在比 ${deltaText}</div><div class="small">主なスキル：${r.skills.length?r.skills.map(esc).join(' / '):'—'}</div><button type="button" class="good group-proposal-apply" data-group-proposal-index="${i}" style="margin-top:7px">この案を採用</button></div>`;}
 function groupProposalDiagnostic(info,nushiInfo,bySlot,states,rows){
   const seriesPieces=groupProposalPieces(info),nushiPieces=nushiInfo?(DB.armor||[]).filter(a=>groupProposalBonusObjects(a,'group').some(g=>bonusSkillMatches(g,nushiInfo.skill))):[];
   const perSlot=arr=>arr.map(k=>`${k}:${(bySlot?.[k]||[]).length}`).join(' / ');
@@ -2550,11 +4284,11 @@ function runGroupProposal(){
   groupProposalRestore(base);
 
   const unique=[];const seen=new Set();
-  for(const r of rows.sort((a,b)=>b.reasonScore-a.reasonScore||b.dps-a.dps)){
+  for(const r of rows.sort((a,b)=>b.reasonScore-a.reasonScore||groupProposalDpsCompare(a,b))){
     const key=slots.map(k=>r.armor[k]||'').join('|');
     if(!seen.has(key)){seen.add(key);unique.push(r);}
   }
-  const sortedDps=[...unique].sort((a,b)=>b.dps-a.dps),sortedReason=[...unique].sort((a,b)=>b.reasonScore-a.reasonScore),sortedFlex=[...unique].sort((a,b)=>b.skills.length-a.skills.length||b.dps-a.dps);
+  const sortedDps=[...unique].sort(groupProposalDpsCompare),sortedReason=[...unique].sort((a,b)=>b.reasonScore-a.reasonScore),sortedFlex=[...unique].sort((a,b)=>b.skills.length-a.skills.length||groupProposalDpsCompare(a,b));
   const pool=[];for(const arr of [mode==='dps'?sortedDps:sortedReason,sortedDps,sortedFlex])for(const r of arr)if(!pool.includes(r))pool.push(r);
   const shown=pool.slice(0,Number($('groupProposalCount')?.value)||3);window._groupProposalRows=shown;
   const targetLabel=$('groupProposalSkill')?.selectedOptions[0]?.textContent||'';
@@ -2567,9 +4301,152 @@ const BUILDS_KEY='mh-wilds-builds-v625';
 const LEGACY_BUILDS_KEYS=['mh-wilds-builds-v624','mh-wilds-builds-v623','mh-wilds-builds-v622','mh-wilds-builds-v621','mh-wilds-builds-v45'];
 function storageGet(key){try{return localStorage.getItem(key)}catch(e){return null}}
 function storageSet(key,value){try{localStorage.setItem(key,value);return true}catch(e){return false}}
+// Portable user records only; never imports official DB or canonical adoption decisions.
+const SIMULATOR_BACKUP_FORMAT='MHWildsSimulatorBackup';
+let preparedSimulatorBackup=null;
+function backupPlain(value){return value!==null&&typeof value==='object'&&!Array.isArray(value);}
+function backupAssert(ok,reason){if(!ok)throw new Error('BACKUP_'+reason);}
+function backupSafeTree(value,depth=0){
+  backupAssert(depth<40,'DEPTH');
+  if(value&&typeof value==='object')for(const key of Object.keys(value)){backupAssert(!['__proto__','prototype','constructor'].includes(key),'UNSAFE_KEY');backupSafeTree(value[key],depth+1);}
+  else if(typeof value==='number')backupAssert(Number.isFinite(value)&&Math.abs(value)<=Number.MAX_SAFE_INTEGER,'NUMBER');
+}
+function backupStable(value){if(Array.isArray(value))return value.map(backupStable);if(backupPlain(value))return Object.fromEntries(Object.keys(value).sort().map(k=>[k,backupStable(value[k])]));return value;}
+function backupEqual(a,b){return JSON.stringify(backupStable(a))===JSON.stringify(backupStable(b));}
+function backupCustomMetadata(value){
+  for(const field of ['fixedDamage','elementRatio'])if(value[field]!=null)backupAssert(Number.isFinite(value[field])&&value[field]>=0,'CUSTOM_'+field);
+  if(value.damageType!=null)backupAssert(['physical','hunting-horn-wave','great-sword-kick','fixed','element-only','physical-fixed','physical-no-element'].includes(value.damageType),'CUSTOM_DAMAGE_TYPE');
+  if(value.criticalState!=null)backupAssert(['expected','noncritical','critical','negative-critical'].includes(value.criticalState),'CUSTOM_CRITICAL_STATE');
+}
+function validateSimulatorBackup(input){
+  const raw=typeof input==='string'?input:JSON.stringify(input);backupAssert(typeof raw==='string'&&raw.length<=2000000&&new Blob([raw]).size<=2000000,'SIZE');
+  const x=JSON.parse(raw);backupSafeTree(x);
+  backupAssert(x.format===SIMULATOR_BACKUP_FORMAT&&x.schemaVersion===1,'SCHEMA');
+  const data=x.data;backupAssert(backupPlain(data)&&backupPlain(data.savedBuilds)&&backupPlain(data.customTechniques)&&backupPlain(data.canonicalTimings),'DATA');
+  backupAssert(Object.keys(data.savedBuilds).length<=1000,'BUILD_LIMIT');
+  for(const [name,b] of Object.entries(data.savedBuilds)){
+    backupAssert(name.trim()&&name.length<=300&&backupPlain(b),'BUILD');
+    backupAssert(['string','number'].includes(typeof b.weaponId),'WEAPON_ID');
+    for(const key of ['armor','decos','artia','charmCustom'])if(b[key]!=null)backupAssert(backupPlain(b[key]),'BUILD_CONTAINER');
+    if(b.charmCustom?.skills!=null){backupAssert(Array.isArray(b.charmCustom.skills)&&b.charmCustom.skills.length<=100,'CHARM');for(const skill of b.charmCustom.skills)backupAssert(backupPlain(skill)&&typeof skill.name==='string'&&Number.isFinite(skill.level)&&skill.level>=0,'CHARM_SKILL');}
+    if(b.charmCustom?.slots!=null)backupAssert(Array.isArray(b.charmCustom.slots)&&b.charmCustom.slots.length<=20,'CHARM_SLOTS');
+    if(b.combo!=null){backupAssert(backupPlain(b.combo)&&Array.isArray(b.combo.moves)&&b.combo.moves.length<=1000,'COMBO');let expanded=0;for(const m of b.combo.moves){backupAssert(backupPlain(m)&&typeof m.techniqueId==='string'&&m.techniqueId.length<=300&&(m.repeat==null||(Number.isInteger(m.repeat)&&m.repeat>0&&m.repeat<=1000)),'COMBO_MOVE');expanded+=m.repeat??1;}backupAssert(expanded<=1000,'COMBO_EXPANSION');}
+  }
+  let customCount=0;
+  for(const [kind,list] of Object.entries(data.customTechniques)){
+    backupAssert(!!LEGACY_COMBO_TEMPLATES[kind]&&Array.isArray(list),'CUSTOM_KIND');const ids=new Set();
+    for(const m of list){
+      backupAssert(backupPlain(m)&&typeof m.id==='string'&&m.id.startsWith('custom_')&&!ids.has(m.id)&&typeof m.name==='string'&&m.name.trim()&&Number.isFinite(m.time)&&m.time>0&&Array.isArray(m.mvs)&&m.mvs.length>0&&m.mvs.length<=1000,'CUSTOM');ids.add(m.id);
+      backupCustomMetadata(m);
+      for(const h of m.mvs){const mv=backupPlain(h)?h.mv:h;backupAssert(Number.isFinite(mv)&&mv>=0,'CUSTOM_HIT');if(backupPlain(h))backupCustomMetadata(h);}
+      customCount++;
+    }
+  }backupAssert(customCount<=1000,'CUSTOM_LIMIT');
+  const timings=data.canonicalTimings;backupAssert(timings.schemaVersion===1&&backupPlain(timings.records)&&Object.keys(timings.records).length<=1000,'TIMING_SCHEMA');
+  for(const [key,e] of Object.entries(timings.records))backupAssert(key.length<=500&&backupPlain(e)&&Number.isFinite(e.seconds)&&e.seconds>0&&typeof e.gameVersion==='string'&&/^\d+\.\d+\.\d+\.\d+$/.test(e.gameVersion)&&typeof e.note==='string'&&!!e.note.trim()&&typeof e.fingerprint==='string'&&e.fingerprint.length<=100000,'TIMING');
+  return x;
+}
+function createSimulatorBackup(){
+  const parse=(key,fallback)=>{const raw=localStorage.getItem(key);return raw==null?fallback:JSON.parse(raw);};
+  let savedBuilds={};for(const key of [BUILDS_KEY,...LEGACY_BUILDS_KEYS]){const raw=localStorage.getItem(key);if(raw!==null){savedBuilds=JSON.parse(raw);break;}}
+  return validateSimulatorBackup({format:SIMULATOR_BACKUP_FORMAT,schemaVersion:1,release:'r73',exportedAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,data:{savedBuilds,customTechniques:parse(TECHNIQUES.storageKey,{}),canonicalTimings:parse(CANONICAL_TIMING_STORAGE_KEY,{schemaVersion:1,records:{}})}});
+}
+function planSimulatorBackupImport(input){
+  const backup=validateSimulatorBackup(input),current=createSimulatorBackup().data,counts={buildsAdded:0,customAdded:0,timingsAdded:0,buildsRenamed:0,timingsKept:0},renamed=[];
+  for(const [name,b] of Object.entries(backup.data.savedBuilds)){
+    if(Object.prototype.hasOwnProperty.call(current.savedBuilds,name)&&backupEqual(current.savedBuilds[name],b))continue;
+    let target=name,index=2;while(Object.prototype.hasOwnProperty.call(current.savedBuilds,target))target=name+'（復元 '+index+++'）';
+    if(target!==name){counts.buildsRenamed++;renamed.push({from:name,to:target});}current.savedBuilds[target]=b;counts.buildsAdded++;
+  }
+  for(const [kind,list] of Object.entries(backup.data.customTechniques)){
+    const target=current.customTechniques[kind]||(current.customTechniques[kind]=[]);
+    for(const m of list){const existing=target.find(v=>v.id===m.id);if(existing){backupAssert(backupEqual(existing,m),'CUSTOM_ID_CONFLICT:'+m.id);continue;}target.push(m);counts.customAdded++;}
+  }
+  for(const [key,record] of Object.entries(backup.data.canonicalTimings.records)){
+    if(Object.prototype.hasOwnProperty.call(current.canonicalTimings.records,key)){counts.timingsKept++;continue;}current.canonicalTimings.records[key]=record;counts.timingsAdded++;
+  }
+  validateSimulatorBackup({format:SIMULATOR_BACKUP_FORMAT,schemaVersion:1,data:current});
+  return {backup,data:current,counts,renamed};
+}
+function applySimulatorBackup(input,{confirmed=false}={}){
+  if(!confirmed)return {ok:false,reason:'復元内容を確認してから実行してください。'};
+  let plan;try{plan=planSimulatorBackupImport(input);}catch(e){return {ok:false,reason:String(e.message||e)};}
+  const entries=[[BUILDS_KEY,plan.data.savedBuilds],[TECHNIQUES.storageKey,plan.data.customTechniques],[CANONICAL_TIMING_STORAGE_KEY,plan.data.canonicalTimings]],before=[];
+  try{for(const [key] of entries)before.push([key,localStorage.getItem(key)]);}catch(e){return {ok:false,reason:'保存領域を読み取れないため復元を中止しました。'};}
+  try{for(const [key,value] of entries)localStorage.setItem(key,JSON.stringify(value));}
+  catch(e){let rollbackComplete=true;for(const [key,value] of before)try{if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value);}catch(f){rollbackComplete=false;}
+    return {ok:false,rollbackComplete,reason:rollbackComplete?'書込に失敗したため、元の保存内容に戻しました。':'書込と一部の復旧に失敗しました。追加操作を止め、保存領域を確認してください。'};
+  }
+  TECHNIQUES.custom=plan.data.customTechniques;renderSavedBuilds();renderTechniqueEditor();refreshCanonicalTimingViews('バックアップを追加復元しました。');
+  return {ok:true,counts:plan.counts};
+}
+function prepareSimulatorBackupImport(text){
+  preparedSimulatorBackup=null;$('simBackupRestore').disabled=true;
+  try{const plan=planSimulatorBackupImport(text);preparedSimulatorBackup=plan.backup;const c=plan.counts;
+    $('simBackupPreview').innerHTML=`ビルド追加 ${c.buildsAdded}件（別名保存 ${c.buildsRenamed}件） / 追加技 ${c.customAdded}件 / 時間追加 ${c.timingsAdded}件。既存時間 ${c.timingsKept}件は維持します。<div style="max-height:240px;overflow:auto;overflow-wrap:anywhere">${Object.keys(plan.backup.data.savedBuilds).map(esc).join('<br>')}<br>${plan.renamed.map(x=>esc(x.from)+' → '+esc(x.to)).join('<br>')}</div>現在編集中の装備とコンボは変更しません。`;
+    $('simBackupRestore').disabled=false;return {ok:true,counts:c};
+  }catch(e){$('simBackupPreview').textContent='復元できません：'+String(e.message||e);return {ok:false};}
+}
+async function previewSimulatorBackupFile(file){
+  if(!file)return;preparedSimulatorBackup=null;$('simBackupRestore').disabled=true;
+  if(file.size>2000000){$('simBackupPreview').textContent='2MB以下のバックアップJSONを選択してください。';return;}
+  try{prepareSimulatorBackupImport(await file.text());}catch(e){$('simBackupPreview').textContent='ファイルを読み取れませんでした。';}
+}
+function commitPreparedSimulatorBackup(){
+  if(!preparedSimulatorBackup)return;const result=applySimulatorBackup(preparedSimulatorBackup,{confirmed:true});
+  $('simBackupPreview').textContent=result.ok?'追加復元しました。必要なビルドは保存一覧から読み込んでください。':result.reason;
+  if(result.ok){preparedSimulatorBackup=null;$('simBackupRestore').disabled=true;}
+}
+function downloadSimulatorJson(value,filename){
+  const blob=new Blob([JSON.stringify(value,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+}
+function downloadSimulatorBackup(){
+  try{const x=createSimulatorBackup();downloadSimulatorJson(x,'mhwilds-backup-'+new Date().toISOString().slice(0,10)+'.json');$('simBackupPreview').textContent='バックアップJSONを保存してください。公式DB・画像・認証情報は含みません。';}catch(e){$('simBackupPreview').textContent='バックアップを作成できません：'+String(e.message||e);}
+}
+function createComboVerificationReport(){
+  const observed=String($('comboReportObservedVersion')?.value||'').trim();
+  if(observed&&!/^\d+\.\d+\.\d+\.\d+$/.test(observed))throw new Error('ゲーム版は1.042.00.02のように入力してください。未確認なら空欄にしてください。');
+  const weapon=selectedWeapon();let context=null,contextError=null;
+  try{if(!weapon)throw new Error('WEAPON_REQUIRED');context=comboDamageContext();}catch(e){contextError=String(e.message||e);}
+  const stages=[...document.querySelectorAll('#combo .cmove')].map((select,index)=>{
+    const id=select.value;let move=null,stage={index:index+1,techniqueId:id,status:'BLOCKED',reason:null,time:null,timingStatus:'PENDING',numericOrigin:'UNAVAILABLE',hits:[],damage:null};
+    try{
+      move=comboMove(id);if(!move)throw new Error('COMBO_TECHNIQUE_UNAVAILABLE:'+id);
+      const record=move.numericOrigin==='CANONICAL_DB'?techniqueDbGet(move.canonicalKind,move.canonicalTechniqueId):null;
+      Object.assign(stage,{name:move.name,canonicalTechniqueId:move.canonicalTechniqueId||null,handler:move.handler||'OrdinaryHit',numericOrigin:move.numericOrigin||(move.custom?'USER_REGISTERED_REFERENCE':'LEGACY_REFERENCE_ONLY'),numericStatus:record?.numericStatus||'REFERENCE_ONLY',verificationStatus:record?.verificationStatus||'UNVERIFIED',evidenceRefs:record?.evidenceRefs||[],registeredHits:record?.hits||move.hitsData||[],stateRequirement:record?.stateRequirement||{},time:Number.isFinite(move.time)&&move.time>0?move.time:null,timingStatus:move.timingStatus||(move.time>0?'LEGACY_REFERENCE_ONLY':'PENDING'),timingEvidence:move.timingEvidence||null,timingCondition:move.timingCondition||null});
+      if(contextError)throw new Error(contextError);
+      const result=comboTechniqueDamage(move,context);
+      stage.hits=result.hits.map((h,i)=>({hit:i+1,component:h.component||'BODY',mv:h.mv??move.hitsData?.[i]?.mv??null,elementModifier:h.elementModifier??move.hitsData?.[i]?.elementRatio??null,physical:h.p??0,element:h.e??0,special:roundDamage2(h.total-(h.p??0)-(h.e??0)),total:h.total,criticalState:h.criticalState||'expected',partModifierAppliedToHp:false}));
+      stage.damage=result.total;stage.status='REFERENCE_ONLY';if(result.components)stage.handlerComponents=result.components;
+    }catch(e){stage.reason=String(e.message||e);}
+    return stage;
+  });
+  const blocked=!!contextError||!stages.length||stages.some(s=>s.status==='BLOCKED'),timingPending=stages.some(s=>s.time===null);
+  const damage=blocked?null:stages.reduce((sum,s)=>sum+s.damage,0),time=blocked||timingPending?null:stages.reduce((sum,s)=>sum+s.time,0);
+  const theoreticalDps=time>0?damage/time:null,uptime=Math.max(1,Math.min(100,Number($('uptime')?.value)||85))/100;
+  const practicalDps=theoreticalDps===null?null:$('uptimeMode')?.value==='1'?theoreticalDps*uptime:theoreticalDps;
+  return {format:'MHWildsComboVerification',schemaVersion:1,release:'r73',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,observedGameVersion:observed||null,currentBuild:buildSnapshot(),weapon:weapon?{id:weapon.id,name:weapon.name,kind:canonicalWeaponKind(weapon)}:null,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null},context,contextError,externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT',rounding:'PER_HIT_PHYSICAL_ELEMENT_2_DECIMAL_REFERENCE_NOT_GAME_DISPLAY',stages,summary:{status:blocked?'BLOCKED':timingPending?'TIMING_PENDING':'REFERENCE_ONLY',damage,time,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60},notes:['実機検証済みを意味しません。','未確認時間や特殊成分は推定で補完しません。','食事・アイテム・エキスなどゲーム側の追加状態を別途記録してください。']};
+}
+function prepareComboVerificationReport(){
+  try{const data=createComboVerificationReport();$('comboReportOut').textContent=JSON.stringify(data,null,2);$('comboReportStatus').textContent=data.summary.status==='BLOCKED'?'保留条件を含む検証データです。全体ダメージ・DPSは未算出です。':'最新の条件で検証データを作成しました。ゲーム表示の丸めは別途確認が必要です。';return data;}
+  catch(e){$('comboReportOut').textContent='';$('comboReportStatus').textContent=String(e.message||e);return null;}
+}
+function downloadComboVerificationReport(){const data=prepareComboVerificationReport();if(data)try{downloadSimulatorJson(data,'mhwilds-verification-'+new Date().toISOString().slice(0,10)+'.json');}catch(e){$('comboReportStatus').textContent='保存できませんでした。下のJSONをコピーしてください。';}}
+async function copyComboVerificationReport(){const data=prepareComboVerificationReport();if(!data)return;try{await navigator.clipboard.writeText(JSON.stringify(data,null,2));$('comboReportStatus').textContent='検証データをコピーしました。';}catch(e){$('comboReportStatus').textContent='自動コピーできませんでした。下のJSONを手動でコピーしてください。';}}
 function savedBuildMap(){try{let raw=storageGet(BUILDS_KEY);if(!raw){for(const key of LEGACY_BUILDS_KEYS){raw=storageGet(key);if(raw)break;}}return raw?JSON.parse(raw)||{}:{};}catch(e){return {}}}
-function buildSnapshot(){return {version:App.version,weaponId:$('weapon')?.value||build.weapon?.id||'',armor:Object.fromEntries(Object.entries(build.armor).map(([k,a])=>[k,a?.id||''])),charmCustom:JSON.parse(JSON.stringify(build.charmCustom)),artia:JSON.parse(JSON.stringify(build.artia)),decos:JSON.parse(JSON.stringify(build.decos)),combo:JSON.parse(JSON.stringify(App.state.combo||{})),savedAt:new Date().toISOString()}}
-function applyBuildSnapshot(x){if(!x)return;const weapon=DB.weapons.find(w=>String(w.id)===String(x.weaponId));if(weapon){$('weaponKind').value=canonicalWeaponKind(weapon)||'';weaponRows=[weapon];renderWeapon();$('weapon').value=String(weapon.id);App.build.setWeapon(weapon);}for(const k of ['head','chest','arms','waist','legs']){const id=x.armor?.[k];build.armor[k]=id?DB.armor.find(a=>String(a.id)===String(id))||null:null;}build.charmCustom=x.charmCustom||build.charmCustom;build.artia=x.artia||build.artia;build.decos=x.decos||{};App.state.combo={moves:(x.combo?.moves||[]).flatMap(item=>Array.from({length:Math.max(1,Number(item.repeat)||1)},()=>({techniqueId:item.techniqueId||''}))),uptime:x.combo?.uptime??85,uptimeMode:x.combo?.uptimeMode||'1'};normalizeCharm();renderArmor();renderCharmEditor();renderArtia();renderWeapon();updateWeaponInfo();renderComboForWeapon();renderTechniqueEditor();calcBuild();renderSavedBuilds()}
+function buildSnapshot(){App.combo.syncFromDOM();return {version:App.version,weaponId:$('weapon')?.value||build.weapon?.id||'',armor:Object.fromEntries(Object.entries(build.armor).map(([k,a])=>[k,a?.id||''])),charmCustom:JSON.parse(JSON.stringify(build.charmCustom)),artia:JSON.parse(JSON.stringify(build.artia)),decos:JSON.parse(JSON.stringify(build.decos)),combo:JSON.parse(JSON.stringify(App.state.combo||{})),savedAt:new Date().toISOString()}}
+function applyBuildSnapshot(x,{preserveCombo=false}={}){
+  if(!x)return;
+  const weapon=DB.weapons.find(w=>String(w.id)===String(x.weaponId));
+  if(weapon){$('weaponKind').value=canonicalWeaponKind(weapon)||'';weaponRows=[weapon];renderWeapon();$('weapon').value=String(weapon.id);App.build.setWeapon(weapon);}
+  for(const k of ['head','chest','arms','waist','legs']){const id=x.armor?.[k];build.armor[k]=id?DB.armor.find(a=>String(a.id)===String(id))||null:null;}
+  build.charmCustom=x.charmCustom||build.charmCustom;build.artia=x.artia||build.artia;build.decos=x.decos||{};
+  if(!preserveCombo){const cb=x.combo?.chargeBladeState;for(const [id,key] of [['comboCBShield','shieldBoosted'],['comboCBAxe','axeBoosted']])$(id).value=cb?.[key]===true?'1':cb?.[key]===false?'0':'';}
+  if(!preserveCombo)App.state.combo={moves:(x.combo?.moves||[]).flatMap(item=>Array.from({length:Math.max(1,Number(item.repeat)||1)},()=>({techniqueId:item.techniqueId||''}))),uptime:x.combo?.uptime??85,uptimeMode:x.combo?.uptimeMode||'1'};
+  normalizeCharm();renderArmor();renderCharmEditor();renderArtia();renderWeapon();updateWeaponInfo();renderComboForWeapon();renderTechniqueEditor();calcBuild();
+  if(!preserveCombo)restoreComboRows();
+  renderSavedBuilds();
+}
 function renderSavedBuilds(){
   const box=$('savedBuilds');if(!box)return;
   const m=savedBuildMap(),names=Object.keys(m).sort((a,b)=>a.localeCompare(b,'ja',{numeric:true}));
@@ -2586,9 +4463,7 @@ function renderCompareBuilds(){
   box.innerHTML=names.length?names.map(n=>`<label class="compare-item"><input type="checkbox" data-compare-name="${esc(n)}" ${old.has(n)?'checked':''}><span><b>${esc(n)}</b><div class="compare-meta">保存済み装備セット</div></span></label>`).join(''):'<div class="muted small">比較できる保存済み装備セットがありません。まずビルドを名前付きで保存してください。</div>';
 }
 function damageFromValues(raw,aff,elem,mv,hz,ehz,sharp,esharp,cb,eCrit){
-  raw=Number(raw)||0; aff=Math.max(-100,Math.min(100,Number(aff)||0))/100; elem=(Number(elem)||0)/10; mv=(Number(mv)||100)/100; hz=(Number(hz)||45)/100; ehz=(Number(ehz)||20)/100; sharp=Number(sharp)||1; esharp=Number(esharp)||1; cb=Math.max(0,Math.min(3,Number(cb)||0));
-  const critBonus=[0,0.03,0.06,0.1][cb],crit=aff>=0?(1+aff*(0.25+critBonus)):1+aff*(-0.25),ec=Number(eCrit)?crit:1;
-  const p=raw*mv*sharp*hz*crit,e=elem*esharp*ehz*ec; return {p,e,total:p+e};
+  return damageFromParams({attack:raw,affinity:aff,element:elem,mv,hz,ehz,sharp,esharp,critBonus:cb,elementCrit:Boolean(Number(eCrit))});
 }
 // v7.2.2-r21: Charge Blade verified-evidence gate + route timing registry foundation.
 // This layer is intentionally isolated from damageFromValues()/dpsForStats().
@@ -2887,7 +4762,7 @@ window.ChargeBladeEngine={version:CHARGE_BLADE_ENGINE_VERSION,evidence:CHARGE_BL
 // r27: Weapon Handler Router + common Build Comparison contract.
 // Important: generic weapons are NOT silently promoted from legacy 1-hit/DPS values to
 // comparisonPower. Until a STANDARD profile exists for that weapon, the new engine fails closed.
-const BUILD_COMPARISON_ENGINE_VERSION='BUILD_COMPARE_1.042.00.02-r65';
+const BUILD_COMPARISON_ENGINE_VERSION='BUILD_COMPARE_1.042.00.02-r72';
 function comparisonWeaponKindFromSnapshot(snapshot){
   const w=DB.weapons.find(x=>String(x.id)===String(snapshot?.weaponId||''));
   return w?String(canonicalWeaponKind(w)||''):'';
@@ -3083,7 +4958,752 @@ function runTechniqueDbR43SelfTest(){
   if(!techniqueDbGet('light-bowgun','LBG_STANDARD_ELEMENT_AMMO')||!techniqueDbGet('heavy-bowgun','HBG_STANDARD_ELEMENT_AMMO'))throw new Error('R46_TECHNIQUE_DB_TEST_FAIL:bowgun_ammo_registry');
   return Object.freeze({ok:true,greatSword:Object.freeze({hits:3,mv:497,elementModifierSum:5.5,partModifier:1.2}),longSword:Object.freeze({hits:7,mv:185}),dualBlades:Object.freeze({hits:27,mv:393}),hammer:Object.freeze({hits:4,mv:293}),lance:Object.freeze({hits:6,mv:179,elementModifierSum:7.9}),switchAxe:Object.freeze({hits:5,mv:188})});
 }
-window.TechniqueDBEngine=Object.freeze({spec:TECHNIQUE_DB_SPEC,db:TECHNIQUE_DB,completion:TECHNIQUE_DB_COMPLETION,evidence:TECHNIQUE_DB_R47_EVIDENCE,get:techniqueDbGet,hits:techniqueDbHits,motionValues:techniqueDbMotionValues,audit:techniqueDbAudit,selfTest:runTechniqueDbR43SelfTest});
+// Explicit identity decisions only; no automatic name matching or numeric replacement.
+const LEGACY_CANONICAL_IDENTITY_MAP=techniqueDbDeepFreeze({
+  "great-sword": {
+    "gs_draw": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "GS_DRAW_VERTICAL_SLASH"
+      ],
+      "identityReason": "抜刀斬りは抜刀斬り/縦斬りの明示別名。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "gs_charge3": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "GS_CHARGED_SLASH_3"
+      ],
+      "identityReason": "溜め段階3が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "gs_strong3": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "GS_STRONG_CHARGED_SLASH_3"
+      ],
+      "identityReason": "強溜め・段階3が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "gs_tcs3": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "GS_TRUE_CHARGED_SLASH_3",
+        "GS_TRUE_CHARGED_SLASH_3_STRONG"
+      ],
+      "identityReason": "段階3は明示されるが強撃の有無が不明。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "gs_offset3": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "GS_OFFSET_RISING_SLASH_3"
+      ],
+      "identityReason": "相殺斬り上げ・段階3が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "long-sword": {
+    "ls_base1": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "LS_VERTICAL_SLASH",
+        "LS_VERTICAL_SLASH_2"
+      ],
+      "identityReason": "縦斬りの連携位置が不明。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "ls_base2": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "LS_THRUST"
+      ],
+      "identityReason": "突きの技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "ls_base3": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "LS_RISING_SLASH"
+      ],
+      "identityReason": "斬り上げの技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "ls_fade": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "LS_FORESIGHT_SLASH"
+      ],
+      "identityReason": "旧IDのfadeではなく表示名の見切り斬りを根拠とする。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "ls_helm": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "LS_HELM_BREAKER_RED"
+      ],
+      "identityReason": "兜割・赤ゲージの明示が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "ls_release": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "LS_SPIRIT_RELEASE"
+      ],
+      "identityReason": "旧技は赤を明示するが対象の状態補正との対応確認が必要。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "sword-and-shield": {
+    "sns_slash": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "SNS_DOWNWARD_SLASH"
+      ],
+      "identityReason": "技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "sns_horizontal": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "SNS_HORIZONTAL_SLASH"
+      ],
+      "identityReason": "技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "sns_shield": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "SNS_SHIELD_ATTACK"
+      ],
+      "identityReason": "技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "sns_falling": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "SNS_FALLING_BASH"
+      ],
+      "identityReason": "技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "dual-blades": {
+    "db_double": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "DB_DOUBLE_SLASH"
+      ],
+      "identityReason": "二段斬りであり鬼人二段斬りとは区別する。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "db_dance1": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "DB_DEMON_FLURRY_I"
+      ],
+      "identityReason": "表示名は鬼人連斬Ⅰ。乱舞Ⅰではない。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "db_dance2": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "DB_DEMON_FLURRY_II"
+      ],
+      "identityReason": "表示名は鬼人連斬Ⅱ。乱舞Ⅱではない。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "db_dance3": {
+      "identityStatus": "UNMAPPED",
+      "candidateTechniqueIds": [],
+      "identityReason": "鬼人連斬Ⅲに一致する登録技なし。乱舞Ⅲへの置換を禁止。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "db_flurry": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "DB_DEMON_ADVANCING_SLASH"
+      ],
+      "identityReason": "鬼人突進連斬の技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "hammer": {
+    "hm_swing": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "HAM_VERTICAL_I",
+        "HAM_VERTICAL_II"
+      ],
+      "identityReason": "縦振りの連携段階が不明。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "hm_side": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "HAM_SIDE_SWING"
+      ],
+      "identityReason": "横振りの技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "hm_charge2": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "HAM_CHARGED_UPPERCUT"
+      ],
+      "identityReason": "溜め2攻撃という汎用名だけでは入力と状態の確定が不十分。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "hm_big": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "HAM_UPPERCUT"
+      ],
+      "identityReason": "アッパーの技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "hunting-horn": {
+    "hh_left": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "HH_LEFT_SWING"
+      ],
+      "identityReason": "左ぶん回しの技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "hh_forward": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "HH_FORWARD_ATTACK"
+      ],
+      "identityReason": "前方攻撃の技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "hh_slam": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "HH_SLAM"
+      ],
+      "identityReason": "叩きつけ。叩きつけ・追撃とは区別する。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "hh_melody": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "HH_PERFORMANCE_BODY",
+        "HH_SELF_IMPROVEMENT_PERFORMANCE"
+      ],
+      "identityReason": "旋律と音波を含む範囲が不明。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "lance": {
+    "ln_mid": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "LAN_MID_THRUST_I",
+        "LAN_MID_THRUST_II",
+        "LAN_MID_THRUST_III"
+      ],
+      "identityReason": "中段突きの連携段階が不明。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "ln_high": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "LAN_HIGH_THRUST_I",
+        "LAN_HIGH_THRUST_II",
+        "LAN_HIGH_THRUST_III"
+      ],
+      "identityReason": "上段突きの連携段階が不明。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "ln_counter": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "LAN_CHARGED_COUNTER",
+        "LAN_COUNTER_DOUBLE_THRUST",
+        "LAN_RETURN_THRUST"
+      ],
+      "identityReason": "旧カウンター突きの入力・溜め・反撃経路が不明。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "ln_charge": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "LAN_DASH"
+      ],
+      "identityReason": "表示名の突進が一致。可変Hitは別途保留。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "gunlance": {
+    "gl_thrust": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "GL_ADVANCING_RISING"
+      ],
+      "identityReason": "踏み込み突き上げの技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "gl_shell": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "GL_SHELL_NORMAL_LOW",
+        "GL_SHELL_NORMAL_MEDIUM",
+        "GL_SHELL_NORMAL_HIGH",
+        "GL_SHELL_LONG_LOW",
+        "GL_SHELL_LONG_MEDIUM",
+        "GL_SHELL_LONG_HIGH",
+        "GL_SHELL_WIDE_LOW",
+        "GL_SHELL_WIDE_MEDIUM",
+        "GL_SHELL_WIDE_HIGH"
+      ],
+      "identityReason": "砲撃タイプと威力区分が旧技にない。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "gl_burst": {
+      "identityStatus": "UNMAPPED",
+      "candidateTechniqueIds": [],
+      "identityReason": "フルバーストの経路と弾数が不明。竜杭フルバーストとは同一視しない。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "gl_wyvern": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "GL_WYVERN_FIRE_NORMAL_LOW",
+        "GL_WYVERN_FIRE_NORMAL_MEDIUM",
+        "GL_WYVERN_FIRE_NORMAL_HIGH",
+        "GL_WYVERN_FIRE_LONG_LOW",
+        "GL_WYVERN_FIRE_LONG_MEDIUM",
+        "GL_WYVERN_FIRE_LONG_HIGH",
+        "GL_WYVERN_FIRE_WIDE_LOW",
+        "GL_WYVERN_FIRE_WIDE_MEDIUM",
+        "GL_WYVERN_FIRE_WIDE_HIGH"
+      ],
+      "identityReason": "砲撃タイプと威力区分が旧技にない。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "switch-axe": {
+    "sa_vertical": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "SA_AXE_VERTICAL",
+        "SA_SWORD_VERTICAL"
+      ],
+      "identityReason": "斧/剣モードが旧技にない。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "sa_horizontal": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "SA_AXE_HORIZONTAL"
+      ],
+      "identityReason": "斧モードの明示が旧技にないため候補のみ。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "sa_heavy": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "SA_AXE_POWER_SLAM"
+      ],
+      "identityReason": "斧強化叩きつけの明示が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "sa_element": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "SA_ELEMENT_DISCHARGE_FINISH",
+        "SA_ELEMENT_DISCHARGE_SHORT",
+        "SA_ZERO_SUM_FINISH",
+        "SA_ZERO_SUM_SHORT"
+      ],
+      "identityReason": "継続回数・フィニッシュ・零距離の有無が不明。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "charge-blade": {
+    "cb_check": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "CB_SWORD_WEAK_SLASH"
+      ],
+      "identityReason": "牽制斬りの技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "cb_spin": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "CB_SWORD_ROUND_SLASH"
+      ],
+      "identityReason": "回転斬り。属性強化回転斬りとは区別する。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "cb_axe": {
+      "identityStatus": "UNMAPPED",
+      "candidateTechniqueIds": [],
+      "identityReason": "斧：強化叩きつけに一致する登録技なし。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "cb_saed": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "CB_AED"
+      ],
+      "identityReason": "旧IDのsaedではなく表示名の高出力を根拠とする。超高出力とは区別。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "insect-glaive": {
+    "ig_slash": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "IG_TORNADO_SLASH"
+      ],
+      "identityReason": "飛円斬りの技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "ig_combo": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "IG_ENHANCED_RISING_COMBO"
+      ],
+      "identityReason": "強化連続斬り上げの技名が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "ig_jump": {
+      "identityStatus": "UNMAPPED",
+      "candidateTechniqueIds": [],
+      "identityReason": "飛燕は具体的な技の入力・名称として確定できない。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "ig_rising": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "IG_DESCENDING_THRUST",
+        "IG_ENHANCED_DESCENDING_THRUST_SOURCE"
+      ],
+      "identityReason": "急襲突きのエキス・溜め・舞踏跳躍状態が不明。強化急襲斬りとは区別。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "light-bowgun": {
+    "lbg_normal3": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "LBG_NORMAL_AMMO_3"
+      ],
+      "identityReason": "通常弾Lv3が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "lbg_pierce2": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "LBG_PIERCE_AMMO_2"
+      ],
+      "identityReason": "貫通弾Lv2が一致。Hit数は別途保留。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "lbg_rapid": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [],
+      "identityReason": "速射の対象弾・速射仕様が不明。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "lbg_special": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [],
+      "identityReason": "特殊弾の種類が特定されていない。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "heavy-bowgun": {
+    "hbg_normal3": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "HBG_NORMAL_AMMO_3"
+      ],
+      "identityReason": "通常弾Lv3が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "hbg_pierce2": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "HBG_PIERCE_AMMO_2"
+      ],
+      "identityReason": "貫通弾Lv2が一致。Hit数は別途保留。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "hbg_cluster": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "HBG_STICKY_AMMO_1",
+        "HBG_STICKY_AMMO_2",
+        "HBG_STICKY_AMMO_3"
+      ],
+      "identityReason": "表示名は徹甲榴弾。旧IDのclusterから拡散弾へ推測しない。Lv不明。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "hbg_special": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "HBG_IGNITION_MACHINE"
+      ],
+      "identityReason": "機関竜弾と竜熱機関竜弾の経路・条件の対応確認が必要。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  },
+  "bow": {
+    "bow_shot": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "BOW_SHOT_3"
+      ],
+      "identityReason": "射撃Lv3と溜め3の段階が一致。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "bow_spread": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "BOW_POWER_SHOT_1",
+        "BOW_POWER_SHOT_2",
+        "BOW_POWER_SHOT_3"
+      ],
+      "identityReason": "剛射の溜め段階が不明。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "bow_arc": {
+      "identityStatus": "AMBIGUOUS",
+      "candidateTechniqueIds": [
+        "BOW_ARC_SHOT_1",
+        "BOW_ARC_SHOT_2",
+        "BOW_ARC_SHOT_3"
+      ],
+      "identityReason": "曲射の溜め段階・炸裂を含む範囲が不明。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    },
+    "bow_power": {
+      "identityStatus": "MATCHED",
+      "candidateTechniqueIds": [
+        "BOW_DRAGON_PIERCER"
+      ],
+      "identityReason": "竜の一矢の技名が一致。可変Hitは別途保留。",
+      "evidenceRefs": [
+        "R66_LEGACY_COMBO_SEED",
+        "R68_EXPLICIT_IDENTITY_REVIEW"
+      ]
+    }
+  }
+});
+function legacyCanonicalMapping(kind,id){
+  const legacy=legacyComboTechniqueRecord(kind,id);
+  if(!legacy)return null;
+  const decision=LEGACY_CANONICAL_IDENTITY_MAP[kind]?.[id];
+  if(!decision)throw new Error('LEGACY_IDENTITY_DECISION_MISSING:'+kind+':'+id);
+  const candidates=decision.candidateTechniqueIds.map(techniqueId=>{
+    const record=techniqueDbGet(kind,techniqueId);
+    if(!record)throw new Error('LEGACY_IDENTITY_TARGET_MISSING:'+kind+':'+techniqueId);
+    return {techniqueId,name:record.techniqueName,mvTotal:record.hits.length?record.hits.reduce((sum,h)=>sum+h.mv,0):null,registeredHitEntries:record.hits.length,stateRequirement:record.stateRequirement||{},evidenceRefs:record.evidenceRefs||[]};
+  });
+  const canonicalTechniqueId=decision.identityStatus==='MATCHED'?decision.candidateTechniqueIds[0]:null;
+  const blockers=['LEGACY_TIMING_UNVERIFIED'];
+  let canonicalHitsReady=false;
+  if(!canonicalTechniqueId)blockers.push('LEGACY_IDENTITY_UNRESOLVED');
+  else {
+    const record=techniqueDbGet(kind,canonicalTechniqueId);
+    if(record.specialComponents?.length)blockers.push('SPECIAL_HANDLER_REQUIRED');
+    else try{const hits=techniqueDbHits(kind,canonicalTechniqueId);canonicalHitsReady=hits.length>0;if(!hits.length)blockers.push('NO_CANONICAL_NORMAL_HITS');}catch(e){blockers.push('CANONICAL_EVIDENCE_GATED');}
+  }
+  return techniqueDbDeepFreeze({weaponType:kind,legacyId:id,legacyName:legacy.techniqueName,identityStatus:decision.identityStatus,identityReason:decision.identityReason,identityEvidenceRefs:decision.evidenceRefs,canonicalTechniqueId,candidates,legacyMvTotal:legacy.mvs.reduce((sum,v)=>sum+v,0),legacyEntryCount:legacy.mvs.length,canonicalHitsReady,canonicalReadScope:'REGISTERED_NORMAL_HITS_ONLY',completeTechniqueReady:false,dpsReady:false,blockers});
+}
+function legacyCanonicalHits(kind,id){
+  const mapping=legacyCanonicalMapping(kind,id);
+  if(!mapping?.canonicalTechniqueId)throw new Error('LEGACY_IDENTITY_UNRESOLVED:'+kind+':'+id);
+  if(mapping.blockers.includes('SPECIAL_HANDLER_REQUIRED'))throw new Error('LEGACY_SPECIAL_HANDLER_REQUIRED:'+kind+':'+id);
+  const hits=techniqueDbHits(kind,mapping.canonicalTechniqueId);
+  if(!hits.length)throw new Error('LEGACY_CANONICAL_NORMAL_HITS_MISSING:'+kind+':'+id);
+  return hits;
+}
+window.TechniqueDBEngine=Object.freeze({spec:TECHNIQUE_DB_SPEC,db:TECHNIQUE_DB,completion:TECHNIQUE_DB_COMPLETION,evidence:TECHNIQUE_DB_R47_EVIDENCE,get:techniqueDbGet,hits:techniqueDbHits,motionValues:techniqueDbMotionValues,audit:techniqueDbAudit,selfTest:runTechniqueDbR43SelfTest,legacyArchive:Object.freeze({mapping:legacyCanonicalMapping,canonicalHits:legacyCanonicalHits,get:(kind,id)=>legacyComboTechniqueRecord(kind,id),templates:kind=>Object.hasOwn(LEGACY_COMBO_TEMPLATES,kind)?LEGACY_COMBO_TEMPLATES[kind].moves:null})});
 const GENERIC_STANDARD_PROFILE_CATALOG=Object.freeze({
   'great-sword':Object.freeze({id:'GS_STANDARD_MAX_CHARGE_STRONG_SWEEP_V1042',status:'ADOPTED',chargePolicy:'MAXIMUM',sequence:Object.freeze(['溜め斬りⅢ','強溜め斬りⅢ','強薙ぎ払いⅢ'])}),
   'long-sword':Object.freeze({id:'LS_STANDARD_RED_BLADE_I_II_III_V1042',status:'ADOPTED',startState:Object.freeze({spiritGauge:'RED'}),sequence:Object.freeze(['赤刃斬りⅠ','赤刃斬りⅡ','赤刃斬りⅢ'])}),
@@ -3567,12 +6187,12 @@ function runBuildComparisonBridgeR39SelfTest(){
   if(gunlanceEvidenceReady())throw new Error('R32_TEST_FAIL:gunlance_unverified_special_must_gate');
   for(const k of ['long-sword','dual-blades','sword-and-shield','hammer','lance','switch-axe','insect-glaive']){const d=buildComparisonHandlerDescriptor(k);if(d.handler!=='GenericWeaponHandler'||d.status!=='IMPLEMENTED')throw new Error(`R31_TEST_FAIL:generic_handler:${k}`);}
   const cap=buildComparisonCapabilityReport();if(Object.keys(cap).length!==14)throw new Error('R31_TEST_FAIL:capability_14_weapons');
-  return {ok:true,engineVersion:BUILD_COMPARISON_ENGINE_VERSION,chargeBladeHandler:'dedicated',genericReady:Object.keys(GENERIC_STANDARD_PROFILES),specialHandlerScaffolds:[],evidenceGatedHandlers:['gunlance','hunting-horn','light-bowgun','heavy-bowgun','bow'],genericUnverified:'FAIL_CLOSED',crossWeaponTimingGate:true,legacyCompareUntouched:true};
+  return {ok:true,engineVersion:BUILD_COMPARISON_ENGINE_VERSION,chargeBladeHandler:'dedicated',genericReady:Object.keys(GENERIC_STANDARD_PROFILES),specialHandlerScaffolds:[],evidenceGatedHandlers:['gunlance','hunting-horn','light-bowgun','heavy-bowgun','bow'],genericUnverified:'FAIL_CLOSED',crossWeaponTimingGate:true,legacyCompareUntouched:false,legacyTechniqueArchiveUnchanged:true,comboAndComparisonSharedHitPath:true};
 }
 window.BuildComparisonEngine={version:BUILD_COMPARISON_ENGINE_VERSION,router:buildComparisonRouter,commonResult:comparisonCommonResultShape,genericAdapter:genericStandardComparisonAdapter,genericProfiles:GENERIC_STANDARD_PROFILES,genericProfileDamage,insectGlaiveStatePlan,profileCatalog:GENERIC_STANDARD_PROFILE_CATALOG,profileAvailability:genericStandardProfileAvailability,handlerRegistry:BUILD_COMPARISON_HANDLER_REGISTRY,handlerDescriptor:buildComparisonHandlerDescriptor,capabilityReport:buildComparisonCapabilityReport,gunlanceProfile:GUNLANCE_STANDARD_PROFILE,gunlanceEvidence:GUNLANCE_EVIDENCE,gunlanceBodyComponents,gunlanceAdapter:gunlanceStandardComparisonAdapter,huntingHornProfile:HUNTING_HORN_STANDARD_PROFILE,huntingHornEvidence:HUNTING_HORN_EVIDENCE,huntingHornComponentPlan,huntingHornBodyComponents,huntingHornSpecialSourceEstimate,huntingHornAdapter:huntingHornStandardComparisonAdapter,bowgunProfiles:BOWGUN_STANDARD_PROFILES,bowgunAmmoTypes:BOWGUN_AMMO_COMPONENT_TYPES,bowgunEvidence:BOWGUN_AMMO_EVIDENCE,bowgunNumeric:BOWGUN_AMMO_NUMERIC,bowgunComparisonPolicy:BOWGUN_COMPARISON_POLICY,bowgunPierceMaximumProfile,bowgunComponentPlan:bowgunAmmoComponentPlan,bowgunAdapter:bowgunStandardComparisonAdapter,bowProfile:BOW_STANDARD_PROFILE,bowTechniques:BOW_TECHNIQUES,bowEvidence:BOW_EVIDENCE,bowComponentPlan:bowStandardComponentPlan,bowAdapter:bowStandardComparisonAdapter,selfTest:runBuildComparisonBridgeR39SelfTest};
 
 function compareStep5Snapshot(){
-  return {attack:$('dAttack')?.value,aff:$('dAff')?.value,elem:$('dElem')?.value,mv:$('dMV')?.value,hz:$('dHZ')?.value,ehz:$('dEHZ')?.value,sharp:$('dSharp')?.value,esharp:$('dESharp')?.value,cb:$('dCB')?.value,eCrit:$('dECrit')?.value,uptime:$('uptime')?.value,uptimeMode:$('uptimeMode')?.value};
+  return {attack:$('dAttack')?.value,aff:$('dAff')?.value,elem:$('dElem')?.value,mv:$('dMV')?.value,hz:$('dHZ')?.value,ehz:$('dEHZ')?.value,sharp:$('dSharp')?.value,esharp:$('dESharp')?.value,cb:$('dCB')?.value,eCrit:$('dECrit')?.value,uptime:$('uptime')?.value,uptimeMode:$('uptimeMode')?.value,chargeBladeState:comboCBStoredState()};
 }
 function restoreStep5Snapshot(x){
   if(!x)return; for(const [id,key] of [['dAttack','attack'],['dAff','aff'],['dElem','elem'],['dMV','mv'],['dHZ','hz'],['dEHZ','ehz'],['dSharp','sharp'],['dESharp','esharp'],['dCB','cb'],['dECrit','eCrit'],['uptime','uptime'],['uptimeMode','uptimeMode']]) if($(id)&&x[key]!=null) $(id).value=x[key];
@@ -3581,25 +6201,31 @@ function damageForStats(st,mv,cond){
   return damageFromValues(st.attackTrue??st.attack,st.affinity,st.element,mv,cond.hz,cond.ehz,cond.sharp,cond.esharp,cond.cb,cond.eCrit).total;
 }
 function dpsForStats(st,cond){
+  const dpsStats={...st,affinity:st.maxAffinity??st.affinity};
   const rows=[...document.querySelectorAll('.comboRow')]; if(!rows.length)return null;
   let sumD=0,sumT=0;
-  for(const r of rows){const m=comboMove(r.querySelector('.cmove')?.value);if(!m)continue;sumD+=m.mvs.reduce((a,mv)=>a+damageForStats(st,mv,cond),0);sumT+=m.time;}
+  for(const r of rows){
+    const m=comboMove(r.querySelector('.cmove')?.value,dpsStats);if(!m||!Number.isFinite(m.time)||m.time<=0)return null;
+    sumD+=comboTechniqueDamage(m,{chargeBladeState:comboKind()==='charge-blade'?comboCBCondition(dpsStats):null,attack:dpsStats.attackTrue??dpsStats.attack,affinity:dpsStats.affinity,element:dpsStats.element,hz:Number(cond.hz),ehz:Number(cond.ehz),sharp:Number(cond.sharp),esharp:Number(cond.esharp),critBonus:Number(cond.cb),elementCrit:Boolean(Number(cond.eCrit))}).total;
+    sumT+=m.time;
+  }
   if(sumT<=0)return null; const theoretical=sumD/sumT,up=Math.max(1,Math.min(100,Number(cond.uptime)||85))/100; return cond.uptimeMode==='1'?theoretical*up:theoretical;
 }
 
 function compareSnapshot(name,snapshot,cond){
-  applyBuildSnapshot(snapshot);
+  applyBuildSnapshot(snapshot,{preserveCombo:true});
   const st=calcState.stats||{};
   let dmg=null,dps=null;
   try{dmg=damageForStats(st,cond.mv,cond);dps=dpsForStats(st,cond)}catch(e){}
   return {name,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:Number(st.element)||0,elementType:String(st.elementType||'—'),damage:dmg,dps};
 }
-function renderCompareTable(rows){
+function renderCompareTableChunk(rows,allRows){
   if(!rows.length)return '<span class="muted small">比較結果はありません。</span>';
-  const max=key=>Math.max(...rows.map(r=>Number(r[key])||0));
-  const ma=max('attack'),mta=max('attackTrue'),mf=max('affinity'),mmf=max('maxAffinity'),me=max('element'),mx=Math.max(...rows.map(r=>Number(r.damage)||0)),mp=Math.max(...rows.map(r=>Number(r.dps)||0));
+  const max=key=>Math.max(...allRows.map(r=>Number(r[key])||0));
+  const ma=max('attack'),mta=max('attackTrue'),mf=max('affinity'),mmf=max('maxAffinity'),me=max('element'),mx=Math.max(...allRows.map(r=>Number(r.damage)||0)),mp=Math.max(...allRows.map(r=>Number(r.dps)||0));
   const cell=(v,b)=>`<td class="${b?'compare-best':''}">${esc(v)}</td>`;
-  let h='<div class="compare-table"><table style="--compare-build-count:'+rows.length+'"><colgroup><col class="compare-item-col">'+rows.map(()=>'<col class="compare-build-col">').join('')+'</colgroup><thead><tr><th>項目</th>'+rows.map(r=>`<th>${esc(r.name)}</th>`).join('')+'</tr></thead><tbody>';
+  const itemWidth=112,buildWidth=120,totalWidth=itemWidth+rows.length*buildWidth;
+  let h='<div class="compare-table"><table style="table-layout:fixed;width:'+totalWidth+'px;min-width:'+totalWidth+'px;max-width:'+totalWidth+'px"><colgroup><col class="compare-item-col" style="width:'+itemWidth+'px">'+rows.map(()=>'<col class="compare-build-col" style="width:'+buildWidth+'px">').join('')+'</colgroup><thead><tr><th>項目</th>'+rows.map(r=>`<th>${esc(r.name)}</th>`).join('')+'</tr></thead><tbody>';
   h+='<tr><th>表示攻撃力</th>'+rows.map(r=>cell(Math.round(r.attack),r.attack===ma)).join('')+'</tr>';
   h+='<tr><th>真攻撃力</th>'+rows.map(r=>cell(Math.round(r.attackTrue),r.attackTrue===mta)).join('')+'</tr>';
   h+='<tr><th>会心率</th>'+rows.map(r=>cell(Math.round(r.affinity)+'%',r.affinity===mf)).join('')+'</tr>';
@@ -3607,15 +6233,28 @@ function renderCompareTable(rows){
   h+='<tr><th>属性</th>'+rows.map(r=>cell(Math.round(r.element)+(r.elementType!=='—'?' '+r.elementType:''),r.element===me)).join('')+'</tr>';
   h+='<tr><th>1ヒット期待値</th>'+rows.map(r=>cell(r.damage==null?'—':r.damage.toFixed(2),r.damage!=null&&r.damage===mx)).join('')+'</tr>';
   h+='<tr><th>DPS</th>'+rows.map(r=>cell(r.dps==null?'—':r.dps.toFixed(2),r.dps!=null&&r.dps===mp)).join('')+'</tr>';
-  return h+'</tbody></table></div><div class="compare-note">太字は各項目で数値が最大のセットです。1ヒット期待値とDPSは現在Step 5の攻撃条件を共通条件として計算します。</div>';
+  return h+'</tbody></table></div>';
 }
+let lastBuildComparisonRows=null;
+function renderCompareTable(rows){
+  if(!rows.length)return '<span class="muted small">比較結果はありません。</span>';
+  const box=$('compareOut'),style=box?getComputedStyle(box):null;
+  const available=box?.clientWidth ? box.clientWidth-(parseFloat(style.paddingLeft)||0)-(parseFloat(style.paddingRight)||0) : 474;
+  const perGroup=Math.max(1,Math.min(3,Math.floor((Math.min(available,474)-2-112)/120)));
+  let h='<div class="compare-results">';
+  for(let i=0;i<rows.length;i+=perGroup)h+=renderCompareTableChunk(rows.slice(i,i+perGroup),rows);
+  return h+'</div><div class="compare-note">太字は各項目で数値が最大のセットです。1ヒット期待値とDPSは現在Step 5の攻撃条件を共通条件として計算します。DPSは最大会心率を使用します。所要時間は参考値のためDPSも参考値です。</div>';
+}
+window.addEventListener('resize',()=>{if(lastBuildComparisonRows)$('compareOut').innerHTML=renderCompareTable(lastBuildComparisonRows);});
 function runBuildCompare(){
+  lastBuildComparisonRows=null;
   const names=compareSelectedNames();
   if(!names.length){$('compareOut').innerHTML='<span class="warn">比較する装備セットを1〜3件選択してください。</span>';return}
   if(names.length>3){$('compareOut').innerHTML='<span class="warn">比較は最大3件までです。</span>';return}
   const map=savedBuildMap(),current=buildSnapshot(),cond=compareStep5Snapshot(),rows=[];
   try{for(const n of names)if(map[n])rows.push(compareSnapshot(n,map[n],cond));}
-  finally{applyBuildSnapshot(current);restoreStep5Snapshot(cond)}
+  finally{applyBuildSnapshot(current,{preserveCombo:true});restoreStep5Snapshot(cond)}
+  lastBuildComparisonRows=rows;
   $('compareOut').innerHTML=renderCompareTable(rows);
 }
 function aiBuildData(){
@@ -3626,14 +6265,19 @@ function aiBuildData(){
   const decos=build.decos||{};
   const skills=[];
   document.querySelectorAll('#skillOutput .skillrow').forEach(r=>{const t=r.textContent.trim();if(t)skills.push(t)});
-  const combo=[...document.querySelectorAll('.comboRow')].map(r=>{const id=r.querySelector('.cmove')?.value;const m=comboMove(id);return {name:m?.name||'',motionValues:m?.mvs||[],hits:m?.hits||0,time:Number(m?.time||0)}});
-  return {version:App.version,weapon:weapon?{name:weapon.name||'',kind:canonicalWeaponKind(weapon)||'',attack:weapon.attack||0,affinity:weapon.affinity||0,element:weapon.element||0,elementType:weapon.elementType||''}:null,armor,charm:charms,decos,stats:st,activeSkills:skills,step5:{uptime:$('uptime')?.value,uptimeMode:$('uptimeMode')?.value,combo}};
+  const combo=[...document.querySelectorAll('.comboRow')].map(r=>{
+    const id=r.querySelector('.cmove')?.value;const m=comboMove(id);
+    const time=m&&Number.isFinite(Number(m.time))&&Number(m.time)>0?Number(m.time):null;
+    return {techniqueId:id,canonicalTechniqueId:m?.canonicalTechniqueId||null,numericOrigin:m?.numericOrigin||(m?.custom?'USER_REGISTERED_REFERENCE':'LEGACY_REFERENCE_ONLY'),name:m?.name||'',motionValues:m?.mvs||[],hits:m?.hits||0,time,timingEvidence:m?.timingEvidence||null,timingCondition:m?.timingCondition||null,handler:m?.handler||null,calculationBlocked:Boolean(m?.calculationBlocked),blockedReason:m?.blockedReason||null,timingStatus:!m?'TECHNIQUE_UNAVAILABLE':time===null?'PENDING':m.timingStatus||'LEGACY_REFERENCE_ONLY'};
+  });
+  const comboTimingStatus=combo.length>0&&combo.every(m=>m.time!==null)?'REFERENCE_ONLY':'PENDING';
+  return {version:App.version,weapon:weapon?{name:weapon.name||'',kind:canonicalWeaponKind(weapon)||'',attack:weapon.attack||0,affinity:weapon.affinity||0,element:weapon.element||0,elementType:weapon.elementType||''}:null,armor,charm:charms,decos,stats:st,activeSkills:skills,step5:{uptime:$('uptime')?.value,uptimeMode:$('uptimeMode')?.value,combo,comboTimingStatus,chargeBladeState:comboKind()==='charge-blade'?comboCBCondition(st):null}};
 }
 
 function makeAIPrompt(){
   const text=String($('aiPrompt')?.value||'').trim();
   if(!text){$('aiOut').innerHTML='<span class="warn">相談内容を入力してください。</span>';return null;}
-  const payload={request:text,currentBuild:aiBuildData(),instruction:'AIは候補提示・比較・評価を行い、最終ビルドはユーザーが決定する。'};
+  const payload={request:text,currentBuild:aiBuildData(),instruction:'AIは候補提示・比較・評価を行い、最終ビルドはユーザーが決定する。未確認の時間や技を推定で補完せず、時間が未確認のコンボはDPS未算出として扱う。'};
   const out=$('aiPayload');if(out)out.textContent=JSON.stringify(payload,null,2);
   $('aiOut').innerHTML='<span class="ok">AI相談データを作成しました。</span>';
   return payload;
