@@ -316,7 +316,7 @@ window.R45_RELEASE=Object.freeze({version:'r45',gameVersion:'1.042.00.02',techni
 @media(max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head><body>
-<div class="notice"><b>v7.2.2-template-rootfix-r7 / OCR統合 r1.1.19 fix12</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">r96 Conditional Element and Ambush Power / Game Ver.1.042.00.02</div>
+<div class="notice"><b>v7.2.2-template-rootfix-r7 / OCR統合 r1.1.19 fix12</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">r108 Weapon Power Coverage / Game Ver.1.042.00.02</div>
 <header><div class="wrap"><h1>⚔️ MH Wilds 装備セット＆火力シミュレーター v7.2.1 / OCR統合 r1.1.19 / ビルドテンプレート</h1><div class="muted">①〜⑤ ハンターズノート：装備を作る・記録する　｜　⑥〜⑧ ハンターズサポート：分析・提案・相談</div></div></header>
 <section class="wrap" style="margin:12px auto"><details class="card" id="techAuditPanel"><summary><b>技DBの数値・確認状況</b></summary><p class="small">登録値、資料の候補値、STANDARDの保留理由を確認できます。候補値は計算には使用しません。「未記載」の補正を1として扱うことはありません。</p><div class="two"><div><label for="techAuditKind">武器種</label><select id="techAuditKind"></select></div><div><label for="techAuditId">技</label><select id="techAuditId"></select></div></div><div id="techAuditSummary"></div><div id="techAuditOut"></div></details></section>
 <section class="wrap" style="margin:12px auto"><details class="card" id="hhReferencePanel"><summary><b>狩猟笛の音波・固定ダメージ参考計算</b></summary><p>発生するイベントの回数を明示して、資料の式による未丸めの参考値を確認します。本体攻撃を含みません。狩猟笛全体の火力・DPSやビルド比較には使用しません。</p><p class="small">全欄に入力してください。発生しないイベントは0です。確認済みの追撃4回から、イベントの種類や回数を自動補完しません。</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px"><label for="hhRefAttack">攻撃力（武器係数なし・計算に使う値）<input id="hhRefAttack" type="number" min="0" step="any" inputmode="decimal" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefElement">表示属性値（無属性は0）<input id="hhRefElement" type="number" min="0" step="any" inputmode="decimal" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefElementHz">属性肉質（%）<input id="hhRefElementHz" type="number" min="0" step="any" inputmode="decimal" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefPerformance">演奏衝撃波の回数<input id="hhRefPerformance" type="number" min="0" step="1" inputmode="numeric" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefNormalEcho">通常攻撃時の響玉追撃の回数<input id="hhRefNormalEcho" type="number" min="0" step="1" inputmode="numeric" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefMelodyEcho">旋律成立時の響玉追撃の回数<input id="hhRefMelodyEcho" type="number" min="0" step="1" inputmode="numeric" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefFixed">重ね掛け時の固定10ダメージの回数<input id="hhRefFixed" type="number" min="0" step="1" inputmode="numeric" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label></div><button type="button" id="hhRefCalculate" style="margin-top:12px">参考値を計算</button><output id="hhRefOut" aria-live="polite" style="display:block;white-space:pre-line;margin-top:12px">入力して「参考値を計算」を押してください。</output><p class="small">ゲーム表示の丸め・発生条件・基準版の照合は未確定です。</p></details></section>
@@ -333,9 +333,24 @@ window.R45_RELEASE=Object.freeze({version:'r45',gameVersion:'1.042.00.02',techni
 <label for="scorchComboTimes">現在のコンボの全Hit時刻（秒・対象外も含む）<textarea id="scorchComboTimes" rows="3" placeholder="コンボの順に、全Hitの時刻をカンマ区切りで入力" style="width:100%;box-sizing:border-box"></textarea></label>
 </div><button id="scorchCalculate" type="button">追撃の参考値を計算</button><button id="scorchExport" type="button">コンボ追撃の検証JSONを保存</button><div id="scorchOut" style="white-space:pre-wrap;overflow-wrap:anywhere" aria-live="polite"></div>
 <p class="small">資料値：発動確率1/3・再発動間隔2秒。時刻による期待値は開始時に再発動可能とする条件付き計算です。実機検証済みではありません。</p><p class="small"><a href="https://kuroyonhon.com/mhwilds/program/skill.php" target="_blank" rel="noopener noreferrer">スキル数値の資料</a> ／ <a href="https://kuroyonhon.com/mhwilds/memo/32.php" target="_blank" rel="noopener noreferrer">発動対象モーションの資料</a></p></details></section>
+<section class="wrap" style="margin:12px auto"><details class="card" id="darkArtsReferencePanel"><summary><b>ダークアーツ衝撃波の参考計算</b></summary>
+<p>大剣の衝撃波だけを、確認済みの追撃回数から計算します。武器の属性値は使わず、龍属性攻撃強化のみ指定できます。他の属性強化・赤ゲージ時の強化・追加スキルとの併用は含みません。</p>
+<p class="small">溜め斬りⅢ・強溜め斬りⅢ・真溜め斬りⅢの2Hit目が対象です。衝撃波が当たった回数を入力してください。すべての入力を明示してください。</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px">
+<label for="daAttack">攻撃力（武器係数なし・計算に使う値）<input id="daAttack" type="number" min="0" step="any" inputmode="decimal"></label>
+<label for="daAffinity">会心率（%）<input id="daAffinity" type="number" min="-100" max="100" step="any" inputmode="decimal"></label>
+<label for="daCrit">物理会心倍率（例：1.25）<input id="daCrit" type="number" min="1" max="2" step="any" inputmode="decimal"></label>
+<label for="daSharp">物理斬れ味倍率（例：1.32）<input id="daSharp" type="number" min="0.01" max="2" step="any" inputmode="decimal"></label>
+<label for="daESharp">属性斬れ味倍率（例：1.15）<input id="daESharp" type="number" min="0.01" max="2" step="any" inputmode="decimal"></label>
+<label for="daHz">対象部位の斬肉質（%）<input id="daHz" type="number" min="0" max="100" step="any" inputmode="decimal"></label>
+<label for="daDragonHz">対象部位の龍肉質（%）<input id="daDragonHz" type="number" min="0" max="100" step="any" inputmode="decimal"></label>
+<label for="daDragonAttack">龍属性攻撃強化<select id="daDragonAttack"><option value="0">なし</option><option value="1">Lv1</option><option value="2">Lv2</option><option value="3">Lv3</option></select></label>
+<label for="daCount">確認済み衝撃波Hit数（発生なしは0）<input id="daCount" type="number" min="0" max="10000" step="1" inputmode="numeric"></label>
+</div><button id="daCalculate" type="button">衝撃波の参考値を計算</button><div id="daOut" style="white-space:pre-wrap;overflow-wrap:anywhere" aria-live="polite"></div>
+<p class="small">資料値の未丸め計算です。実機の丸め・最低ダメージは未照合です。龍肉質0は計算保留です。</p><p class="small"><a href="https://kuroyonhon.com/mhwilds/program/skill.php" target="_blank" rel="noopener noreferrer">スキル数値の資料</a></p></details></section>
 <main class="wrap"><div class="grid"><aside>
 <section class="card"><details class="card-details" open="True"><summary class="card-summary">① データ取得</summary><div class="card-details-body"><div class="muted">ゲームデータの取得・検証・保存は装備セット計算とは独立して管理します。取得済みデータがあれば、APIへ再接続できない場合でも利用できます。</div><div class="two" style="margin-top:8px"><button class="primary" id="load" onclick="window.__startDataLoad &amp;&amp; window.__startDataLoad()" type="button">最新データを取得 / 更新</button><button id="clearDataCache">取得データを削除</button></div><progress id="prog" max="100" style="display:none;margin-top:8px" value="0"></progress><div class="muted" id="status" style="margin-top:7px">未取得</div><div class="game-status hidden-ui-below-status" id="dataStatus" style="margin-top:8px"></div><div class="notice small hidden-ui-below-status" id="architectureStatus" style="margin-top:8px">V6構造チェック待機中</div><div class="notice small hidden-ui-below-status" id="diag"></div></div></details></section><section class="card hidden-ui-section"><details><summary class="small"><b>スキル最大Lv監査</b></summary><div class="notice small" id="skillMaxAudit">データ取得後に監査します。</div></details></section><section class="card" id="buildLoadCard"><details class="card-details" open="True"><summary class="card-summary">② 装備セット読込</summary><div class="card-details-body"><div class="muted">保存済みの装備セットを呼び出します。初めて使う場合は、③ 装備登録から新しい装備セットを作成できます。</div><div class="saved-build-list" id="savedBuilds"></div><section class="card card-details" id="buildTemplateCard"><details><summary class="card-summary">📚 ビルドテンプレート</summary><div class="card-details-body"><div class="muted">登録済みのビルドテンプレートを選択し、現在の装備セットへ読み込みます。テンプレートはMHDBの実データへ照合してBuild Stateへ反映します。</div><div class="two" style="margin-top:8px"><div><label>武器種</label><select id="buildTemplateWeaponKind"><option value="">武器種を選択</option></select></div><div><label>テンプレート</label><select disabled="" id="buildTemplateSelect"><option value="">武器種を選択してください</option></select></div></div><div class="notice small" id="buildTemplateInfo" style="margin-top:8px">テンプレートを選択してください。</div><div class="two" style="margin-top:8px"><button class="primary" disabled="" id="loadBuildTemplate" type="button">このビルドを読込•反映</button><button id="clearBuildTemplate" type="button">選択解除</button></div><div class="notice small hidden" id="buildTemplateStatus" style="margin-top:8px"></div></div></details></section><section class="card card-details" id="ocrImportCard"><details><summary class="card-summary">📷 スクショからビルドを取り込む</summary><div class="card-details-body"><div class="muted" style="margin-bottom:8px">ゲーム内スクショから武器・防具・装飾品を読み取り、現在の装備セットへ直接反映できます。β版と同じDBを使用します。</div><div id="ocrEmbeddedHost"></div></div></details></section></div></details></section><section class="card"><details class="card-details" open="True"><summary class="card-summary">③ 装備登録</summary><div class="card-details-body"><div class="muted">武器・防具・護石を登録し、そのまま各スロットへ装飾品を割り当てます。防具は限界突破後として扱います。</div><h3>武器</h3><label>武器種</label><select id="weaponKind"></select><div aria-label="武器種を選択" class="weapon-kind-icons" id="weaponKindIcons"></div><div class="muted small" style="margin-top:5px">アイコンをタップして武器種を選択できます。</div><label>武器</label><select id="weapon"></select><div class="muted small" id="weaponDataState"></div><div class="muted small" id="weaponKindDiag"></div><div class="equip-skill-preview hidden" id="weaponSkillPreview"></div><div class="equip-skill-preview hidden" id="weaponSlotPreview"></div><div class="notice hidden" id="artiaBox"></div><div class="notice small">防具・護石は④の左ペインで編集します。</div></div></details></section><section class="armor-build-workspace" id="armorBuildWorkspace"><div class="armor-workspace-left" id="armorWorkspaceLeft"><section class="card armor-editor-card"><details class="card-details" open=""><summary class="card-summary">防具・護石</summary><div class="card-details-body armor-editor-body"><div class="muted small armor-workspace-note">装備を変更すると、右側のスキル構成へリアルタイムに反映されます。</div><div class="section-title">防具</div><div class="armor-equip-grid" id="armorSelectors"></div><div class="section-title">護石</div><div id="charmEditor"></div><div class="notice small" id="charmLegality" style="margin-top:8px"></div><div class="muted small" id="decorEditor" style="display:none"></div></div></details></section></div><div class="skill-workspace-right" id="skillWorkspaceRight"><section class="card"><details class="card-details" open="True"><summary class="card-summary">④ スキル構成</summary><div class="card-details-body"><div class="checkline" style="margin:9px 0"><input checked="" id="useWeaponCoeff" type="checkbox"/><label for="useWeaponCoeff" style="margin:0">武器係数を適用して攻撃力を表示</label></div><div class="muted small" id="weaponCoeffState">ON：ゲーム内表示攻撃力（武器係数あり）</div><div class="muted small">この切替は<strong>表示上の攻撃力</strong>だけを変更します。ダメージ計算は真攻撃力を基準にします。属性値には武器係数を掛けません。</div><button class="primary sticky" id="calcBuild">🔄 装備セットを計算</button><div class="summarygrid" id="buildSummary" style="margin-top:9px"></div><div class="notice" id="skillOutput">データ取得後、装備を選んでください。</div><div class="section-title">現在の装備セット</div><div class="muted" id="buildDetail">未計算</div></div></details></section></div></section></aside><section>
-<section class="card"><details class="card-details" open="True"><summary class="card-summary">⑤ 装備セット保存</summary><div class="card-details-body"><div class="muted">現在の武器・防具・護石・装飾品・巨戟アーティア設定を名前付きで保存できます。保存した装備セットは⑥のサポート機能から比較できます。</div><div class="save-build-row"><div><label>装備セット名</label><input id="buildName" maxlength="40" placeholder="例：クピドバイン 弓装備" type="text"/></div><button class="good" id="saveBuild" type="button">保存</button><button id="clearBuildName" type="button">消去</button></div><div class="notice small hidden" id="buildSaveStatus"></div></div></details></section><div class="support-divider">ここからサポート機能</div><section class="card support-card"><details class="card-details" open="True"><summary class="card-summary">⑥ ビルド比較・対象モンスター</summary><div class="card-details-body"><div class="section-title">対象モンスター・部位</div><div class="muted small">比較時の物理・属性肉質と期待値計算条件に使用します。</div><label>モンスター</label><select id="monster"><option value="">モンスターを選択</option></select><label>部位</label><select id="monsterPart"><option value="">部位を選択</option></select><div class="notice" id="monsterInfo">未選択</div><div class="section-title" style="margin-top:12px">装備セット比較</div><div class="muted small">⑤で保存した装備セットを最大3件まで選び、現在の対象モンスター・部位を条件として、最大会心率とDPSを比較します。</div><div class="compare-list" id="compareBuilds"></div><div class="two" style="margin-top:7px"><button id="selectAllCompare">保存した装備セットを全選択</button><button id="clearAllCompare">選択解除</button></div><div class="notice small"><label for="powerGutsState">火力指数の根性【果敢】条件</label><select id="powerGutsState"><option value="BEFORE">根性の消費前（攻撃補正あり）</option><option value="AFTER">根性の消費後（攻撃補正なし）</option></select><p>根性【果敢】が発動するビルドだけに適用します。通常側では激励・死中に活を未発動、最大側では条件成立として計算します。コンボDPSへの接続は保留中です。</p></div><button class="primary" id="runCompare" style="margin-top:7px">📊 選択した装備セットを比較</button><div class="notice" id="compareOut">比較する装備セットを選択してください。</div></div></details></section><section class="card support-card"><details class="card-details"><summary class="card-summary">⑦ コンボDPS</summary><div class="card-details-body"><div class="muted">③ 装備登録で選択した武器をそのまま使用します。武器をここで再選択する必要はありません。その武器に対応する技を選び、コンボの順番をユーザーが決めて、コンボ全体のダメージ・所要時間・DPSを計算します。同じ技を複数回使う場合は、同じ技をその回数だけ追加します。</div><div class="notice" id="comboWeaponInfo"><b>使用武器：</b>③ 装備登録で武器を選択してください。</div><div class="two"><div><label>技を選択</label><select id="comboMovePicker"></select></div><div><label>プリセット</label><select id="comboPreset"><option value="">なし（自分で組む）</option></select></div></div><div class="notice small" id="comboDataStatus">③ 装備登録の武器を確認しています…</div>
+<section class="card"><details class="card-details" open="True"><summary class="card-summary">⑤ 装備セット保存</summary><div class="card-details-body"><div class="muted">現在の武器・防具・護石・装飾品・巨戟アーティア設定を名前付きで保存できます。保存した装備セットは⑥のサポート機能から比較できます。</div><div class="save-build-row"><div><label>装備セット名</label><input id="buildName" maxlength="40" placeholder="例：クピドバイン 弓装備" type="text"/></div><button class="good" id="saveBuild" type="button">保存</button><button id="clearBuildName" type="button">消去</button></div><div class="notice small hidden" id="buildSaveStatus"></div></div></details></section><div class="support-divider">ここからサポート機能</div><section class="card support-card"><details class="card-details" open="True"><summary class="card-summary">⑥ ビルド比較・対象モンスター</summary><div class="card-details-body"><div class="section-title">対象モンスター・部位</div><div class="muted small">比較時の物理・属性肉質と期待値計算条件に使用します。</div><label>モンスター</label><select id="monster"><option value="">モンスターを選択</option></select><label>部位</label><select id="monsterPart"><option value="">部位を選択</option></select><div class="notice" id="monsterInfo">未選択</div><div class="section-title" style="margin-top:12px">装備セット比較</div><div class="muted small">⑤で保存した装備セットを最大3件まで選び、共通の肉質条件で火力指数・最大会心率・DPSを比較します。装備を変更した場合は、⑤で保存し直してから比較してください。火力指数は現在、大剣・太刀・片手剣・双剣・ハンマー・ランス・スラッシュアックスの固定コンボに対応しています。未対応の武器・スキルは理由を表示して保留します。</div><details id="powerCoverageDetails" class="notice small"><summary>武器ごとの火力指数対応状況</summary><div id="powerCoverageOut"></div><button id="powerCoverageDownload" type="button">対応状況をJSON保存</button></details><div class="compare-list" id="compareBuilds"></div><div class="two" style="margin-top:7px"><button id="selectAllCompare">保存した装備セットを全選択</button><button id="clearAllCompare">選択解除</button></div><div class="notice small"><label for="powerDragonHz">大剣ダークアーツの龍肉質（%・比較共通条件）<input id="powerDragonHz" type="number" min="0" max="100" step="any" inputmode="decimal" placeholder="大剣の衝撃波込み通常指数に必要"></label><button id="useTargetDragonHz" type="button">選択部位の龍肉質を取得</button><div id="powerDragonHzSource" class="muted small" role="status">未入力：部位から取得、または手入力してください。</div><label for="powerGutsState">火力指数の根性【果敢】条件</label><select id="powerGutsState"><option value="BEFORE">根性の消費前（攻撃補正あり）</option><option value="AFTER">根性の消費後（攻撃補正なし）</option></select><label for="powerFortifyCount">最大火力指数の不屈条件</label><select id="powerFortifyCount"><option value="0">未発動（攻撃補正なし）</option><option value="1">1回力尽きた後（攻撃×1.1）</option><option value="2" selected>2回力尽きた後（攻撃×1.21）</option></select><p class="muted small">毛皮の昂揚3部位のビルドだけに適用します。通常側は未発動、最大側は選択した条件の参考値です。実際の力尽きた回数は読み取りません。</p><p>根性【果敢】が発動するビルドだけに適用します。通常側では激励・死中に活を未発動、最大側では条件成立として計算します。コンボDPSへの接続は保留中です。</p></div><button class="primary" id="runCompare" style="margin-top:7px">📊 選択した装備セットを比較</button><div class="notice" id="compareOut">比較する装備セットを選択してください。</div></div></details></section><section class="card support-card"><details class="card-details"><summary class="card-summary">⑦ コンボDPS</summary><div class="card-details-body"><div class="muted">③ 装備登録で選択した武器をそのまま使用します。武器をここで再選択する必要はありません。その武器に対応する技を選び、コンボの順番をユーザーが決めて、コンボ全体のダメージ・所要時間・DPSを計算します。同じ技を複数回使う場合は、同じ技をその回数だけ追加します。</div><div class="notice" id="comboWeaponInfo"><b>使用武器：</b>③ 装備登録で武器を選択してください。</div><div class="two"><div><label>技を選択</label><select id="comboMovePicker"></select></div><div><label>プリセット</label><select id="comboPreset"><option value="">なし（自分で組む）</option></select></div></div><div class="notice small" id="comboDataStatus">③ 装備登録の武器を確認しています…</div>
 <details class="notice small" id="techniqueEditor" style="margin-top:8px">
 <summary><b>技データを登録・管理</b></summary>
 <div class="muted" style="margin:6px 0">現在選択中の武器種に技を登録できます。モーション値は公式API値ではなく、検証値として扱います。</div>
@@ -1353,9 +1368,9 @@ function renderCharmEditor(){
 function renderMonsters(){let s=$('monster');if(!s)return;let old=s.value;let arr=selectableMonsters();const training=arr.find(m=>m.id==='training-room');arr=arr.filter(m=>m.id!=='training-room').sort((a,b)=>jpSort(a.name,b.name));if(training)arr.unshift(training);s.innerHTML='<option value="">モンスターを選択</option>'+arr.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join('');if(old&&arr.some(m=>String(m.id)===old))s.value=old;else if(!old&&training)s.value='training-room';renderMonsterParts()}
 function renderMonsterParts(){let m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value),s=$('monsterPart');if(!s)return;let old=s.value;let parts=(m?.parts||[]).slice().sort((a,b)=>jpSort(partNameJP(a),partNameJP(b)));s.innerHTML='<option value="">部位を選択</option>'+parts.map(p=>`<option value="${p.id}">${esc(partNameJP(p))}</option>`).join('');if(old&&parts.some(p=>String(p.id)===old))s.value=old;else if(m?.id==='training-room')s.value='training-front';
   let box=document.getElementById('monsterStateBox');if(box)box.remove();
-  if(m?.id?.endsWith(':king')){const host=s.parentElement;const div=document.createElement('div');div.id='monsterStateBox';div.innerHTML='<label>鎖刃状態</label><select id="monsterState"><option value="released">鎖刃解放状態</option><option value="releasedOff">鎖刃解除状態</option></select><div class="muted small">★10歴戦王アルシュベルド：鎖翼刃の属性肉質を状態に応じて変更します。</div>';host.insertBefore(div,s);document.getElementById('monsterState').onchange=()=>{renderMonsterInfo();syncDamage();calcBuild()};}
+  if(String(m?.id??'').endsWith(':king')){const host=s.parentElement;const div=document.createElement('div');div.id='monsterStateBox';div.innerHTML='<label>鎖刃状態</label><select id="monsterState"><option value="released">鎖刃解放状態</option><option value="releasedOff">鎖刃解除状態</option></select><div class="muted small">★10歴戦王アルシュベルド：鎖翼刃の属性肉質を状態に応じて変更します。</div>';host.insertBefore(div,s);document.getElementById('monsterState').onchange=()=>{renderMonsterInfo();syncDamage();calcBuild()};}
   renderMonsterInfo()}
-function renderMonsterInfo(){const m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value)||null,p=selectedPart();if(!m||!p){$('monsterInfo').textContent='未選択';return}let w=selectedWeapon();let hz=partPhysHz(p,w);let ehz=w&&weaponElementInfo(w).type?partElemHz(p,weaponElementInfo(w).type):0;const state=m.id.endsWith(':king')?` / ${$('monsterState')?.selectedOptions?.[0]?.textContent||'鎖刃解放状態'}`:'';$('monsterInfo').innerHTML=`<b>${esc(m.name)} / ${esc(partNameJP(p))}${esc(state)}</b><br>物理肉質 ${hz}% / 属性肉質 ${ehz}%`}
+function renderMonsterInfo(){const m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value)||null,p=selectedPart();if(!m||!p){$('monsterInfo').textContent='未選択';return}let w=selectedWeapon();let hz=partPhysHz(p,w);let ehz=w&&weaponElementInfo(w).type?partElemHz(p,weaponElementInfo(w).type):0;const state=String(m.id).endsWith(':king')?` / ${$('monsterState')?.selectedOptions?.[0]?.textContent||'鎖刃解放状態'}`:'';$('monsterInfo').innerHTML=`<b>${esc(m.name)} / ${esc(partNameJP(p))}${esc(state)}</b><br>物理肉質 ${hz}% / 属性肉質 ${ehz}%`}
 function normalizeWeaponKindValue(v){
   // UI -> official MHDB WeaponKind only. No heuristic inference.
   const raw=String(v==null?'':v).trim().toLowerCase();
@@ -1783,7 +1798,9 @@ function calcBuild(){renderCharmLegality();
   // APIの基礎値と二重計上/取りこぼしが起きるため、ここでは計算済み stats.affinity をそのまま渡す。
   stats.maxAffinity=calcMaxAffinity(total, stats.affinity, w, p);
   stats.rapidMorphLevel=Math.max(0,Math.min(3,skillLevel(total,['高速変形','Rapid Morph'])));
-  const elem=calcElementSkill(total,stats.elementType); stats.element=stats.element*elem.mult+elem.add;
+  const elem=calcElementSkill(total,stats.elementType);
+  stats.elementComponents={weaponBase:stats.element,normalMultiplier:elem.mult,normalFlat:elem.add};
+  stats.element=stats.elementComponents.weaponBase*elem.mult+elem.add;
   // Defense skill contribution (common levels)
   const dl=skillLevel(total,['防御','Defense']); const dFlat=[0,5,10,10,20,20,35,35][Math.min(7,dl)]||0; const dMult=dl>=7?1.10:dl>=6?1.08:dl>=4?1.05:1; stats.defense=(stats.defense+dFlat)*dMult;
   stats.activeBonusEffects=JSON.parse(JSON.stringify([...(calcState.bonusDisplay?.series||[]),...(calcState.bonusDisplay?.group||[])]));
@@ -3954,10 +3971,41 @@ for(const id of ['uptime','uptimeMode']){
   $(id)?.addEventListener('input',()=>invalidateComboResults());
   $(id)?.addEventListener('change',()=>invalidateComboResults());
 }
-for(const id of ['dSharp','dESharp','dCB','dECrit','powerGutsState']){
+for(const id of ['dSharp','dESharp','dCB','dECrit','powerGutsState','powerFortifyCount','powerDragonHz']){
   $(id)?.addEventListener('input',()=>invalidateComboResults('ダメージ計算条件が変わりました。'));
   $(id)?.addEventListener('change',()=>invalidateComboResults('ダメージ計算条件が変わりました。'));
 }
+function dragonTargetReceipt(){
+  const p=selectedPart(),value=p?.multipliers?.dragon;
+  if(typeof value!=='number'||!Number.isFinite(value)||value<0||value>1)return null;
+  const monsterId=$('monster')?.value||'',partId=$('monsterPart')?.value||'';
+  if(!monsterId||!partId)return null;
+  return {kind:monsterId==='training-room'?'TRAINING_REFERENCE':monsterId.endsWith(':king')?'KING_REFERENCE':'MHDB_PART',monsterId,partId,state:monsterId.endsWith(':king')?selectedKingChainState():null,dragonHz:value*100};
+}
+function dragonHitzoneSource(){
+  const input=$('powerDragonHz');let receipt;
+  try{receipt=JSON.parse(input?.dataset.dragonSource||'null');}catch(e){receipt=null;}
+  const current=dragonTargetReceipt();
+  if(receipt&&current&&['kind','monsterId','partId','state','dragonHz'].every(k=>receipt[k]===current[k])&&input.value!==''&&Number(input.value)===receipt.dragonHz)return current;
+  return {kind:input?.value===''?'UNSET':'MANUAL'};
+}
+function renderDragonHitzoneSource(message){
+  const out=$('powerDragonHzSource');if(!out)return;
+  const source=dragonHitzoneSource(),labels={MHDB_PART:'MHDB部位データ（読込済み）',TRAINING_REFERENCE:'トレーニングルームの登録参考値',KING_REFERENCE:'歴戦王・鎖刃状態別の登録参考値',MANUAL:'手入力の比較共通条件',UNSET:'未入力：部位から取得、または手入力してください。'};
+  out.textContent=message||labels[source.kind];
+}
+function importTargetDragonHitzone(){
+  const input=$('powerDragonHz'),receipt=dragonTargetReceipt();if(!input)return;
+  input.value=receipt?String(receipt.dragonHz):'';
+  if(receipt)input.dataset.dragonSource=JSON.stringify(receipt);else delete input.dataset.dragonSource;
+  renderDragonHitzoneSource(receipt?null:'龍肉質を取得できません。部位を確認し、必要に応じて手入力してください。');
+  invalidateComboResults('衝撃波の龍肉質条件が変わりました。');
+}
+$('useTargetDragonHz')?.addEventListener('click',importTargetDragonHitzone);
+for(const event of ['input','change'])$('powerDragonHz')?.addEventListener(event,()=>{delete $('powerDragonHz').dataset.dragonSource;renderDragonHitzoneSource();});
+function invalidateDarkArtsTarget(){if($('powerDragonHz')){$('powerDragonHz').value='';delete $('powerDragonHz').dataset.dragonSource;}renderDragonHitzoneSource();invalidateComboResults('標的が変わりました。大剣衝撃波の龍肉質を取得し直してください。');}
+for(const id of ['monster','monsterPart'])$(id)?.addEventListener('change',invalidateDarkArtsTarget);
+document.addEventListener('change',event=>{if(event.target?.id==='monsterState')invalidateDarkArtsTarget();});
 function restoreComboRows(){
   const moves=(App.state.combo.moves||[]).map(item=>({...item})),uptime=App.state.combo.uptime,uptimeMode=App.state.combo.uptimeMode;
   $('combo').innerHTML='';App.combo.reset();
@@ -4487,7 +4535,7 @@ function validateSimulatorBackup(input){
 function createSimulatorBackup(){
   const parse=(key,fallback)=>{const raw=localStorage.getItem(key);return raw==null?fallback:JSON.parse(raw);};
   let savedBuilds={};for(const key of [BUILDS_KEY,...LEGACY_BUILDS_KEYS]){const raw=localStorage.getItem(key);if(raw!==null){savedBuilds=JSON.parse(raw);break;}}
-  return validateSimulatorBackup({format:SIMULATOR_BACKUP_FORMAT,schemaVersion:1,release:'r96',exportedAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,data:{savedBuilds,customTechniques:parse(TECHNIQUES.storageKey,{}),canonicalTimings:parse(CANONICAL_TIMING_STORAGE_KEY,{schemaVersion:1,records:{}})}});
+  return validateSimulatorBackup({format:SIMULATOR_BACKUP_FORMAT,schemaVersion:1,release:'r108',exportedAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,data:{savedBuilds,customTechniques:parse(TECHNIQUES.storageKey,{}),canonicalTimings:parse(CANONICAL_TIMING_STORAGE_KEY,{schemaVersion:1,records:{}})}});
 }
 function planSimulatorBackupImport(input){
   const backup=validateSimulatorBackup(input),current=createSimulatorBackup().data,counts={buildsAdded:0,customAdded:0,timingsAdded:0,buildsRenamed:0,timingsKept:0},renamed=[];
@@ -4565,13 +4613,13 @@ function createComboVerificationReport(){
   const scorchPlan=techniqueScorchPlan(canonicalWeaponKind(weapon)||'',stages.map(x=>x.canonicalTechniqueId||'UNRESOLVED_TECHNIQUE'));
   const blocked=evaluation.status==='BLOCKED',timingPending=evaluation.status==='TIMING_PENDING';
   const {damage,time,theoreticalDps,practicalDps}=evaluation;
-  return {format:'MHWildsComboVerification',schemaVersion:1,release:'r96',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,observedGameVersion:observed||null,currentBuild:buildSnapshot(),weapon:weapon?{id:weapon.id,name:weapon.name,kind:canonicalWeaponKind(weapon)}:null,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null},context,contextError,externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT',rounding:'PER_HIT_PHYSICAL_ELEMENT_2_DECIMAL_REFERENCE_NOT_GAME_DISPLAY',stages,scorchPlan,summary:{status:blocked?'BLOCKED':timingPending?'TIMING_PENDING':'REFERENCE_ONLY',damage,time,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60},notes:['実機検証済みを意味しません。','未確認時間や特殊成分は推定で補完しません。','食事・アイテム・エキスなどゲーム側の追加状態を別途記録してください。']};
+  return {format:'MHWildsComboVerification',schemaVersion:1,release:'r108',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,observedGameVersion:observed||null,currentBuild:buildSnapshot(),weapon:weapon?{id:weapon.id,name:weapon.name,kind:canonicalWeaponKind(weapon)}:null,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null},context,contextError,externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT',rounding:'PER_HIT_PHYSICAL_ELEMENT_2_DECIMAL_REFERENCE_NOT_GAME_DISPLAY',stages,scorchPlan,summary:{status:blocked?'BLOCKED':timingPending?'TIMING_PENDING':'REFERENCE_ONLY',damage,time,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60},notes:['実機検証済みを意味しません。','未確認時間や特殊成分は推定で補完しません。','食事・アイテム・エキスなどゲーム側の追加状態を別途記録してください。']};
 }
 function createScorchRouteReferenceReport(settings,hitTimes){
   const combo=createComboVerificationReport();
   const techniqueIds=combo.stages.map(x=>x.canonicalTechniqueId||'UNRESOLVED_TECHNIQUE');
   const reference=window.ScorchReference.forRoute({...settings,weaponType:combo.weapon?.kind||'',techniqueIds,hitTimes},window.TechniqueDBEngine);
-  return {format:'MHWildsScorchRouteReference',schemaVersion:1,release:'r96',createdAt:new Date().toISOString(),referenceGameVersion:combo.referenceGameVersion,observedGameVersion:combo.observedGameVersion,currentBuild:combo.currentBuild,weapon:combo.weapon,settings:{level:settings.level,fireAttack:settings.fireAttack,fireHitzone:settings.fireHitzone},reference,damageIncluded:false,notes:['追撃のみの資料期待値。本体ダメージ・火力指数・DPSへ自動反映しません。','コンボ開始時は再発動可能。全Hitが入力した時刻に当たる前提です。','入力時刻・ゲーム表示の丸め・実機版は別途検証が必要です。']};
+  return {format:'MHWildsScorchRouteReference',schemaVersion:1,release:'r108',createdAt:new Date().toISOString(),referenceGameVersion:combo.referenceGameVersion,observedGameVersion:combo.observedGameVersion,currentBuild:combo.currentBuild,weapon:combo.weapon,settings:{level:settings.level,fireAttack:settings.fireAttack,fireHitzone:settings.fireHitzone},reference,damageIncluded:false,notes:['追撃のみの資料期待値。本体ダメージ・火力指数・DPSへ自動反映しません。','コンボ開始時は再発動可能。全Hitが入力した時刻に当たる前提です。','入力時刻・ゲーム表示の丸め・実機版は別途検証が必要です。']};
 }
 function prepareComboVerificationReport(){
   try{const data=createComboVerificationReport();$('comboReportOut').textContent=JSON.stringify(data,null,2);$('comboReportStatus').textContent=data.summary.status==='BLOCKED'?'保留条件を含む検証データです。全体ダメージ・DPSは未算出です。':'最新の条件で検証データを作成しました。ゲーム表示の丸めは別途確認が必要です。';return data;}
@@ -4597,7 +4645,7 @@ function renderSavedBuilds(){
   const box=$('savedBuilds');if(!box)return;
   const m=savedBuildMap(),names=Object.keys(m).sort((a,b)=>a.localeCompare(b,'ja',{numeric:true}));
   box.innerHTML=names.length?names.map(n=>`<div class="saved-build-item"><button data-build-load="${esc(n)}">読込</button><span>${esc(n)}</span><button class="danger" data-build-del="${esc(n)}">削除</button></div>`).join(''):'<div class="muted small">保存した装備セットはありません。</div>';
-  box.querySelectorAll('[data-build-load]').forEach(b=>b.onclick=()=>applyBuildSnapshot(m[b.dataset.buildLoad]));
+  box.querySelectorAll('[data-build-load]').forEach(b=>b.onclick=()=>{const name=b.dataset.buildLoad;if(!confirm(`装備セット「${name}」を読み込みます。現在の装備・装飾品・護石・武器ボーナス・コンボを上書きします。よろしいですか？`))return;applyBuildSnapshot(m[name]);});
   box.querySelectorAll('[data-build-del]').forEach(b=>b.onclick=()=>{const n=b.dataset.buildDel;if(!confirm(`装備セット「${n}」を削除しますか？`))return;const m2=savedBuildMap();delete m2[n];localStorage.setItem(BUILDS_KEY,JSON.stringify(m2));renderSavedBuilds()});
   renderCompareBuilds();
 }
@@ -5029,9 +5077,14 @@ const TECHNIQUE_DB_R91_SCORCH_RULES=techniqueDbDeepFreeze({
  'lance':{LAN_MID_THRUST_I:true,LAN_MID_THRUST_II:true,LAN_MID_THRUST_III:true,LAN_TRIPLE_THRUST:true},
  'switch-axe':{SA_SWORD_VERTICAL:true,SA_SWORD_RIGHT_RISING:true,SA_SWORD_MORPH_DOUBLE:true,SA_AXE_MORPH_SLASH:true}
 });
+const TECHNIQUE_DB_EVIDENCE=techniqueDbDeepFreeze({...TECHNIQUE_DB_R47_EVIDENCE,GS_DARK_ARTS_R98_SOURCE:{url:'https://kuroyonhon.com/mhwilds/program/skill.php',retrievedAt:'2026-10-07',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',scope:'DARK_ARTS_WAVE_AND_DRAGON_ATTACK_ONLY'}});
+// r98: dedicated source record; never substitute weapon element for the wave's fixed dragon.
+const TECHNIQUE_DB_R98_DARK_ARTS_WAVE=techniqueDbDeepFreeze({weaponType:'great-sword',techniqueId:'GS_DARK_ARTS_WAVE',techniqueName:'ダークアーツ衝撃波（参考値専用）',evidenceRefs:['GS_DARK_ARTS_R98_SOURCE'],baselineGameVersion:'1.042.00.02',hits:[],verificationStatus:'UNVERIFIED',numericStatus:'SOURCE_CONFIRMED',calculationStatus:'EVIDENCE_GATED',calculationScope:'SPECIAL_SOURCE_REFERENCE_ONLY',liveGameVerification:'PENDING',currentVersionAudit:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',recordRole:'SPECIAL_REFERENCE',stateRequirement:{darkArts:true,chargeLevel:3},specialSourceValues:{status:'SOURCE_CONFIRMED',motionValue:30,dragonDisplayedValue:600,dragonAttackMultipliers:[1,1,1.1,1.2],dragonAttackAdds:[0,40,50,60],physicalCrit:true,physicalSharpness:true,elementSharpness:true,weaponElementUsed:false},sourceFormula:{url:'https://kuroyonhon.com/mhwilds/program/skill.php',retrievedAt:'2026-10-07',rounding:'UNROUNDED_REFERENCE',scope:'WAVE_ONLY_DRAGON_ATTACK_ONLY_NO_OTHER_BUFFS'},unresolvedReasons:['SPECIAL_HANDLER_REQUIRED','LIVE_GAME_VERIFICATION_PENDING','INTERACTING_BUFFS_PENDING']});
+const TECHNIQUE_DB_R101_WAVE_RULES=techniqueDbDeepFreeze({GS_CHARGED_SLASH_3:true,GS_STRONG_CHARGED_SLASH_3:true,GS_STRONG_WIDE_SLASH_3:false});
 // Merge only at the canonical DB boundary; profiles and handlers keep technique ID references.
 const TECHNIQUE_DB=techniqueDbDeepFreeze(Object.fromEntries(Object.entries(TECHNIQUE_DB_R46_BASE).map(([kind,base])=>{
   const entries={...base};
+  if(kind==='great-sword')entries.GS_DARK_ARTS_WAVE=TECHNIQUE_DB_R98_DARK_ARTS_WAVE;
   for(const [id,record] of Object.entries(TECHNIQUE_DB_R47_EXPANSION[kind]||{})){
     if(entries[id])throw new Error(`TECHNIQUE_DB_DUPLICATE:${kind}:${id}`);
     entries[id]=record;
@@ -5045,9 +5098,23 @@ const TECHNIQUE_DB=techniqueDbDeepFreeze(Object.fromEntries(Object.entries(TECHN
     if(!entries[id])throw new Error(`TECHNIQUE_DB_SCORCH_ORPHAN:${kind}:${id}`);
     entries[id]={...entries[id],sourceHitRules:{...entries[id].sourceHitRules,scorch:{eligible,hitScope:eligible?'ALL_HITS':'NONE',status:'SOURCE_CONFIRMED',hitTimingStatus:'PENDING',calculationReady:false,url:'https://kuroyonhon.com/mhwilds/memo/32.php',retrievedAt:'2026-10-07',liveGameVerification:'PENDING'}}};
   }
+  if(kind==='great-sword')for(const [id,eligible] of Object.entries(TECHNIQUE_DB_R101_WAVE_RULES)){
+    if(!entries[id])throw Error('TECHNIQUE_DB_DARK_ARTS_ORPHAN:'+id);
+    entries[id]={...entries[id],sourceHitRules:{...entries[id].sourceHitRules,darkArtsWave:{eligible,status:'SOURCE_CONFIRMED',waveTechniqueId:'GS_DARK_ARTS_WAVE',eventCount:eligible?1:0,evidenceRef:'GS_DARK_ARTS_R98_SOURCE'}}};
+  }
   return [kind,entries];
 })));
 function techniqueDbGet(weaponType,techniqueId){return TECHNIQUE_DB?.[String(weaponType||'')]?.[String(techniqueId||'')]||null;}
+function techniqueDarkArtsPlan(kind,techniqueIds){
+  if(kind!=='great-sword'||!Array.isArray(techniqueIds)||!techniqueIds.length||techniqueIds.length>2000)throw Error('DARK_ARTS_WAVE:ROUTE_UNRESOLVED');
+  let waveCount=0;const events=[];
+  for(const [stageIndex,id] of techniqueIds.entries()){
+    const rule=techniqueDbGet(kind,id)?.sourceHitRules?.darkArtsWave;
+    if(rule?.status!=='SOURCE_CONFIRMED'||typeof rule.eligible!=='boolean'||rule.eventCount!==(rule.eligible?1:0))throw Error('DARK_ARTS_WAVE:ELIGIBILITY_PENDING');
+    if(rule.eligible){waveCount+=rule.eventCount;events.push({stageIndex,techniqueId:id,waveTechniqueId:rule.waveTechniqueId,evidenceRef:rule.evidenceRef});}
+  }
+  return {status:'SOURCE_REFERENCE',waveCount,events,hitPolicy:'FULL_HIT_FIXED_STANDARD_REFERENCE_NOT_OBSERVED'};
+}
 // r94: trace source eligibility separately from HP damage. No duration-derived hit timestamps.
 function techniqueScorchPlan(kind,techniqueIds,hitTimes=null){
   if(typeof kind!=='string'||!Array.isArray(techniqueIds)||techniqueIds.length>2000)throw Error('SCORCH_PLAN:INVALID_ROUTE');
@@ -5098,7 +5165,7 @@ function techniqueDbAudit(weaponType,techniqueId){
     registeredHits:t.hits.map(h=>({...h})),stateRequirement:{...(t.stateRequirement||{})},
     alternatives:t.sourceAlternatives||[],revisionHistory:t.revisionHistory||[],fieldVerification:t.fieldVerification||{},recordRole:t.recordRole||'CANONICAL_TECHNIQUE',replacedByTechniqueIds:t.replacedByTechniqueIds||[],
     specialSourceValues:t.specialSourceValues||null,variableHitSource:t.variableHitSource||null,sourceStateModifiers:t.sourceStateModifiers||null,sourceHitRules:t.sourceHitRules||null,sourceFormula:t.sourceFormula||null,damageStateTransition:t.damageStateTransition||null,excludedComponents:t.excludedComponents||[],techniqueFamily:t.techniqueFamily||null,specialTechniqueIds:t.specialTechniqueIds||[],
-    evidence:refs.map(ref=>({ref,...(TECHNIQUE_DB_R47_EVIDENCE[ref]||{}),registered:!!TECHNIQUE_DB_R47_EVIDENCE[ref]}))});
+    evidence:refs.map(ref=>({ref,...(TECHNIQUE_DB_EVIDENCE[ref]||{}),registered:!!TECHNIQUE_DB_EVIDENCE[ref]}))});
 }
 const TECHNIQUE_DB_COMPLETION=techniqueDbDeepFreeze(Object.fromEntries(KINDS.map(([kind])=>{
   const records=Object.values(TECHNIQUE_DB[kind]||{});
@@ -5888,7 +5955,7 @@ function legacyCanonicalHits(kind,id){
   if(!hits.length)throw new Error('LEGACY_CANONICAL_NORMAL_HITS_MISSING:'+kind+':'+id);
   return hits;
 }
-window.TechniqueDBEngine=Object.freeze({spec:TECHNIQUE_DB_SPEC,db:TECHNIQUE_DB,completion:TECHNIQUE_DB_COMPLETION,evidence:TECHNIQUE_DB_R47_EVIDENCE,get:techniqueDbGet,scorchPlan:techniqueScorchPlan,hits:techniqueDbHits,motionValues:techniqueDbMotionValues,audit:techniqueDbAudit,selfTest:runTechniqueDbR43SelfTest,legacyArchive:Object.freeze({mapping:legacyCanonicalMapping,canonicalHits:legacyCanonicalHits,get:(kind,id)=>legacyComboTechniqueRecord(kind,id),templates:kind=>Object.hasOwn(LEGACY_COMBO_TEMPLATES,kind)?LEGACY_COMBO_TEMPLATES[kind].moves:null})});
+window.TechniqueDBEngine=Object.freeze({spec:TECHNIQUE_DB_SPEC,db:TECHNIQUE_DB,completion:TECHNIQUE_DB_COMPLETION,evidence:TECHNIQUE_DB_EVIDENCE,get:techniqueDbGet,darkArtsPlan:techniqueDarkArtsPlan,scorchPlan:techniqueScorchPlan,hits:techniqueDbHits,motionValues:techniqueDbMotionValues,audit:techniqueDbAudit,selfTest:runTechniqueDbR43SelfTest,legacyArchive:Object.freeze({mapping:legacyCanonicalMapping,canonicalHits:legacyCanonicalHits,get:(kind,id)=>legacyComboTechniqueRecord(kind,id),templates:kind=>Object.hasOwn(LEGACY_COMBO_TEMPLATES,kind)?LEGACY_COMBO_TEMPLATES[kind].moves:null})});
 const GENERIC_STANDARD_PROFILE_CATALOG=Object.freeze({
   'great-sword':Object.freeze({id:'GS_STANDARD_MAX_CHARGE_STRONG_SWEEP_V1042',status:'ADOPTED',chargePolicy:'MAXIMUM',sequence:Object.freeze(['溜め斬りⅢ','強溜め斬りⅢ','強薙ぎ払いⅢ'])}),
   'long-sword':Object.freeze({id:'LS_STANDARD_RED_BLADE_I_II_III_V1042',status:'ADOPTED',startState:Object.freeze({spiritGauge:'RED'}),sequence:Object.freeze(['赤刃斬りⅠ','赤刃斬りⅡ','赤刃斬りⅢ'])}),
@@ -6015,28 +6082,53 @@ function insectGlaiveStatePlan(techniqueIds,options={}){
   });
   return techniqueDbDeepFreeze({status:'EVIDENCE_GATED',reason:'INSPECTION_ONLY_ROUTE_NOT_ADOPTED',calculationReady:false,numericDataPromoted:false,stages,finalState:state,requiredStatsStates:[...required],blockers});
 }
+const RECOVERY_BONUS_HP_POLICIES=techniqueDbDeepFreeze({
+ '加速再生Ⅰ':{parent:'鎖刃竜の飢餓',source:'series',required:2,rankLevel:1,bonusSkillId:33},
+ '加速再生Ⅱ':{parent:'鎖刃竜の飢餓',source:'series',required:4,rankLevel:2,bonusSkillId:33}
+});
+function recoveryBonusClassified(e){
+  const rule=e&&Object.prototype.hasOwnProperty.call(RECOVERY_BONUS_HP_POLICIES,e.name)?RECOVERY_BONUS_HP_POLICIES[e.name]:null;
+  return Boolean(rule&&e.bonusName===rule.parent&&e.source===rule.source&&e.required===rule.required&&e.rankLevel===rule.rankLevel&&e.bonusSkillId===rule.bonusSkillId&&Number.isInteger(e.count)&&e.count>=rule.required);
+}
+function hpRelevantBonusEffects(effects){
+  const recovery=effects.filter(recoveryBonusClassified);
+  // Invalid or duplicated ranks must remain gated instead of being silently discarded.
+  return recovery.length>1?effects:effects.filter(e=>!recoveryBonusClassified(e));
+}
 function bonusDamagePendingReason(st={}){
   if(st?.activeBonusEffects==null)return null;
   if(!Array.isArray(st.activeBonusEffects))return 'BONUS_DAMAGE_EFFECT_PENDING:INVALID_ACTIVE_EFFECTS';
-  if(!st.activeBonusEffects.length)return null;
+  const effects=hpRelevantBonusEffects(st.activeBonusEffects);
+  if(!effects.length)return null;
   // Each active effect needs its own HP damage policy. Parent-name lists cannot establish readiness.
-  return 'BONUS_DAMAGE_EFFECT_PENDING:'+st.activeBonusEffects.map(x=>String(x?.name||x?.bonusName||'UNKNOWN_EFFECT')).join(' / ');
+  return 'BONUS_DAMAGE_EFFECT_PENDING:'+effects.map(x=>String(x?.name||x?.bonusName||'UNKNOWN_EFFECT')).join(' / ');
 }
+const STANDARD_FORTIFY_SOURCE=techniqueDbDeepFreeze({url:'https://kuroyonhon.com/mhwilds/program/skill.php',retrievedAt:'2026-10-07',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',attackMultipliers:[1,1.1,1.21],maximumDeathCount:2,stackingScope:'PURE_MULTIPLIERS_WITHOUT_ATTACK_FLATS'});
 const STANDARD_GROUP_POWER_RULES=techniqueDbDeepFreeze({
  '根性【果敢】':{parent:'ヌシの魂',attackMultiplier:1.05,condition:'GUTS_NOT_CONSUMED'},
  '激励':{parent:'ヌシの誇り',attackAdd:10,condition:'ALLY_EFFECT_PREACTIVATED_20_SECONDS'},
- '死中に活':{parent:'ヌシの憤激',attackAdd:10,condition:'STATUS_AILMENT_ACTIVE'}
+ '死中に活':{parent:'ヌシの憤激',attackAdd:10,condition:'STATUS_AILMENT_ACTIVE'},
+ '不屈':{parent:'毛皮の昂揚',maximumAttackMultiplier:STANDARD_FORTIFY_SOURCE.attackMultipliers[2],maximumDeathCount:STANDARD_FORTIFY_SOURCE.maximumDeathCount,condition:'FAINTED_TWICE_PREACTIVATED'}
 });
 const STANDARD_SERIES_POWER_RULES=techniqueDbDeepFreeze({
  '連撃強化Ⅰ':{parent:'兇爪竜の力',source:'series',required:2,rankLevel:1,attackAdd:8,condition:'BURST_PREACTIVATED_FIVE_HITS'},
  '連撃強化Ⅱ':{parent:'兇爪竜の力',source:'series',required:4,rankLevel:2,attackAdd:18,condition:'BURST_PREACTIVATED_FIVE_HITS'}
 });
+const STANDARD_DARK_ARTS_BODY_SOURCE=techniqueDbDeepFreeze({url:'https://kuroyonhon.com/mhwilds/program/skill.php',retrievedAt:'2026-10-07',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',supportedKinds:['great-sword','long-sword','sword-and-shield','dual-blades','hammer','lance','switch-axe'],highMultiplierKinds:['great-sword','hammer','hunting-horn'],highMultiplier:1.2,otherMultiplier:1.14,scope:'GENERIC_BODY_WITH_GS_NORMAL_WAVE_BRIDGE'});
 function standardGroupPowerPlan(st={},gutsState='BEFORE',total={},kind=null){
-  const effects=st.activeBonusEffects??[],seen=new Set(),applied=[],unresolved=[];
-  if(!Array.isArray(effects))throw Error('BONUS_DAMAGE_EFFECT_PENDING:INVALID_ACTIVE_EFFECTS');
+  const original=st.activeBonusEffects??[],seen=new Set(),applied=[],unresolved=[];
+  if(!Array.isArray(original))throw Error('BONUS_DAMAGE_EFFECT_PENDING:INVALID_ACTIVE_EFFECTS');
+  const effects=hpRelevantBonusEffects(original);
   let attackMultiplier=1;
   for(let i=0;i<effects.length;i++){
-    const e=effects[i],series=e&&Object.prototype.hasOwnProperty.call(STANDARD_SERIES_POWER_RULES,e.name),rule=series?STANDARD_SERIES_POWER_RULES[e.name]:(e&&Object.prototype.hasOwnProperty.call(STANDARD_GROUP_POWER_RULES,e.name)?STANDARD_GROUP_POWER_RULES[e.name]:null);
+    const e=effects[i];
+    if(e?.name==='ダークアーツ'){
+      if(e.bonusName!=='暗黒騎士の証'||e.source!=='series'||e.required!==2||e.rankLevel!==1||e.bonusSkillId!==172||!Number.isInteger(e.count)||e.count<2||e.count>=4||seen.has(e.name)||!STANDARD_DARK_ARTS_BODY_SOURCE.supportedKinds.includes(kind)){unresolved.push('ダークアーツ');continue;}
+      seen.add(e.name);
+      applied.push({skill:e.name,attackAdd:0,attackMultiplier:1,elementMultiplier:STANDARD_DARK_ARTS_BODY_SOURCE.highMultiplierKinds.includes(kind)?STANDARD_DARK_ARTS_BODY_SOURCE.highMultiplier:STANDARD_DARK_ARTS_BODY_SOURCE.otherMultiplier,condition:'RECOVERABLE_DAMAGE',exclusiveGroup:'HEALTH',bonusSource:true,appliesToNormal:false,evidenceRef:STANDARD_DARK_ARTS_BODY_SOURCE.url,numericOrigin:STANDARD_DARK_ARTS_BODY_SOURCE.status});
+      continue;
+    }
+    const series=e&&Object.prototype.hasOwnProperty.call(STANDARD_SERIES_POWER_RULES,e.name),rule=series?STANDARD_SERIES_POWER_RULES[e.name]:(e&&Object.prototype.hasOwnProperty.call(STANDARD_GROUP_POWER_RULES,e.name)?STANDARD_GROUP_POWER_RULES[e.name]:null);
     const seenKey=series?'BURST_BOOST_RANK':e?.name;
     if(!rule||typeof e.bonusName!=='string'||e.bonusName!==rule.parent||e.source!==(rule.source||'group')||e.required!==(rule.required||3)||!Number.isInteger(e.count)||e.count<(rule.required||3)||e.rankLevel!==(rule.rankLevel||1)||!Number.isInteger(e.bonusSkillId)||e.bonusSkillId<0||seen.has(seenKey)){unresolved.push(e?.name||'INVALID_ACTIVE_EFFECT');continue;}
     seen.add(seenKey);
@@ -6044,7 +6136,7 @@ function standardGroupPowerPlan(st={},gutsState='BEFORE',total={},kind=null){
     if(rule.attackMultiplier){if(!['BEFORE','AFTER'].includes(gutsState))throw Error('BONUS_DAMAGE_EFFECT_PENDING:GUTS_STATE_INVALID');mult=gutsState==='BEFORE'?rule.attackMultiplier:1;attackMultiplier*=mult;}
     const burstLevel=skillLevel(total,['連撃','Burst']);
     const burstReady=Number.isInteger(burstLevel)&&burstLevel>0&&STANDARD_BURST_SOURCE.groups.some(x=>x.kinds.includes(kind));
-    applied.push({skill:e.name,attackAdd:series?(burstReady?rule.attackAdd:0):(rule.attackAdd||0),attackMultiplier:mult,condition:series?(burstReady?rule.condition:'BURST_INACTIVE_OR_UNRESOLVED'):rule.attackMultiplier?(gutsState==='BEFORE'?rule.condition:'GUTS_CONSUMED'):rule.condition,bonusSource:true,appliesToNormal:Boolean(rule.attackMultiplier),evidenceRef:series?'MHDB_JA_SKILL_115_20261007':'https://kuroyonhon.com/mhwilds/program/skill.php',numericOrigin:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED'});
+    applied.push({skill:e.name,attackAdd:series?(burstReady?rule.attackAdd:0):(rule.attackAdd||0),attackMultiplier:mult,...(rule.maximumAttackMultiplier?{maximumAttackMultiplier:rule.maximumAttackMultiplier,maximumDeathCount:rule.maximumDeathCount,stackingScope:'PURE_MULTIPLIERS_WITHOUT_ATTACK_FLATS'}:{}),condition:series?(burstReady?rule.condition:'BURST_INACTIVE_OR_UNRESOLVED'):rule.attackMultiplier?(gutsState==='BEFORE'?rule.condition:'GUTS_CONSUMED'):rule.condition,bonusSource:true,appliesToNormal:Boolean(rule.attackMultiplier),evidenceRef:series?'MHDB_JA_SKILL_115_20261007':'https://kuroyonhon.com/mhwilds/program/skill.php',numericOrigin:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED'});
   }
   if(unresolved.length)throw Error('BONUS_DAMAGE_EFFECT_PENDING:'+unresolved.join(' / '));
   return {attackMultiplier,maximumFlat:applied.reduce((n,x)=>n+x.attackAdd,0),applied,gutsState,status:'SOURCE_REFERENCE',scope:'GENERIC_STANDARD_POWER_ONLY'};
@@ -6314,6 +6406,27 @@ function buildComparisonCapabilityReport(){
   return out;
 }
 
+function createPowerCoverageReport(){
+  const gaps={
+    'charge-blade':'属性解放ルートのビン爆発回数と、比較する固定ルートの接続が未完了です。',
+    'insect-glaive':'エキス消費前後の攻撃力・属性値と、本体／猟虫の成分接続が未完了です。',
+    'hunting-horn':'本体攻撃・演奏音波・響玉の成分を組み合わせた計算が未完了です。',
+    'gunlance':'砲撃・竜杭の発生回数と、砲撃タイプ別の成分計算が未完了です。',
+    'light-bowgun':'属性弾の係数と、1発・速射の計算単位の接続が未完了です。',
+    'heavy-bowgun':'属性弾の係数と、1発あたりの計算単位の接続が未完了です。',
+    'bow':'溜め段階・矢の命中数・ビン・距離条件の接続が未完了です。'
+  };
+  const weapons=KINDS.map(([weaponKind,name])=>{
+    const handler=buildComparisonHandlerDescriptor(weaponKind),availability=genericStandardProfileAvailability(weaponKind),ready=handler.handler==='GenericWeaponHandler'&&availability.status==='READY';
+    return {weaponKind,name,status:ready?'REFERENCE_BASE_READY':'PENDING',handler:handler.handler,profileId:isChargeBladeKind(weaponKind)?'CB_COMPOSITE_R_H':availability.profileId||null,reason:ready?null:handler.handler!=='GenericWeaponHandler'?(handler.reason||'SPECIAL_STANDARD_COMPONENTS_PENDING'):(availability.reason||'STANDARD_PROFILE_PENDING'),message:ready?'固定コンボの参考計算に対応。装備スキルと入力条件によっては通常・最大側を保留します。':gaps[weaponKind]||'固定コンボの技データまたは状態条件が未確定です。',blockers:availability.blockers||[],profileBlockers:availability.profileBlockers||[]};
+  });
+  return JSON.parse(JSON.stringify({format:'MHWildsPowerCoverage',schemaVersion:1,release:'r108',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,referenceBaseReadyCount:weapons.filter(x=>x.status==='REFERENCE_BASE_READY').length,weaponCount:weapons.length,completeAllSkills:false,liveVerified:false,scope:'FIXED_STANDARD_ROUTE_BASE_READINESS_NOT_BUILD_RESULT_OR_DPS',weapons,notes:['全スキル対応・技DB完成・実機検証済みを意味しません。','実際の保存ビルドの計算可否は比較結果の保留理由を確認してください。','コンボDPSの対応状況とは別です。']}));
+}
+function renderPowerCoverageReport(){
+  const out=$('powerCoverageOut');if(!out)return;
+  const report=createPowerCoverageReport();
+  out.innerHTML='<p>固定コンボの計算基盤：'+report.referenceBaseReadyCount+' / '+report.weaponCount+'武器に対応。全スキル対応・実機検証済みを意味しません。装備ごとの保留理由は比較結果で確認してください。コンボDPSとは別の対応状況です。</p>'+report.weapons.map(x=>'<div style="margin:8px 0;overflow-wrap:anywhere"><b>'+esc(x.name)+'：'+(x.status==='REFERENCE_BASE_READY'?'参考計算に対応':'準備中')+'</b><div class="small">'+esc(x.message)+'</div></div>').join('');
+}
 function genericStandardComparisonAdapter(snapshotA,snapshotB=null,cond={}){
   const kind=comparisonWeaponKindFromSnapshot(snapshotA),profile=GENERIC_STANDARD_PROFILES[kind];
   if(!profile){const av=genericStandardProfileAvailability(kind);throw new Error(`BUILD_COMPARE_FAIL_CLOSED:GENERIC_STANDARD_PROFILE_UNAVAILABLE:${kind||'UNKNOWN'}:${av.status}:${av.reason||'UNKNOWN'}`);}
@@ -6413,10 +6526,11 @@ function runBuildComparisonBridgeR39SelfTest(){
 window.BuildComparisonEngine={version:BUILD_COMPARISON_ENGINE_VERSION,router:buildComparisonRouter,commonResult:comparisonCommonResultShape,genericAdapter:genericStandardComparisonAdapter,genericProfiles:GENERIC_STANDARD_PROFILES,genericProfileDamage,insectGlaiveStatePlan,profileCatalog:GENERIC_STANDARD_PROFILE_CATALOG,profileAvailability:genericStandardProfileAvailability,handlerRegistry:BUILD_COMPARISON_HANDLER_REGISTRY,handlerDescriptor:buildComparisonHandlerDescriptor,capabilityReport:buildComparisonCapabilityReport,gunlanceProfile:GUNLANCE_STANDARD_PROFILE,gunlanceEvidence:GUNLANCE_EVIDENCE,gunlanceBodyComponents,gunlanceAdapter:gunlanceStandardComparisonAdapter,huntingHornProfile:HUNTING_HORN_STANDARD_PROFILE,huntingHornEvidence:HUNTING_HORN_EVIDENCE,huntingHornComponentPlan,huntingHornBodyComponents,huntingHornSpecialSourceEstimate,huntingHornAdapter:huntingHornStandardComparisonAdapter,bowgunProfiles:BOWGUN_STANDARD_PROFILES,bowgunAmmoTypes:BOWGUN_AMMO_COMPONENT_TYPES,bowgunEvidence:BOWGUN_AMMO_EVIDENCE,bowgunNumeric:BOWGUN_AMMO_NUMERIC,bowgunComparisonPolicy:BOWGUN_COMPARISON_POLICY,bowgunPierceMaximumProfile,bowgunComponentPlan:bowgunAmmoComponentPlan,bowgunAdapter:bowgunStandardComparisonAdapter,bowProfile:BOW_STANDARD_PROFILE,bowTechniques:BOW_TECHNIQUES,bowEvidence:BOW_EVIDENCE,bowComponentPlan:bowStandardComponentPlan,bowAdapter:bowStandardComparisonAdapter,selfTest:runBuildComparisonBridgeR39SelfTest};
 
 function compareStep5Snapshot(){
-  return {attack:$('dAttack')?.value,aff:$('dAff')?.value,elem:$('dElem')?.value,mv:$('dMV')?.value,hz:$('dHZ')?.value,ehz:$('dEHZ')?.value,sharp:$('dSharp')?.value,esharp:$('dESharp')?.value,cb:$('dCB')?.value,eCrit:$('dECrit')?.value,gutsState:$('powerGutsState')?.value||'BEFORE',uptime:$('uptime')?.value,uptimeMode:$('uptimeMode')?.value,chargeBladeState:comboCBStoredState()};
+  return {attack:$('dAttack')?.value,aff:$('dAff')?.value,elem:$('dElem')?.value,mv:$('dMV')?.value,hz:$('dHZ')?.value,ehz:$('dEHZ')?.value,sharp:$('dSharp')?.value,esharp:$('dESharp')?.value,cb:$('dCB')?.value,eCrit:$('dECrit')?.value,dragonHz:$('powerDragonHz')?.value??'',dragonHitzoneSource:dragonHitzoneSource(),gutsState:$('powerGutsState')?.value||'BEFORE',fortifyCount:$('powerFortifyCount')?.value!==''?Number($('powerFortifyCount')?.value):null,uptime:$('uptime')?.value,uptimeMode:$('uptimeMode')?.value,chargeBladeState:comboCBStoredState()};
 }
 function restoreStep5Snapshot(x){
-  if(!x)return; for(const [id,key] of [['dAttack','attack'],['dAff','aff'],['dElem','elem'],['dMV','mv'],['dHZ','hz'],['dEHZ','ehz'],['dSharp','sharp'],['dESharp','esharp'],['dCB','cb'],['dECrit','eCrit'],['powerGutsState','gutsState'],['uptime','uptime'],['uptimeMode','uptimeMode']]) if($(id)&&x[key]!=null) $(id).value=x[key];
+  if(!x)return; for(const [id,key] of [['dAttack','attack'],['dAff','aff'],['dElem','elem'],['dMV','mv'],['dHZ','hz'],['dEHZ','ehz'],['dSharp','sharp'],['dESharp','esharp'],['dCB','cb'],['dECrit','eCrit'],['powerGutsState','gutsState'],['powerFortifyCount','fortifyCount'],['powerDragonHz','dragonHz'],['uptime','uptime'],['uptimeMode','uptimeMode']]) if($(id)&&x[key]!=null) $(id).value=x[key];
+  if($('powerDragonHz')){if(x.dragonHitzoneSource)$('powerDragonHz').dataset.dragonSource=JSON.stringify(x.dragonHitzoneSource);else delete $('powerDragonHz').dataset.dragonSource;renderDragonHitzoneSource();}
 }
 function damageForStats(st,mv,cond){
   const pending=bonusDamagePendingReason(st);if(pending)throw new Error(pending);
@@ -6441,7 +6555,7 @@ const STANDARD_CONDITIONAL_ATTACK_RULES=Object.freeze([
 const STANDARD_UNRESOLVED_CONDITIONAL_SKILLS=Object.freeze([
   ['攻めの守勢','Offensive Guard'],
   ['チャージマスター','Charge Master'],['抜刀術【力】','Punishing Draw'],['研鑽','Everlasting'],
-  ['ヌシの誇り','ヌシの魂','ヌシの憤激'],['暗器蛸の力'],['花舞の祈り'],['凍峰竜の反逆'],['闢獣の力'],['雪獅子の闘志'],['兇爪竜の力'],['毛皮の昂揚'],['踊火の祈り'],['千刃竜の闘志'],['暗黒','暗黒騎士の証'],['夢灯の祈り'],['巨戟龍の黙示録'],['祝謡の祈り'],['耐性変換【雷】','耐性変換【水】'],
+  ['ヌシの誇り','ヌシの魂','ヌシの憤激'],['暗器蛸の力'],['花舞の祈り'],['凍峰竜の反逆'],['闢獣の力'],['雪獅子の闘志'],['兇爪竜の力'],['毛皮の昂揚'],['踊火の祈り'],['千刃竜の闘志'],['暗黒','Dark','暗黒騎士の証'],['夢灯の祈り'],['巨戟龍の黙示録'],['祝謡の祈り'],['耐性変換【雷】','耐性変換【水】'],
   ['連撃','Burst'],['災禍転福','Coalescence'],['属性吸収','Element Absorption'],['属性変換','Convert Element'],['火事場力','Heroics'],['逆境','Fortify'],['急襲','Ambush'],['鎖刃刺撃','Slicing Shot'],['濡れ刃紋','Wet Blade Mark'],['海竜の渦雷','蒼雷一閃'],['オメガレゾナンス','レゾナンス'],['黒蝕竜の力','黒蝕一体'],['抜刀術【技】','抜刀術[技]','Critical Draw']
 ]);
 const STANDARD_BURST_SOURCE=techniqueDbDeepFreeze({url:'https://gamewith.jp/mhwilds/486597',retrievedAt:'2026-10-07',sourceUpdatedAt:'2026-09-08',gameVersion:null,status:'SOURCE_CONFIRMED_NOT_GAME_VERIFIED',fiveHitTotalsIncludeInitial:true,groups:[
@@ -6456,6 +6570,9 @@ const STANDARD_ELEMENT_ABSORPTION_SOURCE=techniqueDbDeepFreeze({url:'https://kur
  {kinds:['long-sword','sword-and-shield','hammer','lance','gunlance','switch-axe','charge-blade','insect-glaive'],values:[[0,0,0],[40,50,60],[50,60,70],[60,70,80]]},
  {kinds:['dual-blades','light-bowgun','heavy-bowgun','bow'],values:[[0,0,0],[30,40,50],[40,50,60],[50,60,70]]}
 ]});
+const STANDARD_DARK_SOURCE=techniqueDbDeepFreeze({url:'https://kuroyonhon.com/mhwilds/program/skill.php',retrievedAt:'2026-10-07',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',supportedKind:'great-sword',level:1,attackMultiplier:1.1,durationSeconds:30,healthCost:20,scope:'PREACTIVATED_MAXIMUM_ONLY_NO_DARK_ARTS'});
+const STANDARD_HEROICS_SOURCE=techniqueDbDeepFreeze({url:'https://kuroyonhon.com/mhwilds/program/skill.php',retrievedAt:'2026-10-07',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',attackMultipliers:[1,1,1.05,1.05,1.1,1.3],healthThresholdPercent:35,scope:'LOW_HEALTH_FIXED_STANDARD_MAXIMUM_REFERENCE'});
+const STANDARD_COALESCENCE_SOURCE=techniqueDbDeepFreeze({url:'https://kuroyonhon.com/mhwilds/program/skill.php',retrievedAt:'2026-10-07',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',durationSeconds:30,groups:[{kinds:['great-sword','hammer','hunting-horn','gunlance','switch-axe','charge-blade','light-bowgun','heavy-bowgun'],multipliers:[1,1.1,1.2,1.3]},{kinds:['long-sword','sword-and-shield','dual-blades','lance','insect-glaive','bow'],multipliers:[1,1.05,1.1,1.15]}],scope:'PREACTIVATED_MAXIMUM_WEAPON_ELEMENT_ONLY_NO_STACKING'});
 function standardPowerConditionPlan(st,total={},kind=null,cond={}){
   const normal={...st},maximum={...st},applied=[],excluded=[],pending=[];
   const groupPlan=standardGroupPowerPlan(st,cond.gutsState??'BEFORE',total,kind);
@@ -6463,12 +6580,27 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={}){
   let conditionalMultiplier=1;
   const c=st.attackComponents;
   const componentsValid=c&&['weaponBase','normalMultiplier','normalFlat'].every(k=>typeof c[k]==='number'&&Number.isFinite(c[k])&&c[k]>=0)&&Math.abs(c.weaponBase*c.normalMultiplier+c.normalFlat-Number(st.attackTrue??st.attack))<1e-6;
+  const heroicsLevel=skillLevel(total,['火事場力','Heroics']);
+  if(heroicsLevel){
+    if(!Number.isInteger(heroicsLevel)||heroicsLevel<1||heroicsLevel>5)pending.push('火事場力:HEROICS_LEVEL_UNRESOLVED');
+    else if(heroicsLevel>1&&!componentsValid)pending.push('火事場力:HEROICS_ATTACK_COMPONENTS_UNRESOLVED');
+    else{const multiplier=STANDARD_HEROICS_SOURCE.attackMultipliers[heroicsLevel];conditionalMultiplier*=multiplier;applied.push({skill:'火事場力',level:heroicsLevel,attackAdd:0,attackMultiplier:multiplier,healthThresholdPercent:STANDARD_HEROICS_SOURCE.healthThresholdPercent,condition:heroicsLevel===1?'NO_ATTACK_BONUS_LV1':'HEALTH_AT_OR_BELOW_THRESHOLD',evidenceRef:STANDARD_HEROICS_SOURCE.url,numericOrigin:STANDARD_HEROICS_SOURCE.status,scope:STANDARD_HEROICS_SOURCE.scope});}
+    if(heroicsLevel>1&&skillLevel(total,['フルチャージ','Peak Performance'])>0)pending.push('火事場力:HEROICS_FULL_HEALTH_BRANCH_REQUIRED');
+  }
+  const darkLevel=skillLevel(total,['暗黒','Dark']);
+  if(darkLevel){
+    if(darkLevel!==STANDARD_DARK_SOURCE.level)pending.push('暗黒:DARK_LEVEL_UNRESOLVED');
+    else if(kind!==STANDARD_DARK_SOURCE.supportedKind)pending.push('暗黒:DARK_WEAPON_UNRESOLVED');
+    else if(!componentsValid)pending.push('暗黒:DARK_ATTACK_COMPONENTS_UNRESOLVED');
+    else{conditionalMultiplier*=STANDARD_DARK_SOURCE.attackMultiplier;applied.push({skill:'暗黒',level:darkLevel,attackAdd:0,attackMultiplier:STANDARD_DARK_SOURCE.attackMultiplier,condition:'DARK_30_SECOND_BUFF_PREACTIVATED',durationSeconds:STANDARD_DARK_SOURCE.durationSeconds,healthCost:STANDARD_DARK_SOURCE.healthCost,evidenceRef:STANDARD_DARK_SOURCE.url,numericOrigin:STANDARD_DARK_SOURCE.status,scope:STANDARD_DARK_SOURCE.scope});}
+    if(skillLevel(total,['フルチャージ','Peak Performance'])>0)pending.push('暗黒:DARK_FULL_HEALTH_INTERACTION_PENDING');
+  }
   if(guard){
     const guardingKinds=['great-sword','sword-and-shield','lance','gunlance','charge-blade','heavy-bowgun'];
     if(!Number.isInteger(guard)||guard<0)pending.push('攻めの守勢:LEVEL_INVALID');
     else if(!guardingKinds.includes(kind))pending.push('攻めの守勢:GUARDING_WEAPON_REQUIRED');
     else if(!componentsValid)pending.push('攻めの守勢:ATTACK_COMPONENTS_UNRESOLVED');
-    else{const level=Math.min(3,guard);conditionalMultiplier=[1,1.05,1.1,1.15][level];applied.push({skill:'攻めの守勢',level,attackAdd:0,attackMultiplier:conditionalMultiplier,condition:'TIMED_GUARD_PREACTIVATED',exclusiveGroup:null,evidenceRef:'MHDB_JA_SKILL_66_20261007'});}
+    else{const level=Math.min(3,guard),multiplier=[1,1.05,1.1,1.15][level];conditionalMultiplier*=multiplier;applied.push({skill:'攻めの守勢',level,attackAdd:0,attackMultiplier:multiplier,condition:'TIMED_GUARD_PREACTIVATED',exclusiveGroup:null,evidenceRef:'MHDB_JA_SKILL_66_20261007'});}
   }
   const ambush=skillLevel(total,['急襲','Ambush']);
   if(ambush){
@@ -6506,10 +6638,54 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={}){
       applied.push({skill:'属性吸収',level,attackAdd:0,elementAdd,condition:'ELEMENT_ABSORPTION_THREE_HITS_PREACTIVATED',elementScope:trueElement?'WEAPON_TRUE_ELEMENT_ONLY':'NO_TRUE_ELEMENT_HP_BONUS',evidenceRef:STANDARD_ELEMENT_ABSORPTION_SOURCE.url,numericOrigin:STANDARD_ELEMENT_ABSORPTION_SOURCE.status});
     }
   }
-  for(const names of STANDARD_UNRESOLVED_CONDITIONAL_SKILLS)if(!['連撃','攻めの守勢','急襲','属性吸収'].includes(names[0])&&!(names[0]==='兇爪竜の力'&&groupPlan.applied.some(x=>Object.prototype.hasOwnProperty.call(STANDARD_SERIES_POWER_RULES,x.skill)))&&skillLevel(total,names)>0)pending.push(names[0]+':CONDITIONAL_DAMAGE_FORMULA_PENDING');
+  const darkArts=groupPlan.applied.find(x=>x.skill==='ダークアーツ');
+  if(darkArts){
+    const ec=st.elementComponents,trueElement=['fire','water','thunder','ice','dragon'].includes(st.elementType)&&Number(st.element)>0;
+    if(skillLevel(total,['フルチャージ','Peak Performance'])>0)pending.push('DARK_ARTS:FULL_HEALTH_BRANCH_COMPARISON_PENDING');
+    if(Number(st.element)>0&&!['fire','water','thunder','ice','dragon','poison','paralysis','sleep','blast'].includes(st.elementType))pending.push('DARK_ARTS:ELEMENT_TYPE_UNRESOLVED');
+    if(trueElement){
+      const valid=ec&&['weaponBase','normalMultiplier','normalFlat'].every(k=>typeof ec[k]==='number'&&Number.isFinite(ec[k])&&ec[k]>=0)&&Math.abs(ec.weaponBase*ec.normalMultiplier+ec.normalFlat-Number(st.element))<1e-6;
+      if(!valid)pending.push('DARK_ARTS:ELEMENT_COMPONENTS_UNRESOLVED');
+      else if(ec.normalMultiplier!==1)pending.push('DARK_ARTS:ELEMENT_MULTIPLIER_STACKING_PENDING');
+      else maximum.element=ec.weaponBase*darkArts.elementMultiplier+ec.normalFlat;
+      const elementSkillNames={fire:['火属性攻撃強化','Fire Attack'],water:['水属性攻撃強化','Water Attack'],thunder:['雷属性攻撃強化','Thunder Attack'],ice:['氷属性攻撃強化','Ice Attack'],dragon:['龍属性攻撃強化','Dragon Attack']};
+      if(skillLevel(total,elementSkillNames[st.elementType])>1)pending.push('DARK_ARTS:ELEMENT_MULTIPLIER_STACKING_PENDING');
+      if(burstLevel||absorption||skillLevel(total,['災禍転福','Coalescence']))pending.push('DARK_ARTS:CONDITIONAL_ELEMENT_STACKING_PENDING');
+    }
+  }
+  const coalescence=skillLevel(total,['災禍転福','Coalescence']);
+  if(coalescence){
+    const group=STANDARD_COALESCENCE_SOURCE.groups.find(x=>x.kinds.includes(kind)),trueElement=['fire','water','thunder','ice','dragon'].includes(st.elementType)&&Number(st.element)>0;
+    if(!Number.isInteger(coalescence)||coalescence<1||coalescence>3||!group)pending.push('災禍転福:COALESCENCE_LEVEL_OR_WEAPON_UNRESOLVED');
+    else if(Number(st.element)>0&&!['fire','water','thunder','ice','dragon','poison','paralysis','sleep','blast'].includes(st.elementType))pending.push('災禍転福:COALESCENCE_ELEMENT_TYPE_UNRESOLVED');
+    else{
+      const multiplier=group.multipliers[coalescence];
+      applied.push({skill:'災禍転福',level:coalescence,attackAdd:0,elementMultiplier:trueElement?multiplier:1,sourceElementMultiplier:multiplier,elementConditionLabel:'状態異常・属性やられ解除後',condition:'AILMENT_RECOVERED_BUFF_PREACTIVATED',durationSeconds:STANDARD_COALESCENCE_SOURCE.durationSeconds,elementScope:trueElement?'WEAPON_TRUE_ELEMENT_ONLY':'NO_TRUE_ELEMENT_HP_BONUS',evidenceRef:STANDARD_COALESCENCE_SOURCE.url,numericOrigin:STANDARD_COALESCENCE_SOURCE.status,scope:STANDARD_COALESCENCE_SOURCE.scope});
+      if(trueElement){
+        const ec=st.elementComponents,valid=ec&&['weaponBase','normalMultiplier','normalFlat'].every(k=>typeof ec[k]==='number'&&Number.isFinite(ec[k])&&ec[k]>=0)&&Math.abs(ec.weaponBase*ec.normalMultiplier+ec.normalFlat-Number(st.element))<1e-6;
+        const names={fire:['火属性攻撃強化','Fire Attack'],water:['水属性攻撃強化','Water Attack'],thunder:['雷属性攻撃強化','Thunder Attack'],ice:['氷属性攻撃強化','Ice Attack'],dragon:['龍属性攻撃強化','Dragon Attack']}[st.elementType];
+        if(!valid)pending.push('災禍転福:COALESCENCE_ELEMENT_COMPONENTS_UNRESOLVED');
+        else if(ec.normalMultiplier!==1||ec.normalFlat!==0||burstLevel||absorption||darkArts||skillLevel(total,names)>1)pending.push('災禍転福:COALESCENCE_ELEMENT_STACKING_ORDER_PENDING');
+        else maximum.element=ec.weaponBase*multiplier;
+      }
+    }
+  }
+  for(const names of STANDARD_UNRESOLVED_CONDITIONAL_SKILLS)if(!['連撃','攻めの守勢','急襲','属性吸収','火事場力','災禍転福'].includes(names[0])&&!(names[0]==='暗黒'&&darkLevel)&&!(names[0]==='毛皮の昂揚'&&groupPlan.applied.some(x=>x.skill==='不屈'))&&!(names[0]==='兇爪竜の力'&&groupPlan.applied.some(x=>Object.prototype.hasOwnProperty.call(STANDARD_SERIES_POWER_RULES,x.skill)))&&!(names[0]==='暗黒'&&darkArts&&!skillLevel(total,['暗黒','Dark']))&&skillLevel(total,names)>0)pending.push(names[0]+':CONDITIONAL_DAMAGE_FORMULA_PENDING');
   if(groupPlan.attackMultiplier!==1&&!componentsValid)throw Error('BONUS_DAMAGE_EFFECT_PENDING:GUTS_ATTACK_COMPONENTS_UNRESOLVED');
   applied.push(...groupPlan.applied);
   const flat=applied.reduce((n,x)=>n+x.attackAdd,0);
+  const fortify=groupPlan.applied.find(x=>x.skill==='不屈');
+  if(fortify){
+    const count=cond.fortifyCount===undefined?STANDARD_FORTIFY_SOURCE.maximumDeathCount:cond.fortifyCount;
+    if(typeof count!=='number'||!Number.isInteger(count)||count<0||count>STANDARD_FORTIFY_SOURCE.maximumDeathCount){
+      fortify.maximumDeathCount=null;fortify.maximumAttackMultiplier=null;fortify.condition='FAINT_COUNT_UNRESOLVED';pending.push('不屈:FORTIFY_COUNT_UNRESOLVED');
+    }else{
+      fortify.maximumDeathCount=count;fortify.maximumAttackMultiplier=STANDARD_FORTIFY_SOURCE.attackMultipliers[count];fortify.condition=count===0?'NO_FAINTS':count===1?'FAINTED_ONCE_PREACTIVATED':'FAINTED_TWICE_PREACTIVATED';
+      if(count>0&&!componentsValid)pending.push('不屈:FORTIFY_ATTACK_COMPONENTS_UNRESOLVED');
+      else if(count>0&&(c.normalFlat!==0||flat!==0))pending.push('不屈:FORTIFY_FLAT_STACKING_ORDER_PENDING');
+      else conditionalMultiplier*=fortify.maximumAttackMultiplier;
+    }
+  }
   if(groupPlan.applied.length){
     normal.activeBonusEffects=[];maximum.activeBonusEffects=[];
     normal.resolvedBonusEffects=groupPlan.applied.filter(x=>x.appliesToNormal).map(x=>({...x}));maximum.resolvedBonusEffects=groupPlan.applied.map(x=>({...x}));
@@ -6518,13 +6694,29 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={}){
   maximum.attackTrue=componentsValid?c.weaponBase*c.normalMultiplier*conditionalMultiplier*groupPlan.attackMultiplier+c.normalFlat+flat:Number(st.attackTrue??st.attack)+flat;
   return {normal,maximum,applied,excluded,pending,groupPlan,status:pending.length?'PARTIAL':'REFERENCE_ONLY',scope:'ADOPTED_CONDITIONAL_ATTACK_ELEMENT_MAX_AFFINITY',attackOrder:componentsValid?'WEAPON_BASE_TIMES_MULTIPLIERS_PLUS_FLATS':'ADD_TO_CALCULATED_TRUE_ATTACK_REFERENCE',attackComponents:componentsValid?{...c,conditionalMultiplier,groupMultiplier:groupPlan.attackMultiplier,conditionalFlat:flat}:null,evidenceGameVersion:'NOT_VERIFIED'};
 }
-function standardPowerForStats(kind,st,cond,total={}){
+function standardPowerForStatsSingleHealth(kind,st,cond,total={}){
   const availability=genericStandardProfileAvailability(kind),handler=buildComparisonHandlerDescriptor(kind);
   const scorchPlan=techniqueScorchPlan(String(kind||''),GENERIC_STANDARD_PROFILES[kind]?.techniqueIds||[]);
   const pending=reason=>({status:'PENDING',reason,profileId:availability.profileId,normal:null,maximum:null,scorchPlan});
   try{standardGroupPowerPlan(st,cond.gutsState??'BEFORE',total,kind);}catch(e){return {...pending(String(e.message)),activeBonusEffects:JSON.parse(JSON.stringify(st.activeBonusEffects||[]))};}
   if(handler.handler!=='GenericWeaponHandler')return pending(handler.reason||'SPECIAL_STANDARD_COMPONENTS_PENDING');
   if(availability.status!=='READY')return pending(availability.reason||'STANDARD_PROFILE_PENDING');
+  if(kind==='great-sword'&&st.activeBonusEffects?.some(x=>x.name==='ダークアーツ')){
+    try{
+      if(Number(cond.eCrit))throw Error('DARK_ARTS_WAVE:ELEMENT_CRITICAL_PENDING');
+      for(const names of [['暗黒','Dark'],['チャージマスター','Charge Master'],['会心撃【属性】','Critical Element']])if(skillLevel(total,names)>0)throw Error('DARK_ARTS_WAVE:IN_ROUTE_SKILL_INTERACTION_PENDING:'+names[0]);
+      if(cond.dragonHz==null||String(cond.dragonHz).trim()==='')throw Error('DARK_ARTS_WAVE:DRAGON_HITZONE_REQUIRED');
+      if(!window.DarkArtsReference?.observed)throw Error('DARK_ARTS_WAVE:REFERENCE_MODULE_UNAVAILABLE');
+      const bodyStats={...st,activeBonusEffects:st.activeBonusEffects.filter(x=>x.name!=='ダークアーツ')},bodyTotal={...total};
+      for(const name of ['暗黒騎士の証','ダークアーツ'])delete bodyTotal[name];
+      const body=standardPowerForStatsSingleHealth(kind,bodyStats,cond,bodyTotal);
+      if(!body.normal)throw Error(body.reason||'DARK_ARTS_WAVE:BODY_PENDING');
+      const plan=techniqueDarkArtsPlan(kind,GENERIC_STANDARD_PROFILES[kind].techniqueIds),normalStats=body.conditionPlan.normal;
+      const wave=window.DarkArtsReference.observed({attack:Number(normalStats.attackTrue??normalStats.attack),affinity:Number(normalStats.affinity),criticalMultiplier:1.25+[0,.03,.06,.09,.12,.15][Number(cond.cb??0)],sharpness:Number(cond.sharp),elementSharpness:Number(cond.esharp),physicalHitzone:Number(cond.hz),dragonHitzone:Number(cond.dragonHz),dragonAttack:skillLevel(total,['龍属性攻撃強化','Dragon Attack']),count:plan.waveCount},window.TechniqueDBEngine);
+      const normal={...body.normal,physical:body.normal.physical+wave.physical,element:body.normal.element+wave.element,comparisonPower:body.normal.comparisonPower+wave.total,trace:[...body.normal.trace,{name:'ダークアーツ衝撃波',techniqueId:'GS_DARK_ARTS_WAVE',eventCount:plan.waveCount,physical:wave.physical,element:wave.element,dragonDisplayedValue:wave.dragonDisplayedValue,dragonHitzone:Number(cond.dragonHz),scope:'FULL_HIT_NORMAL_STANDARD_SOURCE_REFERENCE',partModifierAppliedToHp:false}]};
+      return {...body,status:'MAXIMUM_PENDING',normal,maximum:null,maximumReason:'DARK_ARTS_WAVE:MAXIMUM_BUFF_INTERACTIONS_PENDING',normalScope:'GS_BODY_PLUS_FIXED_DRAGON_WAVES_SOURCE_REFERENCE',darkArtsWave:{...wave,dragonHitzone:Number(cond.dragonHz),damageIncluded:true,includedScope:'NORMAL_FIXED_STANDARD_ONLY',plan}};
+    }catch(e){return pending(String(e.message));}
+  }
   try{
     const level=Number(cond.cb??0);
     if(!Number.isInteger(level)||level<0||level>5)throw new Error('CRITICAL_BOOST_LEVEL_INVALID');
@@ -6536,6 +6728,29 @@ function standardPowerForStats(kind,st,cond,total={}){
     return {status:conditionPlan.pending.length?'MAXIMUM_PENDING':'REFERENCE_ONLY',reason:null,profileId:profile.id,scorchPlan,normal:genericProfileDamage(profile,stats,'NORMAL'),maximum:conditionPlan.pending.length?null:genericProfileDamage(profile,maxStats,'MAX'),maximumReason:conditionPlan.pending.join(' / ')||null,maximumScope:conditionPlan.scope,conditionPlan,criticalBoostLevel:level};
   }catch(e){return pending(String(e.message));}
 }
+// r100: evaluate whole fixed routes in mutually exclusive health states. Never mix components.
+function standardPowerForStats(kind,st,cond,total={}){
+  const original=standardPowerForStatsSingleHealth(kind,st,cond,total);
+  const darkArts=original.conditionPlan?.groupPlan?.applied?.some(x=>x.skill==='ダークアーツ');
+  const heroics=original.conditionPlan?.applied?.some(x=>x.skill==='火事場力'&&x.attackMultiplier>1);
+  const peak=skillLevel(total,['フルチャージ','Peak Performance']);
+  if(!original.normal||(!darkArts&&!heroics)||!Number.isInteger(peak)||peak<=0)return original;
+  const redTotal={...total},fullTotal={...total};
+  for(const name of ['フルチャージ','Peak Performance'])delete redTotal[name];
+  for(const name of ['逆恨み','Resentment','暗黒騎士の証','ダークアーツ','火事場力','Heroics'])delete fullTotal[name];
+  const fullStats={...st,activeBonusEffects:(st.activeBonusEffects||[]).filter(x=>x.name!=='ダークアーツ')};
+  const full=standardPowerForStatsSingleHealth(kind,fullStats,cond,fullTotal);
+  const red=standardPowerForStatsSingleHealth(kind,st,cond,redTotal);
+  const branch=(state,result)=>({state,status:result.maximum?'REFERENCE_ONLY':'PENDING',reason:result.maximumReason||result.reason||null,comparisonPower:result.maximum?.comparisonPower??null,components:result.maximum?{physical:result.maximum.physical,element:result.maximum.element,special:result.maximum.special}:null,conditionPlan:result.conditionPlan||null});
+  const needsRecoverableDamage=darkArts||red.conditionPlan?.applied?.some(x=>x.skill==='逆恨み');
+  const redState=heroics?(needsRecoverableDamage?'LOW_HEALTH_WITH_RECOVERABLE_DAMAGE':'LOW_HEALTH'):'RECOVERABLE_DAMAGE';
+  const branches=[branch('FULL_HEALTH',full),branch(redState,red)];
+  const trace={status:'PENDING',selectedState:null,selectionPolicy:'WHOLE_ROUTE_TOTAL_NOT_COMPONENT_MAXIMA',scope:'MUTUALLY_EXCLUSIVE_HEALTH_STATE_REFERENCE',branches};
+  if(branches.some(x=>!Number.isFinite(x.comparisonPower)||x.comparisonPower<0))return {...original,status:'MAXIMUM_PENDING',maximum:null,maximumReason:branches.filter(x=>x.status==='PENDING').map(x=>x.state+':'+(x.reason||'HEALTH_BRANCH_FORMULA_PENDING')).join(' / ')||'HEALTH_BRANCH_FORMULA_PENDING',healthBranchComparison:trace};
+  const selected=red.maximum.comparisonPower>full.maximum.comparisonPower?red:full;
+  const state=selected===red?redState:'FULL_HEALTH';
+  return {...original,status:'REFERENCE_ONLY',maximum:selected.maximum,maximumReason:null,maximumScope:'HEALTH_STATE_BRANCH_REFERENCE',conditionPlan:{...selected.conditionPlan,normal:original.conditionPlan.normal,selectedHealthState:state},healthBranchComparison:{...trace,status:'SOURCE_REFERENCE',selectedState:state}};
+}
 function comparisonPowerIndex(row,baseline){
   if(!row?.kind||row.kind!==baseline?.kind||row.power?.profileId!==baseline.power?.profileId)return null;
   const base=baseline.power?.normal?.comparisonPower,n=row.power?.normal?.comparisonPower,m=row.power?.maximum?.comparisonPower;
@@ -6546,10 +6761,63 @@ function comparisonPowerIndex(row,baseline){
 function compareSnapshot(name,snapshot,cond){
   applyBuildSnapshot(snapshot,{preserveCombo:true});
   const st=calcState.stats||{};
-  let dmg=null,dps=null;
-  try{dmg=damageForStats(st,cond.mv,cond);dps=dpsForStats(st,cond)}catch(e){}
+  let dmg=null,dps=null,damageReason=null,dpsReason=null;
+  try{dmg=damageForStats(st,cond.mv,cond);}catch(e){damageReason=String(e.message||e);}
+  try{dps=dpsForStats(st,cond);}catch(e){dpsReason=String(e.message||e);}
+  if(dps==null&&!dpsReason)dpsReason=document.querySelector('.comboRow .cmove')?(bonusDamagePendingReason(st)||'COMBO_DAMAGE_OR_TIMING_PENDING'):'COMBO_NOT_SELECTED';
   const kind=canonicalWeaponKind(selectedWeapon()),power=standardPowerForStats(kind,st,{...cond,cb:skillLevel(calcState.total||{},['超会心','Critical Boost'])},calcState.total||{});
-  return {name,kind,power,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:Number(st.element)||0,elementType:String(st.elementType||'—'),damage:dmg,dps};
+  return {name,kind,power,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:Number(st.element)||0,elementType:String(st.elementType||'—'),damage:dmg,dps,damageReason,dpsReason};
+}
+function comparisonReasonText(reason){
+  const text=String(reason||'');
+  if(text.includes('火事場力:HEROICS_'))return '火事場力の段階・攻撃力内訳または体力状態の併用条件が未対応・未確定です。';
+  if(text.includes('不屈:FORTIFY_FLAT_STACKING_ORDER_PENDING'))return '不屈と攻撃力加算の計算順序が未確認のため、最大火力指数を保留しています。';
+  if(text.includes('不屈:FORTIFY_ATTACK_COMPONENTS_UNRESOLVED'))return '不屈の計算に必要な攻撃力の内訳が未確定です。';
+  if(text.includes('不屈:FORTIFY_COUNT_UNRESOLVED'))return '不屈の最大側の条件を未発動・1回・2回から選択してください。';
+  if(text.includes('災禍転福:COALESCENCE_ELEMENT_STACKING_ORDER_PENDING'))return '災禍転福と他の属性倍率・属性加算の計算順序が未確認のため、最大火力指数を保留しています。';
+  if(text.includes('災禍転福:COALESCENCE_'))return '災禍転福の段階・武器種または属性値の内訳が未確定です。';
+  if(text.includes('暗黒:DARK_FULL_HEALTH_INTERACTION_PENDING'))return '暗黒の体力消費後に回復した場合のフルチャージ併用計算は未対応です。';
+  if(text.includes('暗黒:DARK_'))return '暗黒の武器種・段階・攻撃力の内訳が未対応または未確定です。';
+  if(text==='COMBO_NOT_SELECTED')return 'コンボが未登録です。⑦ コンボDPSで技を追加してから再比較してください。';
+  if(text==='COMBO_DAMAGE_OR_TIMING_PENDING')return 'コンボのダメージ条件または所要時間が未確定です。⑦ コンボDPSの保留理由を確認してください。';
+  if(text.startsWith('BONUS_DAMAGE_EFFECT_PENDING:'))return 'シリーズ／グループ効果の計算が未対応：'+text.split(':').slice(1).join(':')+(text.includes('ダークアーツ')?'（大剣の追加追撃・属性補正を含む計算が未対応）':'');
+  if(text.includes('COATING_STANDARD_AND_CURRENT_VERSION_AUDIT_PENDING'))return '弓のビン補正・STANDARDの現行版確認が未完了です。';
+  if(text.includes('DARK_ARTS:FULL_HEALTH_BRANCH_COMPARISON_PENDING'))return 'ダークアーツの赤ゲージ状態とフルチャージの満タン状態を分けた比較が未対応です。';
+  if(text.includes('DARK_ARTS_WAVE:DRAGON_HITZONE_REQUIRED'))return '大剣の衝撃波用の龍肉質を入力してください（本体属性の肉質とは別です）。';
+  if(text.includes('DARK_ARTS_WAVE:'))return '大剣ダークアーツの追撃・技中スキル・最大側の属性併用条件が未対応・未確定です。';
+  if(text.includes('DARK_ARTS:ELEMENT_COMPONENTS_UNRESOLVED'))return 'ダークアーツに必要な属性値の倍率・加算内訳が未確定です。';
+  if(text.includes('DARK_ARTS:'))return 'ダークアーツと他の属性強化の併用計算が未対応・未確定です。';
+  if(text==='BASELINE_NORMAL_POWER_UNAVAILABLE')return '基準ビルドの通常火力が未算出・0以下のため指数化できません。';
+  if(text.includes('CONDITIONAL_DAMAGE_FORMULA_PENDING'))return '条件付きスキルの計算が未対応：'+text.replaceAll(':CONDITIONAL_DAMAGE_FORMULA_PENDING','');
+  return '計算に必要な武器・技の補正または入力条件が未対応・未確定です。';
+}
+function comparisonReadinessHtml(rows,baseline){
+  const darkArtsNote=rows.some(r=>r.power?.healthBranchComparison||r.power?.conditionPlan?.applied?.some(x=>x.skill==='ダークアーツ'))?'<p class="small">ダークアーツは通常側を未発動として扱い、本体の属性倍率は赤ゲージ状態だけに適用します。フルチャージ併用時は満タン状態と赤ゲージ状態を別々に比較します。大剣の衝撃波は条件が揃った通常側のみ対応し、最大側は保留です。複数属性倍率・連撃等との併用が未確定の場合は最大側を保留します。実機照合済みではありません。</p>':'';
+  let h='<div id="comparisonReadiness" class="compare-note" role="status"><b>比較の計算状況</b><br>火力指数は固定STANDARDで計算します。DPSには⑦ コンボDPSのコンボ登録と所要時間が必要です。';
+  for(const row of rows){
+    const index=comparisonPowerIndex(row,baseline),lines=[];
+    if(!index){let reason=row.power?.reason;if(!reason&&row.kind!==baseline.kind)lines.push('火力指数：同じ武器種のビルドを比較してください。');else if(!reason&&row.power?.normal&&(!Number.isFinite(baseline.power?.normal?.comparisonPower)||baseline.power.normal.comparisonPower<=0))lines.push('火力指数：基準ビルドが未算出・0以下のため指数化できません。');else lines.push('火力指数：'+comparisonReasonText(reason||'STANDARD_PROFILE_PENDING'));}
+    if(index?.maximum==null)lines.push('最大火力指数：'+comparisonReasonText(row.power?.maximumReason||row.power?.reason||'BASELINE_NORMAL_POWER_UNAVAILABLE'));
+    if(row.damage==null)lines.push('1ヒット期待値：'+comparisonReasonText(row.damageReason||'DAMAGE_CONDITIONS_PENDING'));
+    if(row.dps==null)lines.push('DPS：'+comparisonReasonText(row.dpsReason||'COMBO_DAMAGE_OR_TIMING_PENDING'));
+    h+='<div style="margin-top:8px"><b>'+esc(row.name)+'</b>：'+(lines.length?lines.map(esc).join('<br>'):'火力指数・最大火力指数・DPSを算出済みです。')+'</div>';
+    const health=row.power?.healthBranchComparison;
+    const heroics=row.power?.conditionPlan?.applied?.find(x=>x.skill==='火事場力')||health?.branches?.flatMap(x=>x.conditionPlan?.applied||[]).find(x=>x.skill==='火事場力');
+    if(heroics)h+='<div class="small">火事場力：通常側は未発動の基準値です。'+(heroics.level===1?'Lv1に攻撃力の増加はありません。':'低体力候補は体力'+esc(heroics.healthThresholdPercent)+'%以下が全Hitで続く前提です。')+'防御力の効果は火力に算入しません。体力維持や被弾・回復はシミュレーションしていません。</div>';
+    const fortify=row.power?.conditionPlan?.applied?.find(x=>x.skill==='不屈');
+    if(fortify)h+='<div class="small">不屈：通常側は未発動、最大側は'+(fortify.maximumDeathCount===null?'回数未確定':fortify.maximumDeathCount===0?'未発動（攻撃×1）':esc(fortify.maximumDeathCount)+'回力尽きた後（攻撃×'+esc(fortify.maximumAttackMultiplier)+'）')+'を仮定した参考値です。実際の力尽きた回数は読み取りません。発動時は攻撃力加算との計算順序が未確認の組み合わせを最大側で保留します。防御力の効果は火力に算入しません。</div>';
+    const coalescence=row.power?.conditionPlan?.applied?.find(x=>x.skill==='災禍転福');
+    if(coalescence)h+='<div class="small">災禍転福：通常側は未発動、最大側は状態異常・属性やられ解除後の30秒間の強化が全Hitで続く前提です。武器属性だけの参考計算で、状態異常蓄積はHPダメージに算入しません。攻撃力は増加させません。他の属性強化との計算順序が未確認の場合は最大側を保留します。</div>';
+    const dark=row.power?.conditionPlan?.applied?.find(x=>x.skill==='暗黒');
+    if(dark)h+='<div class="small">暗黒：通常側は未発動の基準値、最大側は事前発動し、体力消費後の強化が全Hitで続く前提です。攻撃力倍率'+esc(dark.attackMultiplier)+'、効果時間'+esc(dark.durationSeconds)+'秒の資料参考値です。コンボ中の発動時点・時間・実機ダメージは照合していません。フルチャージとダークアーツの併用は保留です。</div>';
+    const wave=row.power?.darkArtsWave;
+    if(wave)h+='<div class="small">通常火力指数に本体＋衝撃波'+esc(wave.count)+'回を含みます。龍肉質'+esc(wave.dragonHitzone)+'。固定STANDARDの全Hit命中を仮定した資料ベースの参考値で、実測命中回数ではありません。赤ゲージなしの通常側のみ対応し、最大側・コンボDPSは保留です。</div>';
+    if(health){
+      const label=state=>({FULL_HEALTH:'満タン',RECOVERABLE_DAMAGE:'赤ゲージ',LOW_HEALTH:'低体力',LOW_HEALTH_WITH_RECOVERABLE_DAMAGE:'低体力＋赤ゲージ'}[state]||'未確認');
+      h+='<div class="small">体力状態候補（固定コンボ全体の参考火力）：'+health.branches.map(x=>label(x.state)+' '+(Number.isFinite(x.comparisonPower)?x.comparisonPower.toFixed(2):'保留')).map(esc).join(' / ')+'。採用状態：'+esc(health.selectedState?label(health.selectedState):'保留')+'。物理と属性の良い部分だけを別々に組み合わせません。</div>';
+    }
+  }
+  return h+darkArtsNote+'</div>';
 }
 function comparisonDpsIndex(row,baseline){
   if(!Number.isFinite(baseline?.dps)||baseline.dps<=0||!Number.isFinite(row?.dps)||row.dps<0)return null;
@@ -6588,9 +6856,10 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   const available=box?.clientWidth ? box.clientWidth-(parseFloat(style.paddingLeft)||0)-(parseFloat(style.paddingRight)||0) : 474;
   const perGroup=Math.max(1,Math.min(3,Math.floor((Math.min(available,474)-2-112)/120)));
   let h='<label for="comparisonBaseline">指数の基準ビルド（通常火力100）</label><select id="comparisonBaseline">'+rows.map((r,i)=>'<option value="'+i+'"'+(i===selectedIndex?' selected':'')+'>'+esc(r.name)+'</option>').join('')+'</select><div class="two" style="margin-top:8px"><button type="button" id="comparisonReportDownload">比較結果をJSON保存</button><button type="button" id="comparisonReportCopy">比較結果をコピー</button></div><pre id="comparisonReportOut" class="small" style="max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere"></pre><div class="compare-results">';
+  h+=comparisonReadinessHtml(rows,baseline);
   for(let i=0;i<rows.length;i+=perGroup)h+=renderCompareTableChunk(rows.slice(i,i+perGroup),rows,baseline);
-  h+=rows.filter(r=>r.power?.conditionPlan?.applied.length).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数の適用条件 '+esc(r.power.conditionPlan.applied.map(x=>x.skill+(x.level!=null?' Lv'+x.level:'')+' (攻撃'+(x.attackMultiplier&&x.attackMultiplier!==1?'×'+x.attackMultiplier:'+'+x.attackAdd)+(x.elementAdd?' / 属性+'+x.elementAdd:'')+')').join(' / '))+'。'+(r.power.conditionPlan.excluded.length?'同時成立しないため除外：'+esc(r.power.conditionPlan.excluded.map(x=>x.skill).join(' / '))+'。':'')+'</div>').join('');
-  h+='<div class="compare-note">基準：'+esc(baseline.name)+'。火力指数は同武器・同STANDARDの基準ビルドの通常火力を100とします。最大火力指数は対応済みの条件付き攻撃力・攻めの守勢と最大会心率を適用した参考値です。攻撃力の乗算を先に行い、加算はその後に適用します。攻めの守勢・激励は事前に発動した前提です。死中に活は状態異常中、根性【果敢】は選択した消費前／後の条件を適用します。これらのグループ効果と連撃強化はコンボDPSへ未接続です。フルチャージと逆恨みは強い側の条件を採用します。未対応の条件付き補正がある場合は最大側を保留します。連撃は5回攻撃後の強化状態が事前に成立した前提で、初回分を重ねて加算しません。急襲は事前発動した最大側に攻撃倍率を適用します。属性吸収は3回被弾後の強化が成立した最大側で、火・水・雷・氷・龍の属性値を加算します。状態異常の蓄積値はSTANDARDの属性HPダメージに算入しません。連撃強化Ⅰ・Ⅱは連撃を装備した最大側に基礎攻撃力＋8／＋18を加えます。通常側と連撃なしでは加算しません。連撃の数値はGameWith資料の参考値で、実機版との照合は未完了です。グループ／シリーズ効果の計算分類が未完了の装備は、効果を無視せず火力指数・装備由来のコンボDPSを保留します。防御・補助効果だけのものも分類完了までは保留します。全スキル・武器状態の上限対応は未完了です。肉質・斬れ味はStep 5の共通条件、超会心は各ビルドの装備スキルを使用します。所要時間は使用しません。</div>';
+  h+=rows.filter(r=>r.power?.conditionPlan?.applied.length).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数の適用条件 '+esc(r.power.conditionPlan.applied.map(x=>x.skill+(x.level!=null?' Lv'+x.level:'')+' (攻撃'+(x.maximumAttackMultiplier?'×'+x.maximumAttackMultiplier+'：最大側のみ':x.attackMultiplier&&x.attackMultiplier!==1?'×'+x.attackMultiplier:'+'+x.attackAdd)+(x.elementAdd?' / 属性+'+x.elementAdd:'')+(x.elementMultiplier?' / 属性×'+x.elementMultiplier+'：'+esc(x.elementConditionLabel||'赤ゲージ時')+'・最大側のみ':'')+')').join(' / '))+'。'+(r.power.conditionPlan.excluded.length?'同時成立しないため除外：'+esc(r.power.conditionPlan.excluded.map(x=>x.skill).join(' / '))+'。':'')+'</div>').join('');
+  h+='<div class="compare-note">基準：'+esc(baseline.name)+'。火力指数は同武器・同STANDARDの基準ビルドの通常火力を100とします。最大火力指数は対応済みの条件付き攻撃力・攻めの守勢と最大会心率を適用した参考値です。攻撃力の乗算を先に行い、加算はその後に適用します。攻めの守勢・激励は事前に発動した前提です。死中に活は状態異常中、根性【果敢】は選択した消費前／後の条件を適用します。これらのグループ効果と連撃強化はコンボDPSへ未接続です。フルチャージと逆恨みは同時加算しません。ダークアーツ・火事場力とフルチャージの併用時は、満タンと赤ゲージ・低体力のコンボ全体を別々に比較します。それ以外は同時成立する条件内で攻撃加算を選びます。未対応の条件付き補正がある場合は最大側を保留します。連撃は5回攻撃後の強化状態が事前に成立した前提で、初回分を重ねて加算しません。急襲は事前発動した最大側に攻撃倍率を適用します。属性吸収は3回被弾後の強化が成立した最大側で、火・水・雷・氷・龍の属性値を加算します。状態異常の蓄積値はSTANDARDの属性HPダメージに算入しません。連撃強化Ⅰ・Ⅱは連撃を装備した最大側に基礎攻撃力＋8／＋18を加えます。通常側と連撃なしでは加算しません。連撃の数値はGameWith資料の参考値で、実機版との照合は未完了です。グループ／シリーズ効果の計算分類が未完了の装備は、効果を無視せず火力指数・装備由来のコンボDPSを保留します。防御・補助効果だけのものも分類完了までは保留します。全スキル・武器状態の上限対応は未完了です。肉質・斬れ味はStep 5の共通条件、超会心は各ビルドの装備スキルを使用します。所要時間は使用しません。</div>';
   h+=rows.filter(r=>!comparisonPowerIndex(r,baseline)).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数は保留（'+esc(r.power?.reason||(!r.kind||r.kind!==baseline.kind?'SAME_WEAPON_REQUIRED':'BASELINE_NORMAL_POWER_UNAVAILABLE'))+'）</div>').join('');
   h+=rows.filter(r=>r.power?.maximumReason).map(r=>'<div class="compare-note">'+esc(r.name)+'：最大火力は保留（'+esc(r.power.maximumReason)+'）</div>').join('');
   return h+'</div><div class="compare-note">基準：'+esc(baseline.name)+'。選択したビルドのDPSを100として指数・増減率を表示します。'+(ready?'':'基準DPSが未算出・0以下の場合、指数と増減率は算出しません。')+'太字は各項目で数値が最大のセットです。1ヒット期待値とDPSは現在Step 5の攻撃条件を共通条件として計算します。DPSは最大会心率を使用します。所要時間は参考値のためDPSも参考値です。</div>';
@@ -6604,7 +6873,7 @@ function createBuildComparisonReport(){
     const powerIndex=comparisonPowerIndex(row,baseline);
     return {...row,powerIndex:powerIndex?.normal??null,maxPowerIndex:powerIndex?.maximum??null,dps,dpsStatus:dps===null?'NOT_CALCULATED':'REFERENCE_ONLY',dpsIndex:relative?.index??null,dpsChangePercent:relative?.change??null};
   });
-  return JSON.parse(JSON.stringify({format:'MHWildsBuildComparison',schemaVersion:1,release:'r96',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,baseline:{index,name:baseline.name},context:lastBuildComparisonContext,results,notes:['参考計算であり実機検証済みを意味しません。','DPS未算出の理由は推定しません。','食事・アイテム等の追加状態は取得していません。']}));
+  return JSON.parse(JSON.stringify({format:'MHWildsBuildComparison',schemaVersion:1,release:'r108',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,baseline:{index,name:baseline.name},context:lastBuildComparisonContext,results,notes:['参考計算であり実機検証済みを意味しません。','DPS未算出の理由は推定しません。','食事・アイテム等の追加状態は取得していません。']}));
 }
 async function exportBuildComparisonReport({copy=false}={}){
   const report=createBuildComparisonReport(),out=$('comparisonReportOut');
@@ -7230,6 +7499,24 @@ const __skillWorkspace=$('armorWorkspaceLeft');
  const invalidateRoute=()=>{el('scorchComboTimes').value='';invalidate();};
  for(const id of ['combo','weapon','weaponKind'])el(id)?.addEventListener('change',invalidateRoute);
  if(typeof MutationObserver!=='undefined'&&el('combo'))new MutationObserver(invalidateRoute).observe(el('combo'),{childList:true});
+})();
+</script>
+<script src="dark-arts-reference.js"></script>
+<script id="power-coverage-ui">
+renderPowerCoverageReport();
+$('powerCoverageDetails').addEventListener('toggle',()=>{if($('powerCoverageDetails').open)renderPowerCoverageReport();});
+$('powerCoverageDownload').addEventListener('click',()=>downloadSimulatorJson(createPowerCoverageReport(),'mhwilds-power-coverage-'+new Date().toISOString().slice(0,10)+'.json'));
+</script>
+<script id="dark-arts-reference-ui">
+(function(){
+ const fields={attack:'daAttack',affinity:'daAffinity',criticalMultiplier:'daCrit',sharpness:'daSharp',elementSharpness:'daESharp',physicalHitzone:'daHz',dragonHitzone:'daDragonHz',dragonAttack:'daDragonAttack',count:'daCount'},el=id=>document.getElementById(id),out=el('daOut');
+ const fmt=n=>Number(n.toFixed(6)).toString();
+ el('daCalculate').addEventListener('click',()=>{out.textContent='';try{
+  const values=Object.fromEntries(Object.entries(fields).map(([key,id])=>{const raw=el(id).value.trim();if(!raw)throw Error('未入力の項目があります');return [key,Number(raw)];}));
+  const r=window.DarkArtsReference.observed(values,window.TechniqueDBEngine);
+  out.textContent='確認済み衝撃波Hit数：'+r.count+'\n物理部分：'+fmt(r.physical)+'\n龍属性部分：'+fmt(r.element)+'\n追撃合計（未丸め）：'+fmt(r.total)+'\n本体攻撃を含みません。全体のDPS・ビルド比較には自動反映しません。';
+ }catch(e){out.textContent='計算保留：'+e.message;}});
+ for(const id of Object.values(fields))for(const event of ['input','change'])el(id).addEventListener(event,()=>{out.textContent='入力が変わりました。再計算してください。';});
 })();
 </script>
 </body></html>
