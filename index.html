@@ -311,12 +311,12 @@ window.R45_RELEASE=Object.freeze({version:'r45',gameVersion:'1.042.00.02',techni
 .grid{grid-template-columns:300px minmax(0,1fr)}
 .grid>*{min-width:0}
 #compareOut{min-width:0;max-width:100%}
-.compare-results{width:100%;max-width:474px;display:grid;gap:12px}
+.compare-results{width:100%;max-width:474px;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
 .compare-table{width:max-content;min-width:0;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media(max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head><body>
-<div class="notice"><b>v7.2.2-template-rootfix-r7 / OCR統合 r1.1.19 fix12</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">r108 Weapon Power Coverage / Game Ver.1.042.00.02</div>
+<div class="notice"><b>v7.2.2-template-rootfix-r7 / OCR統合 r1.1.19 fix12</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">r110 Baseline Damage and Power Changes / Game Ver.1.042.00.02</div>
 <header><div class="wrap"><h1>⚔️ MH Wilds 装備セット＆火力シミュレーター v7.2.1 / OCR統合 r1.1.19 / ビルドテンプレート</h1><div class="muted">①〜⑤ ハンターズノート：装備を作る・記録する　｜　⑥〜⑧ ハンターズサポート：分析・提案・相談</div></div></header>
 <section class="wrap" style="margin:12px auto"><details class="card" id="techAuditPanel"><summary><b>技DBの数値・確認状況</b></summary><p class="small">登録値、資料の候補値、STANDARDの保留理由を確認できます。候補値は計算には使用しません。「未記載」の補正を1として扱うことはありません。</p><div class="two"><div><label for="techAuditKind">武器種</label><select id="techAuditKind"></select></div><div><label for="techAuditId">技</label><select id="techAuditId"></select></div></div><div id="techAuditSummary"></div><div id="techAuditOut"></div></details></section>
 <section class="wrap" style="margin:12px auto"><details class="card" id="hhReferencePanel"><summary><b>狩猟笛の音波・固定ダメージ参考計算</b></summary><p>発生するイベントの回数を明示して、資料の式による未丸めの参考値を確認します。本体攻撃を含みません。狩猟笛全体の火力・DPSやビルド比較には使用しません。</p><p class="small">全欄に入力してください。発生しないイベントは0です。確認済みの追撃4回から、イベントの種類や回数を自動補完しません。</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px"><label for="hhRefAttack">攻撃力（武器係数なし・計算に使う値）<input id="hhRefAttack" type="number" min="0" step="any" inputmode="decimal" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefElement">表示属性値（無属性は0）<input id="hhRefElement" type="number" min="0" step="any" inputmode="decimal" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefElementHz">属性肉質（%）<input id="hhRefElementHz" type="number" min="0" step="any" inputmode="decimal" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefPerformance">演奏衝撃波の回数<input id="hhRefPerformance" type="number" min="0" step="1" inputmode="numeric" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefNormalEcho">通常攻撃時の響玉追撃の回数<input id="hhRefNormalEcho" type="number" min="0" step="1" inputmode="numeric" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefMelodyEcho">旋律成立時の響玉追撃の回数<input id="hhRefMelodyEcho" type="number" min="0" step="1" inputmode="numeric" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label><label for="hhRefFixed">重ね掛け時の固定10ダメージの回数<input id="hhRefFixed" type="number" min="0" step="1" inputmode="numeric" placeholder="明示入力" style="width:100%;box-sizing:border-box"></label></div><button type="button" id="hhRefCalculate" style="margin-top:12px">参考値を計算</button><output id="hhRefOut" aria-live="polite" style="display:block;white-space:pre-line;margin-top:12px">入力して「参考値を計算」を押してください。</output><p class="small">ゲーム表示の丸め・発生条件・基準版の照合は未確定です。</p></details></section>
@@ -4535,7 +4535,7 @@ function validateSimulatorBackup(input){
 function createSimulatorBackup(){
   const parse=(key,fallback)=>{const raw=localStorage.getItem(key);return raw==null?fallback:JSON.parse(raw);};
   let savedBuilds={};for(const key of [BUILDS_KEY,...LEGACY_BUILDS_KEYS]){const raw=localStorage.getItem(key);if(raw!==null){savedBuilds=JSON.parse(raw);break;}}
-  return validateSimulatorBackup({format:SIMULATOR_BACKUP_FORMAT,schemaVersion:1,release:'r108',exportedAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,data:{savedBuilds,customTechniques:parse(TECHNIQUES.storageKey,{}),canonicalTimings:parse(CANONICAL_TIMING_STORAGE_KEY,{schemaVersion:1,records:{}})}});
+  return validateSimulatorBackup({format:SIMULATOR_BACKUP_FORMAT,schemaVersion:1,release:'r110',exportedAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,data:{savedBuilds,customTechniques:parse(TECHNIQUES.storageKey,{}),canonicalTimings:parse(CANONICAL_TIMING_STORAGE_KEY,{schemaVersion:1,records:{}})}});
 }
 function planSimulatorBackupImport(input){
   const backup=validateSimulatorBackup(input),current=createSimulatorBackup().data,counts={buildsAdded:0,customAdded:0,timingsAdded:0,buildsRenamed:0,timingsKept:0},renamed=[];
@@ -4613,13 +4613,13 @@ function createComboVerificationReport(){
   const scorchPlan=techniqueScorchPlan(canonicalWeaponKind(weapon)||'',stages.map(x=>x.canonicalTechniqueId||'UNRESOLVED_TECHNIQUE'));
   const blocked=evaluation.status==='BLOCKED',timingPending=evaluation.status==='TIMING_PENDING';
   const {damage,time,theoreticalDps,practicalDps}=evaluation;
-  return {format:'MHWildsComboVerification',schemaVersion:1,release:'r108',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,observedGameVersion:observed||null,currentBuild:buildSnapshot(),weapon:weapon?{id:weapon.id,name:weapon.name,kind:canonicalWeaponKind(weapon)}:null,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null},context,contextError,externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT',rounding:'PER_HIT_PHYSICAL_ELEMENT_2_DECIMAL_REFERENCE_NOT_GAME_DISPLAY',stages,scorchPlan,summary:{status:blocked?'BLOCKED':timingPending?'TIMING_PENDING':'REFERENCE_ONLY',damage,time,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60},notes:['実機検証済みを意味しません。','未確認時間や特殊成分は推定で補完しません。','食事・アイテム・エキスなどゲーム側の追加状態を別途記録してください。']};
+  return {format:'MHWildsComboVerification',schemaVersion:1,release:'r110',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,observedGameVersion:observed||null,currentBuild:buildSnapshot(),weapon:weapon?{id:weapon.id,name:weapon.name,kind:canonicalWeaponKind(weapon)}:null,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null},context,contextError,externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT',rounding:'PER_HIT_PHYSICAL_ELEMENT_2_DECIMAL_REFERENCE_NOT_GAME_DISPLAY',stages,scorchPlan,summary:{status:blocked?'BLOCKED':timingPending?'TIMING_PENDING':'REFERENCE_ONLY',damage,time,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60},notes:['実機検証済みを意味しません。','未確認時間や特殊成分は推定で補完しません。','食事・アイテム・エキスなどゲーム側の追加状態を別途記録してください。']};
 }
 function createScorchRouteReferenceReport(settings,hitTimes){
   const combo=createComboVerificationReport();
   const techniqueIds=combo.stages.map(x=>x.canonicalTechniqueId||'UNRESOLVED_TECHNIQUE');
   const reference=window.ScorchReference.forRoute({...settings,weaponType:combo.weapon?.kind||'',techniqueIds,hitTimes},window.TechniqueDBEngine);
-  return {format:'MHWildsScorchRouteReference',schemaVersion:1,release:'r108',createdAt:new Date().toISOString(),referenceGameVersion:combo.referenceGameVersion,observedGameVersion:combo.observedGameVersion,currentBuild:combo.currentBuild,weapon:combo.weapon,settings:{level:settings.level,fireAttack:settings.fireAttack,fireHitzone:settings.fireHitzone},reference,damageIncluded:false,notes:['追撃のみの資料期待値。本体ダメージ・火力指数・DPSへ自動反映しません。','コンボ開始時は再発動可能。全Hitが入力した時刻に当たる前提です。','入力時刻・ゲーム表示の丸め・実機版は別途検証が必要です。']};
+  return {format:'MHWildsScorchRouteReference',schemaVersion:1,release:'r110',createdAt:new Date().toISOString(),referenceGameVersion:combo.referenceGameVersion,observedGameVersion:combo.observedGameVersion,currentBuild:combo.currentBuild,weapon:combo.weapon,settings:{level:settings.level,fireAttack:settings.fireAttack,fireHitzone:settings.fireHitzone},reference,damageIncluded:false,notes:['追撃のみの資料期待値。本体ダメージ・火力指数・DPSへ自動反映しません。','コンボ開始時は再発動可能。全Hitが入力した時刻に当たる前提です。','入力時刻・ゲーム表示の丸め・実機版は別途検証が必要です。']};
 }
 function prepareComboVerificationReport(){
   try{const data=createComboVerificationReport();$('comboReportOut').textContent=JSON.stringify(data,null,2);$('comboReportStatus').textContent=data.summary.status==='BLOCKED'?'保留条件を含む検証データです。全体ダメージ・DPSは未算出です。':'最新の条件で検証データを作成しました。ゲーム表示の丸めは別途確認が必要です。';return data;}
@@ -6420,7 +6420,7 @@ function createPowerCoverageReport(){
     const handler=buildComparisonHandlerDescriptor(weaponKind),availability=genericStandardProfileAvailability(weaponKind),ready=handler.handler==='GenericWeaponHandler'&&availability.status==='READY';
     return {weaponKind,name,status:ready?'REFERENCE_BASE_READY':'PENDING',handler:handler.handler,profileId:isChargeBladeKind(weaponKind)?'CB_COMPOSITE_R_H':availability.profileId||null,reason:ready?null:handler.handler!=='GenericWeaponHandler'?(handler.reason||'SPECIAL_STANDARD_COMPONENTS_PENDING'):(availability.reason||'STANDARD_PROFILE_PENDING'),message:ready?'固定コンボの参考計算に対応。装備スキルと入力条件によっては通常・最大側を保留します。':gaps[weaponKind]||'固定コンボの技データまたは状態条件が未確定です。',blockers:availability.blockers||[],profileBlockers:availability.profileBlockers||[]};
   });
-  return JSON.parse(JSON.stringify({format:'MHWildsPowerCoverage',schemaVersion:1,release:'r108',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,referenceBaseReadyCount:weapons.filter(x=>x.status==='REFERENCE_BASE_READY').length,weaponCount:weapons.length,completeAllSkills:false,liveVerified:false,scope:'FIXED_STANDARD_ROUTE_BASE_READINESS_NOT_BUILD_RESULT_OR_DPS',weapons,notes:['全スキル対応・技DB完成・実機検証済みを意味しません。','実際の保存ビルドの計算可否は比較結果の保留理由を確認してください。','コンボDPSの対応状況とは別です。']}));
+  return JSON.parse(JSON.stringify({format:'MHWildsPowerCoverage',schemaVersion:1,release:'r110',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,referenceBaseReadyCount:weapons.filter(x=>x.status==='REFERENCE_BASE_READY').length,weaponCount:weapons.length,completeAllSkills:false,liveVerified:false,scope:'FIXED_STANDARD_ROUTE_BASE_READINESS_NOT_BUILD_RESULT_OR_DPS',weapons,notes:['全スキル対応・技DB完成・実機検証済みを意味しません。','実際の保存ビルドの計算可否は比較結果の保留理由を確認してください。','コンボDPSの対応状況とは別です。']}));
 }
 function renderPowerCoverageReport(){
   const out=$('powerCoverageOut');if(!out)return;
@@ -6758,6 +6758,30 @@ function comparisonPowerIndex(row,baseline){
   const normal=n/base*100,maximum=Number.isFinite(m)&&m>=0?m/base*100:null;
   return Number.isFinite(normal)?{normal,maximum:Number.isFinite(maximum)?maximum:null}:null;
 }
+function comparisonPowerChange(row,baseline){
+  if(!comparisonPowerIndex(row,baseline))return null;
+  const base=baseline.power.normal,denominator=base.comparisonPower;
+  const pack=value=>{
+    if(!value||!Number.isFinite(value.comparisonPower)||value.comparisonPower<0)return null;
+    const components={},componentChangePercent={},componentContributionPercent={};
+    for(const key of ['physical','element','special']){
+      const v=value[key],b=base[key];
+      components[key]=Number.isFinite(v)?v:null;
+      componentChangePercent[key]=Number.isFinite(v)&&Number.isFinite(b)?(b>0?(v/b-1)*100:v===0?0:null):null;
+      componentContributionPercent[key]=Number.isFinite(v)&&Number.isFinite(b)?(v-b)/denominator*100:null;
+    }
+    return {damage:value.comparisonPower,changePercent:(value.comparisonPower/denominator-1)*100,components,componentChangePercent,componentContributionPercent};
+  };
+  return {baselineDamage:denominator,normal:pack(row.power.normal),maximum:pack(row.power.maximum)};
+}
+function comparisonChangeText(value){
+  if(!value)return '—';
+  const signed=v=>(v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(2)+'%';
+  const component=(key,label)=>Number.isFinite(value.componentContributionPercent[key])?label+signed(value.componentContributionPercent[key]):label+'：未確定';
+  const parts=[component('physical','物'),component('element','属')];
+  if(value.components.special!==null&&(value.components.special!==0||value.componentContributionPercent.special!==0))parts.push(component('special','特殊'));
+  return signed(value.changePercent)+'（'+parts.join('／')+'）';
+}
 function compareSnapshot(name,snapshot,cond){
   applyBuildSnapshot(snapshot,{preserveCombo:true});
   const st=calcState.stats||{};
@@ -6838,7 +6862,7 @@ function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
   const powerIndices=allRows.map(r=>comparisonPowerIndex(r,baseline));
   for(const [key,label,metric] of [['normal','火力指数','power-index'],['maximum','最大火力指数','max-power-index']]){
     const best=Math.max(...powerIndices.filter(x=>x&&Number.isFinite(x[key])).map(x=>x[key]));
-    h+='<tr data-comparison-metric="'+metric+'"><th>'+label+'</th>'+rows.map(r=>{const x=comparisonPowerIndex(r,baseline);return cell(x&&Number.isFinite(x[key])?x[key].toFixed(2):'—',!!x&&Number.isFinite(x[key])&&x[key]===best);}).join('')+'</tr>';
+    h+='<tr data-comparison-metric="'+metric+'"><th>'+label+'</th>'+rows.map(r=>{const x=comparisonPowerIndex(r,baseline),change=comparisonPowerChange(r,baseline);return cell(key==='normal'&&r===baseline&&change?change.baselineDamage.toFixed(2)+'（基準）':comparisonChangeText(change?.[key]),!!x&&Number.isFinite(x[key])&&x[key]===best);}).join('')+'</tr>';
   }
   h+='<tr><th>1ヒット期待値</th>'+rows.map(r=>cell(r.damage==null?'—':r.damage.toFixed(2),r.damage!=null&&r.damage===mx)).join('')+'</tr>';
   h+='<tr data-comparison-metric="dps"><th>DPS</th>'+rows.map(r=>cell(r.dps==null?'—':r.dps.toFixed(2),r.dps!=null&&r.dps===mp)).join('')+'</tr>';
@@ -6852,14 +6876,15 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   if(!rows.length)return '<span class="muted small">比較結果はありません。</span>';
   const selectedIndex=Number.isInteger(baselineIndex)&&baselineIndex>=0&&baselineIndex<rows.length?baselineIndex:0;
   const baseline=rows[selectedIndex],ready=Number.isFinite(baseline.dps)&&baseline.dps>0;
-  const box=$('compareOut'),style=box?getComputedStyle(box):null;
-  const available=box?.clientWidth ? box.clientWidth-(parseFloat(style.paddingLeft)||0)-(parseFloat(style.paddingRight)||0) : 474;
-  const perGroup=Math.max(1,Math.min(3,Math.floor((Math.min(available,474)-2-112)/120)));
-  let h='<label for="comparisonBaseline">指数の基準ビルド（通常火力100）</label><select id="comparisonBaseline">'+rows.map((r,i)=>'<option value="'+i+'"'+(i===selectedIndex?' selected':'')+'>'+esc(r.name)+'</option>').join('')+'</select><div class="two" style="margin-top:8px"><button type="button" id="comparisonReportDownload">比較結果をJSON保存</button><button type="button" id="comparisonReportCopy">比較結果をコピー</button></div><pre id="comparisonReportOut" class="small" style="max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere"></pre><div class="compare-results">';
+  // Group by the fixed table maximum; narrow viewports scroll inside each table.
+  const perGroup=Math.max(1,Math.floor((474-2-112)/120));
+  const baseDamage=baseline.power?.normal?.comparisonPower;
+  let h='<div class="compare-note"><b>基準ダメージ：'+(Number.isFinite(baseDamage)&&baseDamage>0?baseDamage.toFixed(2):'—')+'</b>（'+esc(baseline.name)+'・通常STANDARD、ゲーム表示の丸め前）</div><label for="comparisonBaseline">比較の基準ビルド（通常STANDARDの期待ダメージ）</label><select id="comparisonBaseline">'+rows.map((r,i)=>'<option value="'+i+'"'+(i===selectedIndex?' selected':'')+'>'+esc(r.name)+'</option>').join('')+'</select><div class="two" style="margin-top:8px"><button type="button" id="comparisonReportDownload">比較結果をJSON保存</button><button type="button" id="comparisonReportCopy">比較結果をコピー</button></div><pre id="comparisonReportOut" class="small" style="max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere"></pre><div class="compare-results">';
   h+=comparisonReadinessHtml(rows,baseline);
+  if(rows.length>1)h+='<div class="compare-note small">表が画面に収まらない場合は、表の中を横にスワイプして比較できます。</div>';
   for(let i=0;i<rows.length;i+=perGroup)h+=renderCompareTableChunk(rows.slice(i,i+perGroup),rows,baseline);
   h+=rows.filter(r=>r.power?.conditionPlan?.applied.length).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数の適用条件 '+esc(r.power.conditionPlan.applied.map(x=>x.skill+(x.level!=null?' Lv'+x.level:'')+' (攻撃'+(x.maximumAttackMultiplier?'×'+x.maximumAttackMultiplier+'：最大側のみ':x.attackMultiplier&&x.attackMultiplier!==1?'×'+x.attackMultiplier:'+'+x.attackAdd)+(x.elementAdd?' / 属性+'+x.elementAdd:'')+(x.elementMultiplier?' / 属性×'+x.elementMultiplier+'：'+esc(x.elementConditionLabel||'赤ゲージ時')+'・最大側のみ':'')+')').join(' / '))+'。'+(r.power.conditionPlan.excluded.length?'同時成立しないため除外：'+esc(r.power.conditionPlan.excluded.map(x=>x.skill).join(' / '))+'。':'')+'</div>').join('');
-  h+='<div class="compare-note">基準：'+esc(baseline.name)+'。火力指数は同武器・同STANDARDの基準ビルドの通常火力を100とします。最大火力指数は対応済みの条件付き攻撃力・攻めの守勢と最大会心率を適用した参考値です。攻撃力の乗算を先に行い、加算はその後に適用します。攻めの守勢・激励は事前に発動した前提です。死中に活は状態異常中、根性【果敢】は選択した消費前／後の条件を適用します。これらのグループ効果と連撃強化はコンボDPSへ未接続です。フルチャージと逆恨みは同時加算しません。ダークアーツ・火事場力とフルチャージの併用時は、満タンと赤ゲージ・低体力のコンボ全体を別々に比較します。それ以外は同時成立する条件内で攻撃加算を選びます。未対応の条件付き補正がある場合は最大側を保留します。連撃は5回攻撃後の強化状態が事前に成立した前提で、初回分を重ねて加算しません。急襲は事前発動した最大側に攻撃倍率を適用します。属性吸収は3回被弾後の強化が成立した最大側で、火・水・雷・氷・龍の属性値を加算します。状態異常の蓄積値はSTANDARDの属性HPダメージに算入しません。連撃強化Ⅰ・Ⅱは連撃を装備した最大側に基礎攻撃力＋8／＋18を加えます。通常側と連撃なしでは加算しません。連撃の数値はGameWith資料の参考値で、実機版との照合は未完了です。グループ／シリーズ効果の計算分類が未完了の装備は、効果を無視せず火力指数・装備由来のコンボDPSを保留します。防御・補助効果だけのものも分類完了までは保留します。全スキル・武器状態の上限対応は未完了です。肉質・斬れ味はStep 5の共通条件、超会心は各ビルドの装備スキルを使用します。所要時間は使用しません。</div>';
+  h+='<div class="compare-note">基準：'+esc(baseline.name)+'。基準ダメージは同武器・同STANDARDの基準ビルドの通常期待ダメージです。比較ビルドの通常・最大と基準ビルドの最大は、すべてこの通常ダメージからの変化率を表示します。括弧内の物・属は各成分の増減を基準全体のダメージで割った寄与率です。特殊成分があれば別記します。丸め前の寄与率の合計が全体の変化率になります。最大火力指数は対応済みの条件付き攻撃力・攻めの守勢と最大会心率を適用した参考値です。攻撃力の乗算を先に行い、加算はその後に適用します。攻めの守勢・激励は事前に発動した前提です。死中に活は状態異常中、根性【果敢】は選択した消費前／後の条件を適用します。これらのグループ効果と連撃強化はコンボDPSへ未接続です。フルチャージと逆恨みは同時加算しません。ダークアーツ・火事場力とフルチャージの併用時は、満タンと赤ゲージ・低体力のコンボ全体を別々に比較します。それ以外は同時成立する条件内で攻撃加算を選びます。未対応の条件付き補正がある場合は最大側を保留します。連撃は5回攻撃後の強化状態が事前に成立した前提で、初回分を重ねて加算しません。急襲は事前発動した最大側に攻撃倍率を適用します。属性吸収は3回被弾後の強化が成立した最大側で、火・水・雷・氷・龍の属性値を加算します。状態異常の蓄積値はSTANDARDの属性HPダメージに算入しません。連撃強化Ⅰ・Ⅱは連撃を装備した最大側に基礎攻撃力＋8／＋18を加えます。通常側と連撃なしでは加算しません。連撃の数値はGameWith資料の参考値で、実機版との照合は未完了です。グループ／シリーズ効果の計算分類が未完了の装備は、効果を無視せず火力指数・装備由来のコンボDPSを保留します。防御・補助効果だけのものも分類完了までは保留します。全スキル・武器状態の上限対応は未完了です。肉質・斬れ味はStep 5の共通条件、超会心は各ビルドの装備スキルを使用します。所要時間は使用しません。</div>';
   h+=rows.filter(r=>!comparisonPowerIndex(r,baseline)).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数は保留（'+esc(r.power?.reason||(!r.kind||r.kind!==baseline.kind?'SAME_WEAPON_REQUIRED':'BASELINE_NORMAL_POWER_UNAVAILABLE'))+'）</div>').join('');
   h+=rows.filter(r=>r.power?.maximumReason).map(r=>'<div class="compare-note">'+esc(r.name)+'：最大火力は保留（'+esc(r.power.maximumReason)+'）</div>').join('');
   return h+'</div><div class="compare-note">基準：'+esc(baseline.name)+'。選択したビルドのDPSを100として指数・増減率を表示します。'+(ready?'':'基準DPSが未算出・0以下の場合、指数と増減率は算出しません。')+'太字は各項目で数値が最大のセットです。1ヒット期待値とDPSは現在Step 5の攻撃条件を共通条件として計算します。DPSは最大会心率を使用します。所要時間は参考値のためDPSも参考値です。</div>';
@@ -6871,9 +6896,9 @@ function createBuildComparisonReport(){
   const results=lastBuildComparisonRows.map(row=>{
     const relative=comparisonDpsIndex(row,baseline),dps=Number.isFinite(row.dps)&&row.dps>=0?row.dps:null;
     const powerIndex=comparisonPowerIndex(row,baseline);
-    return {...row,powerIndex:powerIndex?.normal??null,maxPowerIndex:powerIndex?.maximum??null,dps,dpsStatus:dps===null?'NOT_CALCULATED':'REFERENCE_ONLY',dpsIndex:relative?.index??null,dpsChangePercent:relative?.change??null};
+    return {...row,powerChange:comparisonPowerChange(row,baseline),powerIndex:powerIndex?.normal??null,maxPowerIndex:powerIndex?.maximum??null,dps,dpsStatus:dps===null?'NOT_CALCULATED':'REFERENCE_ONLY',dpsIndex:relative?.index??null,dpsChangePercent:relative?.change??null};
   });
-  return JSON.parse(JSON.stringify({format:'MHWildsBuildComparison',schemaVersion:1,release:'r108',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,baseline:{index,name:baseline.name},context:lastBuildComparisonContext,results,notes:['参考計算であり実機検証済みを意味しません。','DPS未算出の理由は推定しません。','食事・アイテム等の追加状態は取得していません。']}));
+  return JSON.parse(JSON.stringify({format:'MHWildsBuildComparison',schemaVersion:2,release:'r110',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,baseline:{index,name:baseline.name,damage:baseline.power?.normal?.comparisonPower??null,components:baseline.power?.normal?{physical:baseline.power.normal.physical,element:baseline.power.normal.element,special:baseline.power.normal.special}:null},context:lastBuildComparisonContext,results,notes:['powerChangeは基準通常STANDARDのダメージからの変化率（%）。componentChangePercentは各成分自身の基準値からの変化率。componentContributionPercentは基準全体に対する増減寄与（百分率ポイント）。','旧powerIndex/maxPowerIndexは互換用の基準100値で、画面表示には使用しません。','参考計算であり実機検証済みを意味しません。','DPS未算出の理由は推定しません。','食事・アイテム等の追加状態は取得していません。']}));
 }
 async function exportBuildComparisonReport({copy=false}={}){
   const report=createBuildComparisonReport(),out=$('comparisonReportOut');
