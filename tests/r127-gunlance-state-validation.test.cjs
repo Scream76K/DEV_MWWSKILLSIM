@@ -1,0 +1,13 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const match=html.match(/function gunlanceBodyComponents\(stats,condition='NORMAL'\)\{[\s\S]*?\n\}/);
+assert.ok(match,'GL body resolver exists');
+const sandbox={GUNLANCE_STANDARD_PROFILE:{bodyTechniqueIds:['GL_SLAM']},genericExpectedCritMultiplier:()=>1,techniqueDbHits:()=>[{mv:100,elementModifier:1,name:'hit'}],techniqueDbGet:()=>({verificationStatus:'VERIFIED'})};
+vm.createContext(sandbox);vm.runInContext(match[0]+';this.resolve=gunlanceBodyComponents;',sandbox);
+const good={baseAttack:200,sharpnessPhysical:1,physicalHitzone:50,displayedElement:100,sharpnessElement:1,elementalHitzone:20,affinity:0,maxAffinity:30};
+test('GL body remains calculable for valid state',()=>{const r=sandbox.resolve(good);assert.equal(r.physical,100);assert.equal(r.element,2)});
+test('GL invalid condition fails closed',()=>assert.throws(()=>sandbox.resolve(good,'WRONG'),/GUNLANCE_CONDITION_INVALID/));
+test('GL invalid hitzone fails closed',()=>assert.throws(()=>sandbox.resolve({...good,physicalHitzone:101}),/GUNLANCE_HITZONE_INVALID/));
+test('GL invalid attack fails closed',()=>assert.throws(()=>sandbox.resolve({...good,baseAttack:NaN}),/GUNLANCE_STAT_INVALID/));
+test('GL invalid affinity fails closed',()=>assert.throws(()=>sandbox.resolve({...good,maxAffinity:101},'MAX'),/GUNLANCE_AFFINITY_INVALID/));

@@ -1,0 +1,11 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict');
+const {compareObservedComponents:compare}=require('../tools/evidence-component-pairing.cjs');
+const base={weaponId:'gunlance',gameVersion:'1.042.00.02',videoFile:'A.mp4',equipmentRecorded:true,targetRecorded:true,skillLevelsRecorded:true,hitNumbersReadable:true,conditionsRecorded:true,equipmentId:'set1',targetId:'training',targetPart:'head',distance:'same',buffState:'none',criticalMode:'no-crit',skillCondition:'none',hits:[100,20,30,40],observedComponents:{physicalBody:100,elementalBody:20,shelling:30,wyrmstake:40}};
+const variant={...base,videoFile:'B.mp4',skillCondition:'skill-lv1',hits:[110,20,35,40],observedComponents:{physicalBody:110,elementalBody:20,shelling:35,wyrmstake:40}};
+test('controlled gunlance footage becomes typed observed comparison',()=>{const r=compare(base,variant);assert.equal(r.comparable,true);assert.equal(r.components.shelling.delta,5);assert.equal(r.delta,15);assert.equal(r.dpsReady,false)});
+test('component and visible hit totals must reconcile',()=>assert.match(compare(base,{...variant,observedComponents:{...variant.observedComponents,shelling:36}}).errors.join(' '),/does not match/));
+test('mismatched recording controls are rejected',()=>assert.equal(compare(base,{...variant,targetPart:'tail'}).comparable,false));
+test('missing or invented component rejected',()=>assert.equal(compare(base,{...variant,observedComponents:{physicalBody:110,elementalBody:20,shelling:35,foo:40}}).comparable,false));
+test('charge blade phial types must match',()=>{const cb={...base,weaponId:'charge-blade',phialType:'IMPACT',hits:[100],observedComponents:{physicalBody:50,elementalBody:10,axeBoostPhysical:10,axeBoostElement:10,impactPhial:20,elementalPhial:0}};const other={...cb,videoFile:'B.mp4',skillCondition:'skill-lv1',phialType:'ELEMENT'};assert.equal(compare(cb,other).comparable,false)});
+test('charge blade component totals can reconcile without promotion',()=>{const cb={...base,weaponId:'charge-blade',phialType:'IMPACT',hits:[100],observedComponents:{physicalBody:50,elementalBody:10,axeBoostPhysical:10,axeBoostElement:10,impactPhial:20,elementalPhial:0}};const r=compare(cb,{...cb,videoFile:'B.mp4',skillCondition:'skill-lv1'});assert.equal(r.comparable,true);assert.equal(r.verificationStatus,'UNVERIFIED')});

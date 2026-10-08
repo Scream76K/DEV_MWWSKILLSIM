@@ -1,0 +1,12 @@
+'use strict';
+const test=require('node:test');const assert=require('node:assert/strict');
+const {inspectPair,summarizePair}=require('../tools/evidence-pairing.cjs');
+const base={weaponId:'heavy-bowgun',gameVersion:'1.042.00.02',videoFile:'A.mp4',equipmentRecorded:true,targetRecorded:true,skillLevelsRecorded:true,hitNumbersReadable:true,conditionsRecorded:true,equipmentId:'set1',targetId:'training',targetPart:'head',distance:'same',buffState:'none',criticalMode:'no-crit',skillCondition:'none',hits:[100,100]};
+const pair={...base,videoFile:'B.mp4',skillCondition:'first-shot-lv1',hits:[110,100]};
+test('matching controlled evidence is comparable but not verified',()=>{const r=summarizePair(base,pair);assert.equal(r.comparable,true);assert.equal(r.verificationStatus,'UNVERIFIED');assert.ok(Math.abs(r.relativePercent-5)<1e-9)});
+test('different target part invalidates comparison',()=>assert.equal(inspectPair(base,{...pair,targetPart:'tail'}).comparable,false));
+test('different equipment invalidates comparison',()=>assert.equal(inspectPair(base,{...pair,equipmentId:'set2'}).comparable,false));
+test('same skill condition invalidates comparison',()=>assert.equal(inspectPair(base,{...pair,skillCondition:'none'}).comparable,false));
+test('missing control field invalidates comparison',()=>{const x={...pair};delete x.distance;assert.equal(inspectPair(base,x).comparable,false)});
+test('invalid hit data invalidates comparison',()=>assert.equal(inspectPair(base,{...pair,hits:[NaN]}).comparable,false));
+test('zero baseline yields no relative percentage',()=>assert.equal(summarizePair({...base,hits:[0]},pair).relativePercent,null));

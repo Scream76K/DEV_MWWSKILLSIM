@@ -1,0 +1,9 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+function api(){const nodes=Object.fromEntries(['weapon','baseline','variant','result','template','compare','save','load'].map(id=>[id,{value:id==='weapon'?'gunlance':'',textContent:'',innerHTML:''}]));const ctx={document:{getElementById:id=>nodes[id]},window:{},JSON,Number,Object,Array,String,Math,Error,RegExp,Blob:class{},URL:{createObjectURL:()=>'',revokeObjectURL:()=>{}},setTimeout:()=>{}};vm.runInNewContext(fs.readFileSync(path.join(__dirname,'..','evidence-review.js'),'utf8'),ctx);return ctx.window.__evidenceReview;}
+function pair(){const a=api();const A=a.template('gunlance',false),B=a.template('gunlance',true);Object.assign(A,{equipmentId:'build-1',techniqueId:'GL_SLAM',moveSequence:'GL_SLAM',hits:[30],observedComponents:{physicalBody:30,elementalBody:0,shelling:0,wyrmstake:0}});Object.assign(B,{equipmentId:'build-2',techniqueId:'GL_SLAM',moveSequence:'GL_SLAM',hits:[35],observedComponents:{physicalBody:35,elementalBody:0,shelling:0,wyrmstake:0}});return {a,A,B};}
+test('different builds can be compared for the same move',()=>{const {a,A,B}=pair();assert.equal(a.compare(A,B).comparable,true);assert.equal(a.compare(A,B).delta,5)});
+test('different moves cannot be compared as build improvement',()=>{const {a,A,B}=pair();B.techniqueId='GL_SWEEP';assert.equal(a.compare(A,B).comparable,false)});
+test('different hit count is rejected',()=>{const {a,A,B}=pair();B.hits=[10,25];assert.equal(a.compare(A,B).comparable,false)});
+test('unfilled template cannot be treated as evidence',()=>{const a=api();assert.equal(a.compare(a.template('gunlance',false),a.template('gunlance',true)).comparable,false)});
+test('same build with changed skill condition is comparable',()=>{const {a,A,B}=pair();B.equipmentId=A.equipmentId;assert.equal(a.compare(A,B).comparable,true)});

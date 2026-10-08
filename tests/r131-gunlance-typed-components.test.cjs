@@ -1,0 +1,12 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const names=['gunlanceTypedComponentIntegrity','gunlanceTypedComponentComparison'];
+const source=names.map(name=>{const match=html.match(new RegExp('function '+name+'\\([^]*?\\n\\}'));assert.ok(match,name);return match[0]}).join('\n');
+const ctx={};vm.createContext(ctx);vm.runInContext(source+';this.integrity=gunlanceTypedComponentIntegrity;this.compare=gunlanceTypedComponentComparison',ctx);
+const record=(physicalBody=100,elementalBody=20,shelling=30,wyrmstake=40)=>({components:{physicalBody,elementalBody,shelling,wyrmstake}});
+test('observed GL components compare independently',()=>{const r=ctx.compare(record(),record(110,25,45,40));assert.equal(r.componentSumDelta,30);assert.equal(r.components.shelling.delta,15);assert.equal(r.dpsReady,false);assert.equal(r.eventCountsVerified,false)});
+test('zero baseline component percent is unknown',()=>{const r=ctx.compare(record(0,0,0,0),record(10,0,0,0));assert.equal(r.components.physicalBody.percent,null);assert.equal(r.componentSumPercent,null)});
+test('negative or missing shelling cannot silently pass',()=>{assert.throws(()=>ctx.integrity(record(1,2,-1,4)),/shelling_INVALID/);assert.throws(()=>ctx.integrity({components:{physicalBody:1,elementalBody:2,wyrmstake:4}}),/shelling_INVALID/)});
+test('overflow is fail closed',()=>assert.throws(()=>ctx.integrity(record(1e308,1e308,1,1)),/OVERFLOW/));
+test('special component does not promote standard readiness',()=>{const r=ctx.integrity(record());assert.equal(r.specialSum,70);assert.equal(r.scope,'OBSERVED_COMPONENTS_ONLY_NOT_STANDARD');assert.equal(r.dpsReady,false)});

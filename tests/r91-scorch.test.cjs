@@ -1,0 +1,12 @@
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const S=require('../scorch-reference.js');
+test('current upper rank damage reproduces both training hitzones and fire attack 3',()=>{
+ for(const [level,hz,skill,value] of [[1,30,0,38],[1,5,0,23],[2,30,0,76],[2,5,0,46],[1,30,3,43.4],[2,30,3,85]])assert.ok(Math.abs(S.damage({level,fireHitzone:hz,fireAttack:skill}).total-value)<1e-9);
+});
+test('explicit observed events calculate a total without inventing a proc rate',()=>{const r=S.observed({level:1,fireHitzone:30,fireAttack:0,count:3});assert.equal(r.total,114);assert.equal(r.fixed,60);assert.equal(r.element,54);assert.equal(r.status,'SOURCE_REFERENCE');});
+test('zero events supported but absent and fractional event counts rejected',()=>{assert.equal(S.observed({level:1,fireHitzone:30,fireAttack:0,count:0}).total,0);for(const count of [undefined,1.5,-1,Infinity,'3'])assert.throws(()=>S.observed({level:1,fireHitzone:30,fireAttack:0,count}));});
+test('invalid ranks levels hitzones and unresolved zero fire hitzone fail closed',()=>{for(const patch of [{level:3},{fireAttack:4},{fireHitzone:0},{fireHitzone:101},{fireHitzone:NaN},{rank:'lower'}])assert.throws(()=>S.damage({level:1,fireHitzone:30,fireAttack:0,...patch}));});
+test('cooldown is applied to successful procs, not all attempted hits',()=>{const r=S.expected({level:1,fireHitzone:30,fireAttack:0,eligibleHitTimes:[0,1]});assert.ok(Math.abs(r.expectedEvents-5/9)<1e-12);assert.ok(Math.abs(r.total-38*5/9)<1e-12);});
+test('two second boundary is eligible and simultaneous hits branch correctly',()=>{assert.ok(Math.abs(S.expected({level:2,fireHitzone:30,fireAttack:0,eligibleHitTimes:[0,2]}).expectedEvents-2/3)<1e-12);assert.ok(Math.abs(S.expected({level:1,fireHitzone:30,fireAttack:0,eligibleHitTimes:[0,0,0]}).expectedEvents-19/27)<1e-12);});
+test('empty explicit timeline returns zero; absent unsorted or malformed timeline is blocked',()=>{assert.equal(S.expected({level:1,fireHitzone:30,fireAttack:0,eligibleHitTimes:[]}).total,0);for(const eligibleHitTimes of [undefined,[1,0],[-1],[NaN],['0'],new Array(1)])assert.throws(()=>S.expected({level:1,fireHitzone:30,fireAttack:0,eligibleHitTimes}));});
+test('timeline is immutable and expectation agrees with exhaustive three-hit outcomes',()=>{const times=[0,1,2],before=[...times];const r=S.expected({level:1,fireHitzone:30,fireAttack:0,eligibleHitTimes:times});assert.ok(Math.abs(r.expectedEvents-22/27)<1e-12);assert.deepEqual(times,before);assert.equal(r.initialState,'READY');});

@@ -1,0 +1,50 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const {test}=require('node:test');
+const s=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
+const elements=Object.fromEntries(['techAuditKind','techAuditId','techAuditOut','techAuditSummary'].map(id=>[id,{value:'',innerHTML:'',addEventListener(event,fn){this[event]=fn;}}]));
+const c={window:{},document:{getElementById:id=>elements[id]||null}};vm.createContext(c);
+vm.runInContext('const KINDS='+s.match(/const KINDS=(\[.*?\]);/)[1]+';'+s.slice(s.indexOf('const CHARGE_BLADE_ENGINE_VERSION='),s.indexOf('function compareStep5Snapshot()')),c);
+const ui=s.match(/<script id="technique-audit-ui">([\s\S]*?)<\/script>/);
+test('audit panel switches weapons and shows all STANDARD blockers and both spiral charges',()=>{
+ assert.ok(ui,'audit UI script must be present');vm.runInContext(ui[1],c);
+ elements.techAuditKind.value='insect-glaive';elements.techAuditKind.change();
+ assert.ok(elements.techAuditId.innerHTML.includes('IG_RISING_SPIRAL_SLASH'));
+ assert.ok(elements.techAuditSummary.innerHTML.includes('IG_ENHANCED_DESCENDING_THRUST'));
+ elements.techAuditId.value='IG_RISING_SPIRAL_SLASH';elements.techAuditId.change();
+ assert.ok(elements.techAuditOut.innerHTML.includes('溜め段階 1'));
+ assert.ok(elements.techAuditOut.innerHTML.includes('溜め段階 2'));
+ assert.ok(elements.techAuditOut.innerHTML.includes('0.8'));
+ assert.ok(elements.techAuditOut.innerHTML.includes('計算保留'));
+});
+test('audit panel treats missing part coefficients as unknown, and displays special ammo source values',()=>{
+ assert.ok(ui);vm.runInContext(ui[1],c);
+ elements.techAuditKind.value='charge-blade';elements.techAuditKind.change();
+ elements.techAuditId.value='CB_CHARGED_DOUBLE_SLASH';elements.techAuditId.change();
+ assert.ok(elements.techAuditOut.innerHTML.includes('未記載'));
+ elements.techAuditKind.value='heavy-bowgun';elements.techAuditKind.change();
+ elements.techAuditId.value='HBG_NORMAL_AMMO_3';elements.techAuditId.change();
+ assert.ok(elements.techAuditOut.innerHTML.includes('32.3'));
+});
+test('audit panel escapes source text and rejects non-web reference links',()=>{
+ const old=c.window.TechniqueDBEngine;
+ c.window.TechniqueDBEngine={...old,audit:()=>({techniqueName:'<img src=x onerror=alert(1)>',calculable:false,numericStatus:'MISSING',currentVersionAudit:'PENDING',reasons:[],registeredHits:[{mv:0,elementModifier:0}],stateRequirement:{},alternatives:[],revisionHistory:[],evidence:[{ref:'<script>bad</script>',url:'javascript:alert(1)'}]})};
+ vm.runInContext(ui[1],c);
+ assert.ok(elements.techAuditOut.innerHTML.includes('&lt;img'));
+ assert.ok(elements.techAuditOut.innerHTML.includes('<td>0</td>'));
+ assert.ok(!elements.techAuditOut.innerHTML.includes('<img'));
+ assert.ok(!elements.techAuditOut.innerHTML.includes('href="javascript:'));
+ c.window.TechniqueDBEngine=old;
+});
+test('split dance panel distinguishes adopted MV and elements from missing part modifiers',()=>{
+ vm.runInContext(ui[1],c);
+ elements.techAuditKind.value='dual-blades';elements.techAuditKind.change();
+ elements.techAuditId.value='DB_DEMON_DANCE_II';elements.techAuditId.change();
+ assert.ok(elements.techAuditOut.innerHTML.includes('MV：採用済み'));
+ assert.ok(elements.techAuditOut.innerHTML.includes('Hit数：確認済み'));
+ assert.ok(elements.techAuditOut.innerHTML.includes('属性補正：採用済み'));
+ assert.ok(elements.techAuditOut.innerHTML.includes('部位補正：未確定'));
+ assert.ok(elements.techAuditOut.innerHTML.includes('属性補正合計 2.8'));
+ assert.ok(elements.techAuditOut.innerHTML.includes('旧属性値（不採用）'));
+ assert.ok(elements.techAuditOut.innerHTML.includes('4Hit / MV合計 63'));
+ assert.ok(elements.techAuditOut.innerHTML.includes('通常ダメージ比較可（資料採用値）'));
+});

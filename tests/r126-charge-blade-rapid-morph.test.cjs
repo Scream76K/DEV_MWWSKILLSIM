@@ -1,0 +1,10 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const match=html.match(/function chargeBladeTechniqueComponents\(techniqueId,state=\{\}\)\{[\s\S]*?\n\}/);
+assert.ok(match,'CB component resolver exists');
+const sandbox={CHARGE_BLADE_TECHNIQUES:{TEST:{name:'test',rapidMorphDamageEligible:true}},techniqueDbGet:()=>({}),techniqueDbHits:()=>[{mv:10,elementModifier:1}],chargeBladeEvidencePhialCount:()=>null};
+vm.createContext(sandbox);vm.runInContext(match[0]+';this.resolve=chargeBladeTechniqueComponents;',sandbox);
+test('CB defaults omitted rapid morph to level zero',()=>assert.equal(sandbox.resolve('TEST',{}).trace.rapidMorphLevel,0));
+test('CB accepts level 0 to 3',()=>{for(const n of [0,1,2,3])assert.equal(sandbox.resolve('TEST',{rapidMorphLevel:n}).trace.rapidMorphLevel,n)});
+test('CB rejects invalid rapid morph levels instead of silently clamping',()=>{for(const n of [-1,4,1.5,'oops',Infinity])assert.throws(()=>sandbox.resolve('TEST',{rapidMorphLevel:n}),/RAPID_MORPH_LEVEL_INVALID/)});

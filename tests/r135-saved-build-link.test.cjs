@@ -1,0 +1,3 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');const root=path.join(__dirname,'..');
+test('saved-build controls exist on evidence page',()=>{const h=fs.readFileSync(path.join(root,'evidence-review.html'),'utf8');for(const id of ['savedA','savedB','applyA','applyB','refreshBuilds'])assert.match(h,new RegExp('id="'+id+'"'));});
+test('saved builds are read-only and weapon kind is not guessed',()=>{const s=fs.readFileSync(path.join(root,'evidence-review.js'),'utf8');assert.match(s,/localStorage\.getItem/);assert.doesNotMatch(s,/localStorage\.setItem/);assert.match(s,/record\.savedBuildRef=/);assert.match(s,/weapon mismatch/);});

@@ -1,0 +1,11 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const match=html.match(/function chargeBladeComponentDiagnostic\(baseline,candidate\)\{[\s\S]*?\n\}/);
+assert.ok(match,'diagnostic function exists');
+const ctx={};vm.createContext(ctx);vm.runInContext(match[0]+';this.run=chargeBladeComponentDiagnostic',ctx);
+const make=(body,phial=0)=>({components:{physicalBody:body,elementalBody:5,axeBoostPhysical:2,axeBoostElement:1,impactPhial:phial,elementalPhial:0}});
+test('CB component changes stay separated',()=>{const x=ctx.run(make(100,20),make(110,30));assert.equal(x.components.physicalBody.delta,10);assert.equal(x.components.impactPhial.delta,10);assert.equal(x.dpsReady,false)});
+test('CB zero baseline percentage is unavailable',()=>{const x=ctx.run(make(100),make(100,10));assert.equal(x.components.impactPhial.percent,null)});
+test('CB missing components fail closed',()=>assert.throws(()=>ctx.run(make(1),{}),/COMPONENTS_MISSING/));
+test('CB negative or NaN components fail closed',()=>{assert.throws(()=>ctx.run(make(1),make(-1)),/INVALID/);assert.throws(()=>ctx.run(make(1),make(NaN)),/INVALID/)});

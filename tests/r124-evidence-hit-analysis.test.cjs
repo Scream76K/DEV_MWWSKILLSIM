@@ -1,0 +1,11 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict');
+const {analyzeHits}=require('../tools/evidence-hit-analysis.cjs');
+const base={weaponId:'heavy-bowgun',gameVersion:'1.042.00.02',videoFile:'A.mp4',equipmentRecorded:true,targetRecorded:true,skillLevelsRecorded:true,hitNumbersReadable:true,conditionsRecorded:true,equipmentId:'set1',targetId:'training',targetPart:'head',distance:'same',buffState:'none',criticalMode:'no-crit',skillCondition:'none',hits:[100,50],hitTypes:['physical','shell']};
+const variant={...base,videoFile:'B.mp4',skillCondition:'skill-lv1',hits:[110,50]};
+test('per-hit delta with component labels remains unverified',()=>{const r=analyzeHits(base,variant);assert.equal(r.ready,true);assert.deepEqual(r.rows.map(x=>x.delta),[10,0]);assert.equal(r.rows[1].component,'shell');assert.equal(r.verificationStatus,'UNVERIFIED')});
+test('hit count mismatch blocks alignment',()=>assert.ok(analyzeHits(base,{...variant,hits:[110],hitTypes:['physical']}).errors.includes('hit count mismatch')));
+test('component order mismatch blocks alignment',()=>assert.ok(analyzeHits(base,{...variant,hitTypes:['shell','physical']}).errors.includes('hit component mismatch')));
+test('one-sided component labels block alignment',()=>assert.ok(analyzeHits(base,{...variant,hitTypes:undefined}).errors.includes('invalid hitTypes')));
+test('zero baseline hit has null percent',()=>{const r=analyzeHits({...base,hits:[0,50]},{...variant,hits:[10,50]});assert.equal(r.rows[0].relativePercent,null)});
+test('uncontrolled conditions block analysis',()=>assert.equal(analyzeHits(base,{...variant,targetPart:'tail'}).ready,false));

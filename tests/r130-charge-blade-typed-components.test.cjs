@@ -1,0 +1,12 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const names=['chargeBladeComponentDiagnostic','chargeBladeComponentIntegrity','chargeBladeTypedComponentComparison'];
+const functions=names.map(name=>{const match=html.match(new RegExp('function '+name+'\\([^]*?\\n\\}'));assert.ok(match,name);return match[0]}).join('\n');
+const ctx={};vm.createContext(ctx);vm.runInContext(functions+';this.compare=chargeBladeTypedComponentComparison;this.integrity=chargeBladeComponentIntegrity',ctx);
+const record=(type,impact=0,element=0)=>({phialType:type,components:{physicalBody:100,elementalBody:20,axeBoostPhysical:5,axeBoostElement:2,impactPhial:impact,elementalPhial:element}});
+test('typed CB diagnostics sum only explicit components',()=>{const x=ctx.compare(record('IMPACT',10),record('IMPACT',20));assert.equal(x.componentSumDelta,10);assert.equal(x.components.impactPhial.delta,10);assert.equal(x.dpsReady,false)});
+test('mixed phial types are not comparable',()=>assert.throws(()=>ctx.compare(record('IMPACT',10),record('ELEMENT',0,10)),/PHIAL_TYPE_MISMATCH/));
+test('impossible dual phial damage rejected',()=>assert.throws(()=>ctx.integrity(record('IMPACT',10,1)),/PHIAL_TYPE_CONFLICT/));
+test('missing phial type rejected',()=>assert.throws(()=>ctx.integrity(record(undefined,10)),/PHIAL_TYPE_REQUIRED/));
+test('component overflow rejected',()=>{const x=record('IMPACT',1e308);x.components.physicalBody=1e308;assert.throws(()=>ctx.integrity(x),/OVERFLOW/)});
