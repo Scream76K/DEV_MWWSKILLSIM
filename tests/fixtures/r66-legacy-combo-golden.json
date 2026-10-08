@@ -1,0 +1,779 @@
+{
+  "great-sword": {
+    "label": "大剣",
+    "moves": [
+      {
+        "id": "gs_draw",
+        "name": "抜刀斬り",
+        "mvs": [
+          77
+        ],
+        "time": 1.2,
+        "source": "community"
+      },
+      {
+        "id": "gs_charge3",
+        "name": "溜め斬り Lv3",
+        "mvs": [
+          160
+        ],
+        "time": 2.4,
+        "source": "community"
+      },
+      {
+        "id": "gs_strong3",
+        "name": "強溜め斬り Lv3",
+        "mvs": [
+          175
+        ],
+        "time": 2.9,
+        "source": "community"
+      },
+      {
+        "id": "gs_tcs3",
+        "name": "真・溜め斬り Lv3",
+        "mvs": [
+          15,
+          201
+        ],
+        "time": 3.4,
+        "source": "community"
+      },
+      {
+        "id": "gs_offset3",
+        "name": "相殺斬り上げ Lv3",
+        "mvs": [
+          137
+        ],
+        "time": 1.55,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "gs_tcs",
+        "name": "基本：溜め斬り→強溜め→真溜め",
+        "moves": [
+          "gs_charge3",
+          "gs_strong3",
+          "gs_tcs3"
+        ]
+      }
+    ]
+  },
+  "long-sword": {
+    "label": "太刀",
+    "moves": [
+      {
+        "id": "ls_base1",
+        "name": "縦斬り",
+        "mvs": [
+          25
+        ],
+        "time": 0.55,
+        "source": "community"
+      },
+      {
+        "id": "ls_base2",
+        "name": "突き",
+        "mvs": [
+          18
+        ],
+        "time": 0.45,
+        "source": "community"
+      },
+      {
+        "id": "ls_base3",
+        "name": "斬り上げ",
+        "mvs": [
+          30
+        ],
+        "time": 0.6,
+        "source": "community"
+      },
+      {
+        "id": "ls_fade",
+        "name": "見切り斬り",
+        "mvs": [
+          25
+        ],
+        "time": 0.7,
+        "source": "community"
+      },
+      {
+        "id": "ls_helm",
+        "name": "兜割（赤）",
+        "mvs": [
+          175
+        ],
+        "time": 2.3,
+        "source": "community"
+      },
+      {
+        "id": "ls_release",
+        "name": "練気解放無双斬り（赤）",
+        "mvs": [
+          285
+        ],
+        "time": 3.2,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "ls_basic",
+        "name": "基本：縦→突き→斬り上げ",
+        "moves": [
+          "ls_base1",
+          "ls_base2",
+          "ls_base3"
+        ]
+      }
+    ]
+  },
+  "sword-and-shield": {
+    "label": "片手剣",
+    "moves": [
+      {
+        "id": "sns_slash",
+        "name": "斬り下ろし",
+        "mvs": [
+          20
+        ],
+        "time": 0.45,
+        "source": "community"
+      },
+      {
+        "id": "sns_horizontal",
+        "name": "水平斬り",
+        "mvs": [
+          20
+        ],
+        "time": 0.45,
+        "source": "community"
+      },
+      {
+        "id": "sns_shield",
+        "name": "盾攻撃",
+        "mvs": [
+          8
+        ],
+        "time": 0.4,
+        "source": "community"
+      },
+      {
+        "id": "sns_falling",
+        "name": "フォールバッシュ",
+        "mvs": [
+          20,
+          40
+        ],
+        "time": 1.15,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "sns_basic",
+        "name": "基本：斬り下ろし→水平斬り→盾攻撃",
+        "moves": [
+          "sns_slash",
+          "sns_horizontal",
+          "sns_shield"
+        ]
+      }
+    ]
+  },
+  "dual-blades": {
+    "label": "双剣",
+    "moves": [
+      {
+        "id": "db_double",
+        "name": "二段斬り",
+        "mvs": [
+          9,
+          9
+        ],
+        "time": 0.65,
+        "source": "community"
+      },
+      {
+        "id": "db_dance1",
+        "name": "鬼人連斬 I",
+        "mvs": [
+          120
+        ],
+        "time": 1.05,
+        "source": "community"
+      },
+      {
+        "id": "db_dance2",
+        "name": "鬼人連斬 II",
+        "mvs": [
+          135
+        ],
+        "time": 1.2,
+        "source": "community"
+      },
+      {
+        "id": "db_dance3",
+        "name": "鬼人連斬 III",
+        "mvs": [
+          138
+        ],
+        "time": 1.3,
+        "source": "community"
+      },
+      {
+        "id": "db_flurry",
+        "name": "鬼人突進連斬",
+        "mvs": [
+          110
+        ],
+        "time": 1.1,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "db_dance",
+        "name": "鬼人連斬 I→II→III",
+        "moves": [
+          "db_dance1",
+          "db_dance2",
+          "db_dance3"
+        ]
+      }
+    ]
+  },
+  "hammer": {
+    "label": "ハンマー",
+    "moves": [
+      {
+        "id": "hm_swing",
+        "name": "縦振り",
+        "mvs": [
+          37
+        ],
+        "time": 0.65,
+        "source": "community"
+      },
+      {
+        "id": "hm_side",
+        "name": "横振り",
+        "mvs": [
+          15
+        ],
+        "time": 0.45,
+        "source": "community"
+      },
+      {
+        "id": "hm_charge2",
+        "name": "溜め2攻撃",
+        "mvs": [
+          45
+        ],
+        "time": 0.9,
+        "source": "community"
+      },
+      {
+        "id": "hm_big",
+        "name": "アッパー",
+        "mvs": [
+          48
+        ],
+        "time": 1,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "hm_basic",
+        "name": "基本：縦振り→横振り→溜め2",
+        "moves": [
+          "hm_swing",
+          "hm_side",
+          "hm_charge2"
+        ]
+      }
+    ]
+  },
+  "hunting-horn": {
+    "label": "狩猟笛",
+    "moves": [
+      {
+        "id": "hh_left",
+        "name": "左ぶん回し",
+        "mvs": [
+          30
+        ],
+        "time": 0.65,
+        "source": "community"
+      },
+      {
+        "id": "hh_forward",
+        "name": "前方攻撃",
+        "mvs": [
+          30
+        ],
+        "time": 0.65,
+        "source": "community"
+      },
+      {
+        "id": "hh_slam",
+        "name": "叩きつけ",
+        "mvs": [
+          30
+        ],
+        "time": 0.8,
+        "source": "community"
+      },
+      {
+        "id": "hh_melody",
+        "name": "演奏攻撃",
+        "mvs": [
+          35
+        ],
+        "time": 1,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "hh_basic",
+        "name": "基本：前方→左ぶん回し→叩きつけ",
+        "moves": [
+          "hh_forward",
+          "hh_left",
+          "hh_slam"
+        ]
+      }
+    ]
+  },
+  "lance": {
+    "label": "ランス",
+    "moves": [
+      {
+        "id": "ln_mid",
+        "name": "中段突き",
+        "mvs": [
+          20
+        ],
+        "time": 0.55,
+        "source": "community"
+      },
+      {
+        "id": "ln_high",
+        "name": "上段突き",
+        "mvs": [
+          22
+        ],
+        "time": 0.55,
+        "source": "community"
+      },
+      {
+        "id": "ln_counter",
+        "name": "カウンター突き",
+        "mvs": [
+          35
+        ],
+        "time": 0.85,
+        "source": "community"
+      },
+      {
+        "id": "ln_charge",
+        "name": "突進",
+        "mvs": [
+          16
+        ],
+        "time": 0.6,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "ln_basic",
+        "name": "基本：中段→上段→中段",
+        "moves": [
+          "ln_mid",
+          "ln_high",
+          "ln_mid"
+        ]
+      }
+    ]
+  },
+  "gunlance": {
+    "label": "ガンランス",
+    "moves": [
+      {
+        "id": "gl_thrust",
+        "name": "踏み込み突き上げ",
+        "mvs": [
+          24
+        ],
+        "time": 0.65,
+        "source": "community"
+      },
+      {
+        "id": "gl_shell",
+        "name": "水平砲撃",
+        "mvs": [
+          20
+        ],
+        "time": 0.55,
+        "source": "community"
+      },
+      {
+        "id": "gl_burst",
+        "name": "フルバースト",
+        "mvs": [
+          60
+        ],
+        "time": 1.25,
+        "source": "community"
+      },
+      {
+        "id": "gl_wyvern",
+        "name": "竜撃砲",
+        "mvs": [
+          140
+        ],
+        "time": 2.8,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "gl_basic",
+        "name": "基本：突き→砲撃→フルバースト",
+        "moves": [
+          "gl_thrust",
+          "gl_shell",
+          "gl_burst"
+        ]
+      }
+    ]
+  },
+  "switch-axe": {
+    "label": "スラッシュアックス",
+    "moves": [
+      {
+        "id": "sa_vertical",
+        "name": "縦斬り",
+        "mvs": [
+          25
+        ],
+        "time": 0.55,
+        "source": "community"
+      },
+      {
+        "id": "sa_horizontal",
+        "name": "横斬り",
+        "mvs": [
+          20
+        ],
+        "time": 0.55,
+        "source": "community"
+      },
+      {
+        "id": "sa_heavy",
+        "name": "斧強化叩きつけ",
+        "mvs": [
+          35
+        ],
+        "time": 0.9,
+        "source": "community"
+      },
+      {
+        "id": "sa_element",
+        "name": "属性解放突き",
+        "mvs": [
+          15,
+          15,
+          15,
+          55
+        ],
+        "time": 2,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "sa_basic",
+        "name": "基本：縦→横→斧強化叩きつけ",
+        "moves": [
+          "sa_vertical",
+          "sa_horizontal",
+          "sa_heavy"
+        ]
+      }
+    ]
+  },
+  "charge-blade": {
+    "label": "チャージアックス",
+    "moves": [
+      {
+        "id": "cb_check",
+        "name": "牽制斬り",
+        "mvs": [
+          20
+        ],
+        "time": 0.55,
+        "source": "community"
+      },
+      {
+        "id": "cb_spin",
+        "name": "回転斬り",
+        "mvs": [
+          30
+        ],
+        "time": 0.75,
+        "source": "community"
+      },
+      {
+        "id": "cb_axe",
+        "name": "斧：強化叩きつけ",
+        "mvs": [
+          40
+        ],
+        "time": 0.9,
+        "source": "community"
+      },
+      {
+        "id": "cb_saed",
+        "name": "高出力属性解放斬り",
+        "mvs": [
+          120
+        ],
+        "time": 1.9,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "cb_basic",
+        "name": "基本：牽制→回転斬り→高出力",
+        "moves": [
+          "cb_check",
+          "cb_spin",
+          "cb_saed"
+        ]
+      }
+    ]
+  },
+  "insect-glaive": {
+    "label": "操虫棍",
+    "moves": [
+      {
+        "id": "ig_slash",
+        "name": "飛円斬り",
+        "mvs": [
+          30
+        ],
+        "time": 0.65,
+        "source": "community"
+      },
+      {
+        "id": "ig_combo",
+        "name": "強化連続斬り上げ",
+        "mvs": [
+          40
+        ],
+        "time": 0.9,
+        "source": "community"
+      },
+      {
+        "id": "ig_jump",
+        "name": "飛燕",
+        "mvs": [
+          24
+        ],
+        "time": 0.6,
+        "source": "community"
+      },
+      {
+        "id": "ig_rising",
+        "name": "急襲突き",
+        "mvs": [
+          60
+        ],
+        "time": 1.05,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "ig_basic",
+        "name": "基本：飛円→連続斬り上げ→飛燕",
+        "moves": [
+          "ig_slash",
+          "ig_combo",
+          "ig_jump"
+        ]
+      }
+    ]
+  },
+  "light-bowgun": {
+    "label": "ライトボウガン",
+    "moves": [
+      {
+        "id": "lbg_normal3",
+        "name": "通常弾 Lv3",
+        "mvs": [
+          10
+        ],
+        "time": 0.35,
+        "source": "community"
+      },
+      {
+        "id": "lbg_pierce2",
+        "name": "貫通弾 Lv2",
+        "mvs": [
+          7,
+          7,
+          7
+        ],
+        "time": 0.5,
+        "source": "community"
+      },
+      {
+        "id": "lbg_rapid",
+        "name": "速射",
+        "mvs": [
+          10,
+          10,
+          10
+        ],
+        "time": 0.85,
+        "source": "community"
+      },
+      {
+        "id": "lbg_special",
+        "name": "特殊弾",
+        "mvs": [
+          35
+        ],
+        "time": 1.1,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "lbg_basic",
+        "name": "基本：通常弾 Lv3",
+        "moves": [
+          "lbg_normal3"
+        ]
+      }
+    ]
+  },
+  "heavy-bowgun": {
+    "label": "ヘビィボウガン",
+    "moves": [
+      {
+        "id": "hbg_normal3",
+        "name": "通常弾 Lv3",
+        "mvs": [
+          10
+        ],
+        "time": 0.4,
+        "source": "community"
+      },
+      {
+        "id": "hbg_pierce2",
+        "name": "貫通弾 Lv2",
+        "mvs": [
+          7,
+          7,
+          7
+        ],
+        "time": 0.55,
+        "source": "community"
+      },
+      {
+        "id": "hbg_cluster",
+        "name": "徹甲榴弾",
+        "mvs": [
+          35
+        ],
+        "time": 0.9,
+        "source": "community"
+      },
+      {
+        "id": "hbg_special",
+        "name": "機関竜弾",
+        "mvs": [
+          100
+        ],
+        "time": 2.2,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "hbg_basic",
+        "name": "基本：通常弾 Lv3",
+        "moves": [
+          "hbg_normal3"
+        ]
+      }
+    ]
+  },
+  "bow": {
+    "label": "弓",
+    "moves": [
+      {
+        "id": "bow_shot",
+        "name": "射撃 Lv3",
+        "mvs": [
+          24
+        ],
+        "time": 0.45,
+        "source": "community"
+      },
+      {
+        "id": "bow_spread",
+        "name": "剛射",
+        "mvs": [
+          20,
+          20
+        ],
+        "time": 0.75,
+        "source": "community"
+      },
+      {
+        "id": "bow_arc",
+        "name": "曲射",
+        "mvs": [
+          10,
+          10,
+          10
+        ],
+        "time": 1.1,
+        "source": "community"
+      },
+      {
+        "id": "bow_power",
+        "name": "竜の一矢",
+        "mvs": [
+          10,
+          10,
+          10,
+          30
+        ],
+        "time": 1.8,
+        "source": "community"
+      }
+    ],
+    "presets": [
+      {
+        "id": "bow_basic",
+        "name": "基本：射撃→剛射",
+        "moves": [
+          "bow_shot",
+          "bow_spread"
+        ]
+      }
+    ]
+  }
+}
