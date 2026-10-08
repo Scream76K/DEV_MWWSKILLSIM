@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "release": "r139",
+  "purpose": "Repository source evidence; NOT runtime database",
+  "runtimeArchitecture": {
+    "mhdb": "fetched via API at runtime; not bundled",
+    "techniqueDb": "embedded in index.html; no standalone authoritative JSON in r139",
+    "comboDefinitions": "embedded in index.html; no standalone authoritative JSON in r139",
+    "templates": "do not assume standalone JSON exists"
+  },
+  "evidenceFiles": [
+    "evidence/burst-boost-mhdb-20261007.json",
+    "evidence/conditional-attack-mhdb-20261007.json",
+    "evidence/conditional-element-ambush-mhdb-20261007.json",
+    "evidence/offensive-guard-mhdb-20261007.json"
+  ],
+  "excluded": {
+    "LEGACY_CANONICAL_MAPPING_R68.json": "historical mapping; not current runtime data",
+    "R121_CAPTURE_MANIFEST.json": "capture log, not runtime data",
+    "tests/*.json": "test fixtures, not runtime data",
+    "package-lock.json": "dependency lockfile, not game data"
+  },
+  "note": "Do not import evidence JSON as numeric runtime truth; preserve verification gates."
+}
