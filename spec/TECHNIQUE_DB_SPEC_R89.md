@@ -1,9 +1,0 @@
-# r89 Attack component order and Offensive Guard
-
-calcBuild now stores attackComponents: weaponBase (after Artia/restoration, before combat skills), normalMultiplier and normalFlat. Attack Boost applies multiplication before addition: base 200 at Lv5 is 200 * 1.04 + 9 = 217, replacing 217.36. This fixes displayed build stats and dependent damage/DPS comparisons without changing technique data. MHDB Japanese skill72 rank descriptions and https://macarongamemo.com/entry/mhwilds-damage_calculation establish reference order: weapon base times multiplicative modifiers plus additive modifiers. Element calculations remain unchanged.
-
-Offensive Guard maximum reference now uses MHDB skill66 multipliers 1.05/1.1/1.15 (source snapshot evidence/offensive-guard-mhdb-20261007.json). Its condition is TIMED_GUARD_PREACTIVATED. Supported guarding kinds are great sword, sword and shield, lance, gunlance, charge blade, heavy bowgun. Dedicated weapon handlers remain pending where applicable; their gate cannot be bypassed by having a guard condition.
-
-Maximum reference = weaponBase * normalMultiplier * conditionalMultiplier + normalFlat + conditionalFlat. Agitator/Burst and other additive buffs are not multiplied by Guard. Missing, malformed, negative, nonfinite or inconsistent attackComponents prevent maximum guard calculation; normal reference remains available. No inverse reconstruction from displayed/final attack. Guarding weapon mismatch is also pending. Trace and UI show its multiplier and condition. Old pure callers lacking components can still calculate additive-only references.
-
-Reference order is sourced but live game version/equipment reproduction remains unverified. This does not complete elemental critical, weapon-state maxima, every conditional skill, mid-combo guard activation or buff expiry. Existing fixed-width comparison and explicit normal baseline denominator are preserved.

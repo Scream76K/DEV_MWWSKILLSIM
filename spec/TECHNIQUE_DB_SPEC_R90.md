@@ -1,9 +1,0 @@
-# r90 Active bonus effect contract and damage gate
-
-Audit found an integration gap: calcSetSkills produces effect names (e.g. 連撃強化Ⅱ, 灼熱化Ⅰ, 黒蝕一体Ⅱ) while some readiness lists key parent names. Such effects could previously be ignored while STANDARD comparison returned numeric reference power. This release prevents that output; it does not implement their numeric damage effects.
-
-activatedBonusEntry now retains official source skill ID, selected rank level, count, requirement, source type, parent name and effect name. calcBuild copies only active, highest eligible bonusDisplay entries to stats.activeBonusEffects. UI activation and calculation consume the same resulting entries. Tests cover two/four-piece highest rank and three-piece group activation. Existing weapon part counting remains in calcSetSkills.
-
-Every active group/series effect currently requires a per-effect HP damage classification; no effect is marked fully integrated by this release. While classification is pending, both STANDARD normal/maximum power and equipment-derived one-hit comparison/complete combo DPS are withheld with the active effect names. Shared route evaluation carries the pending reason to reports and AI. This intentionally includes defense-only effects until a verified NO_HP_DAMAGE classification is added. Builds without active bonuses retain current reference calculations. Standalone explicit numeric-input calculators are not an equipment completeness guarantee.
-
-Next classification categories: no HP damage, unconditional attack/element/affinity, conditional stat modifiers, extra hit/fixed/element damage, state-triggered or time-dependent effects. Each needs a source ID/rank mapping, formulas/data and readiness policy. Priority: 連撃強化, frenzy/黒蝕一体, ヌシ group skills, event-based 灼熱化 and 巨戟 effects. Existing parent-name maximum-affinity shortcuts must not be treated as complete implementations.
