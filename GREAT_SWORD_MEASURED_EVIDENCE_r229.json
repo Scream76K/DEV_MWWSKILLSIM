@@ -1,0 +1,177 @@
+{
+  "schema": "r229-user-supplied-measurement-evidence-v1",
+  "targetVersion": "1.042.00.02",
+  "source": {
+    "url": "https://x.com/zarugaruku2/status/2000792672529998181",
+    "sourceType": "independent_damage_based_inference",
+    "imageFiles": [
+      "IMG_9732.jpeg",
+      "086670A2-042F-4DCD-9816-6C8970C73E03.png",
+      "5E9E29EE-D208-45C1-8F74-34318929CCC9.png"
+    ],
+    "sourceDate": "2025-12",
+    "versionExplicitlyVerified": false
+  },
+  "method": {
+    "mvFormula": "round(damage / (trueRaw * sharpness * rawHitzone), 2) * 100",
+    "elementFormula": "(totalDamage - rawDamage) / (elementValue * sharpness * elementalHitzone)",
+    "rounding": "source tables round to 2 decimal places; displayed damage is rounded",
+    "note": "Raw-damage and elemental-damage separation depends on source setup; do not derive unlisted values"
+  },
+  "records": [
+    {
+      "techniqueId": "GS_CHARGED_SLASH_1",
+      "name": "溜め斬りⅠ",
+      "measuredInferredMv": 106,
+      "measuredInferredElementModifier": 1.1,
+      "dbMvAtAudit": 106,
+      "dbElementModifierAtAudit": 1.1,
+      "mvDelta": 0,
+      "elementDelta": 0.0,
+      "status": "MATCH_NOT_VERSION_CERTIFIED",
+      "allowDbWrite": false
+    },
+    {
+      "techniqueId": "GS_CHARGED_SLASH_2",
+      "name": "溜め斬りⅡ",
+      "measuredInferredMv": 135,
+      "measuredInferredElementModifier": 1.3,
+      "dbMvAtAudit": 136,
+      "dbElementModifierAtAudit": 1.3,
+      "mvDelta": -1,
+      "elementDelta": 0.0,
+      "status": "CONFLICT_REQUIRES_LATER_VERSION_CHECK",
+      "allowDbWrite": false
+    },
+    {
+      "techniqueId": "GS_CHARGED_SLASH_3",
+      "name": "溜め斬りⅢ",
+      "measuredInferredMv": 176,
+      "measuredInferredElementModifier": 1.5,
+      "dbMvAtAudit": 176,
+      "dbElementModifierAtAudit": 1.5,
+      "mvDelta": 0,
+      "elementDelta": 0.0,
+      "status": "MATCH_NOT_VERSION_CERTIFIED",
+      "allowDbWrite": false
+    },
+    {
+      "techniqueId": "GS_STRONG_CHARGED_SLASH_1",
+      "name": "強溜め斬りⅠ",
+      "measuredInferredMv": 111,
+      "measuredInferredElementModifier": 1.4,
+      "dbMvAtAudit": 111,
+      "dbElementModifierAtAudit": 1.4,
+      "mvDelta": 0,
+      "elementDelta": 0.0,
+      "status": "MATCH_NOT_VERSION_CERTIFIED",
+      "allowDbWrite": false
+    },
+    {
+      "techniqueId": "GS_STRONG_CHARGED_SLASH_2",
+      "name": "強溜め斬りⅡ",
+      "measuredInferredMv": 144,
+      "measuredInferredElementModifier": 1.6,
+      "dbMvAtAudit": 144,
+      "dbElementModifierAtAudit": 1.6,
+      "mvDelta": 0,
+      "elementDelta": 0.0,
+      "status": "MATCH_NOT_VERSION_CERTIFIED",
+      "allowDbWrite": false
+    },
+    {
+      "techniqueId": "GS_STRONG_CHARGED_SLASH_3",
+      "name": "強溜め斬りⅢ",
+      "measuredInferredMv": 187,
+      "measuredInferredElementModifier": 1.8,
+      "dbMvAtAudit": 187,
+      "dbElementModifierAtAudit": 1.8,
+      "mvDelta": 0,
+      "elementDelta": 0.0,
+      "status": "MATCH_NOT_VERSION_CERTIFIED",
+      "allowDbWrite": false
+    },
+    {
+      "techniqueId": "GS_TRUE_CHARGED_SLASH_1",
+      "name": "真・溜め斬りⅠ（強撃なし・主打）",
+      "measuredInferredMv": 112,
+      "measuredInferredElementModifier": 2.0,
+      "dbMvAtAudit": 112,
+      "dbElementModifierAtAudit": 2.0,
+      "mvDelta": 0,
+      "elementDelta": 0.0,
+      "status": "MATCH_NOT_VERSION_CERTIFIED",
+      "allowDbWrite": false
+    },
+    {
+      "techniqueId": "GS_TRUE_CHARGED_SLASH_2",
+      "name": "真・溜め斬りⅡ（強撃なし・主打）",
+      "measuredInferredMv": 164,
+      "measuredInferredElementModifier": 2.2,
+      "dbMvAtAudit": 164,
+      "dbElementModifierAtAudit": 2.2,
+      "mvDelta": 0,
+      "elementDelta": 0.0,
+      "status": "MATCH_NOT_VERSION_CERTIFIED",
+      "allowDbWrite": false
+    },
+    {
+      "techniqueId": "GS_TRUE_CHARGED_SLASH_3",
+      "name": "真・溜め斬りⅢ（強撃なし・主打）",
+      "measuredInferredMv": 209,
+      "measuredInferredElementModifier": 2.5,
+      "dbMvAtAudit": 209,
+      "dbElementModifierAtAudit": 2.5,
+      "mvDelta": 0,
+      "elementDelta": 0.0,
+      "status": "MATCH_NOT_VERSION_CERTIFIED",
+      "allowDbWrite": false
+    },
+    {
+      "techniqueId": "GS_TRUE_CHARGED_SLASH_1_STRONG",
+      "name": "真・溜め斬りⅠ（強撃・主打）",
+      "measuredInferredMv": 134,
+      "measuredInferredElementModifier": 2.0,
+      "dbMvAtAudit": 134,
+      "dbElementModifierAtAudit": 2.0,
+      "mvDelta": 0,
+      "elementDelta": 0.0,
+      "status": "MATCH_NOT_VERSION_CERTIFIED",
+      "allowDbWrite": false
+    },
+    {
+      "techniqueId": "GS_TRUE_CHARGED_SLASH_2_STRONG",
+      "name": "真・溜め斬りⅡ（強撃・主打）",
+      "measuredInferredMv": 199,
+      "measuredInferredElementModifier": 2.2,
+      "dbMvAtAudit": 199,
+      "dbElementModifierAtAudit": 2.2,
+      "mvDelta": 0,
+      "elementDelta": 0.0,
+      "status": "MATCH_NOT_VERSION_CERTIFIED",
+      "allowDbWrite": false
+    },
+    {
+      "techniqueId": "GS_TRUE_CHARGED_SLASH_3_STRONG",
+      "name": "真・溜め斬りⅢ（強撃・主打）",
+      "measuredInferredMv": 267,
+      "measuredInferredElementModifier": 2.5,
+      "dbMvAtAudit": 267,
+      "dbElementModifierAtAudit": 2.5,
+      "mvDelta": 0,
+      "elementDelta": 0.0,
+      "status": "MATCH_NOT_VERSION_CERTIFIED",
+      "allowDbWrite": false
+    }
+  ],
+  "summary": {
+    "total": 12,
+    "matches": 11,
+    "conflicts": 1
+  },
+  "rules": {
+    "automaticPromotion": false,
+    "requireLaterPatchReview": true,
+    "keepSourceVersionUnverified": true
+  }
+}
