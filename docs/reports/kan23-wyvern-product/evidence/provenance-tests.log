@@ -1,0 +1,23 @@
+✔ audit enumerates all 14 weapon types (1.537708ms)
+✔ registered equals calculable plus blocked for every weapon (1.089459ms)
+✔ audit never promotes source-conflicted data to calculable (0.263ms)
+✔ audit reports evidence gaps without modifying source data (2.139208ms)
+✔ blocked examples reference real records (0.921167ms)
+✔ triage accounts for 497 baseline blocked records plus KAN21 SAED and KAN24 scoped rule (1.468459ms)
+✔ all weapon kinds are covered (1.420667ms)
+✔ all records follow source, user, measurement escalation policy (1.014792ms)
+✔ no blocked record is automatically confirmed or sent for measurement (1.284084ms)
+✔ triage is read-only and repeatable (4.129417ms)
+✔ r222: all blocked techniques remain represented (2.572333ms)
+✔ r222: source review is never silently marked complete (1.595417ms)
+✔ r222: conflicting sources are routed for review, not auto adoption (1.323166ms)
+✔ r222: every record has explicit next route and reference version (1.376083ms)
+✔ r222: route totals reconcile with inventory (1.094ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 50.551334
