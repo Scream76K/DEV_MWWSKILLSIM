@@ -4232,6 +4232,20 @@ function validateP0EquipmentSupport(rows){
     if(w.phial!=='element')throw Error('P0_WEAPON_STATE_CONFLICT:選択武器は強属性ビンSAEDの対象ではありません。');
   }
 }
+function evaluateP0DamageRoute(rows){
+  let context=null,result;
+  try{
+    if(!rows.length)throw Error('COMBO_NOT_SELECTED');
+    validateP0EquipmentSupport(rows);
+    const shellOnly=comboKind()==='gunlance'&&rows.every(r=>comboMove(r.techniqueId)?.handler==='GunlanceShellReferenceHandler');
+    context={...comboDamageContext({ignoreWeaponElement:shellOnly||['heavy-bowgun','light-bowgun'].includes(comboKind()),requireKnownInputs:true,shellOnly}),critBonus:skillLevel(calcState.total||{},['超会心','Critical Boost'])};
+    const unavailable=rows.map((r,index)=>({r,index,move:comboMove(r.techniqueId,calcState.stats)})).filter(x=>!x.move||x.move.numericOrigin!=='CANONICAL_DB');
+    if(unavailable.length){
+      result={status:'BLOCKED',damage:null,stages:[],blocked:unavailable.map(x=>({index:x.index+1,id:x.r.techniqueId,name:x.move?.name||x.r.techniqueId,reason:'TECHNIQUE_DB_CONNECTION_PENDING:'+x.r.techniqueId})),context};
+    }else{context=prepareP0ShellContext(rows,prepareP0RangedContext(rows,context));const routeStats=shellOnly||['heavy-bowgun','light-bowgun'].includes(comboKind())?{...calcState.stats,element:0,elementKnown:true,typeKnown:true,elementStatus:'KNOWN'}:calcState.stats;result=evaluateComboRoute(rows,context,{stats:routeStats});}
+  }catch(e){result={status:'BLOCKED',damage:null,stages:[],blocked:[{reason:String(e.message||e)}],context};}
+  return result;
+}
 function calcP0Damage(mode,{remember=true}={}){
   const outputs={single:'singleTechniqueDamageOut',template:'templateComboDamageOut',user:'userComboDamageOut'};
   const out=$(outputs[mode]);if(!out)return null;
@@ -4246,13 +4260,7 @@ function calcP0Damage(mode,{remember=true}={}){
       rows=preset.moves.map(techniqueId=>({techniqueId}));
     }else{App.combo.syncFromDOM();rows=App.state.combo.moves;}
     if(!rows.length)throw Error('技を追加してください。');
-    validateP0EquipmentSupport(rows);
-    const shellOnly=comboKind()==='gunlance'&&rows.every(r=>comboMove(r.techniqueId)?.handler==='GunlanceShellReferenceHandler');
-    context={...comboDamageContext({ignoreWeaponElement:shellOnly||['heavy-bowgun','light-bowgun'].includes(comboKind()),requireKnownInputs:true,shellOnly}),critBonus:skillLevel(calcState.total||{},['超会心','Critical Boost'])};
-    const unavailable=rows.map((r,index)=>({r,index,move:comboMove(r.techniqueId,calcState.stats)})).filter(x=>!x.move||x.move.numericOrigin!=='CANONICAL_DB');
-    if(unavailable.length){
-      result={status:'BLOCKED',damage:null,stages:[],blocked:unavailable.map(x=>({index:x.index+1,id:x.r.techniqueId,name:x.move?.name||x.r.techniqueId,reason:'TECHNIQUE_DB_CONNECTION_PENDING:'+x.r.techniqueId})),context};
-    }else{context=prepareP0ShellContext(rows,prepareP0RangedContext(rows,context));const routeStats=shellOnly||['heavy-bowgun','light-bowgun'].includes(comboKind())?{...calcState.stats,element:0,elementKnown:true,typeKnown:true,elementStatus:'KNOWN'}:calcState.stats;result=evaluateComboRoute(rows,context,{stats:routeStats});}
+    result=evaluateP0DamageRoute(rows);context=result.context;
   }catch(e){result={status:'BLOCKED',damage:null,stages:[],blocked:[{reason:String(e.message||e)}],context};}
   const label=mode==='single'?'選択技':mode==='template'?'テンプレコンボ':'指定コンボ';
   if(result.damage==null||!Number.isFinite(result.damage))out.innerHTML='<b>'+label+'：未算出</b><div class="small">'+(result.blocked||[]).map(x=>esc((x.name?x.name+'：':'')+comboBlockedMessage(x.reason))).join('<br>')+'</div>';
@@ -7452,8 +7460,14 @@ function compareSnapshot(name,snapshot,cond){
     else if(result!=null){dpsStatus='UNVERIFIED';dpsReason='COMBO_DPS_UNVERIFIED';}
   }catch(e){dpsStatus='BLOCKED';dpsReason=String(e.message||e);}
   if(dps==null&&!dpsReason)dpsReason=document.querySelector('.comboRow .cmove')?(bonusDamagePendingReason(st)||'COMBO_DAMAGE_OR_TIMING_PENDING'):'COMBO_NOT_SELECTED';
+  let referenceCombo;
+  try{
+    const routeRows=[...document.querySelectorAll('.comboRow .cmove')].map(x=>({techniqueId:x.value}));
+    const route=evaluateP0DamageRoute(routeRows);
+    referenceCombo={techniqueCount:routeRows.length,status:Number.isFinite(route.damage)?'PROVISIONAL_REFERENCE':'BLOCKED',damage:route.damage??null,context:route.context,blocked:route.blocked||[],stages:(route.stages||[]).map(x=>({index:x.index,techniqueId:x.id,canonicalTechniqueId:x.move?.canonicalTechniqueId??null,name:x.name,damage:x.result?.total??null,hits:x.result?.hits||[]}))};
+  }catch(e){referenceCombo={status:'BLOCKED',damage:null,blocked:[{reason:'P0_COMPARISON_CONTEXT_PENDING:'+String(e.message||e)}],stages:[]};}
   const kind=canonicalWeaponKind(selectedWeapon()),power=standardPowerForStats(kind,st,{...cond,cb:skillLevel(calcState.total||{},['超会心','Critical Boost'])},calcState.total||{});
-  return {name,kind,power,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:st.element,elementType:String(st.elementType||''),elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason,damage:dmg,dps,dpsStatus,damageReason,dpsReason,comboVerification,referenceDps:comboVerification?.referenceDps??null,referenceDpsStatus:comboVerification?.referenceDpsStatus??'NOT_CALCULATED'};
+  return {name,kind,power,referenceCombo,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:st.element,elementType:String(st.elementType||''),elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason,damage:dmg,dps,dpsStatus,damageReason,dpsReason,comboVerification,referenceDps:comboVerification?.referenceDps??null,referenceDpsStatus:comboVerification?.referenceDpsStatus??'NOT_CALCULATED'};
 }
 function comparisonReasonText(reason){
   const text=String(reason||'');
@@ -7577,6 +7591,11 @@ function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
   h+='<tr data-comparison-metric="dps-index"><th>DPS指数</th>'+rows.map((r,i)=>cell(relative[i]===null?'—':comparisonDisplayNumber(relative[i].index),relative[i]!==null&&r.dps===mp)).join('')+'</tr>';
   h+='<tr data-comparison-metric="dps-change"><th>基準比増減</th>'+relative.map(x=>cell(x===null?'—':(x.change>0?'+':x.change<0?'−':'')+comparisonDisplayNumber(x.change)+'%',false)).join('')+'</tr>';
   if(rows.some(r=>r.referenceDpsStatus==='PROVISIONAL_REFERENCE'))h+='<tr data-comparison-metric="reference-dps"><th>コンボDPS（暫定・参考）</th>'+rows.map(r=>cell(!equipmentElementPendingReason(r)&&r.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&r.comboVerification?.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&Number.isFinite(r.referenceDps)&&r.referenceDps>=0?comparisonDisplayNumber(r.referenceDps):'未算出')).join('')+'</tr>';
+  if(rows.some(r=>r.referenceCombo?.techniqueCount>0)){
+    h+='<tr data-comparison-metric="reference-combo-damage"><th>指定コンボ合計（暫定・参考）</th>'+rows.map(r=>cell(Number.isFinite(r.referenceCombo?.damage)?comparisonDisplayNumber(r.referenceCombo.damage):'未算出')).join('')+'</tr>';
+    h+='<tr data-comparison-metric="reference-combo-relative"><th>指定コンボ相対（基準100）</th>'+rows.map(r=>{const v=referenceComboChange(r,baseline);return cell(v?comparisonDisplayNumber(v.index)+'（'+(v.changePercent>=0?'+':'')+v.changePercent.toFixed(1)+'%）':'未算出');}).join('')+'</tr>';
+    h+='<tr><th>指定コンボ保留理由</th>'+rows.map(r=>cell((r.referenceCombo?.blocked||[]).map(x=>comboBlockedMessage(x.reason)).join(' / ')||'—')).join('')+'</tr>';
+  }
   return h+'</tbody></table></div>';
 }
 function comparisonCoverageReason(row,baseline,metric){
@@ -7641,6 +7660,14 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   return h+'</div><div class="compare-note">基準：'+esc(baseline.name)+'。DPSは非正規化の計算値です。DPS指数・増減率は補助情報です。'+(ready?'':'基準DPSが未算出・0以下の場合、指数と増減率は算出しません。')+'太字は各項目で数値が最大のセットです。1ヒット期待値とDPSは現在Step 5の攻撃条件を共通条件として計算します。DPSは最大会心率を使用します。所要時間は参考値のためDPSも参考値です。</div>';
 }
 function renderCachedBuildComparison(){if(lastBuildComparisonRows)$('compareOut').innerHTML=renderCompareTable(lastBuildComparisonRows,{baselineIndex:lastBuildComparisonBaselineIndex});}
+function referenceComboChange(row,baseline){
+  const a=baseline?.referenceCombo,b=row?.referenceCombo;
+  if(row?.kind!==baseline?.kind||a?.status!=='PROVISIONAL_REFERENCE'||b?.status!=='PROVISIONAL_REFERENCE'||!Number.isFinite(a.damage)||a.damage<=0||!Number.isFinite(b.damage)||b.damage<0)return null;
+  const ids=x=>(x.stages||[]).map(s=>s.canonicalTechniqueId||s.techniqueId);
+  if(JSON.stringify(ids(a))!==JSON.stringify(ids(b)))return null;
+  const index=b.damage/a.damage*100;
+  return {index,changePercent:index-100,scope:'SAME_P0_ROUTE_DAMAGE_ONLY_REFERENCE'};
+}
 function createBuildComparisonReport(){
   if(!lastBuildComparisonRows?.length||!lastBuildComparisonContext)return null;
   const index=lastBuildComparisonBaselineIndex,baseline=lastBuildComparisonRows[index];if(!baseline)return null;
@@ -7649,7 +7676,7 @@ function createBuildComparisonReport(){
     const row=pending?{...sourceRow,damage:null,damageReason:pending,dps:null,dpsStatus:'BLOCKED',dpsReason:pending,power:{...sourceRow.power,normal:null,maximum:null,status:'PENDING',reason:pending}}:sourceRow;
     const relative=comparisonDpsIndex(row,baseline),dps=comparisonDpsValue(row);
     const referenceDps=!pending&&row.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&row.comboVerification?.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&Number.isFinite(row.referenceDps)&&row.referenceDps>=0?row.referenceDps:null;
-    return {...row,referenceDps,referenceDpsStatus:pending?'BLOCKED':referenceDps===null?(row.referenceDpsStatus==='PROVISIONAL_REFERENCE'?'DATA_PENDING':row.referenceDpsStatus||'NOT_CALCULATED'):'PROVISIONAL_REFERENCE',relativePowerIndex:comparisonPowerIndex(row,baseline)?.normal??null,relativeMaximumPowerIndex:comparisonPowerIndex(row,baseline)?.maximum??null,powerChange:comparisonPowerChange(row,baseline),powerIndex:row.power?.normal?.comparisonPower??null,maxPowerIndex:row.power?.maximum?.comparisonPower??null,dps,dpsStatus:dps===null?(row.dpsStatus&&row.dpsStatus!=='VERIFIED'?row.dpsStatus:Number.isFinite(row.dps)?'UNVERIFIED':'NOT_CALCULATED'):'VERIFIED',dpsReason:dps===null?(row.dpsReason||'COMBO_DPS_UNVERIFIED'):null,dpsIndex:relative?.index??null,dpsChangePercent:relative?.change??null};
+    return {...row,referenceComboChange:referenceComboChange(row,baseline),referenceDps,referenceDpsStatus:pending?'BLOCKED':referenceDps===null?(row.referenceDpsStatus==='PROVISIONAL_REFERENCE'?'DATA_PENDING':row.referenceDpsStatus||'NOT_CALCULATED'):'PROVISIONAL_REFERENCE',relativePowerIndex:comparisonPowerIndex(row,baseline)?.normal??null,relativeMaximumPowerIndex:comparisonPowerIndex(row,baseline)?.maximum??null,powerChange:comparisonPowerChange(row,baseline),powerIndex:row.power?.normal?.comparisonPower??null,maxPowerIndex:row.power?.maximum?.comparisonPower??null,dps,dpsStatus:dps===null?(row.dpsStatus&&row.dpsStatus!=='VERIFIED'?row.dpsStatus:Number.isFinite(row.dps)?'UNVERIFIED':'NOT_CALCULATED'):'VERIFIED',dpsReason:dps===null?(row.dpsReason||'COMBO_DPS_UNVERIFIED'):null,dpsIndex:relative?.index??null,dpsChangePercent:relative?.change??null};
   });
   return JSON.parse(JSON.stringify({format:'MHWildsBuildComparison',schemaVersion:2,release:'r249',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,baseline:{index,name:baseline.name,damage:equipmentElementPendingReason(baseline)?null:baseline.power?.normal?.comparisonPower??null,components:!equipmentElementPendingReason(baseline)&&baseline.power?.normal?{physical:baseline.power.normal.physical,element:baseline.power.normal.element,special:baseline.power.normal.special}:null},context:lastBuildComparisonContext,coverage:comparisonCoverageSummary(lastBuildComparisonRows||[],baseline),results,notes:['powerChangeは基準通常STANDARDのダメージからの変化率（%）。componentChangePercentは各成分自身の基準値からの変化率。componentContributionPercentは基準全体に対する増減寄与（百分率ポイント）。','powerIndex/maxPowerIndexは非正規化の計算値です。relativePowerIndex/relativeMaximumPowerIndexは基準通常STANDARD=100の指数です。変化率はpowerChangeに分離します。','参考計算であり実機検証済みを意味しません。','DPS未算出の理由は推定しません。','食事・アイテム等の追加状態は取得していません。']}));
 }

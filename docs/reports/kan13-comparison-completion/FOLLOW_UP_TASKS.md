@@ -1,0 +1,5 @@
+# Separate follow-ups (no implementation in this change)
+
+KAN-14 Safari owner check: save backup first; same specified combo standalone/saved comparison parity; baseline selector; unknown state reasons; JSON restore; mobile no overflow. Record Safari/macOS version and exact reproduction. Chromium automation is not Safari verification.
+KAN-14 CI reproducibility: install package.json dependencies in a clean checkout without the local node_modules symlink; pin supported Node/Python/Playwright browser environment; run Node/DOM/Browser+OCR/template gates. HBG analysis tests depend on Python; resolve portable test-only runtime selection separately. No workflow/publishing change here.
+KAN-23 HBG Wyvern: product connection remains disabled. Prepare conditional-effect contract, old/new JSON evaluation separation and 25-test source-sync review evidence; initial supplement review received from Eisen, but current production Handler adoption requires separate approval. Keep 5 explosions vs 2Hit unresolved. No new numbers/OCR change/owner shooting request.

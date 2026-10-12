@@ -1,0 +1,3 @@
+# KAN-13 damage-only saved comparison connection
+Base: develop 657bda43. Product changes stay on codex/kan13-damage-comparison.
+Extract the current P0 route evaluator without changing numerical formulas. Reuse it in saved comparison, including handler preparation, equipment/state guards and current shared P0 conditions. Add referenceCombo diagnostics and same-route baseline-100 damage changes, separate from STANDARD powerIndex and formal DPS. Preserve JSON keys and restore state. First regressions: GL shell parity/stock, blocked components, multi-build relative changes and old power/affinity fields. HBG Wyvern remains disconnected. Safari and reproducible CI are separate follow-ups. No commit/push/main/publication in this phase.
