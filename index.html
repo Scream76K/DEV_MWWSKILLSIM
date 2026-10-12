@@ -3764,7 +3764,7 @@ const DIRECT_CANONICAL_COMBO_CATALOG=techniqueDbDeepFreeze({
   'hammer':['HAM_VERTICAL_II','HAM_MIGHTY_CHARGE_UPPERCUT'],
   'lance':['LAN_MID_THRUST_I','LAN_MID_THRUST_II','LAN_MID_THRUST_III','LAN_TRIPLE_THRUST'],
   'hunting-horn':['HH_LEFT_SWING','HH_FORWARD_ATTACK','HH_RIGHT_SWING','HH_BACKWARD_ATTACK'],
-  'insect-glaive':['IG_DIAGONAL_SLASH','IG_SWEEP'],
+  'insect-glaive':['IG_DIAGONAL_SLASH','IG_SWEEP','IG_DOUBLE_SLASH'],
   'gunlance':['GL_SLAM','GL_SWEEP'],
   'charge-blade':['CB_SAED','CB_SAED_AED_DERIVED','CB_SWORD_TO_AXE_MORPH','CB_SHIELD_THRUST','CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED']
 });
@@ -3938,7 +3938,7 @@ function renderComboIGState(){
   for(const id of ['comboIGExtract','comboIGKinsect'])$(id).onchange=()=>invalidateComboResults('エキス・猟虫条件が変わりました。');
 }
 function insectGlaiveBodyReferenceHits(id){
-  if(!['IG_DIAGONAL_SLASH','IG_SWEEP'].includes(id))throw Error('IG_REFERENCE:TECHNIQUE_NOT_ADOPTED');
+  if(!['IG_DIAGONAL_SLASH','IG_SWEEP','IG_DOUBLE_SLASH'].includes(id))throw Error('IG_REFERENCE:TECHNIQUE_NOT_ADOPTED');
   const r=techniqueDbGet('insect-glaive',id);
   if(r?.numericStatus!=='SOURCE_CONFIRMED'||r.specialComponents?.length||r.excludedComponents?.length||Object.keys(r.stateRequirement||{}).length||!r.hits?.length||r.hits.some(h=>!Number.isFinite(h.mv)||h.mv<0||!Number.isFinite(h.elementModifier)||h.elementModifier<0||h.damageStatsState!=null))throw Error('IG_REFERENCE:BODY_SOURCE_PENDING');
   return r.hits.map((h,i)=>({...h,techniqueId:id,name:r.techniqueName,hit:i+1}));
@@ -4031,7 +4031,7 @@ function comboData(stats=calcState?.stats||{}){
   const kind=comboKind(),data=TECHNIQUES.get(kind)||(DIRECT_CANONICAL_COMBO_CATALOG[kind]?.length?{label:JP_KIND[kind]||kind,moves:[],presets:[]}:null);if(!data)return null;
   const moves=[...data.moves.map(move=>canonicalComboTechnique(kind,move)),...(DIRECT_CANONICAL_COMBO_CATALOG[kind]||[]).map(id=>directCanonicalComboTechnique(kind,id)),...(kind==='gunlance'?glShellReferenceMoves():[])].map(move=>withCanonicalTiming(move,stats));
   const preset=CANONICAL_COMBO_PRESETS[kind],ready=preset&&preset.moves.every(id=>moves.some(m=>m.id===id&&m.numericOrigin==='CANONICAL_DB'&&!m.calculationBlocked));
-  return {...data,moves,presets:[...data.presets,...(kind==='gunlance'?[{id:'adopted:gl_shell_reference',name:'通常フルバースト（砲撃のみ・竜杭なし／共通参考条件）',moves:['reference:gl_FULL_BURST'],origin:'CANONICAL_DB'}]:[]),...(ready?[{...preset,origin:'CANONICAL_DB'}]:[])]};
+  return {...data,moves,presets:[...data.presets,...(kind==='insect-glaive'&&moves.some(m=>m.id==='canonical:IG_DOUBLE_SLASH'&&!m.calculationBlocked)?[{id:'adopted:ig_double_reference',name:'二段斬り1回（エキスなし・猟虫収納／参考）',moves:['canonical:IG_DOUBLE_SLASH'],origin:'CANONICAL_DB'}]:[]),...(kind==='gunlance'?[{id:'adopted:gl_shell_reference',name:'通常フルバースト（砲撃のみ・竜杭なし／共通参考条件）',moves:['reference:gl_FULL_BURST'],origin:'CANONICAL_DB'}]:[]),...(ready?[{...preset,origin:'CANONICAL_DB'}]:[])]};
 }
 function comboMove(id,stats=calcState?.stats||{}){return (comboData(stats)?.moves||[]).find(x=>x.id===id)}
 function renderComboKinds(){renderComboForWeapon();renderTechniqueEditor();}
