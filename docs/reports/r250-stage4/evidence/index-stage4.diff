@@ -1,0 +1,194 @@
+--- stage3/index.html
++++ stage4/index.html
+@@ -4041,10 +4041,11 @@
+   const damage=isBlocked?null:stages.reduce((n,s)=>n+s.result.total,0);
+   const knownTime=isBlocked?null:stages.reduce((n,s)=>n+(s.time??0),0);
+   const time=isBlocked||pendingTimeTechniqueIds.length?null:knownTime;
+-  const theoreticalDps=time>0?damage/time:null;
+-  const up=Math.max(1,Math.min(100,Number(uptime)||85))/100;
+-  const practicalDps=theoreticalDps===null?null:uptimeMode==='1'?theoreticalDps*up:theoreticalDps;
+-  return {status:isBlocked?'BLOCKED':time===null?'TIMING_PENDING':'REFERENCE_ONLY',damage,time,knownTime,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60,pendingTimeTechniqueIds,blocked,stages,context,contextError};
++  // ACCEPTED display spec: no verified route/timing producer exists here.
++  const theoreticalDps=null,practicalDps=null;
++  const dpsStatus=isBlocked?'BLOCKED':time===null?'TIMING_PENDING':'UNVERIFIED';
++  const dpsReason=isBlocked?(contextError||blocked[0]?.reason||'COMBO_NOT_SELECTED'):time===null?'COMBO_TIMING_PENDING':'COMBO_DPS_UNVERIFIED';
++  return {status:isBlocked?'BLOCKED':time===null?'TIMING_PENDING':'REFERENCE_ONLY',dpsStatus,dpsReason,damage,time,knownTime,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60,pendingTimeTechniqueIds,blocked,stages,context,contextError};
+ }
+ function calcDps(){
+   App.combo.syncFromDOM();
+@@ -4065,7 +4066,11 @@
+   const detail=breakdown.map((x,i)=>`${i+1}. ${esc(x.name)}：${x.damage.toFixed(2)} / ${x.hits}Hit / ${x.time==null?'時間未確認':x.time.toFixed(2)+'秒'}${renderComboHitDetail(x)}`).join('<br>');
+   if(pendingTimeTechniqueIds.length){
+     $('dpsOut').innerHTML=`<b>1コンボ ${sumD.toFixed(2)} ダメージ</b><br>所要時間が未確認のためDPSは算出できません。<div class="muted small" style="margin-top:7px">${detail}</div>`;
+-    return {damage:sumD,time:null,knownTime:sumT,theoreticalDps:null,practicalDps:null,oneMinute:null,timingStatus:'PENDING',pendingTimeTechniqueIds,context:ctx,breakdown};
++    return {damage:sumD,time:null,knownTime:sumT,theoreticalDps:null,practicalDps:null,oneMinute:null,dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,timingStatus:'PENDING',pendingTimeTechniqueIds,context:ctx,breakdown};
++  }
++  if(evaluation.dpsStatus!=='VERIFIED'){
++    $('dpsOut').innerHTML=`<b>1コンボ ${sumD.toFixed(2)} ダメージ</b><br>所要時間 ${sumT.toFixed(2)}秒（参考値）<br>DPS未算出：技データ・所要時間・計算条件の実機検証が完了していません。<div class="muted small" style="margin-top:7px">${detail}</div>`;
++    return {damage:sumD,time:sumT,theoreticalDps:null,practicalDps:null,oneMinute:null,dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,context:ctx,breakdown};
+   }
+   const theoretical=evaluation.theoreticalDps,practical=evaluation.practicalDps;
+   const result={damage:sumD,time:sumT,theoreticalDps:theoretical,practicalDps:practical,oneMinute:practical*60,context:ctx,breakdown};
+@@ -4351,13 +4356,13 @@
+   if(groupProposalNormSkill(targetEffect)==='無尽蔵' && groupProposalHasSkill(total,['渾身']))score+=10;
+   return score;
+ }
+-function groupProposalEvaluate(candidateMap,base,cond,targetInfo){for(const k of ['head','chest','arms','waist','legs'])build.armor[k]=candidateMap[k]||null;calcBuild();const st=JSON.parse(JSON.stringify(calcState.stats||{})),tot=JSON.parse(JSON.stringify(calcState.total||{}));const targetEffect=targetInfo?.effectName||targetInfo?.parentSkill?.name||'';const directSeriesCount=groupProposalCountBonus(candidateMap,targetInfo,'series');const targetLv=directSeriesCount>=Number(targetInfo?.required||999)?Number(targetInfo?.rank?.level||targetInfo?.requestedLevel||1):0;return {armor:Object.fromEntries(Object.entries(candidateMap).map(([k,a])=>[k,a?.id||''])),stats:st,total:tot,targetLv,targetEffect,directSeriesCount,dps:dpsForStats(st,cond),damage:damageForStats(st,cond.mv,cond),skills:groupProposalSkillSummary(tot,targetEffect),reasonScore:groupProposalBuildReasonScore(candidateMap,targetInfo,null,'balance',targetEffect,base)};}
++function groupProposalEvaluate(candidateMap,base,cond,targetInfo){for(const k of ['head','chest','arms','waist','legs'])build.armor[k]=candidateMap[k]||null;calcBuild();const st=JSON.parse(JSON.stringify(calcState.stats||{})),tot=JSON.parse(JSON.stringify(calcState.total||{}));const targetEffect=targetInfo?.effectName||targetInfo?.parentSkill?.name||'';const directSeriesCount=groupProposalCountBonus(candidateMap,targetInfo,'series');const targetLv=directSeriesCount>=Number(targetInfo?.required||999)?Number(targetInfo?.rank?.level||targetInfo?.requestedLevel||1):0;return {armor:Object.fromEntries(Object.entries(candidateMap).map(([k,a])=>[k,a?.id||''])),stats:st,total:tot,targetLv,targetEffect,directSeriesCount,...dpsForStats(st,cond,{includeStatus:true}),damage:damageForStats(st,cond.mv,cond),skills:groupProposalSkillSummary(tot,targetEffect),reasonScore:groupProposalBuildReasonScore(candidateMap,targetInfo,null,'balance',targetEffect,base)};}
+ function groupProposalDpsCompare(a,b){
+-  const ak=typeof a.dps==='number'&&Number.isFinite(a.dps),bk=typeof b.dps==='number'&&Number.isFinite(b.dps);
++  const ad=comparisonDpsValue(a),bd=comparisonDpsValue(b),ak=ad!==null,bk=bd!==null;
+   if(ak!==bk)return ak?-1:1;
+-  return ak?b.dps-a.dps:0;
+-}
+-function groupProposalRenderCandidate(r,i){const names=[['head','頭'],['chest','胴'],['arms','腕'],['waist','腰'],['legs','脚']];let armorHtml=names.map(([k,n])=>{const a=DB.armor.find(x=>String(x.id)===String(r.armor[k]||''));return `<div><b>${n}</b>：${a?esc(a.name):'—'}</div>`}).join('');const target=$('groupProposalSkill')?.selectedOptions[0]?.textContent||'';const seriesParts=Number(r.directSeriesCount)||0;const known=typeof r.dps==='number'&&Number.isFinite(r.dps),baseKnown=typeof r.baseDps==='number'&&Number.isFinite(r.baseDps),delta=known&&baseKnown?r.dps-r.baseDps:null;const dpsText=known?r.dps.toFixed(2):'—',deltaText=delta==null?'—':(delta>=0?'+':'')+delta.toFixed(2);return `<div class="equip" style="margin-top:9px"><div class="equip-title">案${i+1}：${i===0?'バランス候補':i===1?'火力寄り候補':'スキル自由度寄り候補'}</div>${armorHtml}<div class="notice small"><b>${esc(target)}</b> → Lv${r.targetLv} / シリーズ部位 ${seriesParts}（武器を含む） / 1ヒット ${Number(r.damage).toFixed(2)} / DPS ${dpsText} / 現在比 ${deltaText}</div><div class="small">主なスキル：${r.skills.length?r.skills.map(esc).join(' / '):'—'}</div><button type="button" class="good group-proposal-apply" data-group-proposal-index="${i}" style="margin-top:7px">この案を採用</button></div>`;}
++  return ak?bd-ad:0;
++}
++function groupProposalRenderCandidate(r,i){const names=[['head','頭'],['chest','胴'],['arms','腕'],['waist','腰'],['legs','脚']];let armorHtml=names.map(([k,n])=>{const a=DB.armor.find(x=>String(x.id)===String(r.armor[k]||''));return `<div><b>${n}</b>：${a?esc(a.name):'—'}</div>`}).join('');const target=$('groupProposalSkill')?.selectedOptions[0]?.textContent||'';const seriesParts=Number(r.directSeriesCount)||0;const dps=comparisonDpsValue(r),baseDps=comparisonDpsValue({dps:r.baseDps,dpsStatus:r.baseDpsStatus}),delta=dps!==null&&baseDps!==null?dps-baseDps:null;const dpsText=dps!==null?dps.toFixed(2):'未算出：'+esc(comparisonReasonText(r.dpsReason||'COMBO_DPS_UNVERIFIED')),deltaText=delta==null?'—':(delta>=0?'+':'')+delta.toFixed(2);return `<div class="equip" style="margin-top:9px"><div class="equip-title">案${i+1}：${i===0?'バランス候補':i===1?'火力寄り候補':'スキル自由度寄り候補'}</div>${armorHtml}<div class="notice small"><b>${esc(target)}</b> → Lv${r.targetLv} / シリーズ部位 ${seriesParts}（武器を含む） / 1ヒット ${Number(r.damage).toFixed(2)} / DPS ${dpsText} / 現在比 ${deltaText}</div><div class="small">主なスキル：${r.skills.length?r.skills.map(esc).join(' / '):'—'}</div><button type="button" class="good group-proposal-apply" data-group-proposal-index="${i}" style="margin-top:7px">この案を採用</button></div>`;}
+ function groupProposalDiagnostic(info,nushiInfo,bySlot,states,rows){
+   const seriesPieces=groupProposalPieces(info),nushiPieces=nushiInfo?(DB.armor||[]).filter(a=>groupProposalBonusObjects(a,'group').some(g=>bonusSkillMatches(g,nushiInfo.skill))):[];
+   const perSlot=arr=>arr.map(k=>`${k}:${(bySlot?.[k]||[]).length}`).join(' / ');
+@@ -4375,7 +4380,7 @@
+   if(!selectedWeapon()){$('groupProposalOut').innerHTML='<span class="warn">まず武器を選択してください。</span>';return;}
+   const info=groupProposalSeriesInfo(skill,targetLv);if(!info.required){$('groupProposalOut').innerHTML='<span class="warn">このシリーズスキルの発動条件をデータから確認できません。</span>';return;}
+   const nushiInfo=wantNushi?groupProposalGroupSkillInfo('ヌシの魂'):null;if(wantNushi&&!nushiInfo){$('groupProposalOut').innerHTML='<span class="warn">「ヌシの魂」のグループスキルデータが見つかりません。</span>';return;}
+-  const base=groupProposalSnapshot(),step5=compareStep5Snapshot();calcBuild();const baseDps=dpsForStats(calcState.stats,step5);const slots=['head','chest','arms','waist','legs'];
++  const base=groupProposalSnapshot(),step5=compareStep5Snapshot();calcBuild();const baseDpsResult=dpsForStats(calcState.stats,step5,{includeStatus:true}),baseDps=baseDpsResult.dps;const slots=['head','chest','arms','waist','legs'];
+   const targetEffect=info.effectName||info.parentSkill?.name||skill.name;
+ 
+   const allArmor=(DB.armor||[]).filter(a=>a.rank!=='low');const bySlot={};
+@@ -4469,7 +4474,7 @@
+       r.reasonScore=groupProposalBuildReasonScore(m,info,wantNushi?nushiInfo:null,mode,targetEffect,base);
+       r.nushi=wantNushi?1:0;r.nushiCount=wantNushi?groupProposalCountBonus(m,nushiInfo,'group'):0;
+       // 現在比は「現在ビルドを基準にしたDPS差」。候補そのもののDPSと混同しない。
+-      r.baseDps=baseDps;
++      r.baseDps=baseDps;r.baseDpsStatus=baseDpsResult.dpsStatus;
+       rows.push(r);
+     }catch(e){/* 個別候補の計算失敗は他候補を継続 */}
+   }
+@@ -4619,7 +4624,7 @@
+   const scorchPlan=techniqueScorchPlan(canonicalWeaponKind(weapon)||'',stages.map(x=>x.canonicalTechniqueId||'UNRESOLVED_TECHNIQUE'));
+   const blocked=evaluation.status==='BLOCKED',timingPending=evaluation.status==='TIMING_PENDING';
+   const {damage,time,theoreticalDps,practicalDps}=evaluation;
+-  return {format:'MHWildsComboVerification',schemaVersion:1,release:'r139',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,observedGameVersion:observed||null,currentBuild:buildSnapshot(),weapon:weapon?{id:weapon.id,name:weapon.name,kind:canonicalWeaponKind(weapon)}:null,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null},context,contextError,externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT',rounding:'PER_HIT_PHYSICAL_ELEMENT_2_DECIMAL_REFERENCE_NOT_GAME_DISPLAY',stages,scorchPlan,summary:{status:blocked?'BLOCKED':timingPending?'TIMING_PENDING':'REFERENCE_ONLY',damage,time,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60},notes:['実機検証済みを意味しません。','未確認時間や特殊成分は推定で補完しません。','食事・アイテム・エキスなどゲーム側の追加状態を別途記録してください。']};
++  return {format:'MHWildsComboVerification',schemaVersion:1,release:'r139',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,observedGameVersion:observed||null,currentBuild:buildSnapshot(),weapon:weapon?{id:weapon.id,name:weapon.name,kind:canonicalWeaponKind(weapon)}:null,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null},context,contextError,externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT',rounding:'PER_HIT_PHYSICAL_ELEMENT_2_DECIMAL_REFERENCE_NOT_GAME_DISPLAY',stages,scorchPlan,summary:{dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,status:blocked?'BLOCKED':timingPending?'TIMING_PENDING':'REFERENCE_ONLY',damage,time,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60},notes:['実機検証済みを意味しません。','未確認時間や特殊成分は推定で補完しません。','食事・アイテム・エキスなどゲーム側の追加状態を別途記録してください。']};
+ }
+ function createScorchRouteReferenceReport(settings,hitTimes){
+   const combo=createComboVerificationReport();
+@@ -6777,12 +6782,13 @@
+   const pending=bonusDamagePendingReason(st);if(pending)throw new Error(pending);
+   return damageFromValues(st.attackTrue??st.attack,st.affinity,st.element,mv,cond.hz,cond.ehz,cond.sharp,cond.esharp,cond.cb,cond.eCrit).total;
+ }
+-function dpsForStats(st,cond){
++function dpsForStats(st,cond,{includeStatus=false}={}){
+   const dpsStats={...st,affinity:st.maxAffinity??st.affinity};
+-  const rows=[...document.querySelectorAll('.comboRow .cmove')].map(s=>({techniqueId:s.value}));if(!rows.length)return null;
++  const rows=[...document.querySelectorAll('.comboRow .cmove')].map(s=>({techniqueId:s.value}));if(!rows.length)return includeStatus?{dps:null,dpsStatus:'NOT_CALCULATED',dpsReason:'COMBO_NOT_SELECTED'}:null;
+   let context;
+-  try{context={chargeBladeState:comboKind()==='charge-blade'?comboCBCondition(dpsStats):null,attack:dpsStats.attackTrue??dpsStats.attack,affinity:dpsStats.affinity,element:dpsStats.element,hz:Number(cond.hz),ehz:Number(cond.ehz),sharp:Number(cond.sharp),esharp:Number(cond.esharp),critBonus:Number(cond.cb),elementCrit:Boolean(Number(cond.eCrit))};}catch(e){return null;}
+-  return evaluateComboRoute(rows,context,{stats:dpsStats,uptime:cond.uptime,uptimeMode:cond.uptimeMode}).practicalDps;
++  try{context={chargeBladeState:comboKind()==='charge-blade'?comboCBCondition(dpsStats):null,attack:dpsStats.attackTrue??dpsStats.attack,affinity:dpsStats.affinity,element:dpsStats.element,hz:Number(cond.hz),ehz:Number(cond.ehz),sharp:Number(cond.sharp),esharp:Number(cond.esharp),critBonus:Number(cond.cb),elementCrit:Boolean(Number(cond.eCrit))};}catch(e){return includeStatus?{dps:null,dpsStatus:'BLOCKED',dpsReason:String(e.message||e)}:null;}
++  const result=evaluateComboRoute(rows,context,{stats:dpsStats,uptime:cond.uptime,uptimeMode:cond.uptimeMode});
++  return includeStatus?{dps:result.practicalDps,dpsStatus:result.dpsStatus,dpsReason:result.dpsReason}:result.practicalDps;
+ }
+ 
+ const STANDARD_CONDITIONAL_ATTACK_RULES=Object.freeze([
+@@ -7083,15 +7089,20 @@
+ function compareSnapshot(name,snapshot,cond){
+   applyBuildSnapshot(snapshot,{preserveCombo:true});
+   const st=calcState.stats||{};
+-  let dmg=null,dps=null,damageReason=null,dpsReason=null;
++  let dmg=null,dps=null,damageReason=null,dpsReason=null,dpsStatus='NOT_CALCULATED';
+   try{dmg=damageForStats(st,cond.mv,cond);}catch(e){damageReason=String(e.message||e);}
+-  try{dps=dpsForStats(st,cond);}catch(e){dpsReason=String(e.message||e);}
++  try{const result=dpsForStats(st,cond,{includeStatus:true});
++    if(result&&typeof result==='object'){dpsStatus=result.dpsStatus||'UNVERIFIED';dpsReason=result.dpsReason||null;dps=dpsStatus==='VERIFIED'&&Number.isFinite(result.dps)&&result.dps>=0?result.dps:null;}
++    else if(result!=null){dpsStatus='UNVERIFIED';dpsReason='COMBO_DPS_UNVERIFIED';}
++  }catch(e){dpsStatus='BLOCKED';dpsReason=String(e.message||e);}
+   if(dps==null&&!dpsReason)dpsReason=document.querySelector('.comboRow .cmove')?(bonusDamagePendingReason(st)||'COMBO_DAMAGE_OR_TIMING_PENDING'):'COMBO_NOT_SELECTED';
+   const kind=canonicalWeaponKind(selectedWeapon()),power=standardPowerForStats(kind,st,{...cond,cb:skillLevel(calcState.total||{},['超会心','Critical Boost'])},calcState.total||{});
+-  return {name,kind,power,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:Number(st.element)||0,elementType:String(st.elementType||'—'),damage:dmg,dps,damageReason,dpsReason};
++  return {name,kind,power,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:Number(st.element)||0,elementType:String(st.elementType||'—'),damage:dmg,dps,dpsStatus,damageReason,dpsReason};
+ }
+ function comparisonReasonText(reason){
+   const text=String(reason||'');
++  if(text.includes('COMBO_DPS_UNVERIFIED'))return '技データ・所要時間・計算条件が未検証のためDPSは未算出です。';
++  if(text.includes('COMBO_TIMING_PENDING'))return '所要時間が未確認のためDPSは未算出です。';
+   if(text.includes('火事場力:HEROICS_'))return '火事場力の段階・攻撃力内訳または体力状態の併用条件が未対応・未確定です。';
+   if(text.includes('不屈:FORTIFY_FLAT_STACKING_ORDER_PENDING'))return '不屈と攻撃力加算の計算順序が未確認のため、最大火力指数を保留しています。';
+   if(text.includes('不屈:FORTIFY_ATTACK_COMPONENTS_UNRESOLVED'))return '不屈の計算に必要な攻撃力の内訳が未確定です。';
+@@ -7136,7 +7147,7 @@
+     if(!index){let reason=row.power?.reason;if(!reason&&row.kind!==baseline.kind)lines.push('火力指数：同じ武器種のビルドを比較してください。');else if(!reason&&row.power?.normal&&(!Number.isFinite(baseline.power?.normal?.comparisonPower)||baseline.power.normal.comparisonPower<=0))lines.push('火力指数：基準ビルドが未算出・0以下のため指数化できません。');else lines.push('火力指数：'+comparisonReasonText(reason||'STANDARD_PROFILE_PENDING'));}
+     if(index?.maximum==null)lines.push('最大火力指数：'+comparisonReasonText(row.power?.maximumReason||row.power?.reason||'BASELINE_NORMAL_POWER_UNAVAILABLE'));
+     if(row.damage==null)lines.push('1ヒット期待値：'+comparisonReasonText(row.damageReason||'DAMAGE_CONDITIONS_PENDING'));
+-    if(row.dps==null)lines.push('DPS：'+comparisonReasonText(row.dpsReason||'COMBO_DAMAGE_OR_TIMING_PENDING'));
++    if(comparisonDpsValue(row)==null)lines.push('DPS：'+comparisonReasonText(row.dpsReason||(Number.isFinite(row.dps)?'COMBO_DPS_UNVERIFIED':'COMBO_DAMAGE_OR_TIMING_PENDING')));
+     h+='<div style="margin-top:8px"><b>'+esc(row.name)+'</b>：'+(lines.length?lines.map(esc).join('<br>'):'火力指数・最大火力指数・DPSを算出済みです。')+'</div>';
+     if(row.power?.normal?.scope==='EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO')h+='<div class="small">ヘビィ追加参考比較：通常弾Lv'+esc(row.power.hbgState.ammoLevel)+'／全3Hit命中。弾Lv・距離・通常モード補正は比較用の共通条件です。武器の装填可否・実機ダメージ・DPSは未照合です。</div>';
+     const bow=row.power?.bowStatePlan;
+@@ -7169,17 +7180,22 @@
+   }
+   return h+darkArtsNote+'</div>';
+ }
++function comparisonDpsValue(row){
++  // Old caches and values without an explicit verified producer fail closed.
++  return row?.dpsStatus==='VERIFIED'&&Number.isFinite(row.dps)&&row.dps>=0?row.dps:null;
++}
+ function comparisonDpsIndex(row,baseline){
+   // DPS is a build-comparison metric only for the same weapon kind and fixed route.
+   // Never compare different weapon profiles even when both have numeric DPS.
+   if(!row?.kind||row.kind!==baseline?.kind||!row.power?.profileId||row.power.profileId!==baseline.power?.profileId)return null;
+-  if(!Number.isFinite(baseline?.dps)||baseline.dps<=0||!Number.isFinite(row?.dps)||row.dps<0)return null;
+-  const index=row.dps/baseline.dps*100;return Number.isFinite(index)?{index,change:index-100}:null;
++  const base=comparisonDpsValue(baseline),value=comparisonDpsValue(row);
++  if(base===null||base<=0||value===null)return null;
++  const index=value/base*100;return Number.isFinite(index)?{index,change:index-100}:null;
+ }
+ function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
+   if(!rows.length)return '<span class="muted small">比較結果はありません。</span>';
+   const max=key=>Math.max(...allRows.map(r=>Number(r[key])||0));
+-  const ma=max('attack'),mta=max('attackTrue'),mf=max('affinity'),mmf=max('maxAffinity'),me=max('element'),mx=Math.max(...allRows.map(r=>Number(r.damage)||0)),mp=Math.max(...allRows.map(r=>Number(r.dps)||0));
++  const ma=max('attack'),mta=max('attackTrue'),mf=max('affinity'),mmf=max('maxAffinity'),me=max('element'),mx=Math.max(...allRows.map(r=>Number(r.damage)||0)),mp=Math.max(...allRows.map(r=>comparisonDpsValue(r)??0));
+   const cell=(v,b)=>`<td class="${b?'compare-best':''}">${esc(v)}</td>`;
+   const itemWidth=112,buildWidth=120,totalWidth=itemWidth+rows.length*buildWidth;
+   let h='<div class="compare-table"><table style="table-layout:fixed;width:'+totalWidth+'px;min-width:'+totalWidth+'px;max-width:'+totalWidth+'px"><colgroup><col class="compare-item-col" style="width:'+itemWidth+'px">'+rows.map(()=>'<col class="compare-build-col" style="width:'+buildWidth+'px">').join('')+'</colgroup><thead><tr><th>項目</th>'+rows.map(r=>`<th>${esc(r.name)}</th>`).join('')+'</tr></thead><tbody>';
+@@ -7199,7 +7215,7 @@
+   h+='<tr data-comparison-metric="relative-power-100"><th>相対火力（基準100）</th>'+rows.map(r=>{const result=comparisonPowerIndex(r,baseline);return cell(result?comparisonDisplayNumber(result.normal):'—',false);}).join('')+'</tr>';
+   h+='<tr data-comparison-metric="relative-max-power-100"><th>最大相対火力（基準100）</th>'+rows.map(r=>{const result=comparisonPowerIndex(r,baseline);return cell(result?.maximum!=null?comparisonDisplayNumber(result.maximum):'—',false);}).join('')+'</tr>';
+   h+='<tr><th>1ヒット期待値</th>'+rows.map(r=>cell(r.damage==null?'—':comparisonDisplayNumber(r.damage),r.damage!=null&&r.damage===mx)).join('')+'</tr>';
+-  h+='<tr data-comparison-metric="dps"><th>DPS</th>'+rows.map(r=>cell(r.dps==null?'—':comparisonDisplayNumber(r.dps),r.dps!=null&&r.dps===mp)).join('')+'</tr>';
++  h+='<tr data-comparison-metric="dps"><th>DPS</th>'+rows.map(r=>{const value=comparisonDpsValue(r);return cell(value===null?'未算出：'+comparisonReasonText(r.dpsReason||'COMBO_DPS_UNVERIFIED'):comparisonDisplayNumber(value),value!==null&&value===mp);}).join('')+'</tr>';
+   const relative=rows.map(r=>comparisonDpsIndex(r,baseline));
+   h+='<tr data-comparison-metric="dps-index"><th>DPS指数</th>'+rows.map((r,i)=>cell(relative[i]===null?'—':comparisonDisplayNumber(relative[i].index),relative[i]!==null&&r.dps===mp)).join('')+'</tr>';
+   h+='<tr data-comparison-metric="dps-change"><th>基準比増減</th>'+relative.map(x=>cell(x===null?'—':(x.change>0?'+':x.change<0?'−':'')+comparisonDisplayNumber(x.change)+'%',false)).join('')+'</tr>';
+@@ -7211,8 +7227,8 @@
+   if(!row?.kind||row.kind!==baseline?.kind)return 'SAME_WEAPON_REQUIRED';
+   if(!row.power?.profileId||row.power.profileId!==baseline.power?.profileId)return 'STANDARD_PROFILE_MISMATCH';
+   if(metric==='dps'){
+-    if(!Number.isFinite(baseline.dps)||baseline.dps<=0)return 'BASELINE_DPS_UNAVAILABLE';
+-    if(!Number.isFinite(row.dps)||row.dps<0)return row.dpsReason||'COMBO_DAMAGE_OR_TIMING_PENDING';
++    if(comparisonDpsValue(baseline)===null||baseline.dps<=0)return baseline.dpsReason||(Number.isFinite(baseline.dps)?'COMBO_DPS_UNVERIFIED':'BASELINE_DPS_UNAVAILABLE');
++    if(comparisonDpsValue(row)===null)return row.dpsReason||(Number.isFinite(row.dps)?'COMBO_DPS_UNVERIFIED':'COMBO_DAMAGE_OR_TIMING_PENDING');
+     return null;
+   }
+   const base=baseline.power?.normal?.comparisonPower;
+@@ -7271,8 +7287,8 @@
+   if(!lastBuildComparisonRows?.length||!lastBuildComparisonContext)return null;
+   const index=lastBuildComparisonBaselineIndex,baseline=lastBuildComparisonRows[index];if(!baseline)return null;
+   const results=lastBuildComparisonRows.map(row=>{
+-    const relative=comparisonDpsIndex(row,baseline),dps=Number.isFinite(row.dps)&&row.dps>=0?row.dps:null;
+-    return {...row,relativePowerIndex:comparisonPowerIndex(row,baseline)?.normal??null,relativeMaximumPowerIndex:comparisonPowerIndex(row,baseline)?.maximum??null,powerChange:comparisonPowerChange(row,baseline),powerIndex:row.power?.normal?.comparisonPower??null,maxPowerIndex:row.power?.maximum?.comparisonPower??null,dps,dpsStatus:dps===null?'NOT_CALCULATED':'REFERENCE_ONLY',dpsIndex:relative?.index??null,dpsChangePercent:relative?.change??null};
++    const relative=comparisonDpsIndex(row,baseline),dps=comparisonDpsValue(row);
++    return {...row,relativePowerIndex:comparisonPowerIndex(row,baseline)?.normal??null,relativeMaximumPowerIndex:comparisonPowerIndex(row,baseline)?.maximum??null,powerChange:comparisonPowerChange(row,baseline),powerIndex:row.power?.normal?.comparisonPower??null,maxPowerIndex:row.power?.maximum?.comparisonPower??null,dps,dpsStatus:dps===null?(row.dpsStatus&&row.dpsStatus!=='VERIFIED'?row.dpsStatus:Number.isFinite(row.dps)?'UNVERIFIED':'NOT_CALCULATED'):'VERIFIED',dpsReason:dps===null?(row.dpsReason||'COMBO_DPS_UNVERIFIED'):null,dpsIndex:relative?.index??null,dpsChangePercent:relative?.change??null};
+   });
+   return JSON.parse(JSON.stringify({format:'MHWildsBuildComparison',schemaVersion:2,release:'r249',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,baseline:{index,name:baseline.name,damage:baseline.power?.normal?.comparisonPower??null,components:baseline.power?.normal?{physical:baseline.power.normal.physical,element:baseline.power.normal.element,special:baseline.power.normal.special}:null},context:lastBuildComparisonContext,coverage:comparisonCoverageSummary(lastBuildComparisonRows||[],baseline),results,notes:['powerChangeは基準通常STANDARDのダメージからの変化率（%）。componentChangePercentは各成分自身の基準値からの変化率。componentContributionPercentは基準全体に対する増減寄与（百分率ポイント）。','powerIndex/maxPowerIndexは非正規化の計算値です。relativePowerIndex/relativeMaximumPowerIndexは基準通常STANDARD=100の指数です。変化率はpowerChangeに分離します。','参考計算であり実機検証済みを意味しません。','DPS未算出の理由は推定しません。','食事・アイテム等の追加状態は取得していません。']}));
+ }
+@@ -7393,7 +7409,7 @@
+     return {techniqueId:id,canonicalTechniqueId:m?.canonicalTechniqueId||null,numericOrigin:m?.numericOrigin||(m?.custom?'USER_REGISTERED_REFERENCE':'LEGACY_REFERENCE_ONLY'),name:m?.name||stage.name,motionValues:m?.mvs||[],hits:m?.hits||0,time,timingEvidence:m?.timingEvidence||null,timingCondition:m?.timingCondition||null,handler:m?.handler||null,calculationBlocked:Boolean(stage.reason),blockedReason:stage.reason,timingStatus:!m?'TECHNIQUE_UNAVAILABLE':time===null?'PENDING':m.timingStatus||'LEGACY_REFERENCE_ONLY'};
+   });
+   const comboTimingStatus=combo.length>0&&combo.every(m=>m.time!==null)?'REFERENCE_ONLY':'PENDING';
+-  const comboEvaluation={status:evaluated.status,damage:evaluated.damage,time:evaluated.time,theoreticalDps:evaluated.theoreticalDps,practicalDps:evaluated.practicalDps,oneMinute:evaluated.oneMinute,context,contextError,pendingTimeTechniqueIds:evaluated.pendingTimeTechniqueIds,blockedStages:evaluated.blocked.map(s=>({index:s.index,techniqueId:s.id,name:s.name,reason:s.reason})),numericScope:'REFERENCE_NOT_LIVE_GAME_VERIFIED',externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT'};
++  const comboEvaluation={status:evaluated.status,dpsStatus:evaluated.dpsStatus,dpsReason:evaluated.dpsReason,damage:evaluated.damage,time:evaluated.time,theoreticalDps:evaluated.theoreticalDps,practicalDps:evaluated.practicalDps,oneMinute:evaluated.oneMinute,context,contextError,pendingTimeTechniqueIds:evaluated.pendingTimeTechniqueIds,blockedStages:evaluated.blocked.map(s=>({index:s.index,techniqueId:s.id,name:s.name,reason:s.reason})),numericScope:'REFERENCE_NOT_LIVE_GAME_VERIFIED',externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT'};
+    const comboProvenance=weapon&&combo.length?window.MHWTechniqueEvidenceBridge.inspectCombo(canonicalWeaponKind(weapon),combo,techniqueDbAudit):null;
+  return {version:App.version,weapon:weapon?{name:weapon.name||'',kind:canonicalWeaponKind(weapon)||'',attack:weapon.attack||0,affinity:weapon.affinity||0,element:weapon.element||0,elementType:weapon.elementType||''}:null,armor,charm:charms,decos,stats:st,activeSkills:skills,buildComparison:createBuildComparisonReport(),step5:{uptime:$('uptime')?.value,uptimeMode:$('uptimeMode')?.value,combo,comboTimingStatus,comboEvaluation,comboProvenance,chargeBladeState:context?.chargeBladeState??null}};
+ }

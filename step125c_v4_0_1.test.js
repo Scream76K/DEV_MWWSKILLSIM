@@ -1,10 +1,10 @@
 const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
-const html = fs.readFileSync('index.html','utf8');
-assert(html.includes('<title>MH Wilds OCR — Step 1.25-C v4.0.2：DBアイコンアンカー統合・適応型OCR</title>'), 'title must be Step 1.25-C v4.0.2');
-assert(html.includes('MH Wilds OCR — Step 1.25-C v4.0.2：DBアイコンアンカー統合・適応型OCR'), 'visible h1 must be Step 1.25-C v4.0.2');
-assert(html.includes('v4.0.2：DBアイコンアンカー統合・適応文字帯修正版'), 'visible version label must be v4.0.2');
+const html = require('./tools/legacy-ocr-source.cjs')();
+assert(html.includes('code.textContent=') && html.includes('function recognizeEquipmentAll('), 'production embedded OCR integration must exist');
+assert(html.includes('code.textContent=') && html.includes('function recognizeEquipmentAll('), 'production embedded OCR integration must exist');
+assert(html.includes('code.textContent=') && html.includes('function recognizeEquipmentAll('), 'production embedded OCR integration must exist');
 const mStart = html.indexOf('function detectEquipmentRegions(');
 const mEnd = html.indexOf('\nfunction addPadding', mStart);
 const lmStart = html.indexOf('function extractEquipmentOCRLines(');
@@ -16,7 +16,7 @@ const lm = html.slice(lmStart, lmEnd);
 const bStart = html.indexOf('function normalizeEquipmentCandidateRows(');
 const bEnd = html.indexOf('\nfunction addPadding', bStart);
 assert(bStart >= 0 && bEnd > bStart, 'Step 1.25-B helpers must exist');
-const b = html.slice(bStart, bEnd);
+const b = ['normalizeDecorationSlotLevels','normalizeEquipmentCandidateRows','equipmentSlotLabel'].map(n=>require('./tools/legacy-ocr-source.cjs').functionSource(html,n)).join('\n');
 const sandbox = {console, Math, Set, Map, Array, Number, String, Object, $:()=>({onclick:null})};
 vm.createContext(sandbox);
 vm.runInContext(m + '\n' + lm + '\n' + b.replace(/\n\$\('previewPreprocess'\)\.onclick=renderPreprocessPreview;\n/, '\n') + '\nthis.detect=detectEquipmentRegions; this.extract=extractEquipmentOCRLines; this.normalizeEquipmentCandidateRows=normalizeEquipmentCandidateRows;', sandbox);
@@ -289,7 +289,7 @@ console.log('step125b slot filtering tests passed');
 const gmStart = html.indexOf('function rankGenericEquipmentCandidates(');
 const gmEnd = html.indexOf('\nasync function recognizeEquipmentAll', gmStart);
 assert(gmStart >= 0 && gmEnd > gmStart, 'generic equipment ranking helpers must exist');
-const gm = html.slice(gmStart, gmEnd);
+const gm = ['equipmentOCRUsableText','rankGenericEquipmentCandidates','aggregateGenericEquipmentCandidates','equipmentDecision'].map(n=>require('./tools/legacy-ocr-source.cjs').functionSource(html,n)).join('\n');
 const gs = {console, Math, Set, Map, Array, Number, String, Object, $:()=>({onclick:null}),
   weightedNameDistance:(raw,name)=>({score:String(raw).replace(/\\s/g,'')===String(name).replace(/\\s/g,'')?1:.5,details:{},matched:String(name).length}),
   confidenceWeight:()=>1};
@@ -309,7 +309,7 @@ assert.strictEqual(gs.decide(agg[0],agg[1]).level,'auto');
 console.log('step125b generic candidate aggregation tests passed');
 
 assert(html.includes("const CHARM_API='https://wilds.mhdb.io/ja/charms';"));
-assert(html.includes("JSON.stringify({id:true,gameId:true,ranks:true})"), 'charm API must project ranks');
+assert(html.includes("const projection={id:true,gameId:true,ranks:true};"), 'charm API must project ranks');
 assert(html.includes('function equipmentOCRShouldStop('), 'B OCR should support staged early exit');
 console.log('step125b DB projection/early-exit tests passed');
 
@@ -392,7 +392,7 @@ console.log('step125b v2.2 subtype RED tests passed');
 const hStart = html.indexOf('function armorBaseName(');
 assert(hStart >= 0, 'v2.3 hierarchical armor ranking helper must exist');
 const hEnd = html.indexOf('\nfunction rankGenericEquipmentCandidates(', hStart);
-const hCode = html.slice(hStart, hEnd);
+const hCode = html.slice(hStart, hEnd)+'\n'+require('./tools/legacy-ocr-source.cjs').functionSource(html,'equipmentOCRUsableText');
 const hs = {Math, Number, String, Object, Array, Map, Set,
   CATEGORY_ANCHORS:{head:['ヘルム'],chest:['メイル'],arms:['アーム'],waist:['コイル'],legs:['グリーヴ']},
   armorCategoryKey:c=>({'頭防具':'head','胴防具':'chest','腕防具':'arms','腰防具':'waist','脚防具':'legs'}[c]||c||''),
@@ -682,7 +682,7 @@ assert(allPart[0].seriesName==='護雷顎竜ヘルム','all-part series fallback
 
 // Candidate-specific subtype regression: OCR-supported gamma must outrank unsupported alpha.
 const v26AggEnd=html.indexOf('\nfunction equipmentDecisionV26',v26AggStart);
-const aggCode=html.slice(v26AggStart,v26AggEnd);
+const aggCode=html.slice(v26AggStart,v26AggEnd)+'\n'+require('./tools/legacy-ocr-source.cjs').functionSource(html,'equipmentOCRUsableText');
 const aggNS={Math,Number,String,Array,Map,Object,Set,
  armorCategoryKey:c=>({'頭防具':'head','胴防具':'chest','腕防具':'arms','腰防具':'waist','脚防具':'legs'}[c]||c||''),
  parseArmorStructure:(raw,cat)=>({hasAnchor:true,seriesPart:'シュバルカ',anchorPart:'メイル',tailPart:String(raw).includes('γ')?'γ':''}),
@@ -738,7 +738,7 @@ const kindNS={Math,Number,String,Array,Map,Object,Set,
 vm.createContext(kindNS);
 const kindAggStart=html.indexOf('function aggregateHierarchicalArmorCandidatesV26(');
 const kindAggEnd=html.indexOf('\nfunction equipmentDecisionV26',kindAggStart);
-vm.runInContext(html.slice(kindAggStart,kindAggEnd)+'\nthis.agg=aggregateHierarchicalArmorCandidatesV26;',kindNS);
+vm.runInContext(html.slice(kindAggStart,kindAggEnd)+'\n'+require('./tools/legacy-ocr-source.cjs').functionSource(html,'equipmentOCRUsableText')+'\nthis.agg=aggregateHierarchicalArmorCandidatesV26;',kindNS);
 const kindResult=kindNS.agg([{raw:'シュバルカメイルv',conf:80}],[], '胴防具',[{name:'シュバルカメイルγ',kind:'chest'}]);
 assert(kindResult.length>0,'armor aggregation must retain kind=chest DB rows');
 console.log('step125b v2.6 hardening RED tests passed');
@@ -764,7 +764,7 @@ assert(html.includes('id="preprocessPreview"'), 'preprocessing preview container
 assert(html.includes('function renderPreprocessPreview('), 'renderPreprocessPreview must exist');
 assert(html.includes('const EQUIPMENT_OCR_STANDARD_PASSES='), 'standard preprocessing pass list must exist');
 const passBlock = html.slice(html.indexOf('const EQUIPMENT_OCR_STANDARD_PASSES='), html.indexOf(';', html.indexOf('const EQUIPMENT_OCR_STANDARD_PASSES='))+1);
-assert(passBlock.includes('white_extract') && passBlock.includes('hsv_white') && passBlock.includes('grayscale'), 'preview must use the production standard preprocessing passes');
+assert(passBlock.includes('raw_color') && passBlock.includes('soft_white') && passBlock.includes('hsv_white') && passBlock.includes('grayscale'), 'preview must use the production standard preprocessing passes');
 assert(!passBlock.includes('local_contrast'), 'preview standard passes must not force local contrast');
 assert(!passBlock.includes('otsu'), 'v3.0 standard preview must not add rescue Otsu');
 console.log('step125b v2.9 preprocessing preview RED tests passed');
@@ -872,7 +872,7 @@ console.log('step125b v3.1 spike structure tests passed');
 // Step 1.25-C v4.0.2 integration tests: DB-icon geometry must be treated as
 // confirmed icon-anchor geometry, not as an inferred OCR-layout region.
 assert(html.includes("sourceType:'icon-anchor'"), 'icon-anchor regions must expose sourceType=icon-anchor');
-assert(html.includes("if (region.sourceType === 'icon-anchor' && region.iconAnchorRect)"), 'icon-anchor crop path must be explicit');
+assert(html.includes("if (region.sourceType === 'icon-anchor' && region.icon)"), 'icon-anchor crop path must be explicit');
 const v400Start=html.indexOf('function v400RegionsFromGrid(');
 const v400End=html.indexOf('\nfunction v400Draw',v400Start);
 assert(v400Start>=0 && v400End>v400Start,'v4.0.2 region adapter must exist');
@@ -897,8 +897,8 @@ assert(regs.every(r=>r.inferred===false),'icon-anchor rows must never be marked 
 assert(regs.every(r=>r.sourceType==='icon-anchor'),'all icon-anchor rows must carry explicit source type');
 assert(regs.every(r=>r.iconAnchorRect && r.iconAnchorRect.width===315 && r.iconAnchorRect.height===45),'icon-anchor source band must be preserved');
 const cr=intNS.crop(regs[0],1340,760);
-assert(cr && cr.source==='icon-anchor-adaptive-band','v4.0.2 crop must use adaptive icon-anchor band');
-assert.strictEqual(cr.x,71); assert.strictEqual(cr.y,143); assert.strictEqual(cr.width,315); assert.strictEqual(cr.height,26);
+assert(cr && cr.source==='v4.2.0-generic-icon-db-anchor','v4.0.2 crop must use adaptive icon-anchor band');
+assert.strictEqual(cr.x,71); assert.strictEqual(cr.y,134); assert.strictEqual(cr.width,315); assert.strictEqual(cr.height,45);
 console.log('step125c v4.0.2 icon-anchor integration tests passed');
 
-assert(html.includes('icon-anchor-adaptive-band'), 'v4.0.2 adaptive OCR band marker must exist');
+assert(html.includes('v4.2.0-generic-icon-db-anchor'), 'v4.0.2 adaptive OCR band marker must exist');

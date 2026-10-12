@@ -1,0 +1,10 @@
+const test=require('node:test'),assert=require('node:assert/strict');
+const {reconcile,format}=require('../combo-technique-reconciliation.js');
+const p={weaponType:'greatsword',entries:[{techniqueId:'a'},{techniqueId:'a'}]};
+const report={accepted:[{stage:1,techniqueId:'a',hitCount:2,gameVersion:'1.042.00.02'},{stage:2,techniqueId:'a',hitCount:3,gameVersion:'1.042.00.02'}]};
+const audit=()=>({weaponType:'greatsword',techniqueId:'a',calculable:true,registeredHits:[{mv:10},{mv:20}]});
+test('matches and mismatches fixed hit count per stage without DPS promotion',()=>{const r=reconcile(p,report,audit,'1.042.00.02');assert.deepEqual(r.rows.map(x=>x.hitStatus),['MATCH','MISMATCH']);assert.equal(r.rows[0].status,'UNVERIFIABLE');assert.equal(r.rows[1].status,'MISMATCH');assert.equal(r.captureEligible,false);assert.equal(r.verifiedDps,null);assert.match(format(r),/DPS確定不可/)});
+test('missing DB record stays unverifiable',()=>{const r=reconcile(p,report,()=>null);assert.equal(r.rows[0].status,'UNVERIFIABLE');assert.ok(r.rows[0].reasons.includes('TECHNIQUE_DB_RECORD_MISSING'))});
+test('variable or not-calculable hits never falsely match',()=>{const r=reconcile(p,report,()=>({...audit(),registeredHits:[{mv:10,optional:true},{mv:20}]}));assert.equal(r.rows[0].hitStatus,'UNVERIFIABLE');const r2=reconcile(p,report,()=>({...audit(),calculable:false}));assert.equal(r2.rows[0].hitStatus,'UNVERIFIABLE')});
+test('version mismatch flagged even when hit count matches',()=>{const r=reconcile(p,{accepted:[{...report.accepted[0],gameVersion:'older'}]},audit,'1.042.00.02');assert.equal(r.rows[0].status,'MISMATCH');assert.ok(r.rows[0].reasons.includes('GAME_VERSION_MISMATCH'))});
+test('untrusted identity mismatch is not compared',()=>{const r=reconcile(p,{accepted:[{...report.accepted[0],techniqueId:'b'}]},audit);assert.equal(r.rows[0].status,'UNVERIFIABLE')});

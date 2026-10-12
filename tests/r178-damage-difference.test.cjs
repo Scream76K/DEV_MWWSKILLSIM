@@ -1,0 +1,8 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const D=require('../combo-damage-difference.js');
+const provenance={entries:[{techniqueId:'T'},{techniqueId:'T'}]};const measurements={accepted:[{stage:1,techniqueId:'T',evidenceRef:'v',damage:{physicalBody:100,elementalBody:20}}]};const audit={rows:[{stage:1,status:'CONTEXT_DOCUMENTED_UNVERIFIED',contextFingerprint:'fp'}]};
+const prediction={stage:1,techniqueId:'T',evidenceRef:'v',contextFingerprint:'fp',damage:{physicalBody:98,elementalBody:20}};
+test('reports per-component signed delta, never verifies DPS',()=>{const r=D.compare(provenance,measurements,audit,[prediction]);assert.equal(r.rows[0].status,'NUMERIC_DIFFERENCE');assert.equal(r.rows[0].differences[0].delta,2);assert.equal(r.captureEligible,false);assert.equal(r.verifiedDps,null);});
+test('matching numbers remain unverified',()=>{const r=D.compare(provenance,measurements,audit,[{...prediction,damage:{physicalBody:100,elementalBody:20}}]);assert.equal(r.rows[0].status,'NUMERIC_MATCH_UNVERIFIED');assert.equal(r.rows[0].verified,false);});
+test('context mismatch prevents comparison',()=>{const r=D.compare(provenance,measurements,audit,[{...prediction,contextFingerprint:'wrong'}]);assert.equal(r.rows[0].status,'NOT_COMPARABLE');assert.equal(r.rows[0].differences.length,0);});
+test('missing component prevents partial numeric match',()=>{const r=D.compare(provenance,measurements,audit,[{...prediction,damage:{physicalBody:100}}]);assert.equal(r.rows[0].status,'NOT_COMPARABLE');});
+test('duplicate prediction stage is rejected',()=>{const r=D.compare(provenance,measurements,audit,[prediction,prediction]);assert.equal(r.rejected[0].reason,'DUPLICATE_STAGE');assert.equal(r.rows[0].status,'NOT_COMPARABLE');});

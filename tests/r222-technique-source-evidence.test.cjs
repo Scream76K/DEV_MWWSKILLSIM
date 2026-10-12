@@ -1,0 +1,7 @@
+'use strict';
+const test=require('node:test');const assert=require('node:assert/strict');const {audit}=require('../tools/technique-source-evidence-r222.cjs');
+test('r222: all blocked techniques remain represented',()=>{const x=audit();assert.equal(x.total,499);assert.equal(x.records.filter(r=>r.techniqueId==='CB_SAED_AED_DERIVED').length,1);assert.equal(x.records.filter(r=>r.techniqueId==='LBG_NORMAL_REFERENCE_RULES').length,1);assert.equal(x.records.filter(r=>!['CB_SAED_AED_DERIVED','LBG_NORMAL_REFERENCE_RULES'].includes(r.techniqueId)).length,497);assert.equal(x.records.length,x.total);assert.equal(new Set(x.records.map(r=>r.weaponKind+':'+r.techniqueId)).size,x.total)});
+test('r222: source review is never silently marked complete',()=>{for(const r of audit().records){assert.equal(r.sourceReviewComplete,false);assert.equal(r.userDecisionRequested,false);assert.equal(r.measurementRequested,false)}});
+test('r222: conflicting sources are routed for review, not auto adoption',()=>{const x=audit();assert.ok(x.conflictFlagged>0);for(const r of x.records.filter(r=>r.conflicts.length))assert.equal(r.decisionRoute,'USER_REVIEW_AFTER_SOURCE_RECONCILIATION')});
+test('r222: every record has explicit next route and reference version',()=>{for(const r of audit().records){assert.ok(r.decisionRoute);assert.equal(r.referenceGameVersion,'1.042.00.02');assert.ok(r.sourceEvidence)}});
+test('r222: route totals reconcile with inventory',()=>{const x=audit();assert.equal(Object.values(x.routes).reduce((a,b)=>a+b,0),x.total)});

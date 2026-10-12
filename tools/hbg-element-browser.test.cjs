@@ -1,0 +1,9 @@
+const {installLocalModules}=require('./browser-test-setup.cjs');
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{chromium}=require(process.env.PLAYWRIGHT_MODULE_PATH||'playwright');
+test('HBG first hit reference loads its module and clears stale results on mobile',async t=>{
+ const b=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE,args:JSON.parse(process.env.CHROMIUM_ARGS||'["--no-sandbox"]')});t.after(()=>b.close());const p=await b.newPage({viewport:{width:393,height:852},isMobile:true});
+ await p.route('**/*',r=>{const url=r.request().url(),file=url==='https://simulator.test/'?'index.html':['bow-reference.js','bowgun-element-reference.js'].find(x=>url==='https://simulator.test/'+x);return file?r.fulfill({contentType:file.endsWith('.js')?'text/javascript':'text/html',body:fs.readFileSync(path.join(__dirname,'../',file),'utf8')}):r.abort();});await installLocalModules(p);await p.goto('https://simulator.test/');
+ await p.locator('#hbgElementReferenceDetails > summary').click();await p.locator('#hbgElementReferenceForm button').click();assert.match(await p.locator('#hbgElementReferenceOut').innerText(),/属性 20\.3/);assert.match(await p.locator('#hbgElementReferenceOut').innerText(),/DPSには反映しません/);
+ await p.locator('#hbgRefAttack').fill('210');assert.doesNotMatch(await p.locator('#hbgElementReferenceOut').innerText(),/20\.3/);await p.locator('#hbgRefAttack').fill('');await p.locator('#hbgElementReferenceForm button').click();assert.doesNotMatch(await p.locator('#hbgElementReferenceOut').innerText(),/最初の1Hitの参考値/);
+ for(const width of [320,393,768]){await p.setViewportSize({width,height:852});assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
+});

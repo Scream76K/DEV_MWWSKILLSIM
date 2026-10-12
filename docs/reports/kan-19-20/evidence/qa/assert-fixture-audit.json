@@ -1,0 +1,998 @@
+[
+  {
+    "file": "tests/r139-raw-metrics-spec.test.cjs",
+    "before": "2d34cbd3d483e17708d423ed4a1400ced542f71ac0e441254c7b3e5351b14a6d",
+    "after": "639139d7af9e2a3acccbb37defa30d864525cdde2af15df005022c496f482b7e",
+    "reasons": [
+      "許可済pending guard検査追加＋元raw参照式検査維持"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": false,
+    "assertBeforeCount": 12,
+    "assertAfterCount": 13,
+    "assertDiffBefore": [
+      "assert.match(chunk,/const rawValue=r=>r\\.power\\?\\.\\[key\\]\\?\\.comparisonPower/)"
+    ],
+    "assertDiffAfter": [
+      "assert.match(chunk,/const rawValue=r=>equipmentElementPendingReason\\(r\\)\\?null:r\\.power\\?\\.\\[key\\]\\?\\.comparisonPower/)",
+      "assert.match(chunk,/r\\.power\\?\\.\\[key\\]\\?\\.comparisonPower/)"
+    ]
+  },
+  {
+    "file": "tests/r192-dps-build-parity.test.cjs",
+    "before": "c4a9ef13c831bc6bc7f1e36dca3a36f24e63c7d4fa2923e1ff01ac7b1263446b",
+    "after": "225a566b74ede7e3c9ca7c9ed63b452bbdd692a5e4a4fe2e23554804bf979876",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 9,
+    "assertAfterCount": 9,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r193-power-parity.test.cjs",
+    "before": "511ef01a86d90d4e728d334dd677eb95bc394daf9b12abe87931d9adcbe1165e",
+    "after": "790b0b0f6075a14a288e12be24b4dc3406fddcf3754a8b8217965fbb001ab127",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 9,
+    "assertAfterCount": 9,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r194-skill-build-impact.test.cjs",
+    "before": "662537c288144fd045279e52a1a893b24f9382b9f0accd6a0cf024d7540e1a5b",
+    "after": "5ad0c20e3798e639c374076ba5ea29044972059f7968ed90017c1cf77616a3ec",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 13,
+    "assertAfterCount": 13,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r211-build-decoration-impact.test.cjs",
+    "before": "74362ee1cc699a3a4afe0ae18f01ef6ef7db5a1bdbc9f582b6b1ddbc7e8865ae",
+    "after": "d6fb26dc0bf7da15fce5b2cdf2dcb401b000daa3bef20299c630d1723039067c",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 13,
+    "assertAfterCount": 13,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r212-decoration-comparison-integration.test.cjs",
+    "before": "5bd6dce2bb0cb2bff3a8cbcfc77794027b24d831355abdee996d20d34a58c710",
+    "after": "8a4205e76f5ce286a23ecd1ff4033fd720d5c13ec9a48b7da2f3eb8803e0d21e",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 14,
+    "assertAfterCount": 14,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r214-standard-power-comparison-scope.test.cjs",
+    "before": "f60efe17eee598d31feb94405af936a0285430d2f893499554fa33b9fb96ffea",
+    "after": "8585aec8eb08a6aeefcab31dc63953b616d378dee47ac548a1525b11864d912e",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 10,
+    "assertAfterCount": 10,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r215-real-generic-damage-index.test.cjs",
+    "before": "10405d411056d62271c0c140afc5b6f31131af3d40ca1f846037d8f95247ea15",
+    "after": "42fe937d4d76711caafbd69e754fb0b69440c3f5894782d594b95e4d93059e5d",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 11,
+    "assertAfterCount": 11,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r216-saved-build-comparison-flow.test.cjs",
+    "before": "08da35ac3b59236efc4d307471280ac4fcdb6aaadf3dafe496ae3c3a44cb6b01",
+    "after": "d74b7ba406723fb08083fe7b6bd5c70c2865f97dcfd922bb83bdb8386652d3dd",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 16,
+    "assertAfterCount": 16,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r217-armor-charm-comparison.test.cjs",
+    "before": "5f6e90424a49881297d024e382fbaf2192a4a7c9c68b66bd9548052633b12106",
+    "after": "e56afd560ffb78d0e118466bd5e369818ef412237c09f7412e2877b9062f9b25",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 10,
+    "assertAfterCount": 10,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r218-combined-build-comparison.test.cjs",
+    "before": "58ff6c02c84c660e4051c96be79bacaf9dd9f63135ebd49b206396d3aea6254b",
+    "after": "2aa36fcca4337a6777dc6da586053af57bc6a371891b3b4d0ebab60a761d6f0e",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 8,
+    "assertAfterCount": 8,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r219-elemental-build-comparison.test.cjs",
+    "before": "1910c40fc4460cf170fb7fc527450285f56fb897afa3152dc56910988f394d28",
+    "after": "0b17e513b816c3b7c20cd8ce6e16f59481f19e296d913f07bf5246f4945d80fd",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 14,
+    "assertAfterCount": 14,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r248-independent-dps-diagnostics.test.cjs",
+    "before": "dc00d78810f219bf1ca44dc5ad6f11d1189a18f88bff2a96ff5df0b4b916b154",
+    "after": "3d85f8497d1b0861b924c6f65f3cc0a8fa93a40c901e9d76ac03c14d07d729c0",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 4,
+    "assertAfterCount": 4,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r249-saved-build-weapon-matrix.test.cjs",
+    "before": "cfd0f2267365c78f0b3f2d70474ac801fdd63067815f773f79da100d6106e074",
+    "after": "78210ea8552838a0b88371730b7c19deaf46d923ac5874a36d00851db6e2ac87",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 9,
+    "assertAfterCount": 9,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r250-dps-verification-gate.test.cjs",
+    "before": "cdef892d40ed0696b9ad5fb91065086bc0210286d94dd78927ffd590b4966914",
+    "after": "29884867d7977a2f69c8bd6b1ccdc591cc5a4ef582d91dd887acafb3526dc675",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 24,
+    "assertAfterCount": 24,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r46-regression.test.cjs",
+    "before": "991a5d7cbe72e783826c211b460d8aa8cd39490545a9f4ee44c8f876878b74fa",
+    "after": "f12cda36e58654e882e2afab7198a1027ccfb56d62cdb2fc982807408c9313c8",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 14,
+    "assertAfterCount": 14,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r53-hp-part.test.cjs",
+    "before": "43c976267a32dcbcc572f57e9691c94d8951b62b1a098a240e8ad3f52ea0bf44",
+    "after": "8381bd6911701ab88a134fe1fb7e21839d11f381320967a44369f39857fd8351",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 22,
+    "assertAfterCount": 22,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r55-damage-states.test.cjs",
+    "before": "654622f1bf90666360cf07e74da123fbd901bd0a2cec0a9fca9b270e11a7fa48",
+    "after": "3eb07e02b39e4184f8726cfa52d72c49d59a5aff29fb347f9d1a6fa4fd845749",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 42,
+    "assertAfterCount": 42,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r56-horn-components.test.cjs",
+    "before": "e5416246e13707dd0d05b5b09076fbed69636272b805b384584b277f9ccd274f",
+    "after": "403bfe19a112886169315c82bd175d671871cc5648ccd317959256f021cada60",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 48,
+    "assertAfterCount": 48,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tests/r59-hit-attack-modifier.test.cjs",
+    "before": "f71cc7ec226cd5dbfa89fd98c3e42e61ada4a8dcae346a81e4c314546c9b39d8",
+    "after": "dcd9fd7c0518f17b5cf01be9ad03b656e52a9a89fd80d1a4f5fe4548e7bbfa59",
+    "reasons": [
+      "抽出VMへ実production状態・表示moduleと補助関数登録"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 14,
+    "assertAfterCount": 14,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/ai-combo-evaluation-browser.test.cjs",
+    "before": "33972351316b1c7ce51ca850c2f6f345149f018e5cc44a24d413bc74d825e9dd",
+    "after": "8667087f0ae07762db847c95693d065c269b984f759f735f3a6d334b32f5f76c",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 9,
+    "assertAfterCount": 9,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/ai-combo-evaluation-dom.test.cjs",
+    "before": "9a8ac493a32eee835ab08aff08178d2e3b35410ff058677df33cc3fe321c2182",
+    "after": "cfbb0f805816b8ef653f8b5a1995caea40de5bb6a54a3329de58ecae1323e068",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 19,
+    "assertAfterCount": 19,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/attack-components-dom.test.cjs",
+    "before": "2b74d333aa6c3c214bbd36db868f7966d7f8df8e132f695cf5ffb093ef4048ae",
+    "after": "45dc58f2e79e3ad7b9784c2a8242f95d9aa64e2438efbad4dc218915cd710db0",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 13,
+    "assertAfterCount": 13,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/backup-report-browser.test.cjs",
+    "before": "47798577a527246b3f061a3b158323b02179102f2b4b1691d70d0088590592f9",
+    "after": "796aac0841647c6b7c277a05265437309009bef9197d05521747537255ea3e7c",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 12,
+    "assertAfterCount": 12,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/bonus-damage-dom.test.cjs",
+    "before": "559034ca682bcca8ad66544b5468047b4e7f6a65c392d2d588b3da91e2455195",
+    "after": "db80c02ed55f19f0c96016fdf176d3ca4fd9eefd6fe52f027adbb37cc3fc132c",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 32,
+    "assertAfterCount": 32,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/bow-state-browser.test.cjs",
+    "before": "d8f6553a97d787eb275acb5b530e6a5fd4ad4d3e811234ddf8907862969d61d7",
+    "after": "4c901219cc0e42caa6ce7f7cb2f8a6b761ff93b82fb19d85dbb5201d69656588",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 12,
+    "assertAfterCount": 12,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/canonical-presets-browser.test.cjs",
+    "before": "4c0e5e5347400b5d9ad9deebf03c8e7121599e60ce87e2ca4bfcf5e19d555ec3",
+    "after": "539578e077c28eb33fe89063d1dce1712bf182290d777711d302964639a0f5bc",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 8,
+    "assertAfterCount": 8,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/canonical-presets-dom.test.cjs",
+    "before": "51445fb56ddf66156ad523dd915ee1dfaa2c5f8614c49ae294b5dc0cc168f887",
+    "after": "041bd08e58d78663c2ef54b63243dd2ce94f24758b12b6f4131994d117496d43",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 19,
+    "assertAfterCount": 19,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/canonical-route-browser.test.cjs",
+    "before": "94471d48487939d0296cb8ebf6857f88fb8eef1b9242346e6d4c331844b144b5",
+    "after": "374a5026c44f1cca06c041887457f8bdb09a68b82ed2ca4fbe4995541584c7fe",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]",
+      "選択した合成武器をcalcBuildで初期化"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 7,
+    "assertAfterCount": 7,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/canonical-timing-browser.test.cjs",
+    "before": "5e867a8d7f73641ffe9c14c2468165dd719138f4fb3787e0949703b9852036ed",
+    "after": "43920c8e78f6ee73e94bf18af78169769f4fd1735edafb927c8bf5cecb9bedfc",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]",
+      "選択した合成武器をcalcBuildで初期化"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 11,
+    "assertAfterCount": 11,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/charge-blade-combo-browser.test.cjs",
+    "before": "748a2531620f998d21fcb29249ce8a63f14d9df0a0be63476a8163d9861495fe",
+    "after": "3d7eb329097efa64193f56cc95de70dd106dccf90142f9ba508ba2c709339cf5",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 10,
+    "assertAfterCount": 10,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/charge-blade-combo-dom.test.cjs",
+    "before": "1289996a8c389b2d23ef54b6ba802d98602ebbac0bdcdbd30ea1ef556d7408c0",
+    "after": "eac5398e74cc731826389bcb7316ee9f3d0fd6c919e54a437ba24143e5295197",
+    "reasons": [
+      "火100の既存calcState fixtureを再計算用武器recordにも明示"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 40,
+    "assertAfterCount": 40,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/combo-blockers-browser.test.cjs",
+    "before": "423f4ec1ebe4dca79c22e0e154599faccbd31814f2e9f5ec8634dd684ad3435b",
+    "after": "ad44fcd3089271deefc1a0b49ac6748c4b499bb573ca7a54f7093fb8081cd213",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 9,
+    "assertAfterCount": 9,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/combo-blockers-dom.test.cjs",
+    "before": "c7a97bb3ff8557a985bb487e20a142b9aba34e89647a741b4399981399029fc7",
+    "after": "fa815388663c9c9f070e5ae058e8d7a4f45f7e98d9475ec57a36a2c808a29ce7",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 28,
+    "assertAfterCount": 28,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/combo-editing-browser.test.cjs",
+    "before": "0caf9a562a512c73a281c99c6e42f9a6f29d847165eaa9f694f0e8b248030d49",
+    "after": "3ff653af5e64e338d2a66694d743fc5fa32fa048b18d9e4840523dcf1c08d3ea",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 10,
+    "assertAfterCount": 10,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/combo-editing-dom.test.cjs",
+    "before": "13469db7aa5791c9687f5bff1719b5a691271c91f6e3f426d92a9af678fcca46",
+    "after": "54c36fb610e8e0a284140e99999bea72b1ed0fe430385ce3d6d0b46df4cd3950",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 26,
+    "assertAfterCount": 26,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/combo-evaluation-dom.test.cjs",
+    "before": "07bbff3f00bfd3e2dacad14bfc3e36907069087396d0c74f6d158991e9b9e5ce",
+    "after": "db57ff1070b747ae6c430c01c32ab1bcccd470cf10f11dd28e9b0513560a2dc2",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 23,
+    "assertAfterCount": 23,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/combo-persistence-dom.test.cjs",
+    "before": "51e5561cdc52aa4b8570dac62d64ab1f24bc53ff3b256dda1a604dc86b93282f",
+    "after": "97b767dd3c0128d6eb387a87b1540c15dc39a40005411b902810a7a083a5730a",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 21,
+    "assertAfterCount": 21,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/combo-verification-dom.test.cjs",
+    "before": "ac5baa60f6646add0522be137caa39b22444821f584dcaba6319b8693f9eacde",
+    "after": "0f9d812bcf411375a0872811eaa8e8e6e34253c5df6950a415e2889529fd290c",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 54,
+    "assertAfterCount": 54,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/comparison-readiness-browser.test.cjs",
+    "before": "eebb66ab4ad143f79977a65cd2901373f5b8a03ae3e2e1c38aec192dcd8a2288",
+    "after": "f019157cf660eb6b47a94f76717115fef6608c334a000a9be2c54b307b03a644",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 10,
+    "assertAfterCount": 10,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/comparison-readiness-dom.test.cjs",
+    "before": "56dbcb4852ed7d425e8e2e3bd671133bf73a3aabf8cf9696a5f358ec5f7bae65",
+    "after": "ae452bfba041c14eb4989a20116e367eacfc7e836d57468cb121e61c49cbd5e5",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 17,
+    "assertAfterCount": 17,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/damage-context-browser.test.cjs",
+    "before": "b8d890ac5bc53f6edae682219ceccbf93e6e1c043549c6a1a901efbefd4bb2b1",
+    "after": "ae98e2aa2f18d39e0ef6453bc585e23e65b651f5b07870b41084162993ab5406",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 8,
+    "assertAfterCount": 8,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/damage-context-dom.test.cjs",
+    "before": "55cfacac3986ab06334676007500913e56097504cc03b1e48f547f9f9f605420",
+    "after": "1492e304384835afa5d122c8d7c953b0cb4fcbafff7d9683e21951b4cfbdcae6",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 16,
+    "assertAfterCount": 16,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/expanded-combo-dom.test.cjs",
+    "before": "6e2ecfd1eaf7adbc4ba6a9aff17700f7175ec1eb56e3b07d07d999b2ef841884",
+    "after": "5477fea24a2ed3516cc2f5fb8c09b113a110713779a89c8dd297aee1e26c7fcc",
+    "reasons": [
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 47,
+    "assertAfterCount": 47,
+    "assertDiffBefore": [],
+    "assertDiffAfter": [],
+    "finalMetadataUpdate": "baseStats contract initialization; all assertions unchanged"
+  },
+  {
+    "file": "tools/fortify-condition-browser.test.cjs",
+    "before": "7fac838bd387b91ce69c0fb41baa8c6359f288c5d579622d92b32b465101ac35",
+    "after": "d632482c38151cd5aa48251ffa895b3f05ac69f522d5cdf7f105f052468a232a",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 9,
+    "assertAfterCount": 9,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/fortify-power-browser.test.cjs",
+    "before": "118e3b63a697ec1b78c9fdb6ce20440db8183af88cb163a7862f266c04b7c131",
+    "after": "59bbb3d9f3a7de9be85510b554b7f38bee0ba36b42ff8b594cdc7dedb0382e7c",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 6,
+    "assertAfterCount": 6,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/frame-timing-browser.test.cjs",
+    "before": "423be078249f98d8e09da1e0065d9bd40e78f1c86cf6ba3e3e2779af200d3e57",
+    "after": "cb7f5e95e206555162f141cbd675de70308e3793da27f1fab0c8c99a7133feb3",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 7,
+    "assertAfterCount": 7,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/frame-timing-dom.test.cjs",
+    "before": "ef36cc6c86f1569c89efa67f4961ffd069ea991c69778bee287c3c26776edf73",
+    "after": "7acefa4b6d6a75ba01ce685fa473a1572a92f4f179a1b6dfdf6097b6bdfc0cf0",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 26,
+    "assertAfterCount": 26,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/group-power-browser.test.cjs",
+    "before": "01b9cc7ade3b076ca7d8d8f80781372f0c236d4589a9a94e5ddcd8058f58fb1d",
+    "after": "7029a2f23619787740d973a4a63b6ad24b2e799a21e55453b370fcc7b0133477",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 10,
+    "assertAfterCount": 10,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/group-power-dom.test.cjs",
+    "before": "b2205d2a8b0a3ab778b068f4bfb0940d606b60545fa69d4e62bfc07e2013db9a",
+    "after": "9a4f86c2e73fe847f53cc21b4b449a4e0c21e2adedee1db2376e891e4143a7b2",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]",
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 52,
+    "assertAfterCount": 52,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/hbg-normal-dom.test.cjs",
+    "before": "82fd95e363e13444792a14ef077b83449051d5945feb99cf08fcaa8803954e5b",
+    "after": "919fc3dda8a5f1d8ebad624d33dfe63ccb4ef27adda58eeafe31c834d3741bd2",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 39,
+    "assertAfterCount": 39,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/hbg-shot-skills-dom.test.cjs",
+    "before": "c2cf7be94950d4270a93950a3617631c3fd777424e7645d1eaca6f2c35d441fe",
+    "after": "9b006732b83549b5246ef69b6fab8f9ef62e87630418f66b9ed2cf8be9f202bd",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 15,
+    "assertAfterCount": 15,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/hit-details-browser.test.cjs",
+    "before": "b4bb1a0be9bdcfff963d10d2f980b175061e05b66f0a4d95827de321aa2a6feb",
+    "after": "bc2a64af0811ce232f1c9d09ed4cf550d2de3a662cdfb459382a953bcc8537b5",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 6,
+    "assertAfterCount": 6,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/hit-details-dom.test.cjs",
+    "before": "488fa0dd0d7ab37e84238cb5f95974fc49c4d73bf6556cccbcf987683bf9787f",
+    "after": "493f9953bb5c9eb95c63b3bcf7d249e1fc61cc13b9fa3ecec394ee8694f2b980",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 26,
+    "assertAfterCount": 26,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/power-conditions-dom.test.cjs",
+    "before": "ab371fd60fb546892ae6e9e2e3b878a5872af7d1c3282a0c70bbcc5d2ff5a2dc",
+    "after": "b0b0ab980cc1517e76ccd5fc0d2cdb1f20d1d1a84839fb8a90c9332b064c6c0e",
+    "reasons": [
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 31,
+    "assertAfterCount": 31,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/power-index-dom.test.cjs",
+    "before": "0e5c248b5e29e30c4ff2fe7d1099e511c41c9b6bdf2862e7ea3fdb7f666e2df3",
+    "after": "9fdc1c5db695cdd32c78fadc7efab18752e740a5684ea7f01f65a04202487a2c",
+    "reasons": [
+      "旧合成数値fixtureへ完全な既知属性状態"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 24,
+    "assertAfterCount": 24,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/r250-dps-verification-browser.test.cjs",
+    "before": "c259243d3671afb517e1655976806c4f6ffacb7af79fb43641db92c5c8f4cef3",
+    "after": "9dfbf0437a8ea47d6ce2ee4a8a1f0f5d0ec872541a38d81330f650cc9e3d2eb3",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 10,
+    "assertAfterCount": 10,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/r250-dps-verification-dom.test.cjs",
+    "before": "65eae52f8cbf84f6e34590d84ab1e551b648274f6ccaf556f9fe7c99aa87a85f",
+    "after": "6c24e9034660cfd0d9c1e7bd3243ff804553a1435b34674121c5330e6363cc19",
+    "reasons": [
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 19,
+    "assertAfterCount": 19,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/scorch-route-dom.test.cjs",
+    "before": "efd075bbb284de8a9909f9a67770bc4aa3e6d920e3599bae919773ed284f2482",
+    "after": "cb8d4921ba4f9e2cae435e34ec39024e94f4d98afea91886d4c9d8864117bc62",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 13,
+    "assertAfterCount": 13,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  },
+  {
+    "file": "tools/simulator-backup-dom.test.cjs",
+    "before": "af49307d53660675d929b08452ffaa200cc059cf0a3881f8b40d78306e20f9a9",
+    "after": "35e462141d53f12f0170c6dccaad0d5f7833ed266f2f4817a7d5b768a291ae3b",
+    "reasons": [
+      "JSDOM外部local JSを実順序でinline読込",
+      "物理専用MHDB-shaped fixtureに明示無属性specials[]"
+    ],
+    "testNamesUnchanged": true,
+    "skipCountBefore": 0,
+    "skipCountAfter": 0,
+    "assertStatementsIdentical": true,
+    "assertBeforeCount": 50,
+    "assertAfterCount": 50,
+    "assertDiffBefore": [],
+    "assertDiffAfter": []
+  }
+]

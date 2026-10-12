@@ -1,0 +1,10 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');
+const {transfer}=require('../gunlance-verified-transfer.js');const {createCapture}=require('../gunlance-result-capture.js');
+const row=(name,damage)=>({kind:'gunlance',name,dps:999,verifiedCapture:{origin:'CALCULATOR_VERIFIED_EVIDENCE',buildName:name,weaponType:'gunlance',source:'VERIFIED_GENERIC_COMPONENTS',contextId:'same',evidenceId:'proof-'+name,components:[{component:'physical',damage,hits:1,verified:true,evidenceRef:"test-hit-source"}],durationSeconds:2,durationVerified:true,durationEvidenceRef:"test-duration-source",techniqueDbRevision:"test-revision"}});
+const pair=()=>[row('A',20),row('B',30)];
+test('verified calculator evidence transfers A/B, ignoring reference DPS',()=>{const store=createCapture();const r=transfer(pair(),{verifiedContextId:"same"},store);assert.equal(r.status,'TRANSFERRED_VERIFIED_PAIR');assert.equal(r.comparison.a.dps,10);assert.equal(r.comparison.b.dps,15)});
+test('missing evidence is never promoted from reference DPS',()=>{const rows=pair();delete rows[1].verifiedCapture;assert.throws(()=>transfer(rows,{verifiedContextId:"same"},createCapture()),/missing/)});
+test('mismatched context never transfers a partial pair',()=>{const rows=pair(),store=createCapture();rows[1].verifiedCapture.contextId='other';assert.throws(()=>transfer(rows,{verifiedContextId:"same"},store),/comparison context mismatch/);assert.deepEqual(store.status(),{A:null,B:null})});
+test('invalid component never transfers a partial pair',()=>{const rows=pair(),store=createCapture();rows[1].verifiedCapture.components[0].verified=false;assert.throws(()=>transfer(rows,{verifiedContextId:"same"},store),/unverified/);assert.deepEqual(store.status(),{A:null,B:null})});
+test('build identity mismatch rejected',()=>{const rows=pair();rows[0].verifiedCapture.buildName='other';assert.throws(()=>transfer(rows,{verifiedContextId:"same"},createCapture()),/identity/)});
+test('wrong weapon rejected',()=>{const rows=pair();rows[0].kind='bow';assert.throws(()=>transfer(rows,{verifiedContextId:"same"},createCapture()),/gunlance/)});

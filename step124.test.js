@@ -1,5 +1,5 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const html=fs.readFileSync('index.html','utf8');
+const html=require('./tools/legacy-ocr-source.cjs')();
 assert(html.includes('Step 1.24'),'title/version must be Step 1.24');
 assert(html.includes('平均文字評価'),'average character score must be displayed');
 assert(html.includes('文字評価（統合寄与）'),'integration character component must be explicitly labeled');

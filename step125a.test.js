@@ -1,7 +1,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
-const html = fs.readFileSync('index.html','utf8');
+const html = require('./tools/legacy-ocr-source.cjs')();
 const mStart = html.indexOf('function detectEquipmentRegions(');
 const mEnd = html.indexOf('\nfunction addPadding', mStart);
 const lmStart = html.indexOf('function extractEquipmentOCRLines(');

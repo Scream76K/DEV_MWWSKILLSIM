@@ -1,0 +1,10 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const bridge=require('../gunlance-generic-bridge.js');
+const typed=()=>({weaponType:'gunlance',source:'VERIFIED_TYPED_COMPONENTS',contextId:'training',evidenceId:'video',durationSeconds:2,durationVerified:true,components:{physicalBody:0,elementalBody:0,shelling:68,wyrmstake:0},componentEvidence:{physicalBody:{verified:true,evidenceRef:'p',hits:0},elementalBody:{verified:true,evidenceRef:'e',hits:0},shelling:{verified:true,evidenceRef:'s',hits:2},wyrmstake:{verified:true,evidenceRef:'w',hits:0}}});
+test('valid typed observation preserved',()=>assert.equal(bridge.fromTypedGeneric(typed()).totalDamage,68));
+test('positive damage with zero hits rejected',()=>{const a=typed();a.componentEvidence.shelling.hits=0;assert.throws(()=>bridge.fromTypedGeneric(a),/inconsistent/)});
+test('zero damage with positive hits rejected',()=>{const a=typed();a.componentEvidence.physicalBody.hits=1;assert.throws(()=>bridge.fromTypedGeneric(a),/inconsistent/)});
+test('negative typed damage rejected',()=>{const a=typed();a.components.shelling=-1;assert.throws(()=>bridge.fromTypedGeneric(a),/invalid typed damage/)});
+test('non-numeric typed damage rejected',()=>{const a=typed();a.components.shelling='68';assert.throws(()=>bridge.fromTypedGeneric(a),/invalid typed damage/)});
+test('generic zero hits with positive damage rejected',()=>{const a={...typed(),source:'VERIFIED_GENERIC_COMPONENTS',components:[{component:'shelling',damage:68,hits:0,verified:true}]};assert.throws(()=>bridge.fromGeneric(a),/inconsistent/)});

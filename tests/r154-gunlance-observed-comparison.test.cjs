@@ -1,0 +1,10 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const {composeObservedCombo}=require('../gunlance-combo-observed.js');
+const {comparisonFromObserved}=require('../gunlance-observed-comparison.js');
+const make=(damage,duration=2)=>composeObservedCombo({evidenceId:'user-video',durationSeconds:duration,events:[{component:'shelling',damage,hits:2}]});
+test('compares complete observed DPS with explicit A baseline',()=>{const r=comparisonFromObserved(make(68),make(85));assert.equal(r.a.dps,34);assert.equal(r.b.dps,42.5);assert.equal(r.relativeDpsPercent,125);assert.equal(r.deltaDps,8.5);});
+test('unknown physical damage blocks comparison, but preserves known shell damage',()=>{const incomplete=composeObservedCombo({evidenceId:'video',durationSeconds:2,events:[{component:'shelling',damage:68,hits:2},{component:'physical',damage:null,hits:null}]});const r=comparisonFromObserved(incomplete,make(85));assert.equal(r.a.knownDamage,68);assert.equal(r.a.totalDamage,null);assert.equal(r.a.totalHits,null);assert.equal(r.dpsComparisonReady,false);assert.equal(r.relativeDpsPercent,null);assert.equal(r.a.reason,'DAMAGE_INCOMPLETE');});
+test('missing measured duration blocks DPS comparison',()=>{const r=comparisonFromObserved(make(68,null),make(85));assert.equal(r.a.reason,'DURATION_UNVERIFIED');assert.equal(r.dpsComparisonReady,false);});
+test('zero baseline does not produce invented infinite percentage',()=>{const r=comparisonFromObserved(make(0),make(68));assert.equal(r.dpsComparisonReady,true);assert.equal(r.baselineZero,true);assert.equal(r.relativeDpsPercent,null);});
+test('rejects invalid ungrounded inputs',()=>{assert.throws(()=>comparisonFromObserved({},make(68)),TypeError);});

@@ -5,10 +5,10 @@ const vm=require('node:vm');
 const assert=require('node:assert/strict');
 const {test}=require('node:test');
 const next=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
-const golden=JSON.parse(fs.readFileSync(path.join(__dirname,'r46-standard-golden.json'),'utf8'));
+const golden=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures','r46-standard-golden.json'),'utf8'));
 function load(html){
   const kinds=html.match(/const KINDS=(\[.*?\]);/)[1];
-  const c={window:{}};vm.createContext(c);
+  const c={window:{}};vm.createContext(require('../tools/element-vm-test-setup.cjs').register(c));
   const utility=html.match(/const \$=id=>document\.getElementById\(id\), esc=.*?;\n/)[0];
   vm.runInContext(utility+'const KINDS='+kinds+';'+html.slice(html.indexOf('const CHARGE_BLADE_ENGINE_VERSION='),html.indexOf('function compareStep5Snapshot()')),c);
   return c;

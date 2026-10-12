@@ -1,0 +1,34 @@
+{
+  "task": "KAN-8",
+  "auditor": "sein",
+  "auditDate": "2026-10-11",
+  "worktree": "/Users/scream/Projects/DEV_MWWSKILLSIM-r250",
+  "branch": "codex/integrate-r249",
+  "head": "fb6d82cd525da9273af10ac6b719f330208608c5",
+  "visualInspection": {"tool": "view_image", "detail": "original", "distinctImages": 4, "newTesseractRuns": 0},
+  "realGoldenSystemsConfirmed": 0,
+  "requiredSystems": 3,
+  "systems": [
+    {"name": "fullscreen", "golden": false, "viewport": null, "nineRowBoundaries": null, "equipmentNameBoxes": null, "crops": null, "reason": "No independently annotated full equipment-name original; decoration image is another screen."},
+    {"name": "top-bottom-bars", "golden": false, "viewport": null, "nineRowBoundaries": null, "equipmentNameBoxes": null, "crops": null, "reason": "No independently annotated equipment original with top/bottom bars and measured viewport."},
+    {"name": "framed-photo", "golden": false, "viewport": null, "nineRowBoundaries": null, "equipmentNameBoxes": null, "crops": null, "reason": "sample_game has a frame and white edge; capture provenance and coordinates remain unannotated."}
+  ],
+  "candidates": [
+    {"path": "sample_game.png", "dimensions": [1340,760], "sha256": "b0de5ef9358306722c12208ab73c9ec65deac5f1a6151deb512eeec1b933df48", "hashRechecked": true, "visuallyInspected": true, "evidenceKind": "UNANNOTATED_REAL_IMAGE", "classification": "Equipment nine rows visible; black frame and white edge; blurred names", "viewport": null, "screenCorners": null, "nineRowBoundaries": null, "equipmentNameBoxes": null, "crops": null, "measurementTolerance": null, "reviewers": [], "golden": false, "mayCalibrateProduction": false},
+    {"path": "examples/equipment_example.jpg", "dimensions": [706,1536], "sha256": "40351ee56236dc2190c59ecd006f7b17731b389f933a5ed31ba9cf877cebab45", "hashRechecked": true, "visuallyInspected": true, "evidenceKind": "UNANNOTATED_PARTIAL_ANNOTATED_IMAGE", "classification": "Nine equipment rows visible in enlarged partial phone browser view; full horizontal game viewport unknown", "viewport": null, "screenCorners": null, "nineRowBoundaries": null, "equipmentNameBoxes": null, "crops": null, "measurementTolerance": null, "reviewers": [], "golden": false, "mayCalibrateProduction": false},
+    {"path": "simulation_result.png", "dimensions": [1099,623], "sha256": "b2113bf9ad595c521bea688b35448a04b011e02e9f50cd0076a22b1220f21a96", "hashRechecked": true, "visuallyInspected": true, "evidenceKind": "DERIVED_DETECTION_OVERLAY_NOT_TRUTH", "classification": "Old blue/yellow detector overlays and scores", "viewport": null, "screenCorners": null, "nineRowBoundaries": null, "equipmentNameBoxes": null, "crops": null, "measurementTolerance": null, "reviewers": [], "golden": false, "mayCalibrateProduction": false},
+    {"path": "examples/decoration_example.jpg", "dimensions": [1536,864], "sha256": "0e07aa421679cc125a8559348fa7a2c5b2069169e3aec539f04c96a90fa904c7", "hashRechecked": true, "visuallyInspected": true, "evidenceKind": "DECORATION_SCREEN_NOT_EQUIPMENT_GRID_TRUTH", "classification": "Full aspect game decoration selection screen without visible browser or frame", "viewport": null, "screenCorners": null, "nineRowBoundaries": null, "equipmentNameBoxes": null, "crops": null, "measurementTolerance": null, "reviewers": [], "golden": false, "mayCalibrateProduction": false}
+  ],
+  "recordedDetectionResults": {
+    "source": "docs/reports/r250-stage3/evidence/real-ocr-result.json",
+    "evidenceKind": "REAL_IMAGE_DETECTOR_OUTPUT_NOT_TRUTH",
+    "runs": [
+      {"image": "sample_game.png", "detectedGameArea": [0,3.125,1340,753.75], "mainWeaponDetectedROI": [64,140,165,26], "autoConfirmed": 0, "recognizedTargets": 7, "golden": false},
+      {"image": "examples/equipment_example.jpg", "detectedGameArea": [0,569.4375,706,397.125], "mainWeaponDetectedROI": [34,644,87,16], "autoConfirmed": 0, "recognizedTargets": 7, "golden": false}
+    ]
+  },
+  "syntheticEvidence": {"source": "tools/r250-ocr-coordinate-browser.test.cjs", "evidenceKind": "CONSTRUCTED_TRUTH_CROP_ONLY", "priorReportedPasses": 3, "rerun": true, "auditorPersonallyReran": false, "stage5Executor": "himmel", "stage5Passed": 3, "stage5Failed": 0, "stage5Evidence": "docs/reports/r250-stage5/evidence/browser-baseline.log", "stage5EvidenceLines": [83,84,85], "stage5FullBrowserPassed": 66, "stage5FullBrowserFailed": 0, "detectorInvoked": false, "mayCalibrateProduction": false},
+  "historicalReference": {"source": "docs/reports/r250-stage3/evidence/historical-4k-reference.json", "status": "HISTORICAL_REFERENCE_NOT_GOLDEN", "originalImageHash": null, "nineRowBoundaries": null, "mayCalibrateProduction": false, "proposedRatiosConfirmed": false},
+  "goldenPromotionRequirements": ["Unmodified original with acquisition metadata and hash", "Three capture systems independently represented", "Manual original-pixel viewport and ten boundaries", "Seven complete equipment-name boxes and physical crops", "Two reviewers and justified measurement tolerance", "Normalization round-trip and overlay/source-crop equality", "Truth independent of detector output and synthetic generation"],
+  "scope": {"productDbTestsGitChanged": false, "externalPathsRead": false, "prohibitedRepositoriesRead": false, "delegated": false, "reportPathsOnly": true}
+}

@@ -1,0 +1,6 @@
+const test=require('node:test');const assert=require('node:assert/strict');const {review,format}=require('../combo-evidence-intake.js');
+const provenance={entries:[{techniqueId:'slash',pending:['VERIFIED_COMPONENT_DAMAGE_PENDING']},{techniqueId:'slash',pending:['VERIFIED_STAGE_TIMING_PENDING']}]};
+test('matches only stage-specific pending reference',()=>{const r=review(provenance,[{stage:1,techniqueId:'slash',code:'VERIFIED_COMPONENT_DAMAGE_PENDING',evidenceRef:' video-1 '}]);assert.equal(r.matched.length,1);assert.equal(r.remaining.length,1);assert.equal(r.matched[0].evidenceRef,'video-1');assert.equal(r.captureEligible,false)});
+test('rejects wrong stage, missing ref, duplicate',()=>{const a={stage:1,techniqueId:'slash',code:'VERIFIED_COMPONENT_DAMAGE_PENDING',evidenceRef:'v'};const r=review(provenance,[a,a,{...a,stage:2},{...a,evidenceRef:''}]);assert.deepEqual(r.rejected.map(x=>x.reason),['DUPLICATE_OBSERVATION','NOT_PENDING_FOR_STAGE','EVIDENCE_REF_REQUIRED']);});
+test('empty observations never promote DPS',()=>{const r=review(provenance,[]);assert.equal(r.remaining.length,2);assert.match(format(r),/DPS確定不可/);});
+test('invalid input rejected',()=>assert.throws(()=>review(provenance,{}),/array required/));

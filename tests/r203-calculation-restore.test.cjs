@@ -1,0 +1,20 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const start=html.indexOf('function buildCalculationFingerprint(){');
+const end=html.indexOf('\n  invalidateAIComparisonData();',start);
+assert.ok(start>=0&&end>start);
+const make=(calcState)=>vm.runInNewContext(html.slice(start,end)+'\nbuildCalculationFingerprint()', {calcState});
+const base={total:{'攻撃':5},stats:{attackTrue:200,attack:240,affinity:10,maxAffinity:60,element:100,elementType:'fire',defense:450,weaponKind:'bow'}};
+test('same restored calculation has same fingerprint',()=>assert.equal(make(base),make(JSON.parse(JSON.stringify(base)))));
+test('skill changes invalidate comparison restore',()=>assert.notEqual(make(base),make({...base,total:{'攻撃':4}})));
+test('affinity changes invalidate comparison restore',()=>assert.notEqual(make(base),make({...base,stats:{...base.stats,maxAffinity:50}})));
+test('power-relevant attack changes invalidate comparison restore',()=>assert.notEqual(make(base),make({...base,stats:{...base.stats,attackTrue:201}})));
+test('comparison verifies calculation fingerprint before publishing',()=>{
+ const section=html.slice(html.indexOf('function runBuildCompare(){'),html.indexOf('\nfunction aiBuildData(){'));
+ assert.match(section,/calculationBefore=buildCalculationFingerprint\(\)/);
+ assert.match(section,/calculationBefore!==buildCalculationFingerprint\(\)/);
+});

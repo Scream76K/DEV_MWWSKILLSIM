@@ -1,0 +1,64 @@
+--- /private/tmp/p0-next-start/files/index.html	2026-10-11 23:58:25
++++ index.html	2026-10-12 00:13:26
+@@ -4192,6 +4192,29 @@
+ // KAN-17 #10066: damage-only UI uses the existing route/handler evaluator.
+ const p0DamageRequests={};
+ let p0DamageSuspend=false;
++// Known incompatible MHDB metadata must never be overridden by manual reference state.
++// Missing metadata remains an unverified common-reference scenario; this does not verify equipment.
++function validateP0EquipmentSupport(rows){
++  const w=selectedWeapon(),kind=comboKind(),ids=rows.map(r=>comboMove(r.techniqueId)?.canonicalTechniqueId);
++  if(kind==='gunlance'&&rows.some(r=>comboMove(r.techniqueId)?.referenceAction)&&w.shell!=null){
++    if(!['normal','long','wide'].includes(w.shell))throw Error('P0_WEAPON_APPLICABILITY_PENDING:武器の砲撃タイプを照合できません。');
++    if(w.shell.toUpperCase()!==comboGLStoredState().shellingType)throw Error('P0_WEAPON_STATE_CONFLICT:武器の砲撃タイプと指定条件が一致しません。');
++  }
++  if(kind==='bow'&&w.coatings!=null){
++    if(!Array.isArray(w.coatings))throw Error('P0_WEAPON_APPLICABILITY_PENDING:対応ビン情報を照合できません。');
++    const coating=$('powerBowCoating')?.value;
++    if(coating==='POWER'&&!w.coatings.includes('power'))throw Error('P0_WEAPON_STATE_CONFLICT:選択武器は強撃ビンに対応していません。');
++  }
++  if(['light-bowgun','heavy-bowgun'].includes(kind)&&w.ammo!=null){
++    if(!Array.isArray(w.ammo))throw Error('P0_WEAPON_APPLICABILITY_PENDING:対応弾情報を照合できません。');
++    for(const id of ids){const level=Number(id?.match(/^(?:LBG|HBG)_NORMAL_AMMO_([123])$/)?.[1]);
++      if(level&&!w.ammo.some(a=>a?.kind==='normal'&&a.level===level&&typeof a.capacity==='number'&&Number.isFinite(a.capacity)&&a.capacity>0))throw Error('P0_WEAPON_STATE_CONFLICT:選択武器の通常弾Lv'+level+'の装填可否が成立しません。');
++    }
++  }
++  if(kind==='charge-blade'&&ids.some(id=>['CB_SAED','CB_SAED_AED_DERIVED'].includes(id))&&w.phial!=null){
++    if(w.phial!=='element')throw Error('P0_WEAPON_STATE_CONFLICT:選択武器は強属性ビンSAEDの対象ではありません。');
++  }
++}
+ function calcP0Damage(mode,{remember=true}={}){
+   const outputs={single:'singleTechniqueDamageOut',template:'templateComboDamageOut',user:'userComboDamageOut'};
+   const out=$(outputs[mode]);if(!out)return null;
+@@ -4206,8 +4229,9 @@
+       rows=preset.moves.map(techniqueId=>({techniqueId}));
+     }else{App.combo.syncFromDOM();rows=App.state.combo.moves;}
+     if(!rows.length)throw Error('技を追加してください。');
++    validateP0EquipmentSupport(rows);
+     const shellOnly=comboKind()==='gunlance'&&rows.every(r=>comboMove(r.techniqueId)?.handler==='GunlanceShellReferenceHandler');
+-    context={...comboDamageContext({ignoreWeaponElement:shellOnly||['heavy-bowgun','light-bowgun'].includes(comboKind())}),critBonus:skillLevel(calcState.total||{},['超会心','Critical Boost'])};
++    context={...comboDamageContext({ignoreWeaponElement:shellOnly||['heavy-bowgun','light-bowgun'].includes(comboKind()),requireKnownInputs:true,shellOnly}),critBonus:skillLevel(calcState.total||{},['超会心','Critical Boost'])};
+     const unavailable=rows.map((r,index)=>({r,index,move:comboMove(r.techniqueId,calcState.stats)})).filter(x=>!x.move||x.move.numericOrigin!=='CANONICAL_DB');
+     if(unavailable.length){
+       result={status:'BLOCKED',damage:null,stages:[],blocked:unavailable.map(x=>({index:x.index+1,id:x.r.techniqueId,name:x.move?.name||x.r.techniqueId,reason:'TECHNIQUE_DB_CONNECTION_PENDING:'+x.r.techniqueId})),context};
+@@ -4312,10 +4336,19 @@
+   }
+   return {...ctx,p0RangedResults:results};
+ }
+-function comboDamageContext({ignoreWeaponElement=false}={}){
++function comboDamageContext({ignoreWeaponElement=false,requireKnownInputs=false,shellOnly=false}={}){
+   const st=calcState?.stats||{};
+   const elementReason=equipmentElementPendingReason(st);if(elementReason&&!ignoreWeaponElement)throw Error(elementReason);
+   const h=monsterHZ();
++  if(requireKnownInputs&&!shellOnly){
++    const attack=st.attackTrue??st.attack,affinity=st.maxAffinity??st.affinity;
++    const finite=(n,min,max)=>typeof n==='number'&&Number.isFinite(n)&&n>=min&&n<=max;
++    if(!finite(attack,0,10000))throw Error('P0_ATTACK_PENDING:武器の攻撃力が未確認です。');
++    if(!finite(affinity,-100,100))throw Error('P0_AFFINITY_PENDING:会心条件が未確認です。');
++    if(!finite(h.hz,0,100))throw Error('P0_PHYSICAL_HITZONE_PENDING:物理肉質が未確認です。対象部位を確認してください。');
++    const element=ignoreWeaponElement||['poison','paralysis','sleep','blast'].includes(st.elementType)?0:st.element;
++    if(element>0&&!finite(h.ehz,0,100))throw Error('P0_ELEMENT_HITZONE_PENDING:属性肉質が未確認です。対象部位を確認してください。');
++  }
+   return {attack:Number(st.attackTrue??st.attack)||0,affinity:Number(st.maxAffinity??st.affinity)||0,element:ignoreWeaponElement||['poison','paralysis','sleep','blast'].includes(st.elementType)?0:st.element,
+     hz:h.hz??45,ehz:h.ehz??20,sharp:Number($('dSharp')?.value)||1.32,esharp:Number($('dESharp')?.value)||1.15,
+     critBonus:Number($('dCB')?.value)||0,elementCrit:Boolean(+$('dECrit')?.value),insectGlaiveState:comboIGStoredState(),huntingHornState:comboHHStoredState(),lightBowgunState:comboLBGStoredState(),chargeBladeState:comboKind()==='charge-blade'?comboCBCondition(st):null};

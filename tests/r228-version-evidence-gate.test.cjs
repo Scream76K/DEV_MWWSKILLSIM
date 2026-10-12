@@ -1,0 +1,11 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.join(__dirname, '..');
+const gate = JSON.parse(fs.readFileSync(path.join(root, 'VERSION_EVIDENCE_GATE_r228.json'), 'utf8'));
+const prev = JSON.parse(fs.readFileSync(path.join(root, 'TECHNIQUE_HISTORY_TRIAGE_r227.json'), 'utf8'));
+test('r228: 13 history discrepancies are all gated', () => { assert.equal(gate.total, 13); assert.equal(gate.records.length, 13); assert.deepEqual(new Set(gate.records.map(r=>r.techniqueId)), new Set(prev.records.map(r=>r.techniqueId))); });
+test('r228: no automatic numeric promotion', () => { assert.equal(gate.rules.automaticPromotion,false); for(const r of gate.records){assert.equal(r.allowedToWriteTechniqueDb,false);assert.equal(r.status,'BLOCKED_AWAITING_VERSIONED_EVIDENCE');} });
+test('r228: historical values and deltas are preserved', () => { for(const r of gate.records){ const p=prev.records.find(x=>x.techniqueId===r.techniqueId);assert.equal(r.currentMv,p.currentMv);assert.equal(r.historical.before,p.historyBeforeMv);assert.equal(r.historical.after,p.historyAfterMv);assert.equal(r.deltaIfAfterAdopted,p.historyAfterMv-p.currentMv);} });
+test('r228: Game8 is context, not MV numeric evidence', () => { const s=gate.referenceIntake.find(x=>x.url==='https://game8.jp/mhwilds/710305');assert.ok(s);assert.equal(s.verifiedNumericMv,false); });

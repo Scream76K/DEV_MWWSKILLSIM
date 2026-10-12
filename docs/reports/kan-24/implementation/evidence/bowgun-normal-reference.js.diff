@@ -1,0 +1,35 @@
+--- before/bowgun-normal-reference.js
++++ after/bowgun-normal-reference.js
+@@ -3,10 +3,16 @@
+  const valid=(n,min,max)=>{if(typeof n!=='number'||!Number.isFinite(n)||n<min||n>max)throw Error('HBG_NORMAL:INVALID_INPUT');return n;};
+  function shot(o,engine){
+   if(!engine||typeof engine.get!=='function')throw Error('HBG_NORMAL:TECHNIQUE_DB_REQUIRED');
+-  const record=engine.get('heavy-bowgun','HBG_NORMAL_REFERENCE_RULES'),rule=record?.specialSourceValues,s=o?.state;
++  const kind=o?.weaponKind||'heavy-bowgun',lbg=kind==='light-bowgun';
++  if(!['heavy-bowgun','light-bowgun'].includes(kind))throw Error('BOWGUN_NORMAL:WEAPON_UNSUPPORTED');
++  const prefix=lbg?'LBG':'HBG',record=engine.get(kind,prefix+'_NORMAL_REFERENCE_RULES'),rule=record?.specialSourceValues,s=o?.state;
++  if(lbg){
++   if(!rule||!rule.supportedLevels?.includes(s?.ammoLevel)||s?.shotMode!=='NORMAL'||s?.contactPolicy!=='ALL_THREE'||s?.range!=='CRITICAL'||s?.normalModeLevel!==0)throw Error('LBG_NORMAL:LIMITED_STATE_UNRESOLVED');
++   if(o.normalUp!==0||(o.firstShot??0)!==0||(o.forceShot??0)!==0)throw Error('LBG_NORMAL:UNREVIEWED_SKILL');
++  }
+   if(rule?.status!=='SOURCE_CONFIRMED'||rule.scope!=='EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO')throw Error('HBG_NORMAL:SOURCE_UNRESOLVED');
+   if(!s||s.ammoType!=='NORMAL'||!Number.isInteger(s.ammoLevel)||s.ammoLevel<1||s.ammoLevel>3||!Object.hasOwn(rule.physicalRange,s.range)||!Number.isInteger(s.normalModeLevel)||!Object.hasOwn(rule.normalMode,s.normalModeLevel))throw Error('HBG_NORMAL:STATE_UNRESOLVED');
+-  const source=engine.get('heavy-bowgun','HBG_NORMAL_AMMO_'+s.ammoLevel),ammo=source?.specialSourceValues;
++  const source=engine.get(kind,prefix+'_NORMAL_AMMO_'+s.ammoLevel),ammo=source?.specialSourceValues;
+   if(!ammo||!Number.isInteger(ammo.hitCount)||ammo.hitCount!==rule.hitCount)throw Error('HBG_NORMAL:AMMO_SOURCE_UNRESOLVED');
+   const mv=valid(ammo.mvPerHit,0,100),attack=valid(o.attack,0,10000),affinity=valid(o.affinity,-100,100),criticalMultiplier=valid(o.criticalMultiplier,1,2),hz=valid(o.physicalHitzone,0,100),normalUp=o.normalUp;
+   if(!Number.isInteger(normalUp)||!Object.hasOwn(rule.normalUp,normalUp))throw Error('HBG_NORMAL:SKILL_LEVEL_INVALID');
+@@ -22,9 +28,10 @@
+    if(s.shotOrdinal>=rules.forceAffinityStart)shotAffinityAdd=valid(rules.forceAffinity[forceShot],0,100);
+   }
+   const effectiveAffinity=Math.min(100,affinity+shotAffinityAdd),shotCrit=effectiveAffinity>=0?1+effectiveAffinity/100*(criticalMultiplier-1):1+effectiveAffinity/100*.25;
+-  const perHit=(attack+shotAttackAdd)*mv/100*hz/100*range*mode*up*shotCrit;
+-  const trace=Array.from({length:ammo.hitCount},(_,i)=>({hit:i+1,techniqueId:source.techniqueId,mv,physical:perHit,element:0,rangePhysicalModifier:range,normalModeModifier:mode,normalUpModifier:up,criticalExpectation:shotCrit,shotOrdinal:s.shotOrdinal??null,shotAttackAdd,shotAffinityAdd,effectiveAffinity,sharpnessApplied:false,weaponElementApplied:false})),physical=perHit*ammo.hitCount;
+-  return {status:'SOURCE_REFERENCE',profileId:'HBG_NORMAL_AMMO_'+s.ammoLevel+'_THREE_CONTACT_REFERENCE',scope:rule.scope,comparisonPower:physical,physical,element:0,special:0,trace,state:{...s},skills:{normalUp,firstShot,forceShot},shotSkills:{shotAttackAdd,shotAffinityAdd,effectiveAffinity},ammoCapacityVerified:false,rounding:'UNROUNDED_REFERENCE',liveGameVerification:'PENDING',evidenceRefs:[...record.evidenceRefs,...source.evidenceRefs]};
++  const weaponPhysicalModifier=lbg?valid(rule.weaponPhysicalModifier,0,2):1;
++  const perHit=(attack+shotAttackAdd)*mv/100*hz/100*range*mode*up*shotCrit*weaponPhysicalModifier;
++  const trace=Array.from({length:ammo.hitCount},(_,i)=>({hit:i+1,techniqueId:source.techniqueId,mv,physical:perHit,element:0,weaponPhysicalModifier,rangePhysicalModifier:range,normalModeModifier:mode,normalUpModifier:up,criticalExpectation:shotCrit,shotOrdinal:s.shotOrdinal??null,shotAttackAdd,shotAffinityAdd,effectiveAffinity,sharpnessApplied:false,weaponElementApplied:false})),physical=perHit*ammo.hitCount;
++  return {status:'SOURCE_REFERENCE',profileId:prefix+'_NORMAL_AMMO_'+s.ammoLevel+'_THREE_CONTACT_REFERENCE',scope:rule.scope,comparisonPower:physical,physical,element:0,special:0,trace,state:{...s},skills:{normalUp,firstShot,forceShot},shotSkills:{shotAttackAdd,shotAffinityAdd,effectiveAffinity},ammoCapacityVerified:false,weaponApplicability:'UNVERIFIED',rounding:'UNROUNDED_REFERENCE',liveGameVerification:'PENDING',evidenceRefs:[...record.evidenceRefs,...source.evidenceRefs]};
+  }
+  const api=Object.freeze({shot});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowgunNormalReference=api;
+ })(typeof window!=='undefined'?window:globalThis);

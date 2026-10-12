@@ -1,0 +1,11 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const A=require('../weapon-critical-skill-audit.js');
+const ctx={affinity:10,criticalBoostLevel:3};const handoff={rows:[{stage:1,status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED',context:ctx}]};const stats={affinity:10,maxAffinity:60};
+const run=(h=handoff,s=stats,skills={'超会心':3})=>A.audit(h,s,skills).rows[0];
+test('read-only snapshot records live base and max affinity',()=>{const r=run();assert.equal(r.baseAffinity,10);assert.equal(r.maxAffinity,60);assert.equal(r.criticalBoostLevel,3)});
+test('conditional maximum never treated as guaranteed',()=>assert.ok(run().blockers.includes('ACTIVE_SKILL_CONDITIONS_NOT_RECONCILED')));
+test('base affinity mismatch blocks',()=>assert.ok(run(handoff,{...stats,affinity:20}).blockers.includes('BASE_AFFINITY_MISMATCH')));
+test('critical boost mismatch blocks',()=>assert.ok(run(handoff,stats,{'超会心':2}).blockers.includes('CRITICAL_BOOST_CONTEXT_MISMATCH')));
+test('missing critical boost is level zero',()=>assert.equal(run(handoff,stats,{}).criticalBoostLevel,0));
+test('duplicate aliases fail closed',()=>assert.ok(run(handoff,stats,{'超会心':3,'Critical Boost':3}).blockers.includes('CRITICAL_BOOST_ALIAS_CONFLICT')));
+test('invalid level fails closed',()=>assert.ok(run(handoff,stats,{'超会心':7}).blockers.includes('CRITICAL_BOOST_LEVEL_INVALID')));
+test('never transfers verified DPS',()=>{const r=A.audit(handoff,stats,{'超会心':3});assert.equal(r.captureEligible,false);assert.equal(r.verifiedDps,null)});

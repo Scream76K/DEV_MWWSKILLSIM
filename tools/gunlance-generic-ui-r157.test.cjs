@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict');const fs=require('node:fs');const vm=require('node:vm');const path=require('node:path');const base=path.join(__dirname,'..');
+const html=fs.readFileSync(path.join(base,'index.html'),'utf8');for(const id of ['glGenericA','glGenericB','glGenericRun','glGenericOutput'])assert(html.includes('id="'+id+'"'));
+const handlers={};const elements=Object.fromEntries(['glGenericA','glGenericB','glGenericRun','glGenericOutput'].map(id=>[id,{value:'',textContent:'',addEventListener:(event,fn)=>{handlers[id+event]=fn}}]));
+const context={window:null,document:{getElementById:id=>elements[id]||null}};context.window=context;vm.createContext(context);
+for(const file of ['observed-shelling.js','gunlance-combo-observed.js','gunlance-observed-comparison.js','gunlance-generic-bridge.js','gunlance-observed-ui.js'])vm.runInContext(fs.readFileSync(path.join(base,file),'utf8'),context,{filename:file});
+const payload=(damage,contextId='same')=>({weaponType:'gunlance',source:'VERIFIED_GENERIC_COMPONENTS',evidenceId:'e1',contextId,durationSeconds:2,durationVerified:true,components:[{component:'shelling',damage,hits:2,verified:true}]});
+elements.glGenericA.value=JSON.stringify(payload(68));elements.glGenericB.value=JSON.stringify(payload(102));handlers.glGenericRunclick();assert.match(elements.glGenericOutput.textContent,/A DPS：34\.0/);assert.match(elements.glGenericOutput.textContent,/B DPS：51\.0/);assert.match(elements.glGenericOutput.textContent,/150\.0%/);
+elements.glGenericB.value=JSON.stringify(payload(102,'different'));handlers.glGenericRunclick();assert.match(elements.glGenericOutput.textContent,/比較保留/);
+elements.glGenericB.value=JSON.stringify({...payload(102),durationVerified:false});handlers.glGenericRunclick();assert.match(elements.glGenericOutput.textContent,/比較保留/);
+console.log('r157 generic comparison UI: 4 checks passed');

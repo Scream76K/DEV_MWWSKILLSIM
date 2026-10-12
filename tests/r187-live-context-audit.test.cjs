@@ -1,0 +1,13 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const A=require('../weapon-live-context-audit.js');
+const context={weaponId:7,weaponAttack:220,weaponElement:120,affinity:10,gameVersion:'1.042.00.02'};
+const handoff={rows:[{stage:1,status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED',context}]};
+const weapon={id:7};const stats={attackTrue:220,element:120,affinity:10};
+const run=(h=handoff,w=weapon,s=stats)=>A.audit(h,w,s,'1.042.00.02').rows[0];
+test('matching numeric stats remain unverified until skill and monster parity',()=>{const r=run();assert.deepEqual(r.blockers,['LIVE_SKILLS_AND_MONSTER_STATE_NOT_RECONCILED']);assert.equal(r.verified,false)});
+test('weapon identity mismatch blocked',()=>assert.ok(run(handoff,{id:8}).blockers.includes('WEAPON_ID_MISMATCH')));
+test('true attack mismatch blocked',()=>assert.ok(run(handoff,weapon,{...stats,attackTrue:221}).blockers.includes('ATTACK_MISMATCH')));
+test('element mismatch blocked',()=>assert.ok(run(handoff,weapon,{...stats,element:100}).blockers.includes('ELEMENT_MISMATCH')));
+test('base affinity mismatch blocked',()=>assert.ok(run(handoff,weapon,{...stats,affinity:20}).blockers.includes('AFFINITY_MISMATCH')));
+test('missing selected weapon blocked',()=>assert.ok(run(handoff,null).blockers.includes('SELECTED_WEAPON_ID_REQUIRED')));
+test('version mismatch blocked',()=>assert.ok(run({rows:[{stage:1,status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED',context:{...context,gameVersion:'old'}}]}).blockers.includes('GAME_VERSION_MISMATCH')));
+test('never permits verified DPS transfer',()=>{const r=A.audit(handoff,weapon,stats,'1.042.00.02');assert.equal(r.captureEligible,false);assert.equal(r.verifiedDps,null)});

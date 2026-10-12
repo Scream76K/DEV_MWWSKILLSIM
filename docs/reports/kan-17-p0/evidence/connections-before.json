@@ -1,0 +1,239 @@
+[
+  {
+    "kind": "great-sword",
+    "name": "大剣",
+    "moves": 6,
+    "canonicalReady": [
+      "gs_charge3",
+      "gs_strong3",
+      "canonical:GS_STRONG_WIDE_SLASH_3"
+    ],
+    "canonicalPresets": [
+      {
+        "id": "adopted:gs_standard",
+        "name": "最大溜め：溜め斬りⅢ→強溜めⅢ→強薙ぎ払いⅢ",
+        "moves": [
+          "gs_charge3",
+          "gs_strong3",
+          "canonical:GS_STRONG_WIDE_SLASH_3"
+        ],
+        "origin": "CANONICAL_DB"
+      }
+    ],
+    "pendingReasons": []
+  },
+  {
+    "kind": "long-sword",
+    "name": "太刀",
+    "moves": 9,
+    "canonicalReady": [
+      "canonical:LS_RED_BLADE_I",
+      "canonical:LS_RED_BLADE_II",
+      "canonical:LS_RED_BLADE_III"
+    ],
+    "canonicalPresets": [
+      {
+        "id": "adopted:ls_standard",
+        "name": "赤刃状態：赤刃斬りⅠ→Ⅱ→Ⅲ",
+        "moves": [
+          "canonical:LS_RED_BLADE_I",
+          "canonical:LS_RED_BLADE_II",
+          "canonical:LS_RED_BLADE_III"
+        ],
+        "origin": "CANONICAL_DB"
+      }
+    ],
+    "pendingReasons": []
+  },
+  {
+    "kind": "sword-and-shield",
+    "name": "片手剣",
+    "moves": 6,
+    "canonicalReady": [
+      "sns_slash",
+      "sns_horizontal",
+      "canonical:SNS_SIDE_SLASH",
+      "canonical:SNS_RETURN_SLASH"
+    ],
+    "canonicalPresets": [
+      {
+        "id": "adopted:sns_standard",
+        "name": "斬り下ろし→横斬り→水平斬り→斬り返し",
+        "moves": [
+          "sns_slash",
+          "canonical:SNS_SIDE_SLASH",
+          "sns_horizontal",
+          "canonical:SNS_RETURN_SLASH"
+        ],
+        "origin": "CANONICAL_DB"
+      }
+    ],
+    "pendingReasons": []
+  },
+  {
+    "kind": "dual-blades",
+    "name": "双剣",
+    "moves": 8,
+    "canonicalReady": [
+      "canonical:DB_DEMON_DANCE_I",
+      "canonical:DB_DEMON_DANCE_II",
+      "canonical:DB_DEMON_DANCE_III"
+    ],
+    "canonicalPresets": [
+      {
+        "id": "adopted:db_standard",
+        "name": "鬼人化：乱舞Ⅰ→Ⅱ→Ⅲ（27Hit）",
+        "moves": [
+          "canonical:DB_DEMON_DANCE_I",
+          "canonical:DB_DEMON_DANCE_II",
+          "canonical:DB_DEMON_DANCE_III"
+        ],
+        "origin": "CANONICAL_DB"
+      }
+    ],
+    "pendingReasons": []
+  },
+  {
+    "kind": "hammer",
+    "name": "ハンマー",
+    "moves": 6,
+    "canonicalReady": [
+      "hm_side",
+      "hm_big",
+      "canonical:HAM_VERTICAL_II",
+      "canonical:HAM_MIGHTY_CHARGE_UPPERCUT"
+    ],
+    "canonicalPresets": [
+      {
+        "id": "adopted:hm_standard",
+        "name": "横振り→縦振りⅡ→アッパー→渾身溜めアッパー",
+        "moves": [
+          "hm_side",
+          "canonical:HAM_VERTICAL_II",
+          "hm_big",
+          "canonical:HAM_MIGHTY_CHARGE_UPPERCUT"
+        ],
+        "origin": "CANONICAL_DB"
+      }
+    ],
+    "pendingReasons": []
+  },
+  {
+    "kind": "hunting-horn",
+    "name": "狩猟笛",
+    "moves": 4,
+    "canonicalReady": [
+      "hh_left",
+      "hh_forward"
+    ],
+    "canonicalPresets": [],
+    "pendingReasons": []
+  },
+  {
+    "kind": "lance",
+    "name": "ランス",
+    "moves": 8,
+    "canonicalReady": [
+      "canonical:LAN_MID_THRUST_I",
+      "canonical:LAN_MID_THRUST_II",
+      "canonical:LAN_MID_THRUST_III",
+      "canonical:LAN_TRIPLE_THRUST"
+    ],
+    "canonicalPresets": [
+      {
+        "id": "adopted:lan_standard",
+        "name": "中段突きⅠ→Ⅱ→Ⅲ→三段突き",
+        "moves": [
+          "canonical:LAN_MID_THRUST_I",
+          "canonical:LAN_MID_THRUST_II",
+          "canonical:LAN_MID_THRUST_III",
+          "canonical:LAN_TRIPLE_THRUST"
+        ],
+        "origin": "CANONICAL_DB"
+      }
+    ],
+    "pendingReasons": []
+  },
+  {
+    "kind": "gunlance",
+    "name": "ガンランス",
+    "moves": 6,
+    "canonicalReady": [
+      "canonical:GL_SLAM",
+      "canonical:GL_SWEEP"
+    ],
+    "canonicalPresets": [],
+    "pendingReasons": []
+  },
+  {
+    "kind": "switch-axe",
+    "name": "スラッシュアックス",
+    "moves": 4,
+    "canonicalReady": [],
+    "canonicalPresets": [],
+    "pendingReasons": []
+  },
+  {
+    "kind": "charge-blade",
+    "name": "チャージアックス",
+    "moves": 10,
+    "canonicalReady": [
+      "canonical:CB_SWORD_TO_AXE_MORPH"
+    ],
+    "canonicalPresets": [],
+    "pendingReasons": [
+      {
+        "id": "canonical:CB_SHIELD_THRUST",
+        "reason": "CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED"
+      },
+      {
+        "id": "canonical:CB_ELEMENT_DISCHARGE_1",
+        "reason": "CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED"
+      },
+      {
+        "id": "canonical:CB_ELEMENT_DISCHARGE_2",
+        "reason": "CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED"
+      },
+      {
+        "id": "canonical:CB_AED",
+        "reason": "CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED"
+      },
+      {
+        "id": "canonical:CB_FOLLOWUP_AED",
+        "reason": "CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED"
+      }
+    ]
+  },
+  {
+    "kind": "insect-glaive",
+    "name": "操虫棍",
+    "moves": 4,
+    "canonicalReady": [],
+    "canonicalPresets": [],
+    "pendingReasons": []
+  },
+  {
+    "kind": "light-bowgun",
+    "name": "ライトボウガン",
+    "moves": 4,
+    "canonicalReady": [],
+    "canonicalPresets": [],
+    "pendingReasons": []
+  },
+  {
+    "kind": "heavy-bowgun",
+    "name": "ヘビィボウガン",
+    "moves": 4,
+    "canonicalReady": [],
+    "canonicalPresets": [],
+    "pendingReasons": []
+  },
+  {
+    "kind": "bow",
+    "name": "弓",
+    "moves": 4,
+    "canonicalReady": [],
+    "canonicalPresets": [],
+    "pendingReasons": []
+  }
+]

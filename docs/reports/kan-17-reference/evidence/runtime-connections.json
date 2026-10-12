@@ -1,0 +1,306 @@
+[
+  {
+    "kind": "great-sword",
+    "name": "大剣",
+    "availability": {
+      "status": "READY",
+      "profileId": "GS_STANDARD_MAX_CHARGE_STRONG_SWEEP_V1042",
+      "reason": null,
+      "blockers": [],
+      "profileBlockers": [],
+      "stateStatsResolution": "NOT_REQUIRED",
+      "calculationScope": "HP_DAMAGE_ONLY",
+      "partDurabilityCalculation": "NOT_IMPLEMENTED"
+    },
+    "handler": {
+      "handler": "GenericWeaponHandler",
+      "status": "IMPLEMENTED",
+      "specialComponents": [],
+      "reason": null
+    }
+  },
+  {
+    "kind": "long-sword",
+    "name": "太刀",
+    "availability": {
+      "status": "READY",
+      "profileId": "LS_STANDARD_RED_BLADE_I_II_III_V1042",
+      "reason": null,
+      "blockers": [],
+      "profileBlockers": [],
+      "stateStatsResolution": "NOT_REQUIRED",
+      "calculationScope": "HP_DAMAGE_ONLY",
+      "partDurabilityCalculation": "NOT_IMPLEMENTED"
+    },
+    "handler": {
+      "handler": "GenericWeaponHandler",
+      "status": "IMPLEMENTED",
+      "specialComponents": [],
+      "reason": null
+    }
+  },
+  {
+    "kind": "sword-and-shield",
+    "name": "片手剣",
+    "availability": {
+      "status": "READY",
+      "profileId": "SNS_STANDARD_TRIANGLE_TRIANGLE_CIRCLE_CIRCLE_V1042",
+      "reason": null,
+      "blockers": [],
+      "profileBlockers": [],
+      "stateStatsResolution": "NOT_REQUIRED",
+      "calculationScope": "HP_DAMAGE_ONLY",
+      "partDurabilityCalculation": "NOT_IMPLEMENTED"
+    },
+    "handler": {
+      "handler": "GenericWeaponHandler",
+      "status": "IMPLEMENTED",
+      "specialComponents": [],
+      "reason": null
+    }
+  },
+  {
+    "kind": "dual-blades",
+    "name": "双剣",
+    "availability": {
+      "status": "READY",
+      "profileId": "DB_STANDARD_DEMON_DANCE_I_II_III_V1042",
+      "reason": null,
+      "blockers": [],
+      "profileBlockers": [],
+      "stateStatsResolution": "NOT_REQUIRED",
+      "calculationScope": "HP_DAMAGE_ONLY",
+      "partDurabilityCalculation": "NOT_IMPLEMENTED"
+    },
+    "handler": {
+      "handler": "GenericWeaponHandler",
+      "status": "IMPLEMENTED",
+      "specialComponents": [],
+      "reason": null
+    }
+  },
+  {
+    "kind": "hammer",
+    "name": "ハンマー",
+    "availability": {
+      "status": "READY",
+      "profileId": "HAMMER_STANDARD_SIDE_VERTICAL2_UPPERCUT_MIGHTY_UPPERCUT_V1042",
+      "reason": null,
+      "blockers": [],
+      "profileBlockers": [],
+      "stateStatsResolution": "NOT_REQUIRED",
+      "calculationScope": "HP_DAMAGE_ONLY",
+      "partDurabilityCalculation": "NOT_IMPLEMENTED"
+    },
+    "handler": {
+      "handler": "GenericWeaponHandler",
+      "status": "IMPLEMENTED",
+      "specialComponents": [],
+      "reason": null
+    }
+  },
+  {
+    "kind": "hunting-horn",
+    "name": "狩猟笛",
+    "availability": {
+      "status": "CANDIDATE",
+      "profileId": "HH_STANDARD_SELF_IMPROVEMENT_ENCORE_V1042",
+      "reason": "ECHO_BUBBLE_AND_PERFORMANCE_COMPONENTS_PENDING"
+    },
+    "handler": {
+      "handler": "HuntingHornHandler",
+      "status": "EVIDENCE_GATED",
+      "specialComponents": [
+        "BODY_PHYSICAL",
+        "BODY_ELEMENT",
+        "PERFORMANCE_SHOCKWAVE",
+        "ECHO_BUBBLE"
+      ],
+      "reason": "PERFORMANCE_AND_ECHO_COMPONENT_EVIDENCE_PENDING"
+    }
+  },
+  {
+    "kind": "lance",
+    "name": "ランス",
+    "availability": {
+      "status": "READY",
+      "profileId": "LANCE_STANDARD_MID1_MID2_MID3_TRIPLE_V1042",
+      "reason": null,
+      "blockers": [],
+      "profileBlockers": [],
+      "stateStatsResolution": "NOT_REQUIRED",
+      "calculationScope": "HP_DAMAGE_ONLY",
+      "partDurabilityCalculation": "NOT_IMPLEMENTED"
+    },
+    "handler": {
+      "handler": "GenericWeaponHandler",
+      "status": "IMPLEMENTED",
+      "specialComponents": [],
+      "reason": null
+    }
+  },
+  {
+    "kind": "gunlance",
+    "name": "ガンランス",
+    "availability": {
+      "status": "CANDIDATE",
+      "profileId": "GL_STANDARD_FULLBURST_STAKE_CHAIN_V1042",
+      "reason": "SHELLING_COMPONENT_HANDLER_PENDING"
+    },
+    "handler": {
+      "handler": "GunlanceHandler",
+      "status": "EVIDENCE_GATED",
+      "specialComponents": [
+        "SHELLING",
+        "WYRMSTAKE"
+      ],
+      "reason": "SHELLING_EVENT_AND_FORMULA_EVIDENCE_PENDING"
+    }
+  },
+  {
+    "kind": "switch-axe",
+    "name": "スラッシュアックス",
+    "availability": {
+      "status": "READY",
+      "profileId": "SA_STANDARD_SWORD_VERTICAL_RIGHT_MORPH_DOUBLE_AXE_MORPH_V1042",
+      "reason": null,
+      "blockers": [],
+      "profileBlockers": [],
+      "stateStatsResolution": "NOT_REQUIRED",
+      "calculationScope": "HP_DAMAGE_ONLY",
+      "partDurabilityCalculation": "NOT_IMPLEMENTED"
+    },
+    "handler": {
+      "handler": "GenericWeaponHandler",
+      "status": "IMPLEMENTED",
+      "specialComponents": [],
+      "reason": null
+    }
+  },
+  {
+    "kind": "charge-blade",
+    "name": "チャージアックス",
+    "availability": {
+      "status": "UNREGISTERED",
+      "profileId": null,
+      "reason": "STANDARD_PROFILE_UNREGISTERED"
+    },
+    "handler": {
+      "handler": "ChargeBladeHandler",
+      "status": "IMPLEMENTED",
+      "specialComponents": [
+        "AXE_BOOST",
+        "PHIAL"
+      ]
+    }
+  },
+  {
+    "kind": "insect-glaive",
+    "name": "操虫棍",
+    "availability": {
+      "status": "EVIDENCE_GATED",
+      "profileId": "IG_STANDARD_TRIPLE_SIDESTEP_COMBO_DESCENDING_SPIRAL_V1042",
+      "reason": "TECHNIQUE_DATA_UNVERIFIED",
+      "blockers": [
+        {
+          "techniqueId": "IG_TRIPLE_SIDESTEP_SLASH",
+          "reasons": [
+            "SOURCE_ELEMENT_MODIFIER_CONFLICT"
+          ]
+        },
+        {
+          "techniqueId": "IG_TRIPLE_ADVANCING_COMBO",
+          "reasons": [
+            "AGGREGATE_HIT_RECORD_UNVERIFIED",
+            "SOURCE_ELEMENT_MODIFIER_CONFLICT"
+          ]
+        },
+        {
+          "techniqueId": "IG_ENHANCED_DESCENDING_THRUST",
+          "reasons": [
+            "AGGREGATE_HIT_RECORD_UNVERIFIED",
+            "CHARGE_STATE_MAPPING_PENDING",
+            "LEGACY_SLASH_THRUST_NAME_MAPPING_PENDING"
+          ]
+        },
+        {
+          "techniqueId": "IG_RISING_SPIRAL_SLASH",
+          "reasons": [
+            "SOURCE_ELEMENT_MODIFIER_CONFLICT",
+            "CHARGE_STATE_MAPPING_PENDING",
+            "SPIRAL_HIT_COUNT_CONFLICT",
+            "EXTRACT_CONSUMPTION_STATS_APPLICATION_PENDING"
+          ]
+        }
+      ],
+      "profileBlockers": [
+        "STATE_STATS_RESOLUTION_PENDING"
+      ],
+      "stateStatsResolution": "PENDING"
+    },
+    "handler": {
+      "handler": "GenericWeaponHandler",
+      "status": "IMPLEMENTED",
+      "specialComponents": [],
+      "reason": null
+    }
+  },
+  {
+    "kind": "light-bowgun",
+    "name": "ライトボウガン",
+    "availability": {
+      "status": "CANDIDATE",
+      "profileId": "LBG_STANDARD_ELEMENT_AMMO_V1042",
+      "reason": "SHOT_AND_RAPID_FIRE_UNIT_PENDING"
+    },
+    "handler": {
+      "handler": "LightBowgunHandler",
+      "status": "EVIDENCE_GATED",
+      "specialComponents": [
+        "AMMO_PHYSICAL",
+        "AMMO_ELEMENT",
+        "RAPID_FIRE"
+      ],
+      "reason": "AMMO_FORMULA_AND_RAPID_FIRE_EVIDENCE_PENDING"
+    }
+  },
+  {
+    "kind": "heavy-bowgun",
+    "name": "ヘビィボウガン",
+    "availability": {
+      "status": "CANDIDATE",
+      "profileId": "HBG_STANDARD_ELEMENT_AMMO_V1042",
+      "reason": "SHOT_UNIT_PENDING"
+    },
+    "handler": {
+      "handler": "HeavyBowgunHandler",
+      "status": "EVIDENCE_GATED",
+      "specialComponents": [
+        "AMMO_PHYSICAL",
+        "AMMO_ELEMENT"
+      ],
+      "reason": "AMMO_FORMULA_EVIDENCE_PENDING"
+    }
+  },
+  {
+    "kind": "bow",
+    "name": "弓",
+    "availability": {
+      "status": "CANDIDATE",
+      "profileId": "BOW_STANDARD_SHOT_POWER_POWER_V1042",
+      "reason": "CHARGE_LEVEL_AND_ARROW_HIT_DATA_PENDING"
+    },
+    "handler": {
+      "handler": "BowHandler",
+      "status": "EVIDENCE_GATED",
+      "specialComponents": [
+        "ARROW_PHYSICAL",
+        "ARROW_ELEMENT",
+        "CHARGE_LEVEL",
+        "RANGE",
+        "COATING"
+      ],
+      "reason": "COATING_STANDARD_AND_CURRENT_VERSION_AUDIT_PENDING"
+    }
+  }
+]

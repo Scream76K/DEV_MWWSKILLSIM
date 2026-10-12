@@ -1,0 +1,44 @@
+# 変更ファイル
+
+- index.html
+- tools/comparison-readiness-browser.test.cjs
+- tools/damage-context-dom.test.cjs
+- tools/dark-power-browser.test.cjs
+- tools/charge-blade-combo-dom.test.cjs
+- tools/bonus-damage-dom.test.cjs
+- tools/hit-details-browser.test.cjs
+- tools/combo-persistence-dom.test.cjs
+- tools/conditional-element-browser.test.cjs
+- tools/backup-report-browser.test.cjs
+- tools/combo-blockers-dom.test.cjs
+- tools/dragon-target-browser.test.cjs
+- tools/charge-blade-combo-browser.test.cjs
+- tools/r250-dps-verification-browser.test.cjs
+- tools/canonical-presets-browser.test.cjs
+- tools/heroics-power-browser.test.cjs
+- tools/hit-details-dom.test.cjs
+- tools/dark-arts-power-browser.test.cjs
+- tools/bow-state-browser.test.cjs
+- tools/combo-evaluation-dom.test.cjs
+- tools/group-power-dom.test.cjs
+- tools/canonical-presets-dom.test.cjs
+- tools/canonical-timing-browser.test.cjs
+- tools/fortify-condition-browser.test.cjs
+- tools/canonical-route-browser.test.cjs
+- tools/combo-blockers-browser.test.cjs
+- tools/coalescence-power-browser.test.cjs
+- tools/group-power-browser.test.cjs
+- tools/ai-combo-evaluation-browser.test.cjs
+- tools/r250-dps-verification-dom.test.cjs
+- tools/combo-editing-browser.test.cjs
+- tools/health-branches-browser.test.cjs
+- tools/frame-timing-browser.test.cjs
+- tools/fortify-power-browser.test.cjs
+- tools/gs-dark-arts-browser.test.cjs
+- tools/ai-combo-evaluation-dom.test.cjs
+- tests/r250-dps-verification-gate.test.cjs
+- tests/kan17-reference-dps.test.cjs
+- tools/p1-source-stats-dom.test.cjs（新規16件）
+- docs/reports/p1-source-stats/（報告・検証証跡）
+
+製品変更はindex.htmlのみ。既存テスト35ファイルは合成武器の会心0%明示、Node2ファイルは共通helperの実ソース抽出を追加。数値期待値の変更なし。既存変更合計38、削除0。

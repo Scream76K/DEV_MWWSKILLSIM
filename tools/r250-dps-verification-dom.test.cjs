@@ -1,0 +1,12 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs');const {JSDOM,VirtualConsole}=require('jsdom');
+const html=process.env.MHW_DPS_HTML?fs.readFileSync(process.env.MHW_DPS_HTML,'utf8'):require('./dom-test-setup.cjs').readSimulatorHtml();
+for(const measured of [false,true])test(`unverified ${measured?'registered':'legacy'} timing stays unavailable across UI saved comparison JSON and AI`,t=>{
+ const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));const dom=new JSDOM(html,{url:'https://simulator.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'))}});t.after(()=>dom.window.close());const w=dom.window,d=w.document;
+ w.eval(`clearWeaponBuckets();build.armor={};const fixture={id:987,kind:'great-sword',name:'Fixture',affinity:0,damage:{raw:200,display:200},specials:[],slots:[],skills:[]};DB.weapons=[fixture];weaponIndexByKind['great-sword']=[fixture];weaponKind.value='great-sword';weapon.innerHTML='<option value="987">Fixture</option>';weapon.value='987';calcBuild();renderComboForWeapon();addCombo('gs_charge3');`);
+ if(measured)assert.equal(w.saveCanonicalTiming('great-sword','gs_charge3',{seconds:3,gameVersion:'1.042.00.02',note:'reference fixture'}).ok,true);
+ const ui=w.calcDps();assert.ok(ui.damage>0);assert.equal(ui.time,measured?3:2.4);assert.equal(ui.practicalDps,null);assert.equal(ui.dpsStatus,'UNVERIFIED');assert.match(d.getElementById('dpsOut').textContent,/DPS未算出/);assert.doesNotMatch(d.getElementById('dpsOut').textContent,/実戦DPS：|理論DPS：/);
+ const r=w.createComboVerificationReport();assert.equal(r.summary.practicalDps,null);assert.equal(r.summary.dpsReason,'COMBO_DPS_UNVERIFIED');assert.equal(r.summary.damage,ui.damage);
+ for(const name of ['A','B']){d.getElementById('buildName').value=name;d.getElementById('saveBuild').click()}d.getElementById('selectAllCompare').click();d.getElementById('runCompare').click();
+ const report=w.createBuildComparisonReport();assert.ok(report);for(const row of report.results){assert.equal(row.dps,null);assert.equal(row.dpsIndex,null);assert.equal(row.dpsStatus,'UNVERIFIED');assert.equal(row.dpsReason,'COMBO_DPS_UNVERIFIED')}
+ d.getElementById('aiPrompt').value='verify';const p=w.makeAIPrompt();assert.equal(p.currentBuild.step5.comboEvaluation.practicalDps,null);assert.equal(p.currentBuild.step5.comboEvaluation.dpsReason,'COMBO_DPS_UNVERIFIED');assert.equal(p.currentBuild.buildComparison.results[0].dps,null);assert.deepEqual(errors,[]);
+});

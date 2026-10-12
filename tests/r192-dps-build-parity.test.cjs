@@ -1,0 +1,20 @@
+// Synthetic VERIFIED fixture tests arithmetic; real reference routes stay UNVERIFIED.
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const start=html.indexOf('function comparisonDpsValue(');
+const end=html.indexOf('\nfunction renderCompareTableChunk(',start);
+assert.ok(start>=0&&end>start);
+const f=vm.runInNewContext(html.slice(start,end)+'\ncomparisonDpsIndex',require('../tools/element-vm-test-setup.cjs').context());
+const b={...require('../element-state.js').fromValue(0,'none'),kind:'bow',power:{profileId:'BOW_STANDARD'},dpsStatus:'VERIFIED',dps:200};
+test('same weapon and fixed route: base is 100',()=>assert.equal(f(b,b).index,100));
+test('same weapon and fixed route: relative DPS',()=>assert.equal(f({...b,dps:220},b).index,110.00000000000001));
+test('different weapon type blocked',()=>assert.equal(f({...b,kind:'great-sword'},b),null));
+test('different profile blocked',()=>assert.equal(f({...b,power:{profileId:'OTHER'}},b),null));
+test('missing profile blocked',()=>assert.equal(f({...b,power:{}},b),null));
+test('missing weapon type blocked',()=>assert.equal(f({...b,kind:''},b),null));
+test('zero baseline DPS blocked',()=>assert.equal(f(b,{...b,dps:0}),null));
+test('negative candidate DPS blocked',()=>assert.equal(f({...b,dps:-1},b),null));

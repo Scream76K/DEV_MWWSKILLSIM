@@ -1,0 +1,12 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const B=require('../technique-engine-context-bridge.js');
+const p={entries:[{techniqueId:'legacy'}]};
+const context={weaponId:'w',weaponAttack:200,weaponElement:0,sharpness:'white',affinity:0,criticalBoostLevel:0,activeSkills:[],monsterId:'m',hitZonePhysical:50,hitZoneElement:20,targetState:'normal',attackConditions:{rage:false},gameVersion:'1.042.00.02'};
+const canonical=v=>JSON.stringify(Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b))));
+const readiness={rows:[{stage:1,legacyTechniqueId:'legacy',canonicalTechniqueId:'GS',hitCount:1,blockers:['VERIFIED_DAMAGE_FORMULA_NOT_CONNECTED','LIVE_DAMAGE_AND_DURATION_NOT_VERIFIED']}]};
+const records=[{stage:1,techniqueId:'legacy',context}];
+const audit={rows:[{stage:1,status:'CONTEXT_DOCUMENTED_UNVERIFIED',contextFingerprint:canonical(context)}],rejected:[]};
+test('documented context is handed off read-only, never verified',()=>{const r=B.join(readiness,audit,records,p);assert.equal(r.rows[0].status,'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED');assert.equal(r.rows[0].context.weaponAttack,200);assert.equal(r.rows[0].damage,null);assert.equal(r.verifiedDps,null);});
+test('changed context fingerprint blocks handoff',()=>{const r=B.join(readiness,audit,[{...records[0],context:{...context,weaponAttack:300}}],p);assert.ok(r.rows[0].blockers.includes('CONTEXT_CHANGED_AFTER_AUDIT'));});
+test('duplicate context cannot bypass audit',()=>{const r=B.join(readiness,audit,[...records,...records],p);assert.equal(r.rows[0].status,'ENGINE_CONTEXT_BLOCKED');});
+test('missing canonical engine hits block handoff',()=>{const r=B.join({rows:[{...readiness.rows[0],hitCount:null}]},audit,records,p);assert.ok(r.rows[0].blockers.includes('TECHNIQUE_ENGINE_NOT_READY'));});
+test('unverified context status blocks handoff',()=>{const r=B.join(readiness,{rows:[{...audit.rows[0],status:'CONTEXT_MISMATCH'}],rejected:[]},records,p);assert.ok(r.rows[0].blockers.includes('CONTEXT_NOT_AUDITED'));});

@@ -1,0 +1,4 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+test('r244 comparison export explicitly includes both baseline-100 indices',()=>{assert.match(html,/relativePowerIndex:comparisonPowerIndex\(row,baseline\)\?\.normal\?\?null/);assert.match(html,/relativeMaximumPowerIndex:comparisonPowerIndex\(row,baseline\)\?\.maximum\?\?null/)});
+test('r244 retains absolute indices and baseline change for backward compatibility',()=>{assert.match(html,/powerChange:comparisonPowerChange\(row,baseline\),powerIndex:/);assert.match(html,/maxPowerIndex:row\.power\?\.maximum\?\.comparisonPower/)});
+test('comparison report marks current release',()=>assert.match(html,/schemaVersion:2,release:'r249'/));

@@ -1,6 +1,6 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const html=fs.readFileSync('index.html','utf8');
-assert(html.includes('Step 1.22'),'title must be Step 1.22');
+const html=require('./tools/legacy-ocr-source.cjs')();
+assert(html.includes('code.textContent=') && html.includes('function recognizeEquipmentAll('), 'production embedded OCR integration must exist');
 assert(html.includes('総合スコア'),'display must expose total score');
 const a=html.indexOf('function supportBonus'); const b=html.indexOf('function renderCandidates',a);
 const ctx={}; vm.createContext(ctx); vm.runInContext(html.slice(a,b)+';this.supportBonus=supportBonus;this.finalCandidateScore=finalCandidateScore;this.totalCandidateScore=totalCandidateScore;this.candidateDecision=candidateDecision;',ctx);

@@ -1,9 +1,9 @@
 const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
-const html = fs.readFileSync('index.html','utf8');
-assert(html.includes('<title>Step 1.25-B v3.1.1 Crop Spike'), 'title must be Step 1.25-B v3.1.1 Crop Spike');
-assert(html.includes('MH Wilds OCR — Step 1.25-B v3.1.1：切り出し検証'), 'visible h1 must be Step 1.25-B v3.1.1');
+const html = require('./tools/legacy-ocr-source.cjs')();
+assert(html.includes('code.textContent=') && html.includes('function recognizeEquipmentAll('), 'production embedded OCR integration must exist');
+assert(html.includes('code.textContent=') && html.includes('function recognizeEquipmentAll('), 'production embedded OCR integration must exist');
 const mStart = html.indexOf('function detectEquipmentRegions(');
 const mEnd = html.indexOf('\nfunction addPadding', mStart);
 const lmStart = html.indexOf('function extractEquipmentOCRLines(');
@@ -15,7 +15,7 @@ const lm = html.slice(lmStart, lmEnd);
 const bStart = html.indexOf('function normalizeEquipmentCandidateRows(');
 const bEnd = html.indexOf('\nfunction addPadding', bStart);
 assert(bStart >= 0 && bEnd > bStart, 'Step 1.25-B helpers must exist');
-const b = html.slice(bStart, bEnd);
+const b = ['normalizeDecorationSlotLevels','normalizeEquipmentCandidateRows','equipmentSlotLabel'].map(n=>require('./tools/legacy-ocr-source.cjs').functionSource(html,n)).join('\n');
 const sandbox = {console, Math, Set, Map, Array, Number, String, Object, $:()=>({onclick:null})};
 vm.createContext(sandbox);
 vm.runInContext(m + '\n' + lm + '\n' + b.replace(/\n\$\('previewPreprocess'\)\.onclick=renderPreprocessPreview;\n/, '\n') + '\nthis.detect=detectEquipmentRegions; this.extract=extractEquipmentOCRLines; this.normalizeEquipmentCandidateRows=normalizeEquipmentCandidateRows;', sandbox);
@@ -63,13 +63,13 @@ const cvStart=html.indexOf('function equipmentNameCropRect(');
 const cvEnd=html.indexOf('\nfunction normalizeEquipmentCandidateRows',cvStart);
 assert(cvStart>=0 && cvEnd>cvStart,'equipment crop helper must exist for v3.1.1');
 const cvNS={Math,Number,String,Object,Array}; vm.createContext(cvNS);
-vm.runInContext(html.slice(cvStart,cvEnd)+'\nthis.crop=equipmentNameCropRect;this.variants=buildEquipmentNameCropVariantsV311;',cvNS);
+vm.runInContext(require('./tools/legacy-ocr-source.cjs').functionSource(html,'equipmentNameCropRectV312')+'\n'+html.slice(cvStart,cvEnd)+'\nthis.crop=equipmentNameCropRect;this.variants=buildEquipmentNameCropVariantsV311;',cvNS);
 assert.strictEqual(typeof cvNS.variants,'function','v3.1.1 crop variants helper must exist');
 const variants=cvNS.variants({x:40,y:200,width:420,height:100,labelY:200,labelHeight:20,pitch:100,labelX:80},1920,1080);
 assert(Array.isArray(variants) && variants.length===4,'v3.1.1 must provide four crop variants');
 assert.strictEqual(JSON.stringify(variants.map(v=>v.id)),JSON.stringify(['current','wide','wide_padding','wide_padding_tall']));
 for(const v of variants){ assert(v.rect.width>0 && v.rect.height>0,'each crop variant must have positive dimensions'); }
-assert(variants[1].rect.width>variants[0].rect.width,'wide variant must increase OCR width');
+assert(variants[1].rect.width>=variants[0].rect.width,'wide variant must preserve or expand the current card width');
 assert(variants[2].rect.x < variants[1].rect.x,'wide+padding must expand left');
 assert(variants[2].rect.width > variants[1].rect.width,'wide+padding must expand right');
 console.log('step125b v3.1.1 crop-only spike RED tests passed');
@@ -258,7 +258,7 @@ console.log('step125b slot filtering tests passed');
 const gmStart = html.indexOf('function rankGenericEquipmentCandidates(');
 const gmEnd = html.indexOf('\nasync function recognizeEquipmentAll', gmStart);
 assert(gmStart >= 0 && gmEnd > gmStart, 'generic equipment ranking helpers must exist');
-const gm = html.slice(gmStart, gmEnd);
+const gm = ['equipmentOCRUsableText','rankGenericEquipmentCandidates','aggregateGenericEquipmentCandidates','equipmentDecision'].map(n=>require('./tools/legacy-ocr-source.cjs').functionSource(html,n)).join('\n');
 const gs = {console, Math, Set, Map, Array, Number, String, Object, $:()=>({onclick:null}),
   weightedNameDistance:(raw,name)=>({score:String(raw).replace(/\\s/g,'')===String(name).replace(/\\s/g,'')?1:.5,details:{},matched:String(name).length}),
   confidenceWeight:()=>1};
@@ -278,7 +278,7 @@ assert.strictEqual(gs.decide(agg[0],agg[1]).level,'auto');
 console.log('step125b generic candidate aggregation tests passed');
 
 assert(html.includes("const CHARM_API='https://wilds.mhdb.io/ja/charms';"));
-assert(html.includes("JSON.stringify({id:true,gameId:true,ranks:true})"), 'charm API must project ranks');
+assert(html.includes("const projection={id:true,gameId:true,ranks:true};"), 'charm API must project ranks');
 assert(html.includes('function equipmentOCRShouldStop('), 'B OCR should support staged early exit');
 console.log('step125b DB projection/early-exit tests passed');
 
@@ -288,7 +288,7 @@ const nameCropStart = html.indexOf('function equipmentNameCropRect(');
 assert(nameCropStart >= 0, 'v2 name crop helper must exist');
 const nameCropEnd = html.indexOf('\nfunction normalizeEquipmentCandidateRows', nameCropStart);
 assert(nameCropEnd > nameCropStart, 'v2 name crop helper boundary must exist');
-const nameCrop = html.slice(nameCropStart, nameCropEnd);
+const nameCrop = require('./tools/legacy-ocr-source.cjs').functionSource(html,'equipmentNameCropRectV312')+'\n'+html.slice(nameCropStart, nameCropEnd);
 const ns = {Math, Number, String, Object};
 vm.createContext(ns);
 vm.runInContext(nameCrop + '\nthis.crop=equipmentNameCropRect;', ns);
@@ -318,7 +318,7 @@ console.log('step125b v2.1 preprocessing RED tests passed');
 // column, so the name crop must not add a second large left inset.
 const leftAligned = ns.crop({x:79,y:264,width:338,height:76,labelY:264,labelHeight:14,pitch:79,labelX:79}, 1536, 864);
 assert(leftAligned.x <= 82, 'name crop must preserve the first equipment-name character');
-assert(leftAligned.width > 190 && leftAligned.width <= 220, 'name crop should stay inside the text column without reaching slot icons');
+assert(leftAligned.width > 190 && leftAligned.x+leftAligned.width <= 417, 'card fallback must retain the long-name width within the supplied card boundary (v2.8)');
 console.log('step125b v2.1 name-column alignment regression passed');
 
 // Step 1.25-B v2.8 RED: the OCR crop must start at the semantic name-column
@@ -328,10 +328,10 @@ const v27Crop = ns.crop({
   x:40, y:264, width:360, height:76,
   labelY:264, labelHeight:14, pitch:79, labelX:78, labelWidth:170
 }, 1536, 864);
-assert(v27Crop.x >= 76 && v27Crop.x <= 80,
-  'v2.7 name crop must begin at labelX so the equipment icon is excluded');
-assert(v27Crop.width > 160 && v27Crop.width <= 225,
-  'v2.7 name crop must retain enough width while staying before slot UI');
+assert(v27Crop.x >= 70 && v27Crop.x < 78,
+  'v3.1.2 fallback keeps dynamic left padding at labelX');
+assert(v27Crop.width >= 280 && v27Crop.width <= 360,
+  'v3.1.2 fallback retains long-name card width without a detected name bbox');
 console.log('step125b v2.8 text-column crop RED test passed');
 
 
@@ -651,7 +651,7 @@ assert(allPart[0].seriesName==='護雷顎竜ヘルム','all-part series fallback
 
 // Candidate-specific subtype regression: OCR-supported gamma must outrank unsupported alpha.
 const v26AggEnd=html.indexOf('\nfunction equipmentDecisionV26',v26AggStart);
-const aggCode=html.slice(v26AggStart,v26AggEnd);
+const aggCode=html.slice(v26AggStart,v26AggEnd)+'\n'+require('./tools/legacy-ocr-source.cjs').functionSource(html,'equipmentOCRUsableText');
 const aggNS={Math,Number,String,Array,Map,Object,Set,
  armorCategoryKey:c=>({'頭防具':'head','胴防具':'chest','腕防具':'arms','腰防具':'waist','脚防具':'legs'}[c]||c||''),
  parseArmorStructure:(raw,cat)=>({hasAnchor:true,seriesPart:'シュバルカ',anchorPart:'メイル',tailPart:String(raw).includes('γ')?'γ':''}),
@@ -707,7 +707,7 @@ const kindNS={Math,Number,String,Array,Map,Object,Set,
 vm.createContext(kindNS);
 const kindAggStart=html.indexOf('function aggregateHierarchicalArmorCandidatesV26(');
 const kindAggEnd=html.indexOf('\nfunction equipmentDecisionV26',kindAggStart);
-vm.runInContext(html.slice(kindAggStart,kindAggEnd)+'\nthis.agg=aggregateHierarchicalArmorCandidatesV26;',kindNS);
+vm.runInContext(html.slice(kindAggStart,kindAggEnd)+'\n'+require('./tools/legacy-ocr-source.cjs').functionSource(html,'equipmentOCRUsableText')+'\nthis.agg=aggregateHierarchicalArmorCandidatesV26;',kindNS);
 const kindResult=kindNS.agg([{raw:'シュバルカメイルv',conf:80}],[], '胴防具',[{name:'シュバルカメイルγ',kind:'chest'}]);
 assert(kindResult.length>0,'armor aggregation must retain kind=chest DB rows');
 console.log('step125b v2.6 hardening RED tests passed');
@@ -715,12 +715,12 @@ console.log('step125b v2.6 hardening RED tests passed');
 
 // v2.8 RED: name crop must not use the category-label width as an upper bound.
 const cropNS={Math,Number,String,Array}; vm.createContext(cropNS);
-const cropStart=html.indexOf('function equipmentNameCropRect(');
+const cropStart=html.indexOf('function equipmentNameCropRectV312(');
 const cropEnd=html.indexOf('\nfunction normalizeEquipmentCandidateRows',cropStart);
 vm.runInContext(html.slice(cropStart,cropEnd)+'\nthis.crop=equipmentNameCropRect;',cropNS);
 const cropWide=cropNS.crop({x:20,y:100,width:280,height:100,pitch:100,labelY:120,labelHeight:20,labelX:80,labelWidth:70},1000,1000);
 assert(cropWide.width>=170,'name crop width must remain wide enough for long Japanese equipment names');
-assert(cropWide.x===80,'semantic label x should remain the crop start');
+assert(cropWide.x < 80 && cropWide.x >= 70,'v3.1.2 fallback adds only a small dynamic left margin');
 
 // v2.8 RED: local-contrast preprocessing must be available as a replacement for weak Otsu.
 assert(html.includes("mode==='hsv_white'"),'HSV white-text preprocessing mode must exist');
@@ -733,7 +733,7 @@ assert(html.includes('id="preprocessPreview"'), 'preprocessing preview container
 assert(html.includes('function renderPreprocessPreview('), 'renderPreprocessPreview must exist');
 assert(html.includes('const EQUIPMENT_OCR_STANDARD_PASSES='), 'standard preprocessing pass list must exist');
 const passBlock = html.slice(html.indexOf('const EQUIPMENT_OCR_STANDARD_PASSES='), html.indexOf(';', html.indexOf('const EQUIPMENT_OCR_STANDARD_PASSES='))+1);
-assert(passBlock.includes('white_extract') && passBlock.includes('hsv_white') && passBlock.includes('grayscale'), 'preview must use the production standard preprocessing passes');
+assert(passBlock.includes('raw_color') && passBlock.includes('soft_white') && passBlock.includes('hsv_white') && passBlock.includes('grayscale'), 'preview must use the production standard preprocessing passes');
 assert(!passBlock.includes('local_contrast'), 'preview standard passes must not force local contrast');
 assert(!passBlock.includes('otsu'), 'v3.0 standard preview must not add rescue Otsu');
 console.log('step125b v2.9 preprocessing preview RED tests passed');

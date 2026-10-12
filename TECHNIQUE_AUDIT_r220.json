@@ -1,0 +1,798 @@
+{
+  "referenceGameVersion": "1.042.00.02",
+  "note": "Blocked records do not necessarily require a new capture; source audit and special-handler work may suffice.",
+  "rows": [
+    {
+      "kind": "great-sword",
+      "registered": 50,
+      "calculable": 3,
+      "blocked": 47,
+      "sourceConflicts": 8,
+      "missing": 5,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          46
+        ],
+        [
+          "SOURCE_TABLE_HISTORY_CONFLICT",
+          8
+        ],
+        [
+          "BLUNT_ELEMENT_AND_SHARPNESS_RULE_PENDING",
+          5
+        ],
+        [
+          "NUMERIC_SOURCE_MISSING",
+          5
+        ],
+        [
+          "HIT_COUNT_AND_MODIFIER_MAPPING_MISSING",
+          3
+        ]
+      ],
+      "examples": [
+        {
+          "id": "GS_DARK_ARTS_WAVE",
+          "name": "ダークアーツ衝撃波（参考値専用）",
+          "reason": [
+            "SPECIAL_HANDLER_REQUIRED",
+            "LIVE_GAME_VERIFICATION_PENDING"
+          ]
+        },
+        {
+          "id": "GS_DRAW_VERTICAL_SLASH",
+          "name": "抜刀斬り/縦斬り",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "GS_CHARGED_SLASH_1",
+          "name": "溜め斬りⅠ",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "GS_CHARGED_SLASH_2",
+          "name": "溜め斬りⅡ",
+          "reason": [
+            "SOURCE_TABLE_HISTORY_CONFLICT",
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "long-sword",
+      "registered": 38,
+      "calculable": 3,
+      "blocked": 35,
+      "sourceConflicts": 0,
+      "missing": 0,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          35
+        ],
+        [
+          "NON_RED_STATE_SCOPE_PENDING",
+          1
+        ]
+      ],
+      "examples": [
+        {
+          "id": "LS_VERTICAL_SLASH",
+          "name": "縦斬り",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "LS_VERTICAL_SLASH_2",
+          "name": "縦斬り(2)",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "LS_REVERSE_DIAGONAL_SLASH",
+          "name": "逆袈裟斬り",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "LS_THRUST",
+          "name": "突き",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "sword-and-shield",
+      "registered": 33,
+      "calculable": 4,
+      "blocked": 29,
+      "sourceConflicts": 2,
+      "missing": 2,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          29
+        ],
+        [
+          "SHIELD_ELEMENT_AND_SHARPNESS_RULE_PENDING",
+          4
+        ],
+        [
+          "SOURCE_STUN_HISTORY_CONFLICT",
+          2
+        ],
+        [
+          "NUMERIC_SOURCE_MISSING",
+          2
+        ],
+        [
+          "HIT_COMPONENT_RULE_PENDING",
+          2
+        ]
+      ],
+      "examples": [
+        {
+          "id": "SNS_ADVANCING_SLASH",
+          "name": "突進斬り",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "SNS_DIAGONAL_RISING_SLASH",
+          "name": "斜め斬り上げ",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "SNS_DIAGONAL_DOWNWARD_SLASH",
+          "name": "斜め斬り下ろし",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "SNS_SPIN_RISING_SLASH",
+          "name": "回転斬り上げ",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "dual-blades",
+      "registered": 25,
+      "calculable": 3,
+      "blocked": 22,
+      "sourceConflicts": 2,
+      "missing": 0,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          21
+        ],
+        [
+          "PART_MODIFIER_NOT_REPORTED_IN_SOURCE",
+          21
+        ],
+        [
+          "SOURCE_TABLE_HISTORY_ELEMENT_CONFLICT",
+          2
+        ]
+      ],
+      "examples": [
+        {
+          "id": "DB_DEMON_DANCE",
+          "name": "乱舞",
+          "reason": [
+            "SOURCE_TABLE_HISTORY_ELEMENT_CONFLICT"
+          ]
+        },
+        {
+          "id": "DB_DOUBLE_SLASH",
+          "name": "二段斬り",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+            "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+          ]
+        },
+        {
+          "id": "DB_DOUBLE_RETURN_SLASH",
+          "name": "二段斬り返し",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+            "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+          ]
+        },
+        {
+          "id": "DB_WHEEL_SLASH",
+          "name": "車輪斬り",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+            "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "hammer",
+      "registered": 28,
+      "calculable": 4,
+      "blocked": 24,
+      "sourceConflicts": 3,
+      "missing": 0,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          24
+        ],
+        [
+          "SOURCE_TABLE_HISTORY_MOTION_CONFLICT",
+          3
+        ]
+      ],
+      "examples": [
+        {
+          "id": "HAM_SWING",
+          "name": "振り回し",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "HAM_VERTICAL_I",
+          "name": "縦振りⅠ",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "HAM_BIG_BANG_1",
+          "name": "叩きつけ1",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "HAM_BIG_BANG_2",
+          "name": "叩きつけ2",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "hunting-horn",
+      "registered": 61,
+      "calculable": 4,
+      "blocked": 57,
+      "sourceConflicts": 1,
+      "missing": 1,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          57
+        ],
+        [
+          "BRACKETED_DAMAGE_FORMULA_AND_STATE_PENDING",
+          33
+        ],
+        [
+          "HORN_SPECIAL_FORMULA_RESOLUTION",
+          3
+        ],
+        [
+          "ECHO_EVENT_TYPE_MAPPING",
+          2
+        ],
+        [
+          "BRACKETED_DAMAGE_FORMULA_PENDING",
+          2
+        ]
+      ],
+      "examples": [
+        {
+          "id": "HH_ECHO_BUBBLE_FOLLOWUP",
+          "name": "響玉追撃",
+          "reason": [
+            "ECHO_EVENT_TYPE_MAPPING",
+            "HORN_SPECIAL_FORMULA_RESOLUTION"
+          ]
+        },
+        {
+          "id": "HH_RIGHT_SWING",
+          "name": "右ぶん回し",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "HH_BACKWARD_ATTACK",
+          "name": "後方攻撃",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "HH_SLAM_FOLLOWUP",
+          "name": "叩きつけ・追撃",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "lance",
+      "registered": 32,
+      "calculable": 4,
+      "blocked": 28,
+      "sourceConflicts": 0,
+      "missing": 0,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          28
+        ],
+        [
+          "VARIABLE_HIT_COUNT_POLICY_PENDING",
+          2
+        ],
+        [
+          "SHIELD_ELEMENT_AND_SHARPNESS_RULE_PENDING",
+          1
+        ]
+      ],
+      "examples": [
+        {
+          "id": "LAN_HIGH_THRUST_I",
+          "name": "上段突きⅠ",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "LAN_HIGH_THRUST_II",
+          "name": "上段突きⅡ",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "LAN_HIGH_THRUST_III",
+          "name": "上段突きⅢ",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "LAN_SWEEP",
+          "name": "なぎ払い",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "gunlance",
+      "registered": 50,
+      "calculable": 2,
+      "blocked": 48,
+      "sourceConflicts": 0,
+      "missing": 8,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          46
+        ],
+        [
+          "SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING",
+          36
+        ],
+        [
+          "PART_MODIFIER_NOT_REPORTED_IN_SOURCE",
+          10
+        ],
+        [
+          "NUMERIC_SOURCE_MISSING",
+          8
+        ]
+      ],
+      "examples": [
+        {
+          "id": "GL_WYRMSTAKE_FULL_BURST",
+          "name": "竜杭フルバースト",
+          "reason": []
+        },
+        {
+          "id": "GL_MULTI_WYRMSTAKE_FULL_BURST",
+          "name": "連装竜杭フルバースト",
+          "reason": []
+        },
+        {
+          "id": "GL_ADVANCING_RISING",
+          "name": "踏み込み突き上げ",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+            "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+          ]
+        },
+        {
+          "id": "GL_HORIZONTAL_THRUST_I",
+          "name": "水平突きⅠ",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+            "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "switch-axe",
+      "registered": 42,
+      "calculable": 4,
+      "blocked": 38,
+      "sourceConflicts": 0,
+      "missing": 2,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          38
+        ],
+        [
+          "HIT_COMPONENT_AND_PHIAL_MAPPING_PENDING",
+          6
+        ],
+        [
+          "NUMERIC_SOURCE_MISSING",
+          2
+        ]
+      ],
+      "examples": [
+        {
+          "id": "SA_AXE_VERTICAL",
+          "name": "縦斬り(斧)",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "SA_AXE_HORIZONTAL",
+          "name": "横斬り",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "SA_AXE_SPIRAL_CHARGE",
+          "name": "螺旋充填斬り",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "SA_AXE_ADVANCING",
+          "name": "突進斬り",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "charge-blade",
+      "registered": 35,
+      "calculable": 6,
+      "blocked": 29,
+      "sourceConflicts": 4,
+      "missing": 0,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          29
+        ],
+        [
+          "PART_MODIFIER_NOT_REPORTED_IN_SOURCE",
+          28
+        ],
+        [
+          "SOURCE_TABLE_HISTORY_MOTION_CONFLICT",
+          3
+        ],
+        [
+          "PHIAL_EVENT_AND_FORMULA_PENDING",
+          1
+        ],
+        [
+          "SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING",
+          1
+        ]
+      ],
+      "examples": [
+        {
+          "id": "CB_SWORD_ADVANCING",
+          "name": "突進斬り(剣)",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+            "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+          ]
+        },
+        {
+          "id": "CB_SWORD_WEAK_SLASH",
+          "name": "牽制斬り",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+            "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+          ]
+        },
+        {
+          "id": "CB_SWORD_RETURN_SLASH",
+          "name": "斬り返し",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+            "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+          ]
+        },
+        {
+          "id": "CB_SWORD_ROUND_SLASH",
+          "name": "回転斬り",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+            "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "insect-glaive",
+      "registered": 43,
+      "calculable": 0,
+      "blocked": 43,
+      "sourceConflicts": 13,
+      "missing": 1,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          39
+        ],
+        [
+          "PART_MODIFIER_NOT_REPORTED_IN_SOURCE",
+          25
+        ],
+        [
+          "STANDARD_ROUTE_CHARGE_SELECTION_PENDING",
+          11
+        ],
+        [
+          "TRIPLE_EXTRACT_ATTACK_STATE_APPLICATION_PENDING",
+          9
+        ],
+        [
+          "SOURCE_ELEMENT_MAPPING_CONFLICT",
+          7
+        ]
+      ],
+      "examples": [
+        {
+          "id": "IG_TRIPLE_SIDESTEP_SLASH",
+          "name": "三色：移動斬り",
+          "reason": [
+            "SOURCE_ELEMENT_MODIFIER_CONFLICT"
+          ]
+        },
+        {
+          "id": "IG_TRIPLE_ADVANCING_COMBO",
+          "name": "三色：移動連斬",
+          "reason": [
+            "AGGREGATE_HIT_RECORD_UNVERIFIED",
+            "SOURCE_ELEMENT_MODIFIER_CONFLICT"
+          ]
+        },
+        {
+          "id": "IG_ENHANCED_DESCENDING_THRUST",
+          "name": "強化急襲斬り",
+          "reason": [
+            "AGGREGATE_HIT_RECORD_UNVERIFIED",
+            "CHARGE_STATE_MAPPING_PENDING"
+          ]
+        },
+        {
+          "id": "IG_RISING_SPIRAL_SLASH",
+          "name": "飛天螺旋斬",
+          "reason": [
+            "SOURCE_ELEMENT_MODIFIER_CONFLICT",
+            "CHARGE_STATE_MAPPING_PENDING"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "light-bowgun",
+      "registered": 31,
+      "calculable": 0,
+      "blocked": 31,
+      "sourceConflicts": 3,
+      "missing": 0,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          30
+        ],
+        [
+          "WEAPON_AMMO_APPLICABILITY_PENDING",
+          28
+        ],
+        [
+          "SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING",
+          26
+        ],
+        [
+          "DEDICATED_WEAPON_ACTION_SCOPE_PENDING",
+          7
+        ],
+        [
+          "VARIABLE_HIT_COUNT_POLICY_PENDING",
+          4
+        ]
+      ],
+      "examples": [
+        {
+          "id": "LBG_STANDARD_ELEMENT_AMMO",
+          "name": "属性弾",
+          "reason": []
+        },
+        {
+          "id": "LBG_NORMAL_AMMO_1",
+          "name": "Lv1通常弾",
+          "reason": [
+            "SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING",
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "LBG_NORMAL_AMMO_2",
+          "name": "Lv2通常弾",
+          "reason": [
+            "SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING",
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        },
+        {
+          "id": "LBG_NORMAL_AMMO_3",
+          "name": "Lv3通常弾",
+          "reason": [
+            "SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING",
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "heavy-bowgun",
+      "registered": 33,
+      "calculable": 0,
+      "blocked": 33,
+      "sourceConflicts": 3,
+      "missing": 0,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          30
+        ],
+        [
+          "WEAPON_AMMO_APPLICABILITY_PENDING",
+          28
+        ],
+        [
+          "SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING",
+          26
+        ],
+        [
+          "DEDICATED_WEAPON_ACTION_SCOPE_PENDING",
+          7
+        ],
+        [
+          "VARIABLE_HIT_COUNT_POLICY_PENDING",
+          4
+        ]
+      ],
+      "examples": [
+        {
+          "id": "HBG_STANDARD_ELEMENT_AMMO",
+          "name": "属性弾",
+          "reason": []
+        },
+        {
+          "id": "HBG_ELEMENT_FIRST_HIT_REFERENCE",
+          "name": "属性弾Lv1・Lv2の最初の1Hit（参考計算）",
+          "reason": []
+        },
+        {
+          "id": "HBG_NORMAL_REFERENCE_RULES",
+          "name": "通常弾3連射の参考比較条件",
+          "reason": []
+        },
+        {
+          "id": "HBG_NORMAL_AMMO_1",
+          "name": "Lv1通常弾",
+          "reason": [
+            "SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING",
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "bow",
+      "registered": 36,
+      "calculable": 3,
+      "blocked": 33,
+      "sourceConflicts": 0,
+      "missing": 0,
+      "reasons": [
+        [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          32
+        ],
+        [
+          "PART_MODIFIER_NOT_REPORTED_IN_SOURCE",
+          24
+        ],
+        [
+          "SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING",
+          4
+        ],
+        [
+          "VARIABLE_HIT_COUNT_POLICY_PENDING",
+          4
+        ]
+      ],
+      "examples": [
+        {
+          "id": "BOW_STATE_MODIFIERS",
+          "name": "弓の距離・ビン・技別スキル補正（参考値専用）",
+          "reason": []
+        },
+        {
+          "id": "BOW_QUICK_SHOT",
+          "name": "クイックショット",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+            "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+          ]
+        },
+        {
+          "id": "BOW_SHOT_1",
+          "name": "溜1",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+            "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+          ]
+        },
+        {
+          "id": "BOW_SHOT_2",
+          "name": "溜2",
+          "reason": [
+            "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+            "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+          ]
+        }
+      ]
+    }
+  ]
+}

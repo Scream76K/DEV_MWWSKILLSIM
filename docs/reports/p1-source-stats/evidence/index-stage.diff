@@ -1,0 +1,89 @@
+--- before/index.html
++++ after/index.html
+@@ -802,7 +802,7 @@
+   }
+   return best;
+ }
+-function artiaFixedRecord(w){const state=MHWElementState.fromRecord(w,{artia:true});return {attack:mhdbTrueAttack(w),affinity:Number(w?.affinity??0),...state,sourceId:w?.id??null};}
++function artiaFixedRecord(w){const numericKnown=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));const state=MHWElementState.fromRecord(w,{artia:true});return {attack:mhdbTrueAttack(w),attackKnown:[w?.damage?.raw,w?.damage?.display,w?.attack].some(numericKnown),affinityKnown:numericKnown(w?.affinity),affinity:Number(w?.affinity??0),...state,sourceId:w?.id??null};}
+ function consolidateArtiaFixedVariantRows(rows){
+   const src=Array.isArray(rows)?rows:[];
+   const groups=new Map(), passthrough=[];
+@@ -1695,7 +1695,7 @@
+   if(v.typeKnown&&v.elementType&&v.elementType!==build.artia.element)state=MHWElementState.unknown(build.artia.element,'ELEMENT_SELECTED_TYPE_NOT_RECORDED');
+   // Existing completed values take precedence; derive only absent values with explicit material evidence.
+   if(!state.elementKnown&&state.elementReason!=='ELEMENT_SELECTED_TYPE_NOT_RECORDED')state=artiaSourceElement(w,build.artia);
+-  return {attack,affinity,...state,sourceId:v.sourceId??null,fixed:true};
++  return {attack,affinity,attackKnown:v.attackKnown!==false,affinityKnown:v.affinityKnown!==false,...state,sourceId:v.sourceId??null,fixed:true};
+ }
+ function weaponElementInfoFromRecord(w){
+   const state=MHWElementState.fromRecord(w,{artia:isArtia(w),...(isArtia(w)?{type:build.artia.element}:{})});
+@@ -1803,6 +1803,9 @@
+   if(isArtia(w)&&!fixed){
+     calcState.fixedValueError='巨戟アーティアの激化タイプ別完成固定値がMHDBから3種類揃っていません。旧値へのフォールバックを停止しました。';
+   }else calcState.fixedValueError='';
++  const knownNumber=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
++  const attackKnown=Boolean(w)&&(isArtia(w)?Boolean(fixed)&&fixed.attackKnown!==false&&knownNumber(fixed.attack):[w.damage?.raw,w.damage?.display,w.attack].some(knownNumber));
++  const affinityKnown=Boolean(w)&&(isArtia(w)?Boolean(fixed)&&fixed.affinityKnown!==false&&knownNumber(fixed.affinity):knownNumber(w.affinity));
+   let baseAttackTrue=Number(fixed?.attack);
+   if(!isArtia(w)&&(!Number.isFinite(baseAttackTrue)||baseAttackTrue<=0)){
+     baseAttackTrue=Number(w?.damage?.raw);
+@@ -1810,6 +1813,7 @@
+   }
+   if(isArtia(w)&&!fixed) baseAttackTrue=0;
+   let stats={attack:baseAttackTrue,attackTrue:baseAttackTrue,affinity:isArtia(w)?(fixed?Number(fixed.affinity):0):(Number(w?.affinity??0)),element:0,elementType:'',defense:1,weaponCoefficient:coef,weaponKind:kind};
++  Object.assign(stats,{attackKnown,affinityKnown});
+   Object.assign(stats,MHWElementState.unknown('','ELEMENT_WEAPON_NOT_SELECTED'));
+   if(w){add(total,weaponSkills(w));const ei=isArtia(w)?(fixed?{...fixed,type:fixed.elementType,value:fixed.element}:MHWElementState.unknown(build.artia.element,'ELEMENT_FIXED_VARIANT_MISSING')):weaponElementInfo(w);Object.assign(stats,{element:ei.value??ei.element,elementType:ei.type??ei.elementType,elementKnown:ei.elementKnown,typeKnown:ei.typeKnown,elementStatus:ei.elementStatus,elementReason:ei.elementReason});if(!isArtia(w)||fixed){let rs=restoreStats(w);stats.attack+=Number(rs.attack)||0;stats.affinity+=Number(rs.affinity)||0;if(stats.elementKnown)stats.element+=Number(rs.element)||0;}}
+   for(const k of ['head','chest','arms','waist','legs']){let a=build.armor[k];if(a){add(total,armorSkills(a));stats.defense+=armorMaxDefense(a)}}
+@@ -4162,7 +4166,8 @@
+ // Route evaluation is shared by display, comparison and verification export.
+ // Special handlers enter through comboTechniqueDamage; no missing values are inferred.
+ function evaluateComboRoute(rows,context,{stats,uptime=85,uptimeMode='1',contextError=null}={}){
+-  contextError=contextError||bonusDamagePendingReason(stats);
++  const shellOnly=rows?.length>0&&rows.every(row=>{try{return comboMove(row.techniqueId,stats)?.handler==='GunlanceShellReferenceHandler';}catch{return false;}});
++  contextError=contextError||weaponNumericPendingReason(stats,{ignoreAffinity:shellOnly})||bonusDamagePendingReason(stats);
+   const stages=(rows||[]).map((item,index)=>{
+     const stage={index:index+1,id:item.techniqueId,name:'保存技：'+item.techniqueId,move:null,result:null,reason:null,time:null};
+     try{
+@@ -4340,6 +4345,8 @@
+   const st=calcState?.stats||{};
+   const elementReason=equipmentElementPendingReason(st);if(elementReason&&!ignoreWeaponElement)throw Error(elementReason);
+   const h=monsterHZ();
++  if(requireKnownInputs&&st.attackKnown===false)throw Error('P0_ATTACK_PENDING:元武器の攻撃力が未確認です。');
++  if(requireKnownInputs&&!shellOnly&&st.affinityKnown===false)throw Error('P0_AFFINITY_PENDING:元武器の会心率が未確認です。');
+   if(requireKnownInputs&&!shellOnly){
+     const attack=st.attackTrue??st.attack,affinity=st.maxAffinity??st.affinity;
+     const finite=(n,min,max)=>typeof n==='number'&&Number.isFinite(n)&&n>=min&&n<=max;
+@@ -7104,11 +7111,14 @@
+   if($('powerBowStartShot'))$('powerBowStartShot').value=Number.isInteger(x.bowState?.startShot)?String(x.bowState.startShot):'';
+   if(x.bowState){if($('powerBowCoating'))$('powerBowCoating').value=x.bowState.coating||'';if($('powerBowRange'))$('powerBowRange').value=x.bowState.range||'';}
+ }
++function weaponNumericPendingReason(st,{ignoreAffinity=false}={}){return st?.attackKnown===false?'WEAPON_ATTACK_MISSING':!ignoreAffinity&&st?.affinityKnown===false?'WEAPON_AFFINITY_MISSING':null;}
+ function damageForStats(st,mv,cond){
++  const numericPending=weaponNumericPendingReason(st);if(numericPending)throw Error(numericPending);
+   const pending=bonusDamagePendingReason(st);if(pending)throw new Error(pending);
+   return damageFromValues(st.attackTrue??st.attack,st.affinity,equipmentHpElement(st),mv,cond.hz,cond.ehz,cond.sharp,cond.esharp,cond.cb,cond.eCrit).total;
+ }
+ function dpsForStats(st,cond,{includeStatus=false}={}){
++  const numericPending=weaponNumericPendingReason(st);if(numericPending)return includeStatus?{dps:null,dpsStatus:'BLOCKED',dpsReason:numericPending}:null;
+   const dpsStats={...st,affinity:st.maxAffinity??st.affinity};
+   const rows=[...document.querySelectorAll('.comboRow .cmove')].map(s=>({techniqueId:s.value}));if(!rows.length)return includeStatus?{dps:null,dpsStatus:'NOT_CALCULATED',dpsReason:'COMBO_NOT_SELECTED'}:null;
+   let context;
+@@ -7286,6 +7296,7 @@
+   const availability=genericStandardProfileAvailability(kind),handler=buildComparisonHandlerDescriptor(kind);
+   const scorchPlan=techniqueScorchPlan(String(kind||''),GENERIC_STANDARD_PROFILES[kind]?.techniqueIds||[]);
+   const pending=reason=>({status:'PENDING',reason,profileId:availability.profileId,normal:null,maximum:null,scorchPlan,...(kind==='bow'?{bowStatePlan:bowComparisonStatePlan(cond.bowState)}:{})});
++  if(st.attackKnown===false||st.affinityKnown===false)return pending(st.attackKnown===false?'WEAPON_ATTACK_MISSING':'WEAPON_AFFINITY_MISSING');
+   if(st.elementKnown===false||st.typeKnown===false||st.elementStatus==='UNKNOWN'||st.element===null)return pending(st.elementReason||'ELEMENT_VALUE_MISSING');
+   try{standardGroupPowerPlan(st,cond.gutsState??'BEFORE',total,kind);}catch(e){return {...pending(String(e.message)),activeBonusEffects:JSON.parse(JSON.stringify(st.activeBonusEffects||[]))};}
+   if(kind==='bow')return bowPowerForStats(st,cond,total);
+@@ -7678,7 +7689,7 @@
+   const state=typeof calcState==='undefined'?{}:calcState;
+   const st=state?.stats||{};
+   return JSON.stringify({skills:state?.total||{},attackTrue:st.attackTrue,attack:st.attack,
+-    affinity:st.affinity,maxAffinity:st.maxAffinity,element:st.element,
++    attackKnown:st.attackKnown,affinityKnown:st.affinityKnown,affinity:st.affinity,maxAffinity:st.maxAffinity,element:st.element,
+     elementType:st.elementType,elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason,defense:st.defense,weaponKind:st.weaponKind});
+ }
+ 

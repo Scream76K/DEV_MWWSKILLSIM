@@ -1,7 +1,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const {test}=require('node:test');
 const s=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
-const c={window:{}};vm.createContext(c);vm.runInContext('const KINDS='+s.match(/const KINDS=(\[.*?\]);/)[1]+';'+s.slice(s.indexOf('const CHARGE_BLADE_ENGINE_VERSION='),s.indexOf('function compareStep5Snapshot()')),c);
+const c={window:{}};vm.createContext(require('../tools/element-vm-test-setup.cjs').register(c));vm.runInContext('const KINDS='+s.match(/const KINDS=(\[.*?\]);/)[1]+';'+s.slice(s.indexOf('const CHARGE_BLADE_ENGINE_VERSION='),s.indexOf('function compareStep5Snapshot()')),c);
 const b=c.window.BuildComparisonEngine,e=c.window.TechniqueDBEngine,plain=x=>JSON.parse(JSON.stringify(x));
 test('confirmed four echo events do not imply four identical damage coefficients',()=>{
  const p=b.huntingHornComponentPlan();

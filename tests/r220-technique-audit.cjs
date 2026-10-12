@@ -1,0 +1,8 @@
+const fs=require('node:fs');const vm=require('node:vm');const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const kinds=['great-sword','long-sword','sword-and-shield','dual-blades','hammer','hunting-horn','lance','gunlance','switch-axe','charge-blade','insect-glaive','light-bowgun','heavy-bowgun','bow'];
+const ctx={window:{},KINDS:kinds.map(x=>[x])};vm.createContext(ctx);vm.runInContext(html.slice(html.indexOf('const TECHNIQUE_DB_SPEC='),html.indexOf('const GENERIC_STANDARD_PROFILE_CATALOG=')),ctx);
+const engine=ctx.window.TechniqueDBEngine;
+function report(){const rows=[];for(const kind of kinds){const techniques=Object.values(engine.db[kind]);const blocked=techniques.filter(t=>{try{return !engine.hits(kind,t.techniqueId).length}catch{return true}});const counts={};for(const t of blocked)for(const reason of t.unresolvedReasons||[])counts[reason]=(counts[reason]||0)+1;rows.push({kind,registered:techniques.length,calculable:techniques.length-blocked.length,blocked:blocked.length,sourceConflicts:techniques.filter(t=>t.numericStatus==='SOURCE_CONFLICT').length,missing:techniques.filter(t=>t.numericStatus==='MISSING').length,reasons:Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5),examples:blocked.slice(0,4).map(t=>({id:t.techniqueId,name:t.techniqueName,reason:(t.unresolvedReasons||[]).slice(0,2)}))});}return rows;}
+if(require.main===module){const rows=report();console.log(JSON.stringify({referenceGameVersion:'1.042.00.02',note:'Blocked records do not necessarily require a new capture; source audit and special-handler work may suffice.',rows},null,2));}
+module.exports={report,kinds,engine};

@@ -1,0 +1,14 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const A=require('../weapon-attack-target-audit.js');
+const stats={attackTrue:230,attackComponents:{weaponBase:200,normalMultiplier:1.1,normalFlat:10}};
+const ctx={weaponAttack:230,monsterId:'m1',partId:'head',partState:'intact',monsterState:'normal',hitZonePhysical:45,hitZoneElement:20};
+const target={monsterId:'m1',partId:'head',partState:'intact',monsterState:'normal',physical:45,element:20};
+const run=(c=ctx,t=target)=>A.audit({rows:[{stage:1,status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED',context:c}]},stats,t).rows[0];
+test('matching state labels remain unverified',()=>{const r=run();assert.equal(r.verified,false);assert.equal(r.damage,null);assert.equal(r.blockers.length,3)});
+test('same hitzones different part blocked',()=>assert.ok(run(ctx,{...target,partId:'tail'}).blockers.includes('PART_ID_MISMATCH')));
+test('same hitzones different part state blocked',()=>assert.ok(run(ctx,{...target,partState:'broken'}).blockers.includes('PART_STATE_MISMATCH')));
+test('same hitzones different monster phase blocked',()=>assert.ok(run(ctx,{...target,monsterState:'enraged'}).blockers.includes('MONSTER_STATE_MISMATCH')));
+test('empty state labels rejected',()=>assert.ok(run(ctx,{...target,partState:' '}).blockers.includes('TARGET_PART_STATE_INVALID')));
+test('missing target state blocked when context has it',()=>assert.ok(run(ctx,{monsterId:'m1',partId:'head',physical:45,element:20}).blockers.includes('PART_STATE_MISMATCH')));
+test('older contexts remain backward compatible',()=>{const c={weaponAttack:230,monsterId:'m1',hitZonePhysical:45,hitZoneElement:20};assert.equal(run(c,target).blockers.length,3)});

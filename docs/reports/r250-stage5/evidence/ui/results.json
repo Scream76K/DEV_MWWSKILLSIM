@@ -1,0 +1,790 @@
+[
+  {
+    "width": 375,
+    "area": "equipment",
+    "action": "OK",
+    "text": "防具・護石装備を変更すると、右側のスキル構成へリアルタイムに反映されます。防具護石護石生成可能性：未設定護石スキルを設定すると、生成可能性を判定します。護石テーブル更新基準：2026-09-09 / ルール29件判定ルールの参照元④ スキル構成武器係数を適用して攻撃力を表示 （ON）ON：ゲーム内表示攻撃力（武器係数あり）この切替は表示上の攻撃力だけを変更します。ダメージ計算は真攻撃力を基準にします。属性値には武器係数を掛けません。🔄 装備セットを計算\n    攻撃力1070真 223\n    会心率20%\n    最大会心率20%\n    属性0—\n    防御力1\n  通常スキル攻撃Lv1シリーズスキルグループスキル現在の装備セット武器UI監査 合成大剣 1攻撃 1070（真攻撃力 223 / 係数×4.8） / 会心 20% / 最大会心 20% / 属性 0  / スロット なし",
+    "elementWidth": 351,
+    "scroll": 351,
+    "client": 351,
+    "pageOverflow": 34,
+    "overflowElements": [],
+    "controls": 2,
+    "errors": [],
+    "image": "375-equipment.png"
+  },
+  {
+    "width": 375,
+    "area": "skills",
+    "action": "OK",
+    "text": "通常スキル攻撃Lv1シリーズスキルグループスキル",
+    "elementWidth": 129.609375,
+    "scroll": 128,
+    "client": 128,
+    "pageOverflow": 34,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "375-skills.png"
+  },
+  {
+    "width": 375,
+    "area": "technique",
+    "action": "OK",
+    "text": "\n技データを登録・管理\n現在選択中の武器種に技を登録できます。モーション値は公式API値ではなく、検証値として扱います。\n\n技名\n所要時間（秒）\n\n\nモーション値（複数はカンマ区切り）\nデータ種別検証値コミュニティ資料\n\n＋この武器種に技を登録\n1件の登録技があります。端末内に保存されています。\nUI監査 合成技（MV 20 / 1.00秒） コミュニティ資料削除\n正規技の実測時間を登録入力開始から次の技を入力できるまでの秒数を登録します。連続技では派生方法もメモしてください。登録時間は参考値として単純合算します。技DBと同じゲーム版の記録を使用します。チャージアックスは盾・斧強化と高速変形Lvも一致する場合に適用します。\n技溜め斬り Lv3（MV 176 / 2.40s）強溜め斬り Lv3（MV 187 / 2.90s）強薙ぎ払いⅢ（MV 134 / 時間未確認）\n時間の入力方法秒数を入",
+    "elementWidth": 321,
+    "scroll": 319,
+    "client": 319,
+    "pageOverflow": 34,
+    "overflowElements": [],
+    "controls": 12,
+    "errors": [],
+    "image": "375-technique.png"
+  },
+  {
+    "width": 375,
+    "area": "combo",
+    "action": "OK",
+    "text": "技抜刀斬り（MV 77 / 1.20s）溜め斬り Lv3（MV 176 / 2.40s）強溜め斬り Lv3（MV 187 / 2.90s）真・溜め斬り Lv3（MV 216 / 3.40s）相殺斬り上げ Lv3（MV 137 / 1.55s）UI監査 合成技（MV 20 / 1.00s）強薙ぎ払いⅢ（MV 134 / 時間未確認）MV 134 / 1ヒット / 所要時間未確認（DPS保留）上へ下へ削除",
+    "elementWidth": 321,
+    "scroll": 321,
+    "client": 321,
+    "pageOverflow": 34,
+    "overflowElements": [],
+    "controls": 4,
+    "errors": [],
+    "image": "375-combo.png"
+  },
+  {
+    "width": 375,
+    "area": "dps",
+    "action": "OK",
+    "text": "1コンボ 186.37 ダメージ所要時間が未確認のためDPSは算出できません。1. 強薙ぎ払いⅢ：186.37 / 1Hit / 時間未確認Hit別の参考内訳（1Hit）技DB採用値。値は会心を含む参考計算です。ゲーム表示の整数丸めとは異なります。Hit・成分物理属性特殊合計1本体186.370.000.00186.37",
+    "elementWidth": 321,
+    "scroll": 319,
+    "client": 319,
+    "pageOverflow": 34,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "375-dps.png"
+  },
+  {
+    "width": 375,
+    "area": "comparison",
+    "action": "OK",
+    "text": "基準ダメージ：1118.7（UI監査保存0・選択した通常側の比較条件、ゲーム表示の丸め前）比較の基準ビルド（通常側の期待ダメージ）UI監査保存0UI監査保存1比較結果をJSON保存比較結果をコピーコンボの技別・未検証項目を表示検証作業リストを表示実機検証の証拠参照を照合（JSON）証拠参照を照合実機ダメージ・Hit数・時間の記録を照合（JSON）実機計測記録を照合Technique DBと計測値を照合（診断）ダメージ計算条件を監査実測と計算値の成分別差異を診断Technique DBと計算エンジンの接続状況Technique DBと実機条件の受渡し診断斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。MHDB斬れ味データ構造を調査選択装備と計算条件を照合攻撃スキル照合会心・超会心・スキル条件を照合攻撃補正・モンスター肉質を照合物",
+    "elementWidth": 321,
+    "scroll": 319,
+    "client": 319,
+    "pageOverflow": 34,
+    "overflowElements": [
+      {
+        "id": "",
+        "tag": "TABLE",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "COLGROUP",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "COL",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "THEAD",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TH",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TBODY",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TD",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TD",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TD",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TD",
+        "right": 390
+      }
+    ],
+    "controls": 20,
+    "errors": [],
+    "image": "375-comparison.png"
+  },
+  {
+    "width": 375,
+    "area": "ocr",
+    "action": "OK",
+    "text": "📷 スクショからビルドを取り込むゲーム内スクショから武器・防具・装飾品を読み取り、現在の装備セットへ直接反映できます。β版と同じDBを使用します。",
+    "elementWidth": 321,
+    "scroll": 319,
+    "client": 319,
+    "pageOverflow": 34,
+    "overflowElements": [
+      {
+        "id": "",
+        "tag": "TABLE",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "COLGROUP",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "COL",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "THEAD",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TH",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TBODY",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TD",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TD",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TD",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TD",
+        "right": 390
+      }
+    ],
+    "controls": 0,
+    "errors": [],
+    "image": "375-ocr.png"
+  },
+  {
+    "width": 375,
+    "area": "template",
+    "action": "OK",
+    "text": "📚 ビルドテンプレート登録済みのビルドテンプレートを選択し、現在の装備セットへ読み込みます。テンプレートはMHDBの実データへ照合してBuild Stateへ反映します。武器種武器種を選択大剣太刀片手剣双剣ハンマー狩猟笛ランスガンランススラッシュアックスチャージアックス操虫棍ライトボウガンヘビィボウガン弓テンプレートテンプレートを選択簡単厳選ver / こたつ簡単厳選ver / こたつ出典：https://youtu.be/D_UsyLgoF-Y?si=Y2iKchVdR-SZQLWI主要スキル：攻撃 Lv2 / 爆破属性強化 Lv1 / 挑戦者 Lv1このビルドを読込•反映選択解除",
+    "elementWidth": 321,
+    "scroll": 319,
+    "client": 319,
+    "pageOverflow": 34,
+    "overflowElements": [
+      {
+        "id": "",
+        "tag": "TABLE",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "COLGROUP",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "COL",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "THEAD",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TH",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TBODY",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TD",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TD",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TD",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TR",
+        "right": 390
+      },
+      {
+        "id": "",
+        "tag": "TD",
+        "right": 390
+      }
+    ],
+    "controls": 4,
+    "errors": [],
+    "image": "375-template.png"
+  },
+  {
+    "width": 390,
+    "area": "equipment",
+    "action": "OK",
+    "text": "防具・護石装備を変更すると、右側のスキル構成へリアルタイムに反映されます。防具護石護石生成可能性：未設定護石スキルを設定すると、生成可能性を判定します。護石テーブル更新基準：2026-09-09 / ルール29件判定ルールの参照元④ スキル構成武器係数を適用して攻撃力を表示 （ON）ON：ゲーム内表示攻撃力（武器係数あり）この切替は表示上の攻撃力だけを変更します。ダメージ計算は真攻撃力を基準にします。属性値には武器係数を掛けません。🔄 装備セットを計算\n    攻撃力1070真 223\n    会心率20%\n    最大会心率20%\n    属性0—\n    防御力1\n  通常スキル攻撃Lv1シリーズスキルグループスキル現在の装備セット武器UI監査 合成大剣 1攻撃 1070（真攻撃力 223 / 係数×4.8） / 会心 20% / 最大会心 20% / 属性 0  / スロット なし",
+    "elementWidth": 366,
+    "scroll": 366,
+    "client": 366,
+    "pageOverflow": 19,
+    "overflowElements": [],
+    "controls": 2,
+    "errors": [],
+    "image": "390-equipment.png"
+  },
+  {
+    "width": 390,
+    "area": "skills",
+    "action": "OK",
+    "text": "通常スキル攻撃Lv1シリーズスキルグループスキル",
+    "elementWidth": 135.609375,
+    "scroll": 134,
+    "client": 134,
+    "pageOverflow": 19,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "390-skills.png"
+  },
+  {
+    "width": 390,
+    "area": "technique",
+    "action": "OK",
+    "text": "\n技データを登録・管理\n現在選択中の武器種に技を登録できます。モーション値は公式API値ではなく、検証値として扱います。\n\n技名\n所要時間（秒）\n\n\nモーション値（複数はカンマ区切り）\nデータ種別検証値コミュニティ資料\n\n＋この武器種に技を登録\n1件の登録技があります。端末内に保存されています。\nUI監査 合成技（MV 20 / 1.00秒） コミュニティ資料削除\n正規技の実測時間を登録入力開始から次の技を入力できるまでの秒数を登録します。連続技では派生方法もメモしてください。登録時間は参考値として単純合算します。技DBと同じゲーム版の記録を使用します。チャージアックスは盾・斧強化と高速変形Lvも一致する場合に適用します。\n技溜め斬り Lv3（MV 176 / 2.40s）強溜め斬り Lv3（MV 187 / 2.90s）強薙ぎ払いⅢ（MV 134 / 時間未確認）\n時間の入力方法秒数を入",
+    "elementWidth": 336,
+    "scroll": 334,
+    "client": 334,
+    "pageOverflow": 19,
+    "overflowElements": [],
+    "controls": 12,
+    "errors": [],
+    "image": "390-technique.png"
+  },
+  {
+    "width": 390,
+    "area": "combo",
+    "action": "OK",
+    "text": "技抜刀斬り（MV 77 / 1.20s）溜め斬り Lv3（MV 176 / 2.40s）強溜め斬り Lv3（MV 187 / 2.90s）真・溜め斬り Lv3（MV 216 / 3.40s）相殺斬り上げ Lv3（MV 137 / 1.55s）UI監査 合成技（MV 20 / 1.00s）強薙ぎ払いⅢ（MV 134 / 時間未確認）MV 134 / 1ヒット / 所要時間未確認（DPS保留）上へ下へ削除",
+    "elementWidth": 336,
+    "scroll": 336,
+    "client": 336,
+    "pageOverflow": 19,
+    "overflowElements": [],
+    "controls": 4,
+    "errors": [],
+    "image": "390-combo.png"
+  },
+  {
+    "width": 390,
+    "area": "dps",
+    "action": "OK",
+    "text": "1コンボ 186.37 ダメージ所要時間が未確認のためDPSは算出できません。1. 強薙ぎ払いⅢ：186.37 / 1Hit / 時間未確認Hit別の参考内訳（1Hit）技DB採用値。値は会心を含む参考計算です。ゲーム表示の整数丸めとは異なります。Hit・成分物理属性特殊合計1本体186.370.000.00186.37",
+    "elementWidth": 336,
+    "scroll": 334,
+    "client": 334,
+    "pageOverflow": 19,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "390-dps.png"
+  },
+  {
+    "width": 390,
+    "area": "comparison",
+    "action": "OK",
+    "text": "基準ダメージ：1118.7（UI監査保存0・選択した通常側の比較条件、ゲーム表示の丸め前）比較の基準ビルド（通常側の期待ダメージ）UI監査保存0UI監査保存1比較結果をJSON保存比較結果をコピーコンボの技別・未検証項目を表示検証作業リストを表示実機検証の証拠参照を照合（JSON）証拠参照を照合実機ダメージ・Hit数・時間の記録を照合（JSON）実機計測記録を照合Technique DBと計測値を照合（診断）ダメージ計算条件を監査実測と計算値の成分別差異を診断Technique DBと計算エンジンの接続状況Technique DBと実機条件の受渡し診断斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。MHDB斬れ味データ構造を調査選択装備と計算条件を照合攻撃スキル照合会心・超会心・スキル条件を照合攻撃補正・モンスター肉質を照合物",
+    "elementWidth": 336,
+    "scroll": 334,
+    "client": 334,
+    "pageOverflow": 19,
+    "overflowElements": [],
+    "controls": 20,
+    "errors": [],
+    "image": "390-comparison.png"
+  },
+  {
+    "width": 390,
+    "area": "ocr",
+    "action": "OK",
+    "text": "📷 スクショからビルドを取り込むゲーム内スクショから武器・防具・装飾品を読み取り、現在の装備セットへ直接反映できます。β版と同じDBを使用します。",
+    "elementWidth": 336,
+    "scroll": 334,
+    "client": 334,
+    "pageOverflow": 19,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "390-ocr.png"
+  },
+  {
+    "width": 390,
+    "area": "template",
+    "action": "OK",
+    "text": "📚 ビルドテンプレート登録済みのビルドテンプレートを選択し、現在の装備セットへ読み込みます。テンプレートはMHDBの実データへ照合してBuild Stateへ反映します。武器種武器種を選択大剣太刀片手剣双剣ハンマー狩猟笛ランスガンランススラッシュアックスチャージアックス操虫棍ライトボウガンヘビィボウガン弓テンプレートテンプレートを選択簡単厳選ver / こたつ簡単厳選ver / こたつ出典：https://youtu.be/D_UsyLgoF-Y?si=Y2iKchVdR-SZQLWI主要スキル：攻撃 Lv2 / 爆破属性強化 Lv1 / 挑戦者 Lv1このビルドを読込•反映選択解除",
+    "elementWidth": 336,
+    "scroll": 334,
+    "client": 334,
+    "pageOverflow": 19,
+    "overflowElements": [],
+    "controls": 4,
+    "errors": [],
+    "image": "390-template.png"
+  },
+  {
+    "width": 768,
+    "area": "equipment",
+    "action": "OK",
+    "text": "防具・護石装備を変更すると、右側のスキル構成へリアルタイムに反映されます。防具護石護石生成可能性：未設定護石スキルを設定すると、生成可能性を判定します。護石テーブル更新基準：2026-09-09 / ルール29件判定ルールの参照元④ スキル構成武器係数を適用して攻撃力を表示 （ON）ON：ゲーム内表示攻撃力（武器係数あり）この切替は表示上の攻撃力だけを変更します。ダメージ計算は真攻撃力を基準にします。属性値には武器係数を掛けません。🔄 装備セットを計算\n    攻撃力1070真 223\n    会心率20%\n    最大会心率20%\n    属性0—\n    防御力1\n  通常スキル攻撃Lv1シリーズスキルグループスキル現在の装備セット武器UI監査 合成大剣 1攻撃 1070（真攻撃力 223 / 係数×4.8） / 会心 20% / 最大会心 20% / 属性 0  / スロット なし",
+    "elementWidth": 300,
+    "scroll": 300,
+    "client": 300,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 2,
+    "errors": [],
+    "image": "768-equipment.png"
+  },
+  {
+    "width": 768,
+    "area": "skills",
+    "action": "OK",
+    "text": "通常スキル攻撃Lv1シリーズスキルグループスキル",
+    "elementWidth": 107.1875,
+    "scroll": 105,
+    "client": 105,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "768-skills.png"
+  },
+  {
+    "width": 768,
+    "area": "technique",
+    "action": "OK",
+    "text": "\n技データを登録・管理\n現在選択中の武器種に技を登録できます。モーション値は公式API値ではなく、検証値として扱います。\n\n技名\n所要時間（秒）\n\n\nモーション値（複数はカンマ区切り）\nデータ種別検証値コミュニティ資料\n\n＋この武器種に技を登録\n1件の登録技があります。端末内に保存されています。\nUI監査 合成技（MV 20 / 1.00秒） コミュニティ資料削除\n正規技の実測時間を登録入力開始から次の技を入力できるまでの秒数を登録します。連続技では派生方法もメモしてください。登録時間は参考値として単純合算します。技DBと同じゲーム版の記録を使用します。チャージアックスは盾・斧強化と高速変形Lvも一致する場合に適用します。\n技溜め斬り Lv3（MV 176 / 2.40s）強溜め斬り Lv3（MV 187 / 2.90s）強薙ぎ払いⅢ（MV 134 / 時間未確認）\n時間の入力方法秒数を入",
+    "elementWidth": 402,
+    "scroll": 400,
+    "client": 400,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 12,
+    "errors": [],
+    "image": "768-technique.png"
+  },
+  {
+    "width": 768,
+    "area": "combo",
+    "action": "OK",
+    "text": "技抜刀斬り（MV 77 / 1.20s）溜め斬り Lv3（MV 176 / 2.40s）強溜め斬り Lv3（MV 187 / 2.90s）真・溜め斬り Lv3（MV 216 / 3.40s）相殺斬り上げ Lv3（MV 137 / 1.55s）UI監査 合成技（MV 20 / 1.00s）強薙ぎ払いⅢ（MV 134 / 時間未確認）MV 134 / 1ヒット / 所要時間未確認（DPS保留）上へ下へ削除",
+    "elementWidth": 402,
+    "scroll": 402,
+    "client": 402,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 4,
+    "errors": [],
+    "image": "768-combo.png"
+  },
+  {
+    "width": 768,
+    "area": "dps",
+    "action": "OK",
+    "text": "1コンボ 186.37 ダメージ所要時間が未確認のためDPSは算出できません。1. 強薙ぎ払いⅢ：186.37 / 1Hit / 時間未確認Hit別の参考内訳（1Hit）技DB採用値。値は会心を含む参考計算です。ゲーム表示の整数丸めとは異なります。Hit・成分物理属性特殊合計1本体186.370.000.00186.37",
+    "elementWidth": 402,
+    "scroll": 400,
+    "client": 400,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "768-dps.png"
+  },
+  {
+    "width": 768,
+    "area": "comparison",
+    "action": "OK",
+    "text": "基準ダメージ：1118.7（UI監査保存0・選択した通常側の比較条件、ゲーム表示の丸め前）比較の基準ビルド（通常側の期待ダメージ）UI監査保存0UI監査保存1比較結果をJSON保存比較結果をコピーコンボの技別・未検証項目を表示検証作業リストを表示実機検証の証拠参照を照合（JSON）証拠参照を照合実機ダメージ・Hit数・時間の記録を照合（JSON）実機計測記録を照合Technique DBと計測値を照合（診断）ダメージ計算条件を監査実測と計算値の成分別差異を診断Technique DBと計算エンジンの接続状況Technique DBと実機条件の受渡し診断斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。MHDB斬れ味データ構造を調査選択装備と計算条件を照合攻撃スキル照合会心・超会心・スキル条件を照合攻撃補正・モンスター肉質を照合物",
+    "elementWidth": 402,
+    "scroll": 400,
+    "client": 400,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 20,
+    "errors": [],
+    "image": "768-comparison.png"
+  },
+  {
+    "width": 768,
+    "area": "ocr",
+    "action": "OK",
+    "text": "📷 スクショからビルドを取り込むゲーム内スクショから武器・防具・装飾品を読み取り、現在の装備セットへ直接反映できます。β版と同じDBを使用します。",
+    "elementWidth": 270,
+    "scroll": 268,
+    "client": 268,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "768-ocr.png"
+  },
+  {
+    "width": 768,
+    "area": "template",
+    "action": "OK",
+    "text": "📚 ビルドテンプレート登録済みのビルドテンプレートを選択し、現在の装備セットへ読み込みます。テンプレートはMHDBの実データへ照合してBuild Stateへ反映します。武器種武器種を選択大剣太刀片手剣双剣ハンマー狩猟笛ランスガンランススラッシュアックスチャージアックス操虫棍ライトボウガンヘビィボウガン弓テンプレートテンプレートを選択簡単厳選ver / こたつ簡単厳選ver / こたつ出典：https://youtu.be/D_UsyLgoF-Y?si=Y2iKchVdR-SZQLWI主要スキル：攻撃 Lv2 / 爆破属性強化 Lv1 / 挑戦者 Lv1このビルドを読込•反映選択解除",
+    "elementWidth": 270,
+    "scroll": 268,
+    "client": 268,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 4,
+    "errors": [],
+    "image": "768-template.png"
+  },
+  {
+    "width": 1024,
+    "area": "equipment",
+    "action": "OK",
+    "text": "防具・護石装備を変更すると、右側のスキル構成へリアルタイムに反映されます。防具護石護石生成可能性：未設定護石スキルを設定すると、生成可能性を判定します。護石テーブル更新基準：2026-09-09 / ルール29件判定ルールの参照元④ スキル構成武器係数を適用して攻撃力を表示 （ON）ON：ゲーム内表示攻撃力（武器係数あり）この切替は表示上の攻撃力だけを変更します。ダメージ計算は真攻撃力を基準にします。属性値には武器係数を掛けません。🔄 装備セットを計算\n    攻撃力1070真 223\n    会心率20%\n    最大会心率20%\n    属性0—\n    防御力1\n  通常スキル攻撃Lv1シリーズスキルグループスキル現在の装備セット武器UI監査 合成大剣 1攻撃 1070（真攻撃力 223 / 係数×4.8） / 会心 20% / 最大会心 20% / 属性 0  / スロット なし",
+    "elementWidth": 300,
+    "scroll": 300,
+    "client": 300,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 2,
+    "errors": [],
+    "image": "1024-equipment.png"
+  },
+  {
+    "width": 1024,
+    "area": "skills",
+    "action": "OK",
+    "text": "通常スキル攻撃Lv1シリーズスキルグループスキル",
+    "elementWidth": 107.1875,
+    "scroll": 105,
+    "client": 105,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "1024-skills.png"
+  },
+  {
+    "width": 1024,
+    "area": "technique",
+    "action": "OK",
+    "text": "\n技データを登録・管理\n現在選択中の武器種に技を登録できます。モーション値は公式API値ではなく、検証値として扱います。\n\n技名\n所要時間（秒）\n\n\nモーション値（複数はカンマ区切り）\nデータ種別検証値コミュニティ資料\n\n＋この武器種に技を登録\n1件の登録技があります。端末内に保存されています。\nUI監査 合成技（MV 20 / 1.00秒） コミュニティ資料削除\n正規技の実測時間を登録入力開始から次の技を入力できるまでの秒数を登録します。連続技では派生方法もメモしてください。登録時間は参考値として単純合算します。技DBと同じゲーム版の記録を使用します。チャージアックスは盾・斧強化と高速変形Lvも一致する場合に適用します。\n技溜め斬り Lv3（MV 176 / 2.40s）強溜め斬り Lv3（MV 187 / 2.90s）強薙ぎ払いⅢ（MV 134 / 時間未確認）\n時間の入力方法秒数を入",
+    "elementWidth": 658,
+    "scroll": 656,
+    "client": 656,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 12,
+    "errors": [],
+    "image": "1024-technique.png"
+  },
+  {
+    "width": 1024,
+    "area": "combo",
+    "action": "OK",
+    "text": "技抜刀斬り（MV 77 / 1.20s）溜め斬り Lv3（MV 176 / 2.40s）強溜め斬り Lv3（MV 187 / 2.90s）真・溜め斬り Lv3（MV 216 / 3.40s）相殺斬り上げ Lv3（MV 137 / 1.55s）UI監査 合成技（MV 20 / 1.00s）強薙ぎ払いⅢ（MV 134 / 時間未確認）MV 134 / 1ヒット / 所要時間未確認（DPS保留）上へ下へ削除",
+    "elementWidth": 658,
+    "scroll": 658,
+    "client": 658,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 4,
+    "errors": [],
+    "image": "1024-combo.png"
+  },
+  {
+    "width": 1024,
+    "area": "dps",
+    "action": "OK",
+    "text": "1コンボ 186.37 ダメージ所要時間が未確認のためDPSは算出できません。1. 強薙ぎ払いⅢ：186.37 / 1Hit / 時間未確認Hit別の参考内訳（1Hit）技DB採用値。値は会心を含む参考計算です。ゲーム表示の整数丸めとは異なります。Hit・成分物理属性特殊合計1本体186.370.000.00186.37",
+    "elementWidth": 658,
+    "scroll": 656,
+    "client": 656,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "1024-dps.png"
+  },
+  {
+    "width": 1024,
+    "area": "comparison",
+    "action": "OK",
+    "text": "基準ダメージ：1118.7（UI監査保存0・選択した通常側の比較条件、ゲーム表示の丸め前）比較の基準ビルド（通常側の期待ダメージ）UI監査保存0UI監査保存1比較結果をJSON保存比較結果をコピーコンボの技別・未検証項目を表示検証作業リストを表示実機検証の証拠参照を照合（JSON）証拠参照を照合実機ダメージ・Hit数・時間の記録を照合（JSON）実機計測記録を照合Technique DBと計測値を照合（診断）ダメージ計算条件を監査実測と計算値の成分別差異を診断Technique DBと計算エンジンの接続状況Technique DBと実機条件の受渡し診断斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。MHDB斬れ味データ構造を調査選択装備と計算条件を照合攻撃スキル照合会心・超会心・スキル条件を照合攻撃補正・モンスター肉質を照合物",
+    "elementWidth": 658,
+    "scroll": 656,
+    "client": 656,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 20,
+    "errors": [],
+    "image": "1024-comparison.png"
+  },
+  {
+    "width": 1024,
+    "area": "ocr",
+    "action": "OK",
+    "text": "📷 スクショからビルドを取り込むゲーム内スクショから武器・防具・装飾品を読み取り、現在の装備セットへ直接反映できます。β版と同じDBを使用します。",
+    "elementWidth": 270,
+    "scroll": 268,
+    "client": 268,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "1024-ocr.png"
+  },
+  {
+    "width": 1024,
+    "area": "template",
+    "action": "OK",
+    "text": "📚 ビルドテンプレート登録済みのビルドテンプレートを選択し、現在の装備セットへ読み込みます。テンプレートはMHDBの実データへ照合してBuild Stateへ反映します。武器種武器種を選択大剣太刀片手剣双剣ハンマー狩猟笛ランスガンランススラッシュアックスチャージアックス操虫棍ライトボウガンヘビィボウガン弓テンプレートテンプレートを選択簡単厳選ver / こたつ簡単厳選ver / こたつ出典：https://youtu.be/D_UsyLgoF-Y?si=Y2iKchVdR-SZQLWI主要スキル：攻撃 Lv2 / 爆破属性強化 Lv1 / 挑戦者 Lv1このビルドを読込•反映選択解除",
+    "elementWidth": 270,
+    "scroll": 268,
+    "client": 268,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 4,
+    "errors": [],
+    "image": "1024-template.png"
+  },
+  {
+    "width": 1440,
+    "area": "equipment",
+    "action": "OK",
+    "text": "防具・護石装備を変更すると、右側のスキル構成へリアルタイムに反映されます。防具護石護石生成可能性：未設定護石スキルを設定すると、生成可能性を判定します。護石テーブル更新基準：2026-09-09 / ルール29件判定ルールの参照元④ スキル構成武器係数を適用して攻撃力を表示 （ON）ON：ゲーム内表示攻撃力（武器係数あり）この切替は表示上の攻撃力だけを変更します。ダメージ計算は真攻撃力を基準にします。属性値には武器係数を掛けません。🔄 装備セットを計算\n    攻撃力1070真 223\n    会心率20%\n    最大会心率20%\n    属性0—\n    防御力1\n  通常スキル攻撃Lv1シリーズスキルグループスキル現在の装備セット武器UI監査 合成大剣 1攻撃 1070（真攻撃力 223 / 係数×4.8） / 会心 20% / 最大会心 20% / 属性 0  / スロット なし",
+    "elementWidth": 300,
+    "scroll": 300,
+    "client": 300,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 2,
+    "errors": [],
+    "image": "1440-equipment.png"
+  },
+  {
+    "width": 1440,
+    "area": "skills",
+    "action": "OK",
+    "text": "通常スキル攻撃Lv1シリーズスキルグループスキル",
+    "elementWidth": 107.1875,
+    "scroll": 105,
+    "client": 105,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "1440-skills.png"
+  },
+  {
+    "width": 1440,
+    "area": "technique",
+    "action": "OK",
+    "text": "\n技データを登録・管理\n現在選択中の武器種に技を登録できます。モーション値は公式API値ではなく、検証値として扱います。\n\n技名\n所要時間（秒）\n\n\nモーション値（複数はカンマ区切り）\nデータ種別検証値コミュニティ資料\n\n＋この武器種に技を登録\n1件の登録技があります。端末内に保存されています。\nUI監査 合成技（MV 20 / 1.00秒） コミュニティ資料削除\n正規技の実測時間を登録入力開始から次の技を入力できるまでの秒数を登録します。連続技では派生方法もメモしてください。登録時間は参考値として単純合算します。技DBと同じゲーム版の記録を使用します。チャージアックスは盾・斧強化と高速変形Lvも一致する場合に適用します。\n技溜め斬り Lv3（MV 176 / 2.40s）強溜め斬り Lv3（MV 187 / 2.90s）強薙ぎ払いⅢ（MV 134 / 時間未確認）\n時間の入力方法秒数を入",
+    "elementWidth": 734,
+    "scroll": 732,
+    "client": 732,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 12,
+    "errors": [],
+    "image": "1440-technique.png"
+  },
+  {
+    "width": 1440,
+    "area": "combo",
+    "action": "OK",
+    "text": "技抜刀斬り（MV 77 / 1.20s）溜め斬り Lv3（MV 176 / 2.40s）強溜め斬り Lv3（MV 187 / 2.90s）真・溜め斬り Lv3（MV 216 / 3.40s）相殺斬り上げ Lv3（MV 137 / 1.55s）UI監査 合成技（MV 20 / 1.00s）強薙ぎ払いⅢ（MV 134 / 時間未確認）MV 134 / 1ヒット / 所要時間未確認（DPS保留）上へ下へ削除",
+    "elementWidth": 734,
+    "scroll": 734,
+    "client": 734,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 4,
+    "errors": [],
+    "image": "1440-combo.png"
+  },
+  {
+    "width": 1440,
+    "area": "dps",
+    "action": "OK",
+    "text": "1コンボ 186.37 ダメージ所要時間が未確認のためDPSは算出できません。1. 強薙ぎ払いⅢ：186.37 / 1Hit / 時間未確認Hit別の参考内訳（1Hit）技DB採用値。値は会心を含む参考計算です。ゲーム表示の整数丸めとは異なります。Hit・成分物理属性特殊合計1本体186.370.000.00186.37",
+    "elementWidth": 734,
+    "scroll": 732,
+    "client": 732,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "1440-dps.png"
+  },
+  {
+    "width": 1440,
+    "area": "comparison",
+    "action": "OK",
+    "text": "基準ダメージ：1118.7（UI監査保存0・選択した通常側の比較条件、ゲーム表示の丸め前）比較の基準ビルド（通常側の期待ダメージ）UI監査保存0UI監査保存1比較結果をJSON保存比較結果をコピーコンボの技別・未検証項目を表示検証作業リストを表示実機検証の証拠参照を照合（JSON）証拠参照を照合実機ダメージ・Hit数・時間の記録を照合（JSON）実機計測記録を照合Technique DBと計測値を照合（診断）ダメージ計算条件を監査実測と計算値の成分別差異を診断Technique DBと計算エンジンの接続状況Technique DBと実機条件の受渡し診断斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。MHDB斬れ味データ構造を調査選択装備と計算条件を照合攻撃スキル照合会心・超会心・スキル条件を照合攻撃補正・モンスター肉質を照合物",
+    "elementWidth": 734,
+    "scroll": 732,
+    "client": 732,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 20,
+    "errors": [],
+    "image": "1440-comparison.png"
+  },
+  {
+    "width": 1440,
+    "area": "ocr",
+    "action": "OK",
+    "text": "📷 スクショからビルドを取り込むゲーム内スクショから武器・防具・装飾品を読み取り、現在の装備セットへ直接反映できます。β版と同じDBを使用します。",
+    "elementWidth": 270,
+    "scroll": 268,
+    "client": 268,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 0,
+    "errors": [],
+    "image": "1440-ocr.png"
+  },
+  {
+    "width": 1440,
+    "area": "template",
+    "action": "OK",
+    "text": "📚 ビルドテンプレート登録済みのビルドテンプレートを選択し、現在の装備セットへ読み込みます。テンプレートはMHDBの実データへ照合してBuild Stateへ反映します。武器種武器種を選択大剣太刀片手剣双剣ハンマー狩猟笛ランスガンランススラッシュアックスチャージアックス操虫棍ライトボウガンヘビィボウガン弓テンプレートテンプレートを選択簡単厳選ver / こたつ簡単厳選ver / こたつ出典：https://youtu.be/D_UsyLgoF-Y?si=Y2iKchVdR-SZQLWI主要スキル：攻撃 Lv2 / 爆破属性強化 Lv1 / 挑戦者 Lv1このビルドを読込•反映選択解除",
+    "elementWidth": 270,
+    "scroll": 268,
+    "client": 268,
+    "pageOverflow": 0,
+    "overflowElements": [],
+    "controls": 4,
+    "errors": [],
+    "image": "1440-template.png"
+  }
+]

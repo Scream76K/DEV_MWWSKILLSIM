@@ -1,0 +1,84 @@
+# Stage5変更一覧
+
+開始時852ファイルとのSHA256比較：変更0、欠落0。製品・Technique DB・テンプレ・既存tests・Stage4成果を変更しない。Git HEADとの差分は以前の統合成果を含み本段階と区別する。
+
+新規70ファイル、すべて本報告フォルダ配下。UI監査スクリプトは再現用証跡であり製品コードではない。削除0。
+
+- REPORT/UI_AUDIT/TECHNIQUE_AUDIT/OCR_GROUND_TRUTH/SALADA_AUDIT：監査と不足根拠
+- QA/REVIEW：独立検証記録
+- JIRA_UPDATE：許可された既存課題のコメント・状態更新
+- CHANGED_FILES：本一覧
+- evidence：852ファイル保全、テストログ、監査JSON、UI画像40+contact5、再現スクリプト
+
+## 新規ファイル
+
+- `docs/reports/r250-stage5/CHANGED_FILES.md`
+- `docs/reports/r250-stage5/JIRA_UPDATE.md`
+- `docs/reports/r250-stage5/OCR_GROUND_TRUTH.md`
+- `docs/reports/r250-stage5/QA.md`
+- `docs/reports/r250-stage5/REPORT.md`
+- `docs/reports/r250-stage5/REVIEW.md`
+- `docs/reports/r250-stage5/SALADA_AUDIT.md`
+- `docs/reports/r250-stage5/TECHNIQUE_AUDIT.md`
+- `docs/reports/r250-stage5/UI_AUDIT.md`
+- `docs/reports/r250-stage5/evidence/before-manifest.json`
+- `docs/reports/r250-stage5/evidence/before-worktree.tar.gz`
+- `docs/reports/r250-stage5/evidence/browser-baseline.log`
+- `docs/reports/r250-stage5/evidence/dom-baseline.log`
+- `docs/reports/r250-stage5/evidence/git-safety.json`
+- `docs/reports/r250-stage5/evidence/jira-updates.json`
+- `docs/reports/r250-stage5/evidence/legacy-template-baseline.log`
+- `docs/reports/r250-stage5/evidence/node-baseline.log`
+- `docs/reports/r250-stage5/evidence/ocr/ground-truth-audit.json`
+- `docs/reports/r250-stage5/evidence/qa/audit.json`
+- `docs/reports/r250-stage5/evidence/technique/runtime-records.json`
+- `docs/reports/r250-stage5/evidence/test-results.json`
+- `docs/reports/r250-stage5/evidence/ui/1024-combo.png`
+- `docs/reports/r250-stage5/evidence/ui/1024-comparison.png`
+- `docs/reports/r250-stage5/evidence/ui/1024-contact.png`
+- `docs/reports/r250-stage5/evidence/ui/1024-dps.png`
+- `docs/reports/r250-stage5/evidence/ui/1024-equipment.png`
+- `docs/reports/r250-stage5/evidence/ui/1024-ocr.png`
+- `docs/reports/r250-stage5/evidence/ui/1024-skills.png`
+- `docs/reports/r250-stage5/evidence/ui/1024-technique.png`
+- `docs/reports/r250-stage5/evidence/ui/1024-template.png`
+- `docs/reports/r250-stage5/evidence/ui/1440-combo.png`
+- `docs/reports/r250-stage5/evidence/ui/1440-comparison.png`
+- `docs/reports/r250-stage5/evidence/ui/1440-contact.png`
+- `docs/reports/r250-stage5/evidence/ui/1440-dps.png`
+- `docs/reports/r250-stage5/evidence/ui/1440-equipment.png`
+- `docs/reports/r250-stage5/evidence/ui/1440-ocr.png`
+- `docs/reports/r250-stage5/evidence/ui/1440-skills.png`
+- `docs/reports/r250-stage5/evidence/ui/1440-technique.png`
+- `docs/reports/r250-stage5/evidence/ui/1440-template.png`
+- `docs/reports/r250-stage5/evidence/ui/375-combo.png`
+- `docs/reports/r250-stage5/evidence/ui/375-comparison.png`
+- `docs/reports/r250-stage5/evidence/ui/375-contact.png`
+- `docs/reports/r250-stage5/evidence/ui/375-dps.png`
+- `docs/reports/r250-stage5/evidence/ui/375-equipment.png`
+- `docs/reports/r250-stage5/evidence/ui/375-ocr.png`
+- `docs/reports/r250-stage5/evidence/ui/375-skills.png`
+- `docs/reports/r250-stage5/evidence/ui/375-technique.png`
+- `docs/reports/r250-stage5/evidence/ui/375-template.png`
+- `docs/reports/r250-stage5/evidence/ui/390-combo.png`
+- `docs/reports/r250-stage5/evidence/ui/390-comparison.png`
+- `docs/reports/r250-stage5/evidence/ui/390-contact.png`
+- `docs/reports/r250-stage5/evidence/ui/390-dps.png`
+- `docs/reports/r250-stage5/evidence/ui/390-equipment.png`
+- `docs/reports/r250-stage5/evidence/ui/390-ocr.png`
+- `docs/reports/r250-stage5/evidence/ui/390-skills.png`
+- `docs/reports/r250-stage5/evidence/ui/390-technique.png`
+- `docs/reports/r250-stage5/evidence/ui/390-template.png`
+- `docs/reports/r250-stage5/evidence/ui/768-combo.png`
+- `docs/reports/r250-stage5/evidence/ui/768-comparison.png`
+- `docs/reports/r250-stage5/evidence/ui/768-contact.png`
+- `docs/reports/r250-stage5/evidence/ui/768-dps.png`
+- `docs/reports/r250-stage5/evidence/ui/768-equipment.png`
+- `docs/reports/r250-stage5/evidence/ui/768-ocr.png`
+- `docs/reports/r250-stage5/evidence/ui/768-skills.png`
+- `docs/reports/r250-stage5/evidence/ui/768-technique.png`
+- `docs/reports/r250-stage5/evidence/ui/768-template.png`
+- `docs/reports/r250-stage5/evidence/ui/audit.cjs`
+- `docs/reports/r250-stage5/evidence/ui/overflow-probe.cjs`
+- `docs/reports/r250-stage5/evidence/ui/overflow-probe.json`
+- `docs/reports/r250-stage5/evidence/ui/results.json`

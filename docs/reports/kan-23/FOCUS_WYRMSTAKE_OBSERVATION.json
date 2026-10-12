@@ -1,0 +1,75 @@
+{
+  "techniqueName": "集中竜杭穿ち",
+  "condition": "WOUND_BREAK",
+  "sourceType": "USER_PROVIDED_FRAME_TRACE",
+  "sourceLocator": "動画A（絶対パス・時刻未提供）",
+  "receivedAt": "2026-10-11",
+  "gameVersion": null,
+  "verificationStatus": "USER_CONFIRMED_OBSERVATION_NOT_INDEPENDENTLY_REVIEWED",
+  "cumulativeReadings": [
+    {
+      "phase": "preceding_horizontal_thrust",
+      "damage": 60,
+      "hits": 1
+    },
+    {
+      "phase": "before_final_followup",
+      "damage": 440,
+      "hits": 24
+    },
+    {
+      "phase": "after_final_followup",
+      "damage": 536,
+      "hits": 25
+    }
+  ],
+  "derivedObservation": {
+    "focusAttackHitCount": 24,
+    "focusAttackDisplayedDamage": 476,
+    "preFinalFocusHits": 23,
+    "finalFollowupHitCount": 1,
+    "finalFollowupDisplayedDamage": 96
+  },
+  "components": {
+    "initial": {
+      "hitCount": null,
+      "motionValues": null,
+      "elementModifier": null
+    },
+    "multiHit": {
+      "hitCount": null,
+      "motionValues": null,
+      "elementModifierCandidate": 0.1,
+      "candidateStatus": "PROVISIONAL_NOT_CALCULATION_ADOPTED"
+    },
+    "woundBreakFollowup": {
+      "hitCount": 1,
+      "motionValues": null,
+      "fixedDamage": null,
+      "elementModifier": null
+    }
+  },
+  "constraints": {
+    "finalDisplayedDamageIsNotCoefficient": true,
+    "elementCandidateAppliesToWholeAttack": false,
+    "calculationAdopted": false,
+    "ordinaryStakeCoefficientsMayBeReused": false
+  },
+  "currentObservation": {
+    "receivedAt": "2026-10-12",
+    "sourceType": "USER_CONFIRMED_IN_GAME_VIDEO_REPORTED_BY_SERIE",
+    "noWoundHitCount": 8,
+    "woundHitCount": 27,
+    "hitPartition": null,
+    "gameVersion": null,
+    "sourceLocator": null,
+    "verificationStatus": "OWNER_VIDEO_CONFIRMED_NOT_INDEPENDENTLY_REVIEWED",
+    "calculationAdopted": false,
+    "legacy24HitAssessment": "SUPERSEDED_AS_CURRENT_SPEC; CUMULATIVE_TRACE_RETAINED_ONLY",
+    "conditionsNeedingClarification": [
+      "27Hitに派生通常竜杭などが含まれるかを原映像で切り分ける",
+      "初段・多段・フィニッシュの対応と係数",
+      "対象ゲーム版・動画パス・時刻"
+    ]
+  }
+}

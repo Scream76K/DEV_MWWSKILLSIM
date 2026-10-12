@@ -1,0 +1,11 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const A=require('../weapon-attack-skill-audit.js');
+const h={rows:[{stage:1,status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED',context:{weaponAttack:220}}]};
+const run=(hand=h,stats={attackTrue:220},skills={'攻撃':4})=>A.audit(hand,stats,skills).rows[0];
+test('reports actual attack and skill level without adding bonus',()=>{const r=run();assert.equal(r.attack,220);assert.equal(r.attackSkillLevel,4);assert.equal(r.damage,null)});
+test('mismatch detected',()=>assert.ok(run(h,{attackTrue:230}).blockers.includes('ATTACK_CONTEXT_MISMATCH')));
+test('absent skill means level zero',()=>assert.equal(run(h,{attackTrue:220},{}).attackSkillLevel,0));
+test('ambiguous alias rejected',()=>assert.ok(run(h,{attackTrue:220},{'攻撃':4,Attack:4}).blockers.includes('ATTACK_SKILL_ALIAS_CONFLICT')));
+test('invalid skill level rejected',()=>assert.ok(run(h,{attackTrue:220},{'攻撃':9}).blockers.includes('ATTACK_SKILL_LEVEL_INVALID')));
+test('missing live stats rejected',()=>assert.ok(run(h,null).blockers.includes('LIVE_STATS_REQUIRED')));
+test('unverified handoff rejected',()=>assert.ok(run({rows:[{stage:1,status:'BLOCKED',context:{weaponAttack:220}}]}).blockers.includes('DOCUMENTED_CONTEXT_REQUIRED')));
+test('never authorizes verified dps',()=>{const r=A.audit(h,{attackTrue:220},{'攻撃':4});assert.equal(r.captureEligible,false);assert.equal(r.verifiedDps,null)});

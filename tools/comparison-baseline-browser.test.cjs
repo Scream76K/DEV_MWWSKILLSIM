@@ -1,0 +1,12 @@
+// ACCEPTED spec: explicit synthetic VERIFIED metadata for formatting only; no real record is promoted.
+const {installLocalModules}=require('./browser-test-setup.cjs');
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');const {chromium}=require(process.env.PLAYWRIGHT_MODULE_PATH||'playwright');
+test('mobile baseline picker changes ratios and keeps selection after rotation',async t=>{
+ const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_EXECUTABLE,args:['--no-sandbox']});t.after(()=>browser.close());const p=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});const errors=[];p.on('pageerror',e=>errors.push(e.message));
+ await p.route('**/*',r=>r.request().url()==='https://simulator.test/'?r.fulfill({contentType:'text/html',body:fs.readFileSync(path.join(__dirname,'../index.html'),'utf8')}):r.abort());await installLocalModules(p);await p.goto('https://simulator.test/');
+ await p.evaluate(()=>{lastBuildComparisonRows=[80,100,60].map((dps,i)=>({name:'Build'+i,kind:'great-sword',power:{profileId:'fixture-standard'},dpsStatus:'VERIFIED',dps,attack:100,attackTrue:100,affinity:0,maxAffinity:0,element:0,elementType:'—',damage:10}));document.getElementById('compareOut').innerHTML=renderCompareTable(lastBuildComparisonRows);for(let e=document.getElementById('compareOut');e;e=e.parentElement)if(e.tagName==='DETAILS')e.open=true;});
+ await p.locator('#comparisonBaseline').selectOption('1');assert.deepEqual(await p.locator('[data-comparison-metric="dps-index"] td').allTextContents(),['80.0','100.0','60.0']);
+ for(const width of [320,430,844,390]){await p.setViewportSize({width,height:844});await p.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));await p.waitForFunction(()=>document.getElementById('comparisonBaseline')?.value==='1');assert.deepEqual(await p.locator('[data-comparison-metric="dps-index"] td').allTextContents(),['80.0','100.0','60.0']);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth),width);}
+ await p.locator('#comparisonBaseline').selectOption('2');assert.deepEqual(await p.locator('[data-comparison-metric="dps-index"] td').allTextContents(),['133.3','166.7','100.0']);
+ await p.evaluate(()=>invalidateComboResults());assert.equal(await p.locator('#comparisonBaseline').count(),0);await p.setViewportSize({width:430,height:844});assert.equal(await p.locator('#compareOut table').count(),0);assert.deepEqual(errors,[]);
+});

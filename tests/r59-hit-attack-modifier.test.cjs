@@ -1,5 +1,5 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),{test}=require('node:test');
-const s=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8'),c={window:{}};vm.createContext(c);vm.runInContext('const KINDS='+s.match(/const KINDS=(\[.*?\]);/)[1]+';'+s.slice(s.indexOf('const CHARGE_BLADE_ENGINE_VERSION='),s.indexOf('function compareStep5Snapshot()')),c);
+const s=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8'),c={window:{}};vm.createContext(require('../tools/element-vm-test-setup.cjs').register(c));vm.runInContext('const KINDS='+s.match(/const KINDS=(\[.*?\]);/)[1]+';'+s.slice(s.indexOf('const CHARGE_BLADE_ENGINE_VERSION='),s.indexOf('function compareStep5Snapshot()')),c);
 const b=c.window.BuildComparisonEngine;
 const stats={baseAttack:200,displayedElement:100,physicalHitzone:50,elementalHitzone:20,sharpnessPhysical:1,sharpnessElement:1,affinity:0,maxAffinity:100};
 const modifier={multiplier:1.1,adoptionStatus:'ADOPTED',evidenceRef:'TEST_EXPLICIT_ADOPTION'};

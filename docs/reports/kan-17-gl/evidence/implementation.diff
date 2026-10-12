@@ -1,0 +1,43 @@
+--- before/index.html
++++ after/index.html
+@@ -3934,6 +3934,7 @@
+   }catch(e){return Object.assign(new Technique({id:move.id,name:move.name,time:move.time,mvs:[],source:'verified'}),meta,{calculationBlocked:true,blockedReason:String(e.message||e)});}
+ }
+ const CANONICAL_COMBO_PRESETS=techniqueDbDeepFreeze({
++  'gunlance':{id:'adopted:gl_melee',name:'叩きつけ→なぎ払い（砲撃・竜杭なし／参考）',moves:['canonical:GL_SLAM','canonical:GL_SWEEP']},
+   'bow':{id:'adopted:bow_reference',name:'溜め3：射撃→剛射→剛連射（参考）',moves:['canonical:BOW_SHOT_3','canonical:BOW_POWER_SHOT_3','canonical:BOW_POWER_VOLLEY_3']},
+   'heavy-bowgun':{id:'adopted:hbg_normal',name:'通常弾Lv3・1発（共通参考条件）',moves:['canonical:HBG_NORMAL_AMMO_3']},
+   'charge-blade':{id:'adopted:cb_saed',name:'強属性ビン：通常派生SAED（全5ビン命中・参考）',moves:['canonical:CB_SAED']},
+@@ -4119,6 +4120,7 @@
+ }
+ // KAN-17 #10066: damage-only UI uses the existing route/handler evaluator.
+ const p0DamageRequests={};
++let p0DamageSuspend=false;
+ function calcP0Damage(mode,{remember=true}={}){
+   const outputs={single:'singleTechniqueDamageOut',template:'templateComboDamageOut',user:'userComboDamageOut'};
+   const out=$(outputs[mode]);if(!out)return null;
+@@ -4148,6 +4150,7 @@
+ function calcTemplateComboDamage(){return calcP0Damage('template');}
+ function calcUserComboDamage(){return calcP0Damage('user');}
+ function refreshP0DamageResults(){
++  if(p0DamageSuspend)return;
+   for(const [mode,kind] of Object.entries(p0DamageRequests)){
+     if(kind===comboKind())calcP0Damage(mode,{remember:false});
+     else{delete p0DamageRequests[mode];const id={single:'singleTechniqueDamageOut',template:'templateComboDamageOut',user:'userComboDamageOut'}[mode];if($(id))$(id).textContent='武器種が変わりました。もう一度計算してください。';}
+@@ -4801,6 +4804,8 @@
+     const id=x.armor?.[k];
+     if(id&&!DB.armor.some(a=>String(a.id)===String(id)))throw new Error('保存ビルドの防具がDBに見つかりません：'+k);
+   }
++  const previousP0Suspend=p0DamageSuspend;p0DamageSuspend=true;
++  try{
+   $('weaponKind').value=canonicalWeaponKind(weapon)||'';weaponRows=[weapon];renderWeapon();$('weapon').value=String(weapon.id);App.build.setWeapon(weapon);
+   for(const k of ['head','chest','arms','waist','legs']){const id=x.armor?.[k];build.armor[k]=id?DB.armor.find(a=>String(a.id)===String(id))||null:null;}
+   const copy=value=>JSON.parse(JSON.stringify(value));
+@@ -4816,6 +4821,7 @@
+   calcBuild();
+   if(!preserveCombo)restoreComboRows();
+   renderSavedBuilds();
++  }finally{p0DamageSuspend=previousP0Suspend;if(!p0DamageSuspend)refreshP0DamageResults();}
+ }
+ function renderSavedBuilds(){
+   const box=$('savedBuilds');if(!box)return;

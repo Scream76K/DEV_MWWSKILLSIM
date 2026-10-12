@@ -1,0 +1,24 @@
+--- before/gunlance-shell-reference.js
++++ after/gunlance-shell-reference.js
+@@ -7,7 +7,11 @@
+   if(!rules||rules.adoptionStatus!=='PROVISIONALLY_ADOPTED'||typeof generic!=='function')throw Error('GL_SHELL:DB_RULES_PENDING');
+   const id='GL_SHELL_'+s?.shellingType+'_'+s?.shellingPower,source=engine.get('gunlance',id),value=source?.specialSourceValues;
+   if(!rules.supportedSourceIds.includes(id)||source?.numericStatus!=='SOURCE_CONFIRMED'||!finite(value?.unparenthesizedValue,0,1000)||!finite(value?.parenthesizedValue,0,10000))throw Error('GL_SHELL:SOURCE_VERSION_OR_POWER_PENDING');
+-  const capacity=rules.baseCapacity[s.shellingType];
++  const loadLevel=o.loadShellsLevel??0,loadRule=rules.loadShellsReference;
++  if(!Number.isInteger(loadLevel)||!loadRule?.supportedLevels?.includes(loadLevel))throw Error('GL_SHELL:LOAD_SHELLS_LEVEL_PENDING');
++  const capacityAdd=loadRule.capacityAdds[loadLevel];
++  if(!finite(capacityAdd,0,10))throw Error('GL_SHELL:LOAD_SHELLS_SOURCE_PENDING');
++  const capacity=rules.baseCapacity[s.shellingType]+capacityAdd;
+   if(!Number.isInteger(s.loadedRounds)||s.loadedRounds<1||s.loadedRounds>capacity)throw Error('GL_SHELL:LOADED_ROUNDS_PENDING_OR_EXHAUSTED');
+   if(!finite(o.weaponBaseAttack,0,10000))throw Error('GL_SHELL:ORIGINAL_WEAPON_ATTACK_PENDING');
+   if(!finite(s.fireHitzone,0,100))throw Error('GL_SHELL:FIRE_HITZONE_PENDING');
+@@ -30,7 +34,7 @@
+   if(!finite(multiplier,0,10))throw Error('GL_SHELL:MODIFIER_SOURCE_PENDING');
+   const hit={mv:value.unparenthesizedValue,elementModifier:rules.fireElementModifier,physicalAttackModifier:{multiplier:multiplier*artilleryMultiplier,adoptionStatus:'ADOPTED',evidenceRef:level>0?artillery.evidenceRef:rules.evidenceRef}};
+   const r=generic({status:'ADOPTED',hits:Array.from({length:count},()=>({...hit}))},{baseAttack:o.weaponBaseAttack,displayedElement:value.parenthesizedValue+fireAdd,elementType:'fire',elementKnown:true,typeKnown:true,physicalHitzone:100,elementalHitzone:s.fireHitzone,sharpnessPhysical:1,sharpnessElement:1,affinity:0,maxAffinity:0});
+-  return {...r,total:r.comparisonPower,hits:r.trace.map(h=>({p:h.physical,e:h.element,total:h.physical+h.element,component:'SHELL_RAW_AND_FIRE'})),consumedRounds:count,remainingRounds:s.loadedRounds-count,sourceTechniqueId:id,action:o.action,weaponApplicability:'UNVERIFIED',verificationStatus:'UNVERIFIED',adoptionStatus:rules.adoptionStatus,evidenceRefs:[...source.evidenceRefs,rules.evidenceRef,...(level>0?[artillery.evidenceRef]:[])],artilleryLevel:level,state:{...s},scope:'EXPLICIT_COMMON_SHELL_REFERENCE'};
++  return {...r,total:r.comparisonPower,hits:r.trace.map(h=>({p:h.physical,e:h.element,total:h.physical+h.element,component:'SHELL_RAW_AND_FIRE'})),consumedRounds:count,remainingRounds:s.loadedRounds-count,sourceTechniqueId:id,action:o.action,weaponApplicability:'UNVERIFIED',verificationStatus:'UNVERIFIED',adoptionStatus:rules.adoptionStatus,evidenceRefs:[...source.evidenceRefs,rules.evidenceRef,...(level>0?[artillery.evidenceRef]:[]),...(loadLevel>0?[loadRule.evidenceRef]:[])],loadShellsLevel:loadLevel,capacity,artilleryLevel:level,state:{...s},scope:'EXPLICIT_COMMON_SHELL_REFERENCE'};
+  }
+  const api=Object.freeze({calculate});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.GunlanceShellReference=api;
+ })(typeof window!=='undefined'?window:globalThis);

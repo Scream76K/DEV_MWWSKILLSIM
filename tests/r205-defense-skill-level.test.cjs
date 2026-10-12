@@ -1,0 +1,17 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const skill=html.match(/function skillLevel\(o,names\)\{for\(const n of names\)\{if\(o\?\.\[n\]!=null\)\{const lv=Number\(o\[n\]\);return Number\.isFinite\(lv\)\?lv:0;\}\}return 0;\}/);
+assert.ok(skill,'normalized skillLevel must be present');
+const level=vm.runInNewContext(skill[0]+'\nskillLevel');
+const valid=(total,names,max)=>{const v=level(total,names);return Number.isInteger(v)&&v>0?Math.min(max,v):0;};
+const defense=(base,total)=>{const dl=valid(total,['防御','Defense'],7);const flat=[0,5,10,10,20,20,35,35][dl];const mult=dl>=7?1.10:dl>=6?1.08:dl>=4?1.05:1;return (base+flat)*mult;};
+test('numeric strings do not concatenate in skillLevel',()=>assert.equal(level({'防御':'4'},['防御']),4));
+test('non-numeric level is zero',()=>assert.equal(level({'防御':'oops'},['防御']),0));
+test('fractional defense level has no bonus',()=>assert.equal(defense(100,{'防御':2.5}),100));
+test('defense level 4 applies flat and multiplier',()=>assert.equal(defense(100,{'防御':4}),126));
+test('defense level 99 caps at level 7',()=>assert.equal(defense(100,{'防御':99}),148.5));
+test('calcBuild uses validated defense skill level',()=>assert.match(html,/const dl=validCombatSkillLevel\(total,\['防御','Defense'\],7\)/));

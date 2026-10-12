@@ -44,5 +44,7 @@ test('aggregate record is archived and new stages expose separate verification c
  assert.deepEqual(p(e.get('dual-blades','DB_DEMON_DANCE').replacedByTechniqueIds),ids);
  assert.equal(e.completion['dual-blades'].motionValueAdopted,3);
  assert.equal(e.completion['dual-blades'].hitCountConfirmed,3);
- assert.equal(Object.values(e.completion).reduce((n,x)=>n+x.registered,0),537);
+ assert.equal(Object.values(e.completion).reduce((n,x)=>n+x.registered,0),539);
+ assert.ok(e.get('charge-blade','CB_SAED_AED_DERIVED'));
+ assert.equal(Object.values(e.db).flatMap(x=>Object.values(x)).filter(t=>!['CB_SAED_AED_DERIVED','LBG_NORMAL_REFERENCE_RULES'].includes(t.techniqueId)).length,537);
 });

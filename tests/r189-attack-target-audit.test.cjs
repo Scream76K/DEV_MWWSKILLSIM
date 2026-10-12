@@ -1,0 +1,13 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const A=require('../weapon-attack-target-audit.js');
+const h={rows:[{stage:1,status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED',context:{weaponAttack:230,monsterId:'m1',hitZonePhysical:45,hitZoneElement:20}}]};
+const s={attackTrue:230,attackComponents:{weaponBase:200,normalMultiplier:1.1,normalFlat:10}};
+const t={monsterId:'m1',partId:'head',physical:45,element:20};
+const run=(hh=h,ss=s,tt=t)=>A.audit(hh,ss,tt).rows[0];
+test('matches attack components and hitzones without verifying',()=>{const r=run();assert.equal(r.attackTrue,230);assert.equal(r.verified,false);assert.equal(r.blockers.length,3)});
+test('rejects inconsistent attack component math',()=>assert.ok(run(h,{...s,attackTrue:231}).blockers.includes('LIVE_ATTACK_COMPONENTS_INVALID')));
+test('rejects attack mismatch',()=>assert.ok(run(h,{...s,attackTrue:231}).blockers.includes('ATTACK_CONTEXT_MISMATCH')));
+test('rejects monster mismatch',()=>assert.ok(run(h,s,{...t,monsterId:'m2'}).blockers.includes('MONSTER_ID_MISMATCH')));
+test('rejects physical hitzone mismatch',()=>assert.ok(run(h,s,{...t,physical:50}).blockers.includes('PHYSICAL_HITZONE_MISMATCH')));
+test('rejects missing target identity',()=>assert.ok(run(h,s,{...t,partId:null}).blockers.includes('TARGET_IDENTITY_REQUIRED')));
+test('rejects invalid element hitzone',()=>assert.ok(run(h,s,{...t,element:NaN}).blockers.includes('LIVE_ELEMENT_HITZONE_INVALID')));
+test('never transfers verified DPS',()=>{const r=A.audit(h,s,t);assert.equal(r.captureEligible,false);assert.equal(r.verifiedDps,null)});

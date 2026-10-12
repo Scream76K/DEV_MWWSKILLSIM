@@ -1,0 +1,11 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const {prepare,transfer}=require('../gunlance-verified-transfer.js');
+const {createCapture}=require('../gunlance-result-capture.js');
+const row=name=>({kind:'gunlance',name,verifiedCapture:{origin:'CALCULATOR_VERIFIED_EVIDENCE',buildName:name,weaponType:'gunlance',source:'VERIFIED_GENERIC_COMPONENTS',contextId:'ctx',evidenceId:name,components:[{component:'physical',damage:20,hits:1,verified:true,evidenceRef:'frame-1'}],durationSeconds:2,durationVerified:true,durationEvidenceRef:'frame-2',techniqueDbRevision:'1.042.00.02'}});
+const rows=()=>[row('A'),row('B')];
+const context={verifiedContextId:'ctx'};
+test('reject mismatched A/B revisions',()=>{const p=rows();p[1].verifiedCapture.techniqueDbRevision='old';assert.throws(()=>prepare(p,context),/A\/B Technique DB revision mismatch/)});
+test('reject mismatch with explicitly selected revision',()=>assert.throws(()=>prepare(rows(),{...context,techniqueDbRevision:'old'}),/Technique DB revision mismatch/));
+test('reject missing typed evidence references',()=>{const p=rows();p[0].verifiedCapture.source='VERIFIED_TYPED_COMPONENTS';p[0].verifiedCapture.components={physicalBody:20,elementalBody:0,shelling:0,wyrmstake:0};p[0].verifiedCapture.componentEvidence=Object.fromEntries(['physicalBody','elementalBody','shelling','wyrmstake'].map(k=>[k,{verified:true,hits:k==='physicalBody'?1:0,evidenceRef:'record'}]));delete p[0].verifiedCapture.componentEvidence.shelling.evidenceRef;assert.throws(()=>prepare(p,context),/typed component evidenceRef/)});
+test('valid matching pair remains transferable',()=>{const s=createCapture();assert.equal(transfer(rows(),{...context,techniqueDbRevision:'1.042.00.02'},s).status,'TRANSFERRED_VERIFIED_PAIR')});

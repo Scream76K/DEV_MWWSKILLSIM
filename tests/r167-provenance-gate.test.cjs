@@ -1,0 +1,10 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');
+const {transfer}=require('../gunlance-verified-transfer.js');const {createCapture}=require('../gunlance-result-capture.js');
+const row=(name)=>({kind:'gunlance',name,verifiedCapture:{origin:'CALCULATOR_VERIFIED_EVIDENCE',buildName:name,weaponType:'gunlance',source:'VERIFIED_GENERIC_COMPONENTS',contextId:'ctx',evidenceId:name,components:[{component:'physical',damage:20,hits:1,verified:true,evidenceRef:'recorded-hit'}],durationSeconds:2,durationVerified:true,durationEvidenceRef:'recorded-time',techniqueDbRevision:'1.042.00.02'}});
+const pair=()=>[row('A'),row('B')];const context={verifiedContextId:'ctx'};
+test('requires exactly two rows',()=>assert.throws(()=>transfer([...pair(),row('C')],context,createCapture()),/A\/B/));
+test('rejects untraceable hit evidence',()=>{const p=pair();delete p[0].verifiedCapture.components[0].evidenceRef;assert.throws(()=>transfer(p,context,createCapture()),/evidenceRef/)});
+test('rejects untraceable duration',()=>{const p=pair();delete p[1].verifiedCapture.durationEvidenceRef;assert.throws(()=>transfer(p,context,createCapture()),/duration evidenceRef/)});
+test('rejects missing technique DB revision',()=>{const p=pair();delete p[0].verifiedCapture.techniqueDbRevision;assert.throws(()=>transfer(p,context,createCapture()),/Technique DB/)});
+test('rejects mismatched comparison context',()=>assert.throws(()=>transfer(pair(),{verifiedContextId:'other'},createCapture()),/comparison context mismatch/));
+test('accepts fully referenced pair',()=>{const s=createCapture();assert.equal(transfer(pair(),context,s).status,'TRANSFERRED_VERIFIED_PAIR')});

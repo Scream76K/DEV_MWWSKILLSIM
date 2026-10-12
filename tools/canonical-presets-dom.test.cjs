@@ -1,0 +1,32 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const {JSDOM,VirtualConsole}=require('jsdom');const html=require('./dom-test-setup.cjs').readSimulatorHtml();
+function setup(t,kind){const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));const dom=new JSDOM(html,{url:'https://simulator.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.confirm=()=>true;w.addEventListener('error',e=>errors.push(e.message));w.fetch=()=>Promise.reject(Error('OFFLINE_TEST'));}});t.after(()=>dom.window.close());const w=dom.window,d=w.document;w.eval(`clearWeaponBuckets();const fixture={id:987,kind:${JSON.stringify(kind)},name:'Fixture',affinity:0,damage:{raw:200,display:200},specials:[],slots:[],skills:[]};DB.weapons=[fixture];weaponIndexByKind[API_WEAPON_KIND[${JSON.stringify(kind)}]]=[fixture];document.getElementById('weaponKind').value=${JSON.stringify(kind)};document.getElementById('weapon').innerHTML='<option value="987">Fixture</option>';document.getElementById('weapon').value='987';calcBuild();renderComboForWeapon();`);return {w,d,errors};}
+const want={
+ 'great-sword':['gs_charge3','gs_strong3','canonical:GS_STRONG_WIDE_SLASH_3'],
+ 'long-sword':['canonical:LS_RED_BLADE_I','canonical:LS_RED_BLADE_II','canonical:LS_RED_BLADE_III'],
+ 'sword-and-shield':['sns_slash','canonical:SNS_SIDE_SLASH','sns_horizontal','canonical:SNS_RETURN_SLASH'],
+ 'dual-blades':['canonical:DB_DEMON_DANCE_I','canonical:DB_DEMON_DANCE_II','canonical:DB_DEMON_DANCE_III'],
+ 'hammer':['hm_side','canonical:HAM_VERTICAL_II','hm_big','canonical:HAM_MIGHTY_CHARGE_UPPERCUT'],
+ 'switch-axe':['canonical:SA_SWORD_VERTICAL','canonical:SA_SWORD_RIGHT_RISING','canonical:SA_SWORD_MORPH_DOUBLE','canonical:SA_AXE_MORPH_SLASH'],
+ 'lance':['canonical:LAN_MID_THRUST_I','canonical:LAN_MID_THRUST_II','canonical:LAN_MID_THRUST_III','canonical:LAN_TRIPLE_THRUST']
+};
+test('seven adopted presets apply the explicit current move IDs and keep route timing unknown',t=>{
+ for(const [kind,expected] of Object.entries(want)){const {w,d,errors}=setup(t,kind);const data=w.eval('comboData()'),preset=data.presets.find(x=>x.origin==='CANONICAL_DB');assert.ok(preset,kind);d.getElementById('comboPreset').value=preset.id;w.applyComboPreset();assert.deepEqual([...d.querySelectorAll('#combo .cmove')].map(x=>x.value),expected);const result=w.calcDps();assert.ok(result.damage>0);assert.equal(result.time,null);assert.equal(result.theoreticalDps,null);assert.deepEqual(errors,[]);}
+});
+test('dance preset uses 12 4 11 hits and survives save reload with canonical provenance',t=>{
+ const {w,d,errors}=setup(t,'dual-blades');const preset=w.eval('comboData()').presets.find(x=>x.origin==='CANONICAL_DB');assert.ok(preset);d.getElementById('comboPreset').value=preset.id;w.applyComboPreset();const r=w.calcDps();assert.deepEqual(JSON.parse(JSON.stringify(r.breakdown.map(x=>x.hits))),[12,4,11]);d.getElementById('buildName').value='Dance';d.getElementById('saveBuild').click();d.querySelector('.comboRow .del').click();d.querySelector('[data-build-load="Dance"]').click();assert.deepEqual([...d.querySelectorAll('#combo .cmove')].map(x=>x.value),want['dual-blades']);const report=w.createComboVerificationReport();assert.equal(report.stages.length,3);assert.ok(report.stages.every(x=>x.numericOrigin==='CANONICAL_DB'));assert.equal(report.summary.status,'TIMING_PENDING');assert.deepEqual(errors,[]);
+});
+test('old presets remain unchanged and LBG only exposes the approved Lv2 reference preset',t=>{
+ const {w,d,errors}=setup(t,'dual-blades');const old=w.eval('comboData()').presets.find(x=>x.id==='db_dance');assert.ok(old);assert.deepEqual(JSON.parse(JSON.stringify(old.moves)),['db_dance1','db_dance2','db_dance3']);assert.match([...d.getElementById('comboPreset').options].find(x=>x.value==='db_dance').textContent,/旧参考/);assert.deepEqual(errors,[]);
+ for(const kind of ['light-bowgun']){const {w,errors}=setup(t,kind);const presets=w.eval('comboData()').presets.filter(x=>x.origin==='CANONICAL_DB');assert.equal(presets.length,1);assert.equal(presets[0].id,'adopted:lbg_normal');assert.deepEqual(Array.from(presets[0].moves),['canonical:LBG_NORMAL_AMMO_2']);assert.match(presets[0].name,/武器適用未検証/);assert.deepEqual(errors,[]);}
+});
+
+test('SAED preset is explicitly DB sourced and unrelated legacy presets stay intact',t=>{const {w}=setup(t,'charge-blade');const p=w.eval('comboData()').presets.find(x=>x.id==='adopted:cb_saed');assert.equal(p.origin,'CANONICAL_DB');assert.deepEqual(Array.from(p.moves),['canonical:CB_SAED']);});
+
+test('bow and HBG adopted templates identify exact sourced handler routes',t=>{for(const [kind,id,ids] of [['bow','adopted:bow_reference',['canonical:BOW_SHOT_3','canonical:BOW_POWER_SHOT_3','canonical:BOW_POWER_VOLLEY_3']],['heavy-bowgun','adopted:hbg_normal',['canonical:HBG_NORMAL_AMMO_3']]]){const {w}=setup(t,kind),p=w.eval('comboData()').presets.find(x=>x.id===id);assert.equal(p.origin,'CANONICAL_DB');assert.deepEqual(Array.from(p.moves),ids);for(const move of ids)assert.equal(w.comboMove(move).handler,'RangedReferenceHandler');}});
+
+test('gunlance melee preset contains only both complete DB melee attacks',t=>{const {w}=setup(t,'gunlance');const p=w.eval('comboData()').presets.find(x=>x.id==='adopted:gl_melee');assert.equal(p.origin,'CANONICAL_DB');assert.deepEqual(Array.from(p.moves),['canonical:GL_SLAM','canonical:GL_SWEEP']);assert.match(p.name,/砲撃・竜杭なし/);});
+
+test('IG no-extract body template retains exact DB ID and reference condition',t=>{const {w}=setup(t,'insect-glaive');const p=w.eval('comboData()').presets.find(x=>x.id==='adopted:ig_body_reference');assert.equal(p.origin,'CANONICAL_DB');assert.deepEqual(Array.from(p.moves),['canonical:IG_DIAGONAL_SLASH']);assert.match(p.name,/エキスなし・猟虫収納/);assert.equal(w.comboMove(p.moves[0]).handler,'InsectGlaiveBodyHandler');});
+
+test('HH body template contains exact sourced actions and excludes sound and echo',t=>{const {w}=setup(t,'hunting-horn');const p=w.eval('comboData()').presets.find(x=>x.id==='adopted:hh_body_reference');assert.equal(p.origin,'CANONICAL_DB');assert.deepEqual(Array.from(p.moves),['canonical:HH_LEFT_SWING','canonical:HH_FORWARD_ATTACK']);assert.match(p.name,/響玉・旋律強化なし/);assert.equal(w.comboMove(p.moves[0]).handler,'HuntingHornBodyHandler');});

@@ -1,0 +1,114 @@
+--- before/index.html
++++ after/index.html
+@@ -3750,6 +3750,8 @@
+   'great-sword':['GS_STRONG_WIDE_SLASH_3'],
+   'long-sword':['LS_RED_BLADE_I','LS_RED_BLADE_II','LS_RED_BLADE_III'],
+   'sword-and-shield':['SNS_SIDE_SLASH','SNS_RETURN_SLASH'],
++  'bow':['BOW_SHOT_3','BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3'],
++  'heavy-bowgun':['HBG_NORMAL_AMMO_1','HBG_NORMAL_AMMO_2','HBG_NORMAL_AMMO_3'],
+   'switch-axe':['SA_SWORD_VERTICAL','SA_SWORD_RIGHT_RISING','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'],
+   'dual-blades':['DB_DEMON_DANCE_I','DB_DEMON_DANCE_II','DB_DEMON_DANCE_III'],
+   'hammer':['HAM_VERTICAL_II','HAM_MIGHTY_CHARGE_UPPERCUT'],
+@@ -3760,6 +3762,7 @@
+ function directCanonicalComboTechnique(kind,id){
+   const record=techniqueDbGet(kind,id),meta={numericOrigin:'CANONICAL_DB',canonicalKind:kind,canonicalTechniqueId:id,timingStatus:'PENDING',...(kind==='charge-blade'?{handler:'ChargeBladeHandler'}:{})};
+   const moveId='canonical:'+id;
++  if(['bow','heavy-bowgun'].includes(kind))return Object.assign(new Technique({id:moveId,name:record?.techniqueName||id,time:0,mvs:[],source:'community'}),meta,{handler:'RangedReferenceHandler'});
+   try{
+     const hits=readCanonicalComboHits({...meta,id:moveId,custom:false});
+     if(kind==='charge-blade'&&CHARGE_BLADE_TECHNIQUES[id]?.phial)throw new Error(chargeBladePhialCountEvidence(id)===null?'CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED':'CB_COMBO_PHIAL_ROUTE_PENDING');
+@@ -3931,6 +3934,8 @@
+   }catch(e){return Object.assign(new Technique({id:move.id,name:move.name,time:move.time,mvs:[],source:'verified'}),meta,{calculationBlocked:true,blockedReason:String(e.message||e)});}
+ }
+ const CANONICAL_COMBO_PRESETS=techniqueDbDeepFreeze({
++  'bow':{id:'adopted:bow_reference',name:'溜め3：射撃→剛射→剛連射（参考）',moves:['canonical:BOW_SHOT_3','canonical:BOW_POWER_SHOT_3','canonical:BOW_POWER_VOLLEY_3']},
++  'heavy-bowgun':{id:'adopted:hbg_normal',name:'通常弾Lv3・1発（共通参考条件）',moves:['canonical:HBG_NORMAL_AMMO_3']},
+   'charge-blade':{id:'adopted:cb_saed',name:'強属性ビン：通常派生SAED（全5ビン命中・参考）',moves:['canonical:CB_SAED']},
+   'great-sword':{id:'adopted:gs_standard',name:'最大溜め：溜め斬りⅢ→強溜めⅢ→強薙ぎ払いⅢ',moves:['gs_charge3','gs_strong3','canonical:GS_STRONG_WIDE_SLASH_3']},
+   'long-sword':{id:'adopted:ls_standard',name:'赤刃状態：赤刃斬りⅠ→Ⅱ→Ⅲ',moves:['canonical:LS_RED_BLADE_I','canonical:LS_RED_BLADE_II','canonical:LS_RED_BLADE_III']},
+@@ -4093,7 +4098,7 @@
+       if(!stage.move)throw new Error('COMBO_TECHNIQUE_UNAVAILABLE:'+item.techniqueId);
+       stage.name=stage.move.name;
+       if(contextError)throw new Error(contextError);
+-      stage.result=comboTechniqueDamage(stage.move,context);
++      stage.result=comboTechniqueDamage(stage.move,{...context,routeIndex:index});
+       const time=Number(stage.move.time);stage.time=Number.isFinite(time)&&time>0?time:null;
+     }catch(e){stage.reason=String(e.message||e);}
+     return stage;
+@@ -4128,11 +4133,11 @@
+       rows=preset.moves.map(techniqueId=>({techniqueId}));
+     }else{App.combo.syncFromDOM();rows=App.state.combo.moves;}
+     if(!rows.length)throw Error('技を追加してください。');
+-    context={...comboDamageContext(),critBonus:skillLevel(calcState.total||{},['超会心','Critical Boost'])};
++    context={...comboDamageContext({ignoreWeaponElement:comboKind()==='heavy-bowgun'}),critBonus:skillLevel(calcState.total||{},['超会心','Critical Boost'])};
+     const unavailable=rows.map((r,index)=>({r,index,move:comboMove(r.techniqueId,calcState.stats)})).filter(x=>!x.move||x.move.numericOrigin!=='CANONICAL_DB');
+     if(unavailable.length){
+       result={status:'BLOCKED',damage:null,stages:[],blocked:unavailable.map(x=>({index:x.index+1,id:x.r.techniqueId,name:x.move?.name||x.r.techniqueId,reason:'TECHNIQUE_DB_CONNECTION_PENDING:'+x.r.techniqueId})),context};
+-    }else result=evaluateComboRoute(rows,context,{stats:calcState.stats});
++    }else{context=prepareP0RangedContext(rows,context);const routeStats=comboKind()==='heavy-bowgun'?{...calcState.stats,element:0,elementKnown:true,typeKnown:true,elementStatus:'KNOWN'}:calcState.stats;result=evaluateComboRoute(rows,context,{stats:routeStats});}
+   }catch(e){result={status:'BLOCKED',damage:null,stages:[],blocked:[{reason:String(e.message||e)}],context};}
+   const label=mode==='single'?'選択技':mode==='template'?'テンプレコンボ':'指定コンボ';
+   if(result.damage==null||!Number.isFinite(result.damage))out.innerHTML='<b>'+label+'：未算出</b><div class="small">'+(result.blocked||[]).map(x=>esc((x.name?x.name+'：':'')+comboBlockedMessage(x.reason))).join('<br>')+'</div>';
+@@ -4186,16 +4191,49 @@
+   return `<details class="combo-hit-detail" style="margin:8px 0;min-width:0"><summary>Hit別の参考内訳（${stage.hits}Hit）</summary><p class="small">${esc(origin)}。値は会心を含む参考計算です。ゲーム表示の整数丸めとは異なります。</p><div style="max-width:100%;overflow-x:auto"><table style="width:100%;min-width:340px;table-layout:fixed;font-size:12px;font-variant-numeric:tabular-nums" aria-label="${esc(stage.name)}のHit別参考内訳"><thead><tr>${['Hit・成分','物理','属性','特殊','合計'].map(s=>`<th scope="col" style="padding:6px">${s}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
+ }
+ 
+-function comboDamageContext(){
++function bowReferenceSkills(total){return {forceShot:skillLevel(total,['フォースショット','Force Shot']),firstShot:skillLevel(total,['ファーストショット','First Shot']),normalUp:skillLevel(total,['通常弾・通常矢強化','Normal/Rapid Up']),spreadUp:skillLevel(total,['散弾・剛射強化','Spread/Power Shots','Spread Up']),chargeMaster:skillLevel(total,['チャージマスター','Charge Master']),criticalElement:skillLevel(total,['会心撃【属性】','Critical Element']),bladescaleLoading:skillLevel(total,['刃鱗増装','Bladescale Loading'])};}
++function rangedComboDamage(move,ctx){
++  const result=ctx.p0RangedResults?.[ctx.routeIndex];
++  if(!result||result.techniqueId!==move.canonicalTechniqueId)throw Error('RANGED_REFERENCE:P0_ROUTE_CONTEXT_REQUIRED');
++  return result;
++}
++function prepareP0RangedContext(rows,ctx){
++  const kind=comboKind();if(!['bow','heavy-bowgun'].includes(kind))return ctx;
++  const total=calcState.total||{},cond=compareStep5Snapshot(),ids=rows.map(r=>comboMove(r.techniqueId)?.canonicalTechniqueId);
++  if(rows.some(r=>comboMove(r.techniqueId)?.handler!=='RangedReferenceHandler'))throw Error('RANGED_REFERENCE:MIXED_OR_UNSUPPORTED_COMPONENT');
++  const level=Number(ctx.critBonus);if(!Number.isInteger(level)||level<0||level>5)throw Error('CRITICAL_BOOST_LEVEL_INVALID');
++  const criticalMultiplier=1.25+[0,.03,.06,.09,.12,.15][level];
++  const convert=(r,id)=>({techniqueId:id,handler:'RangedReferenceHandler',physical:r.physical,element:r.element,special:r.special||0,total:r.comparisonPower,trace:r.trace,hits:r.trace.map(h=>({p:h.physical,e:h.element,total:h.physical+h.element})),status:'SOURCE_REFERENCE'});
++  let results;
++  if(kind==='bow'){
++    const plan=bowComparisonStatePlan(cond.bowState);if(plan.status!=='REFERENCE_READY')throw Error('BOW_STATE_PENDING:'+plan.blockers.join('+'));
++    const st=calcState.stats,skills=bowReferenceSkills(total),basis=st.elementComponents?{...st.elementComponents,conditionalFlat:0}:null;
++    const input={attack:ctx.attack,element:ctx.element,affinity:ctx.affinity,criticalMultiplier,physicalHitzone:ctx.hz,elementalHitzone:ctx.ehz,state:plan.state,skills,elementBasis:basis,bladescaleLoadingActive:false};
++    if(ids.length===BOW_STANDARD_PROFILE.sequence.length&&ids.every((id,i)=>id===BOW_STANDARD_PROFILE.sequence[i])){
++      const r=window.BowReference.standard(input,window.TechniqueDBEngine,ids);
++      results=ids.map(id=>{const trace=r.trace.filter(h=>h.techniqueId===id),physical=trace.reduce((n,h)=>n+h.physical,0),element=trace.reduce((n,h)=>n+h.element,0);return convert({...r,trace,physical,element,comparisonPower:physical+element},id);});
++    }else results=ids.map(id=>convert(window.BowReference.technique(input,window.TechniqueDBEngine,id),id));
++  }else{
++    const firstShot=skillLevel(total,['ファーストショット','First Shot']),forceShot=skillLevel(total,['フォースショット','Force Shot']),normalUp=skillLevel(total,['通常弾・通常矢強化','Normal/Rapid Up']);
++    results=ids.map((id,index)=>{
++      const ammoLevel=Number(id.match(/^HBG_NORMAL_AMMO_([123])$/)?.[1]);if(!ammoLevel)throw Error('HBG_NORMAL:AMMO_SOURCE_UNRESOLVED');
++      const state={...cond.hbgState,ammoLevel};
++      if(firstShot||forceShot){if(!Number.isInteger(state.shotOrdinal))throw Error('HBG_NORMAL:SHOT_POSITION_PENDING');state.shotOrdinal+=index;if(state.shotOrdinal>state.magazineCapacity)throw Error('HBG_NORMAL:RELOAD_CROSSING_PENDING');if(ids.some(x=>x!==ids[0]))throw Error('HBG_NORMAL:MIXED_AMMO_POSITION_PENDING');}
++      const r=window.BowgunNormalReference.shot({attack:ctx.attack,affinity:ctx.affinity,criticalMultiplier,physicalHitzone:ctx.hz,firstShot,forceShot,normalUp,state},window.TechniqueDBEngine);return convert(r,id);
++    });
++  }
++  return {...ctx,p0RangedResults:results};
++}
++function comboDamageContext({ignoreWeaponElement=false}={}){
+   const st=calcState?.stats||{};
+-  const elementReason=equipmentElementPendingReason(st);if(elementReason)throw Error(elementReason);
++  const elementReason=equipmentElementPendingReason(st);if(elementReason&&!ignoreWeaponElement)throw Error(elementReason);
+   const h=monsterHZ();
+-  return {attack:Number(st.attackTrue??st.attack)||0,affinity:Number(st.maxAffinity??st.affinity)||0,element:['poison','paralysis','sleep','blast'].includes(st.elementType)?0:st.element,
++  return {attack:Number(st.attackTrue??st.attack)||0,affinity:Number(st.maxAffinity??st.affinity)||0,element:ignoreWeaponElement||['poison','paralysis','sleep','blast'].includes(st.elementType)?0:st.element,
+     hz:h.hz??45,ehz:h.ehz??20,sharp:Number($('dSharp')?.value)||1.32,esharp:Number($('dESharp')?.value)||1.15,
+     critBonus:Number($('dCB')?.value)||0,elementCrit:Boolean(+$('dECrit')?.value),chargeBladeState:comboKind()==='charge-blade'?comboCBCondition(st):null};
+ }
+ // Adapters connect handlers without duplicating any technique numeric data.
+-const COMBO_HANDLER_ADAPTERS=Object.freeze({OrdinaryHit:ordinaryComboTechniqueDamage,ChargeBladeHandler:chargeBladeComboDamage});
++const COMBO_HANDLER_ADAPTERS=Object.freeze({OrdinaryHit:ordinaryComboTechniqueDamage,ChargeBladeHandler:chargeBladeComboDamage,RangedReferenceHandler:rangedComboDamage});
+ function comboHandlerAvailability(move){
+   const handler=move?.handler??'OrdinaryHit';
+   if(Object.hasOwn(COMBO_HANDLER_ADAPTERS,handler))return {handler,status:'CONNECTED',reason:null};
+@@ -6588,7 +6626,7 @@
+   try{
+     if(!window.BowReference?.standard)throw Error('BOW_REFERENCE_MODULE_UNAVAILABLE');
+     const level=Number(cond.cb??0);if(!Number.isInteger(level)||level<0||level>5)throw Error('CRITICAL_BOOST_LEVEL_INVALID');
+-    const skills={forceShot:skillLevel(total,['フォースショット','Force Shot']),firstShot:skillLevel(total,['ファーストショット','First Shot']),normalUp:skillLevel(total,['通常弾・通常矢強化','Normal/Rapid Up']),spreadUp:skillLevel(total,['散弾・剛射強化','Spread/Power Shots','Spread Up']),chargeMaster:skillLevel(total,['チャージマスター','Charge Master']),criticalElement:skillLevel(total,['会心撃【属性】','Critical Element']),bladescaleLoading:skillLevel(total,['刃鱗増装','Bladescale Loading'])};
++    const skills=bowReferenceSkills(total);
+     const conditionPlan=standardPowerConditionPlan(st,total,'bow',cond);
+     // This fixed charged bow route resolves Charge Master locally; other weapons keep the shared guard.
+     conditionPlan.pending=conditionPlan.pending.filter(x=>x!=='チャージマスター:CONDITIONAL_DAMAGE_FORMULA_PENDING');

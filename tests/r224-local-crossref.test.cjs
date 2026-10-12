@@ -1,0 +1,7 @@
+'use strict';
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');
+const root=path.join(__dirname,'..');const data=JSON.parse(fs.readFileSync(path.join(root,'TECHNIQUE_LOCAL_CROSSREF_r224.json')));const original=JSON.parse(fs.readFileSync(path.join(root,'TECHNIQUE_CONFLICT_REVIEW_r223.json')));
+test('r224 cross-reference covers all 37 original flagged techniques',()=>{assert.equal(data.techniques,37);assert.deepEqual(data.records.map(x=>x.techniqueId).sort(),original.packets.map(x=>x.techniqueId).sort());});
+test('r224 cross-reference does not assert numerical reconciliation or promote status',()=>{for(const x of data.records){assert.equal(x.sourceNumericsReconciled,false);assert.equal(x.decisionRequired,false);assert.equal(x.measurementRequired,false);}});
+test('r224 local references resolve to real files and valid line positions',()=>{for(const x of data.records)for(const hit of x.localDocumentMentions){const lines=fs.readFileSync(path.join(root,hit.file),'utf8').split(/\r?\n/);assert.ok(hit.line>0&&hit.line<=lines.length);assert.ok(lines[hit.line-1].includes(x.techniqueId)||lines[hit.line-1].includes(x.techniqueName));}});
+test('r224 indexed totals match detail rows',()=>{assert.equal(data.withLocalMentions,data.records.filter(x=>x.localMentionsFound).length);assert.equal(data.withoutLocalMentions,data.records.filter(x=>!x.localMentionsFound).length);});

@@ -1,10 +1,10 @@
-# Test fixtures (r139)
+# Canonical test fixtures (r141)
 
-These two JSON files are copies of existing golden/reference datasets from the r139 test suite.
+This directory is the single source for checked-in regression goldens.
 
-- `r46-standard-golden.json`: baseline golden data used by `tests/r46-regression.test.cjs`.
-- `r66-legacy-combo-golden.json`: legacy combo golden data retained for regression reference.
+- `r46-standard-golden.json`: baseline standard technique regression expectations.
+- `r66-legacy-combo-golden.json`: legacy combo migration expectations.
 
-Important: The existing test runner currently reads `r46-standard-golden.json` from the root `tests/` directory. Uploading these files to `tests/fixtures/` alone does not change those test paths or migrate the test suite. Keep the originals in `tests/` until tests are updated.
+These are **test expectations**, not official MHDB values or newly verified gameplay measurements. Do not promote their numbers into Technique DB without evidence.
 
-These are test fixtures, not authoritative MHDB/Technique DB production data.
+Run `node --test tests/*.test.cjs` from repository root. Existing fixtures are preserved byte-for-byte from r140; only their paths changed.

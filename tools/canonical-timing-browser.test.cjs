@@ -1,0 +1,21 @@
+// ACCEPTED spec/COMBAT_METRICS_DISPLAY.md: reference timing is not verified DPS.
+const {installLocalModules}=require('./browser-test-setup.cjs');
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');const {chromium}=require(process.env.PLAYWRIGHT_MODULE_PATH||'playwright');const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+test('mobile measured timing enables comparison and deletion clears it without page overflow',async t=>{const launch={headless:true};if(process.env.CHROMIUM_EXECUTABLE){launch.executablePath=process.env.CHROMIUM_EXECUTABLE;launch.args=JSON.parse(process.env.CHROMIUM_ARGS||'["--no-sandbox"]');}const browser=await chromium.launch(launch);t.after(()=>browser.close());const p=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});const errors=[];p.on('pageerror',e=>errors.push(e.message));await p.route('**/*',r=>r.request().url()==='https://simulator.test/'?r.fulfill({contentType:'text/html',body:html}):r.abort());await installLocalModules(p);await p.goto('https://simulator.test/');
+ await p.evaluate(()=>{clearWeaponBuckets();build.armor={};const fixture={id:987,kind:'dual-blades',name:'Fixture',affinity:0,damage:{raw:200,display:200},specials:[],slots:[],skills:[]};DB.weapons=[fixture];weaponIndexByKind['dual-blades']=[fixture];document.getElementById('weaponKind').value='dual-blades';document.getElementById('weapon').innerHTML='<option value="987">Fixture</option>';document.getElementById('weapon').value='987';calcBuild();renderComboForWeapon();});
+ await p.locator('summary.card-summary').filter({hasText:'⑦ コンボDPS'}).click();
+ for(const stage of ['I','II','III']){await p.locator('#comboMovePicker').selectOption('canonical:DB_DEMON_DANCE_'+stage);await p.locator('#addCombo').click();}
+ await p.locator('#calcDps').click();assert.match(await p.locator('#dpsOut').innerText(),/所要時間が未確認/);
+
+ await p.locator('summary').filter({hasText:'技データを登録・管理'}).click();
+ await p.locator('#canonicalTimingPanel > summary').click();
+ for(const stage of ['I','II','III']){
+  await p.locator('#canonicalTimingTechnique').selectOption('canonical:DB_DEMON_DANCE_'+stage);
+  await p.locator('#canonicalTimingSeconds').fill('2');
+  await p.locator('#canonicalTimingVersion').fill('1.042.00.02');
+  await p.locator('#canonicalTimingNote').fill('Browser fixture; input through recovery');
+  await p.locator('#canonicalTimingSave').click();
+ }
+ await p.locator('#calcDps').click();assert.match(await p.locator('#dpsOut').innerText(),/DPS未算出/);
+ for(const name of ['A','B','C']){await p.locator('#buildName').fill(name);await p.locator('#saveBuild').click();}
+ await p.evaluate(()=>[...document.querySelectorAll('.comboRow .del')].forEach(b=>b.click()));p.once('dialog',dialog=>dialog.accept());await p.locator('[data-build-load="A"]').click();assert.equal(await p.locator('#combo .cmove').count(),3);await p.locator('#selectAllCompare').click();await p.locator('#runCompare').click();const x=await p.evaluate(()=>({doc:document.documentElement.scrollWidth,ids:[...document.querySelectorAll('#combo .cmove')].map(e=>e.value),dps:[...document.querySelectorAll('#compareOut tr[data-comparison-metric="dps"] td')].map(e=>e.textContent),tables:document.querySelectorAll('#compareOut table').length}));assert.equal(x.doc,390);assert.deepEqual(x.ids,['canonical:DB_DEMON_DANCE_I','canonical:DB_DEMON_DANCE_II','canonical:DB_DEMON_DANCE_III']);assert.equal(x.dps.length,3);assert.ok(x.dps.every(value=>value.includes('未算出')));await p.locator('#canonicalTimingRemove').click();await p.setViewportSize({width:430,height:844});assert.match(await p.locator('#compareOut').innerText(),/もう一度比較/);await p.locator('#calcDps').click();assert.match(await p.locator('#dpsOut').innerText(),/時間が未確認/);assert.equal(x.tables,1);assert.deepEqual(errors,[]);await p.close();});

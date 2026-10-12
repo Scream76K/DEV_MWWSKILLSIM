@@ -1,0 +1,138 @@
+{
+  "checkedAt": "2026-10-11 JST",
+  "issues": [
+    {
+      "key": "KAN-7",
+      "summary": "レスポンシブUI現状監査（375〜1440px）",
+      "status": "レビュー中",
+      "url": "https://harasworkspace-36774503.atlassian.net/browse/KAN-7"
+    },
+    {
+      "key": "KAN-8",
+      "summary": "実画像OCRのviewport・9行ground truth確定",
+      "status": "進行中",
+      "url": "https://harasworkspace-36774503.atlassian.net/browse/KAN-8"
+    },
+    {
+      "key": "KAN-10",
+      "summary": "未検証DPS表示を単体・保存比較・レポートで統一",
+      "status": "レビュー中",
+      "url": "https://harasworkspace-36774503.atlassian.net/browse/KAN-10"
+    },
+    {
+      "key": "KAN-11",
+      "summary": "14武器種のTechnique DB根拠・検証状態監査",
+      "status": "レビュー中",
+      "url": "https://harasworkspace-36774503.atlassian.net/browse/KAN-11"
+    },
+    {
+      "key": "KAN-12",
+      "summary": "SALADA_BOW_05の動画出典とMHDB整合を再検証",
+      "status": "進行中",
+      "url": "https://harasworkspace-36774503.atlassian.net/browse/KAN-12"
+    },
+    {
+      "key": "KAN-14",
+      "summary": "r250基準テストとUI回帰ゲート整備",
+      "status": "進行中",
+      "url": "https://harasworkspace-36774503.atlassian.net/browse/KAN-14"
+    }
+  ],
+  "operations": [
+    {
+      "key": "KAN-7",
+      "commentId": "10007",
+      "transitionId": "21",
+      "status": "進行中"
+    },
+    {
+      "key": "KAN-8",
+      "commentId": "10008",
+      "transitionId": "21",
+      "status": "進行中"
+    },
+    {
+      "key": "KAN-11",
+      "commentId": "10009",
+      "transitionId": "21",
+      "status": "進行中"
+    },
+    {
+      "key": "KAN-14",
+      "kind": "start",
+      "commentId": "10010",
+      "status": "進行中"
+    },
+    {
+      "key": "KAN-12",
+      "kind": "start",
+      "commentId": "10011",
+      "status": "進行中"
+    },
+    {
+      "key": "KAN-7",
+      "kind": "result",
+      "message": "Comment added to KAN-7 successfully",
+      "commentId": "10012",
+      "body": "【himmel／Stage5監査結果・QA済】starkが実Chromiumで375/390/768/1024/1440px×8領域（装備/スキル/技/コンボ/DPS/保存比較/OCR/テンプレ）を監査。40操作例外0/pageerror0、40画像+5contact。P2候補3件：参照資料の長IDが資料展開時に375:+34px/390:+19pxのページ横overflow（文字Range右408.6875、閉じると解消）、比較保留理由の低コントラスト（定量未測定）、狭幅の装備/スキル列。合成小規模装備、OCR/テンプレ限定監査、実MHDB長名/大量/実画像反映/ネイティブiOS未検証。fernQA/eisen独立レビュー通過、製品修正0。ローカル docs/reports/r250-stage5/UI_AUDIT.md と evidence/ui/（未push・Jira添付なし）。修正採否はゼーリエ待ち。監査結果のレビュー待ちとしてレビュー中へ更新、完了にはしません。",
+      "appliedContentFormat": "markdown",
+      "jsmCommentType": "publicComment"
+    },
+    {
+      "key": "KAN-7",
+      "kind": "transition",
+      "message": "Issue KAN-7 transitioned successfully",
+      "transitionId": 31,
+      "statusName": "レビュー中"
+    },
+    {
+      "key": "KAN-11",
+      "kind": "result",
+      "message": "Comment added to KAN-11 successfully",
+      "commentId": "10013",
+      "body": "【himmel／Stage5根拠監査・QA済】frierenが現行Technique DBを再抽出：14武器537レコード。DB記録のVERIFIED28/PARTIALLY_VERIFIED321/UNVERIFIED188（今回実機検証で新認証した件数ではない）。武器別MV/Hit/属性/特殊成分/版/revision/evidenceとDPS阻害条件を整理。正式DPS成立確認0/14、Stage4の未検証DPS null gate維持。CB暫定MVとビン回数null、SAED未検証、特殊Handler接続/IG競合/全ルート時間等は保留。抽出registryで未解決の旧参照23種類を出典不存在と断定しません。数値変更・昇格0。fernQA/eisenレビュー通過。ローカル TECHNIQUE_AUDIT.md/evidence/technique、docs/reports/r250-stage5配下、未push・Jira添付なし。監査成果のレビュー待ちへ更新、正式DPS/全品質完了扱いなし。",
+      "appliedContentFormat": "markdown",
+      "jsmCommentType": "publicComment"
+    },
+    {
+      "key": "KAN-11",
+      "kind": "transition",
+      "message": "Issue KAN-11 transitioned successfully",
+      "transitionId": 31,
+      "statusName": "レビュー中"
+    },
+    {
+      "key": "KAN-8",
+      "kind": "result",
+      "message": "Comment added to KAN-8 successfully",
+      "commentId": "10014",
+      "body": "【himmel／Stage5 OCR根拠整理・QA済】seinが既存実画像4種類を視覚/hash再確認。フルスクリーン/上下黒帯/枠撮影の実画像golden0/3。未注釈viewport/10行境界/7名前bbox/物理cropはnull維持。中央16:9検出結果・旧overlay・過去4Kの7ROI・提案比率を正解へ昇格しません。合成crop3件はhimmel全Browser回帰で成功、検出器は呼ばず実画像精度とは別。原PNG/帯付き原画/四隅が見える枠写真、版・UI倍率・二者注釈・座標契約の撮影測定条件を明記。fernQA/eisenレビュー通過、製品修正0。ローカル OCR_GROUND_TRUTH.md/evidence/ocr（未push・Jira添付なし）。監査整理は終了、実画像正解不足につき進行中を維持。",
+      "appliedContentFormat": "markdown",
+      "jsmCommentType": "publicComment"
+    },
+    {
+      "key": "KAN-12",
+      "kind": "result",
+      "message": "Comment added to KAN-12 successfully",
+      "commentId": "10015",
+      "body": "【himmel／Stage5 SALADA監査・QA済】heiterが保存MHDB id68/護火竜アームβ/raw\\[2,1,1\\]と既存常時実効\\[3,2,1\\]をVM再確認、腕テンプレ珠に適合。数値・珠配置の修正不要。ゲーム内実測とは別。腰体術・脚挑戦3/重撃2は10/2過去ユーザー確認/R10として維持し映像verifiedではない。元動画タイムコード・所有部位詳細・対象ゲーム版は未確認、確認画面/撮影条件をチェックリスト化。KAN-12登録P2を維持し担当優先案と区別。fernQA/eisenレビュー通過。ローカル SALADA_AUDIT.md（docs/reports/r250-stage5、未push・Jira添付なし）。根拠整理終了、映像不足につき進行中を維持。",
+      "appliedContentFormat": "markdown",
+      "jsmCommentType": "publicComment"
+    },
+    {
+      "key": "KAN-14",
+      "kind": "result",
+      "message": "Comment added to KAN-14 successfully",
+      "commentId": "10016",
+      "body": "【himmel／Stage5回帰・監査QA最終】指定worktreeでNode752/0、DOM304/0、Browser50/0、14武器等smoke16/0、旧OCR11ファイル/0、Template Gates6/0を再実行、全skip0/exit0。browserログ66=50+16、legacy-templateログ17=11+6（smoke親を含み二重加算なし）。テスト削除/skip/期待値変更0。fern/eisen独立hash再計算：開始852ファイルmissing0/changed0、refs不変。6専門担当の監査成果QA/独立レビュー通過。ローカル Stage5 REPORT/QA/REVIEWとevidence、Jira添付なし・未push。幅別UI監査を収集したが視覚回帰ゲートの製品/テスト導入は未実施、次案として残るため進行中維持。KAN-10はレビュー中を変更せず、完了承認はゼーリエ待ち。",
+      "appliedContentFormat": "markdown",
+      "jsmCommentType": "publicComment"
+    }
+  ],
+  "constraints": {
+    "noNewIssues": true,
+    "kan10NotModified": true,
+    "noAttachments": true,
+    "noCredentialsStored": true
+  }
+}

@@ -1,0 +1,666 @@
+{
+  "retrieved_at": "2026-10-10T12:24:54.262236+00:00",
+  "api_version": {
+    "version": "2026-04-15T01:28:18+00:00"
+  },
+  "game_version": "not confirmed",
+  "urls": [
+    "https://wilds.mhdb.io/ja/armor",
+    "https://wilds.mhdb.io/ja/decorations",
+    "https://wilds.mhdb.io/version"
+  ],
+  "armor": [
+    {
+      "kind": "arms",
+      "name": "護火竜アームβ",
+      "description": "護竜リオレウスの素材で作られた 腕防具。両腕を常に動かして いないと、何となく落ち着かない。",
+      "rank": "high",
+      "rarity": 6,
+      "resistances": {
+        "fire": 3,
+        "water": 1,
+        "ice": 1,
+        "thunder": -2,
+        "dragon": -5
+      },
+      "defense": {
+        "base": 48,
+        "max": 80
+      },
+      "skills": [
+        {
+          "skill": {
+            "id": 4,
+            "gameId": -2041451904,
+            "name": "護竜の守り",
+            "kind": "group",
+            "icon": {
+              "id": 13,
+              "kind": "group"
+            }
+          },
+          "level": 1,
+          "name": "竜都の護り",
+          "description": "竜都の跡形にいると、属性ダメージや 特殊ダメージが軽減される。",
+          "setPiecesRequired": 3,
+          "id": 10
+        },
+        {
+          "skill": {
+            "id": 57,
+            "gameId": -397570464,
+            "name": "弱点特効",
+            "kind": "armor",
+            "icon": {
+              "id": 1,
+              "kind": "attack"
+            }
+          },
+          "level": 1,
+          "name": null,
+          "description": "有効部位への攻撃時、会心率＋５％ 傷口への攻撃時、さらに会心率＋３％",
+          "setPiecesRequired": null,
+          "id": 137
+        },
+        {
+          "skill": {
+            "id": 71,
+            "gameId": -3666104,
+            "name": "火竜の力",
+            "kind": "set",
+            "icon": {
+              "id": 14,
+              "kind": "set"
+            }
+          },
+          "level": 1,
+          "name": "灼熱化Ⅰ",
+          "description": "攻撃を当てた時、確率で 追加の火属性ダメージを与える",
+          "setPiecesRequired": 2,
+          "id": 173
+        }
+      ],
+      "slots": [
+        2,
+        1,
+        1
+      ],
+      "armorSet": {
+        "id": 14,
+        "name": "護火竜β"
+      },
+      "crafting": {
+        "armor": {
+          "id": 68
+        },
+        "materials": [
+          {
+            "item": {
+              "id": 372,
+              "gameId": 406,
+              "rarity": 6,
+              "name": "護火竜の上鱗",
+              "description": "護竜リオレウスの上質な鱗。 蓄えられたエネルギーが、灼熱と なって溢れるほどに満ちている。",
+              "value": 1700,
+              "carryLimit": 99,
+              "recipes": [],
+              "icon": {
+                "id": 43,
+                "kind": "scale",
+                "colorId": 1,
+                "color": "white"
+              }
+            },
+            "quantity": 6,
+            "id": 198
+          },
+          {
+            "item": {
+              "id": 373,
+              "gameId": 407,
+              "rarity": 6,
+              "name": "護火竜の堅殻",
+              "description": "護竜リオレウスの堅い甲殻。 いかなる業火にさらされようと一切 変質しないほど高い耐久性を誇る。",
+              "value": 2550,
+              "carryLimit": 99,
+              "recipes": [],
+              "icon": {
+                "id": 46,
+                "kind": "shell",
+                "colorId": 1,
+                "color": "white"
+              }
+            },
+            "quantity": 5,
+            "id": 199
+          },
+          {
+            "item": {
+              "id": 375,
+              "gameId": 410,
+              "rarity": 6,
+              "name": "護火竜の狩猟証Ｓ",
+              "description": "護竜リオレウスのクエストに成功 した者に与えられる、ギルドの 証明書。装備の作成に使用する。",
+              "value": 1700,
+              "carryLimit": 99,
+              "recipes": [],
+              "icon": {
+                "id": 30,
+                "kind": "certificate",
+                "colorId": 1,
+                "color": "white"
+              }
+            },
+            "quantity": 1,
+            "id": 200
+          },
+          {
+            "item": {
+              "id": 644,
+              "gameId": 705,
+              "rarity": 7,
+              "name": "護火竜の紅玉",
+              "description": "護竜リオレウスの体内で生成 される希少な玉石。灼熱の業火を 思いのままに操る力があるという。",
+              "value": 10200,
+              "carryLimit": 99,
+              "recipes": [],
+              "icon": {
+                "id": 20,
+                "kind": "gem",
+                "colorId": 1,
+                "color": "white"
+              }
+            },
+            "quantity": 1,
+            "id": 201
+          }
+        ],
+        "zennyCost": 5000,
+        "id": 68
+      },
+      "id": 68
+    },
+    {
+      "kind": "waist",
+      "name": "ダハディラコイルγ",
+      "description": "特別なジン・ダハドの素材で作ら れた腰防具。白く輝く装飾が、 歴戦の王に相応しき不屈を示す。",
+      "rank": "high",
+      "rarity": 8,
+      "resistances": {
+        "fire": -3,
+        "water": 2,
+        "ice": 2,
+        "thunder": -1,
+        "dragon": -1
+      },
+      "defense": {
+        "base": 68,
+        "max": 88
+      },
+      "skills": [
+        {
+          "skill": {
+            "id": 62,
+            "gameId": -215826112,
+            "name": "凍峰竜の反逆",
+            "kind": "set",
+            "icon": {
+              "id": 14,
+              "kind": "set"
+            }
+          },
+          "level": 1,
+          "name": "束縛反攻Ⅰ",
+          "description": "糸拘束状態、凍結状態の回復時、または 拘束攻撃から解放された時、鍔迫り合い の後、一定時間、攻撃力が上昇",
+          "setPiecesRequired": 2,
+          "id": 152
+        },
+        {
+          "skill": {
+            "id": 131,
+            "gameId": 1484575872,
+            "name": "ヌシの魂",
+            "kind": "group",
+            "icon": {
+              "id": 13,
+              "kind": "group"
+            }
+          },
+          "level": 1,
+          "name": "根性【果敢】",
+          "description": "致命的な大ダメージを一度だけ軽減 発動前は攻撃力が上がり防御力が下がる 発動後は防御力と耐性値が上がる",
+          "setPiecesRequired": 3,
+          "id": 344
+        },
+        {
+          "skill": {
+            "id": 144,
+            "gameId": 1865909632,
+            "name": "挑戦者",
+            "kind": "armor",
+            "icon": {
+              "id": 9,
+              "kind": "offense"
+            }
+          },
+          "level": 3,
+          "name": null,
+          "description": "スキル発動中、基礎攻撃力＋１２ 会心率＋７％",
+          "setPiecesRequired": null,
+          "id": 377
+        },
+        {
+          "skill": {
+            "id": 147,
+            "gameId": 1966172160,
+            "name": "拘束耐性",
+            "kind": "armor",
+            "icon": {
+              "id": 6,
+              "kind": "defense"
+            }
+          },
+          "level": 2,
+          "name": null,
+          "description": "糸拘束状態と凍結状態から とても早く復帰できるようになる",
+          "setPiecesRequired": null,
+          "id": 389
+        }
+      ],
+      "slots": [
+        1
+      ],
+      "armorSet": {
+        "id": 185,
+        "name": "ダハディラγ"
+      },
+      "crafting": {
+        "armor": {
+          "id": 685
+        },
+        "materials": [
+          {
+            "item": {
+              "id": 385,
+              "gameId": 421,
+              "rarity": 6,
+              "name": "凍峰竜の凍成殻",
+              "description": "ジン・ダハドの背面に伸びている 甲殻。成長し金属成分を多く含んだ 甲殻が大気を凍らせる冷気を放つ。",
+              "value": 4140,
+              "carryLimit": 99,
+              "recipes": [],
+              "icon": {
+                "id": 46,
+                "kind": "shell",
+                "colorId": 8,
+                "color": "brown"
+              }
+            },
+            "quantity": 3,
+            "id": 35070
+          },
+          {
+            "item": {
+              "id": 386,
+              "gameId": 422,
+              "rarity": 6,
+              "name": "凍峰竜の尖爪",
+              "description": "ジン・ダハドの尖った爪。恐ろしい ほどの冷気を帯びており、触れる先 からあらゆるものを凍てつかせる。",
+              "value": 4600,
+              "carryLimit": 99,
+              "recipes": [],
+              "icon": {
+                "id": 45,
+                "kind": "claw",
+                "colorId": 8,
+                "color": "brown"
+              }
+            },
+            "quantity": 4,
+            "id": 35071
+          },
+          {
+            "item": {
+              "id": 388,
+              "gameId": 424,
+              "rarity": 7,
+              "name": "凍峰竜の氷玉",
+              "description": "ジン・ダハドの体内で生成される 希少な玉石。崖を凍てつかせる程の 冷気を自在に操る力があるという。",
+              "value": 13800,
+              "carryLimit": 99,
+              "recipes": [],
+              "icon": {
+                "id": 20,
+                "kind": "gem",
+                "colorId": 16,
+                "color": "sky"
+              }
+            },
+            "quantity": 1,
+            "id": 35072
+          },
+          {
+            "item": {
+              "id": 773,
+              "gameId": 761,
+              "rarity": 7,
+              "name": "凍峰竜の狩猟証γ",
+              "description": "歴戦王ジン・ダハドの狩猟に成功し た者に与えられる、ギルドの証明 書。特別な装備の作成に使用する。",
+              "value": 3200,
+              "carryLimit": 99,
+              "recipes": [],
+              "icon": {
+                "id": 30,
+                "kind": "certificate",
+                "colorId": 16,
+                "color": "sky"
+              }
+            },
+            "quantity": 1,
+            "id": 35073
+          }
+        ],
+        "zennyCost": 12000,
+        "id": 685
+      },
+      "id": 685
+    },
+    {
+      "kind": "legs",
+      "name": "クイーンブーツα",
+      "description": "筆頭ハンターたるナディアが愛用 する脚防具。苛烈な任務の遂行を 支える為、丹念に鍛え上げられた。",
+      "rank": "high",
+      "rarity": 8,
+      "resistances": {
+        "fire": 4,
+        "water": 1,
+        "ice": 1,
+        "thunder": 1,
+        "dragon": 3
+      },
+      "defense": {
+        "base": 66,
+        "max": 86
+      },
+      "skills": [
+        {
+          "skill": {
+            "id": 58,
+            "gameId": -315492576,
+            "name": "スタミナ急速回復",
+            "kind": "armor",
+            "icon": {
+              "id": 8,
+              "kind": "stamina"
+            }
+          },
+          "level": 1,
+          "name": null,
+          "description": "回復速度１．１倍",
+          "setPiecesRequired": null,
+          "id": 142
+        },
+        {
+          "skill": {
+            "id": 73,
+            "gameId": 2237,
+            "name": "栄光の誉れ",
+            "kind": "group",
+            "icon": {
+              "id": 13,
+              "kind": "group"
+            }
+          },
+          "level": 1,
+          "name": "幸運",
+          "description": "クエストのターゲット報酬が増える （クエストの途中からは発動しない）",
+          "setPiecesRequired": 3,
+          "id": 180
+        },
+        {
+          "skill": {
+            "id": 106,
+            "gameId": 722735744,
+            "name": "黒蝕竜の力",
+            "kind": "set",
+            "icon": {
+              "id": 14,
+              "kind": "set"
+            }
+          },
+          "level": 1,
+          "name": "黒蝕一体Ⅰ",
+          "description": "大型モンスターと対峙した時、 狂竜症に感染する。",
+          "setPiecesRequired": 2,
+          "id": 267
+        },
+        {
+          "skill": {
+            "id": 129,
+            "gameId": 1470960256,
+            "name": "破壊王",
+            "kind": "armor",
+            "icon": {
+              "id": 9,
+              "kind": "offense"
+            }
+          },
+          "level": 1,
+          "name": null,
+          "description": "部位に対する蓄積ダメージと 条件を満たした時のダメージが １．１倍になる",
+          "setPiecesRequired": null,
+          "id": 338
+        }
+      ],
+      "slots": [
+        3,
+        2
+      ],
+      "armorSet": {
+        "id": 192,
+        "name": "クイーンα"
+      },
+      "crafting": {
+        "armor": {
+          "id": 704
+        },
+        "materials": [
+          {
+            "item": {
+              "id": 482,
+              "gameId": 524,
+              "rarity": 6,
+              "name": "怪鳥の耳",
+              "description": "イャンクックの特徴的な耳。 耐火性に優れ、伸縮自在の 素材は防具の下地にも最適。",
+              "value": 2134,
+              "carryLimit": 99,
+              "recipes": [],
+              "icon": {
+                "id": 41,
+                "kind": "medulla",
+                "colorId": 4,
+                "color": "pink"
+              }
+            },
+            "quantity": 3,
+            "id": 38931
+          },
+          {
+            "item": {
+              "id": 490,
+              "gameId": 532,
+              "rarity": 6,
+              "name": "毒怪鳥の尻尾",
+              "description": "ゲリョスの尻尾。ゲリョスの身体で 特に伸縮性が高い部位で、そのまま では傷をつけることすら困難。",
+              "value": 1900,
+              "carryLimit": 99,
+              "recipes": [],
+              "icon": {
+                "id": 47,
+                "kind": "tail",
+                "colorId": 17,
+                "color": "blue"
+              }
+            },
+            "quantity": 4,
+            "id": 38932
+          },
+          {
+            "item": {
+              "id": 514,
+              "gameId": 564,
+              "rarity": 6,
+              "name": "黒蝕竜の上暗翼",
+              "description": "闇にゆらめくゴア・マガラの翼。 取り込まれた命は、暗夜の中で 体を侵され、狂気の渦に心を堕す。",
+              "value": 4140,
+              "carryLimit": 99,
+              "recipes": [],
+              "icon": {
+                "id": 48,
+                "kind": "wing",
+                "colorId": 2,
+                "color": "gray"
+              }
+            },
+            "quantity": 3,
+            "id": 38933
+          },
+          {
+            "item": {
+              "id": 518,
+              "gameId": 568,
+              "rarity": 7,
+              "name": "黒蝕竜の闇玉",
+              "description": "全ての光を呑みこむ闇の珠玉。 混濁の無い純粋な漆黒は、 光をその内に封じ、闇に溶かす。",
+              "value": 13800,
+              "carryLimit": 99,
+              "recipes": [],
+              "icon": {
+                "id": 20,
+                "kind": "gem",
+                "colorId": 2,
+                "color": "gray"
+              }
+            },
+            "quantity": 1,
+            "id": 38934
+          }
+        ],
+        "zennyCost": 8000,
+        "id": 704
+      },
+      "id": 704
+    }
+  ],
+  "decorations": [
+    {
+      "name": "重撃珠【２】",
+      "description": "装備に装着すると、 破壊王スキルが発動する装飾品。",
+      "value": 200,
+      "slot": 2,
+      "rarity": 4,
+      "kind": "armor",
+      "skills": [
+        {
+          "skill": {
+            "id": 129,
+            "name": "破壊王"
+          },
+          "level": 1,
+          "description": "部位に対する蓄積ダメージと 条件を満たした時のダメージが １．１倍になる",
+          "setPiecesRequired": null,
+          "id": 338
+        }
+      ],
+      "icon": {
+        "color": "gray",
+        "colorId": 2
+      },
+      "id": 11,
+      "gameId": -1911376000
+    },
+    {
+      "name": "体術珠【１】",
+      "description": "装備に装着すると、 体術スキルが発動する装飾品。",
+      "value": 150,
+      "slot": 1,
+      "rarity": 3,
+      "kind": "armor",
+      "skills": [
+        {
+          "skill": {
+            "id": 14,
+            "name": "体術"
+          },
+          "level": 1,
+          "description": "固定スタミナ消費量１０％軽減",
+          "setPiecesRequired": null,
+          "id": 31
+        }
+      ],
+      "icon": {
+        "color": "brown",
+        "colorId": 8
+      },
+      "id": 63,
+      "gameId": -1381641984
+    },
+    {
+      "name": "達芸珠【３】",
+      "description": "装備に装着すると、 達人芸スキルが発動する装飾品。",
+      "value": 250,
+      "slot": 3,
+      "rarity": 5,
+      "kind": "weapon",
+      "skills": [
+        {
+          "skill": {
+            "id": 124,
+            "name": "達人芸"
+          },
+          "level": 1,
+          "description": "効果発動時、８０％で 斬れ味を消費しない",
+          "setPiecesRequired": null,
+          "id": 326
+        }
+      ],
+      "icon": {
+        "color": "white",
+        "colorId": 1
+      },
+      "id": 66,
+      "gameId": -1340047744
+    },
+    {
+      "name": "挑戦珠【３】",
+      "description": "装備に装着すると、 挑戦者スキルが発動する装飾品。",
+      "value": 250,
+      "slot": 3,
+      "rarity": 5,
+      "kind": "armor",
+      "skills": [
+        {
+          "skill": {
+            "id": 144,
+            "name": "挑戦者"
+          },
+          "level": 1,
+          "description": "スキル発動中、基礎攻撃力＋４ 会心率＋３％",
+          "setPiecesRequired": null,
+          "id": 375
+        }
+      ],
+      "icon": {
+        "color": "red",
+        "colorId": 5
+      },
+      "id": 352,
+      "gameId": 2003488640
+    }
+  ],
+  "full_response_sha256": {
+    "armor": "7464735dd3a23613a871184065517d8079068b764ca329e2bc877c18316b7d82",
+    "decorations": "14d113333bc630dcfc4024ddf42a3a718f9dcec303f28d9092a4df39bc660ede",
+    "version": "0c9df5f89cbe18136ef41b059786979ae12b73cb6b4423b13d73b3c7fa7b53ef"
+  }
+}

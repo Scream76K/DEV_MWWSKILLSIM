@@ -1,0 +1,76 @@
+--- before/index.html
++++ after/index.html
+@@ -4091,9 +4091,12 @@
+   const time=isBlocked||pendingTimeTechniqueIds.length?null:knownTime;
+   // ACCEPTED display spec: no verified route/timing producer exists here.
+   const theoreticalDps=null,practicalDps=null;
++  // KAN-17 #10062: additive provisional output; formal fields retain their contract.
++  const referenceDps=!isBlocked&&Number.isFinite(damage)&&damage>=0&&Number.isFinite(time)&&time>0?damage/time:null;
++  const referenceDpsStatus=isBlocked?'BLOCKED':time===null?'TIMING_PENDING':referenceDps===null?'DATA_PENDING':'PROVISIONAL_REFERENCE';
+   const dpsStatus=isBlocked?'BLOCKED':time===null?'TIMING_PENDING':'UNVERIFIED';
+   const dpsReason=isBlocked?(contextError||blocked[0]?.reason||'COMBO_NOT_SELECTED'):time===null?'COMBO_TIMING_PENDING':'COMBO_DPS_UNVERIFIED';
+-  return {status:isBlocked?'BLOCKED':time===null?'TIMING_PENDING':'REFERENCE_ONLY',dpsStatus,dpsReason,damage,time,knownTime,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60,pendingTimeTechniqueIds,blocked,stages,context,contextError};
++  return {status:isBlocked?'BLOCKED':time===null?'TIMING_PENDING':'REFERENCE_ONLY',dpsStatus,dpsReason,damage,time,knownTime,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60,referenceDps,referenceDpsStatus,pendingTimeTechniqueIds,blocked,stages,context,contextError};
+ }
+ function calcDps(){
+   App.combo.syncFromDOM();
+@@ -4114,11 +4117,11 @@
+   const detail=breakdown.map((x,i)=>`${i+1}. ${esc(x.name)}：${x.damage.toFixed(2)} / ${x.hits}Hit / ${x.time==null?'時間未確認':x.time.toFixed(2)+'秒'}${renderComboHitDetail(x)}`).join('<br>');
+   if(pendingTimeTechniqueIds.length){
+     $('dpsOut').innerHTML=`<b>1コンボ ${sumD.toFixed(2)} ダメージ</b><br>所要時間が未確認のためDPSは算出できません。<div class="muted small" style="margin-top:7px">${detail}</div>`;
+-    return {damage:sumD,time:null,knownTime:sumT,theoreticalDps:null,practicalDps:null,oneMinute:null,dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,timingStatus:'PENDING',pendingTimeTechniqueIds,context:ctx,breakdown};
++    return {damage:sumD,time:null,knownTime:sumT,theoreticalDps:null,practicalDps:null,oneMinute:null,dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,timingStatus:'PENDING',referenceDps:null,referenceDpsStatus:evaluation.referenceDpsStatus,pendingTimeTechniqueIds,context:ctx,breakdown};
+   }
+   if(evaluation.dpsStatus!=='VERIFIED'){
+-    $('dpsOut').innerHTML=`<b>1コンボ ${sumD.toFixed(2)} ダメージ</b><br>所要時間 ${sumT.toFixed(2)}秒（参考値）<br>DPS未算出：技データ・所要時間・計算条件の実機検証が完了していません。<div class="muted small" style="margin-top:7px">${detail}</div>`;
+-    return {damage:sumD,time:sumT,theoreticalDps:null,practicalDps:null,oneMinute:null,dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,context:ctx,breakdown};
++    $('dpsOut').innerHTML=`<b>1コンボ ${sumD.toFixed(2)} ダメージ</b><br>所要時間 ${sumT.toFixed(2)}秒（参考値）<br>正式DPS未算出：実機検証が完了していません。${evaluation.referenceDpsStatus==='PROVISIONAL_REFERENCE'?'<br><b>コンボDPS（暫定・参考）：'+evaluation.referenceDps.toFixed(2)+'</b>（総ダメージ÷参考時間）':''}<div class="muted small" style="margin-top:7px">${detail}</div>`;
++    return {damage:sumD,time:sumT,theoreticalDps:null,practicalDps:null,oneMinute:null,dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,referenceDps:evaluation.referenceDps,referenceDpsStatus:evaluation.referenceDpsStatus,context:ctx,breakdown};
+   }
+   const theoretical=evaluation.theoreticalDps,practical=evaluation.practicalDps;
+   const result={damage:sumD,time:sumT,theoreticalDps:theoretical,practicalDps:practical,oneMinute:practical*60,context:ctx,breakdown};
+@@ -4675,7 +4678,7 @@
+   const scorchPlan=techniqueScorchPlan(canonicalWeaponKind(weapon)||'',stages.map(x=>x.canonicalTechniqueId||'UNRESOLVED_TECHNIQUE'));
+   const blocked=evaluation.status==='BLOCKED',timingPending=evaluation.status==='TIMING_PENDING';
+   const {damage,time,theoreticalDps,practicalDps}=evaluation;
+-  return {format:'MHWildsComboVerification',schemaVersion:1,release:'r139',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,observedGameVersion:observed||null,currentBuild:buildSnapshot(),weapon:weapon?{id:weapon.id,name:weapon.name,kind:canonicalWeaponKind(weapon)}:null,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null},context,contextError,externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT',rounding:'PER_HIT_PHYSICAL_ELEMENT_2_DECIMAL_REFERENCE_NOT_GAME_DISPLAY',stages,scorchPlan,summary:{dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,status:blocked?'BLOCKED':timingPending?'TIMING_PENDING':'REFERENCE_ONLY',damage,time,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60},notes:['実機検証済みを意味しません。','未確認時間や特殊成分は推定で補完しません。','食事・アイテム・エキスなどゲーム側の追加状態を別途記録してください。']};
++  return {format:'MHWildsComboVerification',schemaVersion:1,release:'r139',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,observedGameVersion:observed||null,currentBuild:buildSnapshot(),weapon:weapon?{id:weapon.id,name:weapon.name,kind:canonicalWeaponKind(weapon)}:null,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null},context,contextError,externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT',rounding:'PER_HIT_PHYSICAL_ELEMENT_2_DECIMAL_REFERENCE_NOT_GAME_DISPLAY',stages,scorchPlan,summary:{referenceDps:evaluation.referenceDps,referenceDpsStatus:evaluation.referenceDpsStatus,dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,status:blocked?'BLOCKED':timingPending?'TIMING_PENDING':'REFERENCE_ONLY',damage,time,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60},notes:['実機検証済みを意味しません。','未確認時間や特殊成分は推定で補完しません。','食事・アイテム・エキスなどゲーム側の追加状態を別途記録してください。']};
+ }
+ function createScorchRouteReferenceReport(settings,hitTimes){
+   const combo=createComboVerificationReport();
+@@ -6891,7 +6894,7 @@
+   try{context={chargeBladeState:comboKind()==='charge-blade'?comboCBCondition(dpsStats):null,attack:dpsStats.attackTrue??dpsStats.attack,affinity:dpsStats.affinity,element:equipmentHpElement(dpsStats),elementType:dpsStats.elementType,elementKnown:dpsStats.elementKnown,typeKnown:dpsStats.typeKnown,elementStatus:dpsStats.elementStatus,elementReason:dpsStats.elementReason,hz:Number(cond.hz),ehz:Number(cond.ehz),sharp:Number(cond.sharp),esharp:Number(cond.esharp),critBonus:Number(cond.cb),elementCrit:Boolean(Number(cond.eCrit))};}catch(e){return includeStatus?{dps:null,dpsStatus:'BLOCKED',dpsReason:String(e.message||e)}:null;}
+   const result=evaluateComboRoute(rows,context,{stats:dpsStats,uptime:cond.uptime,uptimeMode:cond.uptimeMode});
+   // Preserve evaluator diagnostics, never create a new numerical/verification producer.
+-  const comboVerification=includeStatus?JSON.parse(JSON.stringify({status:result.status,dpsStatus:result.dpsStatus,dpsReason:result.dpsReason,damage:result.damage,time:result.time,knownTime:result.knownTime,context:result.context,contextError:result.contextError,pendingTimeTechniqueIds:result.pendingTimeTechniqueIds||[],blocked:(result.blocked||[]).map(s=>({index:s.index,techniqueId:s.id,name:s.name,reason:s.reason})),stages:(result.stages||[]).map(s=>({index:s.index,techniqueId:s.id,canonicalTechniqueId:s.move?.canonicalTechniqueId??null,name:s.name,numericOrigin:s.move?.numericOrigin??null,verificationStatus:s.move?.verificationStatus??null,time:s.time,reason:s.reason,damage:s.result?.total??null,hits:s.result?.hits||[]}))})):null;
++  const comboVerification=includeStatus?JSON.parse(JSON.stringify({status:result.status,dpsStatus:result.dpsStatus,dpsReason:result.dpsReason,referenceDps:result.referenceDps,referenceDpsStatus:result.referenceDpsStatus,damage:result.damage,time:result.time,knownTime:result.knownTime,context:result.context,contextError:result.contextError,pendingTimeTechniqueIds:result.pendingTimeTechniqueIds||[],blocked:(result.blocked||[]).map(s=>({index:s.index,techniqueId:s.id,name:s.name,reason:s.reason})),stages:(result.stages||[]).map(s=>({index:s.index,techniqueId:s.id,canonicalTechniqueId:s.move?.canonicalTechniqueId??null,name:s.name,numericOrigin:s.move?.numericOrigin??null,verificationStatus:s.move?.verificationStatus??null,time:s.time,timingStatus:s.move?.timingStatus??null,timingEvidence:s.move?.timingEvidence??null,reason:s.reason,damage:s.result?.total??null,hits:s.result?.hits||[]}))})):null;
+   return includeStatus?{dps:result.practicalDps,dpsStatus:result.dpsStatus,dpsReason:result.dpsReason,comboVerification}:result.practicalDps;
+ }
+ 
+@@ -7206,7 +7209,7 @@
+   }catch(e){dpsStatus='BLOCKED';dpsReason=String(e.message||e);}
+   if(dps==null&&!dpsReason)dpsReason=document.querySelector('.comboRow .cmove')?(bonusDamagePendingReason(st)||'COMBO_DAMAGE_OR_TIMING_PENDING'):'COMBO_NOT_SELECTED';
+   const kind=canonicalWeaponKind(selectedWeapon()),power=standardPowerForStats(kind,st,{...cond,cb:skillLevel(calcState.total||{},['超会心','Critical Boost'])},calcState.total||{});
+-  return {name,kind,power,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:st.element,elementType:String(st.elementType||''),elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason,damage:dmg,dps,dpsStatus,damageReason,dpsReason,comboVerification};
++  return {name,kind,power,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:st.element,elementType:String(st.elementType||''),elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason,damage:dmg,dps,dpsStatus,damageReason,dpsReason,comboVerification,referenceDps:comboVerification?.referenceDps??null,referenceDpsStatus:comboVerification?.referenceDpsStatus??'NOT_CALCULATED'};
+ }
+ function comparisonReasonText(reason){
+   const text=String(reason||'');
+@@ -7329,6 +7332,7 @@
+   const relative=rows.map(r=>comparisonDpsIndex(r,baseline));
+   h+='<tr data-comparison-metric="dps-index"><th>DPS指数</th>'+rows.map((r,i)=>cell(relative[i]===null?'—':comparisonDisplayNumber(relative[i].index),relative[i]!==null&&r.dps===mp)).join('')+'</tr>';
+   h+='<tr data-comparison-metric="dps-change"><th>基準比増減</th>'+relative.map(x=>cell(x===null?'—':(x.change>0?'+':x.change<0?'−':'')+comparisonDisplayNumber(x.change)+'%',false)).join('')+'</tr>';
++  if(rows.some(r=>r.referenceDpsStatus==='PROVISIONAL_REFERENCE'))h+='<tr data-comparison-metric="reference-dps"><th>コンボDPS（暫定・参考）</th>'+rows.map(r=>cell(!equipmentElementPendingReason(r)&&r.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&r.comboVerification?.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&Number.isFinite(r.referenceDps)&&r.referenceDps>=0?comparisonDisplayNumber(r.referenceDps):'未算出')).join('')+'</tr>';
+   return h+'</tbody></table></div>';
+ }
+ function comparisonCoverageReason(row,baseline,metric){
+@@ -7400,7 +7404,8 @@
+     const pending=equipmentElementPendingReason(sourceRow);
+     const row=pending?{...sourceRow,damage:null,damageReason:pending,dps:null,dpsStatus:'BLOCKED',dpsReason:pending,power:{...sourceRow.power,normal:null,maximum:null,status:'PENDING',reason:pending}}:sourceRow;
+     const relative=comparisonDpsIndex(row,baseline),dps=comparisonDpsValue(row);
+-    return {...row,relativePowerIndex:comparisonPowerIndex(row,baseline)?.normal??null,relativeMaximumPowerIndex:comparisonPowerIndex(row,baseline)?.maximum??null,powerChange:comparisonPowerChange(row,baseline),powerIndex:row.power?.normal?.comparisonPower??null,maxPowerIndex:row.power?.maximum?.comparisonPower??null,dps,dpsStatus:dps===null?(row.dpsStatus&&row.dpsStatus!=='VERIFIED'?row.dpsStatus:Number.isFinite(row.dps)?'UNVERIFIED':'NOT_CALCULATED'):'VERIFIED',dpsReason:dps===null?(row.dpsReason||'COMBO_DPS_UNVERIFIED'):null,dpsIndex:relative?.index??null,dpsChangePercent:relative?.change??null};
++    const referenceDps=!pending&&row.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&row.comboVerification?.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&Number.isFinite(row.referenceDps)&&row.referenceDps>=0?row.referenceDps:null;
++    return {...row,referenceDps,referenceDpsStatus:pending?'BLOCKED':referenceDps===null?(row.referenceDpsStatus==='PROVISIONAL_REFERENCE'?'DATA_PENDING':row.referenceDpsStatus||'NOT_CALCULATED'):'PROVISIONAL_REFERENCE',relativePowerIndex:comparisonPowerIndex(row,baseline)?.normal??null,relativeMaximumPowerIndex:comparisonPowerIndex(row,baseline)?.maximum??null,powerChange:comparisonPowerChange(row,baseline),powerIndex:row.power?.normal?.comparisonPower??null,maxPowerIndex:row.power?.maximum?.comparisonPower??null,dps,dpsStatus:dps===null?(row.dpsStatus&&row.dpsStatus!=='VERIFIED'?row.dpsStatus:Number.isFinite(row.dps)?'UNVERIFIED':'NOT_CALCULATED'):'VERIFIED',dpsReason:dps===null?(row.dpsReason||'COMBO_DPS_UNVERIFIED'):null,dpsIndex:relative?.index??null,dpsChangePercent:relative?.change??null};
+   });
+   return JSON.parse(JSON.stringify({format:'MHWildsBuildComparison',schemaVersion:2,release:'r249',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,baseline:{index,name:baseline.name,damage:equipmentElementPendingReason(baseline)?null:baseline.power?.normal?.comparisonPower??null,components:!equipmentElementPendingReason(baseline)&&baseline.power?.normal?{physical:baseline.power.normal.physical,element:baseline.power.normal.element,special:baseline.power.normal.special}:null},context:lastBuildComparisonContext,coverage:comparisonCoverageSummary(lastBuildComparisonRows||[],baseline),results,notes:['powerChangeは基準通常STANDARDのダメージからの変化率（%）。componentChangePercentは各成分自身の基準値からの変化率。componentContributionPercentは基準全体に対する増減寄与（百分率ポイント）。','powerIndex/maxPowerIndexは非正規化の計算値です。relativePowerIndex/relativeMaximumPowerIndexは基準通常STANDARD=100の指数です。変化率はpowerChangeに分離します。','参考計算であり実機検証済みを意味しません。','DPS未算出の理由は推定しません。','食事・アイテム等の追加状態は取得していません。']}));
+ }

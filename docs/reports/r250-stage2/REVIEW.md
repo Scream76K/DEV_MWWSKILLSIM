@@ -1,0 +1,9 @@
+# 独立レビュー：eisen
+
+読み取りのみ、変更0。最小OCR2箇所とtemplate注記訂正は統合可。新規回帰4件を絶対Nodeで独立実行して4成功/0失敗/0skip、template6件も独立実行し6成功/0失敗/0skip。
+
+grid期待315×45はfixture.ocrそのもの。refined優先を保持、topdown非icon経路を直接変更しない。pending拒否は既存明示確定契約の補修。manualというdecisionだけで拒否せずresolutionStatusで判定。テンプレートはnotes以外全一致を確認。
+
+実画像JSONを確認：2画像0/7自動確定、pending拒否はビルド不変、5防具は手動確定で期待MHDB ID一致。全スイートはhimmel実行ログを確認する範囲で、レビュー担当が全件再実行したとは報告しない。
+
+残課題：P1 OCR画像認識精度、SALADA腕スロット不適合。P2確認済み行の要確認表示/内部キー表示、並列ブラウザの不安定性。自動OCR完成・全テンプレート適合の承認ではない。

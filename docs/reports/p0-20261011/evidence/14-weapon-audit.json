@@ -1,0 +1,630 @@
+[
+  {
+    "kind": "great-sword",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "gs_charge3",
+        "name": "溜め斬り Lv3",
+        "handler": "OrdinaryHit",
+        "damage": 229.89
+      },
+      {
+        "id": "gs_strong3",
+        "name": "強溜め斬り Lv3",
+        "handler": "OrdinaryHit",
+        "damage": 245.68
+      },
+      {
+        "id": "canonical:GS_STRONG_WIDE_SLASH_3",
+        "name": "強薙ぎ払いⅢ",
+        "handler": "OrdinaryHit",
+        "damage": 182.33
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:gs_standard",
+        "name": "最大溜め：溜め斬りⅢ→強溜めⅢ→強薙ぎ払いⅢ",
+        "techniqueIds": [
+          "gs_charge3",
+          "gs_strong3",
+          "canonical:GS_STRONG_WIDE_SLASH_3"
+        ],
+        "fixedDamage": 657.9,
+        "freeDamage": 657.9,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "long-sword",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "canonical:LS_RED_BLADE_I",
+        "name": "赤刃斬りⅠ",
+        "handler": "OrdinaryHit",
+        "damage": 68.02
+      },
+      {
+        "id": "canonical:LS_RED_BLADE_II",
+        "name": "赤刃斬りⅡ",
+        "handler": "OrdinaryHit",
+        "damage": 55.64
+      },
+      {
+        "id": "canonical:LS_RED_BLADE_III",
+        "name": "赤刃斬りⅢ",
+        "handler": "OrdinaryHit",
+        "damage": 151.25
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:ls_standard",
+        "name": "赤刃状態：赤刃斬りⅠ→Ⅱ→Ⅲ",
+        "techniqueIds": [
+          "canonical:LS_RED_BLADE_I",
+          "canonical:LS_RED_BLADE_II",
+          "canonical:LS_RED_BLADE_III"
+        ],
+        "fixedDamage": 274.90999999999997,
+        "freeDamage": 274.90999999999997,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "sword-and-shield",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "sns_slash",
+        "name": "斬り下ろし",
+        "handler": "OrdinaryHit",
+        "damage": 31.42
+      },
+      {
+        "id": "sns_horizontal",
+        "name": "水平斬り",
+        "handler": "OrdinaryHit",
+        "damage": 41.96
+      },
+      {
+        "id": "canonical:SNS_SIDE_SLASH",
+        "name": "横斬り",
+        "handler": "OrdinaryHit",
+        "damage": 30.18
+      },
+      {
+        "id": "canonical:SNS_RETURN_SLASH",
+        "name": "斬り返し",
+        "handler": "OrdinaryHit",
+        "damage": 43.21
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:sns_standard",
+        "name": "斬り下ろし→横斬り→水平斬り→斬り返し",
+        "techniqueIds": [
+          "sns_slash",
+          "canonical:SNS_SIDE_SLASH",
+          "sns_horizontal",
+          "canonical:SNS_RETURN_SLASH"
+        ],
+        "fixedDamage": 146.77,
+        "freeDamage": 146.77,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "dual-blades",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "canonical:DB_DEMON_DANCE_I",
+        "name": "乱舞Ⅰ",
+        "handler": "OrdinaryHit",
+        "damage": 235.60000000000002
+      },
+      {
+        "id": "canonical:DB_DEMON_DANCE_II",
+        "name": "乱舞Ⅱ",
+        "handler": "OrdinaryHit",
+        "damage": 97.91
+      },
+      {
+        "id": "canonical:DB_DEMON_DANCE_III",
+        "name": "乱舞Ⅲ",
+        "handler": "OrdinaryHit",
+        "damage": 294.7
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:db_standard",
+        "name": "鬼人化：乱舞Ⅰ→Ⅱ→Ⅲ（27Hit）",
+        "techniqueIds": [
+          "canonical:DB_DEMON_DANCE_I",
+          "canonical:DB_DEMON_DANCE_II",
+          "canonical:DB_DEMON_DANCE_III"
+        ],
+        "fixedDamage": 628.21,
+        "freeDamage": 628.21,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "hammer",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "hm_side",
+        "name": "横振り",
+        "handler": "OrdinaryHit",
+        "damage": 35.59
+      },
+      {
+        "id": "hm_big",
+        "name": "アッパー",
+        "handler": "OrdinaryHit",
+        "damage": 127.47
+      },
+      {
+        "id": "canonical:HAM_VERTICAL_II",
+        "name": "縦振りⅡ",
+        "handler": "OrdinaryHit",
+        "damage": 63.03
+      },
+      {
+        "id": "canonical:HAM_MIGHTY_CHARGE_UPPERCUT",
+        "name": "渾身溜めアッパー",
+        "handler": "OrdinaryHit",
+        "damage": 169.06
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:hm_standard",
+        "name": "横振り→縦振りⅡ→アッパー→渾身溜めアッパー",
+        "techniqueIds": [
+          "hm_side",
+          "canonical:HAM_VERTICAL_II",
+          "hm_big",
+          "canonical:HAM_MIGHTY_CHARGE_UPPERCUT"
+        ],
+        "fixedDamage": 395.15,
+        "freeDamage": 395.15,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "lance",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "canonical:LAN_MID_THRUST_I",
+        "name": "中段突きⅠ",
+        "handler": "OrdinaryHit",
+        "damage": 40.71
+      },
+      {
+        "id": "canonical:LAN_MID_THRUST_II",
+        "name": "中段突きⅡ",
+        "handler": "OrdinaryHit",
+        "damage": 40.71
+      },
+      {
+        "id": "canonical:LAN_MID_THRUST_III",
+        "name": "中段突きⅢ",
+        "handler": "OrdinaryHit",
+        "damage": 53.32
+      },
+      {
+        "id": "canonical:LAN_TRIPLE_THRUST",
+        "name": "三段突き",
+        "handler": "OrdinaryHit",
+        "damage": 143.06
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:lan_standard",
+        "name": "中段突きⅠ→Ⅱ→Ⅲ→三段突き",
+        "techniqueIds": [
+          "canonical:LAN_MID_THRUST_I",
+          "canonical:LAN_MID_THRUST_II",
+          "canonical:LAN_MID_THRUST_III",
+          "canonical:LAN_TRIPLE_THRUST"
+        ],
+        "fixedDamage": 277.8,
+        "freeDamage": 277.8,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "switch-axe",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "canonical:SA_SWORD_VERTICAL",
+        "name": "剣：縦斬り",
+        "handler": "OrdinaryHit",
+        "damage": 48.06
+      },
+      {
+        "id": "canonical:SA_SWORD_RIGHT_RISING",
+        "name": "剣：右斬り上げ",
+        "handler": "OrdinaryHit",
+        "damage": 59.29
+      },
+      {
+        "id": "canonical:SA_SWORD_MORPH_DOUBLE",
+        "name": "剣：変形二連斬り",
+        "handler": "OrdinaryHit",
+        "damage": 113.59
+      },
+      {
+        "id": "canonical:SA_AXE_MORPH_SLASH",
+        "name": "斧：変形斬り",
+        "handler": "OrdinaryHit",
+        "damage": 48.06
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:sa_standard",
+        "name": "剣縦斬り→右斬り上げ→変形二連斬り→斧変形斬り",
+        "techniqueIds": [
+          "canonical:SA_SWORD_VERTICAL",
+          "canonical:SA_SWORD_RIGHT_RISING",
+          "canonical:SA_SWORD_MORPH_DOUBLE",
+          "canonical:SA_AXE_MORPH_SLASH"
+        ],
+        "fixedDamage": 269,
+        "freeDamage": 269,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "charge-blade",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "canonical:CB_SAED",
+        "name": "超高出力属性解放斬り",
+        "handler": "ChargeBladeHandler",
+        "damage": 440.08859999999993
+      },
+      {
+        "id": "canonical:CB_SAED_AED_DERIVED",
+        "name": "超高出力属性解放斬り（高出力・追撃高出力派生）",
+        "handler": "ChargeBladeHandler",
+        "damage": 494.0886
+      },
+      {
+        "id": "canonical:CB_SWORD_TO_AXE_MORPH",
+        "name": "剣：変形斬り",
+        "handler": "ChargeBladeHandler",
+        "damage": 74.26
+      }
+    ],
+    "pending": [
+      {
+        "id": "canonical:CB_SHIELD_THRUST",
+        "name": "剣：盾突き",
+        "reasons": [
+          "CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED"
+        ]
+      },
+      {
+        "id": "canonical:CB_ELEMENT_DISCHARGE_1",
+        "name": "斧：属性解放斬りⅠ",
+        "reasons": [
+          "CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED"
+        ]
+      },
+      {
+        "id": "canonical:CB_ELEMENT_DISCHARGE_2",
+        "name": "斧：属性解放斬りⅡ",
+        "reasons": [
+          "CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED"
+        ]
+      },
+      {
+        "id": "canonical:CB_AED",
+        "name": "斧：高出力属性解放斬り",
+        "reasons": [
+          "CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED"
+        ]
+      },
+      {
+        "id": "canonical:CB_FOLLOWUP_AED",
+        "name": "斧：追撃高出力属性解放斬り",
+        "reasons": [
+          "CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED"
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "id": "adopted:cb_saed",
+        "name": "強属性ビン：通常派生SAED（全5ビン命中・参考）",
+        "techniqueIds": [
+          "canonical:CB_SAED"
+        ],
+        "fixedDamage": 440.08859999999993,
+        "freeDamage": 440.08859999999993,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "insect-glaive",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "canonical:IG_DIAGONAL_SLASH",
+        "name": "けさ斬り",
+        "handler": "InsectGlaiveBodyHandler",
+        "damage": 27.97
+      },
+      {
+        "id": "canonical:IG_SWEEP",
+        "name": "なぎ払い",
+        "handler": "InsectGlaiveBodyHandler",
+        "damage": 32.96
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:ig_body_reference",
+        "name": "けさ斬り1回（エキスなし・猟虫収納／参考）",
+        "techniqueIds": [
+          "canonical:IG_DIAGONAL_SLASH"
+        ],
+        "fixedDamage": 27.97,
+        "freeDamage": 27.97,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "hunting-horn",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "hh_left",
+        "name": "左ぶん回し",
+        "handler": "OrdinaryHit",
+        "damage": 48.06
+      },
+      {
+        "id": "hh_forward",
+        "name": "前方攻撃",
+        "handler": "OrdinaryHit",
+        "damage": 46.82
+      },
+      {
+        "id": "canonical:HH_LEFT_SWING",
+        "name": "左ぶん回し",
+        "handler": "HuntingHornBodyHandler",
+        "damage": 48.06
+      },
+      {
+        "id": "canonical:HH_FORWARD_ATTACK",
+        "name": "前方攻撃",
+        "handler": "HuntingHornBodyHandler",
+        "damage": 46.82
+      },
+      {
+        "id": "canonical:HH_RIGHT_SWING",
+        "name": "右ぶん回し",
+        "handler": "HuntingHornBodyHandler",
+        "damage": 48.06
+      },
+      {
+        "id": "canonical:HH_BACKWARD_ATTACK",
+        "name": "後方攻撃",
+        "handler": "HuntingHornBodyHandler",
+        "damage": 64.28
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:hh_body_reference",
+        "name": "左ぶん回し→前方攻撃（響玉・旋律強化なし／参考）",
+        "techniqueIds": [
+          "canonical:HH_LEFT_SWING",
+          "canonical:HH_FORWARD_ATTACK"
+        ],
+        "fixedDamage": 94.88,
+        "freeDamage": 94.88,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "gunlance",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "canonical:GL_SLAM",
+        "name": "叩きつけ",
+        "handler": "OrdinaryHit",
+        "damage": 78
+      },
+      {
+        "id": "canonical:GL_SWEEP",
+        "name": "なぎ払い",
+        "handler": "OrdinaryHit",
+        "damage": 60.25
+      },
+      {
+        "id": "reference:gl_NORMAL",
+        "name": "通常砲撃（共通参考条件）",
+        "handler": "GunlanceShellReferenceHandler",
+        "damage": 17.4
+      },
+      {
+        "id": "reference:gl_CHARGED",
+        "name": "溜め砲撃（共通参考条件）",
+        "handler": "GunlanceShellReferenceHandler",
+        "damage": 60.4
+      },
+      {
+        "id": "reference:gl_FULL_BURST",
+        "name": "フルバースト（竜杭なし）（共通参考条件）",
+        "handler": "GunlanceShellReferenceHandler",
+        "damage": 142.8
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:gl_shell_reference",
+        "name": "通常フルバースト（砲撃のみ・竜杭なし／共通参考条件）",
+        "techniqueIds": [
+          "reference:gl_FULL_BURST"
+        ],
+        "fixedDamage": 142.8,
+        "freeDamage": 142.8,
+        "coherent": true
+      },
+      {
+        "id": "adopted:gl_melee",
+        "name": "叩きつけ→なぎ払い（砲撃・竜杭なし／参考）",
+        "techniqueIds": [
+          "canonical:GL_SLAM",
+          "canonical:GL_SWEEP"
+        ],
+        "fixedDamage": 138.25,
+        "freeDamage": 138.25,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "bow",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "canonical:BOW_SHOT_3",
+        "name": "射撃（溜め3）",
+        "handler": "RangedReferenceHandler",
+        "damage": 55.422000000000004
+      },
+      {
+        "id": "canonical:BOW_POWER_SHOT_3",
+        "name": "剛射3",
+        "handler": "RangedReferenceHandler",
+        "damage": 86.37000000000002
+      },
+      {
+        "id": "canonical:BOW_POWER_VOLLEY_3",
+        "name": "剛連射3",
+        "handler": "RangedReferenceHandler",
+        "damage": 129.555
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:bow_reference",
+        "name": "溜め3：射撃→剛射→剛連射（参考）",
+        "techniqueIds": [
+          "canonical:BOW_SHOT_3",
+          "canonical:BOW_POWER_SHOT_3",
+          "canonical:BOW_POWER_VOLLEY_3"
+        ],
+        "fixedDamage": 271.34700000000004,
+        "freeDamage": 271.34700000000004,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "heavy-bowgun",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "canonical:HBG_NORMAL_AMMO_1",
+        "name": "Lv1通常弾",
+        "handler": "RangedReferenceHandler",
+        "damage": 48.19500000000001
+      },
+      {
+        "id": "canonical:HBG_NORMAL_AMMO_2",
+        "name": "Lv2通常弾",
+        "handler": "RangedReferenceHandler",
+        "damage": 67.47300000000001
+      },
+      {
+        "id": "canonical:HBG_NORMAL_AMMO_3",
+        "name": "Lv3通常弾",
+        "handler": "RangedReferenceHandler",
+        "damage": 91.5705
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:hbg_normal",
+        "name": "通常弾Lv3・1発（共通参考条件）",
+        "techniqueIds": [
+          "canonical:HBG_NORMAL_AMMO_3"
+        ],
+        "fixedDamage": 91.5705,
+        "freeDamage": 91.5705,
+        "coherent": true
+      }
+    ]
+  },
+  {
+    "kind": "light-bowgun",
+    "scope": "OFFLINE_EXPLICIT_STATE_REFERENCE_FIXTURE_NOT_LIVE_VERIFIED",
+    "accepted": [
+      {
+        "id": "canonical:LBG_NORMAL_AMMO_1",
+        "name": "Lv1通常弾",
+        "handler": "RangedReferenceHandler",
+        "damage": 38.556000000000004
+      },
+      {
+        "id": "canonical:LBG_NORMAL_AMMO_2",
+        "name": "Lv2通常弾",
+        "handler": "RangedReferenceHandler",
+        "damage": 53.97840000000001
+      }
+    ],
+    "pending": [],
+    "presets": [
+      {
+        "id": "adopted:lbg_normal",
+        "name": "通常弾Lv2・1射3Hit（適正距離・非速射／共通参考・武器適用未検証）",
+        "techniqueIds": [
+          "canonical:LBG_NORMAL_AMMO_2"
+        ],
+        "fixedDamage": 53.97840000000001,
+        "freeDamage": 53.97840000000001,
+        "coherent": true
+      }
+    ]
+  }
+]

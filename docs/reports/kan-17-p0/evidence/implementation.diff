@@ -1,0 +1,100 @@
+--- before/index.html
++++ after/index.html
+@@ -394,6 +394,7 @@
+ <div class="two"><button id="canonicalTimingSave" type="button">実測時間を保存</button><button id="canonicalTimingRemove" type="button">登録時間を削除</button></div><div class="notice small" id="canonicalTimingStatus" role="status">武器を選択してください。</div></details>
+ 
+ </details>
++<div class="notice small"><b>ダメージ計算（暫定・参考）</b><p>現在の装備・スキル・会心条件・対象肉質で計算します。時間は不要です。未接続の成分を含む技は理由を表示します。</p><div class="two"><button type="button" id="calcSelectedTechniqueDamage" onclick="calcSelectedTechniqueDamage()">選択技のダメージ</button><button type="button" id="calcTemplateComboDamage" onclick="calcTemplateComboDamage()">選択テンプレの合計</button></div><button type="button" id="calcUserComboDamage" onclick="calcUserComboDamage()">指定コンボの合計</button><div id="singleTechniqueDamageOut" role="status">単発技：未計算</div><div id="templateComboDamageOut" role="status">テンプレ：未計算</div><div id="userComboDamageOut" role="status">指定コンボ：未計算</div></div>
+ <div id="comboCBStatePanel" class="notice" hidden><b>チャージアックスの強化状態</b><p class="small">正規技の専用計算に使います。高速変形Lvは装備の発動スキルから取得します。ビン回数が未確認の技は計算保留です。</p><div class="two"><div><label for="comboCBShield">盾強化</label><select id="comboCBShield"><option value="">選択してください</option><option value="0">なし</option><option value="1">あり</option></select></div><div><label for="comboCBAxe">斧強化</label><select id="comboCBAxe"><option value="">選択してください</option><option value="0">なし</option><option value="1">あり</option></select></div></div></div><div id="combo"></div><button id="addCombo">＋選択した技を追加</button><button class="primary" id="calcDps" style="margin-top:7px">📈 コンボDPSを計算</button><div class="two" style="margin-top:10px"><div><label>攻撃稼働率 (%)</label><input id="uptime" type="number" value="85"/></div><div><label>非攻撃時間を含める</label><select id="uptimeMode"><option value="1">含める（実戦DPS）</option><option value="0">含めない（理論DPS）</option></select></div></div><div class="notice" id="dpsOut">未計算</div><div style="display:none"><input id="dAttack" value="300"/><input id="dAff" value="0"/><input id="dElem" value="0"/><input id="dMV" value="100"/><input id="dHZ" value="80"/><input id="dEHZ" value="30"/><input id="dSharp" value="1.32"/><input id="dESharp" value="1.15"/><input id="dCB" value="0"/><select id="dECrit"><option value="0">なし</option></select></div></div></details></section><section class="card support-card" id="groupProposalCard"><details class="card-details"><summary class="card-summary">⑧ シリーズスキルから装備を提案 v7.1.0</summary><div class="card-details-body"><div class="muted">「このシリーズスキルを採用したい」を起点に、全防具から候補を探索し、目的スキルとの相性・武器種適性・装飾品スロット・現在装備の維持度を推論して複数案を作ります。<b>巨戟アーティアのシリーズ/グループスキルも武器1部位として考慮</b>します。<b>ヌシの魂</b>は重要なグループスキルとして、必要な場合だけ別途指定できます。候補の決定・採用はユーザーが行います。</div><div class="two" style="margin-top:8px"><div><label for="groupProposalSkill">採用したいシリーズスキル</label><select id="groupProposalSkill"><option value="">データ取得後に選択</option></select></div><div><label for="groupProposalLevel">目標Lv</label><select id="groupProposalLevel"><option value="1">Lv1</option><option value="2">Lv2</option><option value="3">Lv3</option></select></div></div><div class="notice small" style="margin-top:7px"><label style="display:flex;align-items:center;gap:8px;margin:0"><input id="groupProposalNushi" type="checkbox"/> <span><b>ヌシの魂を採用する</b></span></label><div class="muted" style="margin-top:4px">ONにすると、シリーズスキルに加えて「ヌシの魂」の発動条件も満たす候補だけを提示します。</div></div><div class="two" style="margin-top:7px"><div><label for="groupProposalMode">提案の考え方</label><select id="groupProposalMode"><option value="balance">バランス</option><option value="dps">火力重視</option><option value="flex">スキル自由度重視</option></select></div><div><label for="groupProposalCount">候補数</label><select id="groupProposalCount"><option selected="" value="3">3案</option><option value="5">5案</option></select></div></div><button class="primary" id="groupProposalRun" style="margin-top:8px">🔎 この条件で装備候補を作る</button><div class="notice" id="groupProposalOut" style="margin-top:8px">例：「無尽蔵 Lv1」を選んで、必要なら「ヌシの魂」をONにして試してください。</div></div></details></section><section class="card support-card" id="aiAdvisorCard"><details class="card-details"><summary class="card-summary">⑧ AI装備相談</summary><div class="card-details-body"><div class="muted">現在の装備・スキル・⑤の火力条件をAIに渡して、装備構築を相談できる機能です。現在の装備セットをAI相談用データに変換します。AIは候補提示・比較・評価を行い、最終的な装備セットはユーザーが決定します。</div><div class="ai-quick-row" style="margin-top:6px"><button class="aiQuick" data-ai="この武器で火力重視の装備を組んでください。" type="button">🔥 火力重視</button><button class="aiQuick" data-ai="この武器で属性火力を重視した装備を組んでください。" type="button">🧊 属性重視</button></div><div class="ai-quick-row" style="margin-top:6px"><button class="aiQuick" data-ai="この装備をベースに、DPSを上げる方法を提案してください。" type="button">📈 DPS改善</button><button class="aiQuick" data-ai="現在の装備について、改善できる点を教えてください。" type="button">🔎 装備診断</button></div><label for="aiPrompt" style="margin-top:9px">相談内容</label><textarea id="aiPrompt" placeholder="例：この武器でDPS最大の装備を作って。会心率100%は維持したい。" rows="4" style="width:100%;padding:9px;border:1px solid #475569;border-radius:9px;background:#0b1020;color:#fff;font:inherit;resize:vertical"></textarea><div class="two" style="margin-top:7px"><button class="primary" id="aiPrepare" type="button">🤖 AI相談データを作成</button><button id="aiCopy" type="button">📋 送信用データをコピー</button></div><div class="notice" id="aiOut">相談内容を入力して「AI相談データを作成」を押してください。</div><details style="margin-top:7px"><summary class="small">AIに送る現在の装備セットデータを確認</summary><pre class="notice small" id="aiPayload" style="white-space:pre-wrap;overflow:auto;max-height:360px"></pre></details></div></details></section></section></div></main>
+ <section class="wrap" style="margin:12px auto"><details class="card" id="simBackupPanel"><summary><b>保存データのバックアップ・追加復元</b></summary><p class="small">保存ビルド・追加登録技・正規技の実測時間をJSONに保存します。復元は追加方式です。同名ビルドは別名にし、既存時間は維持します。同じ追加技IDの内容が違う場合は中止します。現在の編集内容や公式DBを置換しません。</p><button type="button" id="simBackupExport" onclick="downloadSimulatorBackup()">バックアップJSONを保存</button><label for="simBackupFile">復元するバックアップJSON</label><input id="simBackupFile" type="file" accept=".json,application/json" onchange="previewSimulatorBackupFile(this.files[0])"><div class="notice small" id="simBackupPreview" role="status">内容の確認後に、追加復元を実行できます。</div><button type="button" id="simBackupRestore" disabled onclick="commitPreparedSimulatorBackup()">確認した内容を追加復元</button></details></section>
+ <section class="wrap" style="margin:12px auto"><details class="card" id="comboReportPanel"><summary><b>コンボの検証データを出力</b></summary><p class="small">現在の装備・コンボ・条件から毎回再計算し、Hit内訳、実測時間、資料の確認状態、保留理由をJSONに出力します。外部へ自動送信しません。装備情報と測定メモを含むため、共有前に内容を確認してください。</p><label for="comboReportObservedVersion">ゲーム画面で確認したバージョン（未確認なら空欄）</label><input id="comboReportObservedVersion" type="text" placeholder="例：1.042.00.02"><div class="two"><button type="button" id="comboReportCreate" onclick="prepareComboVerificationReport()">検証データを作成</button><button type="button" id="comboReportDownload" onclick="downloadComboVerificationReport()">検証JSONを保存</button></div><button type="button" id="comboReportCopy" onclick="copyComboVerificationReport()">検証データをコピー</button><div class="notice small" id="comboReportStatus" role="status">食事・アイテム・エキスなど、ゲーム側の追加状態も記録してください。</div><pre id="comboReportOut" class="notice small" style="max-height:360px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere"></pre></details></section>
+@@ -3749,6 +3750,7 @@
+   'great-sword':['GS_STRONG_WIDE_SLASH_3'],
+   'long-sword':['LS_RED_BLADE_I','LS_RED_BLADE_II','LS_RED_BLADE_III'],
+   'sword-and-shield':['SNS_SIDE_SLASH','SNS_RETURN_SLASH'],
++  'switch-axe':['SA_SWORD_VERTICAL','SA_SWORD_RIGHT_RISING','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'],
+   'dual-blades':['DB_DEMON_DANCE_I','DB_DEMON_DANCE_II','DB_DEMON_DANCE_III'],
+   'hammer':['HAM_VERTICAL_II','HAM_MIGHTY_CHARGE_UPPERCUT'],
+   'lance':['LAN_MID_THRUST_I','LAN_MID_THRUST_II','LAN_MID_THRUST_III','LAN_TRIPLE_THRUST'],
+@@ -3927,10 +3929,11 @@
+   'sword-and-shield':{id:'adopted:sns_standard',name:'斬り下ろし→横斬り→水平斬り→斬り返し',moves:['sns_slash','canonical:SNS_SIDE_SLASH','sns_horizontal','canonical:SNS_RETURN_SLASH']},
+   'dual-blades':{id:'adopted:db_standard',name:'鬼人化：乱舞Ⅰ→Ⅱ→Ⅲ（27Hit）',moves:['canonical:DB_DEMON_DANCE_I','canonical:DB_DEMON_DANCE_II','canonical:DB_DEMON_DANCE_III']},
+   'hammer':{id:'adopted:hm_standard',name:'横振り→縦振りⅡ→アッパー→渾身溜めアッパー',moves:['hm_side','canonical:HAM_VERTICAL_II','hm_big','canonical:HAM_MIGHTY_CHARGE_UPPERCUT']},
++  'switch-axe':{id:'adopted:sa_standard',name:'剣縦斬り→右斬り上げ→変形二連斬り→斧変形斬り',moves:['canonical:SA_SWORD_VERTICAL','canonical:SA_SWORD_RIGHT_RISING','canonical:SA_SWORD_MORPH_DOUBLE','canonical:SA_AXE_MORPH_SLASH']},
+   'lance':{id:'adopted:lan_standard',name:'中段突きⅠ→Ⅱ→Ⅲ→三段突き',moves:['canonical:LAN_MID_THRUST_I','canonical:LAN_MID_THRUST_II','canonical:LAN_MID_THRUST_III','canonical:LAN_TRIPLE_THRUST']}
+ });
+ function comboData(stats=calcState?.stats||{}){
+-  const kind=comboKind(),data=TECHNIQUES.get(kind);if(!data)return null;
++  const kind=comboKind(),data=TECHNIQUES.get(kind)||(DIRECT_CANONICAL_COMBO_CATALOG[kind]?.length?{label:JP_KIND[kind]||kind,moves:[],presets:[]}:null);if(!data)return null;
+   const moves=[...data.moves.map(move=>canonicalComboTechnique(kind,move)),...(DIRECT_CANONICAL_COMBO_CATALOG[kind]||[]).map(id=>directCanonicalComboTechnique(kind,id))].map(move=>withCanonicalTiming(move,stats));
+   const preset=CANONICAL_COMBO_PRESETS[kind],ready=preset&&preset.moves.every(id=>moves.some(m=>m.id===id&&m.numericOrigin==='CANONICAL_DB'&&!m.calculationBlocked));
+   return {...data,moves,presets:[...data.presets,...(ready?[{...preset,origin:'CANONICAL_DB'}]:[])]};
+@@ -3976,7 +3979,9 @@
+   picker.disabled=false; preset.disabled=false; $('addCombo').disabled=false;
+   const old=picker.value; picker.innerHTML=data.moves.map(m=>`<option value="${m.id}">${comboMoveLabel(m)}</option>`).join('');
+   if(data.moves.some(m=>m.id===old))picker.value=old;
++  const previousPreset=preset.value;
+   preset.innerHTML='<option value="">なし（自分で組む）</option>'+data.presets.map(p=>`<option value="${esc(p.id)}">${p.origin==='CANONICAL_DB'?'技DB採用：':'旧参考：'}${esc(p.name)}</option>`).join('');
++  if(data.presets.some(p=>p.id===previousPreset))preset.value=previousPreset;
+   const adopted=data.moves.filter(m=>m.numericOrigin==='CANONICAL_DB'&&!m.calculationBlocked).length;
+   status.innerHTML=`<b>${esc(data.label)}</b>：${data.moves.length}技を登録。${adopted?`うち${adopted}技は技DBの採用値を使用。`:''}他の技は初期参考値または追加登録値です。時間未確認の技はダメージのみ計算します。所要時間がある技も時間は参考値です。`;
+ }
+@@ -4020,6 +4025,7 @@
+   if($('aiOut'))$('aiOut').textContent='';
+   if($('comboReportOut'))$('comboReportOut').textContent='';
+   if($('comboReportStatus'))$('comboReportStatus').textContent=message+'検証データを作成し直してください。';
++  if(typeof refreshP0DamageResults==='function')refreshP0DamageResults();
+ }
+ for(const id of ['uptime','uptimeMode']){
+   $(id)?.addEventListener('input',()=>invalidateComboResults());
+@@ -4097,6 +4103,42 @@
+   const dpsStatus=isBlocked?'BLOCKED':time===null?'TIMING_PENDING':'UNVERIFIED';
+   const dpsReason=isBlocked?(contextError||blocked[0]?.reason||'COMBO_NOT_SELECTED'):time===null?'COMBO_TIMING_PENDING':'COMBO_DPS_UNVERIFIED';
+   return {status:isBlocked?'BLOCKED':time===null?'TIMING_PENDING':'REFERENCE_ONLY',dpsStatus,dpsReason,damage,time,knownTime,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60,referenceDps,referenceDpsStatus,pendingTimeTechniqueIds,blocked,stages,context,contextError};
++}
++// KAN-17 #10066: damage-only UI uses the existing route/handler evaluator.
++const p0DamageRequests={};
++function calcP0Damage(mode,{remember=true}={}){
++  const outputs={single:'singleTechniqueDamageOut',template:'templateComboDamageOut',user:'userComboDamageOut'};
++  const out=$(outputs[mode]);if(!out)return null;
++  if(remember)p0DamageRequests[mode]=comboKind();
++  let rows=[],context=null,result;
++  try{
++    if(!selectedWeapon())throw Error('武器を選択してください。');
++    if(mode==='single')rows=[{techniqueId:$('comboMovePicker')?.value||''}];
++    else if(mode==='template'){
++      const preset=comboData()?.presets?.find(p=>p.id===$('comboPreset')?.value);
++      if(!preset)throw Error('テンプレコンボを選択してください。');
++      rows=preset.moves.map(techniqueId=>({techniqueId}));
++    }else{App.combo.syncFromDOM();rows=App.state.combo.moves;}
++    if(!rows.length)throw Error('技を追加してください。');
++    context={...comboDamageContext(),critBonus:skillLevel(calcState.total||{},['超会心','Critical Boost'])};
++    const unavailable=rows.map((r,index)=>({r,index,move:comboMove(r.techniqueId,calcState.stats)})).filter(x=>!x.move||x.move.numericOrigin!=='CANONICAL_DB');
++    if(unavailable.length){
++      result={status:'BLOCKED',damage:null,stages:[],blocked:unavailable.map(x=>({index:x.index+1,id:x.r.techniqueId,name:x.move?.name||x.r.techniqueId,reason:'TECHNIQUE_DB_CONNECTION_PENDING:'+x.r.techniqueId})),context};
++    }else result=evaluateComboRoute(rows,context,{stats:calcState.stats});
++  }catch(e){result={status:'BLOCKED',damage:null,stages:[],blocked:[{reason:String(e.message||e)}],context};}
++  const label=mode==='single'?'選択技':mode==='template'?'テンプレコンボ':'指定コンボ';
++  if(result.damage==null||!Number.isFinite(result.damage))out.innerHTML='<b>'+label+'：未算出</b><div class="small">'+(result.blocked||[]).map(x=>esc((x.name?x.name+'：':'')+comboBlockedMessage(x.reason))).join('<br>')+'</div>';
++  else out.innerHTML='<b>'+label+' 合計ダメージ：'+result.damage.toFixed(2)+'</b> <span class="small">暫定・参考</span><div class="small">'+result.stages.map(x=>esc(x.index+'. '+x.name)+'：'+x.result.total.toFixed(2)).join('<br>')+'</div>';
++  return {...result,scope:'DAMAGE_ONLY_PROVISIONAL_REFERENCE'};
++}
++function calcSelectedTechniqueDamage(){return calcP0Damage('single');}
++function calcTemplateComboDamage(){return calcP0Damage('template');}
++function calcUserComboDamage(){return calcP0Damage('user');}
++function refreshP0DamageResults(){
++  for(const [mode,kind] of Object.entries(p0DamageRequests)){
++    if(kind===comboKind())calcP0Damage(mode,{remember:false});
++    else{delete p0DamageRequests[mode];const id={single:'singleTechniqueDamageOut',template:'templateComboDamageOut',user:'userComboDamageOut'}[mode];if($(id))$(id).textContent='武器種が変わりました。もう一度計算してください。';}
++  }
+ }
+ function calcDps(){
+   App.combo.syncFromDOM();
+@@ -7570,6 +7612,7 @@
+ // iOS Safariのネイティブ<select>でも、選択確定後に必ず現在値を読み直して一覧とStateを同期する。
+ $('weaponKind').onchange=()=>{const k=$('weaponKind').value;setWeaponKindSelection(k);};
+ $('weaponKind').oninput=()=>{setTimeout(()=>{const k=$('weaponKind').value;setWeaponKindSelection(k);},0);};
++$('comboMovePicker')?.addEventListener('change',()=>refreshP0DamageResults());
+ $('weapon').onchange=()=>{const id=$('weapon').value;setWeaponSelectionById(id);};
+ $('weapon').oninput=()=>{setTimeout(()=>{const id=$('weapon').value;setWeaponSelectionById(id);},0);};
+ $('charmPreset')?.addEventListener('change',()=>{calcBuild()});$('addTechnique')?.addEventListener('click',registerTechnique);$('monster').onchange=()=>{renderMonsterParts();syncDamage()};$('monsterPart').onchange=()=>{renderMonsterInfo();syncDamage()};$('calcBuild').onclick=calcBuild;$('addCombo').onclick=()=>addCombo();$('calcDps').onclick=calcDps;$('comboPreset')?.addEventListener('change',applyComboPreset);$('groupProposalRun')?.addEventListener('click',runGroupProposal);$('saveBuild')?.addEventListener('click',saveNamedBuild);$('runCompare')?.addEventListener('click',runBuildCompare);$('selectAllCompare')?.addEventListener('click',()=>{document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true)});$('clearAllCompare')?.addEventListener('click',()=>{document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=false)});$('clearBuildName')?.addEventListener('click',()=>{if($('buildName'))$('buildName').value=''});renderSavedBuilds();
