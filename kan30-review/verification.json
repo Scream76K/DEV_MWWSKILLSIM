@@ -1,0 +1,183 @@
+{
+  "purpose": "KAN-30 owner device verification only; not an approved beta release",
+  "automatedTests": {
+    "node": {
+      "tests": 930,
+      "pass": 930,
+      "fail": 0,
+      "skipped": 0
+    },
+    "dom": {
+      "tests": 716,
+      "pass": 716,
+      "fail": 0,
+      "skipped": 0
+    },
+    "browser": {
+      "tests": 163,
+      "pass": 163,
+      "fail": 0,
+      "skipped": 0
+    },
+    "gates": {
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "skipped": 0
+    }
+  },
+  "total": 1815,
+  "fail": 0,
+  "skip": 0,
+  "templateUI": [
+    {
+      "id": "KOTATU_GS_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_LS_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_SNS_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_DB_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_HAM_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_HH_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_LAN_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_GL_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_SA_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_CB_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_IG_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_LBG_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_HBG_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "KOTATU_BOW_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "SALADA_BOW_01",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "SALADA_BOW_02",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "SALADA_BOW_03",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "SALADA_BOW_04",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    },
+    {
+      "id": "SALADA_BOW_05",
+      "load": true,
+      "saveRestore": true,
+      "pageReloadRestore": true,
+      "pageErrors": 0
+    }
+  ],
+  "storageIsolation": {
+    "sameOriginExistingProductionLocalStoragePreserved": true,
+    "sameOriginExistingProductionIndexedDBPreserved": true,
+    "coldStartDoesNotReadProductionKeys": true,
+    "cacheDeletionTouchesOnlyPreview": true,
+    "failedUpdatePreservesPreviousPreviewCache": true
+  },
+  "cacheInitializationFix": {
+    "scope": "preview copy only",
+    "cause": "cache initialization fingerprint captured before HTML parsing finished; original code reproduces",
+    "change": "start after DOMContentLoaded and next task",
+    "conflictGuardsUnchanged": true
+  },
+  "iPhoneSafari": "PENDING_OWNER_VERIFICATION",
+  "MacSafari": "NOT_VERIFIED_IN_THIS_RUN",
+  "sourceIndexSha256": "6b964134033b05e81980a9b8ff68d2b202e6cded4f10715220dca8984621f3a9"
+}
