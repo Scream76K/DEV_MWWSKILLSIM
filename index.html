@@ -1311,6 +1311,12 @@ function setWeaponKindSelection(kind){
   refreshWeaponListForCurrentKind();
   renderArtia();renderComboForWeapon();renderTechniqueEditor();calcBuild();
 }
+// Select events synchronize the applied kind; explicit icon/template commands still reset.
+function syncWeaponKindSelectionFromUI(){
+  const kind=normalizeWeaponKindValue($('weaponKind')?.value||'');
+  if(App.state?.ui&&App.state.ui.weaponKind===kind){syncWeaponKindIconGrid();return;}
+  setWeaponKindSelection(kind);
+}
 function setWeaponSelectionById(id){
   const requested=API_WEAPON_KIND[$('weaponKind')?.value||'']||'';
   const w=(Array.isArray(weaponIndexByKind[requested])?weaponIndexByKind[requested]:[]).find(x=>String(x.id)===String(id))||null;
@@ -4283,7 +4289,7 @@ function calcP0Damage(mode,{remember=true}={}){
   }catch(e){result={status:'BLOCKED',damage:null,stages:[],blocked:[{reason:String(e.message||e)}],context};}
   const label=mode==='single'?'選択技':mode==='template'?'テンプレコンボ':'指定コンボ';
   if(result.damage==null||!Number.isFinite(result.damage))out.innerHTML='<b>'+label+'：未算出</b><div class="small">'+(result.blocked||[]).map(x=>esc((x.name?x.name+'：':'')+comboBlockedMessage(x.reason))).join('<br>')+'</div>';
-  else out.innerHTML='<b>'+label+' 合計ダメージ：'+result.damage.toFixed(2)+'</b> <span class="small">暫定・参考</span><div class="small">'+result.stages.map(x=>esc(x.index+'. '+x.name)+'：'+x.result.total.toFixed(2)).join('<br>')+'</div>';
+  else out.innerHTML='<b>'+label+' 合計ダメージ：'+result.damage.toFixed(2)+'</b><div class="small">'+result.stages.map(x=>esc(x.index+'. '+x.name)+'：'+x.result.total.toFixed(2)).join('<br>')+'</div>';
   if(comboKind()==='light-bowgun'){out.innerHTML+='<div class="small">共通参考条件・武器適用未検証（装填可否未確認）。適正距離・非速射・全3Hit命中。</div>';return {...result,scope:'DAMAGE_ONLY_PROVISIONAL_REFERENCE',weaponApplicability:'UNVERIFIED',equipmentSupportVerified:false};}
   if(comboKind()==='gunlance'&&rows.some(r=>comboMove(r.techniqueId)?.handler==='GunlanceShellReferenceHandler'))out.innerHTML+='<div class="small">共通参考条件・武器適用未検証。砲撃の物理は武器本来の攻撃力を参照し、火属性は別肉質で計算。</div>';
   if(comboKind()==='heavy-bowgun'&&rows.some(r=>comboMove(r.techniqueId)?.handler==='HBGWyvernHandler'))out.innerHTML+='<div class="small">竜撃弾2Hitの暫定・参考値。ゲーム版番号未確定。会心・斬れ味・物理肉質補正は対象外。対応弾情報がない武器は装填可否未検証の共通参考条件。</div>';
@@ -4299,6 +4305,26 @@ function refreshP0DamageResults(){
     if(kind===comboKind())calcP0Damage(mode,{remember:false});
     else{delete p0DamageRequests[mode];const id={single:'singleTechniqueDamageOut',template:'templateComboDamageOut',user:'userComboDamageOut'}[mode];if($(id))$(id).textContent='武器種が変わりました。もう一度計算してください。';}
   }
+}
+// Display provenance only: do not alter route results or verification metadata.
+function adoptedComboDisplayConnection(kind,id,canonicalTechniqueId){
+  if(!kind||!id||!canonicalTechniqueId)return false;
+  try{
+    if(id==='canonical:'+canonicalTechniqueId)return DIRECT_CANONICAL_COMBO_CATALOG[kind]?.includes(canonicalTechniqueId)===true;
+    if(kind==='gunlance'&&glShellReferenceMoves().some(m=>m.id===id&&m.canonicalTechniqueId===canonicalTechniqueId))return true;
+    return CANONICAL_COMBO_ADOPTION[kind]?.includes(id)===true&&legacyCanonicalMapping(kind,id)?.canonicalTechniqueId===canonicalTechniqueId;
+  }catch{return false;}
+}
+function adoptedReferenceDpsDisplay(kind,evaluation,{saved=false}={}){
+  if(evaluation?.referenceDpsStatus!=='PROVISIONAL_REFERENCE'||!Number.isFinite(evaluation.referenceDps)||evaluation.referenceDps<0||!Number.isFinite(evaluation.damage)||!Number.isFinite(evaluation.time)||evaluation.time<=0||!Array.isArray(evaluation.blocked)||evaluation.blocked.length||!Array.isArray(evaluation.pendingTimeTechniqueIds)||evaluation.pendingTimeTechniqueIds.length||!Array.isArray(evaluation.stages)||!evaluation.stages.length)return false;
+  return evaluation.stages.every(s=>{
+    const move=saved?s:s.move;
+    return !s.reason&&move?.numericOrigin==='CANONICAL_DB'&&!move.custom&&!move.calculationBlocked&&(!move.canonicalKind||move.canonicalKind===kind)&&Number.isFinite(saved?s.damage:s.result?.total)&&Array.isArray(saved?s.hits:s.result?.hits)&&(saved?s.hits:s.result.hits).length>0&&(saved?s.hits:s.result.hits).every(h=>Number.isFinite(h.total))&&adoptedComboDisplayConnection(kind,saved?s.techniqueId:s.id,move.canonicalTechniqueId);
+  });
+}
+function adoptedReferenceComboDisplay(row){
+  const result=row?.referenceCombo;
+  return result?.status==='PROVISIONAL_REFERENCE'&&Number.isFinite(result.damage)&&Array.isArray(result.blocked)&&!result.blocked.length&&Array.isArray(result.stages)&&result.stages.length>0&&result.stages.every(s=>!s.reason&&Number.isFinite(s.damage)&&Array.isArray(s.hits)&&s.hits.length>0&&s.hits.every(h=>Number.isFinite(h.total))&&adoptedComboDisplayConnection(row.kind,s.techniqueId,s.canonicalTechniqueId));
 }
 function calcDps(){
   App.combo.syncFromDOM();
@@ -4322,7 +4348,7 @@ function calcDps(){
     return {damage:sumD,time:null,knownTime:sumT,theoreticalDps:null,practicalDps:null,oneMinute:null,dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,timingStatus:'PENDING',referenceDps:null,referenceDpsStatus:evaluation.referenceDpsStatus,pendingTimeTechniqueIds,context:ctx,breakdown};
   }
   if(evaluation.dpsStatus!=='VERIFIED'){
-    $('dpsOut').innerHTML=`<b>1コンボ ${sumD.toFixed(2)} ダメージ</b><br>所要時間 ${sumT.toFixed(2)}秒（参考値）<br>正式DPS未算出：実機検証が完了していません。${evaluation.referenceDpsStatus==='PROVISIONAL_REFERENCE'?'<br><b>コンボDPS（暫定・参考）：'+evaluation.referenceDps.toFixed(2)+'</b>（総ダメージ÷参考時間）':''}<div class="muted small" style="margin-top:7px">${detail}</div>`;
+    $('dpsOut').innerHTML=`<b>1コンボ ${sumD.toFixed(2)} ダメージ</b><br>所要時間 ${sumT.toFixed(2)}秒（参考値）<br>正式DPS未算出：実機検証が完了していません。${evaluation.referenceDpsStatus==='PROVISIONAL_REFERENCE'?'<br><b>コンボDPS'+(adoptedReferenceDpsDisplay(comboKind(),evaluation)?'':'（暫定・参考）')+'：'+evaluation.referenceDps.toFixed(2)+'</b>（総ダメージ÷参考時間）':''}<div class="muted small" style="margin-top:7px">${detail}</div>`;
     return {damage:sumD,time:sumT,theoreticalDps:null,practicalDps:null,oneMinute:null,dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,referenceDps:evaluation.referenceDps,referenceDpsStatus:evaluation.referenceDpsStatus,context:ctx,breakdown};
   }
   const theoretical=evaluation.theoreticalDps,practical=evaluation.practicalDps;
@@ -4971,7 +4997,7 @@ function applyBuildSnapshot(x,{preserveCombo=false,restoreExact=false}={}){
   }
   const previousP0Suspend=p0DamageSuspend;p0DamageSuspend=true;
   try{
-  $('weaponKind').value=canonicalWeaponKind(weapon)||'';weaponRows=[weapon];renderWeapon();$('weapon').value=String(weapon.id);App.build.setWeapon(weapon);
+  $('weaponKind').value=canonicalWeaponKind(weapon)||'';if(App.state?.ui)App.state.ui.weaponKind=normalizeWeaponKindValue($('weaponKind').value);weaponRows=[weapon];renderWeapon();$('weapon').value=String(weapon.id);App.build.setWeapon(weapon);
   for(const k of ['head','chest','arms','waist','legs']){const id=x.armor?.[k];build.armor[k]=id?DB.armor.find(a=>String(a.id)===String(id))||null:null;}
   const copy=value=>JSON.parse(JSON.stringify(value));
   build.charmCustom=copy(x.charmCustom||build.charmCustom);build.artia=copy(x.artia||build.artia);build.decos=copy(x.decos||{});restoreCombatBuffState(x.combatBuffs);
@@ -7635,9 +7661,13 @@ function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
   const relative=rows.map(r=>comparisonDpsIndex(r,baseline));
   h+='<tr data-comparison-metric="dps-index"><th>DPS指数</th>'+rows.map((r,i)=>cell(relative[i]===null?'—':comparisonDisplayNumber(relative[i].index),relative[i]!==null&&r.dps===mp)).join('')+'</tr>';
   h+='<tr data-comparison-metric="dps-change"><th>基準比増減</th>'+relative.map(x=>cell(x===null?'—':(x.change>0?'+':x.change<0?'−':'')+comparisonDisplayNumber(x.change)+'%',false)).join('')+'</tr>';
-  if(rows.some(r=>r.referenceDpsStatus==='PROVISIONAL_REFERENCE'))h+='<tr data-comparison-metric="reference-dps"><th>コンボDPS（暫定・参考）</th>'+rows.map(r=>cell(!equipmentElementPendingReason(r)&&r.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&r.comboVerification?.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&Number.isFinite(r.referenceDps)&&r.referenceDps>=0?comparisonDisplayNumber(r.referenceDps):'未算出')).join('')+'</tr>';
+  if(rows.some(r=>r.referenceDpsStatus==='PROVISIONAL_REFERENCE')){
+    const neutral=allRows.some(r=>adoptedReferenceDpsDisplay(r.kind,r.comboVerification,{saved:true}));
+    h+='<tr data-comparison-metric="reference-dps"><th>コンボDPS'+(neutral?'':'（暫定・参考）')+'</th>'+rows.map(r=>cell(!equipmentElementPendingReason(r)&&r.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&r.comboVerification?.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&Number.isFinite(r.referenceDps)&&r.referenceDps>=0?comparisonDisplayNumber(r.referenceDps)+(neutral&&!adoptedReferenceDpsDisplay(r.kind,r.comboVerification,{saved:true})?'（暫定・参考）':''):'未算出')).join('')+'</tr>';
+  }
   if(rows.some(r=>r.referenceCombo?.techniqueCount>0)){
-    h+='<tr data-comparison-metric="reference-combo-damage"><th>指定コンボ合計（暫定・参考）</th>'+rows.map(r=>cell(Number.isFinite(r.referenceCombo?.damage)?comparisonDisplayNumber(r.referenceCombo.damage):'未算出')).join('')+'</tr>';
+    const neutral=allRows.some(adoptedReferenceComboDisplay);
+    h+='<tr data-comparison-metric="reference-combo-damage"><th>指定コンボ合計'+(neutral?'':'（暫定・参考）')+'</th>'+rows.map(r=>cell(Number.isFinite(r.referenceCombo?.damage)?comparisonDisplayNumber(r.referenceCombo.damage)+(neutral&&!adoptedReferenceComboDisplay(r)?'（暫定・参考）':''):'未算出')).join('')+'</tr>';
     h+='<tr data-comparison-metric="reference-combo-relative"><th>指定コンボ相対（基準100）</th>'+rows.map(r=>{const v=referenceComboChange(r,baseline);return cell(v?comparisonDisplayNumber(v.index)+'（'+(v.changePercent>=0?'+':'')+v.changePercent.toFixed(1)+'%）':'未算出');}).join('')+'</tr>';
     h+='<tr><th>指定コンボ保留理由</th>'+rows.map(r=>cell((r.referenceCombo?.blocked||[]).map(x=>comboBlockedMessage(x.reason)).join(' / ')||'—')).join('')+'</tr>';
   }
@@ -7884,8 +7914,8 @@ $('clearDataCache')?.addEventListener('click',()=>{if(confirm('取得済みの�
 });$('load').addEventListener('click',()=>window.__startDataLoad());
 // 武器種・武器セレクタは、v5.21.3で実績のあるDOM onchangeを一次入力に戻す。
 // iOS Safariのネイティブ<select>でも、選択確定後に必ず現在値を読み直して一覧とStateを同期する。
-$('weaponKind').onchange=()=>{const k=$('weaponKind').value;setWeaponKindSelection(k);};
-$('weaponKind').oninput=()=>{setTimeout(()=>{const k=$('weaponKind').value;setWeaponKindSelection(k);},0);};
+$('weaponKind').onchange=()=>syncWeaponKindSelectionFromUI();
+$('weaponKind').oninput=()=>{setTimeout(()=>syncWeaponKindSelectionFromUI(),0);};
 $('comboMovePicker')?.addEventListener('change',()=>refreshP0DamageResults());
 $('weapon').onchange=()=>{const id=$('weapon').value;setWeaponSelectionById(id);};
 $('weapon').oninput=()=>{setTimeout(()=>{const id=$('weapon').value;setWeaponSelectionById(id);},0);};
