@@ -1435,19 +1435,19 @@ function renderArtia(){
   let w=selectedWeapon(),box=$('artiaBox');
   if(!isArtia(w)){box.classList.add('hidden');return;}
   box.classList.remove('hidden');
+  build.artia.parts=['attack','attack','attack'];build.artia.sameElementPartCount=3;
   const elems=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'];
   const ej={fire:'火',water:'水',ice:'氷',thunder:'雷',dragon:'龍',poison:'毒',paralysis:'麻痺',sleep:'睡眠',blast:'爆破'};
   const opts=[['attack','攻撃激化'],['affinity','会心激化'],['element','属性激化']];
-  // 生産ボーナスは「基礎攻撃力増強」「会心率増強」のみを手動選択。
+  // PO共通前提：全アルティア武器の生産素材は攻撃素材3個で固定。
   // 属性増強は条件成立時に付与されるため、テンプレート/シミュレータでは常時発動前提として別管理する。
-  const partOpts=[['none','未設定'],['attack','基礎攻撃力増強'],['affinity','会心率増強']];
   const setSkills=skillOptionSort((DB.skills||[]).filter(x=>x.kind==='set'));
   const groupSkills=skillOptionSort((DB.skills||[]).filter(x=>x.kind==='group'));
   box.innerHTML=`<b>★ 巨戟アーティア設定</b>
   <div class="muted">${esc(w.name)} は巨戟アーティア14種として登録されています。</div>
   <label>属性</label><select id="aElem">${elems.map(e=>`<option value="${e}">${ej[e]}</option>`).join('')}</select>
-  <label>同属性の生産素材数（攻撃／会心ボーナスとは別）</label><select id="aElementPartCount"><option value="">未確認</option><option value="2">2個</option><option value="3">3個</option></select>
-  <label>生産ボーナス（3枠）</label><div id="aParts"></div>
+  <div class="muted">同一属性の攻撃素材3個で生産した前提です。</div>
+  <label>生産素材</label><div id="aParts">同一属性の攻撃素材×3（固定）</div>
   <label>巨戟変異タイプ（完成ステータス固定値）</label><select id="aProd">${opts.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('')}</select>
   <div class="artia-two-pane">
     <div class="artia-left"><label>復元ボーナス（5枠）</label><div id="aRestore"></div><div class="muted small">初期状態は「復元ボーナスなし」。実際の武器に付いている復元ボーナスを選択してください。</div></div>
@@ -1455,12 +1455,8 @@ function renderArtia(){
   </div>
   <div id="aSkillStatus" class="notice small">シリーズ/グループスキルは、武器を1部位として発動条件を判定します。</div>
   <label>武器スロット</label><div class="equip-skill-preview" id="aWeaponSlotPreview"></div>`;
-  $('aElementPartCount').value=[2,3].includes(build.artia.sameElementPartCount)?String(build.artia.sameElementPartCount):'';
-  $('aElementPartCount').onchange=()=>{build.artia.sameElementPartCount=$('aElementPartCount').value?Number($('aElementPartCount').value):null;calcBuild();};
   $('aProd').value=build.artia.production; $('aElem').value=build.artia.element; $('aSeries').value=build.artia.seriesSkill||''; $('aGroup').value=build.artia.groupSkill||'';
   const updateSkillStatus=()=>{const ss=skillById($('aSeries').value),gg=skillById($('aGroup').value);let lines=[];for(const [label,skill,type] of [['シリーズ',ss,'series'],['グループ',gg,'group']]){if(!skill)continue;const a=artiaSkillActivation(skill,type);const req=a.required?`必要${a.required}部位`:'条件未定義';lines.push(`${label}：${esc(skill.name)} → ${a.active?`発動（${a.count}/${req}）`:`未発動（${a.count}/${req}）`}`);} $('aSkillStatus').innerHTML=lines.length?lines.join('<br>'):'シリーズ/グループスキル未選択';};
-  const parts=$('aParts');parts.innerHTML=build.artia.parts.map((v,i)=>`<select class="aPart" data-i="${i}">${partOpts.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('')}</select>`).join('');
-  document.querySelectorAll('.aPart').forEach((el,i)=>{el.value=build.artia.parts[i];el.onchange=()=>{build.artia.parts[i]=el.value;calcBuild()}});
   const choices=[['none','なし'],['atk:I','基礎攻撃力強化Ⅰ +5'],['atk:II','基礎攻撃力強化Ⅱ +6'],['atk:III','基礎攻撃力強化Ⅲ +9'],['atk:EX','基礎攻撃力強化EX +12'],['aff:I','会心強化Ⅰ +5%'],['aff:II','会心強化Ⅱ +6%'],['aff:III','会心強化Ⅲ +8%'],['aff:EX','会心強化EX +10%'],['elem:I','属性強化Ⅰ'],['elem:II','属性強化Ⅱ'],['elem:EX','属性強化EX'],['sharp:I','斬れ味・装填数強化Ⅰ +30'],['sharp:EX','斬れ味・装填数強化EX +50']];
   const r=$('aRestore');r.innerHTML=build.artia.restores.map((v,i)=>`<select class="aR" data-i="${i}">${choices.map(c=>`<option value="${c[0]}">${c[1]}</option>`).join('')}</select>`).join('');
   document.querySelectorAll('.aR').forEach((el,i)=>{el.value=build.artia.restores[i];el.onchange=()=>{build.artia.restores[i]=el.value;calcBuild()}});
@@ -1755,7 +1751,7 @@ function calcMaxAffinity(total, baseAffinity, w, part){
   return Math.min(100,Math.max(-100,v));
 }
 function selectedMonsterName(){const m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value);return String(m?.name||'');}
-function artiaProductionBreakdown(w){if(!isArtia(w))return '';const m={attack:'攻撃増強',affinity:'会心増強',none:'未設定'};const a=(build.artia.parts||[]).map(x=>x==='element'?'none':x);const elem=Number(w?.artiaElementProductionBonus)||0;return `生産：${a.map(x=>m[x]||x).join(' / ')}（攻撃+${a.filter(x=>x==='attack').length*5} / 会心+${a.filter(x=>x==='affinity').length*5}% / 属性増強+${elem}【常時発動前提】）`;}
+function artiaProductionBreakdown(w){if(!isArtia(w))return '';const elem=Number(w?.artiaElementProductionBonus)||0;return `生産：同一属性の攻撃素材×3（固定） / 属性増強+${elem}【常時発動前提】`;}
 function artiaRestoreBreakdown(w){
   if(!isArtia(w)) return '';
   const labels={ 'atk:I':'+5攻撃','atk:II':'+6攻撃','atk:III':'+9攻撃','atk:EX':'+12攻撃','aff:I':'+5%会心','aff:II':'+6%会心','aff:III':'+8%会心','aff:EX':'+10%会心','sharp:I':'+30斬れ味','sharp:EX':'+50斬れ味'};
@@ -1803,8 +1799,9 @@ function updateWeaponCoeffDisplay(){
   renderSummary();renderDetail();syncDamage();
 }
 function calcBuild(){renderCharmLegality();
-  // KAN-107 prerequisite, scoped to bow: the working materials are owner-fixed.
-  if(canonicalWeaponKind(selectedWeapon())==='bow'&&isArtia(selectedWeapon())){build.artia.parts=['attack','attack','attack'];build.artia.sameElementPartCount=3;}
+  // PO共通前提：全アルティアは同一属性の攻撃素材3個。実測確認の昇格ではない。
+  // MHDB完成固定値へ攻撃+15を重ねて加算しない。
+  if(isArtia(selectedWeapon())){build.artia.parts=['attack','attack','attack'];build.artia.sameElementPartCount=3;}
   let total={},w=selectedWeapon(),kind=canonicalWeaponKind(w),coef=weaponCoefficient(kind),fixed=isArtia(w)?artiaFixedVariantStats(w):null;
   if(isArtia(w)&&!fixed){
     calcState.fixedValueError='巨戟アーティアの激化タイプ別完成固定値がMHDBから3種類揃っていません。旧値へのフォールバックを停止しました。';
@@ -4961,7 +4958,7 @@ function buildSnapshotMatches(a,b){
   return JSON.stringify(buildSnapshotComparable(a))===JSON.stringify(buildSnapshotComparable(b));
 }
 function savedBuildMap(){try{let raw=storageGet(BUILDS_KEY);if(!raw){for(const key of LEGACY_BUILDS_KEYS){raw=storageGet(key);if(raw)break;}}return raw?JSON.parse(raw)||{}:{};}catch(e){return {}}}
-function buildSnapshot(){App.combo.syncFromDOM();return {version:App.version,combatBuffs:combatBuffState(),weaponId:$('weapon')?.value||build.weapon?.id||'',weaponKind:canonicalWeaponKind(DB.weapons.find(w=>String(w.id)===String($('weapon')?.value||build.weapon?.id||''))),armor:Object.fromEntries(Object.entries(build.armor).map(([k,a])=>[k,a?.id||''])),charmCustom:JSON.parse(JSON.stringify(build.charmCustom)),artia:JSON.parse(JSON.stringify(build.artia)),decos:JSON.parse(JSON.stringify(build.decos)),combo:JSON.parse(JSON.stringify(App.state.combo||{})),savedAt:new Date().toISOString()}}
+function buildSnapshot(){App.combo.syncFromDOM();const snapshotWeapon=DB.weapons.find(w=>String(w.id)===String($('weapon')?.value||build.weapon?.id||'')),artia=JSON.parse(JSON.stringify(build.artia));if(isArtia(snapshotWeapon)){artia.parts=['attack','attack','attack'];artia.sameElementPartCount=3;}return {version:App.version,combatBuffs:combatBuffState(),weaponId:$('weapon')?.value||build.weapon?.id||'',weaponKind:canonicalWeaponKind(DB.weapons.find(w=>String(w.id)===String($('weapon')?.value||build.weapon?.id||''))),armor:Object.fromEntries(Object.entries(build.armor).map(([k,a])=>[k,a?.id||''])),charmCustom:JSON.parse(JSON.stringify(build.charmCustom)),artia,decos:JSON.parse(JSON.stringify(build.decos)),combo:JSON.parse(JSON.stringify(App.state.combo||{})),savedAt:new Date().toISOString()}}
 function applyBuildSnapshot(x,{preserveCombo=false,restoreExact=false}={}){
   if(!x)return;
   // Never silently retain the previous weapon when a saved build cannot be resolved.
@@ -8226,6 +8223,8 @@ function renderBuildTemplateUI(){const ks=$('buildTemplateWeaponKind'),sel=$('bu
   const bonusByWeapon={"忘却のオストランツァ":30,"斬罪のエルガンシオ":30,"破滅のキリエヴェルド":20,"永訣のクラウクライス":20,"禁戒のデスヴァンケル":30,"闇黒のテルプリティカ":30,"天涯のゲガルンロウ":30,"前兆のプロフェネシス":30,"邪執のコンキエレガン":20,"代償のネイディ・ギア":30,"堕在のラクリエリカ":20,"荊冠のデストレーター":1,"叛砲アルシャマリ":null,"亡国のクピドバイン":20};
   for(const group of (BUILD_TEMPLATE_DB.templates||[])) for(const t of (group.builds||[])){
     if(!t.artia)continue;
+    // PO共通の生産条件。素材属性名・武器属性値・実測検証状態は推定しない。
+    t.artia.sameElementPartCount=3;
     if(t.id==='SALADA_BOW_01'){t.artia.sameElementPartCount=3;t.artia.sameElementPartCountEvidence='OWNER_CONFIRMED_2026-10-11';}
     const b=Number(bonusByWeapon[t.weapon?.name]);
     if(Number.isFinite(b))t.artia.attributeProductionBonus=b;

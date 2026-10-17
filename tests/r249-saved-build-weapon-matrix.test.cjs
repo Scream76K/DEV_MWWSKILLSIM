@@ -18,7 +18,7 @@ function scenario(){
   standardPowerForStatsSingleHealth(kind,st,cond,total){const stats={baseAttack:st.attackTrue,displayedElement:0,physicalHitzone:60,elementalHitzone:20,sharpnessPhysical:1.32,sharpnessElement:1.15,affinity:st.affinity,maxAffinity:st.maxAffinity,criticalMultiplier:1.25};const normal=ctx.genericProfileDamage(profile,stats,'NORMAL');const maximum=ctx.genericProfileDamage(profile,stats,'MAX');return {profileId:'saved-build-fixture',normal,maximum}},
   invalidateAIComparisonData(){},compareSelectedNames(){return names},savedBuildMap(){return saved},buildSnapshot(){return {weaponId:build.weaponId,armor:{...build.armor},charmCustom:JSON.parse(JSON.stringify(build.charmCustom)),decos:{...build.decos}}},compareStep5Snapshot(){return {mv:100}},buildSnapshotMatches(a,b){return JSON.stringify(a)===JSON.stringify(b)},restoreStep5Snapshot(){},renderCompareTable(rows){ctx.renderedRows=rows;return 'rendered'},Date,JSON};
  ctx.applyBuildSnapshot=function(snapshot){build.decos={...snapshot.decos};build.armor={head:null,chest:null,arms:null,waist:null,legs:null,...snapshot.armor};build.charmCustom=JSON.parse(JSON.stringify(snapshot.charmCustom||{skills:[]}));vm.runInContext('calcBuild()',ctx)};
- vm.createContext(require('../tools/element-vm-test-setup.cjs').register(ctx));vm.runInContext(source,ctx);vm.runInContext('calcBuild()',ctx);
+ vm.createContext(require('../tools/element-vm-test-setup.cjs').register(ctx,{bowProducer:true}));vm.runInContext(source,ctx);vm.runInContext('calcBuild()',ctx);
  return {ctx,build,out,saved,setNames(n){names=n},run(){vm.runInContext('runBuildCompare()',ctx);return ctx.renderedRows},index(row,base){ctx.row=row;ctx.base=base;return vm.runInContext('comparisonPowerIndex(row,base)',ctx)}};
 }
 
