@@ -1,0 +1,104 @@
+{
+  "baseCommit": "8ba21ea9915e44421e89ae0a33fc7a4c5adcb1ae",
+  "branch": "codex/kan108-r250-bow-producer",
+  "source": "r250 verified bow-only delta applied to existing origin/develop runtime, preserving later IG/HBG changes",
+  "actual": {
+    "normal": 672.3191791992,
+    "maximum": 916.16889546,
+    "dragon": 372,
+    "affinity": 22,
+    "maximumAffinity": 100
+  },
+  "conditions": {
+    "attack": "232",
+    "aff": "100",
+    "elem": "372",
+    "mv": "100",
+    "hz": "65",
+    "ehz": "30",
+    "sharp": "1.05",
+    "esharp": "1",
+    "cb": "0",
+    "eCrit": "0",
+    "dragonHz": "",
+    "dragonHitzoneSource": {
+      "kind": "UNSET"
+    },
+    "gutsState": "BEFORE",
+    "fortifyCount": 2,
+    "bowState": {
+      "chargeLevel": 3,
+      "coating": "POWER",
+      "range": "CRITICAL",
+      "startShot": 3
+    },
+    "hbgState": {
+      "ammoType": "NORMAL",
+      "ammoLevel": null,
+      "range": null,
+      "normalModeLevel": null,
+      "magazineCapacity": null,
+      "shotOrdinal": null,
+      "fullMagazine": null
+    },
+    "uptime": "85",
+    "uptimeMode": "1",
+    "chargeBladeState": {
+      "shieldBoosted": null,
+      "axeBoosted": null,
+      "phialType": null,
+      "enhancedPhial": null
+    },
+    "insectGlaiveState": {
+      "extractState": null,
+      "kinsectState": null
+    },
+    "huntingHornState": {
+      "echoState": null,
+      "melodyState": null
+    },
+    "lightBowgunState": {
+      "shotMode": null
+    },
+    "gunlanceState": {
+      "shellingType": null,
+      "shellingPower": null,
+      "loadedRounds": null,
+      "chargedRounds": null,
+      "fireHitzone": null
+    }
+  },
+  "verification": {
+    "command": "node --test tools/kan108-integration-browser.test.cjs",
+    "browser": "Chromium headless",
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "baseline": "Expected failure: missing672.32 before producer integration",
+    "fullSuite": "NOT_RUN_BY_OWNER_INSTRUCTION",
+    "Safari": "NOT_RUN"
+  },
+  "review": {
+    "reviewer": "eisen_review",
+    "mode": "read-only independent code review",
+    "critical": 0,
+    "important": 0,
+    "resolved": "Working-build Artia material enforcement authorized by KAN-107 owner specification; stored raw unchanged"
+  },
+  "protection": {
+    "originalR250FilesUnchanged": 1178,
+    "techniqueDBBlockUnchanged": true,
+    "templateDBUnchanged": true,
+    "existingOtherWeaponRuntimePreserved": true,
+    "sharedGroupGateUnchanged": true
+  },
+  "remaining": [
+    "PIERCE hit counts and coefficients absent in adopted Technique DB",
+    "MAXA literal mapping not documented; existing chargeLevel3 route retained"
+  ],
+  "fixture": {
+    "source": "public MHDB snapshot 2026-10-13, recovered test fixture",
+    "path": "docs/reports/beta-mhdb-crosscheck/evidence/public-mhdb-20261013.tar.gz",
+    "sha256": "8db9204727236ed093a90246bbe50ff53c88e38b3d4f2f9347194349c0f239dc"
+  }
+}
