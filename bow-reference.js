@@ -1,12 +1,19 @@
 (function(root){
  'use strict';
  const valid=(n,min,max)=>{if(typeof n!=='number'||!Number.isFinite(n)||n<min||n>max)throw Error('BOW_REFERENCE:INVALID_INPUT');return n;};
+ // Motion coefficients are read only from the canonical Technique DB state record.
+ function hitsForState(engine,id,state){
+  if(state?.coating!=='PIERCE')return engine.hits('bow',id);
+  const rule=engine.get('bow','BOW_STATE_MODIFIERS')?.specialSourceValues.pierce,t=rule?.techniques?.[id];
+  if(rule?.status!=='SOURCE_CONFIRMED'||rule.hitCountPolicy!=='MAXIMUM_PER_ARROW_ALL_HITS'||rule.rangeCorrectionOwnedByState!==true||!t||!Number.isInteger(t.arrowCount)||t.arrowCount<1||!Number.isInteger(t.maxTicks)||t.maxTicks<1||!Array.isArray(t.elementModifiers)||t.elementModifiers.length!==t.maxTicks||!Array.isArray(rule.physicalTickMultipliers)||rule.physicalTickMultipliers.length<t.maxTicks)throw Error('BOW_REFERENCE:PIERCE_SOURCE_UNAVAILABLE');
+  return Array.from({length:t.arrowCount},(_,arrowIndex)=>Array.from({length:t.maxTicks},(_,i)=>({mv:valid(t.baseMv,0,10000)*valid(rule.physicalTickMultipliers[i],0,2),elementModifier:valid(t.elementModifiers[i],0,10),component:'ARROW',arrowIndex:arrowIndex+1,pierceTick:i+1,techniqueId:id}))).flat();
+ }
  function calculate(o,engine,techniqueIds){
   if(!o||!engine||typeof engine.get!=='function'||typeof engine.hits!=='function'||!Array.isArray(techniqueIds)||techniqueIds.length<1)throw Error('BOW_REFERENCE:TECHNIQUE_DB_REQUIRED');
   const rule=engine.get('bow','BOW_STATE_MODIFIERS')?.specialSourceValues;
   if(rule?.status!=='SOURCE_CONFIRMED'||rule.scope!=='FIXED_BOW_STANDARD_SOURCE_REFERENCE')throw Error('BOW_REFERENCE:STATE_RULE_UNVERIFIED');
   const state=o.state;
-  if(state?.chargeLevel!==3||!Object.hasOwn(rule.rangePhysical,state.range)||!Object.hasOwn(rule.coatingPhysical,state.coating))throw Error('BOW_REFERENCE:STATE_UNRESOLVED');
+  if(state?.chargeLevel!==rule.chargeProfiles.MAXA.chargeLevel||!Object.hasOwn(rule.rangePhysical,state.range)||!Object.hasOwn(rule.coatingPhysical,state.coating))throw Error('BOW_REFERENCE:STATE_UNRESOLVED');
   if(state.coating==='CLOSE_RANGE'&&state.range!=='CRITICAL')throw Error('BOW_REFERENCE:CLOSE_RANGE_OUTSIDE_CRITICAL');
   const attack=valid(o.attack,0,10000),element=valid(o.element,0,100000),affinity=valid(o.affinity,-100,100),criticalMultiplier=valid(o.criticalMultiplier,1,2),hz=valid(o.physicalHitzone,0,100),ehz=valid(o.elementalHitzone,0,100);
   const rangePhysicalModifier=valid(rule.rangePhysical[state.range],0,2),coatingPhysicalModifier=valid(rule.coatingPhysical[state.coating],1,2);
@@ -39,7 +46,7 @@
   for(const [stageIndex,id] of techniqueIds.entries()){
    const r=engine.get('bow',id);
    if(r?.sourceFormula?.scope!=='FIXED_BOW_STANDARD_SOURCE_REFERENCE'||r.sourceFormula.physicalShotCorrectionOwnedByStateRecord!==true)throw Error('BOW_REFERENCE:TECHNIQUE_SOURCE_UNVERIFIED');
-   const hits=engine.hits('bow',id);if(!hits.length)throw Error('BOW_REFERENCE:HITS_UNAVAILABLE');
+   const hits=hitsForState(engine,id,state);if(!hits.length)throw Error('BOW_REFERENCE:HITS_UNAVAILABLE');
    if(bladeActive){const cost=bladeRule.shotCosts[id];if(!Number.isInteger(cost)||cost<1||remainingShots<cost)throw Error('BOW_REFERENCE:BLADESCALE_ROUTE_UNRESOLVED');remainingShots-=cost;bladescaleLoading.stages.push({techniqueId:id,shotCost:cost,remainingShots});}
    const ordinal=forceActive?state.startShot+stageIndex:null,forceAttackAdd=forceActive&&forceRule.attackOrdinals.includes(ordinal)?valid(forceRule.attackAdds[forceLevel],0,100):0,forceAffinityAdd=forceActive&&ordinal>=forceRule.affinityFrom?valid(forceRule.affinityAdds[forceLevel],0,100):0;
    const shotAffinity=Math.min(100,affinity+forceAffinityAdd),shotAttack=attack+forceAttackAdd;
@@ -54,5 +61,5 @@
  }
  function standard(o,engine,ids){if(!Array.isArray(ids)||ids.length!==3)throw Error('BOW_REFERENCE:TECHNIQUE_DB_REQUIRED');return calculate(o,engine,ids);}
  function technique(o,engine,id){return calculate(o,engine,[id]);}
- const api=Object.freeze({standard,technique});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowReference=api;
+ const api=Object.freeze({standard,technique,hitsForState});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowReference=api;
 })(typeof window!=='undefined'?window:globalThis);

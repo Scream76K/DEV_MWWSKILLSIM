@@ -1,0 +1,73 @@
+{
+  "retrievedAt": "2026-10-17",
+  "primary": "https://kuroyonhon.com/mhwilds/memo/16.php",
+  "crosscheck": "https://macarongamemo.com/entry/mhwilds-bow-motion",
+  "skillSource": "https://kuroyonhon.com/mhwilds/program/skill.php",
+  "localSpec": "docs/superpowers/specs/2026-10-08-bow-standard-power-r112.md",
+  "MAXA": {
+    "chargeLevel": 3,
+    "basis": "Owner maximum-charge alias; local r112 profile and source charge progression end at level3"
+  },
+  "adoption": "Extend BOW_STATE_MODIFIERS revision6 to7; existing coefficients unchanged; no verification promotion",
+  "hitPolicy": "MAXIMUM_PER_ARROW_ALL_HITS",
+  "motionRows": {
+    "BOW_SHOT_3": {
+      "arrows": 3,
+      "ticks": 8,
+      "baseMv": 6,
+      "element": [
+        0.4,
+        0.4,
+        0.32,
+        0.16,
+        0.08,
+        0.04,
+        0.04,
+        0.04
+      ]
+    },
+    "BOW_POWER_SHOT_3": {
+      "arrows": 5,
+      "ticks": 6,
+      "baseMv": 6,
+      "element": [
+        0.27,
+        0.27,
+        0.216,
+        0.108,
+        0.054,
+        0.0216
+      ]
+    },
+    "BOW_POWER_VOLLEY_3": {
+      "arrows": 6,
+      "ticks": 6,
+      "baseMv": 7,
+      "element": [
+        0.34,
+        0.34,
+        0.272,
+        0.136,
+        0.068,
+        0.034
+      ]
+    }
+  },
+  "physicalTick": [
+    1.2,
+    1.2,
+    0.9,
+    0.5,
+    0.3,
+    0.15,
+    0.1,
+    0.05
+  ],
+  "rowSelection": "Specific motion rows take precedence over generic decay chart. PowerShot3 sixth element row is listed .0216; not inferred or corrected to .027.",
+  "distance": "Existing 1.1 critical-distance factor applied once; source table 1.1 not copied into baseMv",
+  "forceShot": "Per coated shot, not per arrow/tick; existing 4th/6th attack and 4th-onward affinity rules reused",
+  "historicalExclusions": [
+    "USER_BOW_PIERCE_R119: 4 observed contacts without aligned charge/state, not maximum count",
+    "BOW_DRAGON_PIERCER is a different motion, not pierce-coated normal/power/volley"
+  ]
+}
