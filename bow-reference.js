@@ -5,8 +5,8 @@
  function hitsForState(engine,id,state){
   if(state?.coating!=='PIERCE')return engine.hits('bow',id);
   const rule=engine.get('bow','BOW_STATE_MODIFIERS')?.specialSourceValues.pierce,t=rule?.techniques?.[id];
-  if(rule?.status!=='SOURCE_CONFIRMED'||rule.hitCountPolicy!=='MAXIMUM_PER_ARROW_ALL_HITS'||rule.rangeCorrectionOwnedByState!==true||!t||!Number.isInteger(t.arrowCount)||t.arrowCount<1||!Number.isInteger(t.maxTicks)||t.maxTicks<1||!Array.isArray(t.elementModifiers)||t.elementModifiers.length!==t.maxTicks||!Array.isArray(rule.physicalTickMultipliers)||rule.physicalTickMultipliers.length<t.maxTicks)throw Error('BOW_REFERENCE:PIERCE_SOURCE_UNAVAILABLE');
-  return Array.from({length:t.arrowCount},(_,arrowIndex)=>Array.from({length:t.maxTicks},(_,i)=>({mv:valid(t.baseMv,0,10000)*valid(rule.physicalTickMultipliers[i],0,2),elementModifier:valid(t.elementModifiers[i],0,10),component:'ARROW',arrowIndex:arrowIndex+1,pierceTick:i+1,techniqueId:id}))).flat();
+  if(rule?.status!=='SOURCE_CONFIRMED'||rule.hitCountPolicy!=='MAXIMUM_PER_ARROW_ALL_HITS'||rule.practicalHitCountPolicy!=='PRACTICAL_THREE_HITS_PER_ARROW'||rule.practicalTicksPerArrow!==3||rule.rangeCorrectionOwnedByState!==true||!t||!Number.isInteger(t.arrowCount)||t.arrowCount<1||!Number.isInteger(t.maxTicks)||t.maxTicks<rule.practicalTicksPerArrow||!Array.isArray(t.elementModifiers)||t.elementModifiers.length!==t.maxTicks||!Array.isArray(rule.physicalTickMultipliers)||rule.physicalTickMultipliers.length<t.maxTicks)throw Error('BOW_REFERENCE:PIERCE_SOURCE_UNAVAILABLE');
+  return Array.from({length:t.arrowCount},(_,arrowIndex)=>Array.from({length:rule.practicalTicksPerArrow},(_,i)=>({mv:valid(t.baseMv,0,10000)*valid(rule.physicalTickMultipliers[i],0,2),elementModifier:valid(t.elementModifiers[i],0,10),component:'ARROW',arrowIndex:arrowIndex+1,pierceTick:i+1,techniqueId:id}))).flat();
  }
  function calculate(o,engine,techniqueIds){
   if(!o||!engine||typeof engine.get!=='function'||typeof engine.hits!=='function'||!Array.isArray(techniqueIds)||techniqueIds.length<1)throw Error('BOW_REFERENCE:TECHNIQUE_DB_REQUIRED');

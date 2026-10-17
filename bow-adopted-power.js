@@ -22,7 +22,7 @@ function renderBowAdoptedPowerSummary(){
  if(canonicalWeaponKind(selectedWeapon())!=='bow'||!bowAdoptedRoute(calcState.stats)){$('powerIndexSummary')?.remove();return;}
  let display=$('powerIndexSummary');if(!display){display=document.createElement('div');display.id='powerIndexSummary';display.className='notice';display.style.gridColumn='1 / -1';host.appendChild(display);}
  const p=standardPowerForStats('bow',calcState.stats,compareStep5Snapshot(),calcState.total||{}),n=p.normal?.comparisonPower,m=p.maximum?.comparisonPower;
- display.textContent='火力指数：'+(Number.isFinite(n)?n.toFixed(2):'未算出 — '+(p.reason||'条件未指定'))+' ／ 最大火力指数：'+(Number.isFinite(m)?m.toFixed(2):'未算出 — '+(p.maximumReason||p.reason||'条件未指定'))+'（固定3射'+(compareStep5Snapshot().bowState.coating==='PIERCE'?'・各矢最大Hit':'')+'、連撃5Hit維持。最大側：怒り・克服・傷口・満タン・巧撃の条件成立時。正式DPSとは別）';
+ display.textContent='火力指数：'+(Number.isFinite(n)?n.toFixed(2):'未算出 — '+(p.reason||'条件未指定'))+' ／ 最大火力指数：'+(Number.isFinite(m)?m.toFixed(2):'未算出 — '+(p.maximumReason||p.reason||'条件未指定'))+'（固定3射'+(compareStep5Snapshot().bowState.coating==='PIERCE'?'・各矢3Hit（計42Hit）':'')+'、連撃5Hit維持。最大側：怒り・克服・傷口・満タン・巧撃の条件成立時。正式DPSとは別）';
 }
 document.addEventListener('DOMContentLoaded',()=>{
  for(const id of ['powerBowCoating','powerBowRange','powerBowStartShot','powerGutsState','dHZ','dEHZ','monster','monsterPart'])for(const event of ['input','change'])$(id)?.addEventListener(event,renderBowAdoptedPowerSummary);
