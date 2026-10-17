@@ -22,7 +22,7 @@ function renderBowAdoptedPowerSummary(){
  if(canonicalWeaponKind(selectedWeapon())!=='bow'||!bowAdoptedRoute(calcState.stats)){$('powerIndexSummary')?.remove();return;}
  let display=$('powerIndexSummary');if(!display){display=document.createElement('div');display.id='powerIndexSummary';display.className='notice';display.style.gridColumn='1 / -1';host.appendChild(display);}
  const p=standardPowerForStats('bow',calcState.stats,compareStep5Snapshot(),calcState.total||{}),n=p.normal?.comparisonPower,m=p.maximum?.comparisonPower;
- display.textContent='火力指数：'+(Number.isFinite(n)?n.toFixed(2):'未算出 — '+(p.reason||'条件未指定'))+' ／ 最大火力指数：'+(Number.isFinite(m)?m.toFixed(2):'未算出 — '+(p.maximumReason||p.reason||'条件未指定'))+'（固定3射'+(compareStep5Snapshot().bowState.coating==='PIERCE'?'・各矢3Hit（計42Hit）':'')+'、連撃5Hit維持。最大側：怒り・克服・傷口・満タン・巧撃の条件成立時。正式DPSとは別）';
+ display.textContent='火力指数：'+(Number.isFinite(n)?n.toFixed(2):'未算出 — '+(p.reason||'条件未指定'))+' ／ 最大火力指数：'+(Number.isFinite(m)?m.toFixed(2):'未算出 — '+(p.maximumReason||p.reason||'条件未指定'))+'（固定3射'+(compareStep5Snapshot().bowState.coating==='PIERCE'?'・各矢3Hit（計42Hit）':'')+'、連撃5Hit維持。最大側：怒り・克服・傷口・満タン・巧撃の条件成立時。正式DPSとは別）'+(hpEffectPolicyText(p.effectPolicy)?'。'+hpEffectPolicyText(p.effectPolicy)+'。':'');
 }
 document.addEventListener('DOMContentLoaded',()=>{
  for(const id of ['powerBowCoating','powerBowRange','powerBowStartShot','powerGutsState','dHZ','dEHZ','monster','monsterPart'])for(const event of ['input','change'])$(id)?.addEventListener(event,renderBowAdoptedPowerSummary);
@@ -49,12 +49,14 @@ function bowAdoptedScenarioResult(scenario,conditions,inputs){
   if(!$('monster')?.value||!$('monsterPart')?.value)throw Error('BOW_TARGET_UNCONFIRMED');
   const st=inputs?.stats||calcState.stats,total=inputs?.total||calcState.total||{};if(canonicalWeaponKind(selectedWeapon())!=='bow')throw Error('BOW_WEAPON_REQUIRED');
   if(st.attackKnown===false||st.affinityKnown===false)throw Error(st.attackKnown===false?'WEAPON_ATTACK_MISSING':'WEAPON_AFFINITY_MISSING');
-  const active=st.activeBonusEffects||[],allowed=new Map([[106,[267]],[178,[441]],[26,[60,61]],[131,[344]]]),seen=new Set();
+  const originalActive=st.activeBonusEffects||[],classified=classifyHpBonusEffects(originalActive),effectPolicy=hpEffectPolicy(st,total);
+  if(classified.effects.some(e=>HP_COMPONENT_POLICIES.series[MHSeriesGroupIdentity.resolveEffect(e).parent?.id]))throw Error('BOW_BONUS_IDENTITY_OR_SCOPE_UNSUPPORTED');
+  const active=classified.effects,allowed=new Map([[106,[267]],[178,[441]],[26,[60,61]],[131,[344]]]),seen=new Set();
   for(const e of active){const x=MHSeriesGroupIdentity.resolveEffect(e);if(x.status!=='IDENTIFIED'||!allowed.get(x.parent.id)?.includes(x.rank.id)||seen.has(x.parent.id))throw Error('BOW_BONUS_IDENTITY_OR_SCOPE_UNSUPPORTED');seen.add(x.parent.id);}
   // These IDs cover the adopted bow3 build. Unknown damage/utility skills never
   // acquire a guessed applicability through their display name.
   const ordinary=new Set([3,14,18,22,24,38,41,57,58,63,95,100,120,137,144,147,154]),skills=[];
-  for(const [name,level]of Object.entries(total)){if(active.some(e=>e.name===name))continue;const skill=DB.skills.find(s=>s.name===name),rank=skill?.ranks?.find(r=>r.level===level);if(!skill||!ordinary.has(skill.id)||!rank)throw Error('BOW_SKILL_SCOPE_UNSUPPORTED:'+name);skills.push({skillId:skill.id,rankId:rank.id,level,name});}
+  for(const [name,level]of Object.entries(total)){if(originalActive.some(e=>e.name===name))continue;const skill=DB.skills.find(s=>s.name===name),rank=skill?.ranks?.find(r=>r.level===level);if(!skill||!ordinary.has(skill.id)||!rank)throw Error('BOW_SKILL_SCOPE_UNSUPPORTED:'+name);skills.push({skillId:skill.id,rankId:rank.id,level,name});}
   const row=id=>skills.find(x=>x.skillId===id),text=id=>{const x=row(id);return x?DB.skills.find(s=>s.id===id).ranks.find(r=>r.id===x.rankId).description.normalize('NFKC').replace(/\s/g,''):'';};
   const numbers=(id,pattern)=>{if(!row(id))return [];const values=[...text(id).matchAll(pattern)].map(m=>Number(m[1]));if(!values.length)throw Error('BOW_SKILL_PARAMETER_UNCONFIRMED:'+id);return values;};
   const attackAdd=id=>row(id)?numbers(id,/基礎攻撃力\+(\d+)/g)[0]:0,affinityAdd=id=>row(id)?numbers(id,/会心率\+(\d+)%/g)[0]:0;
@@ -75,7 +77,7 @@ function bowAdoptedScenarioResult(scenario,conditions,inputs){
   const cb=row(22)?.level||0;if(!Number.isInteger(cb)||cb<0||cb>5)throw Error('BOW_CRITICAL_BOOST_UNSUPPORTED');
   const result=window.BowReference.standard({attack,element,affinity,criticalMultiplier:criticalMultiplierForState(100,cb,'critical'),physicalHitzone:hz,elementalHitzone:ehz,skills:bowReferenceSkills(total),elementBasis:basis,bladescaleLoadingActive:false,state:plan.state},window.TechniqueDBEngine,BOW_STANDARD_PROFILE.sequence);
   const signature=JSON.stringify(buildSnapshotComparable(buildSnapshot())),receipt={equipment:{signature,weaponId:selectedWeapon().id},scenario:JSON.parse(JSON.stringify(scenario)),conditions:{hz,ehz,bowState:{...plan.state}},attack,affinity,uncappedAffinity,element,elementBasis:basis,skills,sourceGameVersion:null};
-  return {...pending(),status:'EVALUATED',evaluationStatus:'EVALUATED',value:result.comparisonPower,damage:result.comparisonPower,physical:result.physical,element:result.element,special:null,completeness:'COMPLETE',verification:'PROVISIONAL',modelVerification:'ENGINE_REGRESSION_TESTED',liveGameVerification:'PENDING',reasons:['TARGET_GAME_DAMAGE_VALIDATION_PENDING','BOW_TIMING_UNCONFIRMED'],inputReceipt:receipt,trace:result.trace,excludedEffects:skills.filter(x=>x.skillId===38).map(x=>({...x,reason:'OWNER_EXCLUDED_ADDITIONAL_DAMAGE'})),sourceRefs:[BOW_DECLARATION_I_SOURCE.sourceUrl,BOW_DECLARATION_I_SOURCE.orderEvidence,STANDARD_BURST_SOURCE.url,'OWNER_FRENZY_OVERCOME_20261016'],modelRevision:'BOW_ADOPTED_SCENARIO_V1'};
+  return {...pending(),status:'EVALUATED',evaluationStatus:'EVALUATED',value:result.comparisonPower,damage:result.comparisonPower,physical:result.physical,element:result.element,special:null,completeness:'COMPLETE',verification:'PROVISIONAL',modelVerification:'ENGINE_REGRESSION_TESTED',liveGameVerification:'PENDING',reasons:['TARGET_GAME_DAMAGE_VALIDATION_PENDING','BOW_TIMING_UNCONFIRMED'],inputReceipt:receipt,trace:result.trace,effectPolicy,excludedEffects:effectPolicy.excludedEffects,sourceRefs:[BOW_DECLARATION_I_SOURCE.sourceUrl,BOW_DECLARATION_I_SOURCE.orderEvidence,STANDARD_BURST_SOURCE.url,'OWNER_FRENZY_OVERCOME_20261016'],modelRevision:'BOW_ADOPTED_SCENARIO_V1'};
  }catch(e){reasons.push(String(e.message||e));return pending();}
 }
 
@@ -86,5 +88,5 @@ function bowAdoptedStandardPower(st,cond,total){
  const maxState={...common,monsterState:'ENRAGED',frenzy:has(106)?'OVERCOME':'NONE',weakness:skillLevel(total,['弱点特効','Weakness Exploit'])?'WOUNDED':'NONE',health:'FULL',rush:'ACTIVE'};
  const evaluate=state=>bowAdoptedScenarioResult(state,cond,{stats:st,total});
  const n=evaluate(normalState),m=evaluate(maxState),pack=x=>x.value===null?null:{comparisonPower:x.value,physical:x.physical,element:x.element,special:0,trace:x.trace,scope:x.scope,inputReceipt:x.inputReceipt,verification:x.verification};
- return {status:n.value===null?'PENDING':m.value===null?'MAXIMUM_PENDING':'REFERENCE_ONLY',profileId:BOW_STANDARD_PROFILE.id,normal:pack(n),maximum:pack(m),reason:n.value===null?n.reasons.join(' / '):null,maximumReason:m.value===null?m.reasons.join(' / '):null,normalScope:'BOW_ADOPTED_STANDARD_NORMAL',maximumScope:'BOW_ADOPTED_COMPATIBLE_STATE_SNAPSHOT',scenarioEvidence:{normal:normalState,maximum:maxState,conditions:'連撃5Hit強化維持。最大側は怒り・克服・傷口・体力満タン・巧撃の同時成立snapshot。現在の発動状態ではない。'},liveGameVerification:'PENDING'};
+ return {status:n.value===null?'PENDING':m.value===null?'MAXIMUM_PENDING':'REFERENCE_ONLY',profileId:BOW_STANDARD_PROFILE.id,normal:pack(n),maximum:pack(m),reason:n.value===null?n.reasons.join(' / '):null,maximumReason:m.value===null?m.reasons.join(' / '):null,normalScope:'BOW_ADOPTED_STANDARD_NORMAL',maximumScope:'BOW_ADOPTED_COMPATIBLE_STATE_SNAPSHOT',scenarioEvidence:{normal:normalState,maximum:maxState,conditions:'連撃5Hit強化維持。最大側は怒り・克服・傷口・体力満タン・巧撃の同時成立snapshot。現在の発動状態ではない。'},liveGameVerification:'PENDING',effectPolicy:n.effectPolicy||m.effectPolicy};
 }

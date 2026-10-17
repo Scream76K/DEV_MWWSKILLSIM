@@ -4,4 +4,34 @@ for(const coating of ['POWER','CLOSE_RANGE','PIERCE']){await p.locator('#powerBo
 a.equal(connections.POWER.normal.toFixed(2),'672.32');a.equal(connections.POWER.maximum.toFixed(2),'916.17');a.equal(connections.CLOSE_RANGE.normal.toFixed(2),'690.59');a.equal(connections.CLOSE_RANGE.maximum.toFixed(2),'942.15');a.ok(connections.POWER.trace.every(x=>x.range===1.1&&x.coating===1.35));a.ok(connections.CLOSE_RANGE.trace.every(x=>x.range===1.1&&x.coating===1.4));console.log('SOURCE_INPUTS '+JSON.stringify({normal:connections.POWER.receipt,maximum:connections.POWER.maxReceipt}));a.ok(Number.isFinite(connections.PIERCE.normal),'PIERCE must calculate full source-backed route');a.ok(Number.isFinite(connections.PIERCE.maximum));a.ok(Math.abs(connections.PIERCE.normal-760.4536371048)<1e-8);a.ok(Math.abs(connections.PIERCE.maximum-1042.0383348)<1e-8);a.equal(connections.PIERCE.trace.length,42);a.deepEqual(['BOW_SHOT_3','BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3'].map(id=>connections.PIERCE.trace.filter(h=>h.techniqueId===id).length),[9,15,18]);const maxa=await p.evaluate(()=>({label:BOW_STANDARD_PROFILE.chargeProfile,level:compareStep5Snapshot().bowState.chargeLevel,policy:techniqueDbGet('bow','BOW_STATE_MODIFIERS').specialSourceValues.pierce.practicalHitCountPolicy}));a.deepEqual(maxa,{label:'MAXA',level:3,policy:'PRACTICAL_THREE_HITS_PER_ARROW'});a.match(connections.PIERCE.display,/760\.45.*1042\.04/);a.doesNotMatch(connections.PIERCE.display,/暫定|未確定|未算出/);await p.locator('#runCompare').click();const savedPierce=await p.evaluate(()=>createBuildComparisonReport());a.equal(savedPierce.results[0].powerIndex.toFixed(2),'760.45');a.equal(savedPierce.results[0].maxPowerIndex.toFixed(2),'1042.04');await p.locator('#powerIndexSummary').screenshot({path:path.join(__dirname,'../docs/reports/kan108-maxa-pierce/pierce.png')});await p.locator('#powerBowCoating').selectOption('POWER');
 a.match(await p.locator('#powerIndexSummary').textContent(),/672\.32.*916\.17/);
 const guard=await p.evaluate(()=>standardPowerForStats('bow',{...calcState.stats,attackKnown:false},compareStep5Snapshot(),calcState.total));a.equal(guard.normal,null);a.match(guard.reason,/WEAPON_ATTACK_MISSING/);
+// Real MHDB armor activates Scorch I; compare the same body inputs with only
+// its owner-excluded component absent. Original bow3 regression above is intact.
+const excludedBuild=await p.evaluate(()=>{
+ const original=buildSnapshot();
+ build.armor.chest=DB.armor.find(x=>x.id===42);build.armor.waist=DB.armor.find(x=>x.id===44);
+ for(const key of Object.keys(build.decos))if(key.startsWith('chest')||key.startsWith('waist'))delete build.decos[key];
+ calcBuild();const stats=JSON.parse(JSON.stringify(calcState.stats)),total=JSON.parse(JSON.stringify(calcState.total)),e=stats.activeBonusEffects.find(e=>e.bonusSkillId===71);
+ const power=standardPowerForStats('bow',stats,compareStep5Snapshot(),total),bodyStats={...stats,activeBonusEffects:stats.activeBonusEffects.filter(e=>e.bonusSkillId!==71)},bodyTotal={...total};if(e)delete bodyTotal[e.name];
+ const body=standardPowerForStats('bow',bodyStats,compareStep5Snapshot(),bodyTotal),display=document.getElementById('powerIndexSummary').textContent;
+ buildName.value='Scorch excluded';saveNamedBuild();selectAllCompare.click();runBuildCompare();const report=createBuildComparisonReport(),saved=buildSnapshot();
+ applyBuildSnapshot(original,{restoreExact:true});applyBuildSnapshot(saved,{restoreExact:true});runBuildCompare();const restored=createBuildComparisonReport();
+ return {effect:e,power,body,display,report,restored,stats,total};
+});
+a.equal(excludedBuild.effect?.bonusSkillId,71);a.equal(excludedBuild.effect?.rankLevel,1);
+a.ok(Number.isFinite(excludedBuild.power.normal?.comparisonPower),excludedBuild.power.reason);
+a.ok(Number.isFinite(excludedBuild.power.maximum?.comparisonPower),excludedBuild.power.maximumReason);
+// Independent formula for this changed real-equipment build: no Guts/Declaration.
+// True attack232 + Burst6; max adds Agitator2(8), Peak2(6), Rush4(25).
+// Affinity max22+5+20+15+25=87; ChargeMaster element458.8 in both channels.
+const bodyOracle=(attack,affinities)=>[36,60,90].reduce((sum,mv,i)=>sum+(attack+[0,3,0][i])*mv/100*.65*(1+affinities[i]/100*.34)*1.1*1.35+458.8/10*.3*[3,4,6][i],0);
+a.ok(Math.abs(excludedBuild.power.normal.comparisonPower-bodyOracle(238,[22,30,30]))<1e-8);
+a.ok(Math.abs(excludedBuild.power.maximum.comparisonPower-bodyOracle(277,[87,95,95]))<1e-8);
+a.equal(excludedBuild.power.normal.comparisonPower,excludedBuild.body.normal.comparisonPower);a.equal(excludedBuild.power.maximum.comparisonPower,excludedBuild.body.maximum.comparisonPower);
+a.equal(excludedBuild.power.effectPolicy.excludedEffects.filter(e=>e.identity?.parentId===71).length,1);
+a.match(excludedBuild.display,/灼熱化.*計算対象外/);
+const rejected=await p.evaluate(()=>{const stats=JSON.parse(JSON.stringify(calcState.stats)),total=calcState.total,scorch=stats.activeBonusEffects.find(e=>e.bonusSkillId===71);return [[scorch,scorch],[{...scorch,count:1}],[{...scorch,rankId:174}]].map(extra=>standardPowerForStats('bow',{...stats,activeBonusEffects:[...stats.activeBonusEffects.filter(e=>e.bonusSkillId!==71),...extra]},compareStep5Snapshot(),total));});
+for(const r of rejected){a.equal(r.normal,null);a.equal(r.maximum,null);a.match(r.reason,/BOW_BONUS_IDENTITY_OR_SCOPE_UNSUPPORTED/);}
+
+for(const report of [excludedBuild.report,excludedBuild.restored]){const r=report.results.find(r=>r.name==='Scorch excluded');a.equal(r.powerIndex,excludedBuild.power.normal.comparisonPower);a.equal(r.maxPowerIndex,excludedBuild.power.maximum.comparisonPower);a.equal(r.power.effectPolicy.excludedEffects.filter(e=>e.identity?.parentId===71).length,1);a.equal(r.dps,null);a.notEqual(r.dpsStatus,'VERIFIED');}
+fs.writeFileSync(path.join(__dirname,'../docs/reports/kan108-maxa-pierce/EXCLUDE-CONNECTIONS.json'),JSON.stringify(excludedBuild,null,2));
 a.deepEqual(errors,[]);fs.writeFileSync(path.join(__dirname,'../docs/reports/kan108-maxa-pierce/CONNECTIONS.json'),JSON.stringify(connections,null,2));console.log('CONNECTIONS '+JSON.stringify(connections));});
