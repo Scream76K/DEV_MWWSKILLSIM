@@ -7,7 +7,7 @@ const start=html.indexOf('function runBuildCompare('),end=html.indexOf('function
 const source=html.slice(start,end);
 function run(map,names){
  const out={textContent:'',innerHTML:''};let snapshotCalls=0,compareCalls=0;
- const context=vm.createContext({invalidateAIComparisonData(){},compareSelectedNames(){return names},savedBuildMap(){return map},$(){return out},buildSnapshot(){snapshotCalls++;return {}},compareStep5Snapshot(){return {}},compareSnapshot(){compareCalls++;return {}},applyBuildSnapshot(){},restoreStep5Snapshot(){},renderCompareTable(){return ''},JSON,Date});
+ const context=vm.createContext({invalidateAIComparisonData(){},selectedPart(){return null},compareSelectedNames(){return names},savedBuildMap(){return map},$(){return out},buildSnapshot(){snapshotCalls++;return {}},compareStep5Snapshot(){return {}},compareSnapshot(){compareCalls++;return {}},applyBuildSnapshot(){},restoreStep5Snapshot(){},renderCompareTable(){return ''},JSON,Date});
  vm.runInContext(source,context);vm.runInContext('runBuildCompare()',context);
  return {out,snapshotCalls,compareCalls};
 }

@@ -1,6 +1,6 @@
 const {test}=require('node:test'),a=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
-const context=vm.createContext({MHSeriesGroupIdentity:require('../series-group-identity.js'),DB:require('../tools/kan108-fixture.cjs').db});
+const context=vm.createContext({MHSeriesGroupIdentity:require('../series-group-identity.js'),MHSeriesGroupHpPolicy:require('../series-group-hp-policy.js'),DB:require('../tools/kan108-fixture.cjs').db});
 vm.runInContext(html.slice(html.indexOf('function techniqueDbDeepFreeze('),html.indexOf('const TECHNIQUE_DB_R47_EVIDENCE='))+html.slice(html.indexOf('const RECOVERY_BONUS_HP_POLICIES='),html.indexOf('const STANDARD_FORTIFY_SOURCE=')),context);
 const effect=(id,level)=>{const p=require('../series-group-identity.js').parents.find(p=>p.id===id),r=p.ranks.find(r=>r.level===level);return {name:r.name,bonusName:p.name,bonusSkillId:id,rankId:r.id,source:'series',rankLevel:level,required:r.setPiecesRequired,count:r.setPiecesRequired};};
 test('KAN108 approved excluded and non-damage effects do not block known body inputs',()=>{

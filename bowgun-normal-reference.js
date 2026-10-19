@@ -29,8 +29,19 @@
   }
   const effectiveAffinity=Math.min(100,affinity+shotAffinityAdd),shotCrit=effectiveAffinity>=0?1+effectiveAffinity/100*(criticalMultiplier-1):1+effectiveAffinity/100*.25;
   const weaponPhysicalModifier=lbg?valid(rule.weaponPhysicalModifier,0,2):1;
-  const perHit=(attack+shotAttackAdd)*mv/100*hz/100*range*mode*up*shotCrit*weaponPhysicalModifier;
-  const trace=Array.from({length:ammo.hitCount},(_,i)=>({hit:i+1,techniqueId:source.techniqueId,mv,physical:perHit,element:0,weaponPhysicalModifier,rangePhysicalModifier:range,normalModeModifier:mode,normalUpModifier:up,criticalExpectation:shotCrit,shotOrdinal:s.shotOrdinal??null,shotAttackAdd,shotAffinityAdd,effectiveAffinity,sharpnessApplied:false,weaponElementApplied:false})),physical=perHit*ammo.hitCount;
+  const core=typeof module==='object'&&module.exports?require('./common-damage-core.js'):root.CommonDamageCore;
+  if(!core?.ordinaryHit||!core?.expectedHit||!core?.affinityBranches)throw Error('BOWGUN_NORMAL:COMMON_DAMAGE_CORE_REQUIRED');
+  // Normal ammunition has no weapon element or sharpness component. Already
+  // resolved skill stats and shot-local additions enter the shared formula once.
+  const raw=core.ordinaryHit({stats:{attack:attack+shotAttackAdd,element:0},hit:{
+    motionRatio:mv/100,physicalHitzoneRatio:hz/100,physicalSharpness:1,
+    physicalMultiplier:range*mode*up*weaponPhysicalModifier,
+    elementRatio:0,elementHitzoneRatio:0,elementSharpness:1,elementMultiplier:1}});
+  const branches=core.affinityBranches({chance:effectiveAffinity/100,positivePhysical:criticalMultiplier,
+    negativePhysical:.75,positiveElement:1,negativeElement:1});
+  // Preserve the adopted unrounded reference: neither branches nor sum round.
+  const perHit=core.expectedHit(raw,branches,value=>value).physical;
+  const trace=Array.from({length:ammo.hitCount},(_,i)=>({calculationEngine:'COMMON_DAMAGE_CORE',hit:i+1,techniqueId:source.techniqueId,mv,physical:perHit,element:0,weaponPhysicalModifier,rangePhysicalModifier:range,normalModeModifier:mode,normalUpModifier:up,criticalExpectation:shotCrit,shotOrdinal:s.shotOrdinal??null,shotAttackAdd,shotAffinityAdd,effectiveAffinity,sharpnessApplied:false,weaponElementApplied:false})),physical=perHit*ammo.hitCount;
   return {status:'SOURCE_REFERENCE',profileId:prefix+'_NORMAL_AMMO_'+s.ammoLevel+'_THREE_CONTACT_REFERENCE',scope:rule.scope,comparisonPower:physical,physical,element:0,special:0,trace,state:{...s},skills:{normalUp,firstShot,forceShot},shotSkills:{shotAttackAdd,shotAffinityAdd,effectiveAffinity},ammoCapacityVerified:false,weaponApplicability:'UNVERIFIED',rounding:'UNROUNDED_REFERENCE',liveGameVerification:'PENDING',evidenceRefs:[...record.evidenceRefs,...source.evidenceRefs]};
  }
  const api=Object.freeze({shot});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowgunNormalReference=api;

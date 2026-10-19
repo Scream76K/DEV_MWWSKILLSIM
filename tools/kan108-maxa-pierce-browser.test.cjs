@@ -30,7 +30,7 @@ a.equal(excludedBuild.power.normal.comparisonPower,excludedBuild.body.normal.com
 a.equal(excludedBuild.power.effectPolicy.excludedEffects.filter(e=>e.identity?.parentId===71).length,1);
 a.match(excludedBuild.display,/灼熱化.*計算対象外/);
 const rejected=await p.evaluate(()=>{const stats=JSON.parse(JSON.stringify(calcState.stats)),total=calcState.total,scorch=stats.activeBonusEffects.find(e=>e.bonusSkillId===71);return [[scorch,scorch],[{...scorch,count:1}],[{...scorch,rankId:174}]].map(extra=>standardPowerForStats('bow',{...stats,activeBonusEffects:[...stats.activeBonusEffects.filter(e=>e.bonusSkillId!==71),...extra]},compareStep5Snapshot(),total));});
-for(const r of rejected){a.equal(r.normal,null);a.equal(r.maximum,null);a.match(r.reason,/BOW_BONUS_IDENTITY_OR_SCOPE_UNSUPPORTED/);}
+for(const [i,r]of rejected.entries()){a.equal(r.normal,null);a.equal(r.maximum,null);a.equal(r.reason,'BONUS_DAMAGE_EFFECT_PENDING:BONUS_IDENTITY_'+['DUPLICATE_PARENT','ACTIVATION_MISMATCH','REFERENCE_CONFLICT'][i]);}
 
 for(const report of [excludedBuild.report,excludedBuild.restored]){const r=report.results.find(r=>r.name==='Scorch excluded');a.equal(r.powerIndex,excludedBuild.power.normal.comparisonPower);a.equal(r.maxPowerIndex,excludedBuild.power.maximum.comparisonPower);a.equal(r.power.effectPolicy.excludedEffects.filter(e=>e.identity?.parentId===71).length,1);a.equal(r.dps,null);a.notEqual(r.dpsStatus,'VERIFIED');}
 fs.writeFileSync(path.join(__dirname,'../docs/reports/kan108-maxa-pierce/EXCLUDE-CONNECTIONS.json'),JSON.stringify(excludedBuild,null,2));

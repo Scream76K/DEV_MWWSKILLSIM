@@ -1,12 +1,11 @@
 'use strict';
-const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
-const match=html.match(/function gunlanceStandardComparisonAdapter\(snapshotA,snapshotB=null,cond=\{\}\)\{[\s\S]*?\n\}/);
-assert.ok(match,'gunlance adapter exists');
-const sandbox={resolveSnapshotStatsForComparison:x=>x,genericStatsFromCalcState:x=>x,gunlanceBodyComponents:x=>({physical:x.p,element:x.e,comparisonPower:x.p+x.e}),gunlanceEvidenceReady:()=>false,GUNLANCE_STANDARD_PROFILE:{id:'GL_TEST'},GUNLANCE_EVIDENCE:{}};
-vm.createContext(sandbox);vm.runInContext(match[0]+';this.run=gunlanceStandardComparisonAdapter',sandbox);
-function partial(a,b){try{sandbox.run(a,b)}catch(e){assert.match(e.message,/EVIDENCE_PENDING/);return e.partial}assert.fail('must remain gated')}
-test('GL A/B body diagnostic reports only known components',()=>{const p=partial({p:100,e:20},{p:110,e:30});assert.equal(p.bodyDiagnostic.physicalDelta,10);assert.equal(p.bodyDiagnostic.elementDelta,10);assert.equal(p.bodyDiagnostic.bodyPowerDelta,20);assert.equal(p.bodyDiagnostic.scope,'BODY_ONLY_NOT_STANDARD');assert.deepEqual(Array.from(p.excludedFromComparisonPower),['SHELLING','WYRMSTAKE'])});
-test('GL single snapshot does not fabricate B',()=>{const p=partial({p:100,e:0},null);assert.equal(p.verifiedBodyB,null);assert.equal(p.bodyDiagnostic,null)});
-test('GL zero baseline does not fabricate percentage',()=>{const p=partial({p:0,e:0},{p:10,e:0});assert.equal(p.bodyDiagnostic.bodyPowerPercent,null)});
-test('GL invalid B state is rejected',()=>{sandbox.gunlanceBodyComponents=x=>{if(x.bad)throw Error('INVALID_B');return {physical:x.p,element:x.e,comparisonPower:x.p+x.e}};assert.throws(()=>sandbox.run({p:10,e:0},{bad:true}),/INVALID_B/)});
+const test=require('node:test'),assert=require('node:assert/strict'),{JSDOM,VirtualConsole}=require('jsdom');
+// Exercise the actual snapshot restore, stat mapping, body engine and evidence gate.
+function setup(t){const d=new JSDOM(require('../tools/dom-test-setup.cjs').readSimulatorHtml(),{url:'https://simulator.test/',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));}});t.after(()=>d.window.close());const w=d.window;w.eval("clearWeaponBuckets();build.armor={};build.charmCustom={skills:[],slots:[],weaponSlots:[]};build.decos={};DB.weapons=[];weaponKind.value='gunlance';weapon.innerHTML='';");let id=900;
+ function snapshot(p,e,affinity=0){w.__fixture={id:++id,name:'GL input fixture',kind:'gunlance',affinity,damage:{raw:p/.97,display:p/.97},specials:e?[{kind:'element',element:'dragon',damage:{raw:e*4/10,display:e*4}}]:[],slots:[],skills:[]};w.eval("DB.weapons.push(window.__fixture);weaponIndexByKind.gunlance=DB.weapons;weapon.add(new Option(window.__fixture.name,String(window.__fixture.id)));weapon.value=String(window.__fixture.id);App.build.setWeapon(window.__fixture);calcBuild();");return w.buildSnapshot();}
+ function partial(A,B){try{w.gunlanceStandardComparisonAdapter(A,B,{hz:100,ehz:100,sharp:1,esharp:1,cb:0});assert.fail('full GL must remain gated');}catch(e){assert.match(e.message,/EVIDENCE_PENDING/);return e.partial;}}return {w,snapshot,partial};}
+const close=(x,y)=>assert.ok(Math.abs(x-y)<1e-9,`${x} != ${y}`);
+test('GL A/B body diagnostic reports only known components',t=>{const {snapshot,partial}=setup(t),p=partial(snapshot(100,20),snapshot(110,30));close(p.bodyDiagnostic.physicalDelta,(110-100)*1.32);close(p.bodyDiagnostic.elementDelta,(30-20)*1.15);close(p.bodyDiagnostic.bodyPowerDelta,(110-100)*1.32+(30-20)*1.15);assert.equal(p.bodyDiagnostic.scope,'BODY_ONLY_NOT_STANDARD');assert.deepEqual(Array.from(p.excludedFromComparisonPower),['SHELLING','WYRMSTAKE']);});
+test('GL single snapshot does not fabricate B',t=>{const {snapshot,partial}=setup(t),p=partial(snapshot(100,0),null);assert.equal(p.verifiedBodyB,null);assert.equal(p.bodyDiagnostic,null);});
+test('GL zero baseline does not fabricate percentage',t=>{const {snapshot,partial}=setup(t),p=partial(snapshot(0,0),snapshot(10,0));assert.equal(p.bodyDiagnostic.bodyPowerPercent,null);});
+test('GL invalid B state is rejected',t=>{const {w,snapshot}=setup(t),A=snapshot(10,0),B=snapshot(10,0,101);assert.throws(()=>w.gunlanceStandardComparisonAdapter(A,B,{hz:100,ehz:100,sharp:1,esharp:1,cb:0}),/GUNLANCE_AFFINITY_INVALID/);});

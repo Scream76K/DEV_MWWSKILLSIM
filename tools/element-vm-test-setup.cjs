@@ -12,7 +12,17 @@ function hpPolicySkills(){
  }
  return policySkills;
 }
-function register(context={}, {bowProducer=false}={}){context.MHWElementState=E;
+function register(context={}, {bowProducer=false}={}){
+ // Match production: schema adapter -> maximum resolver -> inline helper.
+ // Execute the real modules in this fixture's browser global; no substitute math.
+ if(!context.window)context.window={};
+ for(const file of ['weapon-sharpness-schema-adapter.js','weapon-max-sharpness.js']){
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../'+file),'utf8'),context,{filename:file});
+ }
+ context.equipmentSharpnessContext=vm.runInNewContext('('+source.functionSource(html,'equipmentSharpnessContext')+')',context);
+ if(!context.skillLevel)context.skillLevel=vm.runInNewContext('('+source.functionSource(html.slice(html.lastIndexOf('function skillLevel(')),'skillLevel')+')',context);
+ if(!context.resolveCriticalBoostInput)context.resolveCriticalBoostInput=vm.runInNewContext('('+source.functionSource(html,'resolveCriticalBoostInput')+')',context);
+context.MHWElementState=E;context.MHSeriesGroupHpPolicy=require('../series-group-hp-policy.js');
  if(bowProducer){
   // Match the page's identity-data -> identity -> producer dependency order.
   // These VM fixtures need only the real pure entry points; no DOM event stubs.
@@ -27,8 +37,8 @@ function register(context={}, {bowProducer=false}={}){context.MHWElementState=E;
  const policyDb=context.DB?.skills?context.DB:{...(context.DB||{}),skills:hpPolicySkills()};
  const hpStart=html.indexOf('const RECOVERY_BONUS_HP_POLICIES='),hpEnd=html.indexOf('const STANDARD_FORTIFY_SOURCE=',hpStart);
  if(hpStart<0||hpEnd<=hpStart)throw Error('HP policy source boundary missing');
- const policyContext={DB:policyDb,MHSeriesGroupIdentity:require('../series-group-identity.js')};
- const hp=vm.runInNewContext('(()=>{'+source.functionSource(html,'techniqueDbDeepFreeze')+'\n'+html.slice(hpStart,hpEnd)+';return {hpEffectPolicy,hpEffectPolicyText};})()',policyContext);
+ const policyContext={DB:policyDb,MHSeriesGroupIdentity:require('../series-group-identity.js'),MHSeriesGroupHpPolicy:require('../series-group-hp-policy.js')};
+ const hp=vm.runInNewContext('(()=>{'+source.functionSource(html,'techniqueDbDeepFreeze')+'\n'+html.slice(hpStart,hpEnd)+';return {hpEffectPolicy,hpEffectPolicyText,hpDamageTotals};})()',policyContext);
  Object.assign(context,hp);
  context.MHWElementDisplay=D;
  const dbStart=html.indexOf('const ARTIA_ELEMENT_SOURCE_DB='),dbEnd=html.indexOf('function artiaSourceElement',dbStart);

@@ -10,6 +10,8 @@
  }
  function calculate(o,engine,techniqueIds){
   if(!o||!engine||typeof engine.get!=='function'||typeof engine.hits!=='function'||!Array.isArray(techniqueIds)||techniqueIds.length<1)throw Error('BOW_REFERENCE:TECHNIQUE_DB_REQUIRED');
+  const core=typeof module==='object'&&module.exports?require('./common-damage-core.js'):root.CommonDamageCore;
+  if(!core?.ordinaryHit||!core?.expectedHit||!core?.affinityBranches)throw Error('BOW_REFERENCE:COMMON_DAMAGE_CORE_REQUIRED');
   const rule=engine.get('bow','BOW_STATE_MODIFIERS')?.specialSourceValues;
   if(rule?.status!=='SOURCE_CONFIRMED'||rule.scope!=='FIXED_BOW_STANDARD_SOURCE_REFERENCE')throw Error('BOW_REFERENCE:STATE_RULE_UNVERIFIED');
   const state=o.state;
@@ -54,7 +56,19 @@
    forceShot.stages.push({techniqueId:id,ordinal,attackAdd:forceAttackAdd,affinityAdd:forceAffinityAdd,attack:shotAttack,affinity:shotAffinity});
    const shotSkillPhysicalModifier=(skillRules.normalUp.techniqueIds.includes(id)?normalUp:1)*(skillRules.spreadUp.techniqueIds.includes(id)?spreadUp:1);
    if(skills.chargeMaster&&element>0&&!skillRules.chargeMaster.techniqueIds.includes(id))throw Error('BOW_REFERENCE:CHARGE_MASTER_ROUTE_UNRESOLVED');
-   for(const h of hits){const mv=valid(h.mv,0,10000),em=valid(h.elementModifier,0,10),p=shotAttack*mv/100*hz/100*crit*rangePhysicalModifier*coatingPhysicalModifier*shotSkillPhysicalModifier*bladescalePhysicalModifier,e=effectiveElement/10*ehz/100*em*elementCriticalExpectation;physical+=p;elementTotal+=e;trace.push({...h,techniqueId:id,physical:p,element:e,rangePhysicalModifier,coatingPhysicalModifier,shotSkillPhysicalModifier,bladescalePhysicalModifier,forceShotOrdinal:ordinal,forceAttackAdd,forceAffinityAdd,shotAffinity,chargeMasterElementModifier:chargeMaster,criticalElementModifier:criticalElement,elementCriticalExpectation,criticalExpectation:crit,sharpnessApplied:false,coatingElementApplied:false});}
+   for(const h of hits){
+    const mv=valid(h.mv,0,10000),em=valid(h.elementModifier,0,10);
+    const raw=core.ordinaryHit({stats:{attack:shotAttack,element:effectiveElement/10},hit:{
+      motionRatio:mv/100,physicalHitzoneRatio:hz/100,physicalSharpness:1,
+      physicalMultiplier:rangePhysicalModifier*coatingPhysicalModifier*shotSkillPhysicalModifier*bladescalePhysicalModifier,
+      elementRatio:em,elementHitzoneRatio:ehz/100,elementSharpness:1,elementMultiplier:1}});
+    const branches=core.affinityBranches({chance:shotAffinity/100,positivePhysical:criticalMultiplier,
+      negativePhysical:.75,positiveElement:criticalElement,negativeElement:1});
+    // Preserve UNROUNDED_REFERENCE for each branch and the technique aggregate.
+    const expected=core.expectedHit(raw,branches,value=>value),p=expected.physical,e=expected.elemental;
+    physical+=p;elementTotal+=e;
+    trace.push({...h,calculationEngine:'COMMON_DAMAGE_CORE',rounding:'UNROUNDED_REFERENCE',techniqueId:id,physical:p,element:e,rangePhysicalModifier,coatingPhysicalModifier,shotSkillPhysicalModifier,bladescalePhysicalModifier,forceShotOrdinal:ordinal,forceAttackAdd,forceAffinityAdd,shotAffinity,chargeMasterElementModifier:chargeMaster,criticalElementModifier:criticalElement,elementCriticalExpectation,criticalExpectation:crit,sharpnessApplied:false,coatingElementApplied:false});
+   }
   }
   bladescaleLoading.remainingShots=remainingShots;
   return {status:'SOURCE_REFERENCE',comparisonPower:physical+elementTotal,physical,element:elementTotal,special:0,trace,affinity,state:{...state},skills:{...skills},firstShot,forceShot,bladescaleLoading,effectiveDisplayedElement:effectiveElement,elementBasis:o.elementBasis?{...o.elementBasis}:null,rounding:'UNROUNDED_REFERENCE',liveGameVerification:'PENDING'};

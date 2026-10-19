@@ -8,7 +8,7 @@ const source=html.slice(start,end);
 function scenario({compareFails=false,restoreFails=false}={}){
  const calls=[];const output={textContent:'',innerHTML:''};
  const context=vm.createContext({
-  invalidateAIComparisonData(){},compareSelectedNames(){return ['A']},savedBuildMap(){return {A:{weaponKind:'great-sword'}}},
+  invalidateAIComparisonData(){},selectedPart(){return null},compareSelectedNames(){return ['A']},savedBuildMap(){return {A:{weaponKind:'great-sword'}}},
   $(){return output},buildSnapshot(){if(!calls.includes('snapshot'))calls.push('snapshot');return {weaponId:'original'}},compareStep5Snapshot(){if(!calls.includes('conditions'))calls.push('conditions');return {original:true}},
   compareSnapshot(){calls.push('compare');if(compareFails)throw Error('compare failed');return {name:'A'}},
   applyBuildSnapshot(x){calls.push('restore');assert.equal(x.weaponId,'original');if(restoreFails)throw Error('restore failed')},
