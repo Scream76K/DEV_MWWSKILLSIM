@@ -7490,9 +7490,19 @@ function comparisonPowerIndex(row,baseline){
     physical:r.power?.[maximum?'maximum':'normal']?.physical,
     elemental:r.power?.[maximum?'maximum':'normal']?.element,
     affinity:r.affinity,maxAffinity:r.maxAffinity});
-  const normal=adapter.compare(project(baseline),project(row));
-  const max=adapter.compare(project(baseline),project(row,true));
-  return normal.metrics.total?{normal:normal.metrics.total.index,maximum:max.metrics.total?.index??null}:null;
+  // Isolate the maximum channel: a missing MAX must not discard valid NORMAL.
+  let normal;
+  try{normal=adapter.compare(project(baseline),project(row));}
+  catch(error){return null;}
+  const normalIndex=normal?.metrics?.total?.index;
+  if(typeof normalIndex!=='number'||!Number.isFinite(normalIndex))return null;
+  let maximum=null;
+  try{
+    const max=adapter.compare(project(baseline),project(row,true));
+    const index=max?.metrics?.total?.index;
+    if(typeof index==='number'&&Number.isFinite(index))maximum=index;
+  }catch(error){/* MAX remains pending; NORMAL is retained. */}
+  return {normal:normalIndex,maximum};
 }
 function comparisonPowerChange(row,baseline){
   if(!comparisonPowerIndex(row,baseline))return null;
