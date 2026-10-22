@@ -3971,7 +3971,7 @@ function comboCBCondition(stats={}){
   const state=comboCBStoredState(),level=Number(stats.rapidMorphLevel??0);
   if(state.shieldBoosted===null||state.axeBoosted===null)return null;
   if(!Number.isInteger(level)||level<0||level>3)throw new Error('CB_COMBO_RAPID_MORPH_LEVEL');
-  return {...state,rapidMorphLevel:level};
+  return {...state,rapidMorphLevel:level,ammoLoadingLevel:validCombatSkillLevel(calcState.total||{},['砲弾装填'],2)};
 }
 function renderComboCBState(){
   const panel=$('comboCBStatePanel');if(!panel)return;panel.hidden=comboKind()!=='charge-blade';
@@ -5167,7 +5167,9 @@ function chargeBladeSaedDamage(techniqueId,stats={},state={}){
   // 3 enhanced + 2 normal baseline, or 5 enhanced configuration.
   // Reloading skill level is not yet automatically wired to this state.
   if(!Number.isInteger(p.hitCount)||p.hitCount!==5)throw Error('CB_SAED:PHIAL_HIT_COUNT_PENDING');
-  const enhancedCount=state.enhancedPhial?5:3;
+  const loadingLevel=state.ammoLoadingLevel;
+  if(loadingLevel!==undefined&&(!Number.isInteger(loadingLevel)||loadingLevel<0||loadingLevel>2))throw Error('CB_SAED:AMMO_LOADING_LEVEL_INVALID');
+  const enhancedCount=loadingLevel===undefined?(state.enhancedPhial?5:3):(loadingLevel>=2?5:3);
   const normalCount=p.hitCount-enhancedCount;
   const normalCoefficient=p.powerElement.normal;
   const enhancedCoefficient=p.powerElement.enhanced;
@@ -5185,7 +5187,7 @@ function chargeBladeSaedDamage(techniqueId,stats={},state={}){
   const physical=physicalBody,element=elementalBody+elementalPhial,special=0;
   return {techniqueId,name:t.techniqueName,status:'REFERENCE_ONLY',verificationStatus:t.verificationStatus,dps:null,
     components:{physicalBody,elementalBody,axeBoostPhysical:0,axeBoostElement:0,impactPhial:0,elementalPhial},physical,element,special,total:physical+element,
-    trace:{eventCount:p.eventCount,hitCount:p.hitCount,enhancedPhial:state.enhancedPhial,enhancedCount,normalCount,normalPhialDamage,enhancedPhialDamage,shieldPhialMultiplier,normalCoefficient,enhancedCoefficient,source:p.source,sourceVersion:p.sourceVersion}};
+    trace:{eventCount:p.eventCount,hitCount:p.hitCount,enhancedPhial:state.enhancedPhial,ammoLoadingLevel:loadingLevel??null,enhancedCount,normalCount,normalPhialDamage,enhancedPhialDamage,shieldPhialMultiplier,normalCoefficient,enhancedCoefficient,source:p.source,sourceVersion:p.sourceVersion}};
 }
 function chargeBladeResolveTechniqueDamage(techniqueId,stats={},state={}){
   if(techniqueId==='CB_SAED'||techniqueId==='CB_SAED_AED_DERIVED')return chargeBladeSaedDamage(techniqueId,stats,state);
@@ -7070,6 +7072,7 @@ function chargeBladeStateFromBuildStats(st={},overrides={}){
   return {
     phialType:overrides.phialType||st.phialType||null,
     enhancedPhial:overrides.enhancedPhial??st.enhancedPhial??false,
+    ammoLoadingLevel:overrides.ammoLoadingLevel??st.ammoLoadingLevel,
     shieldBoosted:overrides.shieldBoosted??true,
     axeBoosted:overrides.axeBoosted??true,
     rapidMorphLevel:Number(overrides.rapidMorphLevel??st.rapidMorphLevel??0),
@@ -7089,7 +7092,7 @@ function chargeBladeStatsFromCalcState(st={},cond={}){
 }
 function resolveSnapshotStatsForComparison(snapshot){
   applyBuildSnapshot(snapshot);
-  return JSON.parse(JSON.stringify(calcState.stats||{}));
+  return JSON.parse(JSON.stringify({...calcState.stats,ammoLoadingLevel:validCombatSkillLevel(calcState.total||{},['砲弾装填'],2)}));
 }
 function buildComparisonRouter({snapshotA,snapshotB=null,cond,stateA={},stateB={}}={}){
   if(!snapshotA)throw new Error('BUILD_COMPARE_FAIL_CLOSED:BUILD_A_REQUIRED');
