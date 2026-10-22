@@ -30,3 +30,23 @@ test('SAED five enhanced and delta equals two upgrades',()=>{
   assert.equal(b.components.elementalPhial,687.5);
   assert.equal(b.total-a.total,75);
 });
+
+test('SAED ammo loading skill level governs five consumed phials',()=>{
+  const base={...state,enhancedPhial:true};
+  for(const level of [0,1]){
+    const r=compute('CB_SAED',stats,{...base,ammoLoadingLevel:level});
+    assert.equal(r.trace.enhancedCount,3);
+    assert.equal(r.trace.normalCount,2);
+    assert.equal(r.components.elementalPhial,612.5);
+  }
+  const r=compute('CB_SAED',stats,{...base,ammoLoadingLevel:2});
+  assert.equal(r.trace.enhancedCount,5);
+  assert.equal(r.trace.normalCount,0);
+  assert.equal(r.components.elementalPhial,687.5);
+});
+test('SAED rejects invalid skill level without inventing damage',()=>{
+  for(const ammoLoadingLevel of [null, '2', -1, 3, NaN]){
+    if(ammoLoadingLevel===null)continue; // null means unspecified via caller contract
+    assert.throws(()=>compute('CB_SAED',stats,{...state,ammoLoadingLevel}),/CB_SAED:AMMO_LOADING_LEVEL_INVALID/);
+  }
+});
