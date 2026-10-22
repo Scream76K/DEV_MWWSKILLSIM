@@ -5163,7 +5163,15 @@ function chargeBladeSaedDamage(techniqueId,stats={},state={}){
   for(const k of ['baseAttack','physicalHitzone','elementalHitzone','sharpnessPhysical','sharpnessElement','affinity'])
     if(typeof stats[k]!=='number'||!Number.isFinite(stats[k]))throw Error('CB_SAED:STAT:'+k);
   if(!Array.isArray(t.hits)||!t.hits.length||t.hits.some(h=>!Number.isFinite(h.mv)||!Number.isFinite(h.elementModifier)))throw Error('CB_SAED:BODY_PENDING');
-  const coefficient=state.enhancedPhial?p.powerElement.enhanced:p.powerElement.normal;
+  // Full five-phial SAED: current enhancedPhial toggle selects the owner's
+  // 3 enhanced + 2 normal baseline, or 5 enhanced configuration.
+  // Reloading skill level is not yet automatically wired to this state.
+  if(!Number.isInteger(p.hitCount)||p.hitCount!==5)throw Error('CB_SAED:PHIAL_HIT_COUNT_PENDING');
+  const enhancedCount=state.enhancedPhial?5:3;
+  const normalCount=p.hitCount-enhancedCount;
+  const normalCoefficient=p.powerElement.normal;
+  const enhancedCoefficient=p.powerElement.enhanced;
+  if([normalCoefficient,enhancedCoefficient].some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0))throw Error('CB_SAED:COEFFICIENT_PENDING');
   const shieldPhialMultiplier=state.shieldBoosted?p.shieldElementMultiplier:1;
   const affinity=Math.max(-100,Math.min(100,stats.affinity))/100;
   const critMultiplier=affinity>=0?1+affinity*(Number(stats.criticalMultiplier??1.25)-1):1+affinity*(1-Number(stats.negativeCriticalMultiplier??.75));
@@ -5171,11 +5179,13 @@ function chargeBladeSaedDamage(techniqueId,stats={},state={}){
   const physicalBody=t.hits.reduce((n,h)=>n+h.mv*bodyMultiplier*stats.baseAttack*stats.sharpnessPhysical*stats.physicalHitzone/100*critMultiplier/100,0);
   const elementalBody=t.hits.reduce((n,h)=>n+h.elementModifier*displayedElement/10*stats.sharpnessElement*stats.elementalHitzone/100,0);
   // Shared formula runs without shield; the DB-owned SAED shield factor is applied once.
-  const elementalPhial=CHARGE_BLADE_FORMULAS.POWER_ELEMENT_PHIAL.evaluate({displayedElement,coefficient,elementalHitzone:stats.elementalHitzone,shieldBoosted:false})*shieldPhialMultiplier*p.hitCount;
+  const normalPhialDamage=CHARGE_BLADE_FORMULAS.POWER_ELEMENT_PHIAL.evaluate({displayedElement,coefficient:normalCoefficient,elementalHitzone:stats.elementalHitzone,shieldBoosted:false})*shieldPhialMultiplier*normalCount;
+  const enhancedPhialDamage=CHARGE_BLADE_FORMULAS.POWER_ELEMENT_PHIAL.evaluate({displayedElement,coefficient:enhancedCoefficient,elementalHitzone:stats.elementalHitzone,shieldBoosted:false})*shieldPhialMultiplier*enhancedCount;
+  const elementalPhial=normalPhialDamage+enhancedPhialDamage;
   const physical=physicalBody,element=elementalBody+elementalPhial,special=0;
   return {techniqueId,name:t.techniqueName,status:'REFERENCE_ONLY',verificationStatus:t.verificationStatus,dps:null,
     components:{physicalBody,elementalBody,axeBoostPhysical:0,axeBoostElement:0,impactPhial:0,elementalPhial},physical,element,special,total:physical+element,
-    trace:{eventCount:p.eventCount,hitCount:p.hitCount,enhancedPhial:state.enhancedPhial,shieldPhialMultiplier,coefficient,source:p.source,sourceVersion:p.sourceVersion}};
+    trace:{eventCount:p.eventCount,hitCount:p.hitCount,enhancedPhial:state.enhancedPhial,enhancedCount,normalCount,normalPhialDamage,enhancedPhialDamage,shieldPhialMultiplier,normalCoefficient,enhancedCoefficient,source:p.source,sourceVersion:p.sourceVersion}};
 }
 function chargeBladeResolveTechniqueDamage(techniqueId,stats={},state={}){
   if(techniqueId==='CB_SAED'||techniqueId==='CB_SAED_AED_DERIVED')return chargeBladeSaedDamage(techniqueId,stats,state);
