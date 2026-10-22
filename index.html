@@ -5354,7 +5354,28 @@ function renderComparisonPowerResult(result,names=['A','B']){
   }).join('')+'</tr>';
   h+='<tr><th>最大火力</th>'+cols.map(c=>{const x=c.data.MAX;return `<td><b>${comparisonPct(x.relativePowerChange)}</b> ${comparisonComponentText(x)}</td>`;}).join('')+'</tr>';
   h+='</tbody></table></div><div class="compare-note">基準火力はビルド比較用の計算値です。ゲーム内に表示されるダメージ値とは異なります。AのNORMALを唯一の比較基準とします。暫定採用データを含む参考値のため、ゲーム内ダメージとの一致を保証しません。</div>';
-  return h;
+  return h+renderSaedReferenceComparison(result,names);
+}
+function renderSaedReferenceComparison(result,names=['A','B']){
+  const reference=result?.saedReference;
+  if(!reference?.A)return '';
+  const columns=[{key:'A',name:names[0]||'A',values:reference.A}];
+  if(reference.B)columns.push({key:'B',name:names[1]||'B',values:reference.B});
+  let html='<div class="compare-table saed-reference-table"><table><thead><tr><th>超高出力（参考）</th>'+columns.map(c=>'<th>'+esc(c.name)+'</th>').join('')+'</tr></thead><tbody>';
+  for(const [mode,label] of [['NORMAL','通常条件'],['MAX','最大条件']]){
+    html+='<tr><th>'+label+'</th>';
+    for(const c of columns){
+      const item=c.values?.[mode];
+      if(item?.status==='REFERENCE_ONLY'&&typeof item.total==='number'&&Number.isFinite(item.total)){
+        html+='<td>'+item.total.toFixed(1)+'（実ダメージ参考値）</td>';
+      }else{
+        html+='<td>保留：'+esc(item?.reason||'未計算')+'</td>';
+      }
+    }
+    html+='</tr>';
+  }
+  html+='</tbody></table></div><div class="compare-note">超高出力の参考ダメージ。既存の火力指数には加算していません。未検証条件は保留します。</div>';
+  return html;
 }
 function comparisonPowerViewModel(result,names=['A','B']){
   if(!result||result.status!=='READY'||!result.A?.NORMAL) throw new Error('COMPARISON_UI_FAIL_CLOSED:INVALID_RESULT');
