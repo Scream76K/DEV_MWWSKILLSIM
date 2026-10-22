@@ -1,0 +1,23 @@
+name: Flamme CB regression
+on:
+  push:
+    branches:
+      - flamme/v10-development
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cb-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Production SAED and comparison contracts
+        run: node --test tests/flamme-cb-*.test.cjs
+      - name: Whole Node test suite
+        run: npm test
