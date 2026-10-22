@@ -5183,7 +5183,7 @@ function chargeBladeResolveTechniqueDamage(techniqueId,stats={},state={}){
   stats={...stats,displayedElement:equipmentHpElement({...stats,element:stats.displayedElement})};
   const c=chargeBladeTechniqueComponents(techniqueId,state),t=CHARGE_BLADE_TECHNIQUES[techniqueId];
   const req=['baseAttack','displayedElement','physicalHitzone','elementalHitzone','sharpnessPhysical','sharpnessElement','affinity'];
-  for(const k of req) if(!Number.isFinite(Number(stats[k]))) throw new Error(`CB_FAIL_CLOSED:${k}`);
+  for(const k of req) if(typeof stats[k]!=='number'||!Number.isFinite(stats[k])) throw new Error(`CB_FAIL_CLOSED:${k}`);
   const affinity=Math.max(-100,Math.min(100,Number(stats.affinity)))/100;
   const critMultiplier=affinity>=0?1+affinity*(Number(stats.criticalMultiplier??1.25)-1):1+affinity*(1-Number(stats.negativeCriticalMultiplier??.75));
   const physUnit=Number(stats.baseAttack)*Number(stats.sharpnessPhysical)*Number(stats.physicalHitzone)/100*critMultiplier/100;
@@ -5197,8 +5197,8 @@ function chargeBladeResolveTechniqueDamage(techniqueId,stats={},state={}){
     if(c.phial?.status!=='READY') throw new Error(`CB_FAIL_CLOSED:${techniqueId}:PHIAL_EXPLOSION_COUNT_UNVERIFIED`);
     const type=state.phialType;if(type!=='IMPACT'&&type!=='POWER_ELEMENT')throw new Error('CB_FAIL_CLOSED:PHIAL_TYPE_REQUIRED');
     const coefficient=chargeBladePhialCoefficient(t,type,!!state.enhancedPhial);
-    if(!Number.isFinite(Number(coefficient)))throw new Error(`CB_FAIL_CLOSED:${techniqueId}:PHIAL_COEFFICIENT`);
-    if(type==='IMPACT') impactPhial=CHARGE_BLADE_FORMULAS.IMPACT_PHIAL.evaluate({baseAttack:stats.baseAttack,coefficient,shieldBoosted:state.shieldBoosted!==false,artilleryMultiplier:Number(state.artilleryMultiplier??1)})*c.phial.count;
+    if(typeof coefficient!=='number'||!Number.isFinite(coefficient)||coefficient<0)throw new Error(`CB_FAIL_CLOSED:${techniqueId}:PHIAL_COEFFICIENT`);
+    if(type==='IMPACT') impactPhial=CHARGE_BLADE_FORMULAS.IMPACT_PHIAL.evaluate({baseAttack:stats.baseAttack,coefficient,shieldBoosted:state.shieldBoosted!==false,artilleryMultiplier:state.artilleryMultiplier??1})*c.phial.count;
     else elementalPhial=CHARGE_BLADE_FORMULAS.POWER_ELEMENT_PHIAL.evaluate({displayedElement:stats.displayedElement,coefficient,elementalHitzone:stats.elementalHitzone,shieldBoosted:state.shieldBoosted!==false})*c.phial.count;
   }
   const physical=physicalBody+axeBoostPhysical,element=elementalBody+axeBoostElement+elementalPhial,special=impactPhial,total=physical+element+special;
