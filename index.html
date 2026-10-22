@@ -7094,6 +7094,18 @@ function resolveSnapshotStatsForComparison(snapshot){
   applyBuildSnapshot(snapshot);
   return JSON.parse(JSON.stringify({...calcState.stats,ammoLoadingLevel:validCombatSkillLevel(calcState.total||{},['砲弾装填'],2)}));
 }
+// SAED is diagnostic-only: never fold its damage into the existing release/AED comparison power.
+function chargeBladeSaedComparisonChannel(buildStats,state){
+  const values={};
+  for(const condition of ['NORMAL','MAX']){
+    try{
+      const conditioned=chargeBladeConditionStats(buildStats,condition);
+      const damage=chargeBladeSaedDamage('CB_SAED',conditioned,state);
+      values[condition]={status:'REFERENCE_ONLY',total:damage.total,physical:damage.physical,element:damage.element,special:damage.special,trace:damage.trace};
+    }catch(error){values[condition]={status:'PENDING',reason:String(error?.message||error)};}
+  }
+  return values;
+}
 function buildComparisonRouter({snapshotA,snapshotB=null,cond,stateA={},stateB={}}={}){
   if(!snapshotA)throw new Error('BUILD_COMPARE_FAIL_CLOSED:BUILD_A_REQUIRED');
   const kindA=comparisonWeaponKindFromSnapshot(snapshotA),kindB=snapshotB?comparisonWeaponKindFromSnapshot(snapshotB):kindA;
@@ -7102,7 +7114,11 @@ function buildComparisonRouter({snapshotA,snapshotB=null,cond,stateA={},stateB={
   if(isChargeBladeKind(kindA)){
     const aRaw=resolveSnapshotStatsForComparison(snapshotA),a=chargeBladeStatsFromCalcState(aRaw,cond);
     let b=null,bRaw=null;if(snapshotB){bRaw=resolveSnapshotStatsForComparison(snapshotB);b=chargeBladeStatsFromCalcState(bRaw,cond)}
-    const result=chargeBladeBuildComparisonAdapter(a,b,chargeBladeStateFromBuildStats(aRaw,stateA),snapshotB?chargeBladeStateFromBuildStats(bRaw,stateB):null);
+    const aState=chargeBladeStateFromBuildStats(aRaw,stateA);
+    const bState=snapshotB?chargeBladeStateFromBuildStats(bRaw,stateB):null;
+    const result=chargeBladeBuildComparisonAdapter(a,b,aState,bState);
+    // Reference SAED damage is separate from the production comparison index.
+    result.saedReference={A:chargeBladeSaedComparisonChannel(a,aState),B:b?chargeBladeSaedComparisonChannel(b,bState):null};
     return comparisonCommonResultShape(result,'ChargeBladeHandler');
   }
   const descriptor=buildComparisonHandlerDescriptor(kindA);
