@@ -1,0 +1,14 @@
+'use strict';
+const {test}=require('node:test');const assert=require('node:assert/strict');const {createPipeline,datum,WEAPON_TYPES}=require('./core.cjs');
+const request=(power)=>({schemaVersion:'v10-min1',build:{weaponType:'charge_blade',raw:power},target:{id:'training'},conditions:{},evaluation:{mode:'standard'}});
+const resolver=(build)=>({weaponType:build.weaponType,equipment:{raw:build.raw},skills:{}});
+const effects=(_build,_cond,channel)=>({effects:{attack:datum('known',channel==='normal'?1:2),shield:datum('unknown')}});
+const h=({build,effects})=>({status:'OK',components:[{kind:'test-damage'}],metrics:{powerIndex:build.equipment.raw*effects.effects.attack.value,comboDps:null}});
+const pipe=createPipeline({resolveBuild:resolver,resolveEffects:effects,handlers:{charge_blade:h}});
+test('six-layer evaluation passes normal and maximum as independent channels',()=>{const r=pipe.evaluate(request(20));assert.equal(r.channels.normal.metrics.powerIndex,20);assert.equal(r.channels.maximum.metrics.powerIndex,40);assert.equal(r.channels.normal.status,'OK');});
+test('comparison preserves absolute values and adds separate A=100 relative view',()=>{const a=request(10),b=request(20),s=JSON.stringify([a,b]);const r=pipe.compare(a,b);assert.equal(r.a.channels.normal.metrics.powerIndex,10);assert.equal(r.b.channels.maximum.metrics.powerIndex,40);assert.deepEqual(r.relative.normal.powerIndex,{a:100,b:200});assert.equal(r.relative.normal.comboDps,null);assert.equal(JSON.stringify([a,b]),s);});
+test('zero, inactive, unknown, n/a remain distinct; null is rejected as known',()=>{assert.deepEqual(datum('known',0),{status:'known',value:0});assert.deepEqual(datum('inactive'),{status:'inactive'});assert.deepEqual(datum('unknown'),{status:'unknown'});assert.deepEqual(datum('not_applicable'),{status:'not_applicable'});assert.throws(()=>datum('known',null));});
+test('missing weapon handler returns NOT_IMPLEMENTED for both channels',()=>{const p=createPipeline({resolveBuild:()=>({weaponType:'bow',equipment:{},skills:{}}),resolveEffects:effects,handlers:{}});const r=p.evaluate(request(0));assert.equal(r.channels.normal.status,'NOT_IMPLEMENTED');assert.equal(r.channels.maximum.status,'NOT_IMPLEMENTED');});
+test('all 14 supported weapon types defined',()=>assert.equal(new Set(WEAPON_TYPES).size,14));
+test('invalid implicit numbers rejected in final metrics',()=>{const p=createPipeline({resolveBuild:resolver,resolveEffects:effects,handlers:{charge_blade:()=>({status:'OK',components:[],metrics:{powerIndex:'0'}})}});assert.throws(()=>p.evaluate(request(1)),/finite number/);});
+test('comparison never mutates original sources or global UI state',()=>{globalThis.calcState={marker:19};const a=request(4);Object.freeze(a.build);pipe.compare(a,request(6));assert.equal(globalThis.calcState.marker,19);delete globalThis.calcState;});
