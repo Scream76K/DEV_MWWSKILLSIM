@@ -7541,7 +7541,18 @@ function compareSnapshot(name,snapshot,cond){
     referenceCombo={techniqueCount:routeRows.length,status:Number.isFinite(route.damage)?'PROVISIONAL_REFERENCE':'BLOCKED',damage:route.damage??null,context:route.context,blocked:route.blocked||[],stages:(route.stages||[]).map(x=>({index:x.index,techniqueId:x.id,canonicalTechniqueId:x.move?.canonicalTechniqueId??null,name:x.name,damage:x.result?.total??null,hits:x.result?.hits||[],verificationStatus:x.result?.verificationStatus??null,evidenceRefs:x.result?.evidenceRefs||[],attackComponents:x.result?.attackComponents??null,displayHits:x.result?.displayHits??null}))};
   }catch(e){referenceCombo={status:'BLOCKED',damage:null,blocked:[{reason:'P0_COMPARISON_CONTEXT_PENDING:'+String(e.message||e)}],stages:[]};}
   const kind=canonicalWeaponKind(selectedWeapon()),power=standardPowerForStats(kind,st,{...cond,cb:skillLevel(calcState.total||{},['超会心','Critical Boost'])},calcState.total||{});
-  return {name,kind,power,referenceCombo,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:st.element,elementType:String(st.elementType||''),elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason,damage:dmg,dps,dpsStatus,damageReason,dpsReason,comboVerification,referenceDps:comboVerification?.referenceDps??null,referenceDpsStatus:comboVerification?.referenceDpsStatus??'NOT_CALCULATED'};
+  let saedReference=null;
+  if(isChargeBladeKind(kind)){
+    try{
+      const compareStats=chargeBladeStatsFromCalcState(st,cond);
+      const state=chargeBladeStateFromBuildStats({...st,ammoLoadingLevel:validCombatSkillLevel(calcState.total||{},['砲弾装填'],2)},comboCBStoredState());
+      saedReference=chargeBladeSaedComparisonChannel(compareStats,state);
+    }catch(error){
+      const reason=String(error?.message||error);
+      saedReference={NORMAL:{status:'PENDING',reason},MAX:{status:'PENDING',reason}};
+    }
+  }
+  return {name,kind,power,referenceCombo,saedReference,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:st.element,elementType:String(st.elementType||''),elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason,damage:dmg,dps,dpsStatus,damageReason,dpsReason,comboVerification,referenceDps:comboVerification?.referenceDps??null,referenceDpsStatus:comboVerification?.referenceDpsStatus??'NOT_CALCULATED'};
 }
 function comparisonReasonText(reason){
   const text=String(reason||'');
@@ -7722,6 +7733,16 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   h+='<div class="compare-note small" data-comparison-coverage="r248">比較可能：通常 '+coverage.normal+'/'+coverage.total+'件 ／ 最大 '+coverage.maximum+'/'+coverage.total+'件 ／ DPS '+coverage.dps+'/'+coverage.total+'件。算出不能な結果は推測で補完しません。</div>';
   if(coverage.pending.length){
     h+='<details class="compare-note" data-comparison-pending="r248"><summary>比較保留の原因を確認（'+coverage.pending.length+'項目）</summary><p class="small">同じビルドが通常・最大・DPSの複数項目で表示される場合があります。</p><strong>原因別集計</strong>'+coverage.causes.map(x=>'<p class="small">'+esc(comparisonReasonText(x.reason))+'：'+x.buildCount+'ビルド／'+x.metricCount+'項目（通常'+x.metrics.normal+'・最大'+x.metrics.maximum+'・DPS'+x.metrics.dps+'）</p>').join('')+'<strong>個別の保留内容</strong>'+coverage.pending.map(x=>'<p class="small">'+esc(x.name)+' ／ '+({normal:'通常',maximum:'最大',dps:'DPS'}[x.metric])+'：'+esc(comparisonReasonText(x.reason))+' <code>'+esc(x.reason)+'</code></p>').join('')+'</details>';
+  }
+  if(rows.every(row=>isChargeBladeKind(row.kind))){
+    h+='<div class="compare-note"><b>超高出力属性解放斬り（参考ダメージ）</b> — 火力指数・DPSには加算しません。</div>';
+    for(const [mode,label] of [['NORMAL','通常条件'],['MAX','最大条件']]){
+      h+='<div class="compare-note small">'+label+'：'+rows.map(row=>{
+        const x=row.saedReference?.[mode];
+        const value=x?.status==='REFERENCE_ONLY'&&typeof x.total==='number'&&Number.isFinite(x.total)?x.total.toFixed(1):'保留（'+esc(x?.reason||'未計算')+'）';
+        return esc(row.name)+' '+value;
+      }).join(' ／ ')+'</div>';
+    }
   }
   h+=comparisonReadinessHtml(rows,baseline);
   if(rows.length>1)h+='<div class="compare-note small">表が画面に収まらない場合は、表の中を横にスワイプして比較できます。</div>';
