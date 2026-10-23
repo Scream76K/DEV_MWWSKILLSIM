@@ -1,0 +1,15 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const {pinVersions,compilePlan,executeChannel,aggregate}=require('./event-engine.cjs');
+const versions={game:'1.042',equipment:'e1',technique:'t1',effects:'x1'};
+const read=(id,v)=>({id,revision:'r1',dataVersion:v,hits:[{id:'h1',components:[{id:'p',kind:'physical',unit:'MV',source:'Technique DB',coefficient:3}]}]});
+const plan=()=>compilePlan({selected:['a','b'],versions:pinVersions(versions),readTechnique:read});
+const handler=({event,state})=>event.type==='hit'?{emit:['p']}: {nextState:{count:state.count+1}};
+const execute=(h=handler,formulae={physical:({coefficient})=>({status:'available',value:coefficient})})=>executeChannel({plan:plan(),initialState:{count:0},handler:h,effects:[],formulae,build:{},channel:'normal'});
+test('version pinning rejects missing references',()=>assert.throws(()=>pinVersions({game:'1'})));
+test('technique plan has expected ordered events',()=>assert.deepEqual(plan().expectedEvents,['0:0','0:0:after','1:0','1:0:after']));
+test('complete execution sums in sole L5',()=>{const r=aggregate(execute(),2);assert.equal(r.metrics.comboTotalDamage.value,6);assert.equal(r.metrics.comboDps.value,3);});
+test('handler absent cannot produce zero or DPS',()=>{const r=aggregate(execute(null,{}),2);assert.equal(r.metrics.comboTotalDamage.status,'unavailable');});
+test('interrupted second hit retains partial component',()=>{const r=aggregate(execute(({event,state})=>{if(event.id==='1:0')throw Error('stop');return handler({event,state})}),2);assert.equal(r.components.length,1);assert.equal(r.metrics.comboTotalDamage.reason,'EXECUTION_INCOMPLETE');assert.equal(r.metrics.comboDps.status,'unavailable');});
+test('missing duration preserves total',()=>{const r=aggregate(execute(),null);assert.equal(r.metrics.comboTotalDamage.value,6);assert.equal(r.metrics.comboDps.reason,'DURATION_UNAVAILABLE');});
+test('unknown formula marks total unavailable',()=>{const r=aggregate(execute(handler,{}),2);assert.equal(r.metrics.comboTotalDamage.status,'unavailable');});
