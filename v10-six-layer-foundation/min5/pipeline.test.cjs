@@ -1,0 +1,17 @@
+'use strict';
+const {test}=require('node:test'),a=require('node:assert/strict');
+const {createPipeline}=require('./pipeline.cjs');
+const {datum}=require('../core.cjs');
+const versions={game:'1.042',equipment:'eq1',technique:'tech2',effects:'fx3'};
+const request=(raw=10)=>({schemaVersion:'v10-min2',build:{raw},target:{id:'training',hitZoneKey:'head'},conditions:{},evaluation:{mode:'combo',kind:'combo',signature:'move-a|move-b',techniqueIds:['move-a','move-b'],duration:2}});
+const resolveBuild=(s,db)=>({weaponType:'charge-blade',dbVersion:db,source:'MHDB',equipment:{ids:['w1'],trueAttack:datum('known',s.raw),displayElement:datum('known',0),baseAffinity:datum('known',0)},skills:{entries:[]}});
+const resolveEffects=(_b,_c,ch)=>({effects:[{id:'atk',target:'physical',stage:'hit',order:1,operation:'add',amount:datum('known',ch==='maximum'?2:1),condition:datum('known',true),source:'MHDB'}]});
+const readTechnique=(id,v)=>({id,revision:'r1',dataVersion:v,hits:[{id:'h1',components:[{id:'raw',kind:'physical',coefficient:5,unit:'MV',source:'Technique DB'}]}]});
+const handler=({event,state})=>event.type==='hit'?{emit:['raw']}: {nextState:{...state,n:(state.n||0)+1}};
+const setup=(opts={})=>createPipeline({versions,resolveBuild,resolveEffects:opts.effects||resolveEffects,readTechnique:opts.read||readTechnique,initialState:()=>({n:0}),handlers:opts.handlers===undefined?{'charge-blade':handler}:opts.handlers,formulae:opts.formulae===undefined?{physical:({coefficient})=>({status:'available',value:coefficient})}:opts.formulae});
+test('single 6-layer evaluate produces totals and DPS',()=>{const r=setup().evaluate(request());a.equal(r.channels.normal.metrics.comboTotalDamage.value,12);a.equal(r.channels.normal.metrics.comboDps.value,6);});
+test('maximum channel is independent',()=>{const r=setup({effects:(...x)=>x[2]==='maximum'?(()=>{throw Error('max')})():resolveEffects(...x)}).evaluate(request());a.equal(r.channels.normal.metrics.comboTotalDamage.status,'available');a.equal(r.channels.maximum.metrics.comboTotalDamage.status,'unavailable');});
+test('missing handler never produces zero total',()=>{const r=setup({handlers:{}}).evaluate(request());a.equal(r.channels.normal.metrics.comboTotalDamage.status,'unavailable')});
+test('interrupted execution retains partial components but no total or DPS',()=>{const r=setup({handlers:{'charge-blade':({event,state})=>{if(event.id.startsWith('1:'))throw Error('stopped');return handler({event,state});}}}).evaluate(request());a.equal(r.channels.normal.metrics.comboTotalDamage.status,'unavailable');a.equal(r.channels.normal.metrics.comboDps.status,'unavailable');a.ok(r.channels.normal.components.length>0);});
+test('missing formula cannot create numeric total',()=>{const r=setup({formulae:{}}).evaluate(request());a.equal(r.channels.normal.metrics.comboTotalDamage.status,'unavailable');});
+test('A/B comparison does not mutate inputs',()=>{const x=request(),before=JSON.stringify(x);setup().compare(x,request(20));a.equal(JSON.stringify(x),before)});
