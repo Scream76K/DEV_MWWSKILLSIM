@@ -4,10 +4,12 @@
 const {createImmutableProvider}=require('./immutable-provider.cjs');
 const {createPipeline}=require('./pipeline.cjs');
 const {adaptOrdinaryPhysicalHit}=require('./real-technique-one-hit-adapter.cjs');
+const {createSourcedPhysicalFormula}=require('./sourced-physical-formula.cjs');
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
-function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,initialState,formulae,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
+function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
- if(typeof formulae?.physical!=='function')throw Error('REAL_SLICE:PHYSICAL_FORMULA_REQUIRED');
+ const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
+ if(typeof physical!=='function')throw Error('REAL_SLICE:PHYSICAL_FORMULA_REQUIRED');
  if(typeof resolveBuild!=='function'||typeof resolveEffects!=='function'||typeof initialState!=='function')throw Error('REAL_SLICE:RESOLVERS_REQUIRED');
  // The pinned technique is independent of A/B builds; the physical-only disposition is
  // checked against every build and each channel, rather than cached from one build.
@@ -38,6 +40,6 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
   if(event.type!=='hit'||event.techniqueId!==techniqueId||event.components?.length!==1||event.components[0].id!==componentId)throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   return {emit:[componentId],inactive:[],unresolved:[]};
  }};
- return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical:formulae.physical}});
+ return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical}});
 }
 module.exports={createRealOneHitPipeline};
