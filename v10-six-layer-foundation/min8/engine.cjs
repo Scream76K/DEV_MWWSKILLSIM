@@ -11,6 +11,9 @@ const condition=(rule,ctx)=>{
  if(!root||!Object.hasOwn(root,rule.key))return 'unknown';
  return semantic(root[rule.key])===semantic(rule.value)?'true':'false';
 };
+const validPath=p=>Array.isArray(p)&&p.length>0&&p.every(k=>(typeof k==='string'&&k.length>0&&k!=='__proto__'&&k!=='prototype'&&k!=='constructor')||(Number.isInteger(k)&&k>=0));
+const readPath=(root,path)=>{let x=root;for(const k of path){if(x===null||typeof x!=='object'||!Object.hasOwn(x,k))return {status:'unknown'};x=x[k]}return {status:'known',value:x}};
+const writePath=(root,path,value)=>{let x=root;for(const k of path.slice(0,-1)){ensure(x&&typeof x==='object'&&Object.hasOwn(x,k),'STATE_PATH_UNKNOWN');x=x[k]}const key=path.at(-1);ensure(x&&typeof x==='object'&&Object.hasOwn(x,key),'STATE_PATH_UNKNOWN');x[key]=copy(value)};
 const bad=reason=>({status:'unavailable',reason}), good=value=>({status:'available',value});
 function createPipeline({versions,openDataSnapshot,initialState,handlers={},formulae={}}){
  const pinned=copy(versions);
@@ -94,13 +97,25 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        ensure(decision.nextState&&typeof decision.nextState==='object','NEXT_STATE_REQUIRED');
        const after=decision.nextState;
        if(ev.type==='consume'){
-         ensure(typeof ev.resource==='string'&&ev.resource&&num(ev.amount)&&ev.amount>=0,'CONSUME_DEFINITION_INVALID');
-         ensure(num(before[ev.resource])&&before[ev.resource]>=ev.amount,'CONSUME_RESOURCE_INVALID');
-         const expected=copy(before);expected[ev.resource]-=ev.amount;
+         const path=ev.resourcePath===undefined?[ev.resource]:ev.resourcePath;
+         ensure(validPath(path)&&num(ev.amount)&&ev.amount>=0,'CONSUME_DEFINITION_INVALID');
+         const current=readPath(before,path);
+         ensure(current.status==='known'&&num(current.value)&&current.value>=ev.amount,'CONSUME_RESOURCE_INVALID');
+         const expected=copy(before);writePath(expected,path,current.value-ev.amount);
          ensure(semantic(after)===semantic(expected),'CONSUME_TRANSITION_MISMATCH');
        }else if(ev.type==='transition'){
-         ensure(ev.updates&&typeof ev.updates==='object'&&!Array.isArray(ev.updates),'TRANSITION_DEFINITION_MISSING');
-         const expected={...copy(before),...copy(ev.updates)};
+         const expected=copy(before);
+         if(Array.isArray(ev.operations)){
+           const occupied=new Set();
+           for(const op of ev.operations){
+             ensure(op?.op==='set'&&validPath(op.path)&&Object.hasOwn(op,'value'),'TRANSITION_OPERATION_INVALID');
+             const key=semantic(op.path);ensure(!occupied.has(key),'TRANSITION_DUPLICATE_PATH');occupied.add(key);
+             writePath(expected,op.path,op.value);
+           }
+         }else{
+           ensure(ev.updates&&typeof ev.updates==='object'&&!Array.isArray(ev.updates),'TRANSITION_DEFINITION_MISSING');
+           Object.assign(expected,copy(ev.updates));
+         }
          ensure(semantic(after)===semantic(expected),'TRANSITION_MISMATCH');
        }
        state=copy(after);
