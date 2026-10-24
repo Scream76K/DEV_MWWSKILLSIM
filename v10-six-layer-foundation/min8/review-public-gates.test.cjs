@@ -93,3 +93,13 @@ test('public condition contract rejects non-finite predicate values',()=>{
   a.equal(result.channels[ch].execution.reason,'STATE_VALUE_NON_FINITE');
  }
 });
+
+test('dense array stock=[3] is accepted for one hit and remains unchanged',()=>{
+ const p=setup({state:{stock:[3]},events:[hit]});
+ const r=p.evaluate(request());
+ for(const ch of ['normal','maximum']){
+  a.equal(r.channels[ch].execution.status,'complete');
+  a.deepEqual(r.channels[ch].finalState,{stock:[3]});
+  a.equal(r.channels[ch].metrics.comboTotalDamage.status,'available');
+ }
+});
