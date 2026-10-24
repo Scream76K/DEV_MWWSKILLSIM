@@ -16,7 +16,7 @@ const validateState=(value,seen=new Set())=>{
     }
     for(const key of Reflect.ownKeys(value)){
       if(key==='length')continue;
-      ensure(typeof key==='string'&&/^(0|[1-9]\\d*)$/.test(key)&&Number(key)<value.length&&Object.getOwnPropertyDescriptor(value,key)?.enumerable,'STATE_KEY_INVALID');
+      ensure(typeof key==='string'&&Number.isSafeInteger(Number(key))&&Number(key)>=0&&String(Number(key))===key&&Number(key)<value.length&&Object.getOwnPropertyDescriptor(value,key)?.enumerable,'STATE_KEY_INVALID');
     }
   }else{
     for(const key of Reflect.ownKeys(value)){
