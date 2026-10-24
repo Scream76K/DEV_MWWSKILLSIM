@@ -41,3 +41,9 @@ The existing `min8/pipeline.cjs` remains the public entry (`evaluate`, `compare`
 
 ## Owners and controls
 Himmel: primary implementation/integration after rate-limit release. Flamme: independent scope/contract/code support, not concurrent editing same main file. Zerie: architecture and technical gate review. Owner: product rules, Mac/iPhone UX and publication approval. Jira KAN-44/47/66/40 maintain β status independently; no premature Done.
+
+## 2026-10-24 latest delta for returning Himmel
+- After the original handoff, two public-entry defects were corrected: legacy transition state equality (`c6015d7`) and comparison snapshot failure reporting (`e99c206`); legacy transition regression added (`8dfc60e`).
+- One output-focused L5 proof was added to existing `min8/pipeline.test.cjs` (`e483d56`): remove **duration only** from a minimal known hit request; expected output is unchanged available comboTotalDamage and unavailable comboDps with DURATION_UNAVAILABLE on both channels. It is **committed, not yet execution-verified**.
+- Gate remains pending: Node execution evidence for the *current HEAD* and Zerie re-review. Previous CI results for `90b413f` are not evidence for these later changes.
+- First implementation action on return remains `node --test v10-six-layer-foundation/min8/review-public-gates.test.cjs v10-six-layer-foundation/min8/pipeline.test.cjs` (smallest public output scope), stop at first failure. No large regression suite.
