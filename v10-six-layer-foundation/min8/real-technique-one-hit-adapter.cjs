@@ -1,9 +1,8 @@
 'use strict';
 // Narrow real-Technique-DB bridge candidate; intentionally NOT wired to production.
 // Source of all normative values: caller's existing Technique DB record.
-const own=(x,k)=>Object.prototype.hasOwnProperty.call(x,k);
 const finite=x=>typeof x==='number'&&Number.isFinite(x);
-function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion}={}){
+function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,elementContext}={}){
   if(!weaponType||weaponType==='charge-blade'||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
   if(!record||record.techniqueId!==techniqueId||(record.weaponType!==undefined&&record.weaponType!==weaponType))throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
   if(!Number.isInteger(record.revision)||record.revision<1)throw Error('REAL_SLICE:REVISION_REQUIRED');
@@ -14,12 +13,15 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion}={}){
   const hit=record.hits[0];
   if(!finite(hit.mv)||hit.mv<0||!finite(hit.elementModifier)||hit.elementModifier<0)throw Error('REAL_SLICE:HIT_FIELDS_PENDING');
   if(hit.damageStatsState!==undefined&&hit.damageStatsState!==null)throw Error('REAL_SLICE:STATE_DEPENDENT_HIT');
-  if(hit.elementModifier!==0)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING');
+  // Element modifiers exist on ordinary physical hits. Do not discard them silently.
+  // Physical-only evaluation is permitted only with an explicitly resolved, zero-element context.
+  if(hit.elementModifier!==0 && !(elementContext?.displayElement===0 && elementContext?.effectsResolved===true && Array.isArray(elementContext.activeElementEffects) && elementContext.activeElementEffects.length===0))throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING');
   if(record.calculationStatus==='EVIDENCE_GATED')throw Error('REAL_SLICE:EVIDENCE_GATED');
   const source=record.evidenceRefs[0];
   if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   return Object.freeze({
     id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',
+    excludedElement:hit.elementModifier===0?null:{coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS'},
     events:[{type:'hit',components:[{id:techniqueId+':physical:0',kind:'physical',unit:'MV',source,coefficient:hit.mv}]}]
   });
 }
