@@ -16,7 +16,8 @@ const validateState=(value,seen=new Set())=>{
   if(Array.isArray(value))for(let i=0;i<value.length;i++)ensure(Object.hasOwn(value,i),'STATE_ARRAY_HOLE_INVALID');
   seen.delete(value);
 };
-const semantic=x=>{validateState(x);return JSON.stringify(stable(x));};
+const semantic=x=>JSON.stringify(stable(x));
+const stateEqual=(a,b)=>{validateState(a);validateState(b);return semantic(a)===semantic(b);};
 const pathIdentity=path=>JSON.stringify(path.map(key=>String(key)));
 const finite=x=>typeof x==='number'&&Number.isFinite(x);
 const condition=(rule,ctx)=>{
@@ -154,7 +155,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
          const current=readPath(before,path);
          ensure(current.status==='known'&&num(current.value)&&current.value>=ev.amount,'CONSUME_RESOURCE_INVALID');
          expected=copy(before);writePath(expected,path,current.value-ev.amount);
-         ensure(semantic(after)===semantic(expected),'CONSUME_TRANSITION_MISMATCH');
+         ensure(stateEqual(after,expected),'CONSUME_TRANSITION_MISMATCH');
        }else if(ev.type==='transition'){
          expected=copy(before);
          if(Array.isArray(ev.operations)){
