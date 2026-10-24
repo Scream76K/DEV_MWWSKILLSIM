@@ -1,6 +1,16 @@
 'use strict';
 // min8 structural engine: immutable-per-session Technique records, event execution, single L5.
 const copy=x=>structuredClone(x), ensure=(x,m)=>{if(!x)throw Error(m)}, num=x=>typeof x==='number'&&Number.isFinite(x);
+const stable=x=>Array.isArray(x)?x.map(stable):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,stable(x[k])])):x;
+const semantic=x=>JSON.stringify(stable(x));
+const condition=(rule,ctx)=>{
+ ensure(rule&&typeof rule==='object'&&['always','state-equals','target-equals','event-equals'].includes(rule.type),'CONDITION_INVALID');
+ if(rule.type==='always')return 'true';
+ const root=rule.type==='state-equals'?ctx.state:rule.type==='target-equals'?ctx.target:ctx.event;
+ ensure(typeof rule.key==='string'&&rule.key.length>0&&Object.hasOwn(rule,'value'),'CONDITION_SCHEMA_INVALID');
+ if(!root||!Object.hasOwn(root,rule.key))return 'unknown';
+ return semantic(root[rule.key])===semantic(rule.value)?'true':'false';
+};
 const bad=reason=>({status:'unavailable',reason}), good=value=>({status:'available',value});
 function createPipeline({versions,openDataSnapshot,initialState,handlers={},formulae={}}){
  const pinned=copy(versions);
@@ -25,14 +35,15 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   });
   return {events,expected:events.map(e=>e.id),signature:JSON.stringify(revisions)};
  }
- function applyEffects(component,effects,state,build){
+ function applyEffects(component,effects,state,build,target,event){
   const out={coefficient:component.coefficient,stats:{attack:build.trueAttack,element:build.element,affinity:build.affinity},post:[],trace:[]};
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
   const unit={coefficient:component.unit,attack:'true-attack',element:'display-element',affinity:'percent',damage:'damage'};
   for(const e of [...effects].filter(x=>x.target===component.kind).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id))){
    ensure(unit[e.stage]===e.unit&&num(e.amount)&&['add','multiply','cap'].includes(e.operation),'EFFECT_INVALID');
-   const active=e.condition.type==='always'||(e.condition.type==='state-equals'&&state[e.condition.key]===e.condition.value);
-   if(!active)continue;
+   const active=condition(e.condition,{state,target,event});
+   if(active==='unknown')throw Error('EFFECT_CONDITION_UNKNOWN_'+e.id);
+   if(active==='false')continue;
    if(e.stage==='damage')out.post.push({operation:e.operation,amount:e.amount});
    else {const dest=e.stage==='coefficient'?out:out.stats,key=e.stage;const v=dest[key];dest[key]=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);}
    out.trace.push({id:e.id,stage:e.stage,unit:e.unit,order:e.order,source:e.source});
@@ -54,7 +65,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
    const handler=handlers[build.weaponType];ensure(typeof handler==='function','HANDLER_NOT_IMPLEMENTED');
    for(const ev of plan.events){
     try{
-     const decision=handler({event:copy({id:ev.id,type:ev.type,techniqueId:ev.techniqueId,componentIds:ev.type==='hit'?ev.components.map(c=>c.id):[]}),state:copy(state),channel:ch});
+     const decision=handler({event:copy(ev),state:copy(state),channel:ch});
      ensure(decision&&typeof decision==='object','DECISION_MISSING');
      if(ev.type==='hit'){
       const emit=decision.emit,inactive=decision.inactive,unresolved=decision.unresolved||[];
@@ -65,7 +76,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        const meta={id:c.id,eventId:ev.id,techniqueId:ev.techniqueId,revision:ev.revision,source:c.source,coefficientUnit:c.unit,damageUnit:'damage'};
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
        if(unresolved.includes(c.id)){components.push({...meta,...bad('UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
-       const applied=applyEffects(c,effects,state,build),f=formulae[c.kind];
+       const applied=applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
        const response=typeof f==='function'?f({kind:c.kind,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
@@ -85,7 +96,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   ensure(build?.weaponType,'BUILD_INVALID');
   const plan=planFor(req,s),results={};
   for(const ch of ['normal','maximum'])results[ch]=runChannel(build,req,plan,ch,s);
-  return {status:'OK',weaponType:build.weaponType,versions:copy(pinned),conditionKey:JSON.stringify({target:req.target,evaluation:req.evaluation,conditions:req.conditions,plan:plan.signature}),channels:results};
+  return {status:'OK',weaponType:build.weaponType,versions:copy(pinned),conditionKey:semantic({target:req.target,conditions:req.conditions,plan:plan.signature,evaluationKind:req.evaluation.kind}),comparisonContext:{damage:semantic({target:req.target,conditions:req.conditions,plan:plan.signature,evaluationKind:req.evaluation.kind}),dps:semantic({target:req.target,conditions:req.conditions,plan:plan.signature,evaluationKind:req.evaluation.kind,duration:req.evaluation.duration})},channels:results};
  }
  function safeEvaluate(req,s){try{return evaluate(req,s)}catch(err){return {status:'FAILED',reason:err.message,channels:Object.fromEntries(['normal','maximum'].map(ch=>[ch,{metrics:{comboTotalDamage:bad(err.message),comboDps:bad(err.message)}}]))}}}
  return Object.freeze({evaluate,safeEvaluate,session});
