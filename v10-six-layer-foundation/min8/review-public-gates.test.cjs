@@ -83,3 +83,13 @@ test('legacy transition updates cannot mutate unrelated state',()=>{
   a.deepEqual(r.channels[ch].finalState,{gauge:0,flag:null});
  }
 });
+
+test('public condition contract rejects non-finite predicate values',()=>{
+ const effects=[{id:'bad-predicate',target:'physical',stage:'attack',operation:'add',amount:1,unit:'true-attack',order:1,source:'DB',condition:{type:'state-equals',path:['flag'],value:NaN}}];
+ const result=setup({effects}).evaluate(request());
+ for(const ch of ['normal','maximum']){
+  a.equal(result.channels[ch].execution.status,'incomplete');
+  a.equal(result.channels[ch].metrics.comboTotalDamage.status,'unavailable');
+  a.equal(result.channels[ch].execution.reason,'STATE_VALUE_NON_FINITE');
+ }
+});
