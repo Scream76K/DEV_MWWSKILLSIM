@@ -2,7 +2,22 @@
 // min8 structural engine: immutable-per-session Technique records, event execution, single L5.
 const copy=x=>structuredClone(x), ensure=(x,m)=>{if(!x)throw Error(m)}, num=x=>typeof x==='number'&&Number.isFinite(x);
 const stable=x=>Array.isArray(x)?x.map(stable):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,stable(x[k])])):x;
-const semantic=x=>JSON.stringify(stable(x));
+const validateState=(value,seen=new Set())=>{
+  const t=typeof value;
+  ensure(value!==undefined&&t!=='function'&&t!=='symbol'&&t!=='bigint','STATE_VALUE_INVALID');
+  if(t==='number')ensure(Number.isFinite(value),'STATE_VALUE_NON_FINITE');
+  if(value===null||t!=='object')return;
+  ensure(!seen.has(value),'STATE_CYCLE_INVALID');seen.add(value);
+  ensure(Array.isArray(value)||Object.getPrototypeOf(value)===Object.prototype||Object.getPrototypeOf(value)===null,'STATE_OBJECT_INVALID');
+  for(const key of Reflect.ownKeys(value)){
+    ensure(typeof key==='string'&&Object.getOwnPropertyDescriptor(value,key)?.enumerable,'STATE_KEY_INVALID');
+    validateState(value[key],seen);
+  }
+  if(Array.isArray(value))for(let i=0;i<value.length;i++)ensure(Object.hasOwn(value,i),'STATE_ARRAY_HOLE_INVALID');
+  seen.delete(value);
+};
+const semantic=x=>{validateState(x);return JSON.stringify(stable(x));};
+const pathIdentity=path=>JSON.stringify(path.map(key=>String(key)));
 const finite=x=>typeof x==='number'&&Number.isFinite(x);
 const condition=(rule,ctx)=>{
  ensure(rule&&typeof rule==='object'&&['always','state-equals','target-equals','event-equals'].includes(rule.type),'CONDITION_INVALID');
@@ -27,7 +42,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
  for(const k of ['game','equipment','technique','effects'])ensure(typeof pinned[k]==='string'&&pinned[k], 'VERSION_MISSING_'+k);
  function session(){
   const snap=openDataSnapshot(copy(pinned));
-  ensure(snap&&JSON.stringify(snap.versions)===JSON.stringify(pinned),'SNAPSHOT_VERSION_MISMATCH');
+  ensure(snap&&semantic(snap.versions)===semantic(pinned),'SNAPSHOT_VERSION_MISMATCH');
   for(const k of ['readTechnique','resolveBuild','resolveEffects'])ensure(typeof snap[k]==='function','SNAPSHOT_READER_MISSING_'+k);
   const cache=new Map(),buildCache=new Map(),effectCache=new Map(),failures=new Map();
   let sealed=false;
@@ -104,7 +119,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
  function runChannel(build,req,plan,ch,s){
   const executed=[],components=[],issues=[];let state;
   try{
-   state=copy(initialState(copy(build),ch,copy(req.conditions)));ensure(state&&typeof state==='object','STATE_INVALID');
+   state=copy(initialState(copy(build),ch,copy(req.conditions)));ensure(state&&typeof state==='object','STATE_INVALID');validateState(state);
    const effects=s.snapshot.resolveEffects(copy(build),copy(req.conditions),ch,pinned.effects);
    ensure(Array.isArray(effects),'EFFECTS_INVALID');
    const handler=handlers[build.weaponType];ensure(typeof handler==='function','HANDLER_NOT_IMPLEMENTED');
@@ -126,29 +141,30 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        const response=typeof f==='function'?f({kind:c.kind,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
-       if(result!==null){for(const post of applied.post)result=post.operation==='add'?result+post.amount:post.operation==='multiply'?result*post.amount:Math.min(result,post.amount);ensure(num(result),'POST_DAMAGE_INVALID')}
+       if(result!==null){for(const post of applied.post){result=post.operation==='add'?result+post.amount:post.operation==='multiply'?result*post.amount:Math.min(result,post.amount);ensure(num(result),'POST_DAMAGE_NON_FINITE')}}
        components.push({...meta,...(result===null?bad(response.reason):good(result)),disposition:'emitted',effectsApplied:applied.trace});
       }
      }else{
        ensure(decision.nextState&&typeof decision.nextState==='object','NEXT_STATE_REQUIRED');
-       const after=decision.nextState;
+       const after=decision.nextState;validateState(after);
+       let expected;
        if(ev.type==='consume'){
          const path=ev.resourcePath===undefined?[ev.resource]:ev.resourcePath;
          ensure(validPath(path)&&num(ev.amount)&&ev.amount>=0,'CONSUME_DEFINITION_INVALID');
          const current=readPath(before,path);
          ensure(current.status==='known'&&num(current.value)&&current.value>=ev.amount,'CONSUME_RESOURCE_INVALID');
-         const expected=copy(before);writePath(expected,path,current.value-ev.amount);
+         expected=copy(before);writePath(expected,path,current.value-ev.amount);
          ensure(semantic(after)===semantic(expected),'CONSUME_TRANSITION_MISMATCH');
        }else if(ev.type==='transition'){
-         const expected=copy(before);
+         expected=copy(before);
          if(Array.isArray(ev.operations)){
            const occupied=new Set();
            for(const op of ev.operations){
              ensure(op&&['set','add','transfer'].includes(op.op)&&validPath(op.path),'TRANSITION_OPERATION_INVALID');
-             const key=semantic(op.path);ensure(!occupied.has(key),'TRANSITION_DUPLICATE_PATH');occupied.add(key);
+             const key=pathIdentity(op.path);ensure(!occupied.has(key),'TRANSITION_DUPLICATE_PATH');occupied.add(key);
              if(op.op==='set'){ensure(Object.hasOwn(op,'value'),'TRANSITION_VALUE_MISSING');writePath(expected,op.path,op.value);}
              else if(op.op==='add'){const curr=readPath(expected,op.path);ensure(curr.status==='known'&&finite(curr.value)&&finite(op.amount),'TRANSITION_ADD_INVALID');let next=curr.value+op.amount;ensure(finite(next),'TRANSITION_OVERFLOW');if(op.cap!==undefined){ensure(finite(op.cap),'TRANSITION_CAP_INVALID');next=Math.min(next,op.cap)}writePath(expected,op.path,next);}
-             else {ensure(validPath(op.to)&&semantic(op.to)!==semantic(op.path),'TRANSFER_TARGET_INVALID');const from=readPath(expected,op.path),to=readPath(expected,op.to);ensure(from.status==='known'&&to.status==='known'&&finite(from.value)&&finite(to.value),'TRANSFER_RESOURCE_INVALID');const amount=op.amount==='all'?from.value:op.amount;ensure(finite(amount)&&amount>=0&&from.value>=amount,'TRANSFER_AMOUNT_INVALID');ensure(finite(to.value+amount),'TRANSFER_OVERFLOW');writePath(expected,op.path,from.value-amount);writePath(expected,op.to,to.value+amount);}
+             else {ensure(validPath(op.to)&&pathIdentity(op.to)!==pathIdentity(op.path),'TRANSFER_TARGET_INVALID');ensure(!occupied.has(pathIdentity(op.to)),'TRANSITION_DUPLICATE_PATH');occupied.add(pathIdentity(op.to));const from=readPath(expected,op.path),to=readPath(expected,op.to);ensure(from.status==='known'&&to.status==='known'&&finite(from.value)&&finite(to.value),'TRANSFER_RESOURCE_INVALID');const amount=op.amount==='all'?from.value:op.amount;ensure(finite(amount)&&amount>=0&&from.value>=amount,'TRANSFER_AMOUNT_INVALID');ensure(finite(to.value+amount),'TRANSFER_OVERFLOW');writePath(expected,op.path,from.value-amount);writePath(expected,op.to,to.value+amount);}
            }
          }else{
            ensure(ev.updates&&typeof ev.updates==='object'&&!Array.isArray(ev.updates),'TRANSITION_DEFINITION_MISSING');
@@ -156,7 +172,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
          }
          ensure(semantic(after)===semantic(expected),'TRANSITION_MISMATCH');
        }
-       state=copy(after);
+       state=expected;
      }
      executed.push(ev.id);
     }catch(err){issues.push({eventId:ev.id,reason:err.message});break}
