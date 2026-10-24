@@ -5,7 +5,7 @@ const own=(x,k)=>Object.prototype.hasOwnProperty.call(x,k);
 const finite=x=>typeof x==='number'&&Number.isFinite(x);
 function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion}={}){
   if(!weaponType||weaponType==='charge-blade'||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
-  if(!record||record.techniqueId!==techniqueId||record.weaponType!==weaponType)throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
+  if(!record||record.techniqueId!==techniqueId||(record.weaponType!==undefined&&record.weaponType!==weaponType))throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
   if(!Number.isInteger(record.revision)||record.revision<1)throw Error('REAL_SLICE:REVISION_REQUIRED');
   if(!['VERIFIED','PARTIALLY_VERIFIED'].includes(record.verificationStatus))throw Error('REAL_SLICE:VERIFICATION_PENDING');
   if(!Array.isArray(record.evidenceRefs)||record.evidenceRefs.length===0)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
