@@ -19,9 +19,14 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const snap=openDataSnapshot(copy(pinned));
   ensure(snap&&JSON.stringify(snap.versions)===JSON.stringify(pinned),'SNAPSHOT_VERSION_MISMATCH');
   for(const k of ['readTechnique','resolveBuild','resolveEffects'])ensure(typeof snap[k]==='function','SNAPSHOT_READER_MISSING_'+k);
-  const cache=new Map();
+  const cache=new Map(),buildCache=new Map(),effectCache=new Map();
   const readTechnique=(id)=>{const k=id+'@'+pinned.technique;if(!cache.has(k))cache.set(k,copy(snap.readTechnique(id,pinned.technique,pinned.game)));return copy(cache.get(k))};
-  return {snapshot:snap,readTechnique};
+  const resolved={
+    ...snap,
+    resolveBuild:(raw,db,game)=>{const key=semantic({raw,db,game});if(!buildCache.has(key))buildCache.set(key,copy(snap.resolveBuild(copy(raw),db,game)));return copy(buildCache.get(key));},
+    resolveEffects:(build,conditions,ch,v)=>{const key=semantic({build,conditions,ch,v});if(!effectCache.has(key))effectCache.set(key,copy(snap.resolveEffects(copy(build),copy(conditions),ch,v)));return copy(effectCache.get(key));}
+   };
+  return {snapshot:resolved,readTechnique};
  }
  function planFor(req,s){
   const selected=req.evaluation.techniqueIds;ensure(Array.isArray(selected)&&selected.length,'TECHNIQUES_MISSING');
@@ -40,7 +45,8 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
   const unit={coefficient:component.unit,attack:'true-attack',element:'display-element',affinity:'percent',damage:'damage'};
   for(const e of [...effects].filter(x=>x.target===component.kind).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id))){
-   ensure(unit[e.stage]===e.unit&&num(e.amount)&&['add','multiply','cap'].includes(e.operation),'EFFECT_INVALID');
+   ensure(unit[e.stage]&&num(e.amount)&&['add','multiply','cap'].includes(e.operation),'EFFECT_INVALID');
+   ensure(e.operation==='multiply'?e.unit==='dimensionless':e.unit===unit[e.stage],'EFFECT_UNIT_MISMATCH');
    const active=condition(e.condition,{state,target,event});
    if(active==='unknown')throw Error('EFFECT_CONDITION_UNKNOWN_'+e.id);
    if(active==='false')continue;
@@ -65,6 +71,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
    const handler=handlers[build.weaponType];ensure(typeof handler==='function','HANDLER_NOT_IMPLEMENTED');
    for(const ev of plan.events){
     try{
+     const before=copy(state);
      const decision=handler({event:copy(ev),state:copy(state),channel:ch});
      ensure(decision&&typeof decision==='object','DECISION_MISSING');
      if(ev.type==='hit'){
@@ -83,7 +90,21 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        if(result!==null){for(const post of applied.post)result=post.operation==='add'?result+post.amount:post.operation==='multiply'?result*post.amount:Math.min(result,post.amount);ensure(num(result),'POST_DAMAGE_INVALID')}
        components.push({...meta,...(result===null?bad(response.reason):good(result)),disposition:'emitted',effectsApplied:applied.trace});
       }
-     }else{ensure(decision.nextState&&typeof decision.nextState==='object','NEXT_STATE_REQUIRED');state=copy(decision.nextState)}
+     }else{
+       ensure(decision.nextState&&typeof decision.nextState==='object','NEXT_STATE_REQUIRED');
+       const after=decision.nextState;
+       if(ev.type==='consume'){
+         ensure(typeof ev.resource==='string'&&ev.resource&&num(ev.amount)&&ev.amount>=0,'CONSUME_DEFINITION_INVALID');
+         ensure(num(before[ev.resource])&&before[ev.resource]>=ev.amount,'CONSUME_RESOURCE_INVALID');
+         const expected=copy(before);expected[ev.resource]-=ev.amount;
+         ensure(semantic(after)===semantic(expected),'CONSUME_TRANSITION_MISMATCH');
+       }else if(ev.type==='transition'){
+         ensure(ev.updates&&typeof ev.updates==='object'&&!Array.isArray(ev.updates),'TRANSITION_DEFINITION_MISSING');
+         const expected={...copy(before),...copy(ev.updates)};
+         ensure(semantic(after)===semantic(expected),'TRANSITION_MISMATCH');
+       }
+       state=copy(after);
+     }
      executed.push(ev.id);
     }catch(err){issues.push({eventId:ev.id,reason:err.message});break}
    }
