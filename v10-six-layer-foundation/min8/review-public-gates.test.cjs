@@ -48,3 +48,28 @@ test('public damage effects refuse overflow before later cap',()=>{
  const p=setup({effects,formulaValue:1e308});const r=p.evaluate(request());
  for(const channel of ['normal','maximum']){a.equal(r.channels[channel].execution.reason,'POST_DAMAGE_NON_FINITE');a.equal(r.channels[channel].metrics.comboDps.status,'unavailable');}
 });
+
+test('public evaluation rejects undefined property addition and omission while preserving initial state',()=>{
+ for(const after of [{gauge:1,flag:null,extra:undefined},{gauge:1}]){
+  const p=setup({events:transition([{op:'add',path:['gauge'],amount:1}]),
+   handler:({event})=>event.type==='hit'?{emit:['c'],inactive:[],unresolved:[]}:{nextState:after}});
+  const result=p.evaluate(request());
+  for(const ch of ['normal','maximum']){
+   a.equal(result.channels[ch].execution.status,'incomplete');
+   a.deepEqual(result.channels[ch].finalState,{gauge:0,flag:null});
+   a.equal(result.channels[ch].metrics.comboTotalDamage.status,'unavailable');
+  }
+ }
+});
+test('public evaluation rejects duplicate transfer destination aliases atomically',()=>{
+ const p=setup({state:{stock:[3,1]},events:transition([
+  {op:'transfer',path:['stock',0],to:['stock',1],amount:1},
+  {op:'set',path:['stock','1'],value:5}
+ ]),handler:({event})=>event.type==='hit'?{emit:['c'],inactive:[],unresolved:[]}:
+  {nextState:{stock:[2,5]}}});
+ const r=p.evaluate(request());
+ for(const ch of ['normal','maximum']){
+  a.equal(r.channels[ch].execution.reason,'TRANSITION_DUPLICATE_PATH');
+  a.deepEqual(r.channels[ch].finalState,{stock:[3,1]});
+ }
+});
