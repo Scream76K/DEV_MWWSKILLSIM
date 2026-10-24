@@ -17,7 +17,17 @@ const validateState=(value,seen=new Set())=>{
   seen.delete(value);
 };
 const semantic=x=>JSON.stringify(stable(x));
-const stateEqual=(a,b)=>{validateState(a);validateState(b);return semantic(a)===semantic(b);};
+const stateEqual=(a,b)=>{
+ validateState(a);validateState(b);
+ const compare=(x,y)=>{
+  if(Object.is(x,y))return true;
+  if(x===null||y===null||typeof x!=='object'||typeof y!=='object')return false;
+  if(Array.isArray(x)!==Array.isArray(y))return false;
+  const xKeys=Object.keys(x),yKeys=Object.keys(y);
+  return xKeys.length===yKeys.length&&xKeys.every(k=>Object.hasOwn(y,k)&&compare(x[k],y[k]));
+ };
+ return compare(a,b);
+};
 const pathIdentity=path=>JSON.stringify(path.map(key=>String(key)));
 const finite=x=>typeof x==='number'&&Number.isFinite(x);
 const condition=(rule,ctx)=>{
