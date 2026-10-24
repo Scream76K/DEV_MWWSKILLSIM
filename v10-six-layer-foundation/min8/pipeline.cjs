@@ -30,7 +30,7 @@ function createPipeline({versions,openDataSnapshot,resolveBuild,resolveEffects,r
         if(!e || typeof e.id!=='string'||typeof e.target!=='string'||typeof e.stage!=='string'||typeof e.unit!=='string'||typeof e.source!=='string')throw Error('L3_EFFECT_SCHEMA_INVALID');
         if(!Number.isInteger(e.order)||!['add','multiply','cap'].includes(e.operation)||typeof e.amount!=='number'||!Number.isFinite(e.amount))throw Error('L3_EFFECT_VALUE_INVALID');
         if(!e.condition || !['always','state-equals','target-equals','event-equals'].includes(e.condition.type))throw Error('L3_CONDITION_INVALID');
-        if(e.condition.type!=='always' && (typeof e.condition.key!=='string'||!e.condition.key||!Object.hasOwn(e.condition,'value')))throw Error('L3_CONDITION_SCHEMA_INVALID');
+        if(e.condition.type!=='always' && (!Object.hasOwn(e.condition,'value') || (e.condition.path===undefined ? (typeof e.condition.key!=='string'||!e.condition.key) : (!Array.isArray(e.condition.path)||!e.condition.path.length||e.condition.path.some(k=>(typeof k!=='string'||!k)&&!Number.isInteger(k))))))throw Error('L3_CONDITION_SCHEMA_INVALID');
         return cp(e);
        });
       }
