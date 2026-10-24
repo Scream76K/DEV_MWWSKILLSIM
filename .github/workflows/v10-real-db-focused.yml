@@ -1,0 +1,16 @@
+name: V10 real DB single-hit focused test
+on:
+  push:
+    branches:
+      - flamme/v10-real-db-element-gate
+  workflow_dispatch:
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.21.0'
+      - run: node --version
+      - run: node --test v10-six-layer-foundation/min8/real-technique-one-hit-adapter.test.cjs v10-six-layer-foundation/min8/real-one-hit-pipeline.test.cjs v10-six-layer-foundation/min8/sourced-physical-formula.test.cjs
