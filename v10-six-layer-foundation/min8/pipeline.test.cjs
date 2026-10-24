@@ -9,3 +9,14 @@ const deps={versions,openDataSnapshot:()=>({versions,resolveBuild:resolved,resol
 test('public pipeline evaluates one build using L1-L6 adapters',()=>{const r=createPipeline(deps).evaluate(src());a.equal(r.channels.normal.metrics.comboTotalDamage.value,2);});
 test('comparison uses single session and shares data',()=>{const r=createPipeline(deps).compare(src(),src());a.equal(r.a.channels.normal.metrics.comboTotalDamage.value,2);a.equal(r.b.channels.normal.metrics.comboTotalDamage.value,2);});
 test('invalid A does not erase valid B',()=>{const r=createPipeline(deps).compare({},src());a.equal(r.a.status,'FAILED');a.equal(r.b.channels.normal.metrics.comboTotalDamage.value,2);});
+
+test('L5 output-first: missing duration keeps real total but withholds DPS on public entry',()=>{
+ const minimal=src();delete minimal.evaluation.duration;
+ const r=createPipeline(deps).evaluate(minimal);
+ for(const ch of ['normal','maximum']){
+  a.equal(r.channels[ch].metrics.comboTotalDamage.status,'available');
+  a.equal(r.channels[ch].metrics.comboTotalDamage.value,2);
+  a.equal(r.channels[ch].metrics.comboDps.status,'unavailable');
+  a.equal(r.channels[ch].metrics.comboDps.reason,'DURATION_UNAVAILABLE');
+ }
+});
