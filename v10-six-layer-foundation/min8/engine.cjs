@@ -23,13 +23,37 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   ensure(snap&&JSON.stringify(snap.versions)===JSON.stringify(pinned),'SNAPSHOT_VERSION_MISMATCH');
   for(const k of ['readTechnique','resolveBuild','resolveEffects'])ensure(typeof snap[k]==='function','SNAPSHOT_READER_MISSING_'+k);
   const cache=new Map(),buildCache=new Map(),effectCache=new Map();
-  const readTechnique=(id)=>{const k=id+'@'+pinned.technique;if(!cache.has(k))cache.set(k,copy(snap.readTechnique(id,pinned.technique,pinned.game)));return copy(cache.get(k))};
+  let sealed=false;
+  const requirePreloaded=(map,key)=>{if(sealed&&!map.has(key))throw Error('SNAPSHOT_UNPREPARED_KEY');};
+  const readTechnique=(id)=>{const k=id+'@'+pinned.technique;requirePreloaded(cache,k);if(!cache.has(k))cache.set(k,copy(snap.readTechnique(id,pinned.technique,pinned.game)));return copy(cache.get(k))};
   const resolved={
     ...snap,
-    resolveBuild:(raw,db,game)=>{const key=semantic({raw,db,game});if(!buildCache.has(key))buildCache.set(key,copy(snap.resolveBuild(copy(raw),db,game)));return copy(buildCache.get(key));},
-    resolveEffects:(build,conditions,ch,v)=>{const key=semantic({build,conditions,ch,v});if(!effectCache.has(key))effectCache.set(key,copy(snap.resolveEffects(copy(build),copy(conditions),ch,v)));return copy(effectCache.get(key));}
+    resolveBuild:(raw,db,game)=>{const key=semantic({raw,db,game});requirePreloaded(buildCache,key);if(!buildCache.has(key))buildCache.set(key,copy(snap.resolveBuild(copy(raw),db,game)));return copy(buildCache.get(key));},
+    resolveEffects:(build,conditions,ch,v)=>{const key=semantic({build,conditions,ch,v});requirePreloaded(effectCache,key);if(!effectCache.has(key))effectCache.set(key,copy(snap.resolveEffects(copy(build),copy(conditions),ch,v)));return copy(effectCache.get(key));}
    };
-  return {snapshot:resolved,readTechnique};
+  return {
+    snapshot:resolved,readTechnique,
+    prepare(requests){
+      ensure(!sealed,'SNAPSHOT_ALREADY_SEALED');
+      ensure(Array.isArray(requests),'SNAPSHOT_REQUESTS_INVALID');
+      const diagnostics=[];
+      for(const [i,req] of requests.entries()){
+        try{
+          ensure(req&&req.build&&req.evaluation&&Array.isArray(req.evaluation.techniqueIds),'SNAPSHOT_REQUEST_INVALID');
+          const build=resolved.resolveBuild(copy(req.build),pinned.equipment,pinned.game);
+          for(const ch of ['normal','maximum']){
+            try{resolved.resolveEffects(copy(build),copy(req.conditions||{}),ch,pinned.effects)}
+            catch(e){diagnostics.push({request:i,channel:ch,reason:e.message})}
+          }
+          for(const id of req.evaluation.techniqueIds){
+            try{readTechnique(id)}catch(e){diagnostics.push({request:i,techniqueId:id,reason:e.message})}
+          }
+        }catch(e){diagnostics.push({request:i,reason:e.message})}
+      }
+      sealed=true;
+      return {diagnostics:copy(diagnostics),keys:{techniques:cache.size,builds:buildCache.size,effects:effectCache.size}};
+    }
+   };
  }
  function planFor(req,s){
   const selected=req.evaluation.techniqueIds;ensure(Array.isArray(selected)&&selected.length,'TECHNIQUES_MISSING');
