@@ -95,8 +95,9 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
  }
  function aggregate(run,duration){
   const e=run.execution,complete=e.status==='complete'&&e.expected.length===e.executed.length&&e.expected.every((x,i)=>x===e.executed[i]);
-  const sum=run.components.reduce((s,c)=>s+c.value,0);
-  const total=!complete?bad('EXECUTION_INCOMPLETE'):run.components.some(c=>c.status!=='available')?bad('COMPONENT_UNAVAILABLE'):!finite(sum)?bad('TOTAL_NON_FINITE'):good(sum);
+  const componentsValid=run.components.every(c=>c.status==='available'&&finite(c.value));
+  const sum=componentsValid?run.components.reduce((s,c)=>s+c.value,0):null;
+  const total=!complete?bad('EXECUTION_INCOMPLETE'):!componentsValid?bad('COMPONENT_UNAVAILABLE'):!finite(sum)?bad('TOTAL_NON_FINITE'):good(sum);
   const time=num(duration)&&duration>0?good(duration):bad('DURATION_UNAVAILABLE');
   return {...run,metrics:{comboTotalDamage:total,comboDuration:time,comboDps:total.status==='available'&&time.status==='available'?(finite(total.value/time.value)?good(total.value/time.value):bad('DPS_NON_FINITE')):bad(total.status==='available'?'DURATION_UNAVAILABLE':total.reason)}};
  }
