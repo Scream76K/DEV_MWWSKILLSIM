@@ -1,3 +1,5 @@
+> **CURRENT DECISION — 2026-10-24: ACCEPT_STRUCTURE**. Zerie accepted the structural boundary gate for source SHA `62c74760b31ac7c932c815c5b26be1a1251b986c`, based on [GitHub Actions run 40067583313](https://github.com/Scream76K/DEV_MWWSKILLSIM/actions/runs/40067583313): Node v24.21.0, min8 61 PASS/0 FAIL/0 SKIP and min2/min3 20 PASS/0 FAIL/0 SKIP. The former notices below that native Node PASS was unconfirmed and the array gate remained open are HISTORICAL ONLY and **not current blockers**. Do not rerun the same gate as Himmel's first task. Next: real Technique DB/provider plus representative Handler, then 14 weapons and shared single/combo/A/B/restore. Acceptance does not approve technical Done, develop merge, β or publication.
+
 # Zerie re-review gate — V10 six-layer structural boundary
 Date: 2026-10-24 JST
 Branch: `flamme/v10-six-layer-foundation`
