@@ -7,9 +7,15 @@ const condition=(rule,ctx)=>{
  ensure(rule&&typeof rule==='object'&&['always','state-equals','target-equals','event-equals'].includes(rule.type),'CONDITION_INVALID');
  if(rule.type==='always')return 'true';
  const root=rule.type==='state-equals'?ctx.state:rule.type==='target-equals'?ctx.target:ctx.event;
- ensure(typeof rule.key==='string'&&rule.key.length>0&&Object.hasOwn(rule,'value'),'CONDITION_SCHEMA_INVALID');
- if(!root||!Object.hasOwn(root,rule.key))return 'unknown';
- return semantic(root[rule.key])===semantic(rule.value)?'true':'false';
+ ensure(Object.hasOwn(rule,'value'),'CONDITION_SCHEMA_INVALID');
+ const path=rule.path===undefined?[rule.key]:rule.path;
+ ensure(Array.isArray(path)&&path.length>0&&path.every(k=>(typeof k==='string'&&k.length>0&&!['__proto__','prototype','constructor'].includes(k))||(Number.isInteger(k)&&k>=0)),'CONDITION_PATH_INVALID');
+ let found=root;
+ for(const key of path){
+   if(!found||typeof found!=='object'||!Object.hasOwn(found,key))return 'unknown';
+   found=found[key];
+ }
+ return semantic(found)===semantic(rule.value)?'true':'false';
 };
 const validPath=p=>Array.isArray(p)&&p.length>0&&p.every(k=>(typeof k==='string'&&k.length>0&&k!=='__proto__'&&k!=='prototype'&&k!=='constructor')||(Number.isInteger(k)&&k>=0));
 const readPath=(root,path)=>{let x=root;for(const k of path){if(x===null||typeof x!=='object'||!Object.hasOwn(x,k))return {status:'unknown'};x=x[k]}return {status:'known',value:x}};
