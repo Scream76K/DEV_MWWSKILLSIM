@@ -54,8 +54,19 @@ function createPipeline({versions,openDataSnapshot,resolveBuild,resolveEffects,r
   const rb=eb?failure(eb):runner.safeEvaluate(bb,session);
   const sameBuildContext=ra.status==='OK'&&rb.status==='OK'&&ra.weaponType===rb.weaponType;
   const comparable=sameBuildContext&&ra.comparisonContext?.damage===rb.comparisonContext?.damage;
-  const relative={};for(const ch of ['normal','maximum']){const base=ra.channels.normal.metrics.comboTotalDamage,x=ra.channels[ch].metrics.comboTotalDamage,y=rb.channels[ch].metrics.comboTotalDamage;
-   relative[ch]=!(sameBuildContext && ra.comparisonContext?.damage===rb.comparisonContext?.damage)?invalid('NOT_COMPARABLE'):base?.status!=='available'||base.value===0||x?.status!=='available'||y?.status!=='available'?invalid('METRIC_UNAVAILABLE'):{status:'available',value:{a:100*x.value/base.value,b:100*y.value/base.value,reference:'A_NORMAL'}};}
+  const relative={};
+  for(const ch of ['normal','maximum']){
+    relative[ch]={};
+    for(const metric of ['comboTotalDamage','comboDps']){
+      const context=metric==='comboDps'?'dps':'damage';
+      const metricComparable=sameBuildContext&&ra.comparisonContext?.[context]===rb.comparisonContext?.[context];
+      const base=ra.channels.normal.metrics[metric];
+      const x=ra.channels[ch].metrics[metric],y=rb.channels[ch].metrics[metric];
+      relative[ch][metric]=!metricComparable?invalid('NOT_COMPARABLE')
+        :base?.status!=='available'||base.value===0||x?.status!=='available'||y?.status!=='available'?invalid('METRIC_UNAVAILABLE')
+        :{status:'available',value:{a:100*x.value/base.value,b:100*y.value/base.value,reference:'A_NORMAL'}};
+    }
+  }
   return {a:ra,b:rb,relative,comparable};
  }
  return Object.freeze({evaluate,safeEvaluate,compare,present:source=>({displayMode:'single',result:safeEvaluate(source)})});
