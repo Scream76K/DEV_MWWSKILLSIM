@@ -181,7 +181,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
            ensure(ev.updates&&typeof ev.updates==='object'&&!Array.isArray(ev.updates),'TRANSITION_DEFINITION_MISSING');
            Object.assign(expected,copy(ev.updates));
          }
-         ensure(semantic(after)===semantic(expected),'TRANSITION_MISMATCH');
+         ensure(stateEqual(after,expected),'TRANSITION_MISMATCH');
        }
        state=expected;
      }
