@@ -1,0 +1,13 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const {createPipeline}=require('./engine.cjs');
+const versions={game:'g',equipment:'e',technique:'t',effects:'fx'};
+const req=()=>({build:{},target:{id:'training'},conditions:{},evaluation:{kind:'combo',techniqueIds:['move'],duration:2}});
+const hit={type:'hit',components:[{id:'body',kind:'raw',coefficient:8,unit:'MV',source:'Technique DB'}]};
+function setup(events,handler){return createPipeline({versions,openDataSnapshot:()=>({versions,readTechnique:(id,v)=>({id,dataVersion:v,revision:'r1',definitionStatus:'defined',events}),resolveBuild:()=>({weaponType:'charge-blade',trueAttack:10,element:0,affinity:0}),resolveEffects:()=>[]}),initialState:()=>({weapon:{phials:5,charged:false},combat:{hitCount:0}}),handlers:{'charge-blade':handler},formulae:{raw:({coefficient})=>({status:'available',value:coefficient})}})}
+const decide=({event,state})=>event.type==='hit'?{emit:['body'],inactive:[],unresolved:[]}:event.type==='consume'?{nextState:{...state,weapon:{...state.weapon,phials:state.weapon.phials-event.amount}}}:{nextState:{...state,weapon:{...state.weapon,charged:true}}};
+test('nested consume reads DB amount, then hit calculates',()=>{const r=setup([{type:'consume',resourcePath:['weapon','phials'],amount:3},hit],decide).evaluate(req());assert.equal(r.channels.normal.finalState.weapon.phials,2);assert.equal(r.channels.normal.metrics.comboTotalDamage.value,8)});
+test('wrong nested consume fails incomplete, never returns a valid total',()=>{const r=setup([{type:'consume',resourcePath:['weapon','phials'],amount:3},hit],({event,state})=>event.type==='consume'?{nextState:state}:decide({event,state})).evaluate(req());assert.equal(r.channels.normal.metrics.comboTotalDamage.status,'unavailable')});
+test('nested transition operations compare exact resulting state',()=>{const r=setup([{type:'transition',operations:[{op:'set',path:['weapon','charged'],value:true}]},hit],decide).evaluate(req());assert.equal(r.channels.normal.finalState.weapon.charged,true);assert.equal(r.channels.normal.metrics.comboTotalDamage.value,8)});
+test('unknown nested paths fail instead of creating new state',()=>{const r=setup([{type:'consume',resourcePath:['weapon','missing'],amount:1},hit],decide).evaluate(req());assert.equal(r.channels.normal.metrics.comboDps.status,'unavailable')});
+test('prototype pollution path is rejected',()=>{const r=setup([{type:'transition',operations:[{op:'set',path:['__proto__','bad'],value:1}]},hit],decide).evaluate(req());assert.equal(r.channels.normal.metrics.comboTotalDamage.status,'unavailable')});
