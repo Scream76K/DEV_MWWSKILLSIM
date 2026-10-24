@@ -1,0 +1,21 @@
+name: V10 six-layer contract tests
+on:
+  push:
+    branches:
+      - flamme/v10-six-layer-foundation
+    paths:
+      - 'v10-six-layer-foundation/**'
+      - '.github/workflows/v10-six-layer-contract.yml'
+  workflow_dispatch:
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Run min8 contract tests
+        run: node --test v10-six-layer-foundation/min8/*.test.cjs
+      - name: Run min2 and min3 regression tests
+        run: node --test v10-six-layer-foundation/core.test.cjs v10-six-layer-foundation/structural-core.test.cjs
