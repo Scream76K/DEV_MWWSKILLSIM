@@ -20,7 +20,7 @@ function createPipeline({versions,openDataSnapshot,resolveBuild,resolveEffects,r
        const resolved=buildResolver(request,(s)=>snapshot.resolveBuild(s,db,game,cp(request)));
        if(resolved.dbVersion!==db)throw Error('EQUIPMENT_DB_VERSION_MISMATCH');
        if(!WEAPON_TYPES.includes(resolved.weaponType))throw Error('WEAPON_KIND_INVALID');
-       return {weaponType:resolved.weaponType,trueAttack:value(resolved.equipment.trueAttack,'trueAttack'),element:value(resolved.equipment.displayElement,'displayElement'),affinity:value(resolved.equipment.baseAffinity,'baseAffinity'),equipment:cp(resolved.equipment),skills:cp(resolved.skills),source:resolved.source};
+       return {weaponType:resolved.weaponType,trueAttack:value(resolved.equipment.trueAttack,'trueAttack'),element:value(resolved.equipment.displayElement,'displayElement'),affinity:value(resolved.equipment.baseAffinity,'baseAffinity'),equipment:cp(resolved.equipment),skills:cp(resolved.skills),weaponState:cp(resolved.extensions||{}),diagnostics:cp(resolved.issues||[]),source:resolved.source};
       },
       resolveEffects:(build,conditions,ch,version)=>{
        // L3: preserve semantic stage/unit and deferred state predicates; no common effect calculations here.
@@ -29,7 +29,8 @@ function createPipeline({versions,openDataSnapshot,resolveBuild,resolveEffects,r
        return found.map(e=>{
         if(!e || typeof e.id!=='string'||typeof e.target!=='string'||typeof e.stage!=='string'||typeof e.unit!=='string'||typeof e.source!=='string')throw Error('L3_EFFECT_SCHEMA_INVALID');
         if(!Number.isInteger(e.order)||!['add','multiply','cap'].includes(e.operation)||typeof e.amount!=='number'||!Number.isFinite(e.amount))throw Error('L3_EFFECT_VALUE_INVALID');
-        if(!e.condition || !['always','state-equals'].includes(e.condition.type))throw Error('L3_CONDITION_INVALID');
+        if(!e.condition || !['always','state-equals','target-equals','event-equals'].includes(e.condition.type))throw Error('L3_CONDITION_INVALID');
+        if(e.condition.type!=='always' && (typeof e.condition.key!=='string'||!e.condition.key||!Object.hasOwn(e.condition,'value')))throw Error('L3_CONDITION_SCHEMA_INVALID');
         return cp(e);
        });
       }
@@ -51,9 +52,10 @@ function createPipeline({versions,openDataSnapshot,resolveBuild,resolveEffects,r
   const session=runner.session();
   const ra=ea?failure(ea):runner.safeEvaluate(aa,session);
   const rb=eb?failure(eb):runner.safeEvaluate(bb,session);
-  const comparable=ra.status==='OK'&&rb.status==='OK'&&ra.weaponType===rb.weaponType&&ra.conditionKey===rb.conditionKey;
+  const sameBuildContext=ra.status==='OK'&&rb.status==='OK'&&ra.weaponType===rb.weaponType;
+  const comparable=sameBuildContext&&ra.comparisonContext?.damage===rb.comparisonContext?.damage;
   const relative={};for(const ch of ['normal','maximum']){const base=ra.channels.normal.metrics.comboTotalDamage,x=ra.channels[ch].metrics.comboTotalDamage,y=rb.channels[ch].metrics.comboTotalDamage;
-   relative[ch]=!comparable?invalid('NOT_COMPARABLE'):base?.status!=='available'||base.value===0||x?.status!=='available'||y?.status!=='available'?invalid('METRIC_UNAVAILABLE'):{status:'available',value:{a:100*x.value/base.value,b:100*y.value/base.value,reference:'A_NORMAL'}};}
+   relative[ch]=!(sameBuildContext && ra.comparisonContext?.[ch==='normal'?'damage':'damage']===rb.comparisonContext?.damage)?invalid('NOT_COMPARABLE'):base?.status!=='available'||base.value===0||x?.status!=='available'||y?.status!=='available'?invalid('METRIC_UNAVAILABLE'):{status:'available',value:{a:100*x.value/base.value,b:100*y.value/base.value,reference:'A_NORMAL'}};}
   return {a:ra,b:rb,relative,comparable};
  }
  return Object.freeze({evaluate,safeEvaluate,compare,present:source=>({displayMode:'single',result:safeEvaluate(source)})});
