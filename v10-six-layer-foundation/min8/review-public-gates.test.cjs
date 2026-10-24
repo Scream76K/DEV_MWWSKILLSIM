@@ -73,3 +73,13 @@ test('public evaluation rejects duplicate transfer destination aliases atomicall
   a.deepEqual(r.channels[ch].finalState,{stock:[3,1]});
  }
 });
+
+test('legacy transition updates cannot mutate unrelated state',()=>{
+ const p=setup({events:[{type:'transition',updates:{gauge:1}},hit],
+ handler:({event})=>event.type==='hit'?{emit:['c'],inactive:[],unresolved:[]}:{nextState:{gauge:1,flag:NaN}}});
+ const r=p.evaluate(request());
+ for(const ch of ['normal','maximum']){
+  a.equal(r.channels[ch].execution.status,'incomplete');
+  a.deepEqual(r.channels[ch].finalState,{gauge:0,flag:null});
+ }
+});
