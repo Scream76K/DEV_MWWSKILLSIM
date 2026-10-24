@@ -63,3 +63,8 @@ Clarifications from Zerie:
 - Shared snapshot acquisition failure can invalidate both builds; distinguish this from A/B-local failure.
 
 After post-fix PASS and Zerie approval, connect one representative real DB+Handler path and extend to 14 weapons; no new architecture redesign. Technical Done, develop merge and beta publication remain separate gates.
+
+## 2026-10-24 additional execution evidence (NOT Node CI)
+Current source was fetched through the GitHub connector. A JavaScript-isolate compatibility harness ran both `review-public-gates.test.cjs` and `pipeline.test.cjs`, with **13/13 test callbacks successful**. This harness provided compatible replacements for `node:test`, `node:assert/strict`, and `structuredClone`; it did **not** execute Node v24 or the actual native Node test runner. Treat this as preliminary logic evidence, not official CI PASS or Zerie acceptance. The GitHub repository could not be cloned by the local environment due to DNS resolution failure.
+
+Next action for Himmel: execute the original tests unchanged in native Node v24 at the exact branch HEAD; capture SHA, version and execution log; only then ask Zerie to close the array-state gate. Do not duplicate or expand tests just to increase counts.
