@@ -1,0 +1,15 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const {createPipeline}=require('./engine.cjs');
+const v={game:'g',equipment:'e',technique:'t',effects:'fx'};
+function mk(events,{start={gauge:0,from:3,to:1},ids=['a','a'],read,fx}={}){
+ const p=createPipeline({versions:v,openDataSnapshot:()=>({versions:v,readTechnique:read||((id,version)=>({id,revision:'r',dataVersion:version,definitionStatus:'defined',events})),resolveBuild:()=>({weaponType:'bow',trueAttack:1,element:0,affinity:0,diagnostics:[{code:'L2_WARN'}]}),resolveEffects:fx||(()=>[])}),initialState:()=>structuredClone(start),handlers:{bow:({event,state})=>{if(event.type==='hit')return {emit:['c'],inactive:[],unresolved:[]};const next=structuredClone(state);for(const op of event.operations||[]){if(op.op==='add')next[op.path[0]]=Math.min(next[op.path[0]]+op.amount,op.cap??Infinity);if(op.op==='transfer'){const n=op.amount==='all'?next[op.path[0]]:op.amount;next[op.path[0]]-=n;next[op.to[0]]+=n}if(op.op==='set')next[op.path[0]]=op.value}return {nextState:next}}},formulae:{raw:()=>({status:'available',value:2})}});
+ return p.evaluate({build:{},target:{},conditions:{},evaluation:{kind:'combo',techniqueIds:ids,duration:1}});
+}
+const h={type:'hit',components:[{id:'c',kind:'raw',source:'DB',unit:'MV',coefficient:1}]};
+test('same technique repeated increments gauge 0 to 1 to 2',()=>{const r=mk([{type:'transition',operations:[{op:'add',path:['gauge'],amount:1}]},h]);assert.equal(r.channels.normal.finalState.gauge,2);assert.equal(r.channels.normal.metrics.comboTotalDamage.value,4)});
+test('gauge cap stops repeated additions',()=>{const r=mk([{type:'transition',operations:[{op:'add',path:['gauge'],amount:1,cap:2}]},h],{ids:['a','a','a','a']});assert.equal(r.channels.normal.finalState.gauge,2)});
+test('atomic transfer updates both resources',()=>{const r=mk([{type:'transition',operations:[{op:'transfer',path:['from'],to:['to'],amount:'all'}]},h],{ids:['a']});assert.equal(r.channels.normal.finalState.from,0);assert.equal(r.channels.normal.finalState.to,4)});
+test('invalid transfer cannot commit partial state or totals',()=>{const r=mk([{type:'transition',operations:[{op:'add',path:['gauge'],amount:1},{op:'transfer',path:['from'],to:['missing'],amount:'all'}]},h],{ids:['a']});assert.equal(r.channels.normal.finalState.gauge,0);assert.equal(r.channels.normal.metrics.comboTotalDamage.status,'unavailable')});
+test('distinct id/revision pairs have distinct signatures',()=>{const x=mk([h],{ids:['move@r1'],read:(id,version)=>({id,revision:'r2',dataVersion:version,definitionStatus:'defined',events:[h]})});const y=mk([h],{ids:['move'],read:(id,version)=>({id,revision:'r1@r2',dataVersion:version,definitionStatus:'defined',events:[h]})});assert.notEqual(x.conditionKey,y.conditionKey)});
+test('large finite components cannot overflow total into available Infinity',()=>{const r=mk([{type:'hit',components:[{id:'c',kind:'raw',source:'DB',unit:'MV',coefficient:1}]}],{ids:['a','a']});assert.equal(r.channels.normal.metrics.comboTotalDamage.value,4)});
