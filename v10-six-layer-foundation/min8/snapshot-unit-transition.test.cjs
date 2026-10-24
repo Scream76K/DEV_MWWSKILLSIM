@@ -1,0 +1,12 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const {createPipeline}=require('./engine.cjs');
+const versions={game:'g',equipment:'e',technique:'t',effects:'fx'};
+const req=()=>({build:{seed:1},conditions:{},target:{id:'training'},evaluation:{kind:'combo',techniqueIds:['m'],duration:1}});
+const record=(events)=>({id:'m',dataVersion:'t',revision:'r1',definitionStatus:'defined',events});
+const hit={type:'hit',components:[{id:'c',kind:'raw',unit:'MV',coefficient:5,source:'DB'}]};
+function setup(events,options={}){let builds=0,effectsRead=0;const provider=()=>({versions,readTechnique:()=>record(events),resolveBuild:()=>{builds++;return {weaponType:'bow',trueAttack:10,element:0,affinity:0}},resolveEffects:()=>{effectsRead++;return options.effects||[]}});const pipe=createPipeline({versions,openDataSnapshot:provider,initialState:()=>({ammo:3}),handlers:{bow:({event,state})=>event.type==='hit'?{emit:['c'],inactive:[],unresolved:[]}: {nextState:options.next?options.next(event,state):event.type==='consume'?{...state,ammo:state.ammo-event.amount}:{...state,...event.updates}}},formulae:{raw:({coefficient})=>({status:'available',value:coefficient})}});return {pipe,counts:()=>({builds,effectsRead})};}
+test('session pins resolved build and effect content across evaluations',()=>{const x=setup([hit]);const s=x.pipe.session();x.pipe.evaluate(req(),s);x.pipe.evaluate(req(),s);assert.deepEqual(x.counts(),{builds:1,effectsRead:2});});
+test('DB-defined consume amount reaches and constrains state transition',()=>{const x=setup([{type:'consume',resource:'ammo',amount:2},hit]);const r=x.pipe.evaluate(req());assert.equal(r.channels.normal.finalState.ammo,1);assert.equal(r.channels.normal.metrics.comboTotalDamage.value,5);});
+test('arbitrary consume result does not pass',()=>{const x=setup([{type:'consume',resource:'ammo',amount:2},hit],{next:()=>({ammo:3})});const r=x.pipe.evaluate(req());assert.equal(r.channels.normal.metrics.comboTotalDamage.status,'unavailable');});
+test('add uses target unit; multiply must be dimensionless',()=>{const e=[{id:'e',target:'raw',stage:'coefficient',unit:'MV',operation:'multiply',amount:2,order:0,condition:{type:'always'},source:'DB'}];const r=setup([hit],{effects:e}).pipe.evaluate(req());assert.equal(r.channels.normal.metrics.comboTotalDamage.status,'unavailable');e[0].unit='dimensionless';const ok=setup([hit],{effects:e}).pipe.evaluate(req());assert.equal(ok.channels.normal.metrics.comboTotalDamage.value,10);});
