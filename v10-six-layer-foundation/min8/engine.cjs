@@ -42,7 +42,8 @@ const condition=(rule,ctx)=>{
    if(!found||typeof found!=='object'||!Object.hasOwn(found,key))return 'unknown';
    found=found[key];
  }
- return semantic(found)===semantic(rule.value)?'true':'false';
+ validateState(rule.value);
+ return stateEqual(found,rule.value)?'true':'false';
 };
 const validPath=p=>Array.isArray(p)&&p.length>0&&p.every(k=>(typeof k==='string'&&k.length>0&&k!=='__proto__'&&k!=='prototype'&&k!=='constructor')||(Number.isInteger(k)&&k>=0));
 const readPath=(root,path)=>{let x=root;for(const k of path){if(x===null||typeof x!=='object'||!Object.hasOwn(x,k))return {status:'unknown'};x=x[k]}return {status:'known',value:x}};
