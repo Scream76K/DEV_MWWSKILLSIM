@@ -1,0 +1,11 @@
+'use strict';
+const {test}=require('node:test'),a=require('node:assert/strict');
+const {createPipeline}=require('./pipeline.cjs');
+const {datum}=require('./min2-contract.cjs');
+const versions={game:'g',equipment:'e',technique:'t',effects:'fx'};
+const src=()=>({schemaVersion:'v10-min2',build:{raw:10},target:{id:'training',hitZoneKey:'head'},conditions:{},evaluation:{mode:'combo',kind:'combo',signature:'m',techniqueIds:['m'],duration:2}});
+const resolved=s=>({weaponType:'charge-blade',dbVersion:'e',source:'MHDB',equipment:{ids:['w'],trueAttack:datum('known',s.raw),displayElement:datum('known',0),baseAffinity:datum('known',0)},skills:{entries:[]}});
+const deps={versions,openDataSnapshot:()=>({versions,resolveBuild:resolved,resolveEffects:()=>[],readTechnique:(id,v)=>({id,dataVersion:v,revision:'r',definitionStatus:'defined',events:[{type:'hit',components:[{id:'c',kind:'physical',unit:'MV',source:'Technique DB',coefficient:2}]}]})}),initialState:()=>({}),handlers:{'charge-blade':()=>({emit:['c'],inactive:[],unresolved:[]})},formulae:{physical:({coefficient})=>({status:'available',value:coefficient})}};
+test('public pipeline evaluates one build using L1-L6 adapters',()=>{const r=createPipeline(deps).evaluate(src());a.equal(r.channels.normal.metrics.comboTotalDamage.value,2);});
+test('comparison uses single session and shares data',()=>{const r=createPipeline(deps).compare(src(),src());a.equal(r.a.channels.normal.metrics.comboTotalDamage.value,2);a.equal(r.b.channels.normal.metrics.comboTotalDamage.value,2);});
+test('invalid A does not erase valid B',()=>{const r=createPipeline(deps).compare({},src());a.equal(r.a.status,'FAILED');a.equal(r.b.channels.normal.metrics.comboTotalDamage.value,2);});
