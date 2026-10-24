@@ -55,7 +55,7 @@ function createPipeline({versions,openDataSnapshot,resolveBuild,resolveEffects,r
   const sameBuildContext=ra.status==='OK'&&rb.status==='OK'&&ra.weaponType===rb.weaponType;
   const comparable=sameBuildContext&&ra.comparisonContext?.damage===rb.comparisonContext?.damage;
   const relative={};for(const ch of ['normal','maximum']){const base=ra.channels.normal.metrics.comboTotalDamage,x=ra.channels[ch].metrics.comboTotalDamage,y=rb.channels[ch].metrics.comboTotalDamage;
-   relative[ch]=!(sameBuildContext && ra.comparisonContext?.[ch==='normal'?'damage':'damage']===rb.comparisonContext?.damage)?invalid('NOT_COMPARABLE'):base?.status!=='available'||base.value===0||x?.status!=='available'||y?.status!=='available'?invalid('METRIC_UNAVAILABLE'):{status:'available',value:{a:100*x.value/base.value,b:100*y.value/base.value,reference:'A_NORMAL'}};}
+   relative[ch]=!(sameBuildContext && ra.comparisonContext?.damage===rb.comparisonContext?.damage)?invalid('NOT_COMPARABLE'):base?.status!=='available'||base.value===0||x?.status!=='available'||y?.status!=='available'?invalid('METRIC_UNAVAILABLE'):{status:'available',value:{a:100*x.value/base.value,b:100*y.value/base.value,reference:'A_NORMAL'}};}
   return {a:ra,b:rb,relative,comparable};
  }
  return Object.freeze({evaluate,safeEvaluate,compare,present:source=>({displayMode:'single',result:safeEvaluate(source)})});
