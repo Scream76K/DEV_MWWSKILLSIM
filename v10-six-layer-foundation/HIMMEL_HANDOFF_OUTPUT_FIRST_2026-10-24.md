@@ -47,3 +47,19 @@ Himmel: primary implementation/integration after rate-limit release. Flamme: ind
 - One output-focused L5 proof was added to existing `min8/pipeline.test.cjs` (`e483d56`): remove **duration only** from a minimal known hit request; expected output is unchanged available comboTotalDamage and unavailable comboDps with DURATION_UNAVAILABLE on both channels. It is **committed, not yet execution-verified**.
 - Gate remains pending: Node execution evidence for the *current HEAD* and Zerie re-review. Previous CI results for `90b413f` are not evidence for these later changes.
 - First implementation action on return remains `node --test v10-six-layer-foundation/min8/review-public-gates.test.cjs v10-six-layer-foundation/min8/pipeline.test.cjs` (smallest public output scope), stop at first failure. No large regression suite.
+
+## 2026-10-24 Zerie review update: single remaining gate
+Zerie reviewed `89a8a2b` and found min8 CI **56 passed / 4 failed** on Node v24.21.0. Root cause: `validateState` rejected standard array `length` as a non-enumerable key, yielding `STATE_KEY_INVALID` before operation validation. This does **not** satisfy the conditional gate.
+
+Flamme correction: `engine.cjs` now validates a dense array's indexed elements and standard non-enumerable length separately from ordinary object members (`2bbab85`). Public one-hit `stock:[3]` acceptance test added (`268fe15`); old self-transfer and duplicate-path cases retained unchanged.
+
+**Current gate: code committed; CI PASS on post-fix HEAD not yet independently confirmed.** Execute only `node --test v10-six-layer-foundation/min8/review-public-gates.test.cjs v10-six-layer-foundation/min8/pipeline.test.cjs`, record exact SHA and first failing assertion. Confirm normal `stock:[3]` one-hit, numeric/string self-transfer reason, alias duplicate reason and rollback. Do not change assertions to `STATE_KEY_INVALID`, remove arrays, skip tests or broaden the suite.
+
+Clarifications from Zerie:
+- L1 minimum means *minimum valid schema*: schemaVersion, build, target, conditions, evaluation kind and IDs all present.
+- L3 validates and forwards effect definitions; L4 applies ordered effects.
+- L4 begins with one ordinary hit; add transition only for state-changing contract.
+- L5 damage survives missing duration, DPS does not.
+- Shared snapshot acquisition failure can invalidate both builds; distinguish this from A/B-local failure.
+
+After post-fix PASS and Zerie approval, connect one representative real DB+Handler path and extend to 14 weapons; no new architecture redesign. Technical Done, develop merge and beta publication remain separate gates.
