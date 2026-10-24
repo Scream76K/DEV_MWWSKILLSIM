@@ -169,7 +169,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   ensure(build?.weaponType,'BUILD_INVALID');
   const plan=planFor(req,s),results={};
   for(const ch of ['normal','maximum'])results[ch]=runChannel(build,req,plan,ch,s);
-  return {status:'OK',weaponType:build.weaponType,versions:copy(pinned),conditionKey:semantic({target:req.target,conditions:req.conditions,plan:plan.signature,evaluationKind:req.evaluation.kind}),comparisonContext:{damage:semantic({target:req.target,conditions:req.conditions,plan:plan.signature,evaluationKind:req.evaluation.kind}),dps:semantic({target:req.target,conditions:req.conditions,plan:plan.signature,evaluationKind:req.evaluation.kind,duration:req.evaluation.duration})},channels:results};
+  return {status:'OK',weaponType:build.weaponType,diagnostics:copy(build.diagnostics||[]),versions:copy(pinned),conditionKey:semantic({target:req.target,conditions:req.conditions,plan:plan.signature,evaluationKind:req.evaluation.kind}),comparisonContext:{damage:semantic({target:req.target,conditions:req.conditions,plan:plan.signature,evaluationKind:req.evaluation.kind}),dps:semantic({target:req.target,conditions:req.conditions,plan:plan.signature,evaluationKind:req.evaluation.kind,duration:req.evaluation.duration})},channels:results};
  }
  function safeEvaluate(req,s){try{return evaluate(req,s)}catch(err){return {status:'FAILED',reason:err.message,channels:Object.fromEntries(['normal','maximum'].map(ch=>[ch,{metrics:{comboTotalDamage:bad(err.message),comboDps:bad(err.message)}}]))}}}
  return Object.freeze({evaluate,safeEvaluate,session});
