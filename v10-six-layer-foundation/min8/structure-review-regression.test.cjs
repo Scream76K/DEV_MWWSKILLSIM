@@ -2,7 +2,7 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const {createPipeline}=require('./engine.cjs');
 const versions={game:'g',equipment:'e',technique:'t',effects:'x'};
-const technique=(id,v)=>({id,dataVersion:v,revision:'r',definitionStatus:'defined',events:[{type:'consume',resource:'phial',amount:2},{type:'hit',components:[{id:'a',kind:'raw',unit:'MV',source:'DB',coefficient:1}]}]});
+const technique=(id,v)=>({id,dataVersion:v,revision:'r',definitionStatus:'defined',events:[{type:'consume',resource:'ammo',amount:2},{type:'hit',components:[{id:'a',kind:'raw',unit:'MV',source:'DB',coefficient:1}]}]});
 const req=()=>({build:{},target:{zone:'head'},conditions:{},evaluation:{kind:'combo',signature:'unused',techniqueIds:['A'],duration:2}});
 function engine({effects=()=>[],handler,formulae={raw:({coefficient})=>({status:'available',value:coefficient})}}={}){return createPipeline({versions,openDataSnapshot:()=>({versions,readTechnique:technique,resolveBuild:()=>({weaponType:'bow',trueAttack:1,element:0,affinity:0}),resolveEffects:effects}),initialState:()=>({ammo:3}),handlers:{bow:handler||(({event,state})=>event.type==='consume'?{nextState:{...state,ammo:state.ammo-event.amount}}:{emit:['a'],inactive:[],unresolved:[]})},formulae})}
 test('consume event retains DB-owned amount',()=>{let amount;const e=engine({handler:({event,state})=>{if(event.type==='consume'){amount=event.amount;return {nextState:state}}return {emit:['a'],inactive:[],unresolved:[]}}});e.evaluate(req());assert.equal(amount,2)});
