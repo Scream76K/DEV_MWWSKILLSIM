@@ -50,6 +50,7 @@ function createPipeline({versions,openDataSnapshot,resolveBuild,resolveEffects,r
   let aa,bb,ea,eb;try{aa=adapt(a)}catch(e){ea=e}try{bb=adapt(b)}catch(e){eb=e}
   // Even if one input is invalid, evaluate the other with the same session.
   const session=runner.session();
+  session.prepare([...(ea?[]:[aa]),...(eb?[]:[bb])]);
   const ra=ea?failure(ea):runner.safeEvaluate(aa,session);
   const rb=eb?failure(eb):runner.safeEvaluate(bb,session);
   const sameBuildContext=ra.status==='OK'&&rb.status==='OK'&&ra.weaponType===rb.weaponType;
