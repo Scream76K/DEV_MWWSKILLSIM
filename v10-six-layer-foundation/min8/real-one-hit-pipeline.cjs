@@ -18,6 +18,8 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    const image=source.capture(pinned);
    if(!image?.techniques||!own(image.techniques,techniqueId))throw Error('REAL_SLICE:TECHNIQUE_NOT_FOUND');
    const record=image.techniques[techniqueId];
+   // The element-disposition proof belongs to L2/L3 and must not be fabricated during capture.
+   // This narrow bridge accepts physical-only data only after both build and effect gates below.
    const adapted=adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion:pinned.technique,
     elementContext:{displayElement:0,effectsResolved:true,activeElementEffects:[]}});
    return {...image,techniques:{[techniqueId]:adapted}};
@@ -26,6 +28,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    const result=resolveBuild(raw,equipment,request);
    if(result?.weaponType!==weaponType)throw Error('REAL_SLICE:WEAPON_MISMATCH');
    if(result?.equipment?.displayElement?.status!=='known'||result.equipment.displayElement.value!==0)throw Error('REAL_SLICE:ZERO_ELEMENT_NOT_PROVEN');
+   if(!Array.isArray(result.skills?.entries)||result.skills.entries.length!==0)throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
    return result;
   },
   resolveEffects:(build,conditions,channel,effects)=>{
