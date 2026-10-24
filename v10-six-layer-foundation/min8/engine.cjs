@@ -9,11 +9,21 @@ const validateState=(value,seen=new Set())=>{
   if(value===null||t!=='object')return;
   ensure(!seen.has(value),'STATE_CYCLE_INVALID');seen.add(value);
   ensure(Array.isArray(value)||Object.getPrototypeOf(value)===Object.prototype||Object.getPrototypeOf(value)===null,'STATE_OBJECT_INVALID');
-  for(const key of Reflect.ownKeys(value)){
-    ensure(typeof key==='string'&&Object.getOwnPropertyDescriptor(value,key)?.enumerable,'STATE_KEY_INVALID');
-    validateState(value[key],seen);
+  if(Array.isArray(value)){
+    for(let i=0;i<value.length;i++){
+      ensure(Object.hasOwn(value,i),'STATE_ARRAY_HOLE_INVALID');
+      validateState(value[i],seen);
+    }
+    for(const key of Reflect.ownKeys(value)){
+      if(key==='length')continue;
+      ensure(typeof key==='string'&&/^(0|[1-9]\\d*)$/.test(key)&&Number(key)<value.length&&Object.getOwnPropertyDescriptor(value,key)?.enumerable,'STATE_KEY_INVALID');
+    }
+  }else{
+    for(const key of Reflect.ownKeys(value)){
+      ensure(typeof key==='string'&&Object.getOwnPropertyDescriptor(value,key)?.enumerable,'STATE_KEY_INVALID');
+      validateState(value[key],seen);
+    }
   }
-  if(Array.isArray(value))for(let i=0;i<value.length;i++)ensure(Object.hasOwn(value,i),'STATE_ARRAY_HOLE_INVALID');
   seen.delete(value);
 };
 const semantic=x=>JSON.stringify(stable(x));
