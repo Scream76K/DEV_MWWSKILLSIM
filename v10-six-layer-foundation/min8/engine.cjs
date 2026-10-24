@@ -3,6 +3,7 @@
 const copy=x=>structuredClone(x), ensure=(x,m)=>{if(!x)throw Error(m)}, num=x=>typeof x==='number'&&Number.isFinite(x);
 const stable=x=>Array.isArray(x)?x.map(stable):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,stable(x[k])])):x;
 const semantic=x=>JSON.stringify(stable(x));
+const finite=x=>typeof x==='number'&&Number.isFinite(x);
 const condition=(rule,ctx)=>{
  ensure(rule&&typeof rule==='object'&&['always','state-equals','target-equals','event-equals'].includes(rule.type),'CONDITION_INVALID');
  if(rule.type==='always')return 'true';
@@ -28,14 +29,15 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const snap=openDataSnapshot(copy(pinned));
   ensure(snap&&JSON.stringify(snap.versions)===JSON.stringify(pinned),'SNAPSHOT_VERSION_MISMATCH');
   for(const k of ['readTechnique','resolveBuild','resolveEffects'])ensure(typeof snap[k]==='function','SNAPSHOT_READER_MISSING_'+k);
-  const cache=new Map(),buildCache=new Map(),effectCache=new Map();
+  const cache=new Map(),buildCache=new Map(),effectCache=new Map(),failures=new Map();
   let sealed=false;
-  const requirePreloaded=(map,key)=>{if(sealed&&!map.has(key))throw Error('SNAPSHOT_UNPREPARED_KEY');};
-  const readTechnique=(id)=>{const k=id+'@'+pinned.technique;requirePreloaded(cache,k);if(!cache.has(k))cache.set(k,copy(snap.readTechnique(id,pinned.technique,pinned.game)));return copy(cache.get(k))};
+  const requirePreloaded=(map,key,scope)=>{if(failures.has(scope+key))throw Error(failures.get(scope+key));if(sealed&&!map.has(key))throw Error('SNAPSHOT_UNPREPARED_KEY');};
+  const capture=(map,key,scope,fn)=>{requirePreloaded(map,key,scope);if(!map.has(key)){try{map.set(key,copy(fn()))}catch(e){failures.set(scope+key,e.message);throw e}}return copy(map.get(key))};
+  const readTechnique=(id)=>{const k=id+'@'+pinned.technique;return capture(cache,k,'T:',()=>snap.readTechnique(id,pinned.technique,pinned.game))};
   const resolved={
     ...snap,
-    resolveBuild:(raw,db,game)=>{const key=semantic({raw,db,game});requirePreloaded(buildCache,key);if(!buildCache.has(key))buildCache.set(key,copy(snap.resolveBuild(copy(raw),db,game)));return copy(buildCache.get(key));},
-    resolveEffects:(build,conditions,ch,v)=>{const key=semantic({build,conditions,ch,v});requirePreloaded(effectCache,key);if(!effectCache.has(key))effectCache.set(key,copy(snap.resolveEffects(copy(build),copy(conditions),ch,v)));return copy(effectCache.get(key));}
+    resolveBuild:(raw,db,game)=>{const key=semantic({raw,db,game});return capture(buildCache,key,'B:',()=>snap.resolveBuild(copy(raw),db,game));},
+    resolveEffects:(build,conditions,ch,v)=>{const key=semantic({build,conditions,ch,v});return capture(effectCache,key,'E:',()=>snap.resolveEffects(copy(build),copy(conditions),ch,v));}
    };
   return {
     snapshot:resolved,readTechnique,
@@ -65,13 +67,13 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const selected=req.evaluation.techniqueIds;ensure(Array.isArray(selected)&&selected.length,'TECHNIQUES_MISSING');
   const events=[],revisions=[];
   selected.forEach((id,step)=>{const t=s.readTechnique(id);ensure(t?.id===id&&t.dataVersion===pinned.technique&&t.revision&&t.definitionStatus==='defined','TECHNIQUE_UNDEFINED');
-   ensure(Array.isArray(t.events)&&(t.events.length||t.explicitNoOp===true),'EVENTS_UNDEFINED');revisions.push(id+'@'+t.revision);
+   ensure(Array.isArray(t.events)&&(t.events.length||t.explicitNoOp===true),'EVENTS_UNDEFINED');revisions.push({id,revision:t.revision});
    t.events.forEach((ev,i)=>{ensure(['hit','consume','transition'].includes(ev.type),'EVENT_TYPE_INVALID');
     if(ev.type==='hit'){ensure(Array.isArray(ev.components)&&ev.components.length,'COMPONENTS_MISSING');const ids=new Set();for(const c of ev.components){ensure(c.id&&!ids.has(c.id)&&c.kind&&c.unit&&c.source&&num(c.coefficient),'DB_COMPONENT_INVALID');ids.add(c.id)}}
     events.push({...copy(ev),id:step+':'+i,techniqueId:id,revision:t.revision});
    });
   });
-  return {events,expected:events.map(e=>e.id),signature:JSON.stringify(revisions)};
+  return {events,expected:events.map(e=>e.id),signature:semantic(revisions)};
  }
  function applyEffects(component,effects,state,build,target,event){
   const out={coefficient:component.coefficient,stats:{attack:build.trueAttack,element:build.element,affinity:build.affinity},post:[],trace:[]};
@@ -83,17 +85,20 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
    const active=condition(e.condition,{state,target,event});
    if(active==='unknown')throw Error('EFFECT_CONDITION_UNKNOWN_'+e.id);
    if(active==='false')continue;
+   ensure(finite(out.coefficient)&&Object.values(out.stats).every(finite),'EFFECT_RESULT_NON_FINITE');
    if(e.stage==='damage')out.post.push({operation:e.operation,amount:e.amount});
    else {const dest=e.stage==='coefficient'?out:out.stats,key=e.stage;const v=dest[key];dest[key]=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);}
+   ensure(finite(out.coefficient)&&Object.values(out.stats).every(finite),'EFFECT_RESULT_NON_FINITE');
    out.trace.push({id:e.id,stage:e.stage,unit:e.unit,order:e.order,source:e.source});
   }
   return out;
  }
  function aggregate(run,duration){
   const e=run.execution,complete=e.status==='complete'&&e.expected.length===e.executed.length&&e.expected.every((x,i)=>x===e.executed[i]);
-  const total=!complete?bad('EXECUTION_INCOMPLETE'):run.components.some(c=>c.status!=='available')?bad('COMPONENT_UNAVAILABLE'):good(run.components.reduce((s,c)=>s+c.value,0));
+  const sum=run.components.reduce((s,c)=>s+c.value,0);
+  const total=!complete?bad('EXECUTION_INCOMPLETE'):run.components.some(c=>c.status!=='available')?bad('COMPONENT_UNAVAILABLE'):!finite(sum)?bad('TOTAL_NON_FINITE'):good(sum);
   const time=num(duration)&&duration>0?good(duration):bad('DURATION_UNAVAILABLE');
-  return {...run,metrics:{comboTotalDamage:total,comboDuration:time,comboDps:total.status==='available'&&time.status==='available'?good(total.value/time.value):bad(total.status==='available'?'DURATION_UNAVAILABLE':total.reason)}};
+  return {...run,metrics:{comboTotalDamage:total,comboDuration:time,comboDps:total.status==='available'&&time.status==='available'?(finite(total.value/time.value)?good(total.value/time.value):bad('DPS_NON_FINITE')):bad(total.status==='available'?'DURATION_UNAVAILABLE':total.reason)}};
  }
  function runChannel(build,req,plan,ch,s){
   const executed=[],components=[],issues=[];let state;
@@ -138,9 +143,11 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
          if(Array.isArray(ev.operations)){
            const occupied=new Set();
            for(const op of ev.operations){
-             ensure(op?.op==='set'&&validPath(op.path)&&Object.hasOwn(op,'value'),'TRANSITION_OPERATION_INVALID');
+             ensure(op&&['set','add','transfer'].includes(op.op)&&validPath(op.path),'TRANSITION_OPERATION_INVALID');
              const key=semantic(op.path);ensure(!occupied.has(key),'TRANSITION_DUPLICATE_PATH');occupied.add(key);
-             writePath(expected,op.path,op.value);
+             if(op.op==='set'){ensure(Object.hasOwn(op,'value'),'TRANSITION_VALUE_MISSING');writePath(expected,op.path,op.value);}
+             else if(op.op==='add'){const curr=readPath(expected,op.path);ensure(curr.status==='known'&&finite(curr.value)&&finite(op.amount),'TRANSITION_ADD_INVALID');let next=curr.value+op.amount;ensure(finite(next),'TRANSITION_OVERFLOW');if(op.cap!==undefined){ensure(finite(op.cap),'TRANSITION_CAP_INVALID');next=Math.min(next,op.cap)}writePath(expected,op.path,next);}
+             else {ensure(validPath(op.to)&&semantic(op.to)!==semantic(op.path),'TRANSFER_TARGET_INVALID');const from=readPath(expected,op.path),to=readPath(expected,op.to);ensure(from.status==='known'&&to.status==='known'&&finite(from.value)&&finite(to.value),'TRANSFER_RESOURCE_INVALID');const amount=op.amount==='all'?from.value:op.amount;ensure(finite(amount)&&amount>=0&&from.value>=amount,'TRANSFER_AMOUNT_INVALID');ensure(finite(to.value+amount),'TRANSFER_OVERFLOW');writePath(expected,op.path,from.value-amount);writePath(expected,op.to,to.value+amount);}
            }
          }else{
            ensure(ev.updates&&typeof ev.updates==='object'&&!Array.isArray(ev.updates),'TRANSITION_DEFINITION_MISSING');
