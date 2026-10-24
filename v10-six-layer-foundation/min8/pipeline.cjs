@@ -52,10 +52,11 @@ function createPipeline({versions,openDataSnapshot,resolveBuild,resolveEffects,r
   // L6: one session through the engine; validate L1 separately to preserve A/B isolation.
   let aa,bb,ea,eb;try{aa=adapt(a)}catch(e){ea=e}try{bb=adapt(b)}catch(e){eb=e}
   // Even if one input is invalid, evaluate the other with the same session.
-  const session=runner.session();
-  session.prepare([...(ea?[]:[aa]),...(eb?[]:[bb])]);
-  const ra=ea?failure(ea):runner.safeEvaluate(aa,session);
-  const rb=eb?failure(eb):runner.safeEvaluate(bb,session);
+  let session,sessionError;
+  try{session=runner.session();session.prepare([...(ea?[]:[aa]),...(eb?[]:[bb])]);}
+  catch(e){sessionError=e;}
+  const ra=ea?failure(ea):sessionError?failure(sessionError):runner.safeEvaluate(aa,session);
+  const rb=eb?failure(eb):sessionError?failure(sessionError):runner.safeEvaluate(bb,session);
   const sameBuildContext=ra.status==='OK'&&rb.status==='OK'&&ra.weaponType===rb.weaponType;
   const comparable=sameBuildContext&&ra.comparisonContext?.damage===rb.comparisonContext?.damage;
   const relative={};
