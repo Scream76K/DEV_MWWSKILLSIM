@@ -1056,6 +1056,7 @@ function calcAffinityBonus(total){
   const rawLv=skillLevel(total,['見切り','Critical Eye']); const lv=Number.isInteger(rawLv)?rawLv:0; const vals=[0,4,8,12,16,20];
   return vals[Math.max(0,Math.min(5,lv))]||0;
 }
+window.MHWAffinitySkillResolver=calcAffinityBonus;
 function calcAttackSkill(total){
   const rawLv=skillLevel(total,['攻撃','Attack Boost']); const lv=Number.isInteger(rawLv)?Math.max(0,Math.min(5,rawLv)):0; return {flat:[0,3,5,7,8,9][lv],mult:lv>=5?1.04:lv===4?1.02:1};
 }
