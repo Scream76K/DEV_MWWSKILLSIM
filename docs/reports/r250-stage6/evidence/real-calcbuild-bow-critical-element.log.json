@@ -1,0 +1,101 @@
+{
+  "gitSha": "002d427f6095b2f5152959875b44642866fd2536",
+  "input": {
+    "weaponId": 17,
+    "weaponName": "Quematrice Arco I",
+    "decoId": 103,
+    "decoName": "属会珠【１】",
+    "elementType": "fire",
+    "elementDisplay": 70,
+    "coating": "POWER",
+    "range": "CRITICAL"
+  },
+  "out": {
+    "status": "OK",
+    "stats": {
+      "attack": 120,
+      "attackTrue": 100,
+      "attackComponents": {
+        "weaponBase": 100,
+        "normalMultiplier": 1,
+        "normalFlat": 0
+      },
+      "affinity": 5,
+      "element": 70
+    },
+    "total": {
+      "Focus": 1
+    },
+    "conditional": {
+      "status": "REFERENCE_ONLY",
+      "pending": [],
+      "normalAttack": 100,
+      "maximumAttack": 100
+    },
+    "normal": {
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "available",
+          "value": 49.602599999999995
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        }
+      }
+    },
+    "maximum": {
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "available",
+          "value": 49.602599999999995
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        }
+      }
+    },
+    "execution": {},
+    "eventKeys": [
+      "status",
+      "weaponType",
+      "diagnostics",
+      "versions",
+      "conditionKey",
+      "comparisonContext",
+      "channels"
+    ],
+    "channelKeys": [
+      "normal",
+      "maximum"
+    ],
+    "diagnostics": [
+      {
+        "code": "MHDB_SOURCE",
+        "apiId": 17,
+        "gameId": 19,
+        "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/17",
+        "apiVersion": "UNKNOWN",
+        "retrievedAt": "UNKNOWN",
+        "sourceGameVersion": "UNKNOWN"
+      }
+    ],
+    "rendered": "\n    攻撃力120真 100\n    会心率5%\n    最大会心率5%\n    属性70\n    防御力1\n    選択技の実計算技 選択技 / 通常 49.6 [MACARONGAMEMO_BOW_MOTION_CURRENT rev.1] / 最大 49.6 [MACARONGAMEMO_BOW_MOTION_CURRENT rev.1]\n  ",
+    "weapon": 17,
+    "skills": [
+      [
+        "Focus",
+        1
+      ]
+    ]
+  }
+}
