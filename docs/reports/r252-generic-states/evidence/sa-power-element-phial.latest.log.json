@@ -1,0 +1,100 @@
+{
+  "executionSha": "aff53102b82f34a9cb0fcf3cf352378d4c6b00bc",
+  "input": {
+    "weaponId": 939,
+    "gameId": 26,
+    "name": "ウズ・オラアチャⅠ",
+    "kind": "switch-axe",
+    "damage": {
+      "raw": 160,
+      "display": 560
+    },
+    "affinity": -15,
+    "element": {
+      "element": "water",
+      "kind": "element",
+      "weapon": {
+        "id": 939
+      },
+      "damage": {
+        "raw": 15,
+        "display": 150
+      },
+      "hidden": false,
+      "id": 7586
+    },
+    "phial": {
+      "kind": "element"
+    },
+    "techniqueId": "SA_SWORD_VERTICAL",
+    "state": {
+      "mode": "SWORD",
+      "awakened": false
+    },
+    "trainingHitzone": {
+      "slash": 0.5,
+      "water": 0.3
+    }
+  },
+  "channels": {
+    "normal": {
+      "status": "available",
+      "value": 49.22
+    },
+    "maximum": {
+      "status": "available",
+      "value": 49.22
+    },
+    "execution": {
+      "normal": "complete",
+      "maximum": "complete"
+    }
+  },
+  "components": {
+    "physical": [
+      {
+        "id": "SA_SWORD_VERTICAL:physical:0",
+        "value": 42.69,
+        "effectsApplied": []
+      }
+    ],
+    "element": [
+      {
+        "id": "SA_SWORD_VERTICAL:element:0",
+        "value": 6.53,
+        "effectsApplied": [
+          {
+            "id": "switch-axe-power-element-phial-element",
+            "target": "element",
+            "stage": "element",
+            "unit": "dimensionless",
+            "order": 20,
+            "source": "https://kuroyonhon.com/mhwilds/memo/11.php",
+            "status": "PROVISIONALLY_ADOPTED"
+          }
+        ]
+      }
+    ]
+  },
+  "effectsApplied": [
+    {
+      "id": "switch-axe-power-element-phial-element",
+      "target": "element",
+      "stage": "element",
+      "unit": "dimensionless",
+      "order": 20,
+      "source": "https://kuroyonhon.com/mhwilds/memo/11.php",
+      "status": "PROVISIONALLY_ADOPTED"
+    }
+  ],
+  "renderedSummary": "\n    攻撃力560真 160\n    会心率-15%\n    最大会心率-15%\n    属性150\n    防御力1\n    選択技の実計算技 選択技 / 通常 49.2 [MACARONGAMEMO_SWITCH_AXE_CURRENT rev.1] [暫定・資料ベース] / 最大 49.2 [MACARONGAMEMO_SWITCH_AXE_CURRENT rev.1] [暫定・資料ベース]\n  ",
+  "assertions": {
+    "physicalAvailable": true,
+    "elementAvailable": true,
+    "elementPhialAppliedOnce": true,
+    "physicalUnaffectedByElementPhial": true,
+    "awakenedFalseOnly": true,
+    "normalMaximumComplete": true
+  },
+  "note": "Power Element Phial 1.45 is PROVISIONALLY_ADOPTED from kuro yonhon memo 11; current game-version verification remains pending. Awakened sword scorch is intentionally out of scope."
+}
