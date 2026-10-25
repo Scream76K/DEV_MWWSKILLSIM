@@ -22,7 +22,8 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!Array.isArray(record.evidenceRefs)||record.evidenceRefs.length===0)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   if(!Array.isArray(record.hits)||record.hits.length<1)throw Error('REAL_SLICE:HITS_REQUIRED');
   if((record.specialComponents?.length||0)>0)throw Error('REAL_SLICE:SPECIAL_ROUTE_PENDING');
-  if(record.calculationStatus==='EVIDENCE_GATED')throw Error('REAL_SLICE:EVIDENCE_GATED');
+  const provisionalHpOnly=record.techniqueId==='IG_ENHANCED_DIAGONAL_SLASH'&&record.hpOnlyProvisional==='IG_ENHANCED_DIAGONAL_SLASH_20261025'&&record.numericStatus==='SOURCE_CONFIRMED'&&record.verificationStatus==='PARTIALLY_VERIFIED'&&Array.isArray(record.hits)&&record.hits.length===2&&record.hits.every(hit=>finite(hit.mv)&&hit.mv>=0&&finite(hit.elementModifier)&&hit.elementModifier>=0)&&(!record.specialComponents||record.specialComponents.length===0);
+  if(record.calculationStatus==='EVIDENCE_GATED'&&!provisionalHpOnly)throw Error('REAL_SLICE:EVIDENCE_GATED');
   const source=record.evidenceRefs[0];
   if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   const elementResolved=elementContext?.displayElement===0&&elementContext?.effectsResolved===true&&Array.isArray(elementContext.activeElementEffects)&&elementContext.activeElementEffects.length===0;
@@ -32,7 +33,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    // Preserve the sourced part-durability modifier for provenance. The
    // canonical HP formula validates it but does not apply it to HP damage.
-   const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??null};
+   const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??null,adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):null};
    const partModifierKnown=finite(hit.partModifier);
    const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,shieldBoostAxeBody:record.shieldBoostAxeBody===true,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
    if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
@@ -47,7 +48,8 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
     id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',
     elementModifier:record.hits.map(hit=>hit.elementModifier),
     excludedElement:excludedElements.length?excludedElements:null,
-    events
+    events,
+    adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):null
   });
 }
 module.exports={adaptOrdinaryPhysicalHit};

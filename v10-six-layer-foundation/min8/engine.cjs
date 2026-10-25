@@ -176,7 +176,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
       const all=[...emit,...inactive,...unresolved],allowed=ev.components.map(c=>c.id);
       ensure(all.length===allowed.length&&new Set(all).size===all.length&&all.every(id=>allowed.includes(id)),'DISPOSITION_INVALID');
       for(const c of ev.components){
-       const meta={id:c.id,eventId:ev.id,techniqueId:ev.techniqueId,revision:ev.revision,source:c.source,coefficientUnit:c.unit,damageUnit:'damage'};
+       const meta={id:c.id,eventId:ev.id,techniqueId:ev.techniqueId,revision:ev.revision,source:c.source,coefficientUnit:c.unit,damageUnit:'damage',...(c.parameters?.adoption?{adoption:copy(c.parameters.adoption)}:{})};
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
        if(unresolved.includes(c.id)){components.push({...meta,...bad(typeof reasons[c.id]==='string'?reasons[c.id]:'UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
        const applied=applyEffects(c,effects,state,build,req.target,ev,req.conditions||{}),f=formulae[c.kind];
