@@ -1,0 +1,31 @@
+const fs=require('fs');
+const assert=require('node:assert/strict');
+const {execFileSync}=require('node:child_process');
+const {JSDOM,VirtualConsole}=require('jsdom');
+const repo='/Users/scream/Documents/Codex/2026-10-18/task/himmel-v10-real-db-element-gate';
+const html=require(`${repo}/tools/dom-test-setup.cjs`).readSimulatorHtml();
+const weapon=JSON.parse(fs.readFileSync(`${repo}/docs/reports/r252-dual-blades/evidence/mhdb-dual-blades-hope-dagger.api.json`,'utf8'));
+const techniqueId='DB_DEMON_DANCE_I';
+const vc=new VirtualConsole();
+const errors=[];
+vc.on('jsdomError',e=>errors.push(e.message));
+const dom=new JSDOM(html,{url:'https://simulator.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}});
+const w=dom.window;
+w.eval(`clearWeaponBuckets();DB.weapons=${JSON.stringify([weapon])};weaponIndexByKind['dual-blades']=[DB.weapons[0]];weaponKind.value='dual-blades';weapon.innerHTML='<option value="${weapon.id}">${weapon.name}</option>';weapon.value='${weapon.id}';DB.monsters=[{id:'training-room',name:'訓練場',parts:[{id:'training-front',name:'正面',multipliers:{slash:.5,blunt:.5,pierce:.5,fire:.2,water:.2,thunder:.2,ice:.2,dragon:.2}}]}];renderMonsters();monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';renderComboForWeapon();document.getElementById('comboDBDemonMode').value='1';App.combo.syncFromDOM();`);
+w.eval(`App.state.combo.moves=[{techniqueId:${JSON.stringify(techniqueId)}}];`);
+w.calcBuild();
+const real=w.eval('calcState.realOneHit');
+assert.equal(real?.status,'OK');
+for(const channel of ['normal','maximum']){
+  const metric=real.channels[channel].metrics.comboTotalDamage;
+  assert.equal(metric.status,'available');
+  assert.equal(Number.isFinite(metric.value),true);
+  assert.equal(real.channels[channel].execution.status,'complete');
+}
+const rendered=w.document.getElementById('buildSummary')?.textContent||'';
+assert.match(rendered,/選択技の実計算/);
+assert.match(rendered,/通常/);
+assert.match(rendered,/最大/);
+assert.deepEqual(errors,[]);
+console.log(JSON.stringify({executionSha:execFileSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8'}).trim(),harness:'tools/dual-blades-real-pipeline-contract.cjs',status:real.status,weapon:{id:weapon.id,gameId:weapon.gameId,name:weapon.name,raw:weapon.damage.raw,display:weapon.damage.display,affinity:weapon.affinity,sharpness:weapon.sharpness,slots:weapon.slots,skills:weapon.skills},techniqueId,state:w.eval('comboDBStoredState()'),normal:real.channels.normal.metrics.comboTotalDamage,maximum:real.channels.maximum.metrics.comboTotalDamage,conditionKey:real.conditionKey,rendered,errors},null,2));
+dom.window.close();
