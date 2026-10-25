@@ -1,0 +1,165 @@
+{
+  "gitSha": "b08dac296b34b1c2f1f298fb226f5923c20f7c13",
+  "input": {
+    "weaponId": 26,
+    "weaponName": "Albirath Bow I",
+    "decoId": 128,
+    "decoName": "達人珠【１】",
+    "slotKey": "w0",
+    "elementType": "fire",
+    "elementDisplay": 110,
+    "coating": "POWER",
+    "range": "CRITICAL"
+  },
+  "out": {
+    "status": "OK",
+    "stats": {
+      "attack": 192,
+      "attackTrue": 160,
+      "attackComponents": {
+        "weaponBase": 160,
+        "normalMultiplier": 1,
+        "normalFlat": 0
+      },
+      "affinity": 19,
+      "element": 110
+    },
+    "total": {
+      "Ballistics": 1,
+      "Critical Element": 1,
+      "見切り": 1
+    },
+    "conditional": {
+      "status": "REFERENCE_ONLY",
+      "pending": [],
+      "normalAttack": 160,
+      "maximumAttack": 160
+    },
+    "normal": {
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "available",
+          "value": 81.67321800000003
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        }
+      }
+    },
+    "maximum": {
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "available",
+          "value": 81.67321800000003
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        }
+      }
+    },
+    "execution": {},
+    "eventKeys": [
+      "status",
+      "weaponType",
+      "diagnostics",
+      "versions",
+      "conditionKey",
+      "comparisonContext",
+      "channels"
+    ],
+    "channelKeys": [
+      "normal",
+      "maximum"
+    ],
+    "diagnostics": [
+      {
+        "code": "MHDB_SOURCE",
+        "apiId": 26,
+        "gameId": 28,
+        "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/26",
+        "apiVersion": "UNKNOWN",
+        "retrievedAt": "UNKNOWN",
+        "sourceGameVersion": "UNKNOWN"
+      }
+    ],
+    "rendered": "\n    攻撃力192真 160\n    会心率19%\n    最大会心率19%\n    属性110\n    防御力1\n    選択技の実計算技 選択技 / 通常 81.7 [MACARONGAMEMO_BOW_MOTION_CURRENT rev.1] / 最大 81.7 [MACARONGAMEMO_BOW_MOTION_CURRENT rev.1]\n  ",
+    "weapon": 26,
+    "skills": [
+      [
+        "Ballistics",
+        1
+      ],
+      [
+        "Critical Element",
+        1
+      ],
+      [
+        "見切り",
+        1
+      ]
+    ],
+    "normalComponents": [
+      {
+        "id": "BOW_SHOT_3:reference:0",
+        "eventId": "0:0",
+        "techniqueId": "BOW_SHOT_3",
+        "revision": "1",
+        "source": "MACARONGAMEMO_BOW_MOTION_CURRENT",
+        "coefficientUnit": "REFERENCE",
+        "damageUnit": "damage",
+        "status": "available",
+        "value": 81.67321800000003,
+        "disposition": "emitted",
+        "effectsApplied": [
+          {
+            "id": "critical-eye-affinity",
+            "stage": "affinity",
+            "unit": "percent",
+            "order": 30,
+            "source": "index.html:calcAffinityBonus"
+          }
+        ]
+      }
+    ],
+    "maximumComponents": [
+      {
+        "id": "BOW_SHOT_3:reference:0",
+        "eventId": "0:0",
+        "techniqueId": "BOW_SHOT_3",
+        "revision": "1",
+        "source": "MACARONGAMEMO_BOW_MOTION_CURRENT",
+        "coefficientUnit": "REFERENCE",
+        "damageUnit": "damage",
+        "status": "available",
+        "value": 81.67321800000003,
+        "disposition": "emitted",
+        "effectsApplied": [
+          {
+            "id": "critical-eye-affinity",
+            "stage": "affinity",
+            "unit": "percent",
+            "order": 30,
+            "source": "index.html:calcAffinityBonus"
+          },
+          {
+            "id": "conditional-affinity-maximum",
+            "stage": "affinity",
+            "unit": "percent",
+            "order": 80,
+            "source": "index.html:calcMaxAffinity"
+          }
+        ]
+      }
+    ]
+  }
+}
