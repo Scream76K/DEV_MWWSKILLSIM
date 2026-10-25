@@ -14,7 +14,7 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   let sharp,hitzone,part=null;
   try{
    sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});
-   hitzone=resolveHitzone({target,state,gameVersion:expectedGameVersion});
+   hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});
    if(parameters?.partModifier!==null&&parameters?.partModifier!==undefined)part=resolvePartModifier({parameters,build,state,gameVersion:expectedGameVersion});
   }catch(_){return unavailable('PHYSICAL_CONTEXT_RESOLUTION_FAILED')}
   const valid=(x)=>x&&x.gameVersion===expectedGameVersion&&typeof x.evidenceRef==='string'&&x.evidenceRef.length>0&&finite(x.value);
@@ -43,7 +43,7 @@ function createSourcedElementalFormula({calculate,resolveElementSharpness,resolv
   if(!finite(stats?.affinity))return unavailable('ELEMENT_AFFINITY_UNRESOLVED');
   if(!expectedGameVersion)return unavailable('ELEMENT_VERSION_UNRESOLVED');
   let sharp,hitzone;
-  try{sharp=resolveElementSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,gameVersion:expectedGameVersion});}
+  try{sharp=resolveElementSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});}
   catch(_){return unavailable('ELEMENT_CONTEXT_RESOLUTION_FAILED')}
   const valid=x=>x&&x.gameVersion===expectedGameVersion&&typeof x.evidenceRef==='string'&&x.evidenceRef.length>0&&finite(x.value);
   if(!valid(sharp)||sharp.value<=0)return unavailable('ELEMENT_SHARPNESS_UNRESOLVED');

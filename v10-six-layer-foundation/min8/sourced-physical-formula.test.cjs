@@ -23,3 +23,16 @@ test('resolved affinity is delegated to the canonical formula; unknown skills ar
  // The sourced Formula receives only already-resolved stats; unknown skill IDs are not its responsibility.
  a.deepEqual(setup()({...args,build:{skills:{entries:[{id:'some-skill'}]}}}),{status:'available',value:23});
 });
+test('hit parameters reach the hitzone resolver unchanged',()=>{
+ let received=null;
+ const formula=createSourcedPhysicalFormula({
+  expectedGameVersion:version,
+  resolveSharpness:()=>known(1),
+  resolveHitzone:input=>{received=input;return known(40);},
+  resolvePartModifier:()=>known(1),
+  calculate:input=>({p:input.mv})
+ });
+ const parameters={damageType:'pierce',hitIndex:2};
+ a.deepEqual(formula({...args,parameters}),{status:'available',value:23});
+ a.deepEqual(received.parameters,parameters);
+});
