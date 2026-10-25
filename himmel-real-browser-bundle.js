@@ -232,7 +232,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        const meta={id:c.id,eventId:ev.id,techniqueId:ev.techniqueId,revision:ev.revision,source:c.source,coefficientUnit:c.unit,damageUnit:'damage'};
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
        if(unresolved.includes(c.id)){components.push({...meta,...bad('UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
-       const applied=applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
+       const applied=c.kind==='shelling'?{coefficient:c.coefficient,stats:{attack:build.trueAttack,element:build.element,affinity:build.affinity},post:[],trace:[]}:applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
        const response=typeof f==='function'?f({kind:c.kind,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
@@ -451,7 +451,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        const meta={id:c.id,eventId:ev.id,techniqueId:ev.techniqueId,revision:ev.revision,source:c.source,coefficientUnit:c.unit,damageUnit:'damage'};
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
        if(unresolved.includes(c.id)){components.push({...meta,...bad('UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
-       const applied=applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
+       const applied=c.kind==='shelling'?{coefficient:c.coefficient,stats:{attack:build.trueAttack,element:build.element,affinity:build.affinity},post:[],trace:[]}:applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
        const response=typeof f==='function'?f({kind:c.kind,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
@@ -753,6 +753,12 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!weaponType||weaponType==='charge-blade'||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
   if(!record||record.techniqueId!==techniqueId||(record.weaponType!==undefined&&record.weaponType!==weaponType))throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
   if(!Number.isInteger(record.revision)||record.revision<1)throw Error('REAL_SLICE:REVISION_REQUIRED');
+  const shelling=Array.isArray(record.specialComponents)&&record.specialComponents.some(x=>String(x).includes('SHELL'));
+  if(shelling){
+   if(record.weaponType!=='gunlance'||record.numericStatus!=='SOURCE_CONFIRMED'||!record.specialSourceValues)throw Error('REAL_SLICE:SHELLING_SOURCE_PENDING');
+   const source=record.evidenceRefs[0];
+   return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':shelling:0',kind:'shelling',unit:'SHELLING',source,coefficient:1,parameters:Object.freeze({hitIndex:0,sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),shellingSource:record.specialSourceValues,shellingAction:record.shellingAction,shellingInput:record.shellingInput})}]}]});
+  }
   if(!['VERIFIED','PARTIALLY_VERIFIED'].includes(record.verificationStatus))throw Error('REAL_SLICE:VERIFICATION_PENDING');
   if(!Array.isArray(record.evidenceRefs)||record.evidenceRefs.length===0)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   if(!Array.isArray(record.hits)||record.hits.length<1)throw Error('REAL_SLICE:HITS_REQUIRED');
@@ -792,6 +798,12 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!weaponType||weaponType==='charge-blade'||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
   if(!record||record.techniqueId!==techniqueId||(record.weaponType!==undefined&&record.weaponType!==weaponType))throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
   if(!Number.isInteger(record.revision)||record.revision<1)throw Error('REAL_SLICE:REVISION_REQUIRED');
+  const shelling=Array.isArray(record.specialComponents)&&record.specialComponents.some(x=>String(x).includes('SHELL'));
+  if(shelling){
+   if(record.weaponType!=='gunlance'||record.numericStatus!=='SOURCE_CONFIRMED'||!record.specialSourceValues)throw Error('REAL_SLICE:SHELLING_SOURCE_PENDING');
+   const source=record.evidenceRefs[0];
+   return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':shelling:0',kind:'shelling',unit:'SHELLING',source,coefficient:1,parameters:Object.freeze({hitIndex:0,sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),shellingSource:record.specialSourceValues,shellingAction:record.shellingAction,shellingInput:record.shellingInput})}]}]});
+  }
   if(!['VERIFIED','PARTIALLY_VERIFIED'].includes(record.verificationStatus))throw Error('REAL_SLICE:VERIFICATION_PENDING');
   if(!Array.isArray(record.evidenceRefs)||record.evidenceRefs.length===0)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   if(!Array.isArray(record.hits)||record.hits.length<1)throw Error('REAL_SLICE:HITS_REQUIRED');
@@ -939,7 +951,7 @@ const {createPipeline}=require('./pipeline.cjs');
 const {adaptOrdinaryPhysicalHit}=require('./real-technique-one-hit-adapter.cjs');
 const {createSourcedPhysicalFormula,createSourcedElementalFormula}=require('./sourced-physical-formula.cjs');
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
-function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,resolveSkillApplicability,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING',techniqueIds=null}){
+function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,resolveSkillApplicability,initialState,formulae,canonicalPhysical,shellingFormula,weaponType='hammer',techniqueId='HAM_SIDE_SWING',techniqueIds=null}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
  const elemental=canonicalPhysical&&typeof canonicalPhysical.resolveElementSharpness==='function'&&typeof canonicalPhysical.resolveElementHitzone==='function'?createSourcedElementalFormula({...canonicalPhysical,resolveElementSharpness:canonicalPhysical.resolveElementSharpness,resolveHitzone:canonicalPhysical.resolveElementHitzone}):formulae?.element;
@@ -987,10 +999,15 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    return result;
   }
  });
- const componentIds=(id,index)=>({physical:id+':physical:'+index,element:id+':element:'+index});
+ const componentIds=(id,index)=>({physical:id+':physical:'+index,element:id+':element:'+index,shelling:id+':shelling:'+index});
  const handlers={[weaponType]:({event,build,effects})=>{
   if(event.type!=='hit'||!uniqueTechniqueIds.includes(event.techniqueId)||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
-  const physicalEvents=event.components.filter(c=>c.kind==='physical'),elementEvents=event.components.filter(c=>c.kind==='element');
+  const physicalEvents=event.components.filter(c=>c.kind==='physical'),elementEvents=event.components.filter(c=>c.kind==='element'),shellingEvents=event.components.filter(c=>c.kind==='shelling');
+  if(shellingEvents.length){
+   if(physicalEvents.length||elementEvents.length||shellingEvents.length!==event.components.length)return {emit:[],inactive:[],unresolved:['REAL_SLICE:SHELLING_COMPONENT_MIXED']};
+   const unresolved=shellingEvents.filter(c=>c.id!==componentIds(event.techniqueId,c.parameters?.hitIndex).shelling).map(c=>c.id);
+   return {emit:shellingEvents.filter(c=>!unresolved.includes(c.id)).map(c=>c.id),inactive:[],unresolved};
+  }
   if(!physicalEvents.length)return {emit:[],inactive:[],unresolved:['REAL_SLICE:PHYSICAL_COMPONENTS_UNRESOLVED']};
   const emit=[],inactive=[],unresolved=[];
   for(const physicalEvent of physicalEvents){
@@ -1007,7 +1024,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   if(event.components.some(c=>!emit.includes(c.id)&&!inactive.includes(c.id)&&!unresolved.includes(c.id)&&!physicalEvents.includes(c)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   return {emit,inactive,unresolved};
  }};
- return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental}});
+ return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental,shelling:shellingFormula}});
 }
 module.exports={createRealOneHitPipeline};
 
@@ -1021,7 +1038,7 @@ const {createPipeline}=require('./pipeline.cjs');
 const {adaptOrdinaryPhysicalHit}=require('./real-technique-one-hit-adapter.cjs');
 const {createSourcedPhysicalFormula,createSourcedElementalFormula}=require('./sourced-physical-formula.cjs');
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
-function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,resolveSkillApplicability,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING',techniqueIds=null}){
+function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,resolveSkillApplicability,initialState,formulae,canonicalPhysical,shellingFormula,weaponType='hammer',techniqueId='HAM_SIDE_SWING',techniqueIds=null}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
  const elemental=canonicalPhysical&&typeof canonicalPhysical.resolveElementSharpness==='function'&&typeof canonicalPhysical.resolveElementHitzone==='function'?createSourcedElementalFormula({...canonicalPhysical,resolveElementSharpness:canonicalPhysical.resolveElementSharpness,resolveHitzone:canonicalPhysical.resolveElementHitzone}):formulae?.element;
@@ -1069,10 +1086,15 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    return result;
   }
  });
- const componentIds=(id,index)=>({physical:id+':physical:'+index,element:id+':element:'+index});
+ const componentIds=(id,index)=>({physical:id+':physical:'+index,element:id+':element:'+index,shelling:id+':shelling:'+index});
  const handlers={[weaponType]:({event,build,effects})=>{
   if(event.type!=='hit'||!uniqueTechniqueIds.includes(event.techniqueId)||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
-  const physicalEvents=event.components.filter(c=>c.kind==='physical'),elementEvents=event.components.filter(c=>c.kind==='element');
+  const physicalEvents=event.components.filter(c=>c.kind==='physical'),elementEvents=event.components.filter(c=>c.kind==='element'),shellingEvents=event.components.filter(c=>c.kind==='shelling');
+  if(shellingEvents.length){
+   if(physicalEvents.length||elementEvents.length||shellingEvents.length!==event.components.length)return {emit:[],inactive:[],unresolved:['REAL_SLICE:SHELLING_COMPONENT_MIXED']};
+   const unresolved=shellingEvents.filter(c=>c.id!==componentIds(event.techniqueId,c.parameters?.hitIndex).shelling).map(c=>c.id);
+   return {emit:shellingEvents.filter(c=>!unresolved.includes(c.id)).map(c=>c.id),inactive:[],unresolved};
+  }
   if(!physicalEvents.length)return {emit:[],inactive:[],unresolved:['REAL_SLICE:PHYSICAL_COMPONENTS_UNRESOLVED']};
   const emit=[],inactive=[],unresolved=[];
   for(const physicalEvent of physicalEvents){
@@ -1089,7 +1111,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   if(event.components.some(c=>!emit.includes(c.id)&&!inactive.includes(c.id)&&!unresolved.includes(c.id)&&!physicalEvents.includes(c)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   return {emit,inactive,unresolved};
  }};
- return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental}});
+ return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental,shelling:shellingFormula}});
 }
 module.exports={createRealOneHitPipeline};
 
