@@ -59,7 +59,7 @@
   "axe": {
     "state": {
       "mode": "AXE",
-      "awakened": false
+      "awakened": null
     },
     "status": "UNAVAILABLE",
     "reason": "REAL_SLICE:STATE_REQUIREMENT_MISMATCH:mode"
@@ -72,5 +72,6 @@
     "provisionalStatusExposed": true,
     "phialComponentNotAdded": true
   },
-  "note": "MHDB power phial is retained as weapon metadata. The registered source supports a provisional 1.17 sword physical multiplier before additive attack effects; SA_SWORD_VERTICAL has no separate phial explosion component. Scorch is source-confirmed but calculationReady:false and remains excluded."
+  "note": "MHDB power phial is retained as weapon metadata. The registered source supports a provisional 1.17 sword physical multiplier before additive attack effects; SA_SWORD_VERTICAL has no separate phial explosion component. Scorch is source-confirmed but calculationReady:false and remains excluded.",
+  "metadataCorrection": "AXE output state.awakened was recorded as false although the harness clears the control and comboSAStoredState returns null; corrected metadata only. Observed rejection and product results are unchanged."
 }
