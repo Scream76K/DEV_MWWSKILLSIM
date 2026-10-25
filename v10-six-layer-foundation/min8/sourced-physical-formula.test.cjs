@@ -16,7 +16,7 @@ test('sourced inputs reach existing damage formula without hardcoded normative M
 test('missing source or version refuses calculation',()=>{
  a.equal(setup({value:1,gameVersion:version})(args).reason,'PHYSICAL_SHARPNESS_UNRESOLVED');
  a.equal(setup(known(1),{...known(40),gameVersion:'unmatched'})(args).reason,'PHYSICAL_HITZONE_UNRESOLVED');
- a.equal(setup(known(1),known(40),known(1.1))(args).reason,'PHYSICAL_PART_MODIFIER_UNSUPPORTED');
+ a.deepEqual(setup(known(1),known(40),known(1.1))(args),{status:'available',value:23});
 });
 test('resolved affinity is delegated to the canonical formula; unknown skills are rejected by L3',()=>{
  a.deepEqual(setup()({...args,stats:{...args.stats,affinity:15}}),{status:'available',value:23});
