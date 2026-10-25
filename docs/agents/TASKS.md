@@ -37,3 +37,4 @@ SERIE-BONUS-BOUNDARIES completed: product 04c424bb7e5c2f6fa5aad146bf7db0b52df6cf
 
 - 2026-10-25 serie: オーナー承認の継続委任。index.htmlのアーティア素材UI・正規化・単独/比較入力に限定編集。旧保存境界の最小実MHDB検証完了、他担当との編集競合なし。詳細 docs/reports/r253-artia-fixed-production/REVIEW.md。
 - 2026-10-25 serie 夜間継続: 通常Ⅰ/Ⅱと巨戟の判定を分離、未接続の通常計算を明示保留。新数値の版・採用判断は docs/reports/r253-base-artia-source/MORNING_DECISIONS.md。数値接続は未完了。1代表の安全境界のみ確認。
+- 2026-10-25 serie: 通常スキルの独立夜間作業。Adapterのファーストショット正式名未接続のみ修正。実HBG467/珠358の初弾と2発目で公開calcBuild/通常最大/表示確認。保存比較・全体回帰なし。アーティア未確定数値は保留維持。
