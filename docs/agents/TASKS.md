@@ -39,3 +39,4 @@ SERIE-BONUS-BOUNDARIES completed: product 04c424bb7e5c2f6fa5aad146bf7db0b52df6cf
 - 2026-10-25 serie 夜間継続: 通常Ⅰ/Ⅱと巨戟の判定を分離、未接続の通常計算を明示保留。新数値の版・採用判断は docs/reports/r253-base-artia-source/MORNING_DECISIONS.md。数値接続は未完了。1代表の安全境界のみ確認。
 - 2026-10-25 serie: 通常スキルの独立夜間作業。Adapterのファーストショット正式名未接続のみ修正。実HBG467/珠358の初弾と2発目で公開calcBuild/通常最大/表示確認。保存比較・全体回帰なし。アーティア未確定数値は保留維持。
 - 2026-10-25 serie: 刃鱗の原典外別名を除去。近接チャージマスター未計算の大剣溜め3合計を限定保留。実244/236の最小入力で未算出/非対象不変を確認。係数追加・保存比較反復なし。
+- 2026-10-25 serie: CB混在のreference式登録をsome条件へ限定修正、非reference肉質解決を分離。実MHDB103公開入力で登録差を観測。SAED出典gate維持、実コンボ未成立、状態遷移未定義を静的に保留。係数/出典/bundle変更なし。
