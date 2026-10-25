@@ -7795,12 +7795,13 @@ function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
   const max=key=>Math.max(...allRows.map(r=>Number(r[key])||0));
   const ma=max('attack'),mta=max('attackTrue'),mf=max('affinity'),mmf=max('maxAffinity'),me=max('element'),mx=Math.max(...allRows.map(r=>Number(r.damage)||0)),mp=Math.max(...allRows.map(r=>comparisonDpsValue(r)??0));
   const cell=(v,b)=>`<td class="${b?'compare-best':''}">${v==null?'—':esc(v)}</td>`;
+  const rounded=v=>v==null?'—':Math.round(v),percent=v=>v==null?'—':Math.round(v)+'%';
   const itemWidth=112,buildWidth=120,totalWidth=itemWidth+rows.length*buildWidth;
   let h='<div class="compare-table"><table style="table-layout:fixed;width:'+totalWidth+'px;min-width:'+totalWidth+'px;max-width:'+totalWidth+'px"><colgroup><col class="compare-item-col" style="width:'+itemWidth+'px">'+rows.map(()=>'<col class="compare-build-col" style="width:'+buildWidth+'px">').join('')+'</colgroup><thead><tr><th>項目</th>'+rows.map(r=>`<th>${esc(r.name)}</th>`).join('')+'</tr></thead><tbody>';
-  h+='<tr><th>表示攻撃力</th>'+rows.map(r=>cell(Math.round(r.attack),r.attack===ma)).join('')+'</tr>';
-  h+='<tr><th>真攻撃力</th>'+rows.map(r=>cell(Math.round(r.attackTrue),r.attackTrue===mta)).join('')+'</tr>';
-  h+='<tr><th>会心率</th>'+rows.map(r=>cell(Math.round(r.affinity)+'%',r.affinity===mf)).join('')+'</tr>';
-  h+='<tr><th>最大会心率</th>'+rows.map(r=>cell(Math.round(r.maxAffinity)+'%',r.maxAffinity===mmf)).join('')+'</tr>';
+  h+='<tr><th>表示攻撃力</th>'+rows.map(r=>cell(rounded(r.attack),r.attack===ma)).join('')+'</tr>';
+  h+='<tr><th>真攻撃力</th>'+rows.map(r=>cell(rounded(r.attackTrue),r.attackTrue===mta)).join('')+'</tr>';
+  h+='<tr><th>会心率</th>'+rows.map(r=>cell(percent(r.affinity),r.affinity===mf)).join('')+'</tr>';
+  h+='<tr><th>最大会心率</th>'+rows.map(r=>cell(percent(r.maxAffinity),r.maxAffinity===mmf)).join('')+'</tr>';
   h+='<tr><th>属性</th>'+rows.map(r=>{const sameType=allRows.every(x=>!equipmentElementPendingReason(x)&&x.elementType===r.elementType);return '<td class="'+(sameType&&Number.isFinite(r.element)&&r.element===me?'compare-best':'')+'">'+equipmentElementDisplay(r,{detail:true})+'</td>';}).join('')+'</tr>';
   // ACCEPTED SPEC: raw calculated power is invariant when the baseline selector changes.
   for(const [key,label,metric] of [['normal','火力指数（計算値）［非正規化］','power-index'],['maximum','最大火力指数（計算値）［非正規化］','max-power-index']]){
