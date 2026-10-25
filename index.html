@@ -7562,7 +7562,7 @@ function comparisonChangeText(value){
   if(value.components.special!==null&&(value.components.special!==0||value.componentContributionPercent.special!==0))parts.push(component('special','特殊'));
   return signed(value.changePercent)+'（'+parts.join('／')+'）';
 }
-function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null){
+function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null,conditions=null){
   const target=snapshot?.target||{};
   const moves=Array.isArray(snapshot?.combo?.moves)?snapshot.combo.moves:[];
   const selectedKind=canonicalWeaponKind(selectedWeapon());
@@ -7594,6 +7594,13 @@ function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null){
       techniqueIds,
       techniqueDb:window.TechniqueDBEngine,
       trainingRoom:trainingRoomMonster(),
+      conditions:conditions||{},
+      bowState:conditions?.bowState||null,
+      hbgState:conditions?.hbgState||null,
+      lightBowgunState:conditions?.lightBowgunState||null,
+      chargeBladeState:conditions?.chargeBladeState||null,
+      huntingHornState:conditions?.huntingHornState||null,
+      gunlanceState:conditions?.gunlanceState||null,
       retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'
     });
   }catch(error){return {status:'UNAVAILABLE',reason:String(error?.message||error||'REAL_SLICE:EVALUATION_FAILED')};}
@@ -7626,7 +7633,7 @@ function compareSnapshot(name,snapshot,cond,expectedSnapshot=null){
       saedReference={NORMAL:{status:'PENDING',reason},MAX:{status:'PENDING',reason}};
     }
   }
-  const oneHitPipeline=evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot);
+  const oneHitPipeline=evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot,cond);
   return {name,kind,power,referenceCombo,saedReference,oneHitPipeline,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:st.element,elementType:String(st.elementType||''),elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason,damage:dmg,dps,dpsStatus,damageReason,dpsReason,comboVerification,referenceDps:comboVerification?.referenceDps??null,referenceDpsStatus:comboVerification?.referenceDpsStatus??'NOT_CALCULATED'};
 }
 function comparisonReasonText(reason){
