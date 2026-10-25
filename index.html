@@ -3949,6 +3949,12 @@ function comboDBStoredState(){const value=$('comboDBDemonMode')?.value;return {d
 function restoreComboDBState(s){if($('comboDBDemonMode'))$('comboDBDemonMode').value=s?.demonMode===true?'1':s?.demonMode===false?'0':'';}
 function renderComboDBState(){const p=$('comboDBStatePanel');if(!p)return;p.hidden=comboKind()!=='dual-blades';$('comboDBDemonMode').onchange=()=>{App.combo.syncFromDOM();invalidateComboResults('双剣の鬼人化状態が変わりました。');};}
 function comboLBGStoredState(){const n=id=>$(id)?.value!==''&&$(id)?.value!=null?Number($(id).value):null;return {shotMode:$('comboLBGMode')?.value||null,ammoType:$('comboLBGAmmoType')?.value||null,ammoLevel:n('comboLBGAmmoLevel'),range:$('comboLBGRange')?.value||null,normalModeLevel:n('comboLBGNormalMode'),contactPolicy:$('comboLBGContactPolicy')?.value||null};}
+function restoreComboLBGState(s){
+  if($('comboLBGMode'))$('comboLBGMode').value=s?.shotMode||'';
+  for(const [id,key] of [['comboLBGAmmoType','ammoType'],['comboLBGAmmoLevel','ammoLevel'],['comboLBGRange','range'],['comboLBGNormalMode','normalModeLevel'],['comboLBGContactPolicy','contactPolicy']]){
+    if($(id))$(id).value=s?.[key]==null?'':String(s[key]);
+  }
+}
 function renderComboLBGState(){
   const panel=$('comboLBGStatePanel');if(!panel)return;panel.hidden=comboKind()!=='light-bowgun';
   for(const id of ['comboLBGMode','comboLBGAmmoType','comboLBGAmmoLevel','comboLBGRange','comboLBGNormalMode','comboLBGContactPolicy']){
@@ -5014,10 +5020,11 @@ function applyBuildSnapshot(x,{preserveCombo=false,restoreExact=false}={}){
   const copy=value=>JSON.parse(JSON.stringify(value));
   build.charmCustom=copy(x.charmCustom||build.charmCustom);build.artia=copy(x.artia||build.artia);build.decos=copy(x.decos||{});restoreCombatBuffState(x.combatBuffs);
   if(!preserveCombo){$('wyvernMode').value=x.combo?.hbgWyvernState?.mode||'';$('wyvernFireHz').value=x.combo?.hbgWyvernState?.fireHitzone??'';}
-  if(!preserveCombo){$('comboLBGMode').value=x.combo?.lightBowgunState?.shotMode||'';restoreComboGLState(x.combo?.gunlanceState);}
+  if(!preserveCombo){restoreComboLBGState(x.combo?.lightBowgunState);restoreComboGLState(x.combo?.gunlanceState);}
   if(!preserveCombo){const hh=x.combo?.huntingHornState;$('comboHHEcho').value=hh?.echoState||'';$('comboHHMelody').value=hh?.melodyState||'';}
   if(!preserveCombo){const ig=x.combo?.insectGlaiveState;$('comboIGExtract').value=ig?.extractState||'';$('comboIGKinsect').value=ig?.kinsectState||'';}
   if(!preserveCombo){const cb=x.combo?.chargeBladeState;$('comboCBPhialType').value=cb?.phialType||'';$('comboCBEnhancedPhial').value=cb?.enhancedPhial===true?'1':cb?.enhancedPhial===false?'0':'';for(const [id,key] of [['comboCBShield','shieldBoosted'],['comboCBAxe','axeBoosted']])$(id).value=cb?.[key]===true?'1':cb?.[key]===false?'0':'';}
+  if(!preserveCombo){restoreComboDBState(x.combo?.dualBladesState);restoreComboLSState(x.combo?.longSwordState);restoreComboSAState(x.combo?.switchAxeState);}
   if(x.target?.monsterId&&$('monster')){$('monster').value=String(x.target.monsterId);renderMonsterParts();if($('monsterPart')&&x.target.partId)$('monsterPart').value=String(x.target.partId);renderMonsterInfo();}
   if(!preserveCombo)App.state.combo={moves:(x.combo?.moves||[]).flatMap(item=>Array.from({length:Math.max(1,Number(item.repeat)||1)},()=>({techniqueId:item.techniqueId||''}))),uptime:x.combo?.uptime??85,uptimeMode:x.combo?.uptimeMode||'1'};
   normalizeCharm();renderArmor();renderCharmEditor();renderArtia();renderWeapon();updateWeaponInfo();renderComboForWeapon();renderTechniqueEditor();

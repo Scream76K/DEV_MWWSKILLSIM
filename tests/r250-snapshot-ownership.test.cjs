@@ -16,6 +16,20 @@ test('loading a legacy snapshot never mutates the caller-owned snapshot',t=>{
  w.eval(`build.charmCustom.skills[0].name='変更';build.artia.production='attack';build.decos.w0='changed';`);
  assert.equal(w.JSON.stringify(w.input),w.before);
 });
+test('normal saved-build load restores weapon-specific combo states',t=>{
+ const w=setup(t);
+ w.eval(`comboLSSpiritGauge.value='RED';comboDBDemonMode.value='1';comboSAMode.value='SWORD';comboSAAwakened.value='1';comboLBGMode.value='NORMAL';comboLBGAmmoType.value='NORMAL';comboLBGAmmoLevel.value='2';comboLBGRange.value='CRITICAL';comboLBGNormalMode.value='0';comboLBGContactPolicy.value='ALL_THREE';App.combo.syncFromDOM();window.savedState=buildSnapshot().combo;comboLSSpiritGauge.value='YELLOW';comboDBDemonMode.value='0';comboSAMode.value='AXE';comboSAAwakened.value='0';comboLBGMode.value='';comboLBGAmmoType.value='';comboLBGAmmoLevel.value='';comboLBGRange.value='';comboLBGNormalMode.value='';comboLBGContactPolicy.value='';applyBuildSnapshot({...buildSnapshot(),combo:savedState});`);
+ assert.equal(w.document.getElementById('comboLSSpiritGauge').value,'RED');
+ assert.equal(w.document.getElementById('comboDBDemonMode').value,'1');
+ assert.equal(w.document.getElementById('comboSAMode').value,'SWORD');
+ assert.equal(w.document.getElementById('comboSAAwakened').value,'1');
+ assert.equal(w.document.getElementById('comboLBGMode').value,'NORMAL');
+ assert.equal(w.document.getElementById('comboLBGAmmoType').value,'NORMAL');
+ assert.equal(w.document.getElementById('comboLBGAmmoLevel').value,'2');
+ assert.equal(w.document.getElementById('comboLBGRange').value,'CRITICAL');
+ assert.equal(w.document.getElementById('comboLBGNormalMode').value,'0');
+ assert.equal(w.document.getElementById('comboLBGContactPolicy').value,'ALL_THREE');
+});
 test('saved comparison restores legacy charm, equipment, combo and calculation conditions exactly',t=>{
  const w=setup(t);w.eval(`build.charm={id:91};build.charmCustom.slots=[0,0];build.charmCustom.skills=[{name:'見切り',level:1,type:'armor'}];build.decos={w0:null};calcBuild();window.before=JSON.stringify({snapshot:buildSnapshotComparable(buildSnapshot()),charmId:build.charm.id,conditions:compareStep5Snapshot(),stats:calcState.stats,total:calcState.total});runBuildCompare();window.after=JSON.stringify({snapshot:buildSnapshotComparable(buildSnapshot()),charmId:build.charm.id,conditions:compareStep5Snapshot(),stats:calcState.stats,total:calcState.total});`);
  assert.equal(w.after,w.before);assert.ok(w.createBuildComparisonReport());
