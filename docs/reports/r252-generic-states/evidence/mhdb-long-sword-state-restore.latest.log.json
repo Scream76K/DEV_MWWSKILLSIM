@@ -1,0 +1,151 @@
+{
+  "sourceSha": "23b06caef246415929ff0d8868e1c264c1e4a6cb",
+  "input": {
+    "fixture": "docs/reports/r252-generic-states/evidence/mhdb-long-sword-hope-edge.api.json",
+    "weapon": {
+      "id": 836,
+      "gameId": 1,
+      "kind": "long-sword",
+      "name": "ホープエッジⅠ"
+    },
+    "techniqueId": "canonical:LS_RED_BLADE_I",
+    "target": "training-room/training-front",
+    "initialState": "RED",
+    "mutatedState": "YELLOW",
+    "loadMode": "applyBuildSnapshot(savedSnapshot) normal read"
+  },
+  "operationOrder": [
+    "select MHDB weapon 836",
+    "set RED + add canonical:LS_RED_BLADE_I",
+    "calcBuild/evaluateCurrent",
+    "save buildSnapshot",
+    "set YELLOW",
+    "calcBuild/evaluateCurrent",
+    "applyBuildSnapshot(savedSnapshot) without preserveCombo",
+    "calcBuild/evaluateCurrent"
+  ],
+  "observations": {
+    "before": {
+      "state": "RED",
+      "techniqueIds": [
+        "canonical:LS_RED_BLADE_I"
+      ],
+      "realStatus": "OK",
+      "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"phialType\":null,\"shieldBoosted\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":\"RED\"},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"spiritGauge\":\"RED\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LS_RED_BLADE_I\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+      "normal": {
+        "execution": {
+          "status": "incomplete",
+          "expected": [
+            "0:0",
+            "0:1"
+          ],
+          "executed": [],
+          "reason": "STATE_OBJECT_INVALID"
+        },
+        "total": {
+          "status": "unavailable",
+          "reason": "EXECUTION_INCOMPLETE"
+        }
+      },
+      "maximum": {
+        "execution": {
+          "status": "incomplete",
+          "expected": [
+            "0:0",
+            "0:1"
+          ],
+          "executed": [],
+          "reason": "STATE_OBJECT_INVALID"
+        },
+        "total": {
+          "status": "unavailable",
+          "reason": "EXECUTION_INCOMPLETE"
+        }
+      }
+    },
+    "changed": {
+      "state": "YELLOW",
+      "techniqueIds": [
+        "canonical:LS_RED_BLADE_I"
+      ],
+      "realStatus": "OK",
+      "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"90\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"phialType\":null,\"shieldBoosted\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":\"YELLOW\"},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"spiritGauge\":\"YELLOW\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LS_RED_BLADE_I\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+      "normal": {
+        "execution": {
+          "status": "incomplete",
+          "expected": [
+            "0:0",
+            "0:1"
+          ],
+          "executed": [],
+          "reason": "STATE_OBJECT_INVALID"
+        },
+        "total": {
+          "status": "unavailable",
+          "reason": "EXECUTION_INCOMPLETE"
+        }
+      },
+      "maximum": {
+        "execution": {
+          "status": "incomplete",
+          "expected": [
+            "0:0",
+            "0:1"
+          ],
+          "executed": [],
+          "reason": "STATE_OBJECT_INVALID"
+        },
+        "total": {
+          "status": "unavailable",
+          "reason": "EXECUTION_INCOMPLETE"
+        }
+      }
+    },
+    "after": {
+      "state": "RED",
+      "techniqueIds": [
+        "canonical:LS_RED_BLADE_I"
+      ],
+      "realStatus": "OK",
+      "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"90\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"phialType\":null,\"shieldBoosted\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":\"RED\"},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"spiritGauge\":\"RED\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LS_RED_BLADE_I\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+      "normal": {
+        "execution": {
+          "status": "incomplete",
+          "expected": [
+            "0:0",
+            "0:1"
+          ],
+          "executed": [],
+          "reason": "STATE_OBJECT_INVALID"
+        },
+        "total": {
+          "status": "unavailable",
+          "reason": "EXECUTION_INCOMPLETE"
+        }
+      },
+      "maximum": {
+        "execution": {
+          "status": "incomplete",
+          "expected": [
+            "0:0",
+            "0:1"
+          ],
+          "executed": [],
+          "reason": "STATE_OBJECT_INVALID"
+        },
+        "total": {
+          "status": "unavailable",
+          "reason": "EXECUTION_INCOMPLETE"
+        }
+      }
+    }
+  },
+  "verification": {
+    "stateChanged": true,
+    "restoredState": true,
+    "techniqueRestored": true,
+    "pipelineNumeric": false,
+    "blocker": "STATE_OBJECT_INVALID during min8 channel execution; both normal and maximum totals are unavailable (EXECUTION_INCOMPLETE).",
+    "harnessNote": "JSDOM harness supplied structuredClone because this DOM runtime lacks it; this is not a real-browser E2E result."
+  }
+}
