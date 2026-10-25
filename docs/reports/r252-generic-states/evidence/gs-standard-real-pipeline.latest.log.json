@@ -1,0 +1,17 @@
+{
+  "command": "NODE_PATH=/Users/scream/Documents/Codex/2026-10-18/task/himmel-db-route-pqr4v6qt/dependencies/node_modules /Users/scream/Documents/Codex/2026-10-18/task/node24/node-v24.22.1-darwin-arm64/bin/node tools/gs-real-pipeline-contract.cjs",
+  "input": {
+    "weapon": {"id": 987, "kind": "great-sword", "fixture": true},
+    "techniqueIds": ["GS_CHARGED_SLASH_3", "GS_STRONG_CHARGED_SLASH_3", "GS_STRONG_WIDE_SLASH_3"],
+    "target": "training-room/training-front",
+    "structuredClone": "same-window JSON clone for JSDOM harness"
+  },
+  "result": {
+    "status": "OK",
+    "normal": {"status": "available", "value": 1049.6599999999999},
+    "maximum": {"status": "available", "value": 1049.6599999999999},
+    "errors": []
+  },
+  "productCommitBefore": "dbedaf69fed1c40eb40817a32ad1ace8466381b5",
+  "note": "実MHDB装備ではなく、既存JSDOMの最小契約入力。新しいGS技ID契約がcalcBuild→evaluateCurrent→Pipeline→表示用realOneHitへ到達することを確認。"
+}
