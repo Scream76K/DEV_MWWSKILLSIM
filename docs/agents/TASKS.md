@@ -26,3 +26,5 @@
 SERIE-STATE-CONNECTION: オーナー2026-10-25 14:46 UTC承認によりserieが担当。基準8338ab0、開始時の4ファイル差分を保持。対象index.html（MHWeaponEffectDBのみ）、hope-hammer-browser-adapter.js、min8/engine.cjsと生成bundle、限定検証tools/serie-state-connection-proof.cjsおよび証拠。弓3射列・SA属性順のみ。SA1.45はOWNER_APPROVED_PROVISIONAL、現行版未検証。ローカルcommit可、push/merge/公開不可。index.htmlの担当はこの限定修正のみ引継ぎ、完了時返却。
 
 SERIE-STATE-CONNECTION completed: product commit 119abbb0a73807f498cef83311f0983e4bdb4fef. Evidence: docs/reports/r252-state-connection/. Limited index.html edit ownership returned.
+
+SERIE-BOW-REAL-AB: owner continuation 2026-10-25T14:55Z; base05c1565; serie owns adapter skill-name mapping and tools/bow-real-saved-comparison-proof.cjs plus docs/reports/r252-bow-real-ab. No index.html, snapshot policy, Artia, or other weapon formula changes.
