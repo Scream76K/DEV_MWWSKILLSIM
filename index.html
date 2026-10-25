@@ -5042,9 +5042,9 @@ const CHARGE_BLADE_FORMULAS=Object.freeze({
   IMPACT_PHIAL:{
     id:'CB_IMPACT_PHIAL_V1042',
     // baseAttack * coefficient * shieldBoost(1.2 when active)
-    evaluate({baseAttack,coefficient,shieldBoosted=false,artilleryMultiplier=1}){
-      for(const [k,v] of Object.entries({baseAttack,coefficient,artilleryMultiplier})) if(typeof v!=='number'||!Number.isFinite(v)||v<0) throw new Error(`CB_FAIL_CLOSED:${k}`);
-      return baseAttack*coefficient*(shieldBoosted?1.2:1)*artilleryMultiplier;
+    evaluate({baseAttack,coefficient,shieldBoosted=false,artilleryMultiplier=1,attackMultiplier=1,attackFlat=0}){
+      for(const [k,v] of Object.entries({baseAttack,coefficient,artilleryMultiplier,attackMultiplier,attackFlat})) if(typeof v!=='number'||!Number.isFinite(v)||v<0) throw new Error(`CB_FAIL_CLOSED:${k}`);
+      return (baseAttack*attackMultiplier*artilleryMultiplier+attackFlat)*coefficient*(shieldBoosted?1.2:1);
     }
   },
   POWER_ELEMENT_PHIAL:{
@@ -5073,6 +5073,7 @@ const CHARGE_BLADE_TECHNIQUES=Object.freeze({
     phial:{impactCoefficient:.16,powerElementCoefficient:4.2,enhancedImpactCoefficient:.20,enhancedPowerElementCoefficient:6,count:null,verification:'TODO_COUNT'}}
 });
 const CHARGE_BLADE_EVIDENCE=Object.freeze({
+  artillery:{status:'PROVISIONALLY_ADOPTED',sourceVersion:'1.000.05.00',multipliers:{1:1.1,2:1.2,3:1.3},evidenceRefs:['KEHAAR6_ARTILLERY_VER_1.000.05.00','KUROYONHON_CB_ARTILLERY_BASE_ORDER'],scope:'CB_PHIAL_BASE_ATTACK_ONLY',notes:'基礎攻撃力への砲術倍率を先に適用し、固定加算は後置。現行版の再検証は未完了。'},
   routeTiming:{
     RELEASE_ROUTE:{status:'CANDIDATE',fps:30,startFrame:null,endFrame:null,durationFrames:null,evidence:['USER_VIDEO_IMPACT_RELEASE','USER_VIDEO_POWER_ELEMENT_RELEASE']},
     AED_ROUTE:{status:'CANDIDATE',fps:30,startFrame:null,endFrame:null,durationFrames:null,evidence:['USER_VIDEO_IMPACT_AED','USER_VIDEO_POWER_ELEMENT_AED']}
