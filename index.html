@@ -7794,7 +7794,7 @@ function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
   if(!rows.length)return '<span class="muted small">比較結果はありません。</span>';
   const max=key=>Math.max(...allRows.map(r=>Number(r[key])||0));
   const ma=max('attack'),mta=max('attackTrue'),mf=max('affinity'),mmf=max('maxAffinity'),me=max('element'),mx=Math.max(...allRows.map(r=>Number(r.damage)||0)),mp=Math.max(...allRows.map(r=>comparisonDpsValue(r)??0));
-  const cell=(v,b)=>`<td class="${b?'compare-best':''}">${esc(v)}</td>`;
+  const cell=(v,b)=>`<td class="${b?'compare-best':''}">${v==null?'—':esc(v)}</td>`;
   const itemWidth=112,buildWidth=120,totalWidth=itemWidth+rows.length*buildWidth;
   let h='<div class="compare-table"><table style="table-layout:fixed;width:'+totalWidth+'px;min-width:'+totalWidth+'px;max-width:'+totalWidth+'px"><colgroup><col class="compare-item-col" style="width:'+itemWidth+'px">'+rows.map(()=>'<col class="compare-build-col" style="width:'+buildWidth+'px">').join('')+'</colgroup><thead><tr><th>項目</th>'+rows.map(r=>`<th>${esc(r.name)}</th>`).join('')+'</tr></thead><tbody>';
   h+='<tr><th>表示攻撃力</th>'+rows.map(r=>cell(Math.round(r.attack),r.attack===ma)).join('')+'</tr>';
@@ -8008,7 +8008,7 @@ function buildCalculationFingerprint(){
       }catch(e){
         rowError=true;
         const reason='BUILD_COMPARE_ROW_FAILED:'+String(e?.message||e);
-        rows.push({name:n,kind:map[n]?.weaponKind||'',power:{},referenceCombo:null,saedReference:null,oneHitPipeline:{status:'UNAVAILABLE',reason},attack:0,attackTrue:0,affinity:0,maxAffinity:0,element:null,elementType:'',elementKnown:false,typeKnown:false,elementStatus:'UNAVAILABLE',elementReason:reason,damage:null,dps:null,dpsStatus:'BLOCKED',damageReason:reason,dpsReason:reason,comboVerification:null,referenceDps:null,referenceDpsStatus:'NOT_CALCULATED'});
+        rows.push({name:n,kind:map[n]?.weaponKind||'',rowException:true,power:{},referenceCombo:null,saedReference:null,oneHitPipeline:{status:'UNAVAILABLE',reason},attack:null,attackTrue:null,affinity:null,maxAffinity:null,element:null,elementType:'',elementKnown:false,typeKnown:false,elementStatus:'UNAVAILABLE',elementReason:reason,damage:null,dps:null,dpsStatus:'BLOCKED',damageReason:reason,dpsReason:reason,comboVerification:null,referenceDps:null,referenceDpsStatus:'NOT_CALCULATED'});
       }
     }
   }catch(e){compareError=e;}
@@ -8021,7 +8021,7 @@ function buildCalculationFingerprint(){
   }
   if(restoreError){$('compareOut').textContent='比較後の元ビルド・比較条件の復元に失敗しました：'+String(restoreError.message||restoreError)+'。保存済みビルドを読み込み直してください。';return;}
   if(compareError){$('compareOut').textContent='比較を中止しました：'+String(compareError.message||compareError);return;}
-  if(rowError&&rows.every(row=>row?.oneHitPipeline?.status==='UNAVAILABLE')){
+  if(rowError&&rows.every(row=>row?.rowException===true)){
     const reason=rows.map(row=>row?.oneHitPipeline?.reason||'BUILD_COMPARE_ROW_FAILED').join(' / ');
     $('compareOut').textContent='比較を中止しました：'+reason;return;
   }
