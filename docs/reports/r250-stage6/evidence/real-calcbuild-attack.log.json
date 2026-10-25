@@ -1,0 +1,103 @@
+{
+  "gitSha": "d789fd80e2dcc6b6860b9950173875933877a5ba",
+  "input": {
+    "weaponId": 521,
+    "weaponName": "アーティアバスターⅠ",
+    "decoId": 255,
+    "decoName": "攻撃珠【１】",
+    "ammoLevel": 2,
+    "capacity": 2,
+    "range": "CRITICAL",
+    "normalModeLevel": 0,
+    "shotOrdinal": 1,
+    "fullMagazine": true
+  },
+  "out": {
+    "status": "OK",
+    "stats": {
+      "attack": 259.5,
+      "attackTrue": 173,
+      "attackComponents": {
+        "weaponBase": 170,
+        "normalMultiplier": 1,
+        "normalFlat": 3
+      },
+      "affinity": 5,
+      "element": 0
+    },
+    "total": {
+      "攻撃": 1
+    },
+    "conditional": {
+      "status": "REFERENCE_ONLY",
+      "pending": [],
+      "normalAttack": 173,
+      "maximumAttack": 173
+    },
+    "normal": {
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "available",
+          "value": 100.05282000000003
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        }
+      }
+    },
+    "maximum": {
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "available",
+          "value": 100.05282000000003
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        }
+      }
+    },
+    "execution": {},
+    "eventKeys": [
+      "status",
+      "weaponType",
+      "diagnostics",
+      "versions",
+      "conditionKey",
+      "comparisonContext",
+      "channels"
+    ],
+    "channelKeys": [
+      "normal",
+      "maximum"
+    ],
+    "diagnostics": [
+      {
+        "code": "MHDB_SOURCE",
+        "apiId": 521,
+        "gameId": 60,
+        "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/521",
+        "apiVersion": "UNKNOWN",
+        "retrievedAt": "UNKNOWN",
+        "sourceGameVersion": "UNKNOWN"
+      }
+    ],
+    "rendered": "\n    攻撃力260真 173\n    会心率5%\n    最大会心率5%\n    属性0\n    防御力1\n    選択技の実計算技 選択技 / 通常 100.1 [MACARONGAMEMO_HBG_R49_SOURCE rev.1] / 最大 100.1 [MACARONGAMEMO_HBG_R49_SOURCE rev.1]\n  ",
+    "weapon": 521,
+    "skills": [
+      [
+        "攻撃",
+        1
+      ]
+    ]
+  }
+}
