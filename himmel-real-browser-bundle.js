@@ -188,6 +188,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
  function applyEffects(component,effects,state,build,target,event,conditions={}){
   const stateKey=component.parameters?.damageStatsState;
   const stateStats=stateKey&&conditions?.stateStatsByState&&typeof conditions.stateStatsByState==='object'?conditions.stateStatsByState[stateKey]:null;
+  if(stateKey&&!stateStats)throw Error('REAL_SLICE:STATE_STATS_UNRESOLVED:'+stateKey);
   const stats=stateStats&&typeof stateStats==='object'?{attack:stateStats.attack,element:stateStats.element,affinity:stateStats.affinity}:{attack:build.trueAttack,element:build.element,affinity:build.affinity};
   const out={coefficient:component.coefficient,stats,post:[],trace:[]};
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
@@ -412,6 +413,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
  function applyEffects(component,effects,state,build,target,event,conditions={}){
   const stateKey=component.parameters?.damageStatsState;
   const stateStats=stateKey&&conditions?.stateStatsByState&&typeof conditions.stateStatsByState==='object'?conditions.stateStatsByState[stateKey]:null;
+  if(stateKey&&!stateStats)throw Error('REAL_SLICE:STATE_STATS_UNRESOLVED:'+stateKey);
   const stats=stateStats&&typeof stateStats==='object'?{attack:stateStats.attack,element:stateStats.element,affinity:stateStats.affinity}:{attack:build.trueAttack,element:build.element,affinity:build.affinity};
   const out={coefficient:component.coefficient,stats,post:[],trace:[]};
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
