@@ -2099,7 +2099,7 @@ function renderSummary(){
   let entries=sortedSkills(t);
   const aff=Math.round(Math.min(100,Math.max(-100,s.affinity))), maxAff=Math.round(s.maxAffinity);
   const one=calcState.realOneHit||{status:'UNAVAILABLE',reason:'REAL_SLICE:NOT_EVALUATED'};
-  const channelText=ch=>{const m=one.channels?.[ch]?.metrics?.comboTotalDamage,c=one.channels?.[ch]?.components?.[0],d=one.channels?.[ch]?.diagnostics;const reason=m?.reason||one.channels?.[ch]?.execution?.reason||one.channels?.[ch]?.issues?.[0]?.reason||one.reason||'RESULT_UNAVAILABLE';return m?.status==='available'?`${Number(m.value).toFixed(1)}${c?` [${esc(c.source)} rev.${esc(c.revision)}]`:''}${d?.formalStatus==='PROVISIONAL'?' [暫定・資料ベース]':d?.formalStatus==='UNVERIFIED'?' [未検証範囲あり]':''}`:`未算出：${esc(reason)}`;};
+  const channelText=ch=>{const m=one.channels?.[ch]?.metrics?.comboTotalDamage,c=one.channels?.[ch]?.components?.[0],d=one.channels?.[ch]?.diagnostics;const reason=m?.reason||one.channels?.[ch]?.execution?.reason||one.channels?.[ch]?.issues?.[0]?.reason||one.reason||'RESULT_UNAVAILABLE';return m?.status==='available'?`${Number(m.value).toFixed(1)}${c?` [${esc(c.source)} rev.${esc(c.revision)}]`:''}${d?.referenceOnly?' [参考値・暫定]':d?.formalStatus==='PROVISIONAL'?' [暫定・資料ベース]':d?.formalStatus==='UNVERIFIED'?' [未検証範囲あり]':''}`:`未算出：${esc(reason)}`;};
   const oneText=one.status==='OK'?`技 ${esc(one.conditionKey?.includes('HAM_SIDE_SWING')?'HAM_SIDE_SWING':'選択技')} / 通常 ${channelText('normal')} / 最大 ${channelText('maximum')}`:`未算出：${esc(one.reason||'RESULT_UNAVAILABLE')}`;
   $('buildSummary').innerHTML=`<div class="game-status" style="grid-column:1/-1">
     <div class="gs-row"><span class="gs-label">攻撃力</span><span class="gs-value">${Math.round(s.attack)}<span class="gs-sub">真 ${Math.round(s.attackTrue)}</span></span></div>
@@ -7770,7 +7770,7 @@ function comparisonReadinessHtml(rows,baseline){
     const pipelineNormal=pipeline?.channels?.normal?.metrics?.comboTotalDamage;
     const pipelineMaximum=pipeline?.channels?.maximum?.metrics?.comboTotalDamage;
     if(pipeline?.status==='OK'&&pipelineNormal?.status==='available'&&pipelineMaximum?.status==='available'){
-      const pd=pipeline?.channels?.normal?.diagnostics?.formalStatus||pipeline?.channels?.maximum?.diagnostics?.formalStatus;lines.push('共通Pipeline通常／最大：'+comparisonDisplayNumber(pipelineNormal.value)+'／'+comparisonDisplayNumber(pipelineMaximum.value)+'（保存対象・選択技を独立評価）'+(pd==='PROVISIONAL'?'［暫定・資料ベース］':pd==='UNVERIFIED'?'［未検証範囲あり］':''));
+      const pd=pipeline?.channels?.normal?.diagnostics?.formalStatus||pipeline?.channels?.maximum?.diagnostics?.formalStatus;lines.push('共通Pipeline通常／最大：'+comparisonDisplayNumber(pipelineNormal.value)+'／'+comparisonDisplayNumber(pipelineMaximum.value)+'（保存対象・選択技を独立評価）'+(pipeline?.channels?.normal?.diagnostics?.referenceOnly?'［参考値・暫定］':pd==='PROVISIONAL'?'［暫定・資料ベース］':pd==='UNVERIFIED'?'［未検証範囲あり］':''));
     }else if(pipeline){
       lines.push('共通Pipeline：未算出（'+comparisonReasonText(pipeline.reason||pipelineNormal?.reason||pipelineMaximum?.reason||'PIPELINE_UNAVAILABLE')+'）');
     }

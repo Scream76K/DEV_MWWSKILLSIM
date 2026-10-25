@@ -14,7 +14,18 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':shelling:0',kind:'shelling',unit:'SHELLING',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:['physical'],effectStages:['attack'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),shellingSource:record.specialSourceValues,shellingAction:record.shellingAction,shellingInput:record.shellingInput})}]}]});
   }
   if(reference){
-   if(record.numericStatus&&record.numericStatus!=='SOURCE_CONFIRMED')throw Error('REAL_SLICE:REFERENCE_SOURCE_PENDING');
+   const saed=record.phialReference;
+  const kan21=record.referenceKind==='charge-blade-saed'&&['CB_SAED','CB_SAED_AED_DERIVED'].includes(techniqueId)
+   &&record.calculationScope==='SAED_SOURCE_REFERENCE_ONLY'&&record.evidenceRefs?.includes('KAN21_SAED_SOURCE')
+   &&saed?.status==='PROVISIONALLY_ADOPTED'&&saed.sourceConfirmed===true&&saed.liveGameVerification==='PENDING'
+   &&saed.approvalRefs?.includes('KAN-21#10057')&&saed.approvalRefs?.includes('KAN-21#10058')
+   &&saed.source==='https://kuroyonhon.com/mhwilds/memo/12.php'
+   &&saed.sourceVersion===(techniqueId==='CB_SAED'?'AFTER_VER_1_011':'VER_1_02_ONWARD')
+   &&saed.hitPolicy==='FULL_STOCK_FULL_HIT'&&saed.hitCount===5&&saed.eventCount===5&&saed.capacitySkillIncreasesStock===false
+   &&JSON.stringify(record.hits?.map(h=>[h.mv,h.elementModifier]))==='[[16,1],[78,1],[45,1]]'
+   &&['normal','enhanced'].every(k=>finite(saed.powerElement?.[k])&&saed.powerElement[k]>0)
+   &&finite(saed.shieldElementMultiplier)&&finite(saed.shieldPhysicalBodyMultiplier);
+  if(record.numericStatus&&record.numericStatus!=='SOURCE_CONFIRMED'&&!kan21)throw Error('REAL_SLICE:REFERENCE_SOURCE_PENDING');
    const source=record.evidenceRefs?.[0];if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
    return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':reference:0',kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:['physical','element'],effectStages:['attack','affinity','element'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),referenceKind:record.referenceKind,referenceInput:record.referenceInput})}]}]});
   }
