@@ -78,6 +78,8 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(!actual.found)return 'REAL_SLICE:DAMAGE_STATS_STATE_UNRESOLVED:'+damageStatsState;
    const normalized=actual.value===true?'TRIPLE_EXTRACT':actual.value===false?'NO_EXTRACT':actual.value;
    if(normalized!==damageStatsState)return 'REAL_SLICE:DAMAGE_STATS_STATE_MISMATCH:'+damageStatsState;
+   const stateStats=conditions?.stateStatsByState?.[damageStatsState];
+   if(!stateStats||typeof stateStats!=='object'||!Number.isFinite(stateStats.attack)||!Number.isFinite(stateStats.element)||!Number.isFinite(stateStats.affinity))return 'REAL_SLICE:STATE_STATS_UNRESOLVED:'+damageStatsState;
   }
   return null;
  };
@@ -107,6 +109,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
     if(activation==='TRIPLE_EXTRACT')stateIssue=requirementIssue({tripleExtract:true},conditions,null);
     else if(typeof activation!=='string'||!activation)stateIssue='REAL_SLICE:STATE_TRANSITION_UNRESOLVED';
     if(!stateIssue&&typeof transition.damageStatsState!=='string')stateIssue='REAL_SLICE:DAMAGE_STATS_STATE_UNRESOLVED';
+    if(!stateIssue){const stateStats=conditions?.stateStatsByState?.[transition.damageStatsState];if(!stateStats||typeof stateStats!=='object'||!Number.isFinite(stateStats.attack)||!Number.isFinite(stateStats.element)||!Number.isFinite(stateStats.affinity))stateIssue='REAL_SLICE:STATE_STATS_UNRESOLVED:'+transition.damageStatsState;}
    }
    if(stateIssue){unresolved.push(ids.physical);reasons[ids.physical]=stateIssue;if(elementEvent){unresolved.push(ids.element);reasons[ids.element]=stateIssue;}continue;}
    if(!Number.isFinite(modifier)||modifier<0){unresolved.push(ids.element);continue;}

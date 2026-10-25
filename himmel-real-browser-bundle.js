@@ -185,8 +185,11 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   });
   return {events,expected:events.map(e=>e.id),signature:semantic(revisions)};
  }
- function applyEffects(component,effects,state,build,target,event){
-  const out={coefficient:component.coefficient,stats:{attack:build.trueAttack,element:build.element,affinity:build.affinity},post:[],trace:[]};
+ function applyEffects(component,effects,state,build,target,event,conditions={}){
+  const stateKey=component.parameters?.damageStatsState;
+  const stateStats=stateKey&&conditions?.stateStatsByState&&typeof conditions.stateStatsByState==='object'?conditions.stateStatsByState[stateKey]:null;
+  const stats=stateStats&&typeof stateStats==='object'?{attack:stateStats.attack,element:stateStats.element,affinity:stateStats.affinity}:{attack:build.trueAttack,element:build.element,affinity:build.affinity};
+  const out={coefficient:component.coefficient,stats,post:[],trace:[]};
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
   const targets=Array.isArray(component.parameters?.effectTargets)&&component.parameters.effectTargets.length?component.parameters.effectTargets:[component.kind];
   const stages=Array.isArray(component.parameters?.effectStages)&&component.parameters.effectStages.length?component.parameters.effectStages:null;
@@ -234,7 +237,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        const meta={id:c.id,eventId:ev.id,techniqueId:ev.techniqueId,revision:ev.revision,source:c.source,coefficientUnit:c.unit,damageUnit:'damage'};
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
        if(unresolved.includes(c.id)){components.push({...meta,...bad(typeof reasons[c.id]==='string'?reasons[c.id]:'UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
-       const applied=applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
+       const applied=applyEffects(c,effects,state,build,req.target,ev,req.conditions||{}),f=formulae[c.kind];
        const response=typeof f==='function'?f({kind:c.kind,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
@@ -406,8 +409,11 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   });
   return {events,expected:events.map(e=>e.id),signature:semantic(revisions)};
  }
- function applyEffects(component,effects,state,build,target,event){
-  const out={coefficient:component.coefficient,stats:{attack:build.trueAttack,element:build.element,affinity:build.affinity},post:[],trace:[]};
+ function applyEffects(component,effects,state,build,target,event,conditions={}){
+  const stateKey=component.parameters?.damageStatsState;
+  const stateStats=stateKey&&conditions?.stateStatsByState&&typeof conditions.stateStatsByState==='object'?conditions.stateStatsByState[stateKey]:null;
+  const stats=stateStats&&typeof stateStats==='object'?{attack:stateStats.attack,element:stateStats.element,affinity:stateStats.affinity}:{attack:build.trueAttack,element:build.element,affinity:build.affinity};
+  const out={coefficient:component.coefficient,stats,post:[],trace:[]};
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
   const targets=Array.isArray(component.parameters?.effectTargets)&&component.parameters.effectTargets.length?component.parameters.effectTargets:[component.kind];
   const stages=Array.isArray(component.parameters?.effectStages)&&component.parameters.effectStages.length?component.parameters.effectStages:null;
@@ -455,7 +461,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        const meta={id:c.id,eventId:ev.id,techniqueId:ev.techniqueId,revision:ev.revision,source:c.source,coefficientUnit:c.unit,damageUnit:'damage'};
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
        if(unresolved.includes(c.id)){components.push({...meta,...bad(typeof reasons[c.id]==='string'?reasons[c.id]:'UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
-       const applied=applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
+       const applied=applyEffects(c,effects,state,build,req.target,ev,req.conditions||{}),f=formulae[c.kind];
        const response=typeof f==='function'?f({kind:c.kind,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
@@ -783,7 +789,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    if(!finite(hit.partModifier))throw Error('REAL_SLICE:PART_MODIFIER_PENDING:'+index);
    if(hit.partModifier!==1)throw Error('REAL_SLICE:PART_MODIFIER_UNSUPPORTED:'+index);
-   const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??null};
+   const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??null};
    const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
    if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
    events.push({type:'hit',components});
@@ -834,7 +840,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    if(!finite(hit.partModifier))throw Error('REAL_SLICE:PART_MODIFIER_PENDING:'+index);
    if(hit.partModifier!==1)throw Error('REAL_SLICE:PART_MODIFIER_UNSUPPORTED:'+index);
-   const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??null};
+   const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??null};
    const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
    if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
    events.push({type:'hit',components});
@@ -1039,6 +1045,8 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(!actual.found)return 'REAL_SLICE:DAMAGE_STATS_STATE_UNRESOLVED:'+damageStatsState;
    const normalized=actual.value===true?'TRIPLE_EXTRACT':actual.value===false?'NO_EXTRACT':actual.value;
    if(normalized!==damageStatsState)return 'REAL_SLICE:DAMAGE_STATS_STATE_MISMATCH:'+damageStatsState;
+   const stateStats=conditions?.stateStatsByState?.[damageStatsState];
+   if(!stateStats||typeof stateStats!=='object'||!Number.isFinite(stateStats.attack)||!Number.isFinite(stateStats.element)||!Number.isFinite(stateStats.affinity))return 'REAL_SLICE:STATE_STATS_UNRESOLVED:'+damageStatsState;
   }
   return null;
  };
@@ -1068,6 +1076,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
     if(activation==='TRIPLE_EXTRACT')stateIssue=requirementIssue({tripleExtract:true},conditions,null);
     else if(typeof activation!=='string'||!activation)stateIssue='REAL_SLICE:STATE_TRANSITION_UNRESOLVED';
     if(!stateIssue&&typeof transition.damageStatsState!=='string')stateIssue='REAL_SLICE:DAMAGE_STATS_STATE_UNRESOLVED';
+    if(!stateIssue){const stateStats=conditions?.stateStatsByState?.[transition.damageStatsState];if(!stateStats||typeof stateStats!=='object'||!Number.isFinite(stateStats.attack)||!Number.isFinite(stateStats.element)||!Number.isFinite(stateStats.affinity))stateIssue='REAL_SLICE:STATE_STATS_UNRESOLVED:'+transition.damageStatsState;}
    }
    if(stateIssue){unresolved.push(ids.physical);reasons[ids.physical]=stateIssue;if(elementEvent){unresolved.push(ids.element);reasons[ids.element]=stateIssue;}continue;}
    if(!Number.isFinite(modifier)||modifier<0){unresolved.push(ids.element);continue;}
@@ -1166,6 +1175,8 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(!actual.found)return 'REAL_SLICE:DAMAGE_STATS_STATE_UNRESOLVED:'+damageStatsState;
    const normalized=actual.value===true?'TRIPLE_EXTRACT':actual.value===false?'NO_EXTRACT':actual.value;
    if(normalized!==damageStatsState)return 'REAL_SLICE:DAMAGE_STATS_STATE_MISMATCH:'+damageStatsState;
+   const stateStats=conditions?.stateStatsByState?.[damageStatsState];
+   if(!stateStats||typeof stateStats!=='object'||!Number.isFinite(stateStats.attack)||!Number.isFinite(stateStats.element)||!Number.isFinite(stateStats.affinity))return 'REAL_SLICE:STATE_STATS_UNRESOLVED:'+damageStatsState;
   }
   return null;
  };
@@ -1195,6 +1206,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
     if(activation==='TRIPLE_EXTRACT')stateIssue=requirementIssue({tripleExtract:true},conditions,null);
     else if(typeof activation!=='string'||!activation)stateIssue='REAL_SLICE:STATE_TRANSITION_UNRESOLVED';
     if(!stateIssue&&typeof transition.damageStatsState!=='string')stateIssue='REAL_SLICE:DAMAGE_STATS_STATE_UNRESOLVED';
+    if(!stateIssue){const stateStats=conditions?.stateStatsByState?.[transition.damageStatsState];if(!stateStats||typeof stateStats!=='object'||!Number.isFinite(stateStats.attack)||!Number.isFinite(stateStats.element)||!Number.isFinite(stateStats.affinity))stateIssue='REAL_SLICE:STATE_STATS_UNRESOLVED:'+transition.damageStatsState;}
    }
    if(stateIssue){unresolved.push(ids.physical);reasons[ids.physical]=stateIssue;if(elementEvent){unresolved.push(ids.element);reasons[ids.element]=stateIssue;}continue;}
    if(!Number.isFinite(modifier)||modifier<0){unresolved.push(ids.element);continue;}

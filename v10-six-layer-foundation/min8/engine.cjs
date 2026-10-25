@@ -112,8 +112,11 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   });
   return {events,expected:events.map(e=>e.id),signature:semantic(revisions)};
  }
- function applyEffects(component,effects,state,build,target,event){
-  const out={coefficient:component.coefficient,stats:{attack:build.trueAttack,element:build.element,affinity:build.affinity},post:[],trace:[]};
+ function applyEffects(component,effects,state,build,target,event,conditions={}){
+  const stateKey=component.parameters?.damageStatsState;
+  const stateStats=stateKey&&conditions?.stateStatsByState&&typeof conditions.stateStatsByState==='object'?conditions.stateStatsByState[stateKey]:null;
+  const stats=stateStats&&typeof stateStats==='object'?{attack:stateStats.attack,element:stateStats.element,affinity:stateStats.affinity}:{attack:build.trueAttack,element:build.element,affinity:build.affinity};
+  const out={coefficient:component.coefficient,stats,post:[],trace:[]};
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
   const targets=Array.isArray(component.parameters?.effectTargets)&&component.parameters.effectTargets.length?component.parameters.effectTargets:[component.kind];
   const stages=Array.isArray(component.parameters?.effectStages)&&component.parameters.effectStages.length?component.parameters.effectStages:null;
@@ -161,7 +164,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        const meta={id:c.id,eventId:ev.id,techniqueId:ev.techniqueId,revision:ev.revision,source:c.source,coefficientUnit:c.unit,damageUnit:'damage'};
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
        if(unresolved.includes(c.id)){components.push({...meta,...bad(typeof reasons[c.id]==='string'?reasons[c.id]:'UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
-       const applied=applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
+       const applied=applyEffects(c,effects,state,build,req.target,ev,req.conditions||{}),f=formulae[c.kind];
        const response=typeof f==='function'?f({kind:c.kind,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
