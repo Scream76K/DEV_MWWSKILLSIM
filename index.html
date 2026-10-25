@@ -4959,13 +4959,13 @@ async function copyComboVerificationReport(){const data=prepareComboVerification
 // savedAt/version are metadata and must not alter the restored firepower.
 function buildSnapshotComparable(x){
   if(!x||typeof x!=='object')return null;
-  return {combatBuffs:{meal:x.combatBuffs?.meal??null,charm:x.combatBuffs?.charm??null,otherBuffs:x.combatBuffs?.otherBuffs??null},weaponId:x.weaponId||'',weaponKind:x.weaponKind||'',armor:x.armor||{},charmCustom:x.charmCustom||{},artia:x.artia||{},decos:x.decos||{},combo:x.combo||{}};
+  return {combatBuffs:{meal:x.combatBuffs?.meal??null,charm:x.combatBuffs?.charm??null,otherBuffs:x.combatBuffs?.otherBuffs??null},weaponId:x.weaponId||'',weaponKind:x.weaponKind||'',armor:x.armor||{},charmCustom:x.charmCustom||{},artia:x.artia||{},decos:x.decos||{},combo:x.combo||{},target:{monsterId:x.target?.monsterId||'',partId:x.target?.partId||''}};
 }
 function buildSnapshotMatches(a,b){
   return JSON.stringify(buildSnapshotComparable(a))===JSON.stringify(buildSnapshotComparable(b));
 }
 function savedBuildMap(){try{let raw=storageGet(BUILDS_KEY);if(!raw){for(const key of LEGACY_BUILDS_KEYS){raw=storageGet(key);if(raw)break;}}return raw?JSON.parse(raw)||{}:{};}catch(e){return {}}}
-function buildSnapshot(){App.combo.syncFromDOM();return {version:App.version,combatBuffs:combatBuffState(),weaponId:$('weapon')?.value||build.weapon?.id||'',weaponKind:canonicalWeaponKind(DB.weapons.find(w=>String(w.id)===String($('weapon')?.value||build.weapon?.id||''))),armor:Object.fromEntries(Object.entries(build.armor).map(([k,a])=>[k,a?.id||''])),charmCustom:JSON.parse(JSON.stringify(build.charmCustom)),artia:JSON.parse(JSON.stringify(build.artia)),decos:JSON.parse(JSON.stringify(build.decos)),combo:JSON.parse(JSON.stringify(App.state.combo||{})),savedAt:new Date().toISOString()}}
+function buildSnapshot(){App.combo.syncFromDOM();return {version:App.version,combatBuffs:combatBuffState(),weaponId:$('weapon')?.value||build.weapon?.id||'',weaponKind:canonicalWeaponKind(DB.weapons.find(w=>String(w.id)===String($('weapon')?.value||build.weapon?.id||''))),armor:Object.fromEntries(Object.entries(build.armor).map(([k,a])=>[k,a?.id||''])),charmCustom:JSON.parse(JSON.stringify(build.charmCustom)),artia:JSON.parse(JSON.stringify(build.artia)),decos:JSON.parse(JSON.stringify(build.decos)),combo:JSON.parse(JSON.stringify(App.state.combo||{})),target:{monsterId:$('monster')?.value||'',partId:$('monsterPart')?.value||''},savedAt:new Date().toISOString()}}
 function applyBuildSnapshot(x,{preserveCombo=false,restoreExact=false}={}){
   if(!x)return;
   // Never silently retain the previous weapon when a saved build cannot be resolved.
@@ -4987,6 +4987,7 @@ function applyBuildSnapshot(x,{preserveCombo=false,restoreExact=false}={}){
   if(!preserveCombo){const hh=x.combo?.huntingHornState;$('comboHHEcho').value=hh?.echoState||'';$('comboHHMelody').value=hh?.melodyState||'';}
   if(!preserveCombo){const ig=x.combo?.insectGlaiveState;$('comboIGExtract').value=ig?.extractState||'';$('comboIGKinsect').value=ig?.kinsectState||'';}
   if(!preserveCombo){const cb=x.combo?.chargeBladeState;$('comboCBPhialType').value=cb?.phialType||'';$('comboCBEnhancedPhial').value=cb?.enhancedPhial===true?'1':cb?.enhancedPhial===false?'0':'';for(const [id,key] of [['comboCBShield','shieldBoosted'],['comboCBAxe','axeBoosted']])$(id).value=cb?.[key]===true?'1':cb?.[key]===false?'0':'';}
+  if(x.target?.monsterId&&$('monster')){$('monster').value=String(x.target.monsterId);renderMonsterParts();if($('monsterPart')&&x.target.partId)$('monsterPart').value=String(x.target.partId);renderMonsterInfo();}
   if(!preserveCombo)App.state.combo={moves:(x.combo?.moves||[]).flatMap(item=>Array.from({length:Math.max(1,Number(item.repeat)||1)},()=>({techniqueId:item.techniqueId||''}))),uptime:x.combo?.uptime??85,uptimeMode:x.combo?.uptimeMode||'1'};
   normalizeCharm();renderArmor();renderCharmEditor();renderArtia();renderWeapon();updateWeaponInfo();renderComboForWeapon();renderTechniqueEditor();
   // Comparison restoration must retain the original legacy shape after UI normalization.
@@ -7544,6 +7545,28 @@ function comparisonChangeText(value){
   if(value.components.special!==null&&(value.components.special!==0||value.componentContributionPercent.special!==0))parts.push(component('special','特殊'));
   return signed(value.changePercent)+'（'+parts.join('／')+'）';
 }
+function evaluateSavedSnapshotOneHit(snapshot){
+  const target=snapshot?.target||{};
+  const moves=Array.isArray(snapshot?.combo?.moves)?snapshot.combo.moves:[];
+  const first=moves.find(x=>x&&typeof x==='object'&&String(x.techniqueId||x.canonicalTechniqueId||''));
+  const techniqueId=first?.canonicalTechniqueId||first?.techniqueId||'';
+  if(!target.monsterId||!target.partId)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TARGET_NOT_SAVED'};
+  if(!techniqueId)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_NOT_SAVED'};
+  const adapter=window.MHWRealOneHitBrowserAdapter;
+  if(!adapter||typeof adapter.evaluateCurrent!=='function')return {status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};
+  try{
+    return adapter.evaluateCurrent({
+      weapon:selectedWeapon(),
+      stats:calcState.stats,
+      target:{monster:String(target.monsterId),part:String(target.partId)},
+      skills:Object.entries(calcState.total||{}),
+      techniqueId,
+      techniqueDb:window.TechniqueDBEngine,
+      trainingRoom:trainingRoomMonster(),
+      retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'
+    });
+  }catch(error){return {status:'UNAVAILABLE',reason:String(error?.message||error||'REAL_SLICE:EVALUATION_FAILED')};}
+}
 function compareSnapshot(name,snapshot,cond){
   applyBuildSnapshot(snapshot,{preserveCombo:true});
   const st=calcState.stats||{};
@@ -7572,7 +7595,8 @@ function compareSnapshot(name,snapshot,cond){
       saedReference={NORMAL:{status:'PENDING',reason},MAX:{status:'PENDING',reason}};
     }
   }
-  return {name,kind,power,referenceCombo,saedReference,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:st.element,elementType:String(st.elementType||''),elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason,damage:dmg,dps,dpsStatus,damageReason,dpsReason,comboVerification,referenceDps:comboVerification?.referenceDps??null,referenceDpsStatus:comboVerification?.referenceDpsStatus??'NOT_CALCULATED'};
+  const oneHitPipeline=evaluateSavedSnapshotOneHit(snapshot);
+  return {name,kind,power,referenceCombo,saedReference,oneHitPipeline,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:st.element,elementType:String(st.elementType||''),elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason,damage:dmg,dps,dpsStatus,damageReason,dpsReason,comboVerification,referenceDps:comboVerification?.referenceDps??null,referenceDpsStatus:comboVerification?.referenceDpsStatus??'NOT_CALCULATED'};
 }
 function comparisonReasonText(reason){
   const text=String(reason||'');
@@ -7623,6 +7647,14 @@ function comparisonReadinessHtml(rows,baseline){
     if(!index){let reason=row.power?.reason;if(!reason&&row.kind!==baseline.kind)lines.push('火力指数：同じ武器種のビルドを比較してください。');else if(!reason&&row.power?.normal&&(!Number.isFinite(baseline.power?.normal?.comparisonPower)||baseline.power.normal.comparisonPower<=0))lines.push('火力指数：基準ビルドが未算出・0以下のため指数化できません。');else lines.push('火力指数：'+comparisonReasonText(reason||'STANDARD_PROFILE_PENDING'));}
     if(index?.maximum==null)lines.push('最大火力指数：'+comparisonReasonText(row.power?.maximumReason||row.power?.reason||'BASELINE_NORMAL_POWER_UNAVAILABLE'));
     if(row.damage==null)lines.push('1ヒット期待値：'+comparisonReasonText(row.damageReason||'DAMAGE_CONDITIONS_PENDING'));
+    const pipeline=row.oneHitPipeline;
+    const pipelineNormal=pipeline?.channels?.normal?.metrics?.comboTotalDamage;
+    const pipelineMaximum=pipeline?.channels?.maximum?.metrics?.comboTotalDamage;
+    if(pipeline?.status==='OK'&&pipelineNormal?.status==='available'&&pipelineMaximum?.status==='available'){
+      lines.push('共通Pipeline通常／最大：'+comparisonDisplayNumber(pipelineNormal.value)+'／'+comparisonDisplayNumber(pipelineMaximum.value)+'（保存対象・選択技を独立評価）');
+    }else if(pipeline){
+      lines.push('共通Pipeline：未算出（'+comparisonReasonText(pipeline.reason||pipelineNormal?.reason||pipelineMaximum?.reason||'PIPELINE_UNAVAILABLE')+'）');
+    }
     if(comparisonDpsValue(row)==null)lines.push('DPS：'+comparisonReasonText(row.dpsReason||(Number.isFinite(row.dps)?'COMBO_DPS_UNVERIFIED':'COMBO_DAMAGE_OR_TIMING_PENDING')));
     h+='<div style="margin-top:8px"><b>'+esc(row.name)+'</b>：'+(lines.length?lines.map(esc).join('<br>'):'火力指数・最大火力指数・DPSを算出済みです。')+'</div>';
     if(row.power?.normal?.scope==='EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO')h+='<div class="small">ヘビィ追加参考比較：通常弾Lv'+esc(row.power.hbgState.ammoLevel)+'／全3Hit命中。弾Lv・距離・通常モード補正は比較用の共通条件です。武器の装填可否・実機ダメージ・DPSは未照合です。</div>';
@@ -7691,6 +7723,14 @@ function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
   h+='<tr data-comparison-metric="relative-power-100"><th>相対火力（基準100）</th>'+rows.map(r=>{const result=comparisonPowerIndex(r,baseline);return cell(result?comparisonDisplayNumber(result.normal):'—',false);}).join('')+'</tr>';
   h+='<tr data-comparison-metric="relative-max-power-100"><th>最大相対火力（基準100）</th>'+rows.map(r=>{const result=comparisonPowerIndex(r,baseline);return cell(result?.maximum!=null?comparisonDisplayNumber(result.maximum):'—',false);}).join('')+'</tr>';
   h+='<tr><th>1ヒット期待値</th>'+rows.map(r=>cell(r.damage==null?'—':comparisonDisplayNumber(r.damage),r.damage!=null&&r.damage===mx)).join('')+'</tr>';
+  const pipelineMetric=(row,channel)=>{const metric=row.oneHitPipeline?.channels?.[channel]?.metrics?.comboTotalDamage;return metric?.status==='available'&&Number.isFinite(metric.value)?metric.value:null;};
+  const pipelineNormal=rows.map(r=>pipelineMetric(r,'normal')),pipelineMaximum=rows.map(r=>pipelineMetric(r,'maximum'));
+  const allPipelineNormal=allRows.map(r=>pipelineMetric(r,'normal')).filter(Number.isFinite),allPipelineMaximum=allRows.map(r=>pipelineMetric(r,'maximum')).filter(Number.isFinite);
+  const pipelineNormalBest=allPipelineNormal.length?Math.max(...allPipelineNormal):null,pipelineMaximumBest=allPipelineMaximum.length?Math.max(...allPipelineMaximum):null;
+  if(rows.some(r=>r.oneHitPipeline)){
+    h+='<tr data-comparison-metric="pipeline-normal"><th>共通Pipeline通常合計</th>'+rows.map((r,i)=>cell(pipelineNormal[i]==null?'未算出':comparisonDisplayNumber(pipelineNormal[i]),pipelineNormalBest!==null&&pipelineNormal[i]===pipelineNormalBest)).join('')+'</tr>';
+    h+='<tr data-comparison-metric="pipeline-maximum"><th>共通Pipeline最大合計</th>'+rows.map((r,i)=>cell(pipelineMaximum[i]==null?'未算出':comparisonDisplayNumber(pipelineMaximum[i]),pipelineMaximumBest!==null&&pipelineMaximum[i]===pipelineMaximumBest)).join('')+'</tr>';
+  }
   h+='<tr data-comparison-metric="dps"><th>DPS</th>'+rows.map(r=>{const value=comparisonDpsValue(r);return cell(value===null?'未算出：'+comparisonReasonText(r.dpsReason||'COMBO_DPS_UNVERIFIED'):comparisonDisplayNumber(value),value!==null&&value===mp);}).join('')+'</tr>';
   const relative=rows.map(r=>comparisonDpsIndex(r,baseline));
   h+='<tr data-comparison-metric="dps-index"><th>DPS指数</th>'+rows.map((r,i)=>cell(relative[i]===null?'—':comparisonDisplayNumber(relative[i].index),relative[i]!==null&&r.dps===mp)).join('')+'</tr>';
