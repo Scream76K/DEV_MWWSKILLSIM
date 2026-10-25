@@ -157,7 +157,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const total=!complete?bad('EXECUTION_INCOMPLETE'):!componentsValid?bad('COMPONENT_UNAVAILABLE'):!finite(sum)?bad('TOTAL_NON_FINITE'):good(sum);
   const time=num(duration)&&duration>0?good(duration):bad('DURATION_UNAVAILABLE');
   const provisionalEffects=run.components.flatMap(c=>Array.isArray(c.effectsApplied)?c.effectsApplied:[]).filter(e=>e.status==='PROVISIONALLY_ADOPTED');
-  return {...run,diagnostics:{formalStatus:provisionalEffects.length?'PROVISIONAL':'VERIFIED',provisionalEffects:copy(provisionalEffects)},metrics:{comboTotalDamage:total,comboDuration:time,comboDps:total.status==='available'&&time.status==='available'?(finite(total.value/time.value)?good(total.value/time.value):bad('DPS_NON_FINITE')):bad(total.status==='available'?'DURATION_UNAVAILABLE':total.reason)}};
+  return {...run,diagnostics:{formalStatus:provisionalEffects.length?'PROVISIONAL':'UNVERIFIED',provisionalEffects:copy(provisionalEffects)},metrics:{comboTotalDamage:total,comboDuration:time,comboDps:total.status==='available'&&time.status==='available'?(finite(total.value/time.value)?good(total.value/time.value):bad('DPS_NON_FINITE')):bad(total.status==='available'?'DURATION_UNAVAILABLE':total.reason)}};
  }
  function runChannel(build,req,plan,ch,s){
   const executed=[],components=[],issues=[];let state;

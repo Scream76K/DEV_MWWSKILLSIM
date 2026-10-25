@@ -264,7 +264,6 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
 .armorSlotLines .slot-line select{min-width:0!important;width:100%!important;}
 @media(max-width:760px){.armorSlotLines .slot-line{grid-template-columns:24px minmax(0,1fr)!important}.armorSlotLines .slot-line .slot-size{width:24px!important;min-width:24px!important;max-width:24px!important;}}
 </style><script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
-window.R45_RELEASE=Object.freeze({version:'r45',gameVersion:'1.042.00.02',techniqueDbMigration:Object.freeze(['insect-glaive','hunting-horn']),fixedDuplicateProfileData:Object.freeze(['lance','switch-axe','insect-glaive'])});
 </script>
 <style>
 /* r1.1.19 fix9: armor/skill workspace horizontal padding reduction + readable armor skills */
@@ -2076,7 +2075,7 @@ function renderSummary(){
   let entries=sortedSkills(t);
   const aff=Math.round(Math.min(100,Math.max(-100,s.affinity))), maxAff=Math.round(s.maxAffinity);
   const one=calcState.realOneHit||{status:'UNAVAILABLE',reason:'REAL_SLICE:NOT_EVALUATED'};
-  const channelText=ch=>{const m=one.channels?.[ch]?.metrics?.comboTotalDamage,c=one.channels?.[ch]?.components?.[0];const reason=m?.reason||one.channels?.[ch]?.execution?.reason||one.channels?.[ch]?.issues?.[0]?.reason||one.reason||'RESULT_UNAVAILABLE';return m?.status==='available'?`${Number(m.value).toFixed(1)}${c?` [${esc(c.source)} rev.${esc(c.revision)}]`:''}`:`未算出：${esc(reason)}`;};
+  const channelText=ch=>{const m=one.channels?.[ch]?.metrics?.comboTotalDamage,c=one.channels?.[ch]?.components?.[0],d=one.channels?.[ch]?.diagnostics;const reason=m?.reason||one.channels?.[ch]?.execution?.reason||one.channels?.[ch]?.issues?.[0]?.reason||one.reason||'RESULT_UNAVAILABLE';return m?.status==='available'?`${Number(m.value).toFixed(1)}${c?` [${esc(c.source)} rev.${esc(c.revision)}]`:''}${d?.formalStatus==='PROVISIONAL'?' [暫定・資料ベース]':d?.formalStatus==='UNVERIFIED'?' [未検証範囲あり]':''}`:`未算出：${esc(reason)}`;};
   const oneText=one.status==='OK'?`技 ${esc(one.conditionKey?.includes('HAM_SIDE_SWING')?'HAM_SIDE_SWING':'選択技')} / 通常 ${channelText('normal')} / 最大 ${channelText('maximum')}`:`未算出：${esc(one.reason||'RESULT_UNAVAILABLE')}`;
   $('buildSummary').innerHTML=`<div class="game-status" style="grid-column:1/-1">
     <div class="gs-row"><span class="gs-label">攻撃力</span><span class="gs-value">${Math.round(s.attack)}<span class="gs-sub">真 ${Math.round(s.attackTrue)}</span></span></div>
@@ -7741,7 +7740,7 @@ function comparisonReadinessHtml(rows,baseline){
     const pipelineNormal=pipeline?.channels?.normal?.metrics?.comboTotalDamage;
     const pipelineMaximum=pipeline?.channels?.maximum?.metrics?.comboTotalDamage;
     if(pipeline?.status==='OK'&&pipelineNormal?.status==='available'&&pipelineMaximum?.status==='available'){
-      lines.push('共通Pipeline通常／最大：'+comparisonDisplayNumber(pipelineNormal.value)+'／'+comparisonDisplayNumber(pipelineMaximum.value)+'（保存対象・選択技を独立評価）');
+      const pd=pipeline?.channels?.normal?.diagnostics?.formalStatus||pipeline?.channels?.maximum?.diagnostics?.formalStatus;lines.push('共通Pipeline通常／最大：'+comparisonDisplayNumber(pipelineNormal.value)+'／'+comparisonDisplayNumber(pipelineMaximum.value)+'（保存対象・選択技を独立評価）'+(pd==='PROVISIONAL'?'［暫定・資料ベース］':pd==='UNVERIFIED'?'［未検証範囲あり］':''));
     }else if(pipeline){
       lines.push('共通Pipeline：未算出（'+comparisonReasonText(pipeline.reason||pipelineNormal?.reason||pipelineMaximum?.reason||'PIPELINE_UNAVAILABLE')+'）');
     }
@@ -8711,6 +8710,11 @@ $('powerCoverageDownload').addEventListener('click',()=>downloadSimulatorJson(cr
 <script src="weapon-attack-target-audit.js"></script>
 <script src="technique-physical-formula-bridge.js"></script>
 <script src="combo-evidence-summary.js"></script>
+<script>window.R45_RELEASE=Object.freeze({version:'r45',gameVersion:'1.042.00.02',techniqueDbMigration:Object.freeze(['insect-glaive','hunting-horn']),fixedDuplicateProfileData:Object.freeze(['lance','switch-axe','insect-glaive'])});
+// Weapon effects are data-layer inputs. Values retain source/version/status and
+// are consumed by the shared adapter; motion values remain in Technique DB.
+window.MHWeaponEffectDB=Object.freeze({switchAxe:Object.freeze({powerPhialSword:Object.freeze({id:'switch-axe-power-phial-physical',target:'physical',stage:'attack',unit:'dimensionless',amount:1.17,operation:'multiply',order:20,source:'https://kuroyonhon.com/mhwilds/memo/11.php',sourceVersion:'ver.1.000.05.00-reference',status:'PROVISIONALLY_ADOPTED',condition:{type:'always'}})})});
+</script>
 <script src="himmel-real-browser-bundle.js"></script>
 <script src="hope-hammer-browser-adapter.js"></script>
 </body></html>
