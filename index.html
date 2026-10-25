@@ -1856,7 +1856,10 @@ function calcBuild(){renderCharmLegality();
   const selectedTechniqueIdRaw=$('comboMovePicker')?.value||document.querySelector('.comboRow .cmove')?.value||'';
   const selectedTechniqueId=selectedTechniqueIdRaw==='hm_side'?'HAM_SIDE_SWING':selectedTechniqueIdRaw;
   const selectedTechniqueIdsRaw=(Array.isArray(App.state.combo?.moves)?App.state.combo.moves:[]).map(x=>x?.techniqueId||x?.canonicalTechniqueId||'');
-  const selectedTechniqueIds=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(selectedTechniqueIdsRaw,{fallback:selectedTechniqueId})?.ids||selectedTechniqueIdsRaw.filter(Boolean);
+  const standardProfile=GENERIC_STANDARD_PROFILES?.[canonicalWeaponKind(w)];
+  const standardTechniqueIds=selectedTechniqueIdsRaw.some(Boolean)?[]:(standardProfile?.status==='ADOPTED'&&Array.isArray(standardProfile.techniqueIds)?standardProfile.techniqueIds:[]);
+  const techniqueInputIds=selectedTechniqueIdsRaw.some(Boolean)?selectedTechniqueIdsRaw:standardTechniqueIds;
+  const selectedTechniqueIds=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(techniqueInputIds,{fallback:selectedTechniqueId})?.ids||techniqueInputIds.filter(Boolean);
   try{calcState.realOneHit=window.MHWRealOneHitBrowserAdapter?.evaluateCurrent?.({weapon:w,stats,target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''},skills:Object.entries(total),techniqueId:selectedTechniqueId,techniqueIds:selectedTechniqueIds.length?selectedTechniqueIds:[selectedTechniqueId],techniqueDb:window.TechniqueDBEngine,trainingRoom:trainingRoomMonster(),retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'})||{status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};}catch(e){calcState.realOneHit={status:'UNAVAILABLE',reason:String(e?.message||e||'REAL_SLICE:EVALUATION_FAILED')};}
   renderSummary();renderDetail();syncDamage();renderMonsterInfo();refreshDecorationSelects();updateWeaponCoeffDisplay();
 }
@@ -7550,8 +7553,10 @@ function comparisonChangeText(value){
 function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null){
   const target=snapshot?.target||{};
   const moves=Array.isArray(snapshot?.combo?.moves)?snapshot.combo.moves:[];
-  if(!moves.length)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_NOT_SAVED'};
-  const rawTechniqueIds=moves.map(x=>x?.techniqueId||x?.canonicalTechniqueId||'');
+  const selectedKind=canonicalWeaponKind(selectedWeapon());
+  const standardProfile=GENERIC_STANDARD_PROFILES?.[selectedKind];
+  const rawTechniqueIds=moves.length?moves.map(x=>x?.techniqueId||x?.canonicalTechniqueId||''):(standardProfile?.status==='ADOPTED'&&Array.isArray(standardProfile.techniqueIds)?standardProfile.techniqueIds:[]);
+  if(!rawTechniqueIds.length)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_NOT_SAVED'};
   const normalizedTechniqueIds=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(rawTechniqueIds)||{ids:rawTechniqueIds.filter(Boolean),unresolved:[]};
   const techniqueIds=normalizedTechniqueIds.ids;
   const techniqueId=techniqueIds[0];
@@ -7560,7 +7565,7 @@ function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null){
   if(expectedSnapshot){
     const expectedTarget=expectedSnapshot.target||{};
     const expectedMoves=Array.isArray(expectedSnapshot.combo?.moves)?expectedSnapshot.combo.moves:[];
-    const expectedRawTechniqueIds=expectedMoves.map(x=>x?.techniqueId||x?.canonicalTechniqueId||'');
+    const expectedRawTechniqueIds=expectedMoves.length?expectedMoves.map(x=>x?.techniqueId||x?.canonicalTechniqueId||''):(standardProfile?.status==='ADOPTED'&&Array.isArray(standardProfile.techniqueIds)?standardProfile.techniqueIds:[]);
     const expectedTechniqueIds=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(expectedRawTechniqueIds)?.ids||expectedRawTechniqueIds.filter(Boolean);
     if(String(target.monsterId)!==String(expectedTarget.monsterId||'')||String(target.partId)!==String(expectedTarget.partId||''))return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TARGET_MISMATCH'};
     if(JSON.stringify(techniqueIds)!==JSON.stringify(expectedTechniqueIds))return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_MISMATCH'};
