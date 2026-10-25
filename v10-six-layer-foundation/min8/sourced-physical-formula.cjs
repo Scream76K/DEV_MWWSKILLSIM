@@ -11,11 +11,11 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!finite(stats.element)||stats.element<0)return unavailable('PHYSICAL_ELEMENT_UNRESOLVED');
   if(!finite(stats.affinity))return unavailable('PHYSICAL_AFFINITY_UNRESOLVED');
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
-  let sharp,hitzone,part;
+  let sharp,hitzone,part=null;
   try{
    sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});
    hitzone=resolveHitzone({target,state,gameVersion:expectedGameVersion});
-   part=resolvePartModifier({parameters,build,state,gameVersion:expectedGameVersion});
+   if(parameters?.partModifier!==null&&parameters?.partModifier!==undefined)part=resolvePartModifier({parameters,build,state,gameVersion:expectedGameVersion});
   }catch(_){return unavailable('PHYSICAL_CONTEXT_RESOLUTION_FAILED')}
   const valid=(x)=>x&&x.gameVersion===expectedGameVersion&&typeof x.evidenceRef==='string'&&x.evidenceRef.length>0&&finite(x.value);
   if(!valid(sharp)||sharp.value<=0)return unavailable('PHYSICAL_SHARPNESS_UNRESOLVED');
@@ -24,7 +24,7 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   // HP formula does not apply the part-durability modifier to HP damage.
   // Require a resolved, version-matched value and deliberately leave it out
   // of the canonical HP calculation.
-  if(!valid(part))return unavailable('PHYSICAL_PART_MODIFIER_UNRESOLVED');
+  if(part&&!valid(part))return unavailable('PHYSICAL_PART_MODIFIER_UNRESOLVED');
   let result;
    try{result=calculate({attack:stats.attack,affinity:stats.affinity,element:0,mv:coefficient,hz:hitzone.value,ehz:0,sharp:sharp.value,esharp:1,critBonus:Number(build?.equipment?.criticalBoostLevel)||0,elementCrit:false,criticalState:'expected'})}
   catch(_){return unavailable('PHYSICAL_CANONICAL_FORMULA_FAILED')}

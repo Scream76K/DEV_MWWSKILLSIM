@@ -5665,6 +5665,10 @@ const TECHNIQUE_DB=techniqueDbDeepFreeze(Object.fromEntries(Object.entries(TECHN
     entries.CB_SAED_AED_DERIVED={...base,techniqueId:'CB_SAED_AED_DERIVED',techniqueName:'超高出力属性解放斬り（高出力・追撃高出力派生）',revision:1,introducedIn:'r250-KAN21',
       hits:base.hits.map(h=>({...h})),evidenceRefs:[...base.evidenceRefs,'KAN21_SAED_SOURCE'],phialReference:reference(10,14,'VER_1_02_ONWARD'),calculationScope:'SAED_SOURCE_REFERENCE_ONLY',
       sourceLocator:'(高出力派生)斧：超高出力属性解放斬り',derivedFrom:'CB_SAED',revisionHistory:[]};
+    for(const id of ['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED']){
+      const observed={CB_ELEMENT_DISCHARGE_1:{count:1,source:'USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4'},CB_ELEMENT_DISCHARGE_2:{count:2,source:'USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4'},CB_AED:{count:2,source:'USER_VIDEO_OBSERVATION:1a11b213a0886-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4'},CB_FOLLOWUP_AED:{count:3,source:'USER_VIDEO_OBSERVATION:1a11b213a0886-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4'}},evidence=observed[id],entry=entries[id];
+      if(evidence&&entry)entries[id]={...entry,phialReference:{status:'OBSERVED',adoptionStatus:'PROVISIONALLY_ADOPTED',verificationStatus:'PROVISIONAL',eventCount:evidence.count,hitCount:evidence.count,sourceType:'USER_VIDEO_OBSERVATION',sourceRefs:[evidence.source],gameVersion:'UNCONFIRMED',calculationUse:'PROVISIONAL_PIPELINE_ONLY'}};
+    }
   }
   if(kind==='heavy-bowgun'){
     const old=entries.HBG_WYVERN_AMMO;
