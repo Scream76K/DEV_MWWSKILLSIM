@@ -166,7 +166,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
        if(unresolved.includes(c.id)){components.push({...meta,...bad(typeof reasons[c.id]==='string'?reasons[c.id]:'UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
        const applied=applyEffects(c,effects,state,build,req.target,ev,req.conditions||{}),f=formulae[c.kind];
-       const response=typeof f==='function'?f({kind:c.kind,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
+       const response=typeof f==='function'?f({kind:c.kind,channel:ch,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
        if(result!==null){for(const post of applied.post){result=post.operation==='add'?result+post.amount:post.operation==='multiply'?result*post.amount:Math.min(result,post.amount);ensure(num(result),'POST_DAMAGE_NON_FINITE')}}
