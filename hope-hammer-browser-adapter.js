@@ -1,6 +1,6 @@
 (function(root){'use strict';
  function fail(reason){return {status:'UNAVAILABLE',reason};}
- function evaluateCurrent({weapon,stats,target,skills=[],techniqueDb,trainingRoom,techniqueId,retrievedAt='UNKNOWN'}={}){
+ function evaluateCurrent({weapon,stats,target,skills=[],techniqueDb,trainingRoom,techniqueId,techniqueIds,retrievedAt='UNKNOWN'}={}){
   if(typeof root.damageFromParams!=='function'||!root.MHWWeaponMaxSharpness||typeof root.HimmelRealOneHitPipeline!=='function')return fail('REAL_SLICE:BROWSER_DEPENDENCIES_UNAVAILABLE');
   if(!weapon||!Number.isInteger(weapon.id)||!Number.isInteger(weapon.gameId)||typeof weapon.kind!=='string'||weapon.kind==='charge-blade')return fail('REAL_SLICE:CURRENT_WEAPON_NOT_SUPPORTED');
   if(!Array.isArray(weapon.specials))return fail('REAL_SLICE:WEAPON_SPECIALS_UNKNOWN');
@@ -22,12 +22,18 @@
   const buildSkills=Array.isArray(skills)?skills.map(([name,level])=>{const ui=classifySkill({name,level},'index.html:calcBuild');return ui.skillKey==='slugger'&&canonicalSlugger?{...canonicalSlugger,level:ui.level,source:`${canonicalSlugger.source};index.html:calcBuild`}:ui;}):[];
   const allSkills=[...rawSkills,...buildSkills.filter(x=>!rawSkills.some(y=>String(y.skillId)===String(x.skillId)&&y.level===x.level))];
   if(target?.monster!=='training-room'||target?.part!=='training-front')return fail('REAL_SLICE:TRAINING_ROOM_FRONT_REQUIRED');
-  if(typeof techniqueId!=='string'||!techniqueId)return fail('REAL_SLICE:TECHNIQUE_NOT_SELECTED');
-  const resolvedTechniqueId=techniqueId==='hm_side'?'HAM_SIDE_SWING':techniqueId.startsWith('canonical:')?techniqueId.slice('canonical:'.length):techniqueId;
-  if(!resolvedTechniqueId)return fail('REAL_SLICE:TECHNIQUE_UNSUPPORTED:'+techniqueId);
-  techniqueId=resolvedTechniqueId;
-  const technique=techniqueDb?.get?.(weapon.kind,techniqueId);
-  if(!technique||!Array.isArray(technique.hits)||technique.hits.length!==1)return fail('REAL_SLICE:TECHNIQUE_NOT_FOUND');
+  const requestedIds=Array.isArray(techniqueIds)&&techniqueIds.length?techniqueIds:(typeof techniqueId==='string'&&techniqueId?[techniqueId]:[]);
+  if(!requestedIds.length)return fail('REAL_SLICE:TECHNIQUE_NOT_SELECTED');
+  const resolvedTechniqueIds=requestedIds.map(id=>id==='hm_side'?'HAM_SIDE_SWING':id.startsWith('canonical:')?id.slice('canonical:'.length):id);
+  if(resolvedTechniqueIds.some(id=>!id))return fail('REAL_SLICE:TECHNIQUE_UNSUPPORTED');
+  const techniques={};
+  for(const id of [...new Set(resolvedTechniqueIds)]){
+   const technique=techniqueDb?.get?.(weapon.kind,id);
+   if(!technique||!Array.isArray(technique.hits)||technique.hits.length!==1)return fail('REAL_SLICE:TECHNIQUE_NOT_FOUND:'+id);
+   techniques[id]=technique;
+  }
+  techniqueId=resolvedTechniqueIds[0];
+  const technique=techniques[techniqueId];
   const part=trainingRoom?.parts?.find(x=>x.id==='training-front');
   const hitDamageType=technique.hits[0]?.damageType;
   const physicalKey=hitDamageType==='blunt'||hitDamageType==='slash'||hitDamageType==='pierce'?hitDamageType:['hammer','hunting-horn'].includes(weapon.kind)?'blunt':null;
@@ -57,8 +63,8 @@
   const versions={game:'1.042.00.02',equipment:'mhdb-source-unknown-game-version',technique:'tech-real',effects:'effects-real'};
   const provenance={sourceUrl:`https://wilds.mhdb.io/en/weapons/${weapon.id}`,sourceGameVersion:'UNKNOWN',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',targetGameVersion:versions.game,retrievedAt,apiVersion:'UNKNOWN'};
   const equipment={...weapon,apiId:weapon.id,maxSharpness,maxSharpnessEvidenceRef:provenance.sourceUrl,elementType,elementEvidence:elementSpecial?{sourceUrl:provenance.sourceUrl,raw:elementSpecial.damage.raw,display:elementValue,kind:'element'}:{sourceUrl:provenance.sourceUrl,confirmedNone:true},provenance};
-  const source={capture:pinned=>({versions:pinned,equipment,effects:{},techniques:{[techniqueId]:technique}})};
-  const pipeline=root.HimmelRealOneHitPipeline({versions,source,techniqueId,weaponType:weapon.kind,
+  const source={capture:pinned=>({versions:pinned,equipment,effects:{},techniques})};
+  const pipeline=root.HimmelRealOneHitPipeline({versions,source,techniqueId,techniqueIds:resolvedTechniqueIds,weaponType:weapon.kind,
    resolveBuild:(_raw,snapshot)=>({weaponType:weapon.kind,dbVersion:versions.equipment,source:'MHDB_API_CURRENT_SELECTION',equipment:{...snapshot,ids:[`api_id:${snapshot.apiId}`,`game_id:${snapshot.gameId}`],trueAttack:{status:'known',value:snapshot.damage.raw},displayElement:{status:'known',value:snapshot.elementEvidence.confirmedNone?0:snapshot.elementEvidence.display},baseAffinity:{status:'known',value:snapshot.affinity},elementType:snapshot.elementType,sourceGameVersion:snapshot.provenance.sourceGameVersion},skills:{entries:allSkills},issues:[{code:'MHDB_SOURCE',apiId:snapshot.apiId,gameId:snapshot.gameId,sourceEndpoint:snapshot.provenance.sourceUrl,apiVersion:snapshot.provenance.apiVersion,retrievedAt:snapshot.provenance.retrievedAt,sourceGameVersion:snapshot.provenance.sourceGameVersion}]}),
    resolveEffects:(build,_conditions)=>{const entries=build.skills.entries||[],effects=[],attack=entries.filter(x=>x.skillKey==='attack'),affinity=entries.filter(x=>x.skillKey==='affinity');if(attack.length){if(!root.MHWAttackSkillResolver)throw Error('REAL_SLICE:ATTACK_RULE_UNAVAILABLE');const level=Math.max(...attack.map(x=>x.level)),rule=root.MHWAttackSkillResolver({攻撃:level});if(!Number.isFinite(Number(rule.flat))||!Number.isFinite(Number(rule.mult)))throw Error('REAL_SLICE:ATTACK_RULE_INVALID');effects.push({id:'attack-boost-multiply',target:'physical',stage:'attack',unit:'dimensionless',amount:Number(rule.mult),operation:'multiply',order:10,source:'index.html:calcAttackSkill',condition:{type:'always'}},{id:'attack-boost-flat',target:'physical',stage:'attack',unit:'true-attack',amount:Number(rule.flat),operation:'add',order:20,source:'index.html:calcAttackSkill',condition:{type:'always'}});}if(affinity.length){if(!root.MHWAffinitySkillResolver)throw Error('REAL_SLICE:AFFINITY_RULE_UNAVAILABLE');const level=Math.max(...affinity.map(x=>x.level)),amount=Number(root.MHWAffinitySkillResolver({'見切り':level}));if(!Number.isFinite(amount))throw Error('REAL_SLICE:AFFINITY_RULE_INVALID');if(amount)effects.push({id:'critical-eye-affinity',target:'physical',stage:'affinity',unit:'percent',amount,operation:'add',order:30,source:'index.html:calcAffinityBonus',condition:{type:'always'}});}return effects;},resolveSkillApplicability:entries=>entries.map(entry=>{if(entry.skillKey==='slugger'&&String(entry.skillId)==='36'&&Number.isInteger(entry.level)&&entry.level===1)return {...entry,effectDisposition:'non_damage',reason:'stun accumulation only; no HP-damage modifier',evidenceRef:`MHDB skill.id=36;level=1;${entry.source}`};if(entry.skillKey==='attack'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'HP attack effect is resolved by the shared L3 effect list',evidenceRef:'index.html:calcAttackSkill'};if(entry.skillKey==='affinity'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'critical-eye affinity is resolved by the shared L3 effect list',evidenceRef:'index.html:calcAffinityBonus'};throw Error('REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:'+entry.name);}),initialState:()=>({}),
    canonicalPhysical:{expectedGameVersion:versions.game,
@@ -68,7 +74,7 @@
     resolveElementHitzone:()=>{if(!elementSpecial)return {value:0,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:none`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'};const value=part.multipliers?.[elementType];if(typeof value!=='number'||!Number.isFinite(value)||value<0||value>1)throw Error('REAL_SLICE:ELEMENT_HITZONE_UNRESOLVED');return {value:value*100,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:${elementType}`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'};},
     resolvePartModifier:({parameters})=>({value:parameters.partModifier,gameVersion:versions.game,evidenceRef:parameters.partModifierSource}),
     calculate:root.damageFromParams}});
-  try{return pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:'training-room',hitZoneKey:'training-front'},conditions:{},evaluation:{mode:'combo',kind:'combo',signature:'current-selection-hammer-one-hit',techniqueIds:[techniqueId]}});}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
+  try{return pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:'training-room',hitZoneKey:'training-front'},conditions:{},evaluation:{mode:'combo',kind:'combo',signature:'current-selection-hammer-combo',techniqueIds:resolvedTechniqueIds}});}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
  }
  root.MHWRealOneHitBrowserAdapter=Object.freeze({evaluateCurrent});
 })(typeof window!=='undefined'?window:globalThis);

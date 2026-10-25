@@ -770,7 +770,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!finite(hit.partModifier))throw Error('REAL_SLICE:PART_MODIFIER_PENDING');
   if(hit.partModifier!==1)throw Error('REAL_SLICE:PART_MODIFIER_UNSUPPORTED');
   const components=[{id:techniqueId+':physical:0',kind:'physical',unit:'MV',source,coefficient:hit.mv,
-   parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier})}];
+  parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier,damageType:hit.damageType??null})}];
   if(hit.elementModifier>0)components.push({id:techniqueId+':element:0',kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,
    parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source})});
   return Object.freeze({
@@ -809,7 +809,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!finite(hit.partModifier))throw Error('REAL_SLICE:PART_MODIFIER_PENDING');
   if(hit.partModifier!==1)throw Error('REAL_SLICE:PART_MODIFIER_UNSUPPORTED');
   const components=[{id:techniqueId+':physical:0',kind:'physical',unit:'MV',source,coefficient:hit.mv,
-   parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier})}];
+  parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier,damageType:hit.damageType??null})}];
   if(hit.elementModifier>0)components.push({id:techniqueId+':element:0',kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,
    parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source})});
   return Object.freeze({
@@ -939,7 +939,7 @@ const {createPipeline}=require('./pipeline.cjs');
 const {adaptOrdinaryPhysicalHit}=require('./real-technique-one-hit-adapter.cjs');
 const {createSourcedPhysicalFormula,createSourcedElementalFormula}=require('./sourced-physical-formula.cjs');
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
-function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,resolveSkillApplicability,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
+function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,resolveSkillApplicability,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING',techniqueIds=null}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
  const elemental=canonicalPhysical&&typeof canonicalPhysical.resolveElementSharpness==='function'&&typeof canonicalPhysical.resolveElementHitzone==='function'?createSourcedElementalFormula({...canonicalPhysical,resolveElementSharpness:canonicalPhysical.resolveElementSharpness,resolveHitzone:canonicalPhysical.resolveElementHitzone}):formulae?.element;
@@ -948,17 +948,20 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
  if(typeof resolveBuild!=='function'||typeof resolveEffects!=='function'||typeof initialState!=='function')throw Error('REAL_SLICE:RESOLVERS_REQUIRED');
  // The pinned technique is independent of A/B builds; the physical-only disposition is
  // checked against every build and each channel, rather than cached from one build.
+ const selectedTechniqueIds=Array.isArray(techniqueIds)&&techniqueIds.length?techniqueIds:[techniqueId];
+ const uniqueTechniqueIds=[...new Set(selectedTechniqueIds)];
  const openDataSnapshot=createImmutableProvider({
   capture:pinned=>{
    const image=source.capture(pinned);
-   if(!image?.techniques||!own(image.techniques,techniqueId))throw Error('REAL_SLICE:TECHNIQUE_NOT_FOUND');
-   const record=image.techniques[techniqueId];
-   // The element-disposition proof belongs to L2/L3 and must not be fabricated during capture.
-   // This narrow bridge accepts physical-only data only after both build and effect gates below.
-   // Preserve static element/part values, but do not assert the L2/L3 element
-   // disposition while opening the immutable snapshot.
-   const adapted=adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion:pinned.technique,allowUnresolvedElement:true});
-   return {...image,techniques:{[techniqueId]:adapted}};
+   if(!image?.techniques)throw Error('REAL_SLICE:TECHNIQUE_NOT_FOUND');
+   const techniques={};
+   for(const id of uniqueTechniqueIds){
+    if(!own(image.techniques,id))throw Error('REAL_SLICE:TECHNIQUE_NOT_FOUND:'+id);
+    const record=image.techniques[id];
+    // The element-disposition proof belongs to L2/L3 and must not be fabricated during capture.
+    techniques[id]=adaptOrdinaryPhysicalHit({weaponType,techniqueId:id,record,dbVersion:pinned.technique,allowUnresolvedElement:true});
+   }
+   return {...image,techniques};
   },
   resolveBuild:(raw,equipment,request)=>{
    const result=resolveBuild(raw,equipment,request);
@@ -975,24 +978,27 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   },
   resolveEffects:(build,conditions,channel,effects)=>{
    const result=resolveEffects(build,conditions,channel,effects);
-   // Any unresolved or active effect requires a future full elemental/skill route.
-   if(!Array.isArray(result)||result.length!==0)throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_EMPTY');
+   if(!Array.isArray(result))throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_ARRAY');
    const applicability=build.skills.entries.length===0?[]:(typeof resolveSkillApplicability==='function'?resolveSkillApplicability(build.skills.entries):null);
-   if(!Array.isArray(applicability)||applicability.length!==build.skills.entries.length||applicability.some(x=>x?.effectDisposition!=='non_damage'||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
+   if(!Array.isArray(applicability)||applicability.length!==build.skills.entries.length||applicability.some(x=>!['non_damage','resolved'].includes(x?.effectDisposition)||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
+   for(const effect of result){
+    if(!effect||typeof effect.id!=='string'||!['physical','element'].includes(effect.target)||!['attack','coefficient','element','affinity'].includes(effect.stage)||!['add','multiply','cap'].includes(effect.operation)||!Number.isFinite(effect.amount)||!Number.isInteger(effect.order)||typeof effect.source!=='string'||!effect.condition)throw Error('REAL_SLICE:EFFECT_SCHEMA_INVALID');
+   }
    return result;
   }
  });
- const componentId=techniqueId+':physical:0',elementComponentId=techniqueId+':element:0';
+ const componentIds=id=>({physical:id+':physical:0',element:id+':element:0'});
  const handlers={[weaponType]:({event,build,effects})=>{
-  if(event.type!=='hit'||event.techniqueId!==techniqueId||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
-  const physicalEvent=event.components.find(c=>c.id===componentId),elementEvent=event.components.find(c=>c.id===elementComponentId);
-  if(!physicalEvent||event.components.some(c=>![componentId,elementComponentId].includes(c.id)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+  if(event.type!=='hit'||!uniqueTechniqueIds.includes(event.techniqueId)||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+  const ids=componentIds(event.techniqueId);
+  const physicalEvent=event.components.find(c=>c.id===ids.physical),elementEvent=event.components.find(c=>c.id===ids.element);
+  if(!physicalEvent||event.components.some(c=>![ids.physical,ids.element].includes(c.id)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   const modifier=elementEvent?.parameters?.elementModifier??physicalEvent.parameters?.elementModifier;
   if(!Number.isFinite(modifier)||modifier<0)throw Error('REAL_SLICE:ELEMENT_COMPONENT_UNRESOLVED');
-  if(modifier===0)return {emit:[componentId],inactive:[],unresolved:[]};
-  if(build?.element===0)return {emit:[componentId],inactive:[elementComponentId],unresolved:[]};
-  if(!Number.isFinite(build?.element)||!Array.isArray(effects)||effects.length!==0)return {emit:[componentId],inactive:[],unresolved:[elementComponentId]};
-  return {emit:[componentId,elementComponentId],inactive:[],unresolved:[]};
+  if(modifier===0)return {emit:[ids.physical],inactive:[],unresolved:[]};
+  if(build?.element===0)return {emit:[ids.physical],inactive:[ids.element],unresolved:[]};
+  if(!Number.isFinite(build?.element)||!Array.isArray(effects))return {emit:[ids.physical],inactive:[],unresolved:[ids.element]};
+  return {emit:[ids.physical,ids.element],inactive:[],unresolved:[]};
  }};
  return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental}});
 }
@@ -1008,7 +1014,7 @@ const {createPipeline}=require('./pipeline.cjs');
 const {adaptOrdinaryPhysicalHit}=require('./real-technique-one-hit-adapter.cjs');
 const {createSourcedPhysicalFormula,createSourcedElementalFormula}=require('./sourced-physical-formula.cjs');
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
-function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,resolveSkillApplicability,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
+function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,resolveSkillApplicability,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING',techniqueIds=null}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
  const elemental=canonicalPhysical&&typeof canonicalPhysical.resolveElementSharpness==='function'&&typeof canonicalPhysical.resolveElementHitzone==='function'?createSourcedElementalFormula({...canonicalPhysical,resolveElementSharpness:canonicalPhysical.resolveElementSharpness,resolveHitzone:canonicalPhysical.resolveElementHitzone}):formulae?.element;
@@ -1017,17 +1023,20 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
  if(typeof resolveBuild!=='function'||typeof resolveEffects!=='function'||typeof initialState!=='function')throw Error('REAL_SLICE:RESOLVERS_REQUIRED');
  // The pinned technique is independent of A/B builds; the physical-only disposition is
  // checked against every build and each channel, rather than cached from one build.
+ const selectedTechniqueIds=Array.isArray(techniqueIds)&&techniqueIds.length?techniqueIds:[techniqueId];
+ const uniqueTechniqueIds=[...new Set(selectedTechniqueIds)];
  const openDataSnapshot=createImmutableProvider({
   capture:pinned=>{
    const image=source.capture(pinned);
-   if(!image?.techniques||!own(image.techniques,techniqueId))throw Error('REAL_SLICE:TECHNIQUE_NOT_FOUND');
-   const record=image.techniques[techniqueId];
-   // The element-disposition proof belongs to L2/L3 and must not be fabricated during capture.
-   // This narrow bridge accepts physical-only data only after both build and effect gates below.
-   // Preserve static element/part values, but do not assert the L2/L3 element
-   // disposition while opening the immutable snapshot.
-   const adapted=adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion:pinned.technique,allowUnresolvedElement:true});
-   return {...image,techniques:{[techniqueId]:adapted}};
+   if(!image?.techniques)throw Error('REAL_SLICE:TECHNIQUE_NOT_FOUND');
+   const techniques={};
+   for(const id of uniqueTechniqueIds){
+    if(!own(image.techniques,id))throw Error('REAL_SLICE:TECHNIQUE_NOT_FOUND:'+id);
+    const record=image.techniques[id];
+    // The element-disposition proof belongs to L2/L3 and must not be fabricated during capture.
+    techniques[id]=adaptOrdinaryPhysicalHit({weaponType,techniqueId:id,record,dbVersion:pinned.technique,allowUnresolvedElement:true});
+   }
+   return {...image,techniques};
   },
   resolveBuild:(raw,equipment,request)=>{
    const result=resolveBuild(raw,equipment,request);
@@ -1044,24 +1053,27 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   },
   resolveEffects:(build,conditions,channel,effects)=>{
    const result=resolveEffects(build,conditions,channel,effects);
-   // Any unresolved or active effect requires a future full elemental/skill route.
-   if(!Array.isArray(result)||result.length!==0)throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_EMPTY');
+   if(!Array.isArray(result))throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_ARRAY');
    const applicability=build.skills.entries.length===0?[]:(typeof resolveSkillApplicability==='function'?resolveSkillApplicability(build.skills.entries):null);
-   if(!Array.isArray(applicability)||applicability.length!==build.skills.entries.length||applicability.some(x=>x?.effectDisposition!=='non_damage'||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
+   if(!Array.isArray(applicability)||applicability.length!==build.skills.entries.length||applicability.some(x=>!['non_damage','resolved'].includes(x?.effectDisposition)||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
+   for(const effect of result){
+    if(!effect||typeof effect.id!=='string'||!['physical','element'].includes(effect.target)||!['attack','coefficient','element','affinity'].includes(effect.stage)||!['add','multiply','cap'].includes(effect.operation)||!Number.isFinite(effect.amount)||!Number.isInteger(effect.order)||typeof effect.source!=='string'||!effect.condition)throw Error('REAL_SLICE:EFFECT_SCHEMA_INVALID');
+   }
    return result;
   }
  });
- const componentId=techniqueId+':physical:0',elementComponentId=techniqueId+':element:0';
+ const componentIds=id=>({physical:id+':physical:0',element:id+':element:0'});
  const handlers={[weaponType]:({event,build,effects})=>{
-  if(event.type!=='hit'||event.techniqueId!==techniqueId||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
-  const physicalEvent=event.components.find(c=>c.id===componentId),elementEvent=event.components.find(c=>c.id===elementComponentId);
-  if(!physicalEvent||event.components.some(c=>![componentId,elementComponentId].includes(c.id)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+  if(event.type!=='hit'||!uniqueTechniqueIds.includes(event.techniqueId)||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+  const ids=componentIds(event.techniqueId);
+  const physicalEvent=event.components.find(c=>c.id===ids.physical),elementEvent=event.components.find(c=>c.id===ids.element);
+  if(!physicalEvent||event.components.some(c=>![ids.physical,ids.element].includes(c.id)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   const modifier=elementEvent?.parameters?.elementModifier??physicalEvent.parameters?.elementModifier;
   if(!Number.isFinite(modifier)||modifier<0)throw Error('REAL_SLICE:ELEMENT_COMPONENT_UNRESOLVED');
-  if(modifier===0)return {emit:[componentId],inactive:[],unresolved:[]};
-  if(build?.element===0)return {emit:[componentId],inactive:[elementComponentId],unresolved:[]};
-  if(!Number.isFinite(build?.element)||!Array.isArray(effects)||effects.length!==0)return {emit:[componentId],inactive:[],unresolved:[elementComponentId]};
-  return {emit:[componentId,elementComponentId],inactive:[],unresolved:[]};
+  if(modifier===0)return {emit:[ids.physical],inactive:[],unresolved:[]};
+  if(build?.element===0)return {emit:[ids.physical],inactive:[ids.element],unresolved:[]};
+  if(!Number.isFinite(build?.element)||!Array.isArray(effects))return {emit:[ids.physical],inactive:[],unresolved:[ids.element]};
+  return {emit:[ids.physical,ids.element],inactive:[],unresolved:[]};
  }};
  return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental}});
 }

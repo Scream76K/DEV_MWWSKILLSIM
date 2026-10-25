@@ -1855,7 +1855,8 @@ function calcBuild(){renderCharmLegality();
   calcState={total,rawTotal,stats,bonusDisplay:calcState.bonusDisplay||{series:[],group:[]}};
   const selectedTechniqueIdRaw=$('comboMovePicker')?.value||document.querySelector('.comboRow .cmove')?.value||'';
   const selectedTechniqueId=selectedTechniqueIdRaw==='hm_side'?'HAM_SIDE_SWING':selectedTechniqueIdRaw;
-  try{calcState.realOneHit=window.MHWRealOneHitBrowserAdapter?.evaluateCurrent?.({weapon:w,stats,target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''},skills:Object.entries(total),techniqueId:selectedTechniqueId,techniqueDb:window.TechniqueDBEngine,trainingRoom:trainingRoomMonster(),retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'})||{status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};}catch(e){calcState.realOneHit={status:'UNAVAILABLE',reason:String(e?.message||e||'REAL_SLICE:EVALUATION_FAILED')};}
+  const selectedTechniqueIds=(Array.isArray(App.state.combo?.moves)?App.state.combo.moves:[]).map(x=>x?.techniqueId||x?.canonicalTechniqueId||'').filter(Boolean);
+  try{calcState.realOneHit=window.MHWRealOneHitBrowserAdapter?.evaluateCurrent?.({weapon:w,stats,target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''},skills:Object.entries(total),techniqueId:selectedTechniqueId,techniqueIds:selectedTechniqueIds.length?selectedTechniqueIds:[selectedTechniqueId],techniqueDb:window.TechniqueDBEngine,trainingRoom:trainingRoomMonster(),retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'})||{status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};}catch(e){calcState.realOneHit={status:'UNAVAILABLE',reason:String(e?.message||e||'REAL_SLICE:EVALUATION_FAILED')};}
   renderSummary();renderDetail();syncDamage();renderMonsterInfo();refreshDecorationSelects();updateWeaponCoeffDisplay();
 }
 function sortedSkills(o){const kindRank=name=>{const k=skillByIdByName(name)?.kind;return k==='weapon'?0:k==='armor'?1:2;};return Object.entries(o).sort((a,b)=>kindRank(a[0])-kindRank(b[0])||Number(b[1])-Number(a[1])||jpSort(a[0],b[0]));}
@@ -7548,17 +7549,17 @@ function comparisonChangeText(value){
 function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null){
   const target=snapshot?.target||{};
   const moves=Array.isArray(snapshot?.combo?.moves)?snapshot.combo.moves:[];
-  if(moves.length!==1)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_MULTI_HIT_COMBO_UNSUPPORTED'};
-  const first=moves[0];
-  const techniqueId=first?.canonicalTechniqueId||first?.techniqueId||'';
+  if(!moves.length)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_NOT_SAVED'};
+  const techniqueIds=moves.map(x=>x?.canonicalTechniqueId||x?.techniqueId||'');
+  const techniqueId=techniqueIds[0];
   if(!target.monsterId||!target.partId)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TARGET_NOT_SAVED'};
-  if(!techniqueId)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_NOT_SAVED'};
+  if(techniqueIds.some(id=>!id))return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_NOT_SAVED'};
   if(expectedSnapshot){
     const expectedTarget=expectedSnapshot.target||{};
     const expectedMoves=Array.isArray(expectedSnapshot.combo?.moves)?expectedSnapshot.combo.moves:[];
-    const expectedTechnique=expectedMoves.length===1?(expectedMoves[0]?.canonicalTechniqueId||expectedMoves[0]?.techniqueId||''):'';
+    const expectedTechniqueIds=expectedMoves.map(x=>x?.canonicalTechniqueId||x?.techniqueId||'');
     if(String(target.monsterId)!==String(expectedTarget.monsterId||'')||String(target.partId)!==String(expectedTarget.partId||''))return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TARGET_MISMATCH'};
-    if(techniqueId!==expectedTechnique)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_MISMATCH'};
+    if(JSON.stringify(techniqueIds)!==JSON.stringify(expectedTechniqueIds))return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_MISMATCH'};
   }
   const adapter=window.MHWRealOneHitBrowserAdapter;
   if(!adapter||typeof adapter.evaluateCurrent!=='function')return {status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};
@@ -7569,6 +7570,7 @@ function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null){
       target:{monster:String(target.monsterId),part:String(target.partId)},
       skills:Object.entries(calcState.total||{}),
       techniqueId,
+      techniqueIds,
       techniqueDb:window.TechniqueDBEngine,
       trainingRoom:trainingRoomMonster(),
       retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'
