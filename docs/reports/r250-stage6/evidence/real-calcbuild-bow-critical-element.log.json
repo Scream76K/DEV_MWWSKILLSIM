@@ -1,8 +1,8 @@
 {
-  "gitSha": "002d427f6095b2f5152959875b44642866fd2536",
+  "gitSha": "647174d45c8484f453daf01759db457d4b9adf44",
   "input": {
-    "weaponId": 17,
-    "weaponName": "Quematrice Arco I",
+    "weaponId": 26,
+    "weaponName": "Albirath Bow I",
     "decoId": 103,
     "decoName": "属会珠【１】",
     "elementType": "fire",
@@ -13,30 +13,31 @@
   "out": {
     "status": "OK",
     "stats": {
-      "attack": 120,
-      "attackTrue": 100,
+      "attack": 192,
+      "attackTrue": 160,
       "attackComponents": {
-        "weaponBase": 100,
+        "weaponBase": 160,
         "normalMultiplier": 1,
         "normalFlat": 0
       },
-      "affinity": 5,
-      "element": 70
+      "affinity": 15,
+      "element": 110
     },
     "total": {
-      "Focus": 1
+      "Ballistics": 1,
+      "Critical Element": 1
     },
     "conditional": {
       "status": "REFERENCE_ONLY",
       "pending": [],
-      "normalAttack": 100,
-      "maximumAttack": 100
+      "normalAttack": 160,
+      "maximumAttack": 160
     },
     "normal": {
       "metrics": {
         "comboTotalDamage": {
           "status": "available",
-          "value": 49.602599999999995
+          "value": 80.96913
         },
         "comboDuration": {
           "status": "unavailable",
@@ -52,7 +53,7 @@
       "metrics": {
         "comboTotalDamage": {
           "status": "available",
-          "value": 49.602599999999995
+          "value": 80.96913
         },
         "comboDuration": {
           "status": "unavailable",
@@ -81,19 +82,23 @@
     "diagnostics": [
       {
         "code": "MHDB_SOURCE",
-        "apiId": 17,
-        "gameId": 19,
-        "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/17",
+        "apiId": 26,
+        "gameId": 28,
+        "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/26",
         "apiVersion": "UNKNOWN",
         "retrievedAt": "UNKNOWN",
         "sourceGameVersion": "UNKNOWN"
       }
     ],
-    "rendered": "\n    攻撃力120真 100\n    会心率5%\n    最大会心率5%\n    属性70\n    防御力1\n    選択技の実計算技 選択技 / 通常 49.6 [MACARONGAMEMO_BOW_MOTION_CURRENT rev.1] / 最大 49.6 [MACARONGAMEMO_BOW_MOTION_CURRENT rev.1]\n  ",
-    "weapon": 17,
+    "rendered": "\n    攻撃力192真 160\n    会心率15%\n    最大会心率15%\n    属性110\n    防御力1\n    選択技の実計算技 選択技 / 通常 81.0 [MACARONGAMEMO_BOW_MOTION_CURRENT rev.1] / 最大 81.0 [MACARONGAMEMO_BOW_MOTION_CURRENT rev.1]\n  ",
+    "weapon": 26,
     "skills": [
       [
-        "Focus",
+        "Ballistics",
+        1
+      ],
+      [
+        "Critical Element",
         1
       ]
     ]
