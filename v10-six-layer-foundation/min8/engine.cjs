@@ -115,8 +115,10 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
  function applyEffects(component,effects,state,build,target,event){
   const out={coefficient:component.coefficient,stats:{attack:build.trueAttack,element:build.element,affinity:build.affinity},post:[],trace:[]};
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
+  const targets=Array.isArray(component.parameters?.effectTargets)&&component.parameters.effectTargets.length?component.parameters.effectTargets:[component.kind];
+  const stages=Array.isArray(component.parameters?.effectStages)&&component.parameters.effectStages.length?component.parameters.effectStages:null;
   const unit={coefficient:component.unit,attack:'true-attack',element:'display-element',affinity:'percent',damage:'damage'};
-  for(const e of [...effects].filter(x=>x.target===component.kind).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id))){
+  for(const e of [...effects].filter(x=>targets.includes(x.target)&&(!stages||stages.includes(x.stage))).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id))){
    ensure(unit[e.stage]&&num(e.amount)&&['add','multiply','cap'].includes(e.operation),'EFFECT_INVALID');
    ensure(e.operation==='multiply'?e.unit==='dimensionless':e.unit===unit[e.stage],'EFFECT_UNIT_MISMATCH');
    const active=condition(e.condition,{state,target,event});
@@ -159,7 +161,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        const meta={id:c.id,eventId:ev.id,techniqueId:ev.techniqueId,revision:ev.revision,source:c.source,coefficientUnit:c.unit,damageUnit:'damage'};
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
        if(unresolved.includes(c.id)){components.push({...meta,...bad('UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
-       const applied=(c.kind==='shelling'||c.kind==='reference')?{coefficient:c.coefficient,stats:{attack:build.trueAttack,element:build.element,affinity:build.affinity},post:[],trace:[]}:applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
+       const applied=applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
        const response=typeof f==='function'?f({kind:c.kind,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
