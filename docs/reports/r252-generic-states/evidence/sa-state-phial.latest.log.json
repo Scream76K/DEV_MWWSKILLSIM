@@ -1,5 +1,5 @@
 {
-  "executionSha": "d48749d1b5d7da00d5524339fcbe75cb8ef70849",
+  "executionSha": "dcd2b47a056ff241ed464c2fd8193ccff3fea254",
   "input": {
     "weaponId": 914,
     "gameId": 1,
@@ -52,6 +52,10 @@
       }
     ]
   },
+  "omittedAwakened": {
+    "status": "UNAVAILABLE",
+    "reason": "REAL_SLICE:SA_AWAKENED_STATE_UNRESOLVED"
+  },
   "axe": {
     "state": {
       "mode": "AXE",
@@ -62,6 +66,7 @@
   },
   "assertions": {
     "swordModeAvailable": true,
+    "omittedAwakenedRejected": true,
     "axeModeRejected": true,
     "powerPhialPhysicalEffectAppliedOnce": true,
     "provisionalStatusExposed": true,
