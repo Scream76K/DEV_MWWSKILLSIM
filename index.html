@@ -1851,7 +1851,8 @@ function calcBuild(){renderCharmLegality();
   const dl=validCombatSkillLevel(total,['防御','Defense'],7); const dFlat=[0,5,10,10,20,20,35,35][dl]; const dMult=dl>=7?1.10:dl>=6?1.08:dl>=4?1.05:1; stats.defense=(stats.defense+dFlat)*dMult;
   stats.activeBonusEffects=JSON.parse(JSON.stringify([...(calcState.bonusDisplay?.series||[]),...(calcState.bonusDisplay?.group||[])]));
   calcState={total,rawTotal,stats,bonusDisplay:calcState.bonusDisplay||{series:[],group:[]}};
-  calcState.realOneHit=window.MHWRealOneHitBrowserAdapter?.evaluateCurrent?.({weapon:w,stats,target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''},skills:Object.entries(total),techniqueDb:window.TechniqueDBEngine,trainingRoom:trainingRoomMonster(),retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'})||{status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};
+  const selectedTechniqueId=$('comboMovePicker')?.value||document.querySelector('.comboRow .cmove')?.value||'';
+  try{calcState.realOneHit=window.MHWRealOneHitBrowserAdapter?.evaluateCurrent?.({weapon:w,stats,target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''},skills:Object.entries(total),techniqueId:selectedTechniqueId,techniqueDb:window.TechniqueDBEngine,trainingRoom:trainingRoomMonster(),retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'})||{status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};}catch(e){calcState.realOneHit={status:'UNAVAILABLE',reason:String(e?.message||e||'REAL_SLICE:EVALUATION_FAILED')};}
   renderSummary();renderDetail();syncDamage();renderMonsterInfo();refreshDecorationSelects();updateWeaponCoeffDisplay();
 }
 function sortedSkills(o){const kindRank=name=>{const k=skillByIdByName(name)?.kind;return k==='weapon'?0:k==='armor'?1:2;};return Object.entries(o).sort((a,b)=>kindRank(a[0])-kindRank(b[0])||Number(b[1])-Number(a[1])||jpSort(a[0],b[0]));}
@@ -2053,14 +2054,15 @@ function renderSummary(){
   let entries=sortedSkills(t);
   const aff=Math.round(Math.min(100,Math.max(-100,s.affinity))), maxAff=Math.round(s.maxAffinity);
   const one=calcState.realOneHit||{status:'UNAVAILABLE',reason:'REAL_SLICE:NOT_EVALUATED'};
-  const oneText=one.status==='OK'?`通常 ${one.channels.normal.metrics.comboTotalDamage.value} / 最大 ${one.channels.maximum.metrics.comboTotalDamage.value}（技 ${esc(one.channels.normal.components[0].source)} rev.${esc(one.channels.normal.components[0].revision)}）`:`未算出：${esc(one.reason)}`;
+  const channelText=ch=>{const m=one.channels?.[ch]?.metrics?.comboTotalDamage,c=one.channels?.[ch]?.components?.[0];return m?.status==='available'?`${m.value}${c?` [${esc(c.source)} rev.${esc(c.revision)}]`:''}`:`未算出：${esc(m?.reason||one.reason||'RESULT_UNAVAILABLE')}`;};
+  const oneText=one.status==='OK'?`技 ${esc(one.conditionKey?.includes('HAM_SIDE_SWING')?'HAM_SIDE_SWING':'選択技')} / 通常 ${channelText('normal')} / 最大 ${channelText('maximum')}`:`未算出：${esc(one.reason||'RESULT_UNAVAILABLE')}`;
   $('buildSummary').innerHTML=`<div class="game-status" style="grid-column:1/-1">
     <div class="gs-row"><span class="gs-label">攻撃力</span><span class="gs-value">${Math.round(s.attack)}<span class="gs-sub">真 ${Math.round(s.attackTrue)}</span></span></div>
     <div class="gs-row"><span class="gs-label">会心率</span><span class="gs-value">${aff}%</span></div>
     <div class="gs-row"><span class="gs-label">最大会心率</span><span class="gs-value">${maxAff}%</span></div>
     <div class="gs-row"><span class="gs-label">属性</span><span class="gs-value">${equipmentElementDisplay(s)}</span></div>
     <div class="gs-row"><span class="gs-label">防御力</span><span class="gs-value">${Math.round(s.defense)}</span></div>
-    <div class="gs-row"><span class="gs-label">実1Hit Pipeline</span><span class="gs-value">${oneText}</span></div>
+    <div class="gs-row"><span class="gs-label">選択技の実計算</span><span class="gs-value">${oneText}</span></div>
   </div>`;
   const bonus=calcState.bonusDisplay||{series:[],group:[]};
   const bonusNames=new Set([...bonus.series,...bonus.group].map(x=>x.name));
