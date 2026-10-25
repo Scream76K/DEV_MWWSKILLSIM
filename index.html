@@ -7376,7 +7376,7 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={}){
       }
     }
   }
-  for(const names of STANDARD_UNRESOLVED_CONDITIONAL_SKILLS)if(!['連撃','攻めの守勢','急襲','属性吸収','火事場力','災禍転福'].includes(names[0])&&!(names[0]==='暗黒'&&darkLevel)&&!(names[0]==='毛皮の昂揚'&&groupPlan.applied.some(x=>x.skill==='不屈'))&&!(names[0]==='兇爪竜の力'&&groupPlan.applied.some(x=>Object.prototype.hasOwnProperty.call(STANDARD_SERIES_POWER_RULES,x.skill)))&&!(names[0]==='暗黒'&&darkArts&&!skillLevel(total,['暗黒','Dark']))&&skillLevel(total,names)>0)pending.push(names[0]+':CONDITIONAL_DAMAGE_FORMULA_PENDING');
+  for(const names of STANDARD_UNRESOLVED_CONDITIONAL_SKILLS)if(!['連撃','攻めの守勢','急襲','属性吸収','火事場力','災禍転福'].includes(names[0])&&!(names[0]==='暗黒'&&darkLevel)&&!(names[0]==='毛皮の昂揚'&&groupPlan.applied.some(x=>x.skill==='不屈'))&&!(names[0]==='兇爪竜の力'&&groupPlan.applied.some(x=>Object.prototype.hasOwnProperty.call(STANDARD_SERIES_POWER_RULES,x.skill)))&&!(names[0]==='暗黒'&&darkArts&&!skillLevel(total,['暗黒','Dark']))&&!(names[0]==='抜刀術【技】')&&skillLevel(total,names)>0)pending.push(names[0]+':CONDITIONAL_DAMAGE_FORMULA_PENDING');
   if(groupPlan.attackMultiplier!==1&&!componentsValid)throw Error('BONUS_DAMAGE_EFFECT_PENDING:GUTS_ATTACK_COMPONENTS_UNRESOLVED');
   applied.push(...groupPlan.applied);
   const flat=applied.reduce((n,x)=>n+x.attackAdd,0);
