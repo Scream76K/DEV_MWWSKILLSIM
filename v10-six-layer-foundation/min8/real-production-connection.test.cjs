@@ -2,6 +2,8 @@
 const {test}=require('node:test'),a=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const {createRealOneHitPipeline}=require('./real-one-hit-pipeline.cjs');
 const {datum}=require('./min2-contract.cjs');
+const {resolveHopeHammerI}=require('./hope-hammer-source-adapter.cjs');
+const sharpnessApi=require('../../weapon-max-sharpness.js');
 const db=require('../../docs/reports/r250-stage5/evidence/technique/runtime-records.json');
 
 // Execute the existing product evaluator from index.html; this test does not copy
@@ -13,16 +15,22 @@ if(start<0||end<0)throw Error('PRODUCTION_FORMULA_EXPORT_NOT_FOUND');
 const box={};
 vm.runInNewContext(`(()=>{${html.slice(start,end)};this.damageFromParams=damageFromParams})()`,box);
 const calculate=box.damageFromParams;
+const trainingStart=html.indexOf('function trainingRoomMonster');
+const trainingEnd=html.indexOf('function isTrainingRoom',trainingStart);
+vm.runInNewContext(`(()=>{${html.slice(trainingStart,trainingEnd)};this.trainingRoomMonster=trainingRoomMonster})()`,box);
+const training=box.trainingRoomMonster();
+const trainingFront=training.parts.find(p=>p.id==='training-front');
 const game='1.042.00.02',id='HAM_SIDE_SWING',record=db.db.hammer[id];
+const adopted=resolveHopeHammerI();
 const versions={game,equipment:'mhdb-source-unknown-game-version',technique:'tech-real',effects:'effects-real'};
 const request={schemaVersion:'v10-min2',build:{weapon:'hope-hammer-i'},target:{id:'training-room',hitZoneKey:'training-front'},conditions:{},evaluation:{mode:'combo',kind:'combo',signature:'hope-hammer-one-hit',techniqueIds:[id]}};
-const source={capture:pinned=>({versions:pinned,equipment:{sourceNamespace:'github.com/LartTyler/mhdb-wilds-data',gameId:1,gameVersionStatus:'UNKNOWN'},effects:{},techniques:{[id]:record}})};
+const source={capture:pinned=>({versions:pinned,equipment:adopted.weapon,effects:{},techniques:{[id]:record}})};
 const make=()=>createRealOneHitPipeline({versions,source,
- resolveBuild:()=>({weaponType:'hammer',dbVersion:versions.equipment,source:'LARTTYLER_MHDB_HOPE_HAMMER_I',equipment:{ids:['game_id:1'],trueAttack:datum('known',90),displayElement:datum('known',0),baseAffinity:datum('known',0),sourceGameVersion:'UNKNOWN'},skills:{entries:[]}}),
+ resolveBuild:()=>({weaponType:'hammer',dbVersion:versions.equipment,source:'LARTTYLER_MHDB_HOPE_HAMMER_I',equipment:{ids:['game_id:1'],trueAttack:datum('known',adopted.weapon.attackRaw),displayElement:datum('known',0),baseAffinity:datum('known',adopted.weapon.affinity),sourceGameVersion:adopted.provenance.sourceGameVersion},skills:{entries:[]}}),
  resolveEffects:()=>[],initialState:()=>({}),
  canonicalPhysical:{expectedGameVersion:game,
-  resolveSharpness:()=>({value:1.05,gameVersion:game,evidenceRef:'https://docs.wilds.mhdb.io/#sharpness',sourceGameVersion:'UNKNOWN',status:'PROVISIONAL'}),
-  resolveHitzone:()=>({value:80,gameVersion:game,evidenceRef:'index.html:1207 trainingRoomMonster',sourceGameVersion:'UNKNOWN',status:'PRODUCT_REFERENCE'}),
+  resolveSharpness:()=>{const r=sharpnessApi.resolve(adopted.weapon,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});return {value:r.options.sharpnessPhysicalMultiplier,gameVersion:game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:adopted.provenance.sourceGameVersion,status:'PROVISIONAL'};},
+  resolveHitzone:()=>({value:trainingFront.multipliers.blunt*100,gameVersion:game,evidenceRef:'index.html:1207 trainingRoomMonster',sourceGameVersion:adopted.provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'}),
   resolvePartModifier:({parameters})=>({value:parameters.partModifier,gameVersion:game,evidenceRef:parameters.partModifierSource}),
   calculate}});
 
