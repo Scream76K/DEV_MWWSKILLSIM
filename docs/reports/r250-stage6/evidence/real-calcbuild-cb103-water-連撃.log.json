@@ -1,0 +1,130 @@
+{
+  "gitSha": "d4e304c595175baeda4a495bd9f732d8b169c917",
+  "input": {
+    "weaponId": 103,
+    "weaponName": "ウズ・ヴァレロヤⅡ",
+    "weaponSlots": [
+      2,
+      1
+    ],
+    "decoId": 61,
+    "decoName": "流水珠【１】",
+    "decoSlotKey": "w0",
+    "armorId": 93,
+    "armorName": "コンガグリーヴβ",
+    "shield": true,
+    "axe": false,
+    "phialType": "POWER_ELEMENT",
+    "enhancedPhial": true
+  },
+  "out": {
+    "status": "OK",
+    "stats": {
+      "attackTrue": 190,
+      "affinity": -15,
+      "element": 300,
+      "elementType": "water"
+    },
+    "total": {
+      "強化持続": 2,
+      "連撃": 1,
+      "毛皮の誘惑": 1,
+      "水属性攻撃強化": 1
+    },
+    "normal": {
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "unavailable",
+          "reason": "EXECUTION_INCOMPLETE"
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "EXECUTION_INCOMPLETE"
+        }
+      }
+    },
+    "maximum": {
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "unavailable",
+          "reason": "EXECUTION_INCOMPLETE"
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "EXECUTION_INCOMPLETE"
+        }
+      }
+    },
+    "normalRaw": {
+      "execution": {
+        "status": "incomplete",
+        "expected": [
+          "0:0"
+        ],
+        "executed": [],
+        "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:毛皮の誘惑"
+      },
+      "components": [],
+      "issues": [
+        {
+          "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:毛皮の誘惑"
+        }
+      ],
+      "finalState": {},
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "unavailable",
+          "reason": "EXECUTION_INCOMPLETE"
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "EXECUTION_INCOMPLETE"
+        }
+      }
+    },
+    "maximumComponents": [],
+    "diagnostics": [
+      {
+        "code": "MHDB_SOURCE",
+        "apiId": 103,
+        "gameId": 25,
+        "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/103",
+        "apiVersion": "UNKNOWN",
+        "retrievedAt": "UNKNOWN",
+        "sourceGameVersion": "UNKNOWN"
+      }
+    ],
+    "rendered": "\n    攻撃力684真 190\n    会心率-15%\n    最大会心率-15%\n    属性300\n    防御力91\n    選択技の実計算技 選択技 / 通常 未算出：EXECUTION_INCOMPLETE / 最大 未算出：EXECUTION_INCOMPLETE\n  ",
+    "weapon": 103,
+    "skills": [
+      [
+        "強化持続",
+        2
+      ],
+      [
+        "連撃",
+        1
+      ],
+      [
+        "毛皮の誘惑",
+        1
+      ],
+      [
+        "水属性攻撃強化",
+        1
+      ]
+    ]
+  }
+}

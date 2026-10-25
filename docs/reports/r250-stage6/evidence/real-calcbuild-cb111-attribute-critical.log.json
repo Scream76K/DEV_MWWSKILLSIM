@@ -1,0 +1,212 @@
+{
+  "gitSha": "d4e304c595175baeda4a495bd9f732d8b169c917",
+  "input": {
+    "weaponId": 111,
+    "weaponName": "レ・アストラペⅡ",
+    "weaponSlots": [
+      2,
+      1
+    ],
+    "elementDecoId": 103,
+    "elementDecoName": "属会珠【１】",
+    "elementDecoSlotKey": "w0",
+    "criticalEyeDecoId": 128,
+    "criticalEyeDecoName": "達人珠【１】",
+    "criticalEyeDecoSlotKey": "w1",
+    "shield": false,
+    "axe": false,
+    "phialType": "POWER_ELEMENT",
+    "enhancedPhial": true
+  },
+  "out": {
+    "status": "OK",
+    "stats": {
+      "attackTrue": 170,
+      "affinity": 4,
+      "element": 190,
+      "elementType": "thunder"
+    },
+    "total": {
+      "集中": 1,
+      "砲弾装填": 1,
+      "会心撃【属性】": 1,
+      "見切り": 1
+    },
+    "normal": {
+      "comboTotalDamage": {
+        "status": "available",
+        "value": 103.86000000000001
+      },
+      "comboDuration": {
+        "status": "unavailable",
+        "reason": "DURATION_UNAVAILABLE"
+      },
+      "comboDps": {
+        "status": "unavailable",
+        "reason": "DURATION_UNAVAILABLE"
+      }
+    },
+    "maximum": {
+      "comboTotalDamage": {
+        "status": "available",
+        "value": 103.86000000000001
+      },
+      "comboDuration": {
+        "status": "unavailable",
+        "reason": "DURATION_UNAVAILABLE"
+      },
+      "comboDps": {
+        "status": "unavailable",
+        "reason": "DURATION_UNAVAILABLE"
+      }
+    },
+    "normalComponents": [
+      {
+        "id": "CB_ELEMENT_DISCHARGE_1:physical:0",
+        "eventId": "0:0",
+        "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+        "revision": "2",
+        "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+        "coefficientUnit": "MV",
+        "damageUnit": "damage",
+        "status": "available",
+        "value": 84.06,
+        "disposition": "emitted",
+        "effectsApplied": [
+          {
+            "id": "critical-eye-affinity",
+            "stage": "affinity",
+            "unit": "percent",
+            "order": 30,
+            "source": "index.html:calcAffinityBonus"
+          }
+        ]
+      },
+      {
+        "id": "CB_ELEMENT_DISCHARGE_1:element:0",
+        "eventId": "0:0",
+        "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+        "revision": "2",
+        "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+        "coefficientUnit": "ELEMENT_MODIFIER",
+        "damageUnit": "damage",
+        "status": "available",
+        "value": 6.12,
+        "disposition": "emitted",
+        "effectsApplied": [
+          {
+            "id": "critical-eye-affinity-element",
+            "stage": "affinity",
+            "unit": "percent",
+            "order": 30,
+            "source": "index.html:calcAffinityBonus"
+          }
+        ]
+      },
+      {
+        "id": "CB_ELEMENT_DISCHARGE_1:phial:0",
+        "eventId": "0:0",
+        "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+        "revision": "2",
+        "source": "USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4",
+        "coefficientUnit": "PHIAL",
+        "damageUnit": "damage",
+        "status": "available",
+        "value": 13.68,
+        "disposition": "emitted",
+        "effectsApplied": []
+      }
+    ],
+    "maximumComponents": [
+      {
+        "id": "CB_ELEMENT_DISCHARGE_1:physical:0",
+        "eventId": "0:0",
+        "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+        "revision": "2",
+        "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+        "coefficientUnit": "MV",
+        "damageUnit": "damage",
+        "status": "available",
+        "value": 84.06,
+        "disposition": "emitted",
+        "effectsApplied": [
+          {
+            "id": "critical-eye-affinity",
+            "stage": "affinity",
+            "unit": "percent",
+            "order": 30,
+            "source": "index.html:calcAffinityBonus"
+          },
+          {
+            "id": "conditional-affinity-maximum",
+            "stage": "affinity",
+            "unit": "percent",
+            "order": 80,
+            "source": "index.html:calcMaxAffinity"
+          }
+        ]
+      },
+      {
+        "id": "CB_ELEMENT_DISCHARGE_1:element:0",
+        "eventId": "0:0",
+        "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+        "revision": "2",
+        "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+        "coefficientUnit": "ELEMENT_MODIFIER",
+        "damageUnit": "damage",
+        "status": "available",
+        "value": 6.12,
+        "disposition": "emitted",
+        "effectsApplied": [
+          {
+            "id": "critical-eye-affinity-element",
+            "stage": "affinity",
+            "unit": "percent",
+            "order": 30,
+            "source": "index.html:calcAffinityBonus"
+          },
+          {
+            "id": "conditional-affinity-maximum-element",
+            "stage": "affinity",
+            "unit": "percent",
+            "order": 80,
+            "source": "index.html:calcMaxAffinity"
+          }
+        ]
+      },
+      {
+        "id": "CB_ELEMENT_DISCHARGE_1:phial:0",
+        "eventId": "0:0",
+        "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+        "revision": "2",
+        "source": "USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4",
+        "coefficientUnit": "PHIAL",
+        "damageUnit": "damage",
+        "status": "available",
+        "value": 13.68,
+        "disposition": "emitted",
+        "effectsApplied": []
+      }
+    ],
+    "rendered": "\n    攻撃力612真 170\n    会心率4%\n    最大会心率4%\n    属性190\n    防御力1\n    選択技の実計算技 選択技 / 通常 103.9 [MACARONGAMEMO_CHARGE_BLADE_MOTION rev.2] / 最大 103.9 [MACARONGAMEMO_CHARGE_BLADE_MOTION rev.2]\n  ",
+    "weapon": 111,
+    "skills": [
+      [
+        "集中",
+        1
+      ],
+      [
+        "砲弾装填",
+        1
+      ],
+      [
+        "会心撃【属性】",
+        1
+      ],
+      [
+        "見切り",
+        1
+      ]
+    ]
+  }
+}
