@@ -11,7 +11,13 @@ test('r241 phial audit requires valid base coefficients and prioritizes count ca
   vm.runInContext(src.slice(start,end)+`;globalThis.audit=chargeBladePhialMeasurementAudit();globalThis.fn=chargeBladePhialMeasurementAudit;`,context);
   const audit=JSON.parse(JSON.stringify(context.audit));
   assert.equal(audit.length,5);
-  assert.ok(audit.every(x=>x.priority==='COUNT_FIRST'&&x.measurementNeeded&&x.coefficientStatus==='PROVISIONAL_EXISTING'));
+  const byId=Object.fromEntries(audit.map(x=>[x.techniqueId,x]));
+  assert.equal(byId.CB_SHIELD_THRUST.priority,'COUNT_FIRST');
+  assert.equal(byId.CB_SHIELD_THRUST.measurementNeeded,true);
+  for(const id of ['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED']){
+    assert.equal(byId[id].priority,'COEFFICIENT_REVIEW');
+    assert.equal(byId[id].measurementNeeded,false);
+  }
   vm.runInContext(`CHARGE_BLADE_TECHNIQUES.CB_AED.phial.impactCoefficient=NaN`,context);
   assert.equal(JSON.parse(JSON.stringify(vm.runInContext('chargeBladePhialMeasurementAudit()',context))).find(x=>x.techniqueId==='CB_AED').coefficientStatus,'REVIEW_REQUIRED');
 });

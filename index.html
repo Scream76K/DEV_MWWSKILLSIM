@@ -5097,7 +5097,12 @@ const CHARGE_BLADE_STANDARD_PROFILES=Object.freeze({
 // r238: source-backed provisional explosion counts are eligible for calculation.
 // Keep this registry empty until a count is supported by a cited source or measurement.
 // The distinction from VERIFIED is preserved in the returned evidence status.
-const CHARGE_BLADE_PROVISIONAL_PHIAL_COUNTS=Object.freeze({});
+const CHARGE_BLADE_PROVISIONAL_PHIAL_COUNTS=Object.freeze({
+  CB_ELEMENT_DISCHARGE_1:{status:'PROVISIONAL',count:1,source:'USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4:libfile_fb1854af3f3081918abdb17ce3b667e2;1a11b4e1a1f6-master_playlist.mp4:libfile_f85e6fff77408191b5cb588997ab70c0'},
+  CB_ELEMENT_DISCHARGE_2:{status:'PROVISIONAL',count:2,source:'USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4:libfile_fb1854af3f3081918abdb17ce3b667e2;1a11b4e1a1f6-master_playlist.mp4:libfile_f85e6fff77408191b5cb588997ab70c0'},
+  CB_AED:{status:'PROVISIONAL',count:2,source:'USER_VIDEO_OBSERVATION:1a11b213a0886-master_playlist.mp4:libfile_9ce9aa26c3948191a06286669798f7eb;1a11b4e1a1f6-master_playlist.mp4:libfile_f85e6fff77408191b5cb588997ab70c0'},
+  CB_FOLLOWUP_AED:{status:'PROVISIONAL',count:3,source:'USER_VIDEO_OBSERVATION:1a11b213a0886-master_playlist.mp4:libfile_9ce9aa26c3948191a06286669798f7eb;1a11b4e1a1f6-master_playlist.mp4:libfile_f85e6fff77408191b5cb588997ab70c0'}
+});
 function chargeBladePhialCountEvidence(techniqueId){
   const e=CHARGE_BLADE_EVIDENCE.phialEvents[techniqueId];
   if(e?.status==='VERIFIED'&&Number.isInteger(e.count)&&e.count>0)
