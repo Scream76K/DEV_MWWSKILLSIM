@@ -1048,6 +1048,7 @@ function isBaseArtia(w){
   const rare8=BASE_ARTIA_RARE8_IDENTITIES[w.id];
   return !!(w.rarity===8&&rare8&&w.name===rare8[0]&&w.kind===rare8[1])||(BASE_ARTIA_MHDB_IDS.has(Number(w.id))&&[6,7].includes(w.rarity)&&/^アーティア/.test(String(w.name||'')));
 }
+function isNormalArtiaMelee(w){return isBaseArtia(w)&&!['bow','light-bowgun','heavy-bowgun'].includes(canonicalWeaponKind(w));}
 function isArtiaWeapon(w){return isGogmaArtia(w)||isBaseArtia(w);}
 const ARTIA_NAMES=new Set(['忘却のオストランツァ','斬罪のエルガンシオ','破滅のキリエヴェルド','永訣のクラウクライス','禁戒のデスヴァンケル','闇黒のテルプリティカ','暗黒のテルプリティカ','天涯のゲガルンロウ','前兆のプロフェネシス','邪執のコンキエレガン','代償のネイディ・ギア','堕在のラクリエリカ','荊冠のデストレーター','戦慄のヘルシャフェン','亡国のクピドバイン']);
 const WEAPON_COEFF={ 'great-sword':4.8,'long-sword':3.3,'sword-and-shield':1.4,'dual-blades':1.4,hammer:5.2,'hunting-horn':4.2,lance:2.3,gunlance:2.3,'switch-axe':3.5,'charge-blade':3.6,'insect-glaive':3.1,'light-bowgun':1.3,'heavy-bowgun':1.5,bow:1.2 };
@@ -1459,8 +1460,8 @@ function renderArtia(){
   if(!isArtiaWeapon(w)){box.classList.add('hidden');return;}
   box.classList.remove('hidden');
   if(isBaseArtia(w)){
-    const types=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'],choices=['none','atk:I','aff:I','elem:I'];
-    box.innerHTML=`<b>アーティア生産条件（暫定採用・現行版未検証）</b><div>同一属性の攻撃素材3個固定</div><label>武器属性</label><select id="aElem">${types.map(x=>`<option value="${x}">${x}</option>`).join('')}</select><label>復元Ⅰ</label>${build.artia.restores.map((v,i)=>`<select class="aR" data-i="${i}">${[...new Set([...choices,v])].map(x=>`<option value="${x}">${x}</option>`).join('')}</select>`).join('')}`;
+    const types=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'],choices=['none','atk:I','aff:I','elem:I',...(isNormalArtiaMelee(w)?['sharp:I']:[])];
+    box.innerHTML=`<b>アーティア生産条件（暫定採用・現行版未検証）</b><div>同一属性の攻撃素材3個固定</div><label>武器属性</label><select id="aElem">${types.map(x=>`<option value="${x}">${x}</option>`).join('')}</select><label>復元Ⅰ</label>${build.artia.restores.map((v,i)=>`<select class="aR" data-i="${i}">${[...new Set([...choices,v])].map(x=>`<option value="${x}">${x==='sharp:I'?'斬れ味強化Ⅰ（白維持・ゲージ長未計算）':x}</option>`).join('')}</select>`).join('')}`;
     $('aElem').value=build.artia.element;$('aElem').onchange=()=>{build.artia.element=$('aElem').value;calcBuild()};
     document.querySelectorAll('.aR').forEach((el,i)=>{el.value=build.artia.restores[i];el.onchange=()=>{build.artia.restores[i]=el.value;calcBuild()}});
     return;
@@ -1770,9 +1771,10 @@ function realPipelineWeapon(pipelineWeapon){
       // Equipment input before skills: use the same completed record and restoration
       // as calcBuild. Do not mutate MHDB or add production/material bonuses again.
       const type=fixed.elementType,element=fixed.element+restore.element;
+      const sharpnessPremise=isNormalArtiaMelee(pipelineWeapon)?{color:'white',status:'OWNER_SPECIFIED',source:'OWNER_2026-10-25T22:35Z_NORMAL_ARTIA_MELEE_WHITE',scope:'MAX_COLOR_ONLY',gaugeLength:null,depletionModelled:false}:null;
       pipelineWeapon={...pipelineWeapon,damage:{...pipelineWeapon.damage,raw:fixed.attack+restore.attack},affinity:fixed.affinity+restore.affinity,
         specials:element>0?[{kind:['fire','water','ice','thunder','dragon'].includes(type)?'element':'status',element:type,status:type,damage:{display:element,raw:element/10}}]:[],
-        artiaCalculationEvidence:{...fixed.stageEvidence,sourceId:fixed.sourceId,elementEvidence:fixed.elementEvidence||null,production:build.artia.production,parts:[...build.artia.parts],sameElementPartCount:3,restores:[...build.artia.restores],stage:'BASE_PLUS_FIXED_PRODUCTION_PLUS_RESTORE_BEFORE_SKILLS'}};
+        artiaCalculationEvidence:{...fixed.stageEvidence,sharpnessPremise,sourceId:fixed.sourceId,elementEvidence:fixed.elementEvidence||null,production:build.artia.production,parts:[...build.artia.parts],sameElementPartCount:3,restores:[...build.artia.restores],stage:'BASE_PLUS_FIXED_PRODUCTION_PLUS_RESTORE_BEFORE_SKILLS'}};
     }
   return pipelineWeapon;
 }
@@ -1790,6 +1792,7 @@ function restoreStats(w){let st={attack:0,affinity:0,element:0,sharp:0};
     if(typeof x!=='string'||! /^(atk|aff|elem|sharp):(I|II|III|EX)$/.test(x))return invalid('ARTIA_RESTORE_UNKNOWN:'+String(x));
     const [kind,level]=x.split(':');
     if(isBaseArtia(w)){
+      if(kind==='sharp'&&level==='I'&&isNormalArtiaMelee(w))continue; // Maximum white only; gauge length is deliberately not modelled.
       const value=kind==='elem'?ARTIA_STAGE_ADOPTION.normalElementRows[canonicalWeaponKind(w)]?.[4]:ARTIA_STAGE_ADOPTION.normalRestore[kind];
       if(level!=='I'||typeof value!=='number')return invalid('BASE_ARTIA_RESTORE_UNSUPPORTED:'+x);
       st[kind==='atk'?'attack':kind==='aff'?'affinity':'element']+=value;
