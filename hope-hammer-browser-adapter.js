@@ -90,6 +90,9 @@
     technique={...technique,stateRequirement:technique.stateRequirement&&Object.keys(technique.stateRequirement).length?technique.stateRequirement:(normalContract.stateRequirement||{}),hits:(technique.hits||[]).map(hit=>({...hit,damageType:hit.damageType??normalContract.damageType,partModifier:hit.partModifier??normalContract.partModifier,partModifierSource:hit.partModifierSource??normalContract.source}))};
    }
    if(technique.phialReference?.status==='OBSERVED'&&Number.isInteger(technique.phialReference.hitCount)){
+    const axeCountPending=['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED'].includes(id);
+    if(axeCountPending&&typeof chargeBladeState?.axeBoosted!=='boolean')return fail('REAL_SLICE:CB_AXE_BOOST_STATE_REQUIRED');
+    if(axeCountPending&&chargeBladeState.axeBoosted===true)return fail('REAL_SLICE:CB_AXE_BOOST_HITS_UNRESOLVED');
     const suppliedType=chargeBladeState?.phialType||null;
     if(suppliedType&&suppliedType!==officialPhialType)return fail('REAL_SLICE:CB_PHIAL_TYPE_MISMATCH_MHDB:'+officialPhialType+':'+suppliedType);
     const artilleryLevel=artilleryEntries.length?Math.max(...artilleryEntries.map(x=>x.level)):0;
