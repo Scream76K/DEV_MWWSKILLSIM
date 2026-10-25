@@ -5159,7 +5159,7 @@ function chargeBladeTechniqueComponents(techniqueId,state={}){
   const rapidMorphDamageMultiplier=t.rapidMorphDamageEligible?(rapidMorphLevel>=3?1.2:rapidMorphLevel>=2?1.1:1):1;
   // r23: keep physical/element/axe-boost components independent. Shield-boost body scope is
   // intentionally fail-closed for element and axe-boost until evidence explicitly adopts it.
-  const shieldPhysicalBodyMultiplier=shieldBoosted&&t.shieldBoostAxeBody?1.1:1;
+  const shieldPhysicalBodyMultiplier=shieldBoosted&&t.shieldBoostAxeBody?CHARGE_BLADE_SHIELD_AXE_BODY_MULTIPLIER:1;
   const physicalBody=canonicalHits.map(h=>({source:'BODY_PHYSICAL',mv:h.mv,multiplier:shieldPhysicalBodyMultiplier*rapidMorphDamageMultiplier}));
   const elementalBody=canonicalHits.map(h=>({source:'BODY_ELEMENT',elementModifier:h.elementModifier,multiplier:rapidMorphDamageMultiplier}));
   const axeBoostPhysical=axeBoosted&&t.axeBoostHits?Array.from({length:t.axeBoostHits.count},()=>({source:'AXE_BOOST_PHYSICAL',mv:t.axeBoostHits.mv,multiplier:1})) : [];
@@ -5670,7 +5670,7 @@ const TECHNIQUE_DB=techniqueDbDeepFreeze(Object.fromEntries(Object.entries(TECHN
     const reference=(normal,enhanced,sourceVersion)=>({status:'PROVISIONALLY_ADOPTED',sourceConfirmed:true,liveGameVerification:'PENDING',source,sourceVersion,
       baselineGameVersion:'1.042.00.02',retrievedAt:'2026-10-11',approvalRefs:['KAN-21#10057','KAN-21#10058'],
       eventCount:5,hitCount:5,hitPolicy:'FULL_STOCK_FULL_HIT',capacitySkillIncreasesStock:false,
-      powerElement:{normal,enhanced},shieldElementMultiplier:1.3,shieldPhysicalBodyMultiplier:1.1,
+      powerElement:{normal,enhanced},shieldElementMultiplier:1.3,shieldPhysicalBodyMultiplier:CHARGE_BLADE_SHIELD_AXE_BODY_MULTIPLIER,
       bodySourceLocator:'モーション一覧: 斧：超高出力属性解放斬り / (高出力派生)斧：超高出力属性解放斬り = 16・78・45; 属性補正各1',
       bodyVerificationStatus:'PROVISIONALLY_ADOPTED',coefficientUnit:'DISPLAYED_ELEMENT_DIV_10_MULTIPLIER',shieldIncludedInCoefficient:false});
     entries.CB_SAED={...base,revision:base.revision+1,evidenceRefs:[...base.evidenceRefs,'KAN21_SAED_SOURCE'],phialReference:reference(8.2,11,'AFTER_VER_1_011'),calculationScope:'SAED_SOURCE_REFERENCE_ONLY'};
