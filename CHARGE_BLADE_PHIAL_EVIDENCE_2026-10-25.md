@@ -23,10 +23,12 @@ record to `VERIFIED` and does not replace the missing local gameplay videos.
 | `CB_ELEMENT_DISCHARGE_2` | 2 | SOURCE_CANDIDATE | table reading; no local video |
 | `CB_AED` | 2 | SOURCE_CANDIDATE | corroborated by guide for AED; conditions differ |
 | `CB_FOLLOWUP_AED` | 3 | SOURCE_CANDIDATE | corroborated by guide for Follow-Up; conditions differ |
-| `CB_SAED` | 4 observed in article row | CONFLICT_REVIEW | existing provisional model uses 5; do not infer or replace |
+| `CB_SAED` | 4 observed in article row | SOURCE_CANDIDATE | article states the test began with 4 remaining phials; this neither proves nor disproves 5 phial hits from a full-load start |
 
 The article mixes weapon, skill, phial-type, and patch conditions and explicitly
-contains explanatory qualifications. Therefore these values are retained as
+states that its SAED row starts with four remaining phials after a prior AED.
+That is a different starting condition from the full-load five-phial model; it
+neither proves nor disproves five explosion hits. These values are retained as
 review candidates only. No count is copied into the runtime DB, and no count is
 inferred from phial consumption.
 
