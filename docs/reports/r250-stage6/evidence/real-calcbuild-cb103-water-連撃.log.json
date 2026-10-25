@@ -1,5 +1,5 @@
 {
-  "gitSha": "d4e304c595175baeda4a495bd9f732d8b169c917",
+  "gitSha": "93530dca13c5c08776f9405b3ee9fbfd70fb9d36",
   "input": {
     "weaponId": 103,
     "weaponName": "ウズ・ヴァレロヤⅡ",
@@ -28,14 +28,13 @@
     "total": {
       "強化持続": 2,
       "連撃": 1,
-      "毛皮の誘惑": 1,
       "水属性攻撃強化": 1
     },
     "normal": {
       "metrics": {
         "comboTotalDamage": {
-          "status": "unavailable",
-          "reason": "EXECUTION_INCOMPLETE"
+          "status": "available",
+          "value": 123.26000000000002
         },
         "comboDuration": {
           "status": "unavailable",
@@ -43,15 +42,15 @@
         },
         "comboDps": {
           "status": "unavailable",
-          "reason": "EXECUTION_INCOMPLETE"
+          "reason": "DURATION_UNAVAILABLE"
         }
       }
     },
     "maximum": {
       "metrics": {
         "comboTotalDamage": {
-          "status": "unavailable",
-          "reason": "EXECUTION_INCOMPLETE"
+          "status": "available",
+          "value": 134.30599999999998
         },
         "comboDuration": {
           "status": "unavailable",
@@ -59,30 +58,68 @@
         },
         "comboDps": {
           "status": "unavailable",
-          "reason": "EXECUTION_INCOMPLETE"
+          "reason": "DURATION_UNAVAILABLE"
         }
       }
     },
     "normalRaw": {
       "execution": {
-        "status": "incomplete",
+        "status": "complete",
         "expected": [
           "0:0"
         ],
-        "executed": [],
-        "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:毛皮の誘惑"
+        "executed": [
+          "0:0"
+        ],
+        "reason": null
       },
-      "components": [],
-      "issues": [
+      "components": [
         {
-          "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:毛皮の誘惑"
+          "id": "CB_ELEMENT_DISCHARGE_1:physical:0",
+          "eventId": "0:0",
+          "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+          "revision": "2",
+          "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+          "coefficientUnit": "MV",
+          "damageUnit": "damage",
+          "status": "available",
+          "value": 86.18,
+          "disposition": "emitted",
+          "effectsApplied": []
+        },
+        {
+          "id": "CB_ELEMENT_DISCHARGE_1:element:0",
+          "eventId": "0:0",
+          "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+          "revision": "2",
+          "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+          "coefficientUnit": "ELEMENT_MODIFIER",
+          "damageUnit": "damage",
+          "status": "available",
+          "value": 9,
+          "disposition": "emitted",
+          "effectsApplied": []
+        },
+        {
+          "id": "CB_ELEMENT_DISCHARGE_1:phial:0",
+          "eventId": "0:0",
+          "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+          "revision": "2",
+          "source": "USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4",
+          "coefficientUnit": "PHIAL",
+          "damageUnit": "damage",
+          "status": "available",
+          "value": 28.080000000000005,
+          "disposition": "emitted",
+          "effectsApplied": []
         }
       ],
+      "issues": [],
       "finalState": {},
       "metrics": {
         "comboTotalDamage": {
-          "status": "unavailable",
-          "reason": "EXECUTION_INCOMPLETE"
+          "status": "available",
+          "value": 123.26000000000002
         },
         "comboDuration": {
           "status": "unavailable",
@@ -90,11 +127,75 @@
         },
         "comboDps": {
           "status": "unavailable",
-          "reason": "EXECUTION_INCOMPLETE"
+          "reason": "DURATION_UNAVAILABLE"
         }
       }
     },
-    "maximumComponents": [],
+    "maximumComponents": [
+      {
+        "id": "CB_ELEMENT_DISCHARGE_1:physical:0",
+        "eventId": "0:0",
+        "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+        "revision": "2",
+        "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+        "coefficientUnit": "MV",
+        "damageUnit": "damage",
+        "status": "available",
+        "value": 89.81,
+        "disposition": "emitted",
+        "effectsApplied": [
+          {
+            "id": "conditional-attack-flat",
+            "stage": "attack",
+            "unit": "true-attack",
+            "order": 50,
+            "source": "index.html:standardPowerConditionPlan"
+          }
+        ]
+      },
+      {
+        "id": "CB_ELEMENT_DISCHARGE_1:element:0",
+        "eventId": "0:0",
+        "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+        "revision": "2",
+        "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+        "coefficientUnit": "ELEMENT_MODIFIER",
+        "damageUnit": "damage",
+        "status": "available",
+        "value": 10.8,
+        "disposition": "emitted",
+        "effectsApplied": [
+          {
+            "id": "conditional-element-maximum",
+            "stage": "element",
+            "unit": "display-element",
+            "order": 80,
+            "source": "index.html:standardPowerConditionPlan"
+          }
+        ]
+      },
+      {
+        "id": "CB_ELEMENT_DISCHARGE_1:phial:0",
+        "eventId": "0:0",
+        "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+        "revision": "2",
+        "source": "USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4",
+        "coefficientUnit": "PHIAL",
+        "damageUnit": "damage",
+        "status": "available",
+        "value": 33.696,
+        "disposition": "emitted",
+        "effectsApplied": [
+          {
+            "id": "conditional-element-maximum",
+            "stage": "element",
+            "unit": "display-element",
+            "order": 80,
+            "source": "index.html:standardPowerConditionPlan"
+          }
+        ]
+      }
+    ],
     "diagnostics": [
       {
         "code": "MHDB_SOURCE",
@@ -106,7 +207,7 @@
         "sourceGameVersion": "UNKNOWN"
       }
     ],
-    "rendered": "\n    攻撃力684真 190\n    会心率-15%\n    最大会心率-15%\n    属性300\n    防御力91\n    選択技の実計算技 選択技 / 通常 未算出：EXECUTION_INCOMPLETE / 最大 未算出：EXECUTION_INCOMPLETE\n  ",
+    "rendered": "\n    攻撃力684真 190\n    会心率-15%\n    最大会心率-15%\n    属性300\n    防御力91\n    選択技の実計算技 選択技 / 通常 123.3 [MACARONGAMEMO_CHARGE_BLADE_MOTION rev.2] / 最大 134.3 [MACARONGAMEMO_CHARGE_BLADE_MOTION rev.2]\n  ",
     "weapon": 103,
     "skills": [
       [
@@ -115,10 +216,6 @@
       ],
       [
         "連撃",
-        1
-      ],
-      [
-        "毛皮の誘惑",
         1
       ],
       [

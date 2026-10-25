@@ -999,10 +999,14 @@ function armorBonusSkillObjects(a,type){
 }
 function armorSkills(a){
   const out={};
-  addSkillEntries(out,a?.skills);
+  const rawSkills=Array.isArray(a?.skills)?a.skills:null;
+  // MHDB armor records carry the authoritative skill.kind on each entry.
+  // Use it before the normalized DB name lookup so an inactive set/group
+  // skill cannot leak into L2 as an unresolved damage effect.
+  if(rawSkills) addSkillEntries(out,rawSkills.filter(x=>!['set','group'].includes(String(x?.skill?.kind||'').toLowerCase())));
   // Some cached/API shapes put skills under skillList or skill.
-  if(!Object.keys(out).length) addSkillEntries(out,a?.skillList);
-  if(!Object.keys(out).length && Array.isArray(a?.skill)) addSkillEntries(out,a.skill);
+  if(!rawSkills && Array.isArray(a?.skillList)) addSkillEntries(out,a.skillList.filter(x=>!['set','group'].includes(String(x?.skill?.kind||'').toLowerCase())));
+  if(!rawSkills && !a?.skillList && Array.isArray(a?.skill)) addSkillEntries(out,a.skill.filter(x=>!['set','group'].includes(String(x?.skill?.kind||'').toLowerCase())));
   // シリーズ/グループスキルは「装備しているだけ」でLv1を直接加算しない。
   // セット部位数を数える calcSetSkills() でのみ発動判定する。
   return removeBonusSkills(out);
