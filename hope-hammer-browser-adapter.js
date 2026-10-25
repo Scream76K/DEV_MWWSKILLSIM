@@ -22,7 +22,7 @@
   }).filter(Boolean);
   return {ids:normalized,unresolved};
  }
- function evaluateCurrent({weapon,stats,target,skills=[],conditions={},gunlanceState=null,bowState=null,hbgState=null,lightBowgunState=null,chargeBladeState=null,huntingHornState=null,insectGlaiveState=null,dualBladesState=null,longSwordState=null,switchAxeState=null,techniqueDb,trainingRoom,techniqueId,techniqueIds,retrievedAt='UNKNOWN'}={}){
+ function evaluateCurrent({weapon,stats,target,skills=[],equipmentSkillsResolved=false,conditions={},gunlanceState=null,bowState=null,hbgState=null,lightBowgunState=null,chargeBladeState=null,huntingHornState=null,insectGlaiveState=null,dualBladesState=null,longSwordState=null,switchAxeState=null,techniqueDb,trainingRoom,techniqueId,techniqueIds,retrievedAt='UNKNOWN'}={}){
   if(typeof root.damageFromParams!=='function'||!root.MHWWeaponMaxSharpness||typeof root.HimmelRealOneHitPipeline!=='function')return fail('REAL_SLICE:BROWSER_DEPENDENCIES_UNAVAILABLE');
   if(!weapon||!Number.isInteger(weapon.id)||!Number.isInteger(weapon.gameId)||typeof weapon.kind!=='string')return fail('REAL_SLICE:CURRENT_WEAPON_NOT_SUPPORTED');
   if(!Array.isArray(weapon.specials))return fail('REAL_SLICE:WEAPON_SPECIALS_UNKNOWN');
@@ -63,6 +63,10 @@
   // melee route must not publish a total with its elemental modifier omitted.
   if(weapon.kind==='great-sword'&&resolvedTechniqueIds.includes('GS_CHARGED_SLASH_3')&&referenceSkills.chargeMaster>0&&elementSpecials.some(x=>Number(x.damage?.display)>0))
    return fail('REAL_SLICE:CHARGE_MASTER_MELEE_FORMULA_PENDING:GS_CHARGED_SLASH_3');
+  if(resolvedTechniqueIds.some(id=>['CB_SAED','CB_SAED_AED_DERIVED'].includes(id))){
+   if(equipmentSkillsResolved!==true||!Array.isArray(skills))return fail('REAL_SLICE:CB_EQUIPMENT_SKILLS_UNRESOLVED');
+   if(loadShellEntries.some(x=>Number(x.skillId)!==109||!Number.isInteger(x.level)||x.level<0||x.level>2))return fail('REAL_SLICE:CB_LOAD_SHELLS_ID_OR_LEVEL_INVALID');
+  }
   const techniques={};
   const resolveReferenceState=(referenceKind,id,technique,rawState)=>{
    const state={...(rawState||{})},sourceState=technique?.specialSourceValues||{};
@@ -89,7 +93,7 @@
     technique={...base,techniqueId:id,shellingAction:action,shellingInput};
    }
    const referenceKind=weapon.kind==='bow'&&['BOW_SHOT_3','BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3'].includes(id)?'bow':weapon.kind==='heavy-bowgun'&&/^HBG_NORMAL_AMMO_[123]$/.test(id)?'heavy-bowgun':weapon.kind==='light-bowgun'&&/^LBG_NORMAL_AMMO_[12]$/.test(id)?'light-bowgun':weapon.kind==='charge-blade'&&['CB_SAED','CB_SAED_AED_DERIVED'].includes(id)?'charge-blade-saed':weapon.kind==='hunting-horn'&&['HH_PERFORMANCE_SHOCKWAVE','HH_ECHO_BUBBLE_FOLLOWUP','HH_ECHO_BUBBLE_MELODY_EVENT','HH_MELODY_COMPLETION_FIXED_10'].includes(id)?'hunting-horn-sound':null;
-   if(referenceKind){const rawState=referenceKind==='bow'?bowState:referenceKind==='heavy-bowgun'?hbgState:referenceKind==='light-bowgun'?lightBowgunState:referenceKind==='charge-blade-saed'?{...chargeBladeState,ammoLoadingLevel:loadShellEntries.length?Math.max(...loadShellEntries.map(x=>x.level),0):chargeBladeState?.ammoLoadingLevel}:huntingHornState;technique={...technique,referenceKind,referenceInput:{state:resolveReferenceState(referenceKind,id,technique,rawState),skills:referenceSkills,criticalBoostLevel:referenceCriticalBoostLevel,sourceTechniqueId:id}};}
+   if(referenceKind){const rawState=referenceKind==='bow'?bowState:referenceKind==='heavy-bowgun'?hbgState:referenceKind==='light-bowgun'?lightBowgunState:referenceKind==='charge-blade-saed'?{...chargeBladeState,ammoLoadingLevel:Math.max(0,...loadShellEntries.map(x=>x.level))}:huntingHornState;technique={...technique,referenceKind,referenceInput:{state:resolveReferenceState(referenceKind,id,technique,rawState),skills:referenceSkills,criticalBoostLevel:referenceCriticalBoostLevel,sourceTechniqueId:id}};}
    if(!technique)return fail('REAL_SLICE:TECHNIQUE_NOT_FOUND:'+id);
    const normalContract=STANDARD_NORMAL_HIT_CONTRACT[id];
    if(normalContract&&!technique.referenceKind&&!Array.isArray(technique.specialComponents)){

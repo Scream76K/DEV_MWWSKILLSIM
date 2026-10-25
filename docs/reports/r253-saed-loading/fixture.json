@@ -1,0 +1,211 @@
+{
+  "weapon": {
+    "phial": "element",
+    "gameId": 25,
+    "crafting": {
+      "weapon": {
+        "id": 103
+      },
+      "craftable": false,
+      "previous": {
+        "name": "ウズ・ヴァレロヤⅠ",
+        "id": 102
+      },
+      "branches": [
+        {
+          "name": "ウズ・ヴァレロヤⅢ",
+          "id": 104
+        }
+      ],
+      "craftingMaterials": [],
+      "craftingZennyCost": 0,
+      "upgradeMaterials": [
+        {
+          "item": {
+            "id": 60,
+            "gameId": 62,
+            "rarity": 7,
+            "name": "いにしえの龍骨",
+            "description": "骨塚で採取できる貴重な上位素材。 はるかなる昔、この地で息絶えた 龍の貴重な骨。",
+            "value": 1600,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 42,
+              "kind": "bone",
+              "colorId": 9,
+              "color": "ivory"
+            }
+          },
+          "quantity": 1,
+          "id": 43129
+        },
+        {
+          "item": {
+            "id": 282,
+            "gameId": 315,
+            "rarity": 6,
+            "name": "沙海竜の狩猟証Ｓ",
+            "description": "バーラハーラのクエストに成功した 者に与えられる、ギルドの証明書。 装備の作成に使用する。",
+            "value": 1020,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 30,
+              "kind": "certificate",
+              "colorId": 2,
+              "color": "gray"
+            }
+          },
+          "quantity": 1,
+          "id": 43130
+        },
+        {
+          "item": {
+            "id": 546,
+            "gameId": 596,
+            "rarity": 6,
+            "name": "大水袋",
+            "description": "モンスターの内臓器官の１つ。 大量の水を溜め込んでいる、 保水性に優れた巨大な袋。",
+            "value": 1530,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 11,
+              "kind": "powder",
+              "colorId": 17,
+              "color": "blue"
+            }
+          },
+          "quantity": 3,
+          "id": 43131
+        }
+      ],
+      "upgradeZennyCost": 4000,
+      "column": 5,
+      "row": 12,
+      "id": 103
+    },
+    "rarity": 5,
+    "kind": "charge-blade",
+    "damage": {
+      "raw": 190,
+      "display": 684
+    },
+    "specials": [
+      {
+        "element": "water",
+        "kind": "element",
+        "weapon": {
+          "id": 103
+        },
+        "damage": {
+          "raw": 26,
+          "display": 260
+        },
+        "hidden": false,
+        "id": 7088
+      }
+    ],
+    "name": "ウズ・ヴァレロヤⅡ",
+    "description": "ウズ・トゥナの素材を用いた盾斧。 美しき盾は主を守り、水を纏った 斧は、重撃で対象を押しつぶす。",
+    "defenseBonus": 0,
+    "elderseal": null,
+    "slots": [
+      2,
+      1
+    ],
+    "affinity": -15,
+    "skills": [
+      {
+        "skill": {
+          "id": 104,
+          "name": "強化持続",
+          "description": "太刀、双剣、剣斧、盾斧、操虫棍で 発生する、強化状態の持続時間を 長くする。"
+        },
+        "level": 2,
+        "name": null,
+        "description": "強化時間を延長",
+        "setPiecesRequired": null,
+        "id": 262
+      }
+    ],
+    "series": {
+      "id": 24,
+      "gameId": 501778656,
+      "name": "波衣竜派生"
+    },
+    "id": 103,
+    "sharpness": {
+      "red": 60,
+      "orange": 70,
+      "yellow": 120,
+      "green": 50,
+      "blue": 0,
+      "white": 0,
+      "purple": 0
+    },
+    "handicraft": [
+      5
+    ]
+  },
+  "decoration": {
+    "name": "増弾珠Ⅱ【２】",
+    "description": "装備に装着すると、 砲弾装填スキルが発動する装飾品。",
+    "value": 200,
+    "slot": 2,
+    "rarity": 4,
+    "kind": "weapon",
+    "skills": [
+      {
+        "skill": {
+          "id": 109,
+          "name": "砲弾装填"
+        },
+        "level": 2,
+        "description": "弾とビンの装填がさらに速くなる ガンランスの装填数＋１ 盾斧のチャージ数上昇",
+        "setPiecesRequired": null,
+        "id": 275
+      }
+    ],
+    "icon": {
+      "color": "gray",
+      "colorId": 2
+    },
+    "id": 29,
+    "gameId": -1723727616
+  },
+  "skill": {
+    "name": "砲弾装填",
+    "kind": "weapon",
+    "description": "砲弾の装填がスムーズになり ガンランスの装填数が上昇、 盾斧のビン装填数が増える。",
+    "ranks": [
+      {
+        "skill": {
+          "id": 109
+        },
+        "level": 1,
+        "name": null,
+        "description": "弾とビンの装填が速くなる",
+        "setPiecesRequired": null,
+        "id": 274
+      },
+      {
+        "skill": {
+          "id": 109
+        },
+        "level": 2,
+        "name": null,
+        "description": "弾とビンの装填がさらに速くなる ガンランスの装填数＋１ 盾斧のチャージ数上昇",
+        "setPiecesRequired": null,
+        "id": 275
+      }
+    ],
+    "icon": {
+      "id": 10,
+      "kind": "utility"
+    },
+    "id": 109,
+    "gameId": 802725120
+  }
+}

@@ -33,3 +33,7 @@ AED派生の許可条件と比較rendererは静的確認のみ、今回の実入
 フランメ契約はindex.html:5249–5252とtests/flamme-cb-saed-mixed-phials.test.cjsにあり、明示Lv0/1は強化3+通常2、Lv2は強化5。Adapter:92はスキルentryなし時chargeBladeState.ammoLoadingLevelへfallbackし、今回undefinedで旧enhancedPhial互換分岐へ落ちる。実装備なし=Lv0の接続欠陥であり、新承認の問題ではない。
 
 最小修正候補は集計済み実装備入口でスキルなしを明示0へ正規化してreferenceへ渡すこと。旧単独APIの未指定互換は維持。今回追加実行なしの指示に従い修正・再実行なし。既存式によるLv0の静的期待値はビン500.916、合計759.193335（物理234.877335、属性23.4不変）。未実行の受入候補であり、保存ログを変更していない。
+
+## 最新証拠への参照
+
+装填Lv接続は後続r253-saed-loading/REPORT.mdで修正・実証。このディレクトリのresult.jsonは旧未指定互換分岐の履歴として保持し、最新成功証拠には使用しない。最新Lv0合計759.193335、合法Lv2装備の合計815.977335。
