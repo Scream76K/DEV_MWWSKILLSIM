@@ -121,6 +121,7 @@
   if(weapon.kind==='switch-axe'&&resolvedTechniqueIds.includes('SA_SWORD_VERTICAL')){
    if(!switchAxeState||typeof switchAxeState.mode!=='string'||!switchAxeState.mode)return fail('REAL_SLICE:STATE_REQUIREMENT_UNRESOLVED:mode');
    if(switchAxeState.mode!=='SWORD')return fail('REAL_SLICE:STATE_REQUIREMENT_MISMATCH:mode');
+   if(typeof switchAxeState.awakened!=='boolean')return fail('REAL_SLICE:SA_AWAKENED_STATE_UNRESOLVED');
    if(switchAxeState.awakened===true)return fail('REAL_SLICE:SA_AWAKENED_SCORCH_UNRESOLVED');
    if(weapon.phial?.kind!=='power')return fail('REAL_SLICE:SA_PHIAL_EFFECT_UNRESOLVED:'+String(weapon.phial?.kind||'missing'));
   }
