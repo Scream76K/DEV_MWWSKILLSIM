@@ -39,6 +39,9 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    events.push({type:'hit',components});
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});
   });
+  if(record.phialReference?.status==='OBSERVED'&&Number.isInteger(record.phialReference.hitCount)&&record.phialReference.hitCount>0){
+   events[0].components.push({id:techniqueId+':phial:0',kind:'phial',unit:'PHIAL',source:record.phialReference.sourceRefs?.[0]??source,coefficient:1,parameters:Object.freeze({hitIndex:0,phialCount:record.phialReference.hitCount,phialReference:Object.freeze({...record.phialReference}),phialState:record.phialState?Object.freeze({...record.phialState}):null,sourceTechniqueId:techniqueId})});
+  }
   return Object.freeze({
     id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',
     elementModifier:record.hits.map(hit=>hit.elementModifier),
