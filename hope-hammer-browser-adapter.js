@@ -19,7 +19,7 @@
   }).filter(Boolean);
   return {ids:normalized,unresolved};
  }
- function evaluateCurrent({weapon,stats,target,skills=[],conditions={},gunlanceState=null,bowState=null,hbgState=null,lightBowgunState=null,chargeBladeState=null,huntingHornState=null,insectGlaiveState=null,dualBladesState=null,techniqueDb,trainingRoom,techniqueId,techniqueIds,retrievedAt='UNKNOWN'}={}){
+ function evaluateCurrent({weapon,stats,target,skills=[],conditions={},gunlanceState=null,bowState=null,hbgState=null,lightBowgunState=null,chargeBladeState=null,huntingHornState=null,insectGlaiveState=null,dualBladesState=null,longSwordState=null,switchAxeState=null,techniqueDb,trainingRoom,techniqueId,techniqueIds,retrievedAt='UNKNOWN'}={}){
   if(typeof root.damageFromParams!=='function'||!root.MHWWeaponMaxSharpness||typeof root.HimmelRealOneHitPipeline!=='function')return fail('REAL_SLICE:BROWSER_DEPENDENCIES_UNAVAILABLE');
   if(!weapon||!Number.isInteger(weapon.id)||!Number.isInteger(weapon.gameId)||typeof weapon.kind!=='string')return fail('REAL_SLICE:CURRENT_WEAPON_NOT_SUPPORTED');
   if(!Array.isArray(weapon.specials))return fail('REAL_SLICE:WEAPON_SPECIALS_UNKNOWN');
@@ -185,7 +185,9 @@
    'bow':bowState,
    'heavy-bowgun':hbgState,
    'charge-blade':chargeBladeState,
-   'dual-blades':dualBladesState
+   'dual-blades':dualBladesState,
+   'long-sword':longSwordState,
+   'switch-axe':switchAxeState
   }[weapon.kind]||null;
   for(const bundle of [selectedStateBundle]){
    if(!bundle||typeof bundle!=='object')continue;
