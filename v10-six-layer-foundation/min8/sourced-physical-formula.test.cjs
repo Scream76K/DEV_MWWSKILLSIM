@@ -18,7 +18,8 @@ test('missing source or version refuses calculation',()=>{
  a.equal(setup(known(1),{...known(40),gameVersion:'unmatched'})(args).reason,'PHYSICAL_HITZONE_UNRESOLVED');
  a.equal(setup(known(1),known(40),known(1.1))(args).reason,'PHYSICAL_PART_MODIFIER_UNSUPPORTED');
 });
-test('unsupported affinity and skill states fail closed',()=>{
- a.equal(setup()({...args,stats:{...args.stats,affinity:15}}).reason,'PHYSICAL_AFFINITY_UNSUPPORTED');
- a.equal(setup()({...args,build:{skills:{entries:[{id:'some-skill'}]}}}).reason,'PHYSICAL_SKILLS_UNSUPPORTED');
+test('resolved affinity is delegated to the canonical formula; unknown skills are rejected by L3',()=>{
+ a.deepEqual(setup()({...args,stats:{...args.stats,affinity:15}}),{status:'available',value:23});
+ // The sourced Formula receives only already-resolved stats; unknown skill IDs are not its responsibility.
+ a.deepEqual(setup()({...args,build:{skills:{entries:[{id:'some-skill'}]}}}),{status:'available',value:23});
 });

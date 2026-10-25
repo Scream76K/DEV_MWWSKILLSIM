@@ -16,13 +16,13 @@ test('real DB physical-only slice preserves MV, revision and evidence when zero 
  assert.equal(t.events[0].components[0].coefficient,record.hits[0].mv);
  assert.equal(t.events[0].components[0].source,record.evidenceRefs[0]);
  assert.equal(t.revision,String(record.revision));
- assert.equal(t.excludedElement.coefficient,record.hits[0].elementModifier);
- assert.equal(t.excludedElement.reason,'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS');
+ assert.equal(t.excludedElement[0].coefficient,record.hits[0].elementModifier);
+ assert.equal(t.excludedElement[0].reason,'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS');
  assert.equal(t.events[0].components[0].parameters.partModifier,record.hits[0].partModifier);
 });
 test('capture mode preserves unresolved element metadata without claiming exclusion',()=>{
  const t=adaptOrdinaryPhysicalHit({...base,allowUnresolvedElement:true});
- assert.equal(t.elementModifier,record.hits[0].elementModifier);
+ assert.deepEqual(t.elementModifier,record.hits.map(x=>x.elementModifier));
  assert.equal(t.excludedElement,null);
 });
 test('cannot suppress sourced element component with unresolved or active element effects',()=>{
