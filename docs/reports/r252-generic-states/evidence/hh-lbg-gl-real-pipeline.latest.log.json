@@ -1,0 +1,303 @@
+{
+  "executionSha": "2b657843af12200d3a5fd5b524821434249f5f9b",
+  "harness": "tools/hh-lbg-gl-real-pipeline-contract.cjs",
+  "results": [
+    {
+      "label": "hunting-horn",
+      "weapon": {
+        "id": 531,
+        "gameId": 1,
+        "name": "ホープホルンⅠ",
+        "kind": "hunting-horn",
+        "raw": 90,
+        "display": 378,
+        "affinity": 0,
+        "ammo": null,
+        "slots": [],
+        "skills": []
+      },
+      "techniqueId": "HH_LEFT_SWING",
+      "state": {
+        "moves": [
+          {
+            "techniqueId": "HH_LEFT_SWING"
+          }
+        ],
+        "uptime": 85,
+        "uptimeMode": "1",
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "chargeBladeState": {
+          "shieldBoosted": null,
+          "axeBoosted": null,
+          "phialType": null,
+          "enhancedPhial": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        }
+      },
+      "status": "OK",
+      "normal": {
+        "status": "available",
+        "value": 24.95
+      },
+      "maximum": {
+        "status": "available",
+        "value": 24.95
+      },
+      "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"phialType\":null,\"shieldBoosted\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"HH_LEFT_SWING\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+      "rendered": "\n    攻撃力378真 90\n    会心率0%\n    最大会心率0%\n    属性0\n    防御力1\n    選択技の実計算技 選択技 / 通常 24.9 [MACARONGAMEMO_HH_MOTION rev.1] / 最大 24.9 [MACARONGAMEMO_HH_MOTION rev.1]\n  ",
+      "errors": []
+    },
+    {
+      "label": "light-bowgun",
+      "weapon": {
+        "id": 763,
+        "gameId": 1,
+        "name": "ホープバレットⅠ",
+        "kind": "light-bowgun",
+        "raw": 90,
+        "display": 117,
+        "affinity": 0,
+        "ammo": [
+          {
+            "kind": "normal",
+            "level": 2,
+            "capacity": 4,
+            "rapid": true,
+            "id": 1
+          },
+          {
+            "kind": "pierce",
+            "level": 1,
+            "capacity": 4,
+            "rapid": false,
+            "id": 2
+          },
+          {
+            "kind": "spread",
+            "level": 1,
+            "capacity": 3,
+            "rapid": true,
+            "id": 3
+          },
+          {
+            "kind": "poison",
+            "level": 1,
+            "capacity": 2,
+            "rapid": false,
+            "id": 4
+          },
+          {
+            "kind": "thunder",
+            "level": 1,
+            "capacity": 5,
+            "rapid": false,
+            "id": 5
+          },
+          {
+            "kind": "recover",
+            "level": 1,
+            "capacity": 1,
+            "rapid": false,
+            "id": 6
+          },
+          {
+            "kind": "demon",
+            "level": 1,
+            "capacity": 1,
+            "rapid": false,
+            "id": 7
+          },
+          {
+            "kind": "tranq",
+            "level": 1,
+            "capacity": 4,
+            "rapid": false,
+            "id": 8
+          }
+        ],
+        "slots": [],
+        "skills": []
+      },
+      "techniqueId": "LBG_NORMAL_AMMO_2",
+      "state": {
+        "moves": [
+          {
+            "techniqueId": "LBG_NORMAL_AMMO_2"
+          }
+        ],
+        "uptime": 85,
+        "uptimeMode": "1",
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "chargeBladeState": {
+          "shieldBoosted": null,
+          "axeBoosted": null,
+          "phialType": null,
+          "enhancedPhial": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "lightBowgunState": {
+          "shotMode": "NORMAL",
+          "ammoType": "NORMAL",
+          "ammoLevel": 2,
+          "range": "CRITICAL",
+          "normalModeLevel": 0,
+          "contactPolicy": "ALL_THREE"
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        }
+      },
+      "status": "OK",
+      "normal": {
+        "status": "available",
+        "value": 41.12640000000001
+      },
+      "maximum": {
+        "status": "available",
+        "value": 41.12640000000001
+      },
+      "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"ammoLevel\":2,\"ammoType\":\"NORMAL\",\"attack\":\"300\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"phialType\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":2,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\"},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_2\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+      "rendered": "\n    攻撃力117真 90\n    会心率0%\n    最大会心率0%\n    属性0\n    防御力1\n    選択技の実計算技 選択技 / 通常 41.1 [MACARONGAMEMO_LBG_R49_SOURCE rev.1] / 最大 41.1 [MACARONGAMEMO_LBG_R49_SOURCE rev.1]\n  ",
+      "errors": []
+    },
+    {
+      "label": "gunlance",
+      "weapon": {
+        "id": 315,
+        "gameId": 1,
+        "name": "ホープガンランスⅠ",
+        "kind": "gunlance",
+        "raw": 90,
+        "display": 207,
+        "affinity": 0,
+        "ammo": null,
+        "slots": [],
+        "skills": []
+      },
+      "techniqueId": "reference:gl_NORMAL",
+      "state": {
+        "moves": [
+          {
+            "techniqueId": "reference:gl_NORMAL"
+          }
+        ],
+        "uptime": 85,
+        "uptimeMode": "1",
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "chargeBladeState": {
+          "shieldBoosted": null,
+          "axeBoosted": null,
+          "phialType": null,
+          "enhancedPhial": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null
+        },
+        "gunlanceState": {
+          "shellingType": "NORMAL",
+          "shellingPower": "MEDIUM",
+          "loadedRounds": 6,
+          "chargedRounds": 1,
+          "fireHitzone": 20
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        }
+      },
+      "status": "OK",
+      "normal": {
+        "status": "available",
+        "value": 8.6
+      },
+      "maximum": {
+        "status": "available",
+        "value": 8.6
+      },
+      "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"phialType\":null,\"shieldBoosted\":null},\"chargedRounds\":1,\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"loadedRounds\":6,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+      "rendered": "\n    攻撃力207真 90\n    会心率0%\n    最大会心率0%\n    属性0\n    防御力1\n    選択技の実計算技 選択技 / 通常 8.6 [MACARONGAMEMO_GL_R49_SOURCE rev.1] / 最大 8.6 [MACARONGAMEMO_GL_R49_SOURCE rev.1]\n  ",
+      "errors": []
+    }
+  ]
+}
