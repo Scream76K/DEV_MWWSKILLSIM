@@ -148,7 +148,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
    for(const ev of plan.events){
     try{
      const before=copy(state);
-     const decision=handler({event:copy(ev),state:copy(state),channel:ch});
+     const decision=handler({event:copy(ev),state:copy(state),channel:ch,build:copy(build),effects:copy(effects),target:copy(req.target)});
      ensure(decision&&typeof decision==='object','DECISION_MISSING');
      if(ev.type==='hit'){
       const emit=decision.emit,inactive=decision.inactive,unresolved=decision.unresolved||[];

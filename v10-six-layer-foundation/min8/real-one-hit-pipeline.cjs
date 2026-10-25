@@ -10,6 +10,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
  if(typeof physical!=='function')throw Error('REAL_SLICE:PHYSICAL_FORMULA_REQUIRED');
+ if(canonicalPhysical?.expectedGameVersion!==undefined && canonicalPhysical.expectedGameVersion!==versions?.game)throw Error('REAL_SLICE:GAME_VERSION_MISMATCH');
  if(typeof resolveBuild!=='function'||typeof resolveEffects!=='function'||typeof initialState!=='function')throw Error('REAL_SLICE:RESOLVERS_REQUIRED');
  // The pinned technique is independent of A/B builds; the physical-only disposition is
  // checked against every build and each channel, rather than cached from one build.
@@ -20,8 +21,9 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    const record=image.techniques[techniqueId];
    // The element-disposition proof belongs to L2/L3 and must not be fabricated during capture.
    // This narrow bridge accepts physical-only data only after both build and effect gates below.
-   const adapted=adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion:pinned.technique,
-    elementContext:{displayElement:0,effectsResolved:true,activeElementEffects:[]}});
+   // Preserve static element/part values, but do not assert the L2/L3 element
+   // disposition while opening the immutable snapshot.
+   const adapted=adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion:pinned.technique,allowUnresolvedElement:true});
    return {...image,techniques:{[techniqueId]:adapted}};
   },
   resolveBuild:(raw,equipment,request)=>{
@@ -29,7 +31,12 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    if(result?.weaponType!==weaponType)throw Error('REAL_SLICE:WEAPON_MISMATCH');
    if(result?.equipment?.displayElement?.status!=='known'||result.equipment.displayElement.value!==0)throw Error('REAL_SLICE:ZERO_ELEMENT_NOT_PROVEN');
    if(!Array.isArray(result.skills?.entries)||result.skills.entries.length!==0)throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
-   return result;
+   const value=(x)=>x&&x.status==='known'&&Number.isFinite(x.value)?x.value:undefined;
+   return {...result,
+    trueAttack:result.trueAttack??value(result.equipment?.trueAttack),
+    element:result.element??value(result.equipment?.displayElement),
+    affinity:result.affinity??value(result.equipment?.baseAffinity)
+   };
   },
   resolveEffects:(build,conditions,channel,effects)=>{
    const result=resolveEffects(build,conditions,channel,effects);
@@ -39,8 +46,10 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
   }
  });
  const componentId=techniqueId+':physical:0';
- const handlers={[weaponType]:({event})=>{
+ const handlers={[weaponType]:({event,build,effects})=>{
   if(event.type!=='hit'||event.techniqueId!==techniqueId||event.components?.length!==1||event.components[0].id!==componentId)throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+  const modifier=event.components[0].parameters?.elementModifier;
+  if(modifier!==0 && (build?.element!==0 || !Array.isArray(effects) || effects.length!==0))throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING');
   return {emit:[componentId],inactive:[],unresolved:[]};
  }};
  return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical}});

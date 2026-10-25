@@ -2,7 +2,7 @@
 // Narrow real-Technique-DB bridge candidate; intentionally NOT wired to production.
 // Source of all normative values: caller's existing Technique DB record.
 const finite=x=>typeof x==='number'&&Number.isFinite(x);
-function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,elementContext}={}){
+function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,elementContext,allowUnresolvedElement=false}={}){
   if(!weaponType||weaponType==='charge-blade'||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
   if(!record||record.techniqueId!==techniqueId||(record.weaponType!==undefined&&record.weaponType!==weaponType))throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
   if(!Number.isInteger(record.revision)||record.revision<1)throw Error('REAL_SLICE:REVISION_REQUIRED');
@@ -15,14 +15,20 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(hit.damageStatsState!==undefined&&hit.damageStatsState!==null)throw Error('REAL_SLICE:STATE_DEPENDENT_HIT');
   // Element modifiers exist on ordinary physical hits. Do not discard them silently.
   // Physical-only evaluation is permitted only with an explicitly resolved, zero-element context.
-  if(hit.elementModifier!==0 && !(elementContext?.displayElement===0 && elementContext?.effectsResolved===true && Array.isArray(elementContext.activeElementEffects) && elementContext.activeElementEffects.length===0))throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING');
+  const elementResolved=elementContext?.displayElement===0 && elementContext?.effectsResolved===true && Array.isArray(elementContext.activeElementEffects) && elementContext.activeElementEffects.length===0;
+  if(hit.elementModifier!==0 && !elementResolved && !allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING');
   if(record.calculationStatus==='EVIDENCE_GATED')throw Error('REAL_SLICE:EVIDENCE_GATED');
   const source=record.evidenceRefs[0];
   if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
+  if(!finite(hit.partModifier))throw Error('REAL_SLICE:PART_MODIFIER_PENDING');
+  if(hit.partModifier!==1)throw Error('REAL_SLICE:PART_MODIFIER_UNSUPPORTED');
+  const component={id:techniqueId+':physical:0',kind:'physical',unit:'MV',source,coefficient:hit.mv,
+   parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier})};
   return Object.freeze({
     id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',
-    excludedElement:hit.elementModifier===0?null:{coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS'},
-    events:[{type:'hit',components:[{id:techniqueId+':physical:0',kind:'physical',unit:'MV',source,coefficient:hit.mv}]}]
+    elementModifier:hit.elementModifier,
+    excludedElement:elementResolved&&hit.elementModifier!==0?{coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS'}:null,
+    events:[{type:'hit',components:[component]}]
   });
 }
 module.exports={adaptOrdinaryPhysicalHit};
