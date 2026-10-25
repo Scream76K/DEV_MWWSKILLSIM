@@ -1,0 +1,108 @@
+{
+  "gitSha": "9f2487a4b919bfdc2cd4578940937eeb3ecb8a1a",
+  "input": {
+    "weaponId": 466,
+    "weaponName": "ホープキャノンⅢ",
+    "decoId": 255,
+    "decoName": "攻撃珠【１】",
+    "ammoLevel": 2,
+    "capacity": 4,
+    "range": "CRITICAL",
+    "normalModeLevel": 0,
+    "shotOrdinal": 1,
+    "fullMagazine": true
+  },
+  "out": {
+    "status": "OK",
+    "stats": {
+      "attack": 195,
+      "attackTrue": 130,
+      "attackComponents": {
+        "weaponBase": 130,
+        "normalMultiplier": 1,
+        "normalFlat": 0
+      },
+      "affinity": 4,
+      "element": 0
+    },
+    "total": {
+      "見切り": 1,
+      "弾導強化": 1
+    },
+    "conditional": {
+      "status": "REFERENCE_ONLY",
+      "pending": [],
+      "normalAttack": 130,
+      "maximumAttack": 130
+    },
+    "normal": {
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "available",
+          "value": 74.99856000000001
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        }
+      }
+    },
+    "maximum": {
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "available",
+          "value": 74.99856000000001
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        }
+      }
+    },
+    "execution": {},
+    "eventKeys": [
+      "status",
+      "weaponType",
+      "diagnostics",
+      "versions",
+      "conditionKey",
+      "comparisonContext",
+      "channels"
+    ],
+    "channelKeys": [
+      "normal",
+      "maximum"
+    ],
+    "diagnostics": [
+      {
+        "code": "MHDB_SOURCE",
+        "apiId": 466,
+        "gameId": 3,
+        "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/466",
+        "apiVersion": "UNKNOWN",
+        "retrievedAt": "UNKNOWN",
+        "sourceGameVersion": "UNKNOWN"
+      }
+    ],
+    "rendered": "\n    攻撃力195真 130\n    会心率4%\n    最大会心率4%\n    属性0\n    防御力1\n    選択技の実計算技 選択技 / 通常 75.0 [MACARONGAMEMO_HBG_R49_SOURCE rev.1] / 最大 75.0 [MACARONGAMEMO_HBG_R49_SOURCE rev.1]\n  ",
+    "weapon": 466,
+    "skills": [
+      [
+        "見切り",
+        1
+      ],
+      [
+        "弾導強化",
+        1
+      ]
+    ]
+  }
+}
