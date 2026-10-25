@@ -1,0 +1,101 @@
+{
+  "gitSha": "ef313993b3c5586e03703546708074675eb11f63",
+  "input": {
+    "weaponId": 102,
+    "weaponName": "ウズ・ヴァレロヤⅠ",
+    "decoId": 61,
+    "decoName": "流水珠【１】",
+    "shield": true,
+    "axe": false,
+    "phialType": "POWER_ELEMENT",
+    "enhancedPhial": true
+  },
+  "out": {
+    "status": "OK",
+    "stats": {
+      "attack": 576,
+      "attackTrue": 160,
+      "attackComponents": {
+        "weaponBase": 160,
+        "normalMultiplier": 1,
+        "normalFlat": 0
+      },
+      "affinity": -15,
+      "element": 200
+    },
+    "total": {
+      "強化持続": 2
+    },
+    "conditional": {
+      "status": "REFERENCE_ONLY",
+      "pending": [],
+      "normalAttack": 160,
+      "maximumAttack": 160
+    },
+    "normal": {
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "available",
+          "value": 97.28999999999999
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        }
+      }
+    },
+    "maximum": {
+      "metrics": {
+        "comboTotalDamage": {
+          "status": "available",
+          "value": 97.28999999999999
+        },
+        "comboDuration": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        },
+        "comboDps": {
+          "status": "unavailable",
+          "reason": "DURATION_UNAVAILABLE"
+        }
+      }
+    },
+    "execution": {},
+    "eventKeys": [
+      "status",
+      "weaponType",
+      "diagnostics",
+      "versions",
+      "conditionKey",
+      "comparisonContext",
+      "channels"
+    ],
+    "channelKeys": [
+      "normal",
+      "maximum"
+    ],
+    "diagnostics": [
+      {
+        "code": "MHDB_SOURCE",
+        "apiId": 102,
+        "gameId": 24,
+        "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/102",
+        "apiVersion": "UNKNOWN",
+        "retrievedAt": "UNKNOWN",
+        "sourceGameVersion": "UNKNOWN"
+      }
+    ],
+    "rendered": "\n    攻撃力576真 160\n    会心率-15%\n    最大会心率-15%\n    属性200\n    防御力1\n    選択技の実計算技 選択技 / 通常 97.3 [MACARONGAMEMO_CHARGE_BLADE_MOTION rev.2] / 最大 97.3 [MACARONGAMEMO_CHARGE_BLADE_MOTION rev.2]\n  ",
+    "weapon": 102,
+    "skills": [
+      [
+        "強化持続",
+        2
+      ]
+    ]
+  }
+}
