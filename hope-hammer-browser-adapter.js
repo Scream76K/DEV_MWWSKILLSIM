@@ -23,14 +23,14 @@
   const allSkills=[...rawSkills,...buildSkills.filter(x=>!rawSkills.some(y=>String(y.skillId)===String(x.skillId)&&y.level===x.level))];
   if(target?.monster!=='training-room'||target?.part!=='training-front')return fail('REAL_SLICE:TRAINING_ROOM_FRONT_REQUIRED');
   if(typeof techniqueId!=='string'||!techniqueId)return fail('REAL_SLICE:TECHNIQUE_NOT_SELECTED');
-  const resolvedTechniqueId=techniqueId==='hm_side'?'HAM_SIDE_SWING':techniqueId.startsWith('canonical:')?techniqueId.slice('canonical:'.length):null;
+  const resolvedTechniqueId=techniqueId==='hm_side'?'HAM_SIDE_SWING':techniqueId.startsWith('canonical:')?techniqueId.slice('canonical:'.length):techniqueId;
   if(!resolvedTechniqueId)return fail('REAL_SLICE:TECHNIQUE_UNSUPPORTED:'+techniqueId);
   techniqueId=resolvedTechniqueId;
   const technique=techniqueDb?.get?.(weapon.kind,techniqueId);
   if(!technique||!Array.isArray(technique.hits)||technique.hits.length!==1)return fail('REAL_SLICE:TECHNIQUE_NOT_FOUND');
   const part=trainingRoom?.parts?.find(x=>x.id==='training-front');
   const hitDamageType=technique.hits[0]?.damageType;
-  const physicalKey=hitDamageType==='blunt'||hitDamageType==='slash'||hitDamageType==='pierce'?hitDamageType:['hammer','hunting-horn'].includes(weapon.kind)?'blunt':['bow'].includes(weapon.kind)?'pierce':['light-bowgun','heavy-bowgun','gunlance'].includes(weapon.kind)?null:'slash';
+  const physicalKey=hitDamageType==='blunt'||hitDamageType==='slash'||hitDamageType==='pierce'?hitDamageType:['hammer','hunting-horn'].includes(weapon.kind)?'blunt':null;
   if(!physicalKey)return fail('REAL_SLICE:DAMAGE_TYPE_UNRESOLVED');
   if(!part||!Number.isFinite(part.multipliers?.[physicalKey]))return fail('REAL_SLICE:TRAINING_HITZONE_UNRESOLVED');
   const maxSharpness=[...root.MHWWeaponMaxSharpness.colors].reverse().find(color=>Number(weapon.sharpness?.[color])>0);
@@ -62,7 +62,7 @@
     resolveElementHitzone:()=>{if(!elementSpecial)return {value:0,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:none`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'};const value=part.multipliers?.[elementType];if(typeof value!=='number'||!Number.isFinite(value)||value<0||value>1)throw Error('REAL_SLICE:ELEMENT_HITZONE_UNRESOLVED');return {value:value*100,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:${elementType}`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'};},
     resolvePartModifier:({parameters})=>({value:parameters.partModifier,gameVersion:versions.game,evidenceRef:parameters.partModifierSource}),
     calculate:root.damageFromParams}});
-  try{const result=pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:'training-room',hitZoneKey:'training-front'},conditions:{},evaluation:{mode:'combo',kind:'combo',signature:'current-selection-hammer-one-hit',techniqueIds:[techniqueId]}});const firstIssue=result?.channels?.normal?.execution?.reason||result?.channels?.normal?.issues?.[0]?.reason;if(result?.status==='OK'&&firstIssue)return fail(firstIssue);return result;}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
+  try{return pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:'training-room',hitZoneKey:'training-front'},conditions:{},evaluation:{mode:'combo',kind:'combo',signature:'current-selection-hammer-one-hit',techniqueIds:[techniqueId]}});}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
  }
  root.MHWRealOneHitBrowserAdapter=Object.freeze({evaluateCurrent});
 })(typeof window!=='undefined'?window:globalThis);

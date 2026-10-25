@@ -60,7 +60,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   if(!Number.isFinite(modifier)||modifier<0)throw Error('REAL_SLICE:ELEMENT_COMPONENT_UNRESOLVED');
   if(modifier===0)return {emit:[componentId],inactive:[],unresolved:[]};
   if(build?.element===0)return {emit:[componentId],inactive:[elementComponentId],unresolved:[]};
-  if(!Number.isFinite(build?.element)||!Array.isArray(effects)||effects.length!==0)return {emit:[componentId],inactive:[],unresolved:[elementComponentId]};
+  if(!Number.isFinite(build?.element)||!Array.isArray(effects))return {emit:[componentId],inactive:[],unresolved:[elementComponentId]};
   return {emit:[componentId,elementComponentId],inactive:[],unresolved:[]};
  }};
  return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental}});
