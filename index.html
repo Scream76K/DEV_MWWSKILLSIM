@@ -1042,7 +1042,12 @@ function isGogmaArtia(w){return !!w && (ARTIA_NAMES.has(String(w.name||'')) || /
 function isArtia(w){return isGogmaArtia(w);}
 // Exact MHDB identities observed in the retained 2026-10-25 source records.
 const BASE_ARTIA_MHDB_IDS=new Set([69,70,145,146,227,228,303,304,378,379,454,455,521,522,598,599,675,676,751,752,826,827,904,905,975,976,1057,1058]);
-function isBaseArtia(w){return !!w&&BASE_ARTIA_MHDB_IDS.has(Number(w.id))&&[6,7].includes(w.rarity)&&/^アーティア/.test(String(w.name||''));}
+const BASE_ARTIA_RARE8_IDENTITIES=Object.freeze({"305":["ヴァリアンツァ","great-sword"],"380":["アル＝ジェネシス","gunlance"],"456":["モートヴァンケル","hammer"],"71":["アンギルバイン","bow"],"147":["テンプス・ギア","charge-blade"],"229":["ティルトクライス","dual-blades"],"753":["マテンロウ","lance"],"828":["アムニレーター","light-bowgun"],"906":["ディメンシオ","long-sword"],"977":["アルトエレガン","switch-axe"],"523":["グライフェン","heavy-bowgun"],"600":["オミリティカ","hunting-horn"],"677":["ディプリエリカ","insect-glaive"],"1059":["ヴェルドロート","sword-shield"]});
+function isBaseArtia(w){
+  if(!w)return false;
+  const rare8=BASE_ARTIA_RARE8_IDENTITIES[w.id];
+  return !!(w.rarity===8&&rare8&&w.name===rare8[0]&&w.kind===rare8[1])||(BASE_ARTIA_MHDB_IDS.has(Number(w.id))&&[6,7].includes(w.rarity)&&/^アーティア/.test(String(w.name||'')));
+}
 function isArtiaWeapon(w){return isGogmaArtia(w)||isBaseArtia(w);}
 const ARTIA_NAMES=new Set(['忘却のオストランツァ','斬罪のエルガンシオ','破滅のキリエヴェルド','永訣のクラウクライス','禁戒のデスヴァンケル','闇黒のテルプリティカ','暗黒のテルプリティカ','天涯のゲガルンロウ','前兆のプロフェネシス','邪執のコンキエレガン','代償のネイディ・ギア','堕在のラクリエリカ','荊冠のデストレーター','戦慄のヘルシャフェン','亡国のクピドバイン']);
 const WEAPON_COEFF={ 'great-sword':4.8,'long-sword':3.3,'sword-and-shield':1.4,'dual-blades':1.4,hammer:5.2,'hunting-horn':4.2,lance:2.3,gunlance:2.3,'switch-axe':3.5,'charge-blade':3.6,'insect-glaive':3.1,'light-bowgun':1.3,'heavy-bowgun':1.5,bow:1.2 };
@@ -1688,7 +1693,7 @@ function artiaProductionStats(w){
 // 進化差分は由来検証専用であり、実行時には加算しない（二重適用防止）。
 const ARTIA_ELEMENT_SOURCE_DB={"sourceUrl":"https://kuroyonhon.com/mhwilds/memo/38.php","retrievedAt":"2026-10-11","targetRarity":8,"unit":"DISPLAY_ELEMENT","targetGameVersion":null,"verificationStatus":"SOURCE_CONFIRMED_NOT_GAME_VERIFIED","scope":"BASE_PLUS_PARTS_PLUS_MUTATION_BEFORE_RESTORE_AND_SKILLS","weapons":{"great-sword":{"base":{"element":450,"poison":300,"blast":300,"paralysis":250,"sleep":250},"threePartBonus":null,"mutation":{"attack":0,"affinity":-10,"element":50},"restore":{"I":80,"II":90,"EX":110},"sourceVersionNote":null},"long-sword":{"base":{"element":270,"poison":120,"blast":120,"paralysis":70,"sleep":70},"threePartBonus":null,"mutation":{"attack":0,"affinity":-20,"element":50},"restore":{"I":50,"II":60,"EX":90},"sourceVersionNote":null},"sword-and-shield":{"base":{"element":260,"poison":110,"blast":110,"paralysis":60,"sleep":60},"threePartBonus":20,"mutation":{"attack":0,"affinity":-20,"element":40},"restore":{"I":30,"II":50,"EX":80},"sourceVersionNote":null},"dual-blades":{"base":{"element":250,"poison":100,"blast":100,"paralysis":50,"sleep":50},"threePartBonus":20,"mutation":{"attack":0,"affinity":-20,"element":30},"restore":{"I":20,"II":30,"EX":50},"sourceVersionNote":null},"hammer":{"base":{"element":320,"poison":170,"blast":170,"paralysis":120,"sleep":120},"threePartBonus":null,"mutation":{"attack":0,"affinity":-10,"element":40},"restore":{"I":50,"II":60,"EX":90},"sourceVersionNote":null},"hunting-horn":{"base":{"element":320,"poison":170,"blast":170,"paralysis":120,"sleep":120},"threePartBonus":null,"mutation":{"attack":30,"affinity":20,"element":80},"restore":{"I":50,"II":60,"EX":90},"sourceVersionNote":null},"lance":{"base":{"element":270,"poison":120,"blast":120,"paralysis":70,"sleep":70},"threePartBonus":null,"mutation":{"attack":0,"affinity":-20,"element":50},"restore":{"I":50,"II":60,"EX":90},"sourceVersionNote":null},"gunlance":{"base":{"element":370,"poison":220,"blast":220,"paralysis":170,"sleep":170},"threePartBonus":null,"mutation":{"attack":40,"affinity":30,"element":80},"restore":{"I":50,"II":60,"EX":90},"sourceVersionNote":"ver10.11"},"switch-axe":{"base":{"element":260,"poison":110,"blast":110,"paralysis":60,"sleep":60},"threePartBonus":20,"mutation":{"attack":0,"affinity":-20,"element":40},"restore":{"I":30,"II":50,"EX":80},"sourceVersionNote":null},"charge-blade":{"base":{"element":270,"poison":120,"blast":120,"paralysis":70,"sleep":70},"threePartBonus":null,"mutation":{"attack":0,"affinity":-20,"element":50},"restore":{"I":50,"II":60,"EX":80},"sourceVersionNote":null},"insect-glaive":{"base":{"element":260,"poison":110,"blast":110,"paralysis":60,"sleep":60},"threePartBonus":20,"mutation":{"attack":0,"affinity":-20,"element":40},"restore":{"I":30,"II":50,"EX":80},"sourceVersionNote":null},"bow":{"base":{"element":210,"poison":null,"blast":60,"paralysis":null,"sleep":null},"threePartBonus":20,"mutation":{"attack":0,"affinity":-20,"element":30},"restore":{"I":30,"II":40,"EX":60},"sourceVersionNote":null},"light-bowgun":{"base":null,"reason":"BOWGUN_ELEMENT_VALUE_NOT_APPLICABLE_AMMO_SEPARATE"},"heavy-bowgun":{"base":null,"reason":"BOWGUN_ELEMENT_VALUE_NOT_APPLICABLE_AMMO_SEPARATE"}}};
 window.MHGreatSwordChargeMasterDB=Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25T21:29:00Z',approvalRef:'Sentinel_b67c836659e4819188a37beddccd300a',source:'https://kuroyonhon.com/mhwilds/memo/28.php',sourceVersion:'UNPINNED_REFERENCE',targetGameVersion:null,liveGameVerification:'PENDING',weaponType:'great-sword',techniqueIds:Object.freeze(['GS_CHARGED_SLASH_3','GS_STRONG_CHARGED_SLASH_3','GS_STRONG_WIDE_SLASH_3']),skillId:24,multipliers:Object.freeze([1,1.15,1.20,1.25]),scope:'FIVE_ELEMENT_BASE_MULTIPLY_BEFORE_FLAT_ONLY'});
-const ARTIA_STAGE_ADOPTION=Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25T21:29:00Z',approvalRef:'Sentinel_b67c836659e4819188a37beddccd300a',source:'https://www.phantombrawlers.com/mhwilds/Artian',targetGameVersion:null,liveGameVerification:'PENDING',attackPerMaterial:5,materialCount:3,baseAttackByRarity:{6:170,7:180},gogmaAttack:{attack:200,affinity:180,element:190},normalRestore:{atk:5,aff:5},normalElementRows:{'great-sword':[300,150,100,30,80],'long-sword':[230,80,30,30,50],'sword-and-shield':[230,80,30,20,30],'dual-blades':[220,70,20,20,20],hammer:[270,120,70,30,50],'hunting-horn':[270,120,70,30,50],lance:[230,80,30,30,50],gunlance:[270,120,70,30,50],'switch-axe':[220,70,20,20,30],'charge-blade':[230,80,30,30,50],'insect-glaive':[220,70,20,20,30],bow:[180,30,null,20,30]}});
+const ARTIA_STAGE_ADOPTION=Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25T21:29:00Z',approvalRef:'Sentinel_b67c836659e4819188a37beddccd300a',source:'https://www.phantombrawlers.com/mhwilds/Artian',targetGameVersion:null,liveGameVerification:'PENDING',attackPerMaterial:5,materialCount:3,baseAttackByRarity:{6:170,7:180,8:190},gogmaAttack:{attack:200,affinity:180,element:190},normalRestore:{atk:5,aff:5},normalElementRows:{'great-sword':[300,150,100,30,80],'long-sword':[230,80,30,30,50],'sword-and-shield':[230,80,30,20,30],'dual-blades':[220,70,20,20,20],hammer:[270,120,70,30,50],'hunting-horn':[270,120,70,30,50],lance:[230,80,30,30,50],gunlance:[270,120,70,30,50],'switch-axe':[220,70,20,20,30],'charge-blade':[230,80,30,30,50],'insect-glaive':[220,70,20,20,30],bow:[180,30,null,20,30]}});
 function baseArtiaStats(w){
   if(!isBaseArtia(w))return null;
   const a=build.artia,k=canonicalWeaponKind(w),raw=w.damage?.raw;
@@ -1699,7 +1704,8 @@ function baseArtiaStats(w){
   if(['light-bowgun','heavy-bowgun'].includes(k))state=MHWElementState.fromValue(0,'none');
   else {
     const n=['fire','water','ice','thunder','dragon'].includes(type),i=n?0:['poison','blast'].includes(type)?1:['paralysis','sleep'].includes(type)?2:-1;
-    const value=r&&i>=0?r[i]:null;
+    const sourceRow=ARTIA_ELEMENT_SOURCE_DB.weapons[k];
+    const value=w.rarity===8?(sourceRow?.sourceVersionNote?null:sourceRow?.base?.[n?'element':type]):r&&i>=0?r[i]:null;
     state=typeof value==='number'&&!(k==='bow'&&['poison','sleep','paralysis'].includes(type))?MHWElementState.fromValue(value+r[3],type):MHWElementState.unknown(type,'ELEMENT_BASE_ARTIA_TYPE_UNRESOLVED');
   }
   const production=ARTIA_STAGE_ADOPTION.attackPerMaterial*ARTIA_STAGE_ADOPTION.materialCount;
@@ -1758,6 +1764,7 @@ function realPipelineSkillsResolved(){
 function realPipelineWeapon(pipelineWeapon){
     if(isArtiaWeapon(pipelineWeapon)){
       const fixed=calculatedArtiaStats(pipelineWeapon),restore=restoreStats(pipelineWeapon);
+      if(restore.reason)throw new Error('REAL_SLICE:'+restore.reason);
       if(!Number.isFinite(restore.attack)||!Number.isFinite(restore.element)||!fixed||fixed.attackKnown===false||fixed.affinityKnown===false||!fixed.elementKnown||!fixed.typeKnown)
         throw new Error('REAL_SLICE:ARTIA_COMPLETED_VALUES_UNRESOLVED');
       // Equipment input before skills: use the same completed record and restoration
@@ -1774,16 +1781,33 @@ function weaponElementInfoFromRecord(w){
   return {...state,type:state.elementType,value:state.element};
 }
 function restoreStats(w){let st={attack:0,affinity:0,element:0,sharp:0};
-  if(isBaseArtia(w)){
-    for(const x of build.artia.restores||[]){if(x==='none')continue;const [kind,level]=String(x).split(':');
+  if(!isArtiaWeapon(w))return st;
+  const invalid=reason=>({...st,attack:NaN,affinity:NaN,element:NaN,reason});
+  const restores=build.artia.restores;
+  if(!Array.isArray(restores)||restores.length>5)return invalid('ARTIA_RESTORE_LIST_INVALID');
+  for(const x of restores){
+    if(x==='none'||x===''||x===null||x===undefined)continue;
+    if(typeof x!=='string'||! /^(atk|aff|elem|sharp):(I|II|III|EX)$/.test(x))return invalid('ARTIA_RESTORE_UNKNOWN:'+String(x));
+    const [kind,level]=x.split(':');
+    if(isBaseArtia(w)){
       const value=kind==='elem'?ARTIA_STAGE_ADOPTION.normalElementRows[canonicalWeaponKind(w)]?.[4]:ARTIA_STAGE_ADOPTION.normalRestore[kind];
-      if(level!=='I'||typeof value!=='number')return {...st,attack:NaN,affinity:NaN,element:NaN,reason:'BASE_ARTIA_RESTORE_UNSUPPORTED'};
+      if(level!=='I'||typeof value!=='number')return invalid('BASE_ARTIA_RESTORE_UNSUPPORTED:'+x);
       st[kind==='atk'?'attack':kind==='aff'?'affinity':'element']+=value;
-    }return st;
+    }else{
+      let value;
+      if(kind==='atk')value={I:5,II:6,III:9,EX:12}[level];
+      if(kind==='aff')value={I:5,II:6,III:8,EX:10}[level];
+      if(kind==='sharp')value={I:30,EX:50}[level];
+      if(kind==='elem'){
+        if(!['I','II','EX'].includes(level))return invalid('ARTIA_RESTORE_UNSUPPORTED:'+x);
+        const derived=artiaFixedVariantStats(w)?.elementEvidence;
+        value=derived?ARTIA_ELEMENT_SOURCE_DB.weapons[w.kind]?.restore?.[level]:artiaElementBonus(w.kind,level);
+        if(!(value>0))return invalid('ARTIA_RESTORE_ELEMENT_UNRESOLVED:'+x);
+      }
+      if(typeof value!=='number'||!Number.isFinite(value))return invalid('ARTIA_RESTORE_UNSUPPORTED:'+x);
+      st[kind==='atk'?'attack':kind==='aff'?'affinity':kind==='elem'?'element':'sharp']+=value;
+    }
   }
-  if(!isArtia(w))return st;
-  // 生産/巨戟進化差分は完成固定値へ既に反映済み。ここでは復元ボーナスだけを加算する。
-  for(const x of build.artia.restores||[]){let [t,l]=String(x).split(':');if(t==='atk')st.attack+={I:5,II:6,III:9,EX:12}[l]||0;if(t==='aff')st.affinity+={I:5,II:6,III:8,EX:10}[l]||0;if(t==='elem'){const derived=artiaFixedVariantStats(w)?.elementEvidence;st.element+=derived?(ARTIA_ELEMENT_SOURCE_DB.weapons[w.kind]?.restore?.[l]??0):artiaElementBonus(w.kind,l);}if(t==='sharp')st.sharp+={I:30,EX:50}[l]||0;}
   return st;
 }
 function hasSkill(total,names){return skillLevel(total,names)>0}
