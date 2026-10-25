@@ -166,7 +166,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
        if(result!==null){for(const post of applied.post){result=post.operation==='add'?result+post.amount:post.operation==='multiply'?result*post.amount:Math.min(result,post.amount);ensure(num(result),'POST_DAMAGE_NON_FINITE')}}
-       components.push({...meta,...(result===null?bad(response.reason):good(result)),disposition:'emitted',effectsApplied:applied.trace});
+       components.push({...meta,...(result===null?bad(response.reason):good(result)),...(response?.details?{details:copy(response.details)}:{}),disposition:'emitted',effectsApplied:applied.trace});
       }
      }else{
        ensure(decision.nextState&&typeof decision.nextState==='object','NEXT_STATE_REQUIRED');
