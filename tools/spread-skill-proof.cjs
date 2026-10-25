@@ -1,0 +1,21 @@
+const fs=require('node:fs'),assert=require('node:assert/strict'),crypto=require('node:crypto'),cp=require('node:child_process');
+const {JSDOM,VirtualConsole}=require('/Users/scream/Documents/Codex/2026-10-18/task/himmel-db-route-pqr4v6qt/dependencies/node_modules/jsdom');
+const {readSimulatorHtml}=require(process.cwd()+'/tools/dom-test-setup.cjs');
+const weapon=JSON.parse(fs.readFileSync('docs/reports/r254-artia-rare8/mhdb-normal-rare8.json')).find(x=>x.id===71),deco=JSON.parse(fs.readFileSync('docs/reports/r254-spread-lv2-review/candidate-input.json')).decoration;
+assert.equal(deco.skills[0].skill.id,2);assert.ok(weapon.slots[0]>=deco.slot);
+const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));const dom=new JSDOM(readSimulatorHtml(),{url:'https://simulator.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('offline'));w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));w.confirm=()=>true;}}),w=dom.window;
+w.eval(`clearWeaponBuckets();DB.weapons=[${JSON.stringify(weapon)}];DB.decorations=[${JSON.stringify(deco)}];DB.armor=[];weaponIndexByKind.bow=DB.weapons;weaponKind.value='bow';weapon.innerHTML='<option value="71">Angelbein</option>';weapon.value='71';App.build.setWeapon(DB.weapons[0]);build.armor={head:null,chest:null,arms:null,waist:null,legs:null};build.charmCustom={skills:[],slots:[0,0,0],weaponSlots:[]};build.artia={production:'attack',element:'water',parts:['attack','attack','attack'],sameElementPartCount:3,restores:['none','none','none','none','none'],seriesSkill:'',groupSkill:''};renderMonsters();monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';renderComboForWeapon();App.state.combo.moves=[];restoreComboRows();for(const id of ['BOW_SHOT_3','BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3'])addCombo('canonical:'+id);powerBowCoating.value='NONE';powerBowRange.value='CRITICAL';`);
+const results=[],checks=[],contracts=[];
+for(const level of [0,1]){w.eval(`build.decos=${level?"{w0:'246'}":"{}"};calcBuild();`);results.push(JSON.parse(w.eval('JSON.stringify({total:calcState.total,real:calcState.realOneHit,summary:buildSummary.textContent})')));}
+try{
+ assert.equal(results[1].total['散弾・剛射強化'],1);
+ for(const ch of ['normal','maximum']){
+  for(const r of results){assert.equal(r.real.channels[ch].execution.status,'complete');assert.equal(r.real.channels[ch].metrics.comboTotalDamage.status,'available');assert.ok(Number.isFinite(r.real.channels[ch].metrics.comboTotalDamage.value));}
+  const a=results[0].real.channels[ch].components,b=results[1].real.channels[ch].components;assert.equal(a.length,3);assert.equal(b.length,3);
+  for(let i=0;i<3;i++){const at=a[i].details.trace,bt=b[i].details.trace;assert.equal(at.length,bt.length);for(let h=0;h<at.length;h++){assert.equal(bt[h].element,at[h].element);assert.ok(Math.abs(bt[h].physical-at[h].physical*(i===0?1:1.05))<1e-9);assert.equal(bt[h].spreadSkillEffect.applied,i!==0);assert.equal(bt[h].spreadSkillEffect.multiplier,i===0?1:1.05);}}
+ }
+ for(const [kind,id,component,expected] of [['heavy-bowgun','HBG_SPREAD_AMMO_2','physical',1.05],['light-bowgun','LBG_SPREAD_AMMO_2','physical',1.05],['bow','BOW_QUICK_SHOT','physical',1.05],['heavy-bowgun','HBG_NORMAL_AMMO_2','physical',1],['bow','BOW_POWER_SHOT_3','element',1]]){const r=JSON.parse(w.eval(`JSON.stringify(MHWSpreadShotSkill.resolve(MHWSpreadShotSkillRule,${JSON.stringify({weaponKind:kind,techniqueId:id,component,level:1})}))`));assert.equal(r.multiplier,expected);contracts.push({kind,id,component,result:r});}
+ for(const [kind,id] of [['heavy-bowgun','HBG_SPREAD_AMMO_2'],['light-bowgun','LBG_SPREAD_AMMO_2'],['bow','BOW_QUICK_SHOT']])assert.equal(w.eval(`TechniqueDBEngine.get('${kind}','${id}').calculationStatus`),'EVIDENCE_GATED');
+ assert.deepEqual(errors,[]);checks.push({pass:true});
+}catch(e){checks.push({pass:false,error:e.stack});}
+console.log(JSON.stringify({base:cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),hashes:Object.fromEntries(['index.html','bow-reference.js','spread-shot-skill.js','hope-hammer-browser-adapter.js'].map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')])),results,contracts,checks},null,2));dom.window.close();process.exitCode=checks.some(x=>!x.pass)?1:0;

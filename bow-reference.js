@@ -1,5 +1,6 @@
 (function(root){
  'use strict';
+ const spreadSkill=root.MHWSpreadShotSkill||(typeof module!=='undefined'&&module.exports?require('./spread-shot-skill.js'):null);
  const valid=(n,min,max)=>{if(typeof n!=='number'||!Number.isFinite(n)||n<min||n>max)throw Error('BOW_REFERENCE:INVALID_INPUT');return n;};
  function calculate(o,engine,techniqueIds){
   if(!o||!engine||typeof engine.get!=='function'||typeof engine.hits!=='function'||!Array.isArray(techniqueIds)||techniqueIds.length<1)throw Error('BOW_REFERENCE:TECHNIQUE_DB_REQUIRED');
@@ -12,7 +13,7 @@
   const rangePhysicalModifier=valid(rule.rangePhysical[state.range],0,2),coatingPhysicalModifier=valid(rule.coatingPhysical[state.coating],1,2);
   const skills={normalUp:0,spreadUp:0,chargeMaster:0,criticalElement:0,bladescaleLoading:0,firstShot:0,forceShot:0,...o.skills},skillRules=rule.skillRules;
   const modifier=name=>{const level=skills[name],r=skillRules?.[name];if(!Number.isInteger(level)||level<0||!r||!Object.hasOwn(r.multipliers,level))throw Error('BOW_REFERENCE:SKILL_LEVEL_INVALID:'+name);return valid(r.multipliers[level],1,2);};
-  const normalUp=modifier('normalUp'),spreadUp=modifier('spreadUp'),chargeMaster=modifier('chargeMaster'),criticalElement=modifier('criticalElement'),bladescale=modifier('bladescaleLoading');
+  const normalUp=modifier('normalUp'),chargeMaster=modifier('chargeMaster'),criticalElement=modifier('criticalElement'),bladescale=modifier('bladescaleLoading');
   modifier('firstShot');
   if(skillRules.firstShot.component!=='NOT_APPLICABLE_TO_BOW'||skillRules.firstShot.scope!=='BOWGUN_ONLY')throw Error('BOW_REFERENCE:FIRST_SHOT_SCOPE_UNRESOLVED');
   const firstShot={level:skills.firstShot,status:'NOT_APPLICABLE_TO_BOW',damageIncluded:false,scope:skillRules.firstShot.scope};
@@ -45,9 +46,11 @@
    const shotAffinity=Math.min(100,affinity+forceAffinityAdd),shotAttack=attack+forceAttackAdd;
    const crit=shotAffinity>=0?1+shotAffinity/100*(criticalMultiplier-1):1+shotAffinity/100*.25,elementCriticalExpectation=1+Math.max(0,shotAffinity)/100*(criticalElement-1);
    forceShot.stages.push({techniqueId:id,ordinal,attackAdd:forceAttackAdd,affinityAdd:forceAffinityAdd,attack:shotAttack,affinity:shotAffinity});
-   const shotSkillPhysicalModifier=(skillRules.normalUp.techniqueIds.includes(id)?normalUp:1)*(skillRules.spreadUp.techniqueIds.includes(id)?spreadUp:1);
+   if(!spreadSkill)throw Error('BOW_REFERENCE:SPREAD_SKILL_RESOLVER_REQUIRED');
+   const spreadEffect=spreadSkill.resolve(skillRules.spreadUp,{weaponKind:'bow',techniqueId:id,component:'physical',level:skills.spreadUp});
+   const shotSkillPhysicalModifier=(skillRules.normalUp.techniqueIds.includes(id)?normalUp:1)*spreadEffect.multiplier;
    if(skills.chargeMaster&&element>0&&!skillRules.chargeMaster.techniqueIds.includes(id))throw Error('BOW_REFERENCE:CHARGE_MASTER_ROUTE_UNRESOLVED');
-   for(const h of hits){const mv=valid(h.mv,0,10000),em=valid(h.elementModifier,0,10),p=shotAttack*mv/100*hz/100*crit*rangePhysicalModifier*coatingPhysicalModifier*shotSkillPhysicalModifier*bladescalePhysicalModifier,e=effectiveElement/10*ehz/100*em*elementCriticalExpectation;physical+=p;elementTotal+=e;trace.push({...h,techniqueId:id,physical:p,element:e,rangePhysicalModifier,coatingPhysicalModifier,shotSkillPhysicalModifier,bladescalePhysicalModifier,forceShotOrdinal:ordinal,forceAttackAdd,forceAffinityAdd,shotAffinity,chargeMasterElementModifier:chargeMaster,criticalElementModifier:criticalElement,elementCriticalExpectation,criticalExpectation:crit,sharpnessApplied:false,coatingElementApplied:false});}
+   for(const h of hits){const mv=valid(h.mv,0,10000),em=valid(h.elementModifier,0,10),p=shotAttack*mv/100*hz/100*crit*rangePhysicalModifier*coatingPhysicalModifier*shotSkillPhysicalModifier*bladescalePhysicalModifier,e=effectiveElement/10*ehz/100*em*elementCriticalExpectation;physical+=p;elementTotal+=e;trace.push({...h,techniqueId:id,physical:p,element:e,rangePhysicalModifier,coatingPhysicalModifier,shotSkillPhysicalModifier,spreadSkillEffect:spreadEffect,bladescalePhysicalModifier,forceShotOrdinal:ordinal,forceAttackAdd,forceAffinityAdd,shotAffinity,chargeMasterElementModifier:chargeMaster,criticalElementModifier:criticalElement,elementCriticalExpectation,criticalExpectation:crit,sharpnessApplied:false,coatingElementApplied:false});}
   }
   bladescaleLoading.remainingShots=remainingShots;
   return {status:'SOURCE_REFERENCE',comparisonPower:physical+elementTotal,physical,element:elementTotal,special:0,trace,affinity,state:{...state},skills:{...skills},firstShot,forceShot,bladescaleLoading,effectiveDisplayedElement:effectiveElement,elementBasis:o.elementBasis?{...o.elementBasis}:null,rounding:'UNROUNDED_REFERENCE',liveGameVerification:'PENDING'};
