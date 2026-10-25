@@ -33,6 +33,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   resolveBuild:(raw,equipment,request)=>{
    const result=resolveBuild(raw,equipment,request);
    if(result?.weaponType!==weaponType)throw Error('REAL_SLICE:WEAPON_MISMATCH');
+   if(result&&result.elementType===undefined&&result.equipment?.elementType!==undefined)result.elementType=result.equipment.elementType;
    if(result?.equipment?.displayElement?.status!=='known'||!Number.isFinite(result.equipment.displayElement.value)||result.equipment.displayElement.value<0)throw Error('REAL_SLICE:ELEMENT_NOT_RESOLVED');
    if(result.equipment.displayElement.value>0&&(!result.equipment.elementType||typeof result.equipment.elementType!=='string'))throw Error('REAL_SLICE:ELEMENT_TYPE_NOT_RESOLVED');
    if(!Array.isArray(result.skills?.entries))throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');

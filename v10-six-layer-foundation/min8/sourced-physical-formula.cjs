@@ -26,7 +26,8 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   // of the canonical HP calculation.
   if(part&&!valid(part))return unavailable('PHYSICAL_PART_MODIFIER_UNRESOLVED');
   let result;
-   try{result=calculate({attack:stats.attack,affinity:stats.affinity,element:0,mv:coefficient,hz:hitzone.value,ehz:0,sharp:sharp.value,esharp:1,critBonus:Number(build?.equipment?.criticalBoostLevel)||0,elementCrit:false,criticalState:'expected'})}
+   const shieldBodyMultiplier=parameters?.shieldBoostAxeBody===true&&build?.equipment?.chargeBladeState?.shieldBoosted===true?1.1:1;
+   try{result=calculate({attack:stats.attack*shieldBodyMultiplier,affinity:stats.affinity,element:0,mv:coefficient,hz:hitzone.value,ehz:0,sharp:sharp.value,esharp:1,critBonus:Number(build?.equipment?.criticalBoostLevel)||0,elementCrit:false,criticalState:'expected'})}
   catch(_){return unavailable('PHYSICAL_CANONICAL_FORMULA_FAILED')}
   if(!result||!finite(result.p)||result.p<0)return unavailable('PHYSICAL_CANONICAL_RESULT_INVALID');
   return {status:'available',value:result.p};
