@@ -177,14 +177,25 @@
   const baseAttack=stats?.attackComponents?.weaponBase,baseElement=stats?.elementComponents?.weaponBase,baseAffinity=weapon.affinity;
   const stateStatsByState=weapon.kind==='insect-glaive'&&Number.isFinite(baseAttack)&&Number.isFinite(baseElement)&&Number.isFinite(baseAffinity)?{NO_EXTRACT:{attack:baseAttack,element:baseElement,affinity:baseAffinity},TRIPLE_EXTRACT:{attack:baseAttack*1.15,element:baseElement,affinity:baseAffinity}}:conditions?.stateStatsByState;
   const pipelineConditions={...(conditions||{})};
-  for(const bundle of [insectGlaiveState,huntingHornState,lightBowgunState,gunlanceState,bowState,hbgState,chargeBladeState]){
+  const selectedStateBundle={
+   'insect-glaive':insectGlaiveState,
+   'hunting-horn':huntingHornState,
+   'light-bowgun':lightBowgunState,
+   'gunlance':gunlanceState,
+   'bow':bowState,
+   'heavy-bowgun':hbgState,
+   'charge-blade':chargeBladeState
+  }[weapon.kind]||null;
+  for(const bundle of [selectedStateBundle]){
    if(!bundle||typeof bundle!=='object')continue;
    for(const [key,value] of Object.entries(bundle))if(!Object.prototype.hasOwnProperty.call(pipelineConditions,key)&&value!==null&&value!==undefined)pipelineConditions[key]=value;
   }
-  const profileStartState=root.BuildComparisonEngine?.profileCatalog?.[weapon.kind]?.startState||{};
-  for(const id of resolvedTechniqueIds){
-   const record=techniqueDb?.get?.(weapon.kind,id),requirement=record?.stateRequirement||{};
-   for(const [key,expected] of Object.entries(requirement))if(!Object.prototype.hasOwnProperty.call(pipelineConditions,key)&&Object.prototype.hasOwnProperty.call(profileStartState,key))pipelineConditions[key]=profileStartState[key];
+  const profileStartState=conditions?.standardEvaluation===true?root.BuildComparisonEngine?.profileCatalog?.[weapon.kind]?.startState||{}:{};
+  if(conditions?.standardEvaluation===true){
+   for(const id of resolvedTechniqueIds){
+    const record=techniqueDb?.get?.(weapon.kind,id),requirement=record?.stateRequirement||{};
+    for(const [key,expected] of Object.entries(requirement))if(!Object.prototype.hasOwnProperty.call(pipelineConditions,key)&&Object.prototype.hasOwnProperty.call(profileStartState,key)&&Object.is(profileStartState[key],expected))pipelineConditions[key]=profileStartState[key];
+   }
   }
   if(stateStatsByState){pipelineConditions.stateStatsByState=stateStatsByState;pipelineConditions.stateStatsSource='MACARONGAMEMO_DAMAGE_UP_2025-04-16_PROVISIONAL';}
   try{return pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:'training-room',hitZoneKey:'training-front'},conditions:pipelineConditions,evaluation:{mode:'combo',kind:'combo',signature:'current-selection-reference-combo',techniqueIds:resolvedTechniqueIds}});}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}

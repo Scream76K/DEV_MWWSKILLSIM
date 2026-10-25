@@ -7612,7 +7612,7 @@ function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null,conditions=n
       techniqueIds,
       techniqueDb:window.TechniqueDBEngine,
       trainingRoom:trainingRoomMonster(),
-      conditions:conditions||{},
+      conditions:{...(conditions||{}),standardEvaluation:!moves.length&&standardProfile?.status==='ADOPTED'},
       bowState:conditions?.bowState||null,
       hbgState:conditions?.hbgState||null,
       lightBowgunState:conditions?.lightBowgunState||null,
