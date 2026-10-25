@@ -8,6 +8,7 @@
   'Constitution':{effectDisposition:'non_damage',reason:'Constitution changes stamina consumption, not HP damage',evidenceRef:'RELEASE_r213.md:4'}
  });
  function fail(reason){return {status:'UNAVAILABLE',reason};}
+ const STANDARD_NORMAL_HIT_CONTRACT=Object.freeze({GS_CHARGED_SLASH_3:{damageType:'slash',partModifier:1.2,source:'MACARONGAMEMO_GREAT_SWORD_VER1040'},LS_RED_BLADE_I:{damageType:'slash',partModifier:1,source:'MACARONGAMEMO_LONG_SWORD_MOTION_CURRENT'},SNS_SIDE_SLASH:{damageType:'slash',partModifier:1,source:'GAME8_2025_06_30_SNS_NERF'},DB_DEMON_DANCE_I:{damageType:'slash',partModifier:1,stateRequirement:{demonMode:true},source:'KUROYONHON_DB_R50_CHECK'},LAN_MID_THRUST_I:{damageType:'pierce',partModifier:1,source:'MACARONGAMEMO_LANCE_VER1021'},SA_SWORD_VERTICAL:{damageType:'slash',partModifier:1,source:'MACARONGAMEMO_SWITCH_AXE_CURRENT'},IG_DIAGONAL_SLASH:{damageType:'slash',partModifier:1,source:'MACARONGAMEMO_INSECT_GLAIVE_CURRENT'}});
  function normalizeTechniqueIds(ids,{fallback=null}={}){
   const input=Array.isArray(ids)?ids:(fallback?[fallback]:[]),unresolved=[];
   const normalized=input.map(raw=>{
@@ -82,6 +83,10 @@
    const referenceKind=weapon.kind==='bow'&&['BOW_SHOT_3','BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3'].includes(id)?'bow':weapon.kind==='heavy-bowgun'&&/^HBG_NORMAL_AMMO_[123]$/.test(id)?'heavy-bowgun':weapon.kind==='light-bowgun'&&/^LBG_NORMAL_AMMO_[12]$/.test(id)?'light-bowgun':weapon.kind==='charge-blade'&&['CB_SAED','CB_SAED_AED_DERIVED'].includes(id)?'charge-blade-saed':weapon.kind==='hunting-horn'&&['HH_PERFORMANCE_SHOCKWAVE','HH_ECHO_BUBBLE_FOLLOWUP','HH_ECHO_BUBBLE_MELODY_EVENT','HH_MELODY_COMPLETION_FIXED_10'].includes(id)?'hunting-horn-sound':null;
    if(referenceKind){const rawState=referenceKind==='bow'?bowState:referenceKind==='heavy-bowgun'?hbgState:referenceKind==='light-bowgun'?lightBowgunState:referenceKind==='charge-blade-saed'?{...chargeBladeState,ammoLoadingLevel:loadShellEntries.length?Math.max(...loadShellEntries.map(x=>x.level),0):chargeBladeState?.ammoLoadingLevel}:huntingHornState;technique={...technique,referenceKind,referenceInput:{state:resolveReferenceState(referenceKind,id,technique,rawState),skills:referenceSkills,criticalBoostLevel:referenceCriticalBoostLevel,sourceTechniqueId:id}};}
    if(!technique)return fail('REAL_SLICE:TECHNIQUE_NOT_FOUND:'+id);
+   const normalContract=STANDARD_NORMAL_HIT_CONTRACT[id];
+   if(normalContract&&!technique.referenceKind&&!Array.isArray(technique.specialComponents)){
+    technique={...technique,stateRequirement:technique.stateRequirement&&Object.keys(technique.stateRequirement).length?technique.stateRequirement:(normalContract.stateRequirement||{}),hits:(technique.hits||[]).map(hit=>({...hit,damageType:hit.damageType??normalContract.damageType,partModifier:hit.partModifier??normalContract.partModifier,partModifierSource:hit.partModifierSource??normalContract.source}))};
+   }
    const shelling=Array.isArray(technique.specialComponents)&&technique.specialComponents.some(x=>String(x).includes('SHELL')),reference=['bow','light-bowgun','heavy-bowgun','charge-blade-saed','hunting-horn-sound'].includes(technique.referenceKind);
    if(!shelling&&!reference&&(!Array.isArray(technique.hits)||!technique.hits.length))return fail('REAL_SLICE:TECHNIQUE_HITS_NOT_FOUND:'+id);
    techniques[id]=technique;
@@ -91,7 +96,7 @@
   const part=trainingRoom?.parts?.find(x=>x.id==='training-front');
   const isShellingOnly=resolvedTechniqueIds.every(id=>{const r=techniques[id];return Array.isArray(r?.specialComponents)&&r.specialComponents.some(x=>String(x).includes('SHELL'));});
   const isReferenceOnly=resolvedTechniqueIds.every(id=>['bow','heavy-bowgun','light-bowgun','charge-blade-saed','hunting-horn-sound'].includes(techniques[id]?.referenceKind));
-  const physicalKeyForTechnique=id=>{const hits=techniques[id]?.hits||[],keys=hits.map(hit=>{const kind=hit?.damageType;return kind==='blunt'||kind==='slash'||kind==='pierce'?kind:['hammer','hunting-horn'].includes(weapon.kind)?'blunt':weapon.kind==='charge-blade'?'slash':null;});return keys.length&&keys.every(Boolean)&&new Set(keys).size===1?keys[0]:null;};
+  const physicalKeyForTechnique=id=>{const hits=techniques[id]?.hits||[],keys=hits.map(hit=>{const kind=hit?.damageType;return kind==='blunt'||kind==='slash'||kind==='pierce'?kind:STANDARD_NORMAL_HIT_CONTRACT[id]?.damageType??(['hammer','hunting-horn'].includes(weapon.kind)?'blunt':weapon.kind==='charge-blade'?'slash':null);});return keys.length&&keys.every(Boolean)&&new Set(keys).size===1?keys[0]:null;};
   const physicalKeys=resolvedTechniqueIds.map(physicalKeyForTechnique);
   if(!isShellingOnly&&!isReferenceOnly&&physicalKeys.some(x=>!x))return fail('REAL_SLICE:DAMAGE_TYPE_UNRESOLVED');
   if(!isShellingOnly&&!isReferenceOnly&&new Set(physicalKeys).size>1)return fail('REAL_SLICE:MIXED_DAMAGE_TYPES_UNSUPPORTED');

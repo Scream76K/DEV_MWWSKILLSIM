@@ -33,7 +33,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    if(!finite(hit.partModifier))throw Error('REAL_SLICE:PART_MODIFIER_PENDING:'+index);
    if(hit.partModifier!==1)throw Error('REAL_SLICE:PART_MODIFIER_UNSUPPORTED:'+index);
    const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??null};
-   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
+   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:hit.partModifierSource??source,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
    if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
    events.push({type:'hit',components});
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});

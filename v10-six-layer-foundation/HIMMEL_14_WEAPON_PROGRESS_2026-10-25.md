@@ -59,3 +59,17 @@
 - 属性変換の固定追撃（固定値＋龍属性肉質依存）は別イベント入力が必要で、発動回数・再発動条件が未確定のため総計へ自動加算しない。
 - `耐性変換【雷】` は雷属性武器かつ `conditions.thunderResistanceConversionActive === true`、有限非負の総雷耐性、Lv1の明示入力だけを対象にする。武器種係数は大剣/ハンマー/笛=5、LBG/HBG=2、その他=4。負耐性・上限・丸めは未確定。
 - 根拠: `KUROYONHON_SKILL_TABLE_ATTRIBUTE_CONVERSION_20261025`、`KUROYONHON_SKILL_TABLE_THUNDER_RESISTANCE_CONVERSION_20261025`。現行ゲーム版適合は未確認。
+
+## 2026-10-25 通常技の共通入力契約
+
+`hope-hammer-browser-adapter.js` に、既存Technique DBの通常技7件だけを対象にした明示契約を追加した。契約は技ID単位で `damageType`、`partModifier`、必要状態、出典を保持し、武器種から一律推測しない。
+
+- 大剣 `GS_CHARGED_SLASH_3` / slash
+- 太刀 `LS_RED_BLADE_I` / slash
+- 片手剣 `SNS_SIDE_SLASH` / slash
+- 双剣 `DB_DEMON_DANCE_I` / slash、`demonMode:true`
+- ランス `LAN_MID_THRUST_I` / pierce
+- スラッシュアックス `SA_SWORD_VERTICAL` / slash
+- 操虫棍 `IG_DIAGONAL_SLASH` / slash
+
+既存DBの `partModifier` が欠ける代表技については、この技別契約の出典付き値だけを補い、他の技へ既定値を広げない。状態が必要な技は `conditions` に明示し、未提供時は共通Pipelineの状態未解決として停止する。実ブラウザでの7件反復は未実施。
