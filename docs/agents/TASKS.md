@@ -34,3 +34,5 @@ SERIE-BOW-REAL-AB completed: product 01c18a568a5ba0e666d537bcd2300e6cc759fe4c; e
 SERIE-BONUS-BOUNDARIES: base003b7c2, continuation approved. Limited ownership: index.html hpRelevantBonusEffects, adapter non-damage skill classification, tools/bonus-boundary-saved-comparison-proof.cjs and docs/reports/r252-bonus-boundaries. Real MHDB series1/2/4 and group2/3 only; no Artia edits or other-weapon reruns.
 
 SERIE-BONUS-BOUNDARIES completed: product 04c424bb7e5c2f6fa5aad146bf7db0b52df6cf35; evidence docs/reports/r252-bonus-boundaries/. Limited index.html/adapter ownership returned. Existing Artia material-selector discrepancy reported without edits.
+
+- 2026-10-25 serie: オーナー承認の継続委任。index.htmlのアーティア素材UI・正規化・単独/比較入力に限定編集。旧保存境界の最小実MHDB検証完了、他担当との編集競合なし。詳細 docs/reports/r253-artia-fixed-production/REVIEW.md。

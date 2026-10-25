@@ -592,6 +592,13 @@ function validateCurrentCharm(){
 }
 function renderCharmLegality(){const box=$('charmLegality');if(!box)return;const r=validateCurrentCharm();const cls=r.status==='possible'?'ok':r.status==='invalid'?'bad':'info';box.innerHTML=`<b class="${cls}">護石生成可能性：${r.label}</b><br>${esc(r.detail)}<br><span class="muted">護石テーブル更新基準：${CHARM_RULE_VERSION} / ルール${CHARM_RULES.length}件</span><br><a href="${CHARM_RULE_SOURCE}" target="_blank" rel="noopener noreferrer">判定ルールの参照元</a>`;}
 
+// Owner-fixed production premise for every weapon kind. Never rewrites persisted JSON
+// or completed MHDB values; mutation, restoration and element selection are independent.
+function normalizeArtiaProduction(){
+  if(!build.artia||typeof build.artia!=='object')build.artia={};
+  build.artia.parts=['attack','attack','attack'];
+  build.artia.sameElementPartCount=3;
+}
 function normalizeCharm(){
   if(!build.charmCustom||typeof build.charmCustom!=='object') build.charmCustom={};
   if(!Array.isArray(build.charmCustom.skills)) build.charmCustom.skills=[];
@@ -610,15 +617,14 @@ function normalizeCharm(){
   const legacyPattern=charmSlotPattern(build.charmCustom);
   if(legacyPattern==='不正なスロット構成'||legacyPattern==='不正な武器スロット'){build.charmCustom.slots=[0,0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;}
   if(!build.artia||typeof build.artia!=='object') build.artia={production:'element',element:'fire',parts:['none','none','none'],restores:[]};
-if(!Array.isArray(build.artia.parts)) build.artia.parts=['none','none','none'];
-build.artia.parts=build.artia.parts.slice(0,3); while(build.artia.parts.length<3) build.artia.parts.push('none');
+normalizeArtiaProduction();
   if(!['attack','affinity','element'].includes(build.artia.production)) build.artia.production='attack';
   if(!['fire','water','ice','thunder','dragon'].includes(build.artia.element)) build.artia.element='fire';
   build.artia.seriesSkill=String(build.artia.seriesSkill||''); build.artia.groupSkill=String(build.artia.groupSkill||'');
   if(!Array.isArray(build.artia.restores)) build.artia.restores=[];
   build.artia.restores=build.artia.restores.slice(0,5);
   while(build.artia.restores.length<5) build.artia.restores.push('none');
-}let build={weapon:null,armor:{head:null,chest:null,arms:null,waist:null,legs:null},charm:null,charmCustom:{skills:[{name:'',level:1,type:'armor'},{name:'',level:1,type:'armor'},{name:'',level:1,type:'armor'}],slots:[0,0], weaponSlots:[], weaponSlot:false},artia:{production:'element',element:'fire',parts:['none','none','none'],elementParts:0,restores:['none','none','none','none','none'],seriesSkill:'',groupSkill:''},decos:{}};let calcState={total:{},stats:{},bonusDisplay:{series:[],group:[]}};
+}let build={weapon:null,armor:{head:null,chest:null,arms:null,waist:null,legs:null},charm:null,charmCustom:{skills:[{name:'',level:1,type:'armor'},{name:'',level:1,type:'armor'},{name:'',level:1,type:'armor'}],slots:[0,0], weaponSlots:[], weaponSlot:false},artia:{production:'element',element:'fire',parts:['attack','attack','attack'],sameElementPartCount:3,elementParts:0,restores:['none','none','none','none','none'],seriesSkill:'',groupSkill:''},decos:{}};let calcState={total:{},stats:{},bonusDisplay:{series:[],group:[]}};
 /* ========================= V6 Architecture =========================
  * Single source of truth: App.state. Legacy local variables remain as
  * compatibility aliases during the migration, but all new code should
@@ -1437,22 +1443,19 @@ function selectedWeapon(){
   return null;
 }
 function renderArtia(){
+  normalizeArtiaProduction();
   let w=selectedWeapon(),box=$('artiaBox');
   if(!isArtia(w)){box.classList.add('hidden');return;}
   box.classList.remove('hidden');
   const elems=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'];
   const ej={fire:'火',water:'水',ice:'氷',thunder:'雷',dragon:'龍',poison:'毒',paralysis:'麻痺',sleep:'睡眠',blast:'爆破'};
   const opts=[['attack','攻撃激化'],['affinity','会心激化'],['element','属性激化']];
-  // 生産ボーナスは「基礎攻撃力増強」「会心率増強」のみを手動選択。
-  // 属性増強は条件成立時に付与されるため、テンプレート/シミュレータでは常時発動前提として別管理する。
-  const partOpts=[['none','未設定'],['attack','基礎攻撃力増強'],['affinity','会心率増強']];
   const setSkills=skillOptionSort((DB.skills||[]).filter(x=>x.kind==='set'));
   const groupSkills=skillOptionSort((DB.skills||[]).filter(x=>x.kind==='group'));
   box.innerHTML=`<b>★ 巨戟アーティア設定</b>
   <div class="muted">${esc(w.name)} は巨戟アーティア14種として登録されています。</div>
   <label>属性</label><select id="aElem">${elems.map(e=>`<option value="${e}">${ej[e]}</option>`).join('')}</select>
-  <label>同属性の生産素材数（攻撃／会心ボーナスとは別）</label><select id="aElementPartCount"><option value="">未確認</option><option value="2">2個</option><option value="3">3個</option></select>
-  <label>生産ボーナス（3枠）</label><div id="aParts"></div>
+  <div class="muted">生産素材：同一属性の攻撃素材3個固定（完成値へ重複加算しません）</div>
   <label>巨戟変異タイプ（完成ステータス固定値）</label><select id="aProd">${opts.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('')}</select>
   <div class="artia-two-pane">
     <div class="artia-left"><label>復元ボーナス（5枠）</label><div id="aRestore"></div><div class="muted small">初期状態は「復元ボーナスなし」。実際の武器に付いている復元ボーナスを選択してください。</div></div>
@@ -1460,12 +1463,8 @@ function renderArtia(){
   </div>
   <div id="aSkillStatus" class="notice small">シリーズ/グループスキルは、武器を1部位として発動条件を判定します。</div>
   <label>武器スロット</label><div class="equip-skill-preview" id="aWeaponSlotPreview"></div>`;
-  $('aElementPartCount').value=[2,3].includes(build.artia.sameElementPartCount)?String(build.artia.sameElementPartCount):'';
-  $('aElementPartCount').onchange=()=>{build.artia.sameElementPartCount=$('aElementPartCount').value?Number($('aElementPartCount').value):null;calcBuild();};
   $('aProd').value=build.artia.production; $('aElem').value=build.artia.element; $('aSeries').value=build.artia.seriesSkill||''; $('aGroup').value=build.artia.groupSkill||'';
   const updateSkillStatus=()=>{const ss=skillById($('aSeries').value),gg=skillById($('aGroup').value);let lines=[];for(const [label,skill,type] of [['シリーズ',ss,'series'],['グループ',gg,'group']]){if(!skill)continue;const a=artiaSkillActivation(skill,type);const req=a.required?`必要${a.required}部位`:'条件未定義';lines.push(`${label}：${esc(skill.name)} → ${a.active?`発動（${a.count}/${req}）`:`未発動（${a.count}/${req}）`}`);} $('aSkillStatus').innerHTML=lines.length?lines.join('<br>'):'シリーズ/グループスキル未選択';};
-  const parts=$('aParts');parts.innerHTML=build.artia.parts.map((v,i)=>`<select class="aPart" data-i="${i}">${partOpts.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('')}</select>`).join('');
-  document.querySelectorAll('.aPart').forEach((el,i)=>{el.value=build.artia.parts[i];el.onchange=()=>{build.artia.parts[i]=el.value;calcBuild()}});
   const choices=[['none','なし'],['atk:I','基礎攻撃力強化Ⅰ +5'],['atk:II','基礎攻撃力強化Ⅱ +6'],['atk:III','基礎攻撃力強化Ⅲ +9'],['atk:EX','基礎攻撃力強化EX +12'],['aff:I','会心強化Ⅰ +5%'],['aff:II','会心強化Ⅱ +6%'],['aff:III','会心強化Ⅲ +8%'],['aff:EX','会心強化EX +10%'],['elem:I','属性強化Ⅰ'],['elem:II','属性強化Ⅱ'],['elem:EX','属性強化EX'],['sharp:I','斬れ味・装填数強化Ⅰ +30'],['sharp:EX','斬れ味・装填数強化EX +50']];
   const r=$('aRestore');r.innerHTML=build.artia.restores.map((v,i)=>`<select class="aR" data-i="${i}">${choices.map(c=>`<option value="${c[0]}">${c[1]}</option>`).join('')}</select>`).join('');
   document.querySelectorAll('.aR').forEach((el,i)=>{el.value=build.artia.restores[i];el.onchange=()=>{build.artia.restores[i]=el.value;calcBuild()}});
@@ -1706,6 +1705,20 @@ function artiaFixedVariantStats(w){
   if(!state.elementKnown&&state.elementReason!=='ELEMENT_SELECTED_TYPE_NOT_RECORDED')state=artiaSourceElement(w,build.artia);
   return {attack,affinity,attackKnown:v.attackKnown!==false,affinityKnown:v.affinityKnown!==false,...state,sourceId:v.sourceId??null,fixed:true};
 }
+function realPipelineWeapon(pipelineWeapon){
+    if(isArtia(pipelineWeapon)){
+      const fixed=artiaFixedVariantStats(pipelineWeapon),restore=restoreStats(pipelineWeapon);
+      if(!fixed||fixed.attackKnown===false||fixed.affinityKnown===false||!fixed.elementKnown||!fixed.typeKnown)
+        throw new Error('REAL_SLICE:ARTIA_COMPLETED_VALUES_UNRESOLVED');
+      // Equipment input before skills: use the same completed record and restoration
+      // as calcBuild. Do not mutate MHDB or add production/material bonuses again.
+      const type=fixed.elementType,element=fixed.element+restore.element;
+      pipelineWeapon={...pipelineWeapon,damage:{...pipelineWeapon.damage,raw:fixed.attack+restore.attack},affinity:fixed.affinity+restore.affinity,
+        specials:element>0?[{kind:['fire','water','ice','thunder','dragon'].includes(type)?'element':'status',element:type,status:type,damage:{display:element,raw:element/10}}]:[],
+        artiaCalculationEvidence:{sourceId:fixed.sourceId,elementEvidence:fixed.elementEvidence||null,production:build.artia.production,parts:[...build.artia.parts],sameElementPartCount:3,restores:[...build.artia.restores],stage:'COMPLETED_PLUS_RESTORE_BEFORE_SKILLS'}};
+    }
+  return pipelineWeapon;
+}
 function weaponElementInfoFromRecord(w){
   const state=MHWElementState.fromRecord(w,{artia:isArtia(w),...(isArtia(w)?{type:build.artia.element}:{})});
   return {...state,type:state.elementType,value:state.element};
@@ -1761,7 +1774,7 @@ function calcMaxAffinity(total, baseAffinity, w, part){
 }
 window.MHWMaxAffinityResolver=calcMaxAffinity;
 function selectedMonsterName(){const m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value);return String(m?.name||'');}
-function artiaProductionBreakdown(w){if(!isArtia(w))return '';const m={attack:'攻撃増強',affinity:'会心増強',none:'未設定'};const a=(build.artia.parts||[]).map(x=>x==='element'?'none':x);const elem=Number(w?.artiaElementProductionBonus)||0;return `生産：${a.map(x=>m[x]||x).join(' / ')}（攻撃+${a.filter(x=>x==='attack').length*5} / 会心+${a.filter(x=>x==='affinity').length*5}% / 属性増強+${elem}【常時発動前提】）`;}
+function artiaProductionBreakdown(w){return isArtia(w)?'生産：同一属性の攻撃素材3個固定（MHDB完成値に含まれる生産分は再加算しません）':'';}
 function artiaRestoreBreakdown(w){
   if(!isArtia(w)) return '';
   const labels={ 'atk:I':'+5攻撃','atk:II':'+6攻撃','atk:III':'+9攻撃','atk:EX':'+12攻撃','aff:I':'+5%会心','aff:II':'+6%会心','aff:III':'+8%会心','aff:EX':'+10%会心','sharp:I':'+30斬れ味','sharp:EX':'+50斬れ味'};
@@ -1808,7 +1821,7 @@ function updateWeaponCoeffDisplay(){
   if(note)note.textContent=on?'ON：ゲーム内表示攻撃力（武器係数あり）':'OFF：真攻撃力（武器係数なし）';
   renderSummary();renderDetail();syncDamage();
 }
-function calcBuild(){renderCharmLegality();
+function calcBuild(){normalizeArtiaProduction();renderCharmLegality();
   let total={},w=selectedWeapon(),kind=canonicalWeaponKind(w),coef=weaponCoefficient(kind),fixed=isArtia(w)?artiaFixedVariantStats(w):null;
   if(isArtia(w)&&!fixed){
     calcState.fixedValueError='巨戟アーティアの激化タイプ別完成固定値がMHDBから3種類揃っていません。旧値へのフォールバックを停止しました。';
@@ -1873,7 +1886,7 @@ function calcBuild(){renderCharmLegality();
   const standardTechniqueIds=selectedTechniqueIdsRaw.some(Boolean)?[]:(standardProfile?.status==='ADOPTED'&&Array.isArray(standardProfile.techniqueIds)?standardProfile.techniqueIds:[]);
   const techniqueInputIds=selectedTechniqueIdsRaw.some(Boolean)?selectedTechniqueIdsRaw:standardTechniqueIds;
   const selectedTechniqueIds=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(techniqueInputIds,{fallback:selectedTechniqueId})?.ids||techniqueInputIds.filter(Boolean);
-  try{const referenceState=compareStep5Snapshot();calcState.realOneHit=window.MHWRealOneHitBrowserAdapter?.evaluateCurrent?.({weapon:w,stats,target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''},skills:Object.entries(total),conditions:referenceState,conditionalConditionPlan:stats.conditionalConditionPlan,gunlanceState:comboGLStoredState(),bowState:referenceState.bowState,hbgState:referenceState.hbgState,lightBowgunState:referenceState.lightBowgunState,chargeBladeState:comboCBStoredState(),dualBladesState:referenceState.dualBladesState,longSwordState:referenceState.longSwordState,switchAxeState:referenceState.switchAxeState,huntingHornState:referenceState.huntingHornState,insectGlaiveState:referenceState.insectGlaiveState,techniqueId:selectedTechniqueId,techniqueIds:selectedTechniqueIds.length?selectedTechniqueIds:[selectedTechniqueId],techniqueDb:window.TechniqueDBEngine,trainingRoom:trainingRoomMonster(),retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'})||{status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};}catch(e){calcState.realOneHit={status:'UNAVAILABLE',reason:String(e?.message||e||'REAL_SLICE:EVALUATION_FAILED')};}
+  try{const referenceState=compareStep5Snapshot();calcState.realOneHit=window.MHWRealOneHitBrowserAdapter?.evaluateCurrent?.({weapon:realPipelineWeapon(w),stats,target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''},skills:Object.entries(total),conditions:referenceState,conditionalConditionPlan:stats.conditionalConditionPlan,gunlanceState:comboGLStoredState(),bowState:referenceState.bowState,hbgState:referenceState.hbgState,lightBowgunState:referenceState.lightBowgunState,chargeBladeState:comboCBStoredState(),dualBladesState:referenceState.dualBladesState,longSwordState:referenceState.longSwordState,switchAxeState:referenceState.switchAxeState,huntingHornState:referenceState.huntingHornState,insectGlaiveState:referenceState.insectGlaiveState,techniqueId:selectedTechniqueId,techniqueIds:selectedTechniqueIds.length?selectedTechniqueIds:[selectedTechniqueId],techniqueDb:window.TechniqueDBEngine,trainingRoom:trainingRoomMonster(),retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'})||{status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};}catch(e){calcState.realOneHit={status:'UNAVAILABLE',reason:String(e?.message||e||'REAL_SLICE:EVALUATION_FAILED')};}
   renderSummary();renderDetail();syncDamage();renderMonsterInfo();refreshDecorationSelects();updateWeaponCoeffDisplay();
 }
 function sortedSkills(o){const kindRank=name=>{const k=skillByIdByName(name)?.kind;return k==='weapon'?0:k==='armor'?1:2;};return Object.entries(o).sort((a,b)=>kindRank(a[0])-kindRank(b[0])||Number(b[1])-Number(a[1])||jpSort(a[0],b[0]));}
@@ -5001,7 +5014,7 @@ function buildSnapshotMatches(a,b){
   return JSON.stringify(buildSnapshotComparable(a))===JSON.stringify(buildSnapshotComparable(b));
 }
 function savedBuildMap(){try{let raw=storageGet(BUILDS_KEY);if(!raw){for(const key of LEGACY_BUILDS_KEYS){raw=storageGet(key);if(raw)break;}}return raw?JSON.parse(raw)||{}:{};}catch(e){return {}}}
-function buildSnapshot(){App.combo.syncFromDOM();return {version:App.version,combatBuffs:combatBuffState(),weaponId:$('weapon')?.value||build.weapon?.id||'',weaponKind:canonicalWeaponKind(DB.weapons.find(w=>String(w.id)===String($('weapon')?.value||build.weapon?.id||''))),armor:Object.fromEntries(Object.entries(build.armor).map(([k,a])=>[k,a?.id||''])),charmCustom:JSON.parse(JSON.stringify(build.charmCustom)),artia:JSON.parse(JSON.stringify(build.artia)),decos:JSON.parse(JSON.stringify(build.decos)),combo:JSON.parse(JSON.stringify(App.state.combo||{})),target:{monsterId:$('monster')?.value||'',partId:$('monsterPart')?.value||''},savedAt:new Date().toISOString()}}
+function buildSnapshot(){normalizeArtiaProduction();App.combo.syncFromDOM();return {version:App.version,combatBuffs:combatBuffState(),weaponId:$('weapon')?.value||build.weapon?.id||'',weaponKind:canonicalWeaponKind(DB.weapons.find(w=>String(w.id)===String($('weapon')?.value||build.weapon?.id||''))),armor:Object.fromEntries(Object.entries(build.armor).map(([k,a])=>[k,a?.id||''])),charmCustom:JSON.parse(JSON.stringify(build.charmCustom)),artia:JSON.parse(JSON.stringify(build.artia)),decos:JSON.parse(JSON.stringify(build.decos)),combo:JSON.parse(JSON.stringify(App.state.combo||{})),target:{monsterId:$('monster')?.value||'',partId:$('monsterPart')?.value||''},savedAt:new Date().toISOString()}}
 function applyBuildSnapshot(x,{preserveCombo=false,restoreExact=false}={}){
   if(!x)return;
   // Never silently retain the previous weapon when a saved build cannot be resolved.
@@ -7636,7 +7649,7 @@ function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null,conditions=n
   if(!adapter||typeof adapter.evaluateCurrent!=='function')return {status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};
   try{
     return adapter.evaluateCurrent({
-      weapon:selectedWeapon(),
+      weapon:realPipelineWeapon(selectedWeapon()),
       stats:calcState.stats,
       target:{monster:String(target.monsterId),part:String(target.partId)},
       skills:Object.entries(calcState.total||{}),
@@ -8363,8 +8376,8 @@ function templateSetDecos(entries,slots,kind,prefix,unresolved){
   }
 }
 function templateSetCharmDecos(entries,charmCustom,unresolved){const slots=charmSlotEntries(charmCustom);let i=0;(entries||[]).forEach(entry=>{if(i>=slots.length)return;const e=typeof entry==='string'?{name:entry}:entry||{};const slot=slots[i];if(e.free_slot){i++;return;}const lv=Number(e.slot||slot.level||0);const d=templateFindDecoration(e.name,lv);if(d)build.decos[slot.key]=String(d.id);else unresolved.push(`${e.name}（${slot.key} / Lv${lv} / ${slot.kind}）`);i++;});}
-function templateArtiaFromSource(t,weapon,unresolved){if(!isArtia(weapon))return;const a=t.artia||{};build.artia={...build.artia,production:a.production||'attack',element:a.element||'fire',sameElementPartCount:a.sameElementPartCount??null,parts:Array.isArray(a.parts)?a.parts.slice(0,3):['none','none','none'],restores:Array.isArray(a.restores)?a.restores.slice(0,5):['none','none','none','none','none'],seriesSkill:'',groupSkill:''};while(build.artia.parts.length<3)build.artia.parts.push('none');while(build.artia.restores.length<5)build.artia.restores.push('none');const skills=Array.isArray(a.weapon_skills)?a.weapon_skills:[];for(const name of skills){const sk=skillByIdByName(name);if(!sk){unresolved.push(`巨戟スキル：${name}`);continue;}if(sk.kind==='set'&&!build.artia.seriesSkill)build.artia.seriesSkill=sk.id;else if(sk.kind==='group'&&!build.artia.groupSkill)build.artia.groupSkill=sk.id;else unresolved.push(`巨戟スキル種別：${name}`);}}
-function templateArtiaFromSource(t,weapon,unresolved){if(!isArtia(weapon))return;const a=t.artia||{};build.artia={...build.artia,production:a.production||'attack',element:a.element||'fire',sameElementPartCount:a.sameElementPartCount??null,parts:Array.isArray(a.parts)?a.parts.slice(0,3):['none','none','none'],restores:Array.isArray(a.restores)?a.restores.slice(0,5):['none','none','none','none','none'],seriesSkill:'',groupSkill:''};while(build.artia.parts.length<3)build.artia.parts.push('none');while(build.artia.restores.length<5)build.artia.restores.push('none');const skills=Array.isArray(a.weapon_skills)?a.weapon_skills:[];for(const name of skills){const sk=skillByIdByName(name);if(!sk){unresolved.push(`巨戟スキル：${name}`);continue;}if(sk.kind==='set'&&!build.artia.seriesSkill)build.artia.seriesSkill=sk.id;else if(sk.kind==='group'&&!build.artia.groupSkill)build.artia.groupSkill=sk.id;else unresolved.push(`巨戟スキル種別：${name}`);}}
+function templateArtiaFromSource(t,weapon,unresolved){if(!isArtia(weapon))return;const a=t.artia||{};build.artia={...build.artia,production:a.production||'attack',element:a.element||'fire',sameElementPartCount:3,parts:['attack','attack','attack'],restores:Array.isArray(a.restores)?a.restores.slice(0,5):['none','none','none','none','none'],seriesSkill:'',groupSkill:''};while(build.artia.parts.length<3)build.artia.parts.push('none');while(build.artia.restores.length<5)build.artia.restores.push('none');const skills=Array.isArray(a.weapon_skills)?a.weapon_skills:[];for(const name of skills){const sk=skillByIdByName(name);if(!sk){unresolved.push(`巨戟スキル：${name}`);continue;}if(sk.kind==='set'&&!build.artia.seriesSkill)build.artia.seriesSkill=sk.id;else if(sk.kind==='group'&&!build.artia.groupSkill)build.artia.groupSkill=sk.id;else unresolved.push(`巨戟スキル種別：${name}`);}}
+function templateArtiaFromSource(t,weapon,unresolved){if(!isArtia(weapon))return;const a=t.artia||{};build.artia={...build.artia,production:a.production||'attack',element:a.element||'fire',sameElementPartCount:3,parts:['attack','attack','attack'],restores:Array.isArray(a.restores)?a.restores.slice(0,5):['none','none','none','none','none'],seriesSkill:'',groupSkill:''};while(build.artia.parts.length<3)build.artia.parts.push('none');while(build.artia.restores.length<5)build.artia.restores.push('none');const skills=Array.isArray(a.weapon_skills)?a.weapon_skills:[];for(const name of skills){const sk=skillByIdByName(name);if(!sk){unresolved.push(`巨戟スキル：${name}`);continue;}if(sk.kind==='set'&&!build.artia.seriesSkill)build.artia.seriesSkill=sk.id;else if(sk.kind==='group'&&!build.artia.groupSkill)build.artia.groupSkill=sk.id;else unresolved.push(`巨戟スキル種別：${name}`);}}
 function templateSourceRuleAudit(t){
   const issues=[];
   const check=(where,entries,maxSlots)=>{
