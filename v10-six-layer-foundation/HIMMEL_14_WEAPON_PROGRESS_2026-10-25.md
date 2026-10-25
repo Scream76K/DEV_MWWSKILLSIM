@@ -45,3 +45,10 @@
 「固定STANDARDの参考計算に対応」は、実装備・発動スキル・保存A/Bが同じ6層Pipelineを通ったことを意味しない。現時点でその接続を確認済みなのは、ハンマーの限定実DBスライスです。DPSはβペンディングであり、武器対応の完了条件に含めません。
 
 次の優先対象は、既存Technique DBで通常物理・属性の根拠が揃うGeneric STANDARD武器を、ハンマーと同じ装備snapshot→L2/L3→L4→L5入口へ接続することです。固有成分の根拠が不足する武器は、登録済みの数値を流用せずEvidence gatedのまま保持します。
+
+## 2026-10-25 残スキル根拠接続追補
+
+- `研鑽` は明示された段階入力 `conditions.everlastingStage`（0..3）を要求し、Lv1の攻撃加算を `[0,4,8,12]` としてL3の攻撃加算列へ渡す。段階を自動推定せず、資料の30分最大をゲーム版確定値として扱わない。
+- `抜刀術【力】` は `conditions.drawAttack === true` かつ `conditions.mounted !== true` のHitだけで、Lv1/2/3のHP攻撃加算 `[3,5,7]` を共通physical attackへ渡す。気絶蓄積は別成分で未接続。条件不明・騎乗中は未算出理由を返す。
+- 根拠: `MACARONGAMEMO_DAMAGE_UP_2025-04-16`、`MACARONGAMEMO_SKILLS_LIST_2025-03-08`。対象ゲーム版適合は未確認。
+- `属性変換` は武器属性加算と別の龍属性追撃であり、トリガー・クールダウン・補正順が未確定のため、`REAL_SLICE:ATTRIBUTE_CONVERSION_TRIGGER_PENDING` として停止する。耐性変換も負耐性・上限・丸め・対象属性の不足が残るため、自動換算しない。

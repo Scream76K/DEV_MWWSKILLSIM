@@ -7219,7 +7219,7 @@ function runBuildComparisonBridgeR39SelfTest(){
 window.BuildComparisonEngine={version:BUILD_COMPARISON_ENGINE_VERSION,router:buildComparisonRouter,commonResult:comparisonCommonResultShape,genericAdapter:genericStandardComparisonAdapter,genericProfiles:GENERIC_STANDARD_PROFILES,genericProfileDamage,insectGlaiveStatePlan,profileCatalog:GENERIC_STANDARD_PROFILE_CATALOG,profileAvailability:genericStandardProfileAvailability,handlerRegistry:BUILD_COMPARISON_HANDLER_REGISTRY,handlerDescriptor:buildComparisonHandlerDescriptor,capabilityReport:buildComparisonCapabilityReport,gunlanceProfile:GUNLANCE_STANDARD_PROFILE,gunlanceEvidence:GUNLANCE_EVIDENCE,gunlanceBodyComponents,gunlanceTypedComponentIntegrity,gunlanceTypedComponentComparison,gunlanceAdapter:gunlanceStandardComparisonAdapter,huntingHornProfile:HUNTING_HORN_STANDARD_PROFILE,huntingHornEvidence:HUNTING_HORN_EVIDENCE,huntingHornComponentPlan,huntingHornBodyComponents,huntingHornSpecialSourceEstimate,huntingHornAdapter:huntingHornStandardComparisonAdapter,bowgunProfiles:BOWGUN_STANDARD_PROFILES,bowgunAmmoTypes:BOWGUN_AMMO_COMPONENT_TYPES,bowgunEvidence:BOWGUN_AMMO_EVIDENCE,bowgunNumeric:BOWGUN_AMMO_NUMERIC,bowgunComparisonPolicy:BOWGUN_COMPARISON_POLICY,bowgunPierceMaximumProfile,bowgunComponentPlan:bowgunAmmoComponentPlan,bowgunAdapter:bowgunStandardComparisonAdapter,bowProfile:BOW_STANDARD_PROFILE,bowTechniques:BOW_TECHNIQUES,bowEvidence:BOW_EVIDENCE,bowComponentPlan:bowStandardComponentPlan,bowAdapter:bowStandardComparisonAdapter,selfTest:runBuildComparisonBridgeR39SelfTest};
 
 function compareStep5Snapshot(){
-  return {attack:$('dAttack')?.value,aff:$('dAff')?.value,elem:$('dElem')?.value,mv:$('dMV')?.value,hz:$('dHZ')?.value,ehz:$('dEHZ')?.value,sharp:$('dSharp')?.value,esharp:$('dESharp')?.value,cb:$('dCB')?.value,eCrit:$('dECrit')?.value,dragonHz:$('powerDragonHz')?.value??'',dragonHitzoneSource:dragonHitzoneSource(),gutsState:$('powerGutsState')?.value||'BEFORE',fortifyCount:$('powerFortifyCount')?.value!==''?Number($('powerFortifyCount')?.value):null,bowState:{chargeLevel:3,coating:$('powerBowCoating')?.value||null,range:$('powerBowRange')?.value||null,startShot:$('powerBowStartShot')?.value?Number($('powerBowStartShot').value):null},hbgState:{ammoType:'NORMAL',ammoLevel:$('powerHbgAmmoLevel')?.value?Number($('powerHbgAmmoLevel').value):null,range:$('powerHbgRange')?.value||null,normalModeLevel:$('powerHbgNormalMode')?.value!==''?Number($('powerHbgNormalMode')?.value):null,magazineCapacity:$('powerHbgCapacity')?.value?Number($('powerHbgCapacity').value):null,shotOrdinal:$('powerHbgShotOrdinal')?.value?Number($('powerHbgShotOrdinal').value):null,fullMagazine:$('powerHbgFullMagazine')?.value?$('powerHbgFullMagazine').value==='YES':null},uptime:$('uptime')?.value,uptimeMode:$('uptimeMode')?.value,chargeBladeState:comboCBStoredState(),insectGlaiveState:comboIGStoredState(),huntingHornState:comboHHStoredState(),lightBowgunState:comboLBGStoredState(),gunlanceState:comboGLStoredState()};
+  return {attack:$('dAttack')?.value,aff:$('dAff')?.value,elem:$('dElem')?.value,mv:$('dMV')?.value,hz:$('dHZ')?.value,ehz:$('dEHZ')?.value,sharp:$('dSharp')?.value,esharp:$('dESharp')?.value,cb:$('dCB')?.value,eCrit:$('dECrit')?.value,dragonHz:$('powerDragonHz')?.value??'',dragonHitzoneSource:dragonHitzoneSource(),gutsState:$('powerGutsState')?.value||'BEFORE',fortifyCount:$('powerFortifyCount')?.value!==''?Number($('powerFortifyCount')?.value):null,bowState:{chargeLevel:3,coating:$('powerBowCoating')?.value||null,range:$('powerBowRange')?.value||null,startShot:$('powerBowStartShot')?.value?Number($('powerBowStartShot').value):null},drawAttack:$('powerDrawAttack')?.checked===true, mounted:$('powerMounted')?.checked===true, everlastingStage:$('powerEverlastingStage')?.value!==''?Number($('powerEverlastingStage').value):null,hbgState:{ammoType:'NORMAL',ammoLevel:$('powerHbgAmmoLevel')?.value?Number($('powerHbgAmmoLevel').value):null,range:$('powerHbgRange')?.value||null,normalModeLevel:$('powerHbgNormalMode')?.value!==''?Number($('powerHbgNormalMode')?.value):null,magazineCapacity:$('powerHbgCapacity')?.value?Number($('powerHbgCapacity').value):null,shotOrdinal:$('powerHbgShotOrdinal')?.value?Number($('powerHbgShotOrdinal').value):null,fullMagazine:$('powerHbgFullMagazine')?.value?$('powerHbgFullMagazine').value==='YES':null},uptime:$('uptime')?.value,uptimeMode:$('uptimeMode')?.value,chargeBladeState:comboCBStoredState(),insectGlaiveState:comboIGStoredState(),huntingHornState:comboHHStoredState(),lightBowgunState:comboLBGStoredState(),gunlanceState:comboGLStoredState()};
 }
 function restoreStep5Snapshot(x){
   if(x?.gunlanceState)restoreComboGLState(x.gunlanceState);
@@ -7261,7 +7261,7 @@ const STANDARD_CONDITIONAL_ATTACK_RULES=Object.freeze([
 ]);
 const STANDARD_UNRESOLVED_CONDITIONAL_SKILLS=Object.freeze([
   ['攻めの守勢','Offensive Guard'],
-  ['チャージマスター','Charge Master'],['抜刀術【力】','Punishing Draw'],['研鑽','Everlasting'],
+  ['チャージマスター','Charge Master'],
   ['ヌシの誇り','ヌシの魂','ヌシの憤激'],['暗器蛸の力'],['花舞の祈り'],['凍峰竜の反逆'],['闢獣の力'],['雪獅子の闘志'],['兇爪竜の力'],['毛皮の昂揚'],['踊火の祈り'],['千刃竜の闘志'],['暗黒','Dark','暗黒騎士の証'],['夢灯の祈り'],['巨戟龍の黙示録'],['祝謡の祈り'],['耐性変換【雷】','耐性変換【水】'],
   ['連撃','Burst'],['災禍転福','Coalescence'],['属性吸収','Element Absorption'],['属性変換','Convert Element'],['火事場力','Heroics'],['逆境','Fortify'],['急襲','Ambush'],['鎖刃刺撃','Slicing Shot'],['濡れ刃紋','Wet Blade Mark'],['海竜の渦雷','蒼雷一閃'],['オメガレゾナンス','レゾナンス'],['黒蝕竜の力','黒蝕一体'],['抜刀術【技】','抜刀術[技]','Critical Draw']
 ]);
@@ -7288,6 +7288,13 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={}){
   const c=st.attackComponents;
   const componentsValid=c&&['weaponBase','normalMultiplier','normalFlat'].every(k=>typeof c[k]==='number'&&Number.isFinite(c[k])&&c[k]>=0)&&Math.abs(c.weaponBase*c.normalMultiplier+c.normalFlat-Number(st.attackTrue??st.attack))<1e-6;
   const heroicsLevel=skillLevel(total,['火事場力','Heroics']);
+  const everlastingLevel=skillLevel(total,['研鑽','Everlasting']);
+  if(everlastingLevel){
+    const stage=cond.everlastingStage;
+    if(!Number.isInteger(everlastingLevel)||everlastingLevel!==1)pending.push('研鑽:LEVEL_UNSUPPORTED');
+    else if(!Number.isInteger(stage)||stage<0||stage>3)pending.push('研鑽:EXPLICIT_STAGE_REQUIRED');
+    else applied.push({skill:'研鑽',level:everlastingLevel,attackAdd:[0,4,8,12][stage],condition:'EXPLICIT_EVERLASTING_STAGE',stage,evidenceRef:'MACARONGAMEMO_DAMAGE_UP_2025-04-16',numericOrigin:'SOURCE_CONFIRMED_NOT_GAME_VERIFIED'});
+  }
   if(heroicsLevel){
     if(!Number.isInteger(heroicsLevel)||heroicsLevel<1||heroicsLevel>5)pending.push('火事場力:HEROICS_LEVEL_UNRESOLVED');
     else if(heroicsLevel>1&&!componentsValid)pending.push('火事場力:HEROICS_ATTACK_COMPONENTS_UNRESOLVED');
@@ -7377,7 +7384,7 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={}){
       }
     }
   }
-  for(const names of STANDARD_UNRESOLVED_CONDITIONAL_SKILLS)if(!['連撃','攻めの守勢','急襲','属性吸収','火事場力','災禍転福'].includes(names[0])&&!(names[0]==='暗黒'&&darkLevel)&&!(names[0]==='毛皮の昂揚'&&groupPlan.applied.some(x=>x.skill==='不屈'))&&!(names[0]==='兇爪竜の力'&&groupPlan.applied.some(x=>Object.prototype.hasOwnProperty.call(STANDARD_SERIES_POWER_RULES,x.skill)))&&!(names[0]==='暗黒'&&darkArts&&!skillLevel(total,['暗黒','Dark']))&&!(names[0]==='抜刀術【技】')&&skillLevel(total,names)>0)pending.push(names[0]+':CONDITIONAL_DAMAGE_FORMULA_PENDING');
+  for(const names of STANDARD_UNRESOLVED_CONDITIONAL_SKILLS)if(!['連撃','攻めの守勢','急襲','属性吸収','火事場力','災禍転福','研鑽','抜刀術【力】'].includes(names[0])&&!(names[0]==='暗黒'&&darkLevel)&&!(names[0]==='毛皮の昂揚'&&groupPlan.applied.some(x=>x.skill==='不屈'))&&!(names[0]==='兇爪竜の力'&&groupPlan.applied.some(x=>Object.prototype.hasOwnProperty.call(STANDARD_SERIES_POWER_RULES,x.skill)))&&!(names[0]==='暗黒'&&darkArts&&!skillLevel(total,['暗黒','Dark']))&&!(names[0]==='抜刀術【技】')&&skillLevel(total,names)>0)pending.push(names[0]+':CONDITIONAL_DAMAGE_FORMULA_PENDING');
   if(groupPlan.attackMultiplier!==1&&!componentsValid)throw Error('BONUS_DAMAGE_EFFECT_PENDING:GUTS_ATTACK_COMPONENTS_UNRESOLVED');
   applied.push(...groupPlan.applied);
   const flat=applied.reduce((n,x)=>n+x.attackAdd,0);
