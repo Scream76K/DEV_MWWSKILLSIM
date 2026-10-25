@@ -1037,7 +1037,13 @@ function slotLines(v){
   return a.length ? a.map((x,i)=>`<div class="slot-line"><span class="slot-num">${i+1}</span>スロット [${x||'-'}]</div>`).join('') : '<div class="muted small">スロットなし</div>';
 }
 // ---- v4.3 data/calc helpers ----
-function isArtia(w){return !!w && (ARTIA_NAMES.has(String(w.name||'')) || /巨戟アーティア|巨戟変異/.test(String(w.name||'')+' '+String(w.description||'')));}
+function isGogmaArtia(w){return !!w && (ARTIA_NAMES.has(String(w.name||'')) || /巨戟アーティア|巨戟変異/.test(String(w.name||'')+' '+String(w.description||'')));}
+// Legacy callers use this for Gogma-only mutation and set/group contribution.
+function isArtia(w){return isGogmaArtia(w);}
+// Exact MHDB identities observed in the retained 2026-10-25 source records.
+const BASE_ARTIA_MHDB_IDS=new Set([69,70,145,146,227,228,303,304,378,379,454,455,521,522,598,599,675,676,751,752,826,827,904,905,975,976,1057,1058]);
+function isBaseArtia(w){return !!w&&BASE_ARTIA_MHDB_IDS.has(Number(w.id))&&[6,7].includes(w.rarity)&&/^アーティア/.test(String(w.name||''));}
+function isArtiaWeapon(w){return isGogmaArtia(w)||isBaseArtia(w);}
 const ARTIA_NAMES=new Set(['忘却のオストランツァ','斬罪のエルガンシオ','破滅のキリエヴェルド','永訣のクラウクライス','禁戒のデスヴァンケル','闇黒のテルプリティカ','暗黒のテルプリティカ','天涯のゲガルンロウ','前兆のプロフェネシス','邪執のコンキエレガン','代償のネイディ・ギア','堕在のラクリエリカ','荊冠のデストレーター','戦慄のヘルシャフェン','亡国のクピドバイン']);
 const WEAPON_COEFF={ 'great-sword':4.8,'long-sword':3.3,'sword-and-shield':1.4,'dual-blades':1.4,hammer:5.2,'hunting-horn':4.2,lance:2.3,gunlance:2.3,'switch-axe':3.5,'charge-blade':3.6,'insect-glaive':3.1,'light-bowgun':1.3,'heavy-bowgun':1.5,bow:1.2 };
 function weaponCoefficient(kind){return WEAPON_COEFF[kind]||1;}
@@ -1341,7 +1347,7 @@ function renderWeapon(){
   const state=$('weaponDataState');if(state){const k=normalizeWeaponKindValue($('weaponKind')?.value||'');const apiKind=API_WEAPON_KIND[k]||k;const exact=arr.length>0&&arr.every(w=>String(w?.kind||'')===apiKind);const counts=KINDS.map(([ui,n])=>`${n}:${Array.isArray(weaponIndexByKind[API_WEAPON_KIND[ui]])?weaponIndexByKind[API_WEAPON_KIND[ui]].length:0}`).join(' / ');state.textContent=`取得済み武器 ${weaponRows.length}件 / ${JP_KIND[k]||k}:${arr.length}件 / kind一致=${exact?'OK':'NG'} / 再取得なし`;state.title=counts;state.className=exact?'muted small':'muted small bad';}
   updateWeaponInfo();renderArtia();
 }
-function updateWeaponInfo(){const w=selectedWeapon(),sk=$('weaponSkillPreview'),sl=$('weaponSlotPreview');if(!sk||!sl)return;const skills=w?sortedSkills(weaponSkills(w)):[];sk.innerHTML=skills.length?`<div class="equip-inline"><div class="equip-title">武器スキル</div><div class="inline-skill">${skills.map(x=>`${esc(x[0])} Lv${x[1]}`).join(' / ')}</div></div>`:'';sk.classList.toggle('hidden',!skills.length);if(!w){sl.innerHTML='';sl.classList.add('hidden');return;}if(isArtia(w)){sl.innerHTML='';sl.classList.add('hidden');renderArtia();return;}const slots=slotLevels(w.slots);sl.innerHTML=`<div class="equip-inline"><div class="equip-title">武器スロット</div>${inlineDecoRows(slots,'w')}</div>`;sl.classList.remove('hidden');bindInlineDecos(sl);}
+function updateWeaponInfo(){const w=selectedWeapon(),sk=$('weaponSkillPreview'),sl=$('weaponSlotPreview');if(!sk||!sl)return;const skills=w?sortedSkills(weaponSkills(w)):[];sk.innerHTML=skills.length?`<div class="equip-inline"><div class="equip-title">武器スキル</div><div class="inline-skill">${skills.map(x=>`${esc(x[0])} Lv${x[1]}`).join(' / ')}</div></div>`:'';sk.classList.toggle('hidden',!skills.length);if(!w){sl.innerHTML='';sl.classList.add('hidden');return;}if(isArtia(w)){sl.innerHTML='';sl.classList.add('hidden');renderArtia();return;}renderArtia();const slots=slotLevels(w.slots);sl.innerHTML=`<div class="equip-inline"><div class="equip-title">武器スロット</div>${inlineDecoRows(slots,'w')}</div>`;sl.classList.remove('hidden');bindInlineDecos(sl);}
 function renderArmor(){let box=$('armorSelectors');box.innerHTML='';for(let [kind,name] of [['head','頭'],['chest','胴'],['arms','腕'],['waist','腰'],['legs','脚']]){let arr=sortByName(DB.armor.filter(a=>a.kind===kind&&a.rank!=='low'));let old=build.armor[kind]?.id;box.insertAdjacentHTML('beforeend',`<div class="equip-inline"><div class="equip-title">${name}</div><select data-armor="${kind}"><option value="">${name}防具を選択</option>${arr.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select><div class="armorSkillPreview inline-skill"></div><div class="armorSlotLines"></div></div>`);let card=box.querySelectorAll('.equip-inline')[box.querySelectorAll('.equip-inline').length-1],sel=card.querySelector(`select[data-armor="${kind}"]`),preview=card.querySelector('.armorSkillPreview'),slotBox=card.querySelector('.armorSlotLines');if(old)sel.value=old;const update=()=>{let a=arr.find(x=>String(x.id)===sel.value);const skills=a?sortedSkills(armorSkills(a)):[];preview.innerHTML=skills.length?`スキル：${skills.map(x=>`${esc(x[0])} Lv${x[1]}`).join(' / ')}`:'';preview.style.display=skills.length?'block':'none';slotBox.innerHTML=a?`<div class="equip-title">${name}スロット</div>${inlineDecoRows(maxBreakSlots(a),kind)}`:'';if(a)bindInlineDecos(slotBox)};update();sel.onchange=()=>{App.build.setArmor(kind,arr.find(a=>String(a.id)===sel.value)||null);update();calcBuild()}}}
 function renderCharmPresets(){let s=$('charmPreset');if(!s)return;const charms=Array.isArray(DB.charms)?DB.charms:[];s.innerHTML='<option value="">自由設定</option>'+charms.flatMap(c=>Array.isArray(c?.ranks)?c.ranks.map(r=>({id:c.id+'|'+r.id,name:r.name,skills:r.skills})):[]).map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');}
 function charmPrefixRules(skills){
@@ -1445,8 +1451,12 @@ function selectedWeapon(){
 function renderArtia(){
   normalizeArtiaProduction();
   let w=selectedWeapon(),box=$('artiaBox');
-  if(!isArtia(w)){box.classList.add('hidden');return;}
+  if(!isArtiaWeapon(w)){box.classList.add('hidden');return;}
   box.classList.remove('hidden');
+  if(isBaseArtia(w)){
+    box.innerHTML='<b>アーティア生産条件</b><div>同一属性の攻撃素材3個固定</div><div class="notice">通常アーティアの生産・復元補正は原典と対象版の照合待ちです。保存済みの属性・復元指定は保持し、火力合計は未算出とします。</div>';
+    return;
+  }
   const elems=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'];
   const ej={fire:'火',water:'水',ice:'氷',thunder:'雷',dragon:'龍',poison:'毒',paralysis:'麻痺',sleep:'睡眠',blast:'爆破'};
   const opts=[['attack','攻撃激化'],['affinity','会心激化'],['element','属性激化']];
@@ -1706,6 +1716,7 @@ function artiaFixedVariantStats(w){
   return {attack,affinity,attackKnown:v.attackKnown!==false,affinityKnown:v.affinityKnown!==false,...state,sourceId:v.sourceId??null,fixed:true};
 }
 function realPipelineWeapon(pipelineWeapon){
+    if(isBaseArtia(pipelineWeapon))throw new Error('REAL_SLICE:BASE_ARTIA_PRODUCTION_RESTORE_SOURCE_PENDING');
     if(isArtia(pipelineWeapon)){
       const fixed=artiaFixedVariantStats(pipelineWeapon),restore=restoreStats(pipelineWeapon);
       if(!fixed||fixed.attackKnown===false||fixed.affinityKnown===false||!fixed.elementKnown||!fixed.typeKnown)
