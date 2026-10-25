@@ -51,6 +51,24 @@
   const referenceSkills=Object.fromEntries(['normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].map(key=>[key,Math.max(...allSkills.filter(x=>x.skillKey===key).map(x=>x.level),0)]));
   const referenceCriticalBoostLevel=Math.max(...allSkills.filter(x=>x.skillKey==='criticalBoost').map(x=>x.level),0);
   const techniques={};
+  const resolveReferenceState=(referenceKind,id,technique,rawState)=>{
+   const state={...(rawState||{})},sourceState=technique?.specialSourceValues||{};
+   if(referenceKind==='light-bowgun'){
+    const level=Number(String(id).match(/^LBG_NORMAL_AMMO_([12])$/)?.[1]||0);
+    if(!Number.isInteger(level)||level<1)return state;
+    state.ammoType=state.ammoType??'NORMAL';
+    state.ammoLevel=state.ammoLevel??level;
+    state.range=state.range??'CRITICAL';
+    state.normalModeLevel=state.normalModeLevel??0;
+    state.contactPolicy=state.contactPolicy??sourceState.contactPolicy??(sourceState.hitCount===3?'ALL_THREE':null);
+    state.resolutionSource=state.resolutionSource||'TECHNIQUE_DB_SPECIAL_SOURCE_VALUES';
+   }else if(referenceKind==='heavy-bowgun'){
+    state.ammoType=state.ammoType??'NORMAL';
+    state.contactPolicy=state.contactPolicy??(sourceState.hitCount===3?'ALL_THREE':null);
+    state.resolutionSource=state.resolutionSource||'TECHNIQUE_DB_SPECIAL_SOURCE_VALUES';
+   }
+   return state;
+  };
   for(const id of [...new Set(resolvedTechniqueIds)]){
    let technique=techniqueDb?.get?.(weapon.kind,id);
    if(weapon.kind==='gunlance'&&String(id).startsWith('reference:gl_')){
@@ -60,7 +78,7 @@
     technique={...base,techniqueId:id,shellingAction:action,shellingInput};
    }
    const referenceKind=weapon.kind==='bow'&&['BOW_SHOT_3','BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3'].includes(id)?'bow':weapon.kind==='heavy-bowgun'&&/^HBG_NORMAL_AMMO_[123]$/.test(id)?'heavy-bowgun':weapon.kind==='light-bowgun'&&/^LBG_NORMAL_AMMO_[12]$/.test(id)?'light-bowgun':weapon.kind==='charge-blade'&&['CB_SAED','CB_SAED_AED_DERIVED'].includes(id)?'charge-blade-saed':weapon.kind==='hunting-horn'&&['HH_PERFORMANCE_SHOCKWAVE','HH_ECHO_BUBBLE_FOLLOWUP','HH_ECHO_BUBBLE_MELODY_EVENT','HH_MELODY_COMPLETION_FIXED_10'].includes(id)?'hunting-horn-sound':null;
-   if(referenceKind)technique={...technique,referenceKind,referenceInput:{state:referenceKind==='bow'?bowState:referenceKind==='heavy-bowgun'?hbgState:referenceKind==='light-bowgun'?lightBowgunState:referenceKind==='charge-blade-saed'?{...chargeBladeState,ammoLoadingLevel:loadShellEntries.length?Math.max(...loadShellEntries.map(x=>x.level),0):chargeBladeState?.ammoLoadingLevel}:huntingHornState,skills:referenceSkills,criticalBoostLevel:referenceCriticalBoostLevel,sourceTechniqueId:id}};
+   if(referenceKind){const rawState=referenceKind==='bow'?bowState:referenceKind==='heavy-bowgun'?hbgState:referenceKind==='light-bowgun'?lightBowgunState:referenceKind==='charge-blade-saed'?{...chargeBladeState,ammoLoadingLevel:loadShellEntries.length?Math.max(...loadShellEntries.map(x=>x.level),0):chargeBladeState?.ammoLoadingLevel}:huntingHornState;technique={...technique,referenceKind,referenceInput:{state:resolveReferenceState(referenceKind,id,technique,rawState),skills:referenceSkills,criticalBoostLevel:referenceCriticalBoostLevel,sourceTechniqueId:id}};}
    if(!technique)return fail('REAL_SLICE:TECHNIQUE_NOT_FOUND:'+id);
    const shelling=Array.isArray(technique.specialComponents)&&technique.specialComponents.some(x=>String(x).includes('SHELL')),reference=['bow','light-bowgun','heavy-bowgun','charge-blade-saed','hunting-horn-sound'].includes(technique.referenceKind);
    if(!shelling&&!reference&&(!Array.isArray(technique.hits)||!technique.hits.length))return fail('REAL_SLICE:TECHNIQUE_HITS_NOT_FOUND:'+id);
