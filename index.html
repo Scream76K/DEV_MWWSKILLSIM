@@ -1855,6 +1855,12 @@ function calcBuild(){renderCharmLegality();
   // Defense skill contribution (common levels)
   const dl=validCombatSkillLevel(total,['防御','Defense'],7); const dFlat=[0,5,10,10,20,20,35,35][dl]; const dMult=dl>=7?1.10:dl>=6?1.08:dl>=4?1.05:1; stats.defense=(stats.defense+dFlat)*dMult;
   stats.activeBonusEffects=JSON.parse(JSON.stringify([...(calcState.bonusDisplay?.series||[]),...(calcState.bonusDisplay?.group||[])]));
+  try{
+    const conditionPlan=standardPowerConditionPlan(stats,total,kind,compareStep5Snapshot());
+    stats.conditionalConditionPlan=conditionPlan;
+  }catch(error){
+    stats.conditionalConditionPlan={status:'PARTIAL',maximum:stats,pending:['CONDITION_PLAN_ERROR:'+String(error?.message||error)]};
+  }
   calcState={total,rawTotal,stats,bonusDisplay:calcState.bonusDisplay||{series:[],group:[]}};
   const selectedTechniqueIdRaw=$('comboMovePicker')?.value||document.querySelector('.comboRow .cmove')?.value||'';
   const selectedTechniqueId=selectedTechniqueIdRaw==='hm_side'?'HAM_SIDE_SWING':selectedTechniqueIdRaw;
@@ -1863,7 +1869,7 @@ function calcBuild(){renderCharmLegality();
   const standardTechniqueIds=selectedTechniqueIdsRaw.some(Boolean)?[]:(standardProfile?.status==='ADOPTED'&&Array.isArray(standardProfile.techniqueIds)?standardProfile.techniqueIds:[]);
   const techniqueInputIds=selectedTechniqueIdsRaw.some(Boolean)?selectedTechniqueIdsRaw:standardTechniqueIds;
   const selectedTechniqueIds=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(techniqueInputIds,{fallback:selectedTechniqueId})?.ids||techniqueInputIds.filter(Boolean);
-  try{calcState.realOneHit=window.MHWRealOneHitBrowserAdapter?.evaluateCurrent?.({weapon:w,stats,target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''},skills:Object.entries(total),techniqueId:selectedTechniqueId,techniqueIds:selectedTechniqueIds.length?selectedTechniqueIds:[selectedTechniqueId],techniqueDb:window.TechniqueDBEngine,trainingRoom:trainingRoomMonster(),retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'})||{status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};}catch(e){calcState.realOneHit={status:'UNAVAILABLE',reason:String(e?.message||e||'REAL_SLICE:EVALUATION_FAILED')};}
+  try{calcState.realOneHit=window.MHWRealOneHitBrowserAdapter?.evaluateCurrent?.({weapon:w,stats,target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''},skills:Object.entries(total),conditions:compareStep5Snapshot(),conditionalConditionPlan:stats.conditionalConditionPlan,techniqueId:selectedTechniqueId,techniqueIds:selectedTechniqueIds.length?selectedTechniqueIds:[selectedTechniqueId],techniqueDb:window.TechniqueDBEngine,trainingRoom:trainingRoomMonster(),retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'})||{status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};}catch(e){calcState.realOneHit={status:'UNAVAILABLE',reason:String(e?.message||e||'REAL_SLICE:EVALUATION_FAILED')};}
   renderSummary();renderDetail();syncDamage();renderMonsterInfo();refreshDecorationSelects();updateWeaponCoeffDisplay();
 }
 function sortedSkills(o){const kindRank=name=>{const k=skillByIdByName(name)?.kind;return k==='weapon'?0:k==='armor'?1:2;};return Object.entries(o).sort((a,b)=>kindRank(a[0])-kindRank(b[0])||Number(b[1])-Number(a[1])||jpSort(a[0],b[0]));}
@@ -7392,6 +7398,7 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={}){
   maximum.attackTrue=componentsValid?c.weaponBase*c.normalMultiplier*conditionalMultiplier*groupPlan.attackMultiplier+c.normalFlat+flat:Number(st.attackTrue??st.attack)+flat;
   return {normal,maximum,applied,excluded,pending,groupPlan,status:pending.length?'PARTIAL':'REFERENCE_ONLY',scope:'ADOPTED_CONDITIONAL_ATTACK_ELEMENT_MAX_AFFINITY',attackOrder:componentsValid?'WEAPON_BASE_TIMES_MULTIPLIERS_PLUS_FLATS':'ADD_TO_CALCULATED_TRUE_ATTACK_REFERENCE',attackComponents:componentsValid?{...c,conditionalMultiplier,groupMultiplier:groupPlan.attackMultiplier,conditionalFlat:flat}:null,evidenceGameVersion:'NOT_VERIFIED'};
 }
+window.MHWStandardPowerConditionPlan=standardPowerConditionPlan;
 function hbgNormalPowerForStats(st,cond,total={}){
  const pending=reason=>({status:'PENDING',reason,profileId:'HBG_NORMAL_AMMO_REFERENCE',normal:null,maximum:null,hbgState:cond.hbgState});
  try{
