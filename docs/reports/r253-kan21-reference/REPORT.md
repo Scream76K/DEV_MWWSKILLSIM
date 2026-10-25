@@ -23,3 +23,13 @@ tools/kan21-single-reference-proof.cjs は実 calcBuild → 公開Pipeline → r
 AED派生の許可条件と比較rendererは静的確認のみ、今回の実入力実行は通常単独SAEDと混在拒否のみ。保存比較の再実行なし。榴弾/属性会心/任意命中数/混在状態遷移/DPSの完成ではない。部位耐久不明値をHPへ適用しない。通常アーティア係数は朝判断待ち維持。
 
 追加のゲーム数値承認質問は発生していない。次の開発調査は近接チャージマスターの既存出典・技別条件の確認。根拠が揃うまでは未算出を維持する。
+
+## 追加静的照合：装填Lv未接続（再実行なし）
+
+承認根拠：docs/reports/kan-21/REPORT.md:7–11（POWER_ELEMENT限定・全5命中・版・本体・盾補正・REFERENCE_ONLY）、index.html:5702–5712（approvalRefs KAN-21#10057/#10058、hitPolicy FULL_STOCK_FULL_HIT、hitCount/eventCount各5）。今回はJira原文の再取得ではなく保存済み承認参照の照合。命中5は限定採用条件であり、消費5だけから推定していない。
+
+実入力はMHDB103、POWER_ELEMENT、盾true、斧false、enhancedPhial=true、砲弾装填スキルなし。保存traceはammoLoadingLevel:null、enhancedCount:5、normalCount:0、hitCount:5。815.977335は旧互換の全強化5本分岐であり、実装備Lv0の正しい本数接続の実証ではない。前節の成立報告はこの制限付きで読むこと。
+
+フランメ契約はindex.html:5249–5252とtests/flamme-cb-saed-mixed-phials.test.cjsにあり、明示Lv0/1は強化3+通常2、Lv2は強化5。Adapter:92はスキルentryなし時chargeBladeState.ammoLoadingLevelへfallbackし、今回undefinedで旧enhancedPhial互換分岐へ落ちる。実装備なし=Lv0の接続欠陥であり、新承認の問題ではない。
+
+最小修正候補は集計済み実装備入口でスキルなしを明示0へ正規化してreferenceへ渡すこと。旧単独APIの未指定互換は維持。今回追加実行なしの指示に従い修正・再実行なし。既存式によるLv0の静的期待値はビン500.916、合計759.193335（物理234.877335、属性23.4不変）。未実行の受入候補であり、保存ログを変更していない。
