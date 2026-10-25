@@ -93,9 +93,20 @@
     const suppliedType=chargeBladeState?.phialType||null;
     if(suppliedType&&suppliedType!==officialPhialType)return fail('REAL_SLICE:CB_PHIAL_TYPE_MISMATCH_MHDB:'+officialPhialType+':'+suppliedType);
     const artilleryLevel=artilleryEntries.length?Math.max(...artilleryEntries.map(x=>x.level)):0;
+    if(artilleryEntries.some(x=>!Number.isInteger(x.level)||x.level<0||x.level>3))return fail('REAL_SLICE:CB_ARTILLERY_LEVEL_UNRESOLVED');
     const artillery=root.ChargeBladeEngine?.evidence?.artillery;
-    const artilleryMultiplier=artillery?.status==='PROVISIONALLY_ADOPTED'?artillery.multipliers?.[artilleryLevel]??1:1;
-    technique={...technique,phialState:{...(chargeBladeState||{}),phialType:officialPhialType,artilleryLevel,artilleryMultiplier,baseAttack:Number(weapon.damage.raw),attackComponents:stats.attackComponents?{...stats.attackComponents}:null,phialTypeSource:'MHDB:weapon.phial',phialTypeValue:weapon.phial,artilleryEvidenceRefs:artillery?.evidenceRefs||[],artillerySourceVersion:artillery?.sourceVersion||'UNKNOWN',artilleryStatus:artillery?.status||'UNRESOLVED'}};
+    let artilleryMultiplier;
+    if(artilleryLevel===0){
+     if(artillery?.status!=='PROVISIONALLY_ADOPTED')return fail('REAL_SLICE:CB_ARTILLERY_LV0_UNRESOLVED');
+     artilleryMultiplier=1;
+    }else{
+     const candidate=artillery?.multipliers?.[artilleryLevel];
+     if(artillery?.status!=='PROVISIONALLY_ADOPTED'||!Object.prototype.hasOwnProperty.call(artillery?.multipliers||{},artilleryLevel)||typeof candidate!=='number'||!Number.isFinite(candidate)||candidate<=0)return fail('REAL_SLICE:CB_ARTILLERY_MULTIPLIER_UNRESOLVED');
+     artilleryMultiplier=candidate;
+    }
+    const baseAttack=weapon.damage?.raw;
+    if(typeof baseAttack!=='number'||!Number.isFinite(baseAttack)||baseAttack<0)return fail('REAL_SLICE:CB_BASE_ATTACK_UNRESOLVED');
+    technique={...technique,phialState:{...(chargeBladeState||{}),phialType:officialPhialType,artilleryLevel,artilleryMultiplier,baseAttack,attackComponents:stats.attackComponents?{...stats.attackComponents}:null,phialTypeSource:'MHDB:weapon.phial',phialTypeValue:weapon.phial,artilleryEvidenceRefs:artillery?.evidenceRefs||[],artillerySourceVersion:artillery?.sourceVersion||'UNKNOWN',artilleryStatus:artillery?.status||'UNRESOLVED'}};
    }
    const shelling=Array.isArray(technique.specialComponents)&&technique.specialComponents.some(x=>String(x).includes('SHELL')),reference=['bow','light-bowgun','heavy-bowgun','charge-blade-saed','hunting-horn-sound'].includes(technique.referenceKind);
    if(!shelling&&!reference&&(!Array.isArray(technique.hits)||!technique.hits.length))return fail('REAL_SLICE:TECHNIQUE_HITS_NOT_FOUND:'+id);
