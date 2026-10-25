@@ -4186,7 +4186,7 @@ function chargeBladeComboDamage(move,ctx){
   if(move.canonicalKind==='charge-blade'&&['CB_SAED','CB_SAED_AED_DERIVED'].includes(move.canonicalTechniqueId)){
     if(ctx.elementCrit)throw Error('CB_SAED:ELEMENT_CRITICAL_BODY_CONNECTION_PENDING');
     const level=Number(ctx.critBonus);if(!Number.isInteger(level)||level<0||level>5)throw Error('CANONICAL_COMBO_CRIT_LEVEL');
-    const result=chargeBladeSaedDamage(move.canonicalTechniqueId,{baseAttack:ctx.attack,displayedElement:ctx.element,physicalHitzone:ctx.hz,elementalHitzone:ctx.ehz,sharpnessPhysical:ctx.sharp,sharpnessElement:ctx.esharp,affinity:ctx.affinity,criticalMultiplier:1.25+[0,.03,.06,.09,.12,.15][level]},ctx.chargeBladeState||{});
+    const result=chargeBladeSaedDamage(move.canonicalTechniqueId,{baseAttack:ctx.attack,attackComponents:calcState.stats.attackComponents,displayedElement:ctx.element,physicalHitzone:ctx.hz,elementalHitzone:ctx.ehz,sharpnessPhysical:ctx.sharp,sharpnessElement:ctx.esharp,affinity:ctx.affinity,criticalMultiplier:1.25+[0,.03,.06,.09,.12,.15][level]},ctx.chargeBladeState||{});
     return {...result,hits:[{p:result.physical,e:result.element,total:result.total,component:'SAED_BODY_AND_FIVE_PHIALS'}],handler:'ChargeBladeHandler'};
   }
   if(move.canonicalKind!=='charge-blade'||move.canonicalTechniqueId!=='CB_SWORD_TO_AXE_MORPH')throw new Error('CB_COMBO_PHIAL_ROUTE_PENDING');
@@ -4194,11 +4194,11 @@ function chargeBladeComboDamage(move,ctx){
   const level=Number(state.rapidMorphLevel);if(!Number.isInteger(level)||level<0||level>3)throw new Error('CB_COMBO_RAPID_MORPH_LEVEL');
   const critLevel=Number(ctx.critBonus)||0;if(!Number.isInteger(critLevel)||critLevel<0||critLevel>5)throw new Error('CANONICAL_COMBO_CRIT_LEVEL');
   // The dedicated resolver owns component applicability and phial evidence gates.
-  chargeBladeResolveTechniqueDamage(move.canonicalTechniqueId,{baseAttack:ctx.attack,displayedElement:ctx.element,physicalHitzone:ctx.hz,elementalHitzone:ctx.ehz,sharpnessPhysical:ctx.sharp,sharpnessElement:ctx.esharp,affinity:ctx.affinity,criticalMultiplier:1.25+[0,.03,.06,.09,.12,.15][critLevel],negativeCriticalMultiplier:.75},state);
+  chargeBladeResolveTechniqueDamage(move.canonicalTechniqueId,{baseAttack:ctx.attack,attackComponents:calcState.stats.attackComponents,displayedElement:ctx.element,physicalHitzone:ctx.hz,elementalHitzone:ctx.ehz,sharpnessPhysical:ctx.sharp,sharpnessElement:ctx.esharp,affinity:ctx.affinity,criticalMultiplier:1.25+[0,.03,.06,.09,.12,.15][critLevel],negativeCriticalMultiplier:.75},state);
   const parts=chargeBladeTechniqueComponents(move.canonicalTechniqueId,state);
   const pair=(physical,element,component)=>physical.map((p,i)=>{
     const e=element[i];if(!e)throw new Error('CB_COMBO_COMPONENT_PAIR');
-    return {...damageFromParams({...ctx,attack:ctx.attack*p.multiplier,element:ctx.element*e.elementModifier*e.multiplier,mv:p.mv}),component,mv:p.mv,elementModifier:e.elementModifier,partModifierAppliedToHp:false};
+    return {...damageFromParams({...ctx,attack:rapidMorphBodyAttack(ctx.attack,calcState.stats.attackComponents,p.attackMultiplier??1)*p.multiplier,element:ctx.element*e.elementModifier*e.multiplier,mv:p.mv}),component,mv:p.mv,elementModifier:e.elementModifier,partModifierAppliedToHp:false};
   });
   const hits=[...pair(parts.physicalBody,parts.elementalBody,'BODY'),...pair(parts.axeBoostPhysical,parts.axeBoostElement,'AXE_BOOST')];
   return {hits,total:hits.reduce((sum,h)=>sum+h.total,0),handler:'ChargeBladeHandler',components:parts,chargeBladeState:{...state}};
@@ -4629,7 +4629,7 @@ function ordinaryComboTechniqueDamage(move,ctx){
   const level=Math.max(0,Math.min(5,Number(ctx.critBonus)||0));
   if(!Number.isInteger(level))throw new Error('CANONICAL_COMBO_CRIT_LEVEL');
   const criticalMultiplier=1.25+[0,.03,.06,.09,.12,.15][level];
-  const stats={baseAttack:ctx.attack,displayedElement:ctx.element,physicalHitzone:ctx.hz,elementalHitzone:ctx.ehz,sharpnessPhysical:ctx.sharp,sharpnessElement:ctx.esharp,affinity:ctx.affinity,maxAffinity:ctx.affinity,criticalMultiplier,negativeCriticalMultiplier:.75};
+  const stats={baseAttack:ctx.attack,attackComponents:calcState.stats.attackComponents,displayedElement:ctx.element,physicalHitzone:ctx.hz,elementalHitzone:ctx.ehz,sharpnessPhysical:ctx.sharp,sharpnessElement:ctx.esharp,affinity:ctx.affinity,maxAffinity:ctx.affinity,criticalMultiplier,negativeCriticalMultiplier:.75};
   const raw=genericProfileDamage({status:'ADOPTED',hits:registered},stats);
   const elementCrit=ctx.elementCrit?genericExpectedCritMultiplier(ctx.affinity,criticalMultiplier,.75):1;
   const hits=raw.trace.map(h=>{
@@ -5318,6 +5318,13 @@ function chargeBladeEvidencePhialCount(techniqueId){
   if(!e||e.status!=='VERIFIED'||!Number.isInteger(e.count)||e.count<1) return null;
   return e.count;
 }
+const RAPID_MORPH_ATTACK_RULE=Object.freeze({skillId:7,multipliers:Object.freeze([1,1,1.1,1.2]),stage:'attack',target:'physical',status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25T23:53:00Z',source:'https://kuroyonhon.com/mhwilds/memo/26.php',sourceVersion:'UNSPECIFIED',liveGameVerification:'PENDING',unconnectedScope:Object.freeze(['SA_AXE_SWEEP_MORPH_ALL_HITS','SA_FOCUS_MORPH_WOUND_TRANSFORM_HITS','CB_CHARGE_DERIVED_ED1','CB_SHIELD_THRUST_OR_GUARD_DERIVED_AED','CB_GUARD_DERIVED_SAED','CB_ELEMENT_SPIN_AXE_BOOST','CB_ELIGIBLE_AXE_FOLLOWUP','CORRUPTED_MANTLE_FOLLOWUP']),excludedScope:Object.freeze(['SA_FOLLOWUP_EXPLOSION','CB_PHIAL_EXPLOSION']),techniqueIds:Object.freeze(['CB_SWORD_TO_AXE_MORPH','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'])});
+window.MHRapidMorphAttackRule=RAPID_MORPH_ATTACK_RULE;
+function rapidMorphBodyAttack(attack,components,multiplier){
+ if(multiplier===1)return attack;
+ if(!components||!['weaponBase','normalMultiplier','normalFlat'].every(k=>Number.isFinite(components[k])))throw Error('RAPID_MORPH:ATTACK_COMPONENTS_REQUIRED');
+ return components.weaponBase*components.normalMultiplier*multiplier+components.normalFlat;
+}
 function chargeBladeTechniqueComponents(techniqueId,state={}){
   const t=CHARGE_BLADE_TECHNIQUES[techniqueId]; if(!t)throw new Error(`CB_FAIL_CLOSED:unknown_technique:${techniqueId}`);
   const canonical=techniqueDbGet('charge-blade',techniqueId);if(!canonical)throw new Error(`TECHNIQUE_DB_FAIL_CLOSED:charge-blade:${techniqueId}`);
@@ -5325,12 +5332,13 @@ function chargeBladeTechniqueComponents(techniqueId,state={}){
   const axeBoosted=state.axeBoosted!==false,shieldBoosted=state.shieldBoosted!==false;
   const rapidMorphLevel=state.rapidMorphLevel==null?0:Number(state.rapidMorphLevel);
   if(!Number.isInteger(rapidMorphLevel)||rapidMorphLevel<0||rapidMorphLevel>3)throw new Error('CB_FAIL_CLOSED:RAPID_MORPH_LEVEL_INVALID');
-  const rapidMorphDamageMultiplier=t.rapidMorphDamageEligible?(rapidMorphLevel>=3?1.2:rapidMorphLevel>=2?1.1:1):1;
+  const rapidMorphAttackMultiplier=t.rapidMorphDamageEligible?RAPID_MORPH_ATTACK_RULE.multipliers[rapidMorphLevel]:1;
+  if(axeBoosted&&rapidMorphAttackMultiplier!==1)throw Error('CB_FAIL_CLOSED:RAPID_MORPH_AXE_FOLLOWUP_UNCONNECTED');
   // r23: keep physical/element/axe-boost components independent. Shield-boost body scope is
   // intentionally fail-closed for element and axe-boost until evidence explicitly adopts it.
   const shieldPhysicalBodyMultiplier=shieldBoosted&&t.shieldBoostAxeBody?CHARGE_BLADE_SHIELD_AXE_BODY_MULTIPLIER:1;
-  const physicalBody=canonicalHits.map(h=>({source:'BODY_PHYSICAL',mv:h.mv,multiplier:shieldPhysicalBodyMultiplier*rapidMorphDamageMultiplier}));
-  const elementalBody=canonicalHits.map(h=>({source:'BODY_ELEMENT',elementModifier:h.elementModifier,multiplier:rapidMorphDamageMultiplier}));
+  const physicalBody=canonicalHits.map(h=>({source:'BODY_PHYSICAL',mv:h.mv,multiplier:shieldPhysicalBodyMultiplier,attackMultiplier:rapidMorphAttackMultiplier}));
+  const elementalBody=canonicalHits.map(h=>({source:'BODY_ELEMENT',elementModifier:h.elementModifier,multiplier:1}));
   const axeBoostPhysical=axeBoosted&&t.axeBoostHits?Array.from({length:t.axeBoostHits.count},()=>({source:'AXE_BOOST_PHYSICAL',mv:t.axeBoostHits.mv,multiplier:1})) : [];
   const axeBoostElement=axeBoosted&&t.axeBoostHits?Array.from({length:t.axeBoostHits.count},()=>({source:'AXE_BOOST_ELEMENT',elementModifier:t.axeBoostHits.elementModifier,multiplier:1})) : [];
   let phial=null;
@@ -5340,7 +5348,7 @@ function chargeBladeTechniqueComponents(techniqueId,state={}){
     else phial={status:'READY',count:countEvidence.count,verificationStatus:countEvidence.status,source:countEvidence.source,coefficientData:{...t.phial}};
   }
   return {techniqueId,name:t.name,physicalBody,elementalBody,axeBoostPhysical,axeBoostElement,phial,
-    trace:{axeBoosted,shieldBoosted,rapidMorphLevel,rapidMorphDamageMultiplier,shieldPhysicalBodyMultiplier,
+    trace:{axeBoosted,shieldBoosted,rapidMorphLevel,rapidMorphAttackMultiplier,adoption:RAPID_MORPH_ATTACK_RULE,shieldPhysicalBodyMultiplier,
       shieldElementBodyMultiplier:1,shieldAxeBoostMultiplier:1}};
 }
 function chargeBladeProfileTrace(profileId,state={}){
@@ -5414,7 +5422,7 @@ function chargeBladeResolveTechniqueDamage(techniqueId,stats={},state={}){
   const critMultiplier=affinity>=0?1+affinity*(Number(stats.criticalMultiplier??1.25)-1):1+affinity*(1-Number(stats.negativeCriticalMultiplier??.75));
   const physUnit=Number(stats.baseAttack)*Number(stats.sharpnessPhysical)*Number(stats.physicalHitzone)/100*critMultiplier/100;
   const elemUnit=Number(stats.displayedElement)/10*Number(stats.sharpnessElement)*Number(stats.elementalHitzone)/100;
-  const physicalBody=c.physicalBody.reduce((a,x)=>a+x.mv*x.multiplier*physUnit,0);
+  const physicalBody=c.physicalBody.reduce((a,x)=>a+x.mv*x.multiplier*rapidMorphBodyAttack(stats.baseAttack,stats.attackComponents,x.attackMultiplier)*Number(stats.sharpnessPhysical)*Number(stats.physicalHitzone)/100*critMultiplier/100,0);
   const elementalBody=c.elementalBody.reduce((a,x)=>a+x.elementModifier*x.multiplier*elemUnit,0);
   const axeBoostPhysical=c.axeBoostPhysical.reduce((a,x)=>a+x.mv*x.multiplier*physUnit,0);
   const axeBoostElement=c.axeBoostElement.reduce((a,x)=>a+x.elementModifier*x.multiplier*elemUnit,0);
@@ -5621,12 +5629,13 @@ function runChargeBladeR25SelfTest(){
   eq(c.ratio,1.04*(4/7)+1.10*(3/7),'duration_weighted_composite');
   let durationFailClosed=false; try{chargeBladeCompositeRatio(1.04,1.10,{})}catch(e){durationFailClosed=String(e.message).includes('ROUTE_DURATION_UNVERIFIED')}
   if(!durationFailClosed)throw new Error('CB_R25_TEST_FAIL:unverified_duration_must_fail_closed');
-  const morph0=chargeBladeTechniqueComponents('CB_SWORD_TO_AXE_MORPH',{axeBoosted:true,shieldBoosted:false,rapidMorphLevel:0});
-  const morph3=chargeBladeTechniqueComponents('CB_SWORD_TO_AXE_MORPH',{axeBoosted:true,shieldBoosted:false,rapidMorphLevel:3});
-  eq(morph0.physicalBody[0].multiplier,1,'rapid_morph_lv0_physical'); eq(morph3.physicalBody[0].multiplier,1.2,'rapid_morph_lv3_physical');
-  eq(morph3.elementalBody[0].multiplier,1.2,'rapid_morph_lv3_element');
-  eq(morph3.axeBoostPhysical[0].multiplier,1,'rapid_morph_does_not_touch_axe_boost_physical');
-  eq(morph3.axeBoostElement[0].multiplier,1,'rapid_morph_does_not_touch_axe_boost_element');
+  const morph0=chargeBladeTechniqueComponents('CB_SWORD_TO_AXE_MORPH',{axeBoosted:false,shieldBoosted:false,rapidMorphLevel:0});
+  const morph3=chargeBladeTechniqueComponents('CB_SWORD_TO_AXE_MORPH',{axeBoosted:false,shieldBoosted:false,rapidMorphLevel:3});
+  eq(morph0.physicalBody[0].attackMultiplier,1,'rapid_morph_lv0_attack');eq(morph3.physicalBody[0].attackMultiplier,1.2,'rapid_morph_lv3_attack');
+  eq(morph3.physicalBody[0].multiplier,1,'rapid_morph_not_final_damage');eq(morph3.elementalBody[0].multiplier,1,'rapid_morph_element_unchanged');
+  eq(rapidMorphBodyAttack(203,{weaponBase:200,normalMultiplier:1,normalFlat:3},morph3.physicalBody[0].attackMultiplier),243,'rapid_morph_before_flat');
+  let followupBlocked=false;try{chargeBladeTechniqueComponents('CB_SWORD_TO_AXE_MORPH',{axeBoosted:true,shieldBoosted:false,rapidMorphLevel:3})}catch(e){followupBlocked=String(e.message).includes('RAPID_MORPH_AXE_FOLLOWUP_UNCONNECTED');}
+  if(!followupBlocked)throw Error('CB_R25_TEST_FAIL:rapid_morph_followup_unconnected');
   const shielded=chargeBladeTechniqueComponents('CB_ELEMENT_DISCHARGE_1',{axeBoosted:true,shieldBoosted:true});
   eq(shielded.physicalBody[0].multiplier,1.1,'shield_boost_physical_body');
   eq(shielded.elementalBody[0].multiplier,1,'shield_boost_element_scope_fail_closed');
