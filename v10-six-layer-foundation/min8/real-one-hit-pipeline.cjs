@@ -4,11 +4,12 @@
 const {createImmutableProvider}=require('./immutable-provider.cjs');
 const {createPipeline}=require('./pipeline.cjs');
 const {adaptOrdinaryPhysicalHit}=require('./real-technique-one-hit-adapter.cjs');
-const {createSourcedPhysicalFormula}=require('./sourced-physical-formula.cjs');
+const {createSourcedPhysicalFormula,createSourcedElementalFormula}=require('./sourced-physical-formula.cjs');
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
+ const elemental=canonicalPhysical?createSourcedElementalFormula({...canonicalPhysical,resolveHitzone:canonicalPhysical.resolveElementHitzone||canonicalPhysical.resolveHitzone}):formulae?.element;
  if(typeof physical!=='function')throw Error('REAL_SLICE:PHYSICAL_FORMULA_REQUIRED');
  if(canonicalPhysical?.expectedGameVersion!==undefined && canonicalPhysical.expectedGameVersion!==versions?.game)throw Error('REAL_SLICE:GAME_VERSION_MISMATCH');
  if(typeof resolveBuild!=='function'||typeof resolveEffects!=='function'||typeof initialState!=='function')throw Error('REAL_SLICE:RESOLVERS_REQUIRED');
@@ -29,8 +30,9 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
   resolveBuild:(raw,equipment,request)=>{
    const result=resolveBuild(raw,equipment,request);
    if(result?.weaponType!==weaponType)throw Error('REAL_SLICE:WEAPON_MISMATCH');
-   if(result?.equipment?.displayElement?.status!=='known'||result.equipment.displayElement.value!==0)throw Error('REAL_SLICE:ZERO_ELEMENT_NOT_PROVEN');
-   if(!Array.isArray(result.skills?.entries)||result.skills.entries.length!==0)throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
+   if(result?.equipment?.displayElement?.status!=='known'||!Number.isFinite(result.equipment.displayElement.value)||result.equipment.displayElement.value<0)throw Error('REAL_SLICE:ELEMENT_NOT_RESOLVED');
+   if(result.equipment.displayElement.value>0&&(!result.equipment.elementType||typeof result.equipment.elementType!=='string'))throw Error('REAL_SLICE:ELEMENT_TYPE_NOT_RESOLVED');
+   if(!Array.isArray(result.skills?.entries)||result.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
    const value=(x)=>x&&x.status==='known'&&Number.isFinite(x.value)?x.value:undefined;
    return {...result,
     trueAttack:result.trueAttack??value(result.equipment?.trueAttack),
@@ -45,13 +47,18 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    return result;
   }
  });
- const componentId=techniqueId+':physical:0';
+ const componentId=techniqueId+':physical:0',elementComponentId=techniqueId+':element:0';
  const handlers={[weaponType]:({event,build,effects})=>{
-  if(event.type!=='hit'||event.techniqueId!==techniqueId||event.components?.length!==1||event.components[0].id!==componentId)throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
-  const modifier=event.components[0].parameters?.elementModifier;
-  if(modifier!==0 && (build?.element!==0 || !Array.isArray(effects) || effects.length!==0))throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING');
-  return {emit:[componentId],inactive:[],unresolved:[]};
+  if(event.type!=='hit'||event.techniqueId!==techniqueId||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+  const physicalEvent=event.components.find(c=>c.id===componentId),elementEvent=event.components.find(c=>c.id===elementComponentId);
+  if(!physicalEvent||event.components.some(c=>![componentId,elementComponentId].includes(c.id)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+  const modifier=elementEvent?.parameters?.elementModifier??physicalEvent.parameters?.elementModifier;
+  if(!Number.isFinite(modifier)||modifier<0)throw Error('REAL_SLICE:ELEMENT_COMPONENT_UNRESOLVED');
+  if(modifier===0)return {emit:[componentId],inactive:[],unresolved:[]};
+  if(build?.element===0)return {emit:[componentId],inactive:[elementComponentId],unresolved:[]};
+  if(!Number.isFinite(build?.element)||!Array.isArray(effects)||effects.length!==0)return {emit:[componentId],inactive:[],unresolved:[elementComponentId]};
+  return {emit:[componentId,elementComponentId],inactive:[],unresolved:[]};
  }};
- return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical}});
+ return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental}});
 }
 module.exports={createRealOneHitPipeline};

@@ -769,13 +769,15 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   if(!finite(hit.partModifier))throw Error('REAL_SLICE:PART_MODIFIER_PENDING');
   if(hit.partModifier!==1)throw Error('REAL_SLICE:PART_MODIFIER_UNSUPPORTED');
-  const component={id:techniqueId+':physical:0',kind:'physical',unit:'MV',source,coefficient:hit.mv,
-   parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier})};
+  const components=[{id:techniqueId+':physical:0',kind:'physical',unit:'MV',source,coefficient:hit.mv,
+   parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier})}];
+  if(hit.elementModifier>0)components.push({id:techniqueId+':element:0',kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,
+   parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source})});
   return Object.freeze({
     id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',
     elementModifier:hit.elementModifier,
     excludedElement:elementResolved&&hit.elementModifier!==0?{coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS'}:null,
-    events:[{type:'hit',components:[component]}]
+    events:[{type:'hit',components}]
   });
 }
 module.exports={adaptOrdinaryPhysicalHit};
@@ -806,13 +808,15 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   if(!finite(hit.partModifier))throw Error('REAL_SLICE:PART_MODIFIER_PENDING');
   if(hit.partModifier!==1)throw Error('REAL_SLICE:PART_MODIFIER_UNSUPPORTED');
-  const component={id:techniqueId+':physical:0',kind:'physical',unit:'MV',source,coefficient:hit.mv,
-   parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier})};
+  const components=[{id:techniqueId+':physical:0',kind:'physical',unit:'MV',source,coefficient:hit.mv,
+   parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier})}];
+  if(hit.elementModifier>0)components.push({id:techniqueId+':element:0',kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,
+   parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source})});
   return Object.freeze({
     id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',
     elementModifier:hit.elementModifier,
     excludedElement:elementResolved&&hit.elementModifier!==0?{coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS'}:null,
-    events:[{type:'hit',components:[component]}]
+    events:[{type:'hit',components}]
   });
 }
 module.exports={adaptOrdinaryPhysicalHit};
@@ -829,9 +833,9 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
  return function physical({coefficient,coefficientUnit,parameters,target,stats,build,state}={}){
   if(coefficientUnit!=='MV'||!finite(coefficient)||coefficient<0)return unavailable('PHYSICAL_MV_UNRESOLVED');
   if(!finite(stats?.attack)||stats.attack<=0)return unavailable('PHYSICAL_ATTACK_UNRESOLVED');
-  if(stats.element!==0)return unavailable('PHYSICAL_ELEMENT_NOT_ZERO');
-  if(stats.affinity!==0)return unavailable('PHYSICAL_AFFINITY_UNSUPPORTED');
-  if(Array.isArray(build?.skills?.entries)&&build.skills.entries.length!==0)return unavailable('PHYSICAL_SKILLS_UNSUPPORTED');
+  if(!finite(stats.element)||stats.element<0)return unavailable('PHYSICAL_ELEMENT_UNRESOLVED');
+  if(!finite(stats.affinity))return unavailable('PHYSICAL_AFFINITY_UNRESOLVED');
+  if(Array.isArray(build?.skills?.entries)&&build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))return unavailable('PHYSICAL_SKILLS_UNSUPPORTED');
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
   let sharp,hitzone,part;
   try{
@@ -844,13 +848,34 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!valid(hitzone)||hitzone.value<0||hitzone.value>100)return unavailable('PHYSICAL_HITZONE_UNRESOLVED');
   if(!valid(part)||part.value!==1)return unavailable('PHYSICAL_PART_MODIFIER_UNSUPPORTED');
   let result;
-  try{result=calculate({attack:stats.attack,affinity:0,element:0,mv:coefficient,hz:hitzone.value,ehz:0,sharp:sharp.value,esharp:1,critBonus:0,elementCrit:false,criticalState:'noncritical'})}
+  try{result=calculate({attack:stats.attack,affinity:stats.affinity,element:0,mv:coefficient,hz:hitzone.value,ehz:0,sharp:sharp.value,esharp:1,critBonus:0,elementCrit:false,criticalState:'expected'})}
   catch(_){return unavailable('PHYSICAL_CANONICAL_FORMULA_FAILED')}
   if(!result||!finite(result.p)||result.p<0)return unavailable('PHYSICAL_CANONICAL_RESULT_INVALID');
   return {status:'available',value:result.p};
  }
 }
-module.exports={createSourcedPhysicalFormula};
+function createSourcedElementalFormula({calculate,resolveSharpness,resolveHitzone,expectedGameVersion}={}){
+ if(typeof calculate!=='function'||typeof resolveSharpness!=='function'||typeof resolveHitzone!=='function')throw Error('ELEMENT_SOURCE_RESOLVERS_REQUIRED');
+ return function elemental({coefficient,coefficientUnit,target,stats,build,state}={}){
+  if(coefficientUnit!=='ELEMENT_MODIFIER'||!finite(coefficient)||coefficient<0)return unavailable('ELEMENT_MODIFIER_UNRESOLVED');
+  if(!finite(stats?.element)||stats.element<0)return unavailable('ELEMENT_VALUE_UNRESOLVED');
+  if(!finite(stats?.affinity))return unavailable('ELEMENT_AFFINITY_UNRESOLVED');
+  if(Array.isArray(build?.skills?.entries)&&build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))return unavailable('ELEMENT_SKILLS_UNSUPPORTED');
+  if(!expectedGameVersion)return unavailable('ELEMENT_VERSION_UNRESOLVED');
+  let sharp,hitzone;
+  try{sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,gameVersion:expectedGameVersion});}
+  catch(_){return unavailable('ELEMENT_CONTEXT_RESOLUTION_FAILED')}
+  const valid=x=>x&&x.gameVersion===expectedGameVersion&&typeof x.evidenceRef==='string'&&x.evidenceRef.length>0&&finite(x.value);
+  if(!valid(sharp)||sharp.value<=0)return unavailable('ELEMENT_SHARPNESS_UNRESOLVED');
+  if(!valid(hitzone)||hitzone.value<0||hitzone.value>100)return unavailable('ELEMENT_HITZONE_UNRESOLVED');
+  let result;
+  try{result=calculate({attack:0,affinity:stats.affinity,element:stats.element*coefficient,elementKnown:true,typeKnown:true,elementType:build.elementType||build.equipment?.elementType||'none',mv:0,hz:0,ehz:hitzone.value,sharp:1,esharp:sharp.value,critBonus:0,elementCrit:false,criticalState:'expected'});}
+  catch(_){return unavailable('ELEMENT_CANONICAL_FORMULA_FAILED')}
+  if(!result||!finite(result.e)||result.e<0)return unavailable('ELEMENT_CANONICAL_RESULT_INVALID');
+  return {status:'available',value:result.e};
+ };
+}
+module.exports={createSourcedPhysicalFormula,createSourcedElementalFormula};
 
 });
 define("./sourced-physical-formula.cjs",function(module,exports,require){
@@ -864,9 +889,9 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
  return function physical({coefficient,coefficientUnit,parameters,target,stats,build,state}={}){
   if(coefficientUnit!=='MV'||!finite(coefficient)||coefficient<0)return unavailable('PHYSICAL_MV_UNRESOLVED');
   if(!finite(stats?.attack)||stats.attack<=0)return unavailable('PHYSICAL_ATTACK_UNRESOLVED');
-  if(stats.element!==0)return unavailable('PHYSICAL_ELEMENT_NOT_ZERO');
-  if(stats.affinity!==0)return unavailable('PHYSICAL_AFFINITY_UNSUPPORTED');
-  if(Array.isArray(build?.skills?.entries)&&build.skills.entries.length!==0)return unavailable('PHYSICAL_SKILLS_UNSUPPORTED');
+  if(!finite(stats.element)||stats.element<0)return unavailable('PHYSICAL_ELEMENT_UNRESOLVED');
+  if(!finite(stats.affinity))return unavailable('PHYSICAL_AFFINITY_UNRESOLVED');
+  if(Array.isArray(build?.skills?.entries)&&build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))return unavailable('PHYSICAL_SKILLS_UNSUPPORTED');
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
   let sharp,hitzone,part;
   try{
@@ -879,13 +904,34 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!valid(hitzone)||hitzone.value<0||hitzone.value>100)return unavailable('PHYSICAL_HITZONE_UNRESOLVED');
   if(!valid(part)||part.value!==1)return unavailable('PHYSICAL_PART_MODIFIER_UNSUPPORTED');
   let result;
-  try{result=calculate({attack:stats.attack,affinity:0,element:0,mv:coefficient,hz:hitzone.value,ehz:0,sharp:sharp.value,esharp:1,critBonus:0,elementCrit:false,criticalState:'noncritical'})}
+  try{result=calculate({attack:stats.attack,affinity:stats.affinity,element:0,mv:coefficient,hz:hitzone.value,ehz:0,sharp:sharp.value,esharp:1,critBonus:0,elementCrit:false,criticalState:'expected'})}
   catch(_){return unavailable('PHYSICAL_CANONICAL_FORMULA_FAILED')}
   if(!result||!finite(result.p)||result.p<0)return unavailable('PHYSICAL_CANONICAL_RESULT_INVALID');
   return {status:'available',value:result.p};
  }
 }
-module.exports={createSourcedPhysicalFormula};
+function createSourcedElementalFormula({calculate,resolveSharpness,resolveHitzone,expectedGameVersion}={}){
+ if(typeof calculate!=='function'||typeof resolveSharpness!=='function'||typeof resolveHitzone!=='function')throw Error('ELEMENT_SOURCE_RESOLVERS_REQUIRED');
+ return function elemental({coefficient,coefficientUnit,target,stats,build,state}={}){
+  if(coefficientUnit!=='ELEMENT_MODIFIER'||!finite(coefficient)||coefficient<0)return unavailable('ELEMENT_MODIFIER_UNRESOLVED');
+  if(!finite(stats?.element)||stats.element<0)return unavailable('ELEMENT_VALUE_UNRESOLVED');
+  if(!finite(stats?.affinity))return unavailable('ELEMENT_AFFINITY_UNRESOLVED');
+  if(Array.isArray(build?.skills?.entries)&&build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))return unavailable('ELEMENT_SKILLS_UNSUPPORTED');
+  if(!expectedGameVersion)return unavailable('ELEMENT_VERSION_UNRESOLVED');
+  let sharp,hitzone;
+  try{sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,gameVersion:expectedGameVersion});}
+  catch(_){return unavailable('ELEMENT_CONTEXT_RESOLUTION_FAILED')}
+  const valid=x=>x&&x.gameVersion===expectedGameVersion&&typeof x.evidenceRef==='string'&&x.evidenceRef.length>0&&finite(x.value);
+  if(!valid(sharp)||sharp.value<=0)return unavailable('ELEMENT_SHARPNESS_UNRESOLVED');
+  if(!valid(hitzone)||hitzone.value<0||hitzone.value>100)return unavailable('ELEMENT_HITZONE_UNRESOLVED');
+  let result;
+  try{result=calculate({attack:0,affinity:stats.affinity,element:stats.element*coefficient,elementKnown:true,typeKnown:true,elementType:build.elementType||build.equipment?.elementType||'none',mv:0,hz:0,ehz:hitzone.value,sharp:1,esharp:sharp.value,critBonus:0,elementCrit:false,criticalState:'expected'});}
+  catch(_){return unavailable('ELEMENT_CANONICAL_FORMULA_FAILED')}
+  if(!result||!finite(result.e)||result.e<0)return unavailable('ELEMENT_CANONICAL_RESULT_INVALID');
+  return {status:'available',value:result.e};
+ };
+}
+module.exports={createSourcedPhysicalFormula,createSourcedElementalFormula};
 
 });
 define("/real-one-hit-pipeline.cjs",function(module,exports,require){
@@ -895,11 +941,12 @@ define("/real-one-hit-pipeline.cjs",function(module,exports,require){
 const {createImmutableProvider}=require('./immutable-provider.cjs');
 const {createPipeline}=require('./pipeline.cjs');
 const {adaptOrdinaryPhysicalHit}=require('./real-technique-one-hit-adapter.cjs');
-const {createSourcedPhysicalFormula}=require('./sourced-physical-formula.cjs');
+const {createSourcedPhysicalFormula,createSourcedElementalFormula}=require('./sourced-physical-formula.cjs');
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
+ const elemental=canonicalPhysical?createSourcedElementalFormula({...canonicalPhysical,resolveHitzone:canonicalPhysical.resolveElementHitzone||canonicalPhysical.resolveHitzone}):formulae?.element;
  if(typeof physical!=='function')throw Error('REAL_SLICE:PHYSICAL_FORMULA_REQUIRED');
  if(canonicalPhysical?.expectedGameVersion!==undefined && canonicalPhysical.expectedGameVersion!==versions?.game)throw Error('REAL_SLICE:GAME_VERSION_MISMATCH');
  if(typeof resolveBuild!=='function'||typeof resolveEffects!=='function'||typeof initialState!=='function')throw Error('REAL_SLICE:RESOLVERS_REQUIRED');
@@ -920,8 +967,9 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
   resolveBuild:(raw,equipment,request)=>{
    const result=resolveBuild(raw,equipment,request);
    if(result?.weaponType!==weaponType)throw Error('REAL_SLICE:WEAPON_MISMATCH');
-   if(result?.equipment?.displayElement?.status!=='known'||result.equipment.displayElement.value!==0)throw Error('REAL_SLICE:ZERO_ELEMENT_NOT_PROVEN');
-   if(!Array.isArray(result.skills?.entries)||result.skills.entries.length!==0)throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
+   if(result?.equipment?.displayElement?.status!=='known'||!Number.isFinite(result.equipment.displayElement.value)||result.equipment.displayElement.value<0)throw Error('REAL_SLICE:ELEMENT_NOT_RESOLVED');
+   if(result.equipment.displayElement.value>0&&(!result.equipment.elementType||typeof result.equipment.elementType!=='string'))throw Error('REAL_SLICE:ELEMENT_TYPE_NOT_RESOLVED');
+   if(!Array.isArray(result.skills?.entries)||result.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
    const value=(x)=>x&&x.status==='known'&&Number.isFinite(x.value)?x.value:undefined;
    return {...result,
     trueAttack:result.trueAttack??value(result.equipment?.trueAttack),
@@ -936,14 +984,19 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    return result;
   }
  });
- const componentId=techniqueId+':physical:0';
+ const componentId=techniqueId+':physical:0',elementComponentId=techniqueId+':element:0';
  const handlers={[weaponType]:({event,build,effects})=>{
-  if(event.type!=='hit'||event.techniqueId!==techniqueId||event.components?.length!==1||event.components[0].id!==componentId)throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
-  const modifier=event.components[0].parameters?.elementModifier;
-  if(modifier!==0 && (build?.element!==0 || !Array.isArray(effects) || effects.length!==0))throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING');
-  return {emit:[componentId],inactive:[],unresolved:[]};
+  if(event.type!=='hit'||event.techniqueId!==techniqueId||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+  const physicalEvent=event.components.find(c=>c.id===componentId),elementEvent=event.components.find(c=>c.id===elementComponentId);
+  if(!physicalEvent||event.components.some(c=>![componentId,elementComponentId].includes(c.id)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+  const modifier=elementEvent?.parameters?.elementModifier??physicalEvent.parameters?.elementModifier;
+  if(!Number.isFinite(modifier)||modifier<0)throw Error('REAL_SLICE:ELEMENT_COMPONENT_UNRESOLVED');
+  if(modifier===0)return {emit:[componentId],inactive:[],unresolved:[]};
+  if(build?.element===0)return {emit:[componentId],inactive:[elementComponentId],unresolved:[]};
+  if(!Number.isFinite(build?.element)||!Array.isArray(effects)||effects.length!==0)return {emit:[componentId],inactive:[],unresolved:[elementComponentId]};
+  return {emit:[componentId,elementComponentId],inactive:[],unresolved:[]};
  }};
- return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical}});
+ return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental}});
 }
 module.exports={createRealOneHitPipeline};
 
@@ -955,11 +1008,12 @@ define("./real-one-hit-pipeline.cjs",function(module,exports,require){
 const {createImmutableProvider}=require('./immutable-provider.cjs');
 const {createPipeline}=require('./pipeline.cjs');
 const {adaptOrdinaryPhysicalHit}=require('./real-technique-one-hit-adapter.cjs');
-const {createSourcedPhysicalFormula}=require('./sourced-physical-formula.cjs');
+const {createSourcedPhysicalFormula,createSourcedElementalFormula}=require('./sourced-physical-formula.cjs');
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
+ const elemental=canonicalPhysical?createSourcedElementalFormula({...canonicalPhysical,resolveHitzone:canonicalPhysical.resolveElementHitzone||canonicalPhysical.resolveHitzone}):formulae?.element;
  if(typeof physical!=='function')throw Error('REAL_SLICE:PHYSICAL_FORMULA_REQUIRED');
  if(canonicalPhysical?.expectedGameVersion!==undefined && canonicalPhysical.expectedGameVersion!==versions?.game)throw Error('REAL_SLICE:GAME_VERSION_MISMATCH');
  if(typeof resolveBuild!=='function'||typeof resolveEffects!=='function'||typeof initialState!=='function')throw Error('REAL_SLICE:RESOLVERS_REQUIRED');
@@ -980,8 +1034,9 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
   resolveBuild:(raw,equipment,request)=>{
    const result=resolveBuild(raw,equipment,request);
    if(result?.weaponType!==weaponType)throw Error('REAL_SLICE:WEAPON_MISMATCH');
-   if(result?.equipment?.displayElement?.status!=='known'||result.equipment.displayElement.value!==0)throw Error('REAL_SLICE:ZERO_ELEMENT_NOT_PROVEN');
-   if(!Array.isArray(result.skills?.entries)||result.skills.entries.length!==0)throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
+   if(result?.equipment?.displayElement?.status!=='known'||!Number.isFinite(result.equipment.displayElement.value)||result.equipment.displayElement.value<0)throw Error('REAL_SLICE:ELEMENT_NOT_RESOLVED');
+   if(result.equipment.displayElement.value>0&&(!result.equipment.elementType||typeof result.equipment.elementType!=='string'))throw Error('REAL_SLICE:ELEMENT_TYPE_NOT_RESOLVED');
+   if(!Array.isArray(result.skills?.entries)||result.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
    const value=(x)=>x&&x.status==='known'&&Number.isFinite(x.value)?x.value:undefined;
    return {...result,
     trueAttack:result.trueAttack??value(result.equipment?.trueAttack),
@@ -996,14 +1051,19 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    return result;
   }
  });
- const componentId=techniqueId+':physical:0';
+ const componentId=techniqueId+':physical:0',elementComponentId=techniqueId+':element:0';
  const handlers={[weaponType]:({event,build,effects})=>{
-  if(event.type!=='hit'||event.techniqueId!==techniqueId||event.components?.length!==1||event.components[0].id!==componentId)throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
-  const modifier=event.components[0].parameters?.elementModifier;
-  if(modifier!==0 && (build?.element!==0 || !Array.isArray(effects) || effects.length!==0))throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING');
-  return {emit:[componentId],inactive:[],unresolved:[]};
+  if(event.type!=='hit'||event.techniqueId!==techniqueId||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+  const physicalEvent=event.components.find(c=>c.id===componentId),elementEvent=event.components.find(c=>c.id===elementComponentId);
+  if(!physicalEvent||event.components.some(c=>![componentId,elementComponentId].includes(c.id)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+  const modifier=elementEvent?.parameters?.elementModifier??physicalEvent.parameters?.elementModifier;
+  if(!Number.isFinite(modifier)||modifier<0)throw Error('REAL_SLICE:ELEMENT_COMPONENT_UNRESOLVED');
+  if(modifier===0)return {emit:[componentId],inactive:[],unresolved:[]};
+  if(build?.element===0)return {emit:[componentId],inactive:[elementComponentId],unresolved:[]};
+  if(!Number.isFinite(build?.element)||!Array.isArray(effects)||effects.length!==0)return {emit:[componentId],inactive:[],unresolved:[elementComponentId]};
+  return {emit:[componentId,elementComponentId],inactive:[],unresolved:[]};
  }};
- return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical}});
+ return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental}});
 }
 module.exports={createRealOneHitPipeline};
 

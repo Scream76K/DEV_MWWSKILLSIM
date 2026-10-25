@@ -22,13 +22,15 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   if(!finite(hit.partModifier))throw Error('REAL_SLICE:PART_MODIFIER_PENDING');
   if(hit.partModifier!==1)throw Error('REAL_SLICE:PART_MODIFIER_UNSUPPORTED');
-  const component={id:techniqueId+':physical:0',kind:'physical',unit:'MV',source,coefficient:hit.mv,
-   parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier})};
+  const components=[{id:techniqueId+':physical:0',kind:'physical',unit:'MV',source,coefficient:hit.mv,
+   parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier})}];
+  if(hit.elementModifier>0)components.push({id:techniqueId+':element:0',kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,
+   parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source})});
   return Object.freeze({
     id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',
     elementModifier:hit.elementModifier,
     excludedElement:elementResolved&&hit.elementModifier!==0?{coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS'}:null,
-    events:[{type:'hit',components:[component]}]
+    events:[{type:'hit',components}]
   });
 }
 module.exports={adaptOrdinaryPhysicalHit};
