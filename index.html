@@ -1065,6 +1065,9 @@ function calcElementSkill(total,type){
   if(!type)return {add:0,mult:1}; const map={fire:['火属性攻撃強化','Fire Attack'],water:['水属性攻撃強化','Water Attack'],thunder:['雷属性攻撃強化','Thunder Attack'],ice:['氷属性攻撃強化','Ice Attack'],dragon:['龍属性攻撃強化','Dragon Attack']};
   const rawLv=skillLevel(total,map[type]||[]); const lv=Number.isInteger(rawLv)&&rawLv>0?Math.min(3,rawLv):0; if(lv<=0)return {add:0,mult:1}; if(lv===1)return {add:40,mult:1}; if(lv===2)return {add:50,mult:1.1}; return {add:60,mult:1.2};
 }
+function calcCriticalBoost(total){return skillLevel(total,['超会心','Critical Boost']);}
+window.MHWElementSkillResolver=calcElementSkill;
+window.MHWCriticalBoostResolver=calcCriticalBoost;
 class MonsterTarget {
   constructor(monster, partId, state='released'){this.monster=monster||null;this.partId=String(partId||'');this.state=state||'released';}
   get part(){
