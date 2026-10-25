@@ -120,6 +120,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const sourceAttackComponents=build?.equipment?.attackComponents;
   const attackComponents=sourceAttackComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceAttackComponents[k]))?{weaponBase:sourceAttackComponents.weaponBase,normalMultiplier:sourceAttackComponents.normalMultiplier,normalFlat:sourceAttackComponents.normalFlat}:null;
   const out={coefficient:component.coefficient,stats,attackComponents,post:[],trace:[]};
+  const appliedAffinityGroups=new Set();
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
   const targets=Array.isArray(component.parameters?.effectTargets)&&component.parameters.effectTargets.length?component.parameters.effectTargets:[component.kind];
   const stages=Array.isArray(component.parameters?.effectStages)&&component.parameters.effectStages.length?component.parameters.effectStages:null;
@@ -132,6 +133,12 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
    if(active==='false')continue;
    ensure(finite(out.coefficient)&&Object.values(out.stats).every(finite),'EFFECT_RESULT_NON_FINITE');
    if(e.stage==='damage')out.post.push({operation:e.operation,amount:e.amount});
+   else if(e.stage==='affinity'){
+    const logicalId=String(e.id).replace(/-element$/,'');
+    if(appliedAffinityGroups.has(logicalId))continue;
+    appliedAffinityGroups.add(logicalId);
+    const v=out.stats.affinity;out.stats.affinity=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);
+   }
    else if(e.stage==='attack'&&out.attackComponents){
     if(e.operation==='multiply')out.attackComponents.normalMultiplier*=e.amount;
     else if(e.operation==='add')out.attackComponents.normalFlat+=e.amount;

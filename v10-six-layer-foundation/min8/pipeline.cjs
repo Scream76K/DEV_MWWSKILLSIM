@@ -23,7 +23,7 @@ function createPipeline({versions,openDataSnapshot,resolveBuild,resolveEffects,r
        const resolved=buildResolver(request,(s)=>snapshot.resolveBuild(s,db,game,cp(request)));
        if(resolved.dbVersion!==db)throw Error('EQUIPMENT_DB_VERSION_MISMATCH');
        if(!WEAPON_TYPES.includes(resolved.weaponType))throw Error('WEAPON_KIND_INVALID');
-       return {weaponType:resolved.weaponType,trueAttack:value(resolved.equipment.trueAttack,'trueAttack'),element:value(resolved.equipment.displayElement,'displayElement'),affinity:value(resolved.equipment.baseAffinity,'baseAffinity'),equipment:cp(resolved.equipment),skills:cp(resolved.skills),weaponState:cp(resolved.extensions||{}),diagnostics:cp(resolved.issues||[]),source:resolved.source};
+       return {weaponType:resolved.weaponType,elementType:resolved.elementType??resolved.equipment.elementType,trueAttack:value(resolved.equipment.trueAttack,'trueAttack'),element:value(resolved.equipment.displayElement,'displayElement'),affinity:value(resolved.equipment.baseAffinity,'baseAffinity'),equipment:cp(resolved.equipment),skills:cp(resolved.skills),weaponState:cp(resolved.extensions||{}),diagnostics:cp(resolved.issues||[]),source:resolved.source};
       },
       resolveEffects:(build,conditions,ch,version)=>{
        // L3: preserve semantic stage/unit and deferred state predicates; no common effect calculations here.

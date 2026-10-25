@@ -17,7 +17,7 @@ const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 function datum(status,value){if(!['known','unknown','inactive','not_applicable'].includes(status))throw new TypeError('invalid datum status');if(status==='known'){if(value===null||value===undefined)throw new TypeError('known datum requires value');return {status,value:clone(value)}}if(value!==undefined)throw new TypeError('unexpected datum value');return {status}}
 function validateDatum(d,name,numeric=false){obj(d,name);if(d.status==='known'){if(!has(d,'value')||d.value===null||d.value===undefined)throw new TypeError(name+' missing value');if(numeric)num(d.value,name+'.value')}else if(!['unknown','inactive','not_applicable'].includes(d.status)||has(d,'value'))throw new TypeError(name+' invalid datum');return clone(d)}
 function inputAdapter(source){obj(source,'source');if(source.schemaVersion!=='v10-min2')throw new TypeError('schemaVersion');const {build,target,conditions,evaluation}=source;obj(build,'build');obj(target,'target');obj(conditions,'conditions');obj(evaluation,'evaluation');str(evaluation.mode,'mode');str(evaluation.kind,'kind');str(evaluation.signature,'signature');str(target.id,'target.id');str(target.hitZoneKey,'target.hitZoneKey');return clone({schemaVersion:'v10-min2',build,target,conditions,evaluation})}
-function buildResolver(req,resolver){if(typeof resolver!=='function')throw new TypeError('L2 resolver required');const r=obj(resolver(clone(req.build),clone(req)),'L2');if(!WEAPON_TYPES.includes(r.weaponType))throw new TypeError('invalid weaponType');obj(r.equipment,'equipment');obj(r.skills,'skills');str(r.dbVersion,'dbVersion');str(r.source,'source');if(!Array.isArray(r.equipment.ids))throw new TypeError('equipment.ids');for(const id of r.equipment.ids)str(id,'equipment.id');for(const k of ['trueAttack','displayElement','baseAffinity'])validateDatum(r.equipment[k],k,true);if(!Array.isArray(r.skills.entries))throw new TypeError('skills.entries');for(const s of r.skills.entries){str(s.id,'skill.id');num(s.level,'skill.level');num(s.rank,'skill.rank');str(s.source,'skill.source')}return {weaponType:r.weaponType,equipment:clone(r.equipment),skills:clone(r.skills),dbVersion:r.dbVersion,source:r.source,issues:clone(r.issues||[]),extensions:clone(r.extensions||{})}}
+function buildResolver(req,resolver){if(typeof resolver!=='function')throw new TypeError('L2 resolver required');const r=obj(resolver(clone(req.build),clone(req)),'L2');if(!WEAPON_TYPES.includes(r.weaponType))throw new TypeError('invalid weaponType');obj(r.equipment,'equipment');obj(r.skills,'skills');str(r.dbVersion,'dbVersion');str(r.source,'source');if(!Array.isArray(r.equipment.ids))throw new TypeError('equipment.ids');for(const id of r.equipment.ids)str(id,'equipment.id');for(const k of ['trueAttack','displayElement','baseAffinity'])validateDatum(r.equipment[k],k,true);if(r.equipment.elementType!==undefined&&typeof r.equipment.elementType!=='string')throw new TypeError('equipment.elementType');if(!Array.isArray(r.skills.entries))throw new TypeError('skills.entries');for(const s of r.skills.entries){str(s.id,'skill.id');num(s.level,'skill.level');num(s.rank,'skill.rank');str(s.source,'skill.source')}return {weaponType:r.weaponType,elementType:r.equipment.elementType,equipment:clone(r.equipment),skills:clone(r.skills),dbVersion:r.dbVersion,source:r.source,issues:clone(r.issues||[]),extensions:clone(r.extensions||{})}}
 function validateEffect(e){str(e.id,'effect.id');str(e.target,'effect.target');str(e.stage,'effect.stage');num(e.order,'effect.order');if(!['add','multiply','cap'].includes(e.operation))throw new TypeError('effect.operation');validateDatum(e.amount,'effect.amount',true);validateDatum(e.condition,'effect.condition');str(e.source,'effect.source');return clone(e)}
 function effectResolver(build,req,resolve){if(typeof resolve!=='function')throw new TypeError('L3 resolver required');const out={};for(const ch of CHANNELS){try{const r=obj(resolve(clone(build),clone(req.conditions),ch,clone(req)),'L3 '+ch);if(!Array.isArray(r.effects))throw new TypeError('effects must be array');out[ch]={status:'OK',effects:r.effects.map(validateEffect),issues:clone(r.issues||[])}}catch(e){out[ch]={status:'BLOCKED',effects:[],issues:[issue('EFFECT_RESOLUTION_FAILED','L3',e.message)]}}}return out}
 function weaponEngine(build,contexts,req,handlers){obj(handlers,'handlers');const handler=handlers[build.weaponType],out={};for(const ch of CHANNELS){if(contexts[ch].status==='BLOCKED'){out[ch]={status:'BLOCKED',components:[],metrics:{},issues:clone(contexts[ch].issues)};continue}if(typeof handler!=='function'){out[ch]={status:'NOT_IMPLEMENTED',components:[],metrics:{},issues:[issue('HANDLER_NOT_IMPLEMENTED','L4',build.weaponType)]};continue}try{const r=obj(handler({build:clone(build),effects:clone(contexts[ch]),target:clone(req.target),evaluation:clone(req.evaluation),channel:ch}),'L4');if(!['OK','PARTIAL','NOT_IMPLEMENTED','BLOCKED'].includes(r.status)||!Array.isArray(r.components))throw new TypeError('invalid Handler result');out[ch]={status:r.status,components:clone(r.components),metrics:clone(r.metrics||{}),issues:clone(r.issues||[]),techniques:clone(r.techniques||[])}}catch(e){out[ch]={status:'BLOCKED',components:[],metrics:{},issues:[issue('WEAPON_EVALUATION_FAILED','L4',e.message)]}}}return out}
@@ -43,7 +43,7 @@ const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 function datum(status,value){if(!['known','unknown','inactive','not_applicable'].includes(status))throw new TypeError('invalid datum status');if(status==='known'){if(value===null||value===undefined)throw new TypeError('known datum requires value');return {status,value:clone(value)}}if(value!==undefined)throw new TypeError('unexpected datum value');return {status}}
 function validateDatum(d,name,numeric=false){obj(d,name);if(d.status==='known'){if(!has(d,'value')||d.value===null||d.value===undefined)throw new TypeError(name+' missing value');if(numeric)num(d.value,name+'.value')}else if(!['unknown','inactive','not_applicable'].includes(d.status)||has(d,'value'))throw new TypeError(name+' invalid datum');return clone(d)}
 function inputAdapter(source){obj(source,'source');if(source.schemaVersion!=='v10-min2')throw new TypeError('schemaVersion');const {build,target,conditions,evaluation}=source;obj(build,'build');obj(target,'target');obj(conditions,'conditions');obj(evaluation,'evaluation');str(evaluation.mode,'mode');str(evaluation.kind,'kind');str(evaluation.signature,'signature');str(target.id,'target.id');str(target.hitZoneKey,'target.hitZoneKey');return clone({schemaVersion:'v10-min2',build,target,conditions,evaluation})}
-function buildResolver(req,resolver){if(typeof resolver!=='function')throw new TypeError('L2 resolver required');const r=obj(resolver(clone(req.build),clone(req)),'L2');if(!WEAPON_TYPES.includes(r.weaponType))throw new TypeError('invalid weaponType');obj(r.equipment,'equipment');obj(r.skills,'skills');str(r.dbVersion,'dbVersion');str(r.source,'source');if(!Array.isArray(r.equipment.ids))throw new TypeError('equipment.ids');for(const id of r.equipment.ids)str(id,'equipment.id');for(const k of ['trueAttack','displayElement','baseAffinity'])validateDatum(r.equipment[k],k,true);if(!Array.isArray(r.skills.entries))throw new TypeError('skills.entries');for(const s of r.skills.entries){str(s.id,'skill.id');num(s.level,'skill.level');num(s.rank,'skill.rank');str(s.source,'skill.source')}return {weaponType:r.weaponType,equipment:clone(r.equipment),skills:clone(r.skills),dbVersion:r.dbVersion,source:r.source,issues:clone(r.issues||[]),extensions:clone(r.extensions||{})}}
+function buildResolver(req,resolver){if(typeof resolver!=='function')throw new TypeError('L2 resolver required');const r=obj(resolver(clone(req.build),clone(req)),'L2');if(!WEAPON_TYPES.includes(r.weaponType))throw new TypeError('invalid weaponType');obj(r.equipment,'equipment');obj(r.skills,'skills');str(r.dbVersion,'dbVersion');str(r.source,'source');if(!Array.isArray(r.equipment.ids))throw new TypeError('equipment.ids');for(const id of r.equipment.ids)str(id,'equipment.id');for(const k of ['trueAttack','displayElement','baseAffinity'])validateDatum(r.equipment[k],k,true);if(r.equipment.elementType!==undefined&&typeof r.equipment.elementType!=='string')throw new TypeError('equipment.elementType');if(!Array.isArray(r.skills.entries))throw new TypeError('skills.entries');for(const s of r.skills.entries){str(s.id,'skill.id');num(s.level,'skill.level');num(s.rank,'skill.rank');str(s.source,'skill.source')}return {weaponType:r.weaponType,elementType:r.equipment.elementType,equipment:clone(r.equipment),skills:clone(r.skills),dbVersion:r.dbVersion,source:r.source,issues:clone(r.issues||[]),extensions:clone(r.extensions||{})}}
 function validateEffect(e){str(e.id,'effect.id');str(e.target,'effect.target');str(e.stage,'effect.stage');num(e.order,'effect.order');if(!['add','multiply','cap'].includes(e.operation))throw new TypeError('effect.operation');validateDatum(e.amount,'effect.amount',true);validateDatum(e.condition,'effect.condition');str(e.source,'effect.source');return clone(e)}
 function effectResolver(build,req,resolve){if(typeof resolve!=='function')throw new TypeError('L3 resolver required');const out={};for(const ch of CHANNELS){try{const r=obj(resolve(clone(build),clone(req.conditions),ch,clone(req)),'L3 '+ch);if(!Array.isArray(r.effects))throw new TypeError('effects must be array');out[ch]={status:'OK',effects:r.effects.map(validateEffect),issues:clone(r.issues||[])}}catch(e){out[ch]={status:'BLOCKED',effects:[],issues:[issue('EFFECT_RESOLUTION_FAILED','L3',e.message)]}}}return out}
 function weaponEngine(build,contexts,req,handlers){obj(handlers,'handlers');const handler=handlers[build.weaponType],out={};for(const ch of CHANNELS){if(contexts[ch].status==='BLOCKED'){out[ch]={status:'BLOCKED',components:[],metrics:{},issues:clone(contexts[ch].issues)};continue}if(typeof handler!=='function'){out[ch]={status:'NOT_IMPLEMENTED',components:[],metrics:{},issues:[issue('HANDLER_NOT_IMPLEMENTED','L4',build.weaponType)]};continue}try{const r=obj(handler({build:clone(build),effects:clone(contexts[ch]),target:clone(req.target),evaluation:clone(req.evaluation),channel:ch}),'L4');if(!['OK','PARTIAL','NOT_IMPLEMENTED','BLOCKED'].includes(r.status)||!Array.isArray(r.components))throw new TypeError('invalid Handler result');out[ch]={status:r.status,components:clone(r.components),metrics:clone(r.metrics||{}),issues:clone(r.issues||[]),techniques:clone(r.techniques||[])}}catch(e){out[ch]={status:'BLOCKED',components:[],metrics:{},issues:[issue('WEAPON_EVALUATION_FAILED','L4',e.message)]}}}return out}
@@ -193,6 +193,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const sourceAttackComponents=build?.equipment?.attackComponents;
   const attackComponents=sourceAttackComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceAttackComponents[k]))?{weaponBase:sourceAttackComponents.weaponBase,normalMultiplier:sourceAttackComponents.normalMultiplier,normalFlat:sourceAttackComponents.normalFlat}:null;
   const out={coefficient:component.coefficient,stats,attackComponents,post:[],trace:[]};
+  const appliedAffinityGroups=new Set();
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
   const targets=Array.isArray(component.parameters?.effectTargets)&&component.parameters.effectTargets.length?component.parameters.effectTargets:[component.kind];
   const stages=Array.isArray(component.parameters?.effectStages)&&component.parameters.effectStages.length?component.parameters.effectStages:null;
@@ -205,6 +206,12 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
    if(active==='false')continue;
    ensure(finite(out.coefficient)&&Object.values(out.stats).every(finite),'EFFECT_RESULT_NON_FINITE');
    if(e.stage==='damage')out.post.push({operation:e.operation,amount:e.amount});
+   else if(e.stage==='affinity'){
+    const logicalId=String(e.id).replace(/-element$/,'');
+    if(appliedAffinityGroups.has(logicalId))continue;
+    appliedAffinityGroups.add(logicalId);
+    const v=out.stats.affinity;out.stats.affinity=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);
+   }
    else if(e.stage==='attack'&&out.attackComponents){
     if(e.operation==='multiply')out.attackComponents.normalMultiplier*=e.amount;
     else if(e.operation==='add')out.attackComponents.normalFlat+=e.amount;
@@ -425,6 +432,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const sourceAttackComponents=build?.equipment?.attackComponents;
   const attackComponents=sourceAttackComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceAttackComponents[k]))?{weaponBase:sourceAttackComponents.weaponBase,normalMultiplier:sourceAttackComponents.normalMultiplier,normalFlat:sourceAttackComponents.normalFlat}:null;
   const out={coefficient:component.coefficient,stats,attackComponents,post:[],trace:[]};
+  const appliedAffinityGroups=new Set();
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
   const targets=Array.isArray(component.parameters?.effectTargets)&&component.parameters.effectTargets.length?component.parameters.effectTargets:[component.kind];
   const stages=Array.isArray(component.parameters?.effectStages)&&component.parameters.effectStages.length?component.parameters.effectStages:null;
@@ -437,6 +445,12 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
    if(active==='false')continue;
    ensure(finite(out.coefficient)&&Object.values(out.stats).every(finite),'EFFECT_RESULT_NON_FINITE');
    if(e.stage==='damage')out.post.push({operation:e.operation,amount:e.amount});
+   else if(e.stage==='affinity'){
+    const logicalId=String(e.id).replace(/-element$/,'');
+    if(appliedAffinityGroups.has(logicalId))continue;
+    appliedAffinityGroups.add(logicalId);
+    const v=out.stats.affinity;out.stats.affinity=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);
+   }
    else if(e.stage==='attack'&&out.attackComponents){
     if(e.operation==='multiply')out.attackComponents.normalMultiplier*=e.amount;
     else if(e.operation==='add')out.attackComponents.normalFlat+=e.amount;
@@ -560,7 +574,7 @@ function createPipeline({versions,openDataSnapshot,resolveBuild,resolveEffects,r
        const resolved=buildResolver(request,(s)=>snapshot.resolveBuild(s,db,game,cp(request)));
        if(resolved.dbVersion!==db)throw Error('EQUIPMENT_DB_VERSION_MISMATCH');
        if(!WEAPON_TYPES.includes(resolved.weaponType))throw Error('WEAPON_KIND_INVALID');
-       return {weaponType:resolved.weaponType,trueAttack:value(resolved.equipment.trueAttack,'trueAttack'),element:value(resolved.equipment.displayElement,'displayElement'),affinity:value(resolved.equipment.baseAffinity,'baseAffinity'),equipment:cp(resolved.equipment),skills:cp(resolved.skills),weaponState:cp(resolved.extensions||{}),diagnostics:cp(resolved.issues||[]),source:resolved.source};
+       return {weaponType:resolved.weaponType,elementType:resolved.elementType??resolved.equipment.elementType,trueAttack:value(resolved.equipment.trueAttack,'trueAttack'),element:value(resolved.equipment.displayElement,'displayElement'),affinity:value(resolved.equipment.baseAffinity,'baseAffinity'),equipment:cp(resolved.equipment),skills:cp(resolved.skills),weaponState:cp(resolved.extensions||{}),diagnostics:cp(resolved.issues||[]),source:resolved.source};
       },
       resolveEffects:(build,conditions,ch,version)=>{
        // L3: preserve semantic stage/unit and deferred state predicates; no common effect calculations here.
@@ -642,7 +656,7 @@ function createPipeline({versions,openDataSnapshot,resolveBuild,resolveEffects,r
        const resolved=buildResolver(request,(s)=>snapshot.resolveBuild(s,db,game,cp(request)));
        if(resolved.dbVersion!==db)throw Error('EQUIPMENT_DB_VERSION_MISMATCH');
        if(!WEAPON_TYPES.includes(resolved.weaponType))throw Error('WEAPON_KIND_INVALID');
-       return {weaponType:resolved.weaponType,trueAttack:value(resolved.equipment.trueAttack,'trueAttack'),element:value(resolved.equipment.displayElement,'displayElement'),affinity:value(resolved.equipment.baseAffinity,'baseAffinity'),equipment:cp(resolved.equipment),skills:cp(resolved.skills),weaponState:cp(resolved.extensions||{}),diagnostics:cp(resolved.issues||[]),source:resolved.source};
+       return {weaponType:resolved.weaponType,elementType:resolved.elementType??resolved.equipment.elementType,trueAttack:value(resolved.equipment.trueAttack,'trueAttack'),element:value(resolved.equipment.displayElement,'displayElement'),affinity:value(resolved.equipment.baseAffinity,'baseAffinity'),equipment:cp(resolved.equipment),skills:cp(resolved.skills),weaponState:cp(resolved.extensions||{}),diagnostics:cp(resolved.issues||[]),source:resolved.source};
       },
       resolveEffects:(build,conditions,ch,version)=>{
        // L3: preserve semantic stage/unit and deferred state predicates; no common effect calculations here.
@@ -807,13 +821,14 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    // canonical HP formula validates it but does not apply it to HP damage.
    const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??null};
    const partModifierKnown=finite(hit.partModifier);
-   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
+   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,shieldBoostAxeBody:record.shieldBoostAxeBody===true,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
    if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
    events.push({type:'hit',components});
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});
   });
   if(record.phialReference?.status==='OBSERVED'&&Number.isInteger(record.phialReference.hitCount)&&record.phialReference.hitCount>0){
-   events[0].components.push({id:techniqueId+':phial:0',kind:'phial',unit:'PHIAL',source:record.phialReference.sourceRefs?.[0]??source,coefficient:1,parameters:Object.freeze({hitIndex:0,phialCount:record.phialReference.hitCount,phialReference:Object.freeze({...record.phialReference}),phialState:record.phialState?Object.freeze({...record.phialState}):null,effectTargets:['physical'],effectStages:['attack'],sourceTechniqueId:techniqueId})});
+   const phialTarget=record.phialState?.phialType==='POWER_ELEMENT'?'element':'physical';
+   events[0].components.push({id:techniqueId+':phial:0',kind:'phial',unit:'PHIAL',source:record.phialReference.sourceRefs?.[0]??source,coefficient:1,parameters:Object.freeze({hitIndex:0,phialCount:record.phialReference.hitCount,phialReference:Object.freeze({...record.phialReference}),phialState:record.phialState?Object.freeze({...record.phialState}):null,effectTargets:[phialTarget],effectStages:[phialTarget==='element'?'element':'attack'],sourceTechniqueId:techniqueId})});
   }
   return Object.freeze({
     id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',
@@ -862,13 +877,14 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    // canonical HP formula validates it but does not apply it to HP damage.
    const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??null};
    const partModifierKnown=finite(hit.partModifier);
-   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
+   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,shieldBoostAxeBody:record.shieldBoostAxeBody===true,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
    if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
    events.push({type:'hit',components});
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});
   });
   if(record.phialReference?.status==='OBSERVED'&&Number.isInteger(record.phialReference.hitCount)&&record.phialReference.hitCount>0){
-   events[0].components.push({id:techniqueId+':phial:0',kind:'phial',unit:'PHIAL',source:record.phialReference.sourceRefs?.[0]??source,coefficient:1,parameters:Object.freeze({hitIndex:0,phialCount:record.phialReference.hitCount,phialReference:Object.freeze({...record.phialReference}),phialState:record.phialState?Object.freeze({...record.phialState}):null,effectTargets:['physical'],effectStages:['attack'],sourceTechniqueId:techniqueId})});
+   const phialTarget=record.phialState?.phialType==='POWER_ELEMENT'?'element':'physical';
+   events[0].components.push({id:techniqueId+':phial:0',kind:'phial',unit:'PHIAL',source:record.phialReference.sourceRefs?.[0]??source,coefficient:1,parameters:Object.freeze({hitIndex:0,phialCount:record.phialReference.hitCount,phialReference:Object.freeze({...record.phialReference}),phialState:record.phialState?Object.freeze({...record.phialState}):null,effectTargets:[phialTarget],effectStages:[phialTarget==='element'?'element':'attack'],sourceTechniqueId:techniqueId})});
   }
   return Object.freeze({
     id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',
@@ -909,7 +925,10 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   // of the canonical HP calculation.
   if(part&&!valid(part))return unavailable('PHYSICAL_PART_MODIFIER_UNRESOLVED');
   let result;
-   try{result=calculate({attack:stats.attack,affinity:stats.affinity,element:0,mv:coefficient,hz:hitzone.value,ehz:0,sharp:sharp.value,esharp:1,critBonus:Number(build?.equipment?.criticalBoostLevel)||0,elementCrit:false,criticalState:'expected'})}
+   const shieldState=build?.equipment?.chargeBladeState;
+   const shieldBodyMultiplier=parameters?.shieldBoostAxeBody===true&&shieldState?.shieldBoosted===true?(finite(shieldState.shieldBoostAxeBodyMultiplier)?shieldState.shieldBoostAxeBodyMultiplier:null):1;
+   if(shieldBodyMultiplier===null)return unavailable('PHYSICAL_SHIELD_BODY_MULTIPLIER_UNRESOLVED');
+   try{result=calculate({attack:stats.attack*shieldBodyMultiplier,affinity:stats.affinity,element:0,mv:coefficient,hz:hitzone.value,ehz:0,sharp:sharp.value,esharp:1,critBonus:Number(build?.equipment?.criticalBoostLevel)||0,elementCrit:false,criticalState:'expected'})}
   catch(_){return unavailable('PHYSICAL_CANONICAL_FORMULA_FAILED')}
   if(!result||!finite(result.p)||result.p<0)return unavailable('PHYSICAL_CANONICAL_RESULT_INVALID');
   return {status:'available',value:result.p};
@@ -968,7 +987,10 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   // of the canonical HP calculation.
   if(part&&!valid(part))return unavailable('PHYSICAL_PART_MODIFIER_UNRESOLVED');
   let result;
-   try{result=calculate({attack:stats.attack,affinity:stats.affinity,element:0,mv:coefficient,hz:hitzone.value,ehz:0,sharp:sharp.value,esharp:1,critBonus:Number(build?.equipment?.criticalBoostLevel)||0,elementCrit:false,criticalState:'expected'})}
+   const shieldState=build?.equipment?.chargeBladeState;
+   const shieldBodyMultiplier=parameters?.shieldBoostAxeBody===true&&shieldState?.shieldBoosted===true?(finite(shieldState.shieldBoostAxeBodyMultiplier)?shieldState.shieldBoostAxeBodyMultiplier:null):1;
+   if(shieldBodyMultiplier===null)return unavailable('PHYSICAL_SHIELD_BODY_MULTIPLIER_UNRESOLVED');
+   try{result=calculate({attack:stats.attack*shieldBodyMultiplier,affinity:stats.affinity,element:0,mv:coefficient,hz:hitzone.value,ehz:0,sharp:sharp.value,esharp:1,critBonus:Number(build?.equipment?.criticalBoostLevel)||0,elementCrit:false,criticalState:'expected'})}
   catch(_){return unavailable('PHYSICAL_CANONICAL_FORMULA_FAILED')}
   if(!result||!finite(result.p)||result.p<0)return unavailable('PHYSICAL_CANONICAL_RESULT_INVALID');
   return {status:'available',value:result.p};
@@ -1034,6 +1056,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   resolveBuild:(raw,equipment,request)=>{
    const result=resolveBuild(raw,equipment,request);
    if(result?.weaponType!==weaponType)throw Error('REAL_SLICE:WEAPON_MISMATCH');
+   if(result&&result.elementType===undefined&&result.equipment?.elementType!==undefined)result.elementType=result.equipment.elementType;
    if(result?.equipment?.displayElement?.status!=='known'||!Number.isFinite(result.equipment.displayElement.value)||result.equipment.displayElement.value<0)throw Error('REAL_SLICE:ELEMENT_NOT_RESOLVED');
    if(result.equipment.displayElement.value>0&&(!result.equipment.elementType||typeof result.equipment.elementType!=='string'))throw Error('REAL_SLICE:ELEMENT_TYPE_NOT_RESOLVED');
    if(!Array.isArray(result.skills?.entries))throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
@@ -1167,6 +1190,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   resolveBuild:(raw,equipment,request)=>{
    const result=resolveBuild(raw,equipment,request);
    if(result?.weaponType!==weaponType)throw Error('REAL_SLICE:WEAPON_MISMATCH');
+   if(result&&result.elementType===undefined&&result.equipment?.elementType!==undefined)result.elementType=result.equipment.elementType;
    if(result?.equipment?.displayElement?.status!=='known'||!Number.isFinite(result.equipment.displayElement.value)||result.equipment.displayElement.value<0)throw Error('REAL_SLICE:ELEMENT_NOT_RESOLVED');
    if(result.equipment.displayElement.value>0&&(!result.equipment.elementType||typeof result.equipment.elementType!=='string'))throw Error('REAL_SLICE:ELEMENT_TYPE_NOT_RESOLVED');
    if(!Array.isArray(result.skills?.entries))throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
