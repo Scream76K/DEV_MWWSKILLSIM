@@ -1855,7 +1855,8 @@ function calcBuild(){renderCharmLegality();
   calcState={total,rawTotal,stats,bonusDisplay:calcState.bonusDisplay||{series:[],group:[]}};
   const selectedTechniqueIdRaw=$('comboMovePicker')?.value||document.querySelector('.comboRow .cmove')?.value||'';
   const selectedTechniqueId=selectedTechniqueIdRaw==='hm_side'?'HAM_SIDE_SWING':selectedTechniqueIdRaw;
-  const selectedTechniqueIds=(Array.isArray(App.state.combo?.moves)?App.state.combo.moves:[]).map(x=>x?.techniqueId||x?.canonicalTechniqueId||'').filter(Boolean);
+  const selectedTechniqueIdsRaw=(Array.isArray(App.state.combo?.moves)?App.state.combo.moves:[]).map(x=>x?.techniqueId||x?.canonicalTechniqueId||'');
+  const selectedTechniqueIds=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(selectedTechniqueIdsRaw,{fallback:selectedTechniqueId})?.ids||selectedTechniqueIdsRaw.filter(Boolean);
   try{calcState.realOneHit=window.MHWRealOneHitBrowserAdapter?.evaluateCurrent?.({weapon:w,stats,target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''},skills:Object.entries(total),techniqueId:selectedTechniqueId,techniqueIds:selectedTechniqueIds.length?selectedTechniqueIds:[selectedTechniqueId],techniqueDb:window.TechniqueDBEngine,trainingRoom:trainingRoomMonster(),retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'})||{status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};}catch(e){calcState.realOneHit={status:'UNAVAILABLE',reason:String(e?.message||e||'REAL_SLICE:EVALUATION_FAILED')};}
   renderSummary();renderDetail();syncDamage();renderMonsterInfo();refreshDecorationSelects();updateWeaponCoeffDisplay();
 }
@@ -7550,14 +7551,17 @@ function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null){
   const target=snapshot?.target||{};
   const moves=Array.isArray(snapshot?.combo?.moves)?snapshot.combo.moves:[];
   if(!moves.length)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_NOT_SAVED'};
-  const techniqueIds=moves.map(x=>x?.canonicalTechniqueId||x?.techniqueId||'');
+  const rawTechniqueIds=moves.map(x=>x?.techniqueId||x?.canonicalTechniqueId||'');
+  const normalizedTechniqueIds=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(rawTechniqueIds)||{ids:rawTechniqueIds.filter(Boolean),unresolved:[]};
+  const techniqueIds=normalizedTechniqueIds.ids;
   const techniqueId=techniqueIds[0];
   if(!target.monsterId||!target.partId)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TARGET_NOT_SAVED'};
-  if(techniqueIds.some(id=>!id))return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_NOT_SAVED'};
+  if(normalizedTechniqueIds.unresolved.length||!techniqueIds.length||techniqueIds.length!==rawTechniqueIds.length)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_ID_UNRESOLVED'};
   if(expectedSnapshot){
     const expectedTarget=expectedSnapshot.target||{};
     const expectedMoves=Array.isArray(expectedSnapshot.combo?.moves)?expectedSnapshot.combo.moves:[];
-    const expectedTechniqueIds=expectedMoves.map(x=>x?.canonicalTechniqueId||x?.techniqueId||'');
+    const expectedRawTechniqueIds=expectedMoves.map(x=>x?.techniqueId||x?.canonicalTechniqueId||'');
+    const expectedTechniqueIds=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(expectedRawTechniqueIds)?.ids||expectedRawTechniqueIds.filter(Boolean);
     if(String(target.monsterId)!==String(expectedTarget.monsterId||'')||String(target.partId)!==String(expectedTarget.partId||''))return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TARGET_MISMATCH'};
     if(JSON.stringify(techniqueIds)!==JSON.stringify(expectedTechniqueIds))return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_MISMATCH'};
   }

@@ -1,5 +1,15 @@
 (function(root){'use strict';
  function fail(reason){return {status:'UNAVAILABLE',reason};}
+ function normalizeTechniqueIds(ids,{fallback=null}={}){
+  const input=Array.isArray(ids)?ids:(fallback?[fallback]:[]),unresolved=[];
+  const normalized=input.map(raw=>{
+   if(raw===null||raw===undefined||String(raw).trim()==='')return null;
+   const value=String(raw),id=value==='hm_side'?'HAM_SIDE_SWING':value.startsWith('canonical:')?value.slice('canonical:'.length):value;
+   if(!id)unresolved.push(value);
+   return id||null;
+  }).filter(Boolean);
+  return {ids:normalized,unresolved};
+ }
  function evaluateCurrent({weapon,stats,target,skills=[],techniqueDb,trainingRoom,techniqueId,techniqueIds,retrievedAt='UNKNOWN'}={}){
   if(typeof root.damageFromParams!=='function'||!root.MHWWeaponMaxSharpness||typeof root.HimmelRealOneHitPipeline!=='function')return fail('REAL_SLICE:BROWSER_DEPENDENCIES_UNAVAILABLE');
   if(!weapon||!Number.isInteger(weapon.id)||!Number.isInteger(weapon.gameId)||typeof weapon.kind!=='string'||weapon.kind==='charge-blade')return fail('REAL_SLICE:CURRENT_WEAPON_NOT_SUPPORTED');
@@ -22,10 +32,10 @@
   const buildSkills=Array.isArray(skills)?skills.map(([name,level])=>{const ui=classifySkill({name,level},'index.html:calcBuild');return ui.skillKey==='slugger'&&canonicalSlugger?{...canonicalSlugger,level:ui.level,source:`${canonicalSlugger.source};index.html:calcBuild`}:ui;}):[];
   const allSkills=[...rawSkills,...buildSkills.filter(x=>!rawSkills.some(y=>String(y.skillId)===String(x.skillId)&&y.level===x.level))];
   if(target?.monster!=='training-room'||target?.part!=='training-front')return fail('REAL_SLICE:TRAINING_ROOM_FRONT_REQUIRED');
-  const requestedIds=Array.isArray(techniqueIds)&&techniqueIds.length?techniqueIds:(typeof techniqueId==='string'&&techniqueId?[techniqueId]:[]);
-  if(!requestedIds.length)return fail('REAL_SLICE:TECHNIQUE_NOT_SELECTED');
-  const resolvedTechniqueIds=requestedIds.map(id=>id==='hm_side'?'HAM_SIDE_SWING':id.startsWith('canonical:')?id.slice('canonical:'.length):id);
-  if(resolvedTechniqueIds.some(id=>!id))return fail('REAL_SLICE:TECHNIQUE_UNSUPPORTED');
+  const normalized=normalizeTechniqueIds(Array.isArray(techniqueIds)?techniqueIds:null,{fallback:techniqueId});
+  const resolvedTechniqueIds=normalized.ids;
+  if(normalized.unresolved.length)return fail('REAL_SLICE:TECHNIQUE_ID_UNRESOLVED:'+normalized.unresolved.join(','));
+  if(!resolvedTechniqueIds.length)return fail('REAL_SLICE:TECHNIQUE_NOT_SELECTED');
   const techniques={};
   for(const id of [...new Set(resolvedTechniqueIds)]){
    const technique=techniqueDb?.get?.(weapon.kind,id);
@@ -35,8 +45,11 @@
   techniqueId=resolvedTechniqueIds[0];
   const technique=techniques[techniqueId];
   const part=trainingRoom?.parts?.find(x=>x.id==='training-front');
-  const hitDamageType=technique.hits[0]?.damageType;
-  const physicalKey=hitDamageType==='blunt'||hitDamageType==='slash'||hitDamageType==='pierce'?hitDamageType:['hammer','hunting-horn'].includes(weapon.kind)?'blunt':null;
+  const physicalKeyForTechnique=id=>{const hitDamageType=techniques[id]?.hits?.[0]?.damageType;return hitDamageType==='blunt'||hitDamageType==='slash'||hitDamageType==='pierce'?hitDamageType:['hammer','hunting-horn'].includes(weapon.kind)?'blunt':null;};
+  const physicalKeys=resolvedTechniqueIds.map(physicalKeyForTechnique);
+  if(physicalKeys.some(x=>!x))return fail('REAL_SLICE:DAMAGE_TYPE_UNRESOLVED');
+  if(new Set(physicalKeys).size>1)return fail('REAL_SLICE:MIXED_DAMAGE_TYPES_UNSUPPORTED');
+  const physicalKey=physicalKeys[0];
   if(!physicalKey)return fail('REAL_SLICE:DAMAGE_TYPE_UNRESOLVED');
   if(!part||!Number.isFinite(part.multipliers?.[physicalKey]))return fail('REAL_SLICE:TRAINING_HITZONE_UNRESOLVED');
   const maxSharpness=[...root.MHWWeaponMaxSharpness.colors].reverse().find(color=>Number(weapon.sharpness?.[color])>0);
@@ -76,5 +89,5 @@
     calculate:root.damageFromParams}});
   try{return pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:'training-room',hitZoneKey:'training-front'},conditions:{},evaluation:{mode:'combo',kind:'combo',signature:'current-selection-hammer-combo',techniqueIds:resolvedTechniqueIds}});}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
  }
- root.MHWRealOneHitBrowserAdapter=Object.freeze({evaluateCurrent});
+ root.MHWRealOneHitBrowserAdapter=Object.freeze({evaluateCurrent,normalizeTechniqueIds});
 })(typeof window!=='undefined'?window:globalThis);
