@@ -835,7 +835,6 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!finite(stats?.attack)||stats.attack<=0)return unavailable('PHYSICAL_ATTACK_UNRESOLVED');
   if(!finite(stats.element)||stats.element<0)return unavailable('PHYSICAL_ELEMENT_UNRESOLVED');
   if(!finite(stats.affinity))return unavailable('PHYSICAL_AFFINITY_UNRESOLVED');
-  if(Array.isArray(build?.skills?.entries)&&build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))return unavailable('PHYSICAL_SKILLS_UNSUPPORTED');
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
   let sharp,hitzone,part;
   try{
@@ -860,7 +859,6 @@ function createSourcedElementalFormula({calculate,resolveElementSharpness,resolv
   if(coefficientUnit!=='ELEMENT_MODIFIER'||!finite(coefficient)||coefficient<0)return unavailable('ELEMENT_MODIFIER_UNRESOLVED');
   if(!finite(stats?.element)||stats.element<0)return unavailable('ELEMENT_VALUE_UNRESOLVED');
   if(!finite(stats?.affinity))return unavailable('ELEMENT_AFFINITY_UNRESOLVED');
-  if(Array.isArray(build?.skills?.entries)&&build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))return unavailable('ELEMENT_SKILLS_UNSUPPORTED');
   if(!expectedGameVersion)return unavailable('ELEMENT_VERSION_UNRESOLVED');
   let sharp,hitzone;
   try{sharp=resolveElementSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,gameVersion:expectedGameVersion});}
@@ -891,7 +889,6 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!finite(stats?.attack)||stats.attack<=0)return unavailable('PHYSICAL_ATTACK_UNRESOLVED');
   if(!finite(stats.element)||stats.element<0)return unavailable('PHYSICAL_ELEMENT_UNRESOLVED');
   if(!finite(stats.affinity))return unavailable('PHYSICAL_AFFINITY_UNRESOLVED');
-  if(Array.isArray(build?.skills?.entries)&&build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))return unavailable('PHYSICAL_SKILLS_UNSUPPORTED');
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
   let sharp,hitzone,part;
   try{
@@ -916,7 +913,6 @@ function createSourcedElementalFormula({calculate,resolveElementSharpness,resolv
   if(coefficientUnit!=='ELEMENT_MODIFIER'||!finite(coefficient)||coefficient<0)return unavailable('ELEMENT_MODIFIER_UNRESOLVED');
   if(!finite(stats?.element)||stats.element<0)return unavailable('ELEMENT_VALUE_UNRESOLVED');
   if(!finite(stats?.affinity))return unavailable('ELEMENT_AFFINITY_UNRESOLVED');
-  if(Array.isArray(build?.skills?.entries)&&build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))return unavailable('ELEMENT_SKILLS_UNSUPPORTED');
   if(!expectedGameVersion)return unavailable('ELEMENT_VERSION_UNRESOLVED');
   let sharp,hitzone;
   try{sharp=resolveElementSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,gameVersion:expectedGameVersion});}
@@ -943,7 +939,7 @@ const {createPipeline}=require('./pipeline.cjs');
 const {adaptOrdinaryPhysicalHit}=require('./real-technique-one-hit-adapter.cjs');
 const {createSourcedPhysicalFormula,createSourcedElementalFormula}=require('./sourced-physical-formula.cjs');
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
-function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
+function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,resolveSkillApplicability,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
  const elemental=canonicalPhysical&&typeof canonicalPhysical.resolveElementSharpness==='function'&&typeof canonicalPhysical.resolveElementHitzone==='function'?createSourcedElementalFormula({...canonicalPhysical,resolveElementSharpness:canonicalPhysical.resolveElementSharpness,resolveHitzone:canonicalPhysical.resolveElementHitzone}):formulae?.element;
@@ -969,7 +965,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    if(result?.weaponType!==weaponType)throw Error('REAL_SLICE:WEAPON_MISMATCH');
    if(result?.equipment?.displayElement?.status!=='known'||!Number.isFinite(result.equipment.displayElement.value)||result.equipment.displayElement.value<0)throw Error('REAL_SLICE:ELEMENT_NOT_RESOLVED');
    if(result.equipment.displayElement.value>0&&(!result.equipment.elementType||typeof result.equipment.elementType!=='string'))throw Error('REAL_SLICE:ELEMENT_TYPE_NOT_RESOLVED');
-   if(!Array.isArray(result.skills?.entries)||result.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
+   if(!Array.isArray(result.skills?.entries))throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
    const value=(x)=>x&&x.status==='known'&&Number.isFinite(x.value)?x.value:undefined;
    return {...result,
     trueAttack:result.trueAttack??value(result.equipment?.trueAttack),
@@ -981,7 +977,8 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    const result=resolveEffects(build,conditions,channel,effects);
    // Any unresolved or active effect requires a future full elemental/skill route.
    if(!Array.isArray(result)||result.length!==0)throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_EMPTY');
-   if(!Array.isArray(build?.skills?.entries)||build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
+   const applicability=build.skills.entries.length===0?[]:(typeof resolveSkillApplicability==='function'?resolveSkillApplicability(build.skills.entries):null);
+   if(!Array.isArray(applicability)||applicability.length!==build.skills.entries.length||applicability.some(x=>x?.effectDisposition!=='non_damage'||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
    return result;
   }
  });
@@ -1011,7 +1008,7 @@ const {createPipeline}=require('./pipeline.cjs');
 const {adaptOrdinaryPhysicalHit}=require('./real-technique-one-hit-adapter.cjs');
 const {createSourcedPhysicalFormula,createSourcedElementalFormula}=require('./sourced-physical-formula.cjs');
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
-function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
+function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,resolveSkillApplicability,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
  const elemental=canonicalPhysical&&typeof canonicalPhysical.resolveElementSharpness==='function'&&typeof canonicalPhysical.resolveElementHitzone==='function'?createSourcedElementalFormula({...canonicalPhysical,resolveElementSharpness:canonicalPhysical.resolveElementSharpness,resolveHitzone:canonicalPhysical.resolveElementHitzone}):formulae?.element;
@@ -1037,7 +1034,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    if(result?.weaponType!==weaponType)throw Error('REAL_SLICE:WEAPON_MISMATCH');
    if(result?.equipment?.displayElement?.status!=='known'||!Number.isFinite(result.equipment.displayElement.value)||result.equipment.displayElement.value<0)throw Error('REAL_SLICE:ELEMENT_NOT_RESOLVED');
    if(result.equipment.displayElement.value>0&&(!result.equipment.elementType||typeof result.equipment.elementType!=='string'))throw Error('REAL_SLICE:ELEMENT_TYPE_NOT_RESOLVED');
-   if(!Array.isArray(result.skills?.entries)||result.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
+   if(!Array.isArray(result.skills?.entries))throw Error('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
    const value=(x)=>x&&x.status==='known'&&Number.isFinite(x.value)?x.value:undefined;
    return {...result,
     trueAttack:result.trueAttack??value(result.equipment?.trueAttack),
@@ -1049,7 +1046,8 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    const result=resolveEffects(build,conditions,channel,effects);
    // Any unresolved or active effect requires a future full elemental/skill route.
    if(!Array.isArray(result)||result.length!==0)throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_EMPTY');
-   if(!Array.isArray(build?.skills?.entries)||build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
+   const applicability=build.skills.entries.length===0?[]:(typeof resolveSkillApplicability==='function'?resolveSkillApplicability(build.skills.entries):null);
+   if(!Array.isArray(applicability)||applicability.length!==build.skills.entries.length||applicability.some(x=>x?.effectDisposition!=='non_damage'||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
    return result;
   }
  });

@@ -13,13 +13,13 @@
    const name=entry?.skill?.name||entry?.name;
    const level=Number(entry?.level);
    if(!name||!Number.isFinite(level)||level<0)return {id:String(entry?.id||'unknown'),name:name||'UNKNOWN',level:Number.isFinite(level)?level:0,rank:0,source,effectDisposition:'unknown'};
-   if(name==='Slugger'||name==='KO術'||name==='ＫＯ術')return {id:String(entry?.id||entry?.skill?.id||name),name,level,rank:0,source,effectDisposition:'non_damage',reason:'stun accumulation only; no HP-damage modifier',evidenceRef:`${source}:skill.description`};
-   return {id:String(entry?.id||entry?.skill?.id||name),name,level,rank:0,source,effectDisposition:'unknown'};
+   const skillId=entry?.skill?.id??entry?.id??null,description=entry?.description||entry?.skill?.description||null;
+   return {id:String(entry?.id||entry?.skill?.id||name),name,level,rank:0,source,skillId,description,skillKey:(name==='Slugger'||name==='KO術'||name==='ＫＯ術')?'slugger':'unknown'};
   };
   const rawSkills=weapon.skills.map(x=>classifySkill(x,skillSource));
   const buildSkills=Array.isArray(skills)?skills.map(([name,level])=>classifySkill({name,level},'index.html:calcBuild')):[];
-  const allSkills=[...rawSkills,...buildSkills.filter(x=>!rawSkills.some(y=>y.name===x.name&&y.level===x.level))];
-  if(allSkills.some(x=>x.effectDisposition!=='non_damage'))return fail('REAL_SLICE:SKILL_EFFECTS_NOT_PROVEN_ABSENT');
+  const key=x=>x.skillKey==='slugger'||x.name==='Slugger'||x.name==='KO術'||x.name==='ＫＯ術'?'slugger':x.name;
+  const allSkills=[...rawSkills,...buildSkills.filter(x=>!rawSkills.some(y=>key(y)===key(x)&&y.level===x.level))];
   if(target?.monster!=='training-room'||target?.part!=='training-front')return fail('REAL_SLICE:TRAINING_ROOM_FRONT_REQUIRED');
   if(typeof techniqueId!=='string'||!techniqueId)return fail('REAL_SLICE:TECHNIQUE_NOT_SELECTED');
   if(techniqueId!=='HAM_SIDE_SWING')return fail('REAL_SLICE:TECHNIQUE_UNSUPPORTED:'+techniqueId);
@@ -40,7 +40,7 @@
   const source={capture:pinned=>({versions:pinned,equipment,effects:{},techniques:{[techniqueId]:technique}})};
   const pipeline=root.HimmelRealOneHitPipeline({versions,source,techniqueId,
    resolveBuild:(_raw,snapshot)=>({weaponType:'hammer',dbVersion:versions.equipment,source:'MHDB_API_CURRENT_SELECTION',equipment:{...snapshot,ids:[`api_id:${snapshot.apiId}`,`game_id:${snapshot.gameId}`],trueAttack:{status:'known',value:snapshot.damage.raw},displayElement:{status:'known',value:snapshot.elementEvidence.confirmedNone?0:snapshot.elementEvidence.display},baseAffinity:{status:'known',value:snapshot.affinity},elementType:snapshot.elementType,sourceGameVersion:snapshot.provenance.sourceGameVersion},skills:{entries:allSkills},issues:[{code:'MHDB_SOURCE',apiId:snapshot.apiId,gameId:snapshot.gameId,sourceEndpoint:snapshot.provenance.sourceUrl,apiVersion:snapshot.provenance.apiVersion,retrievedAt:snapshot.provenance.retrievedAt,sourceGameVersion:snapshot.provenance.sourceGameVersion}]}),
-   resolveEffects:()=>[],initialState:()=>({}),
+   resolveEffects:()=>[],resolveSkillApplicability:entries=>entries.map(entry=>{const descriptionKnown=typeof entry.description==='string'&&entry.description.includes('Stun power +20%');const idKnown=String(entry.skillId)==='36';if(entry.skillKey==='slugger'&&(idKnown||entry.name==='Slugger')&&(descriptionKnown||entry.name==='Slugger'))return {...entry,effectDisposition:'non_damage',reason:'stun accumulation only; no HP-damage modifier',evidenceRef:`${entry.source}:skill.id=36;skill.description=Stun power +20%`};throw Error('REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:'+entry.name);}),initialState:()=>({}),
    canonicalPhysical:{expectedGameVersion:versions.game,
     resolveSharpness:({build})=>{const r=root.MHWWeaponMaxSharpness.resolve(build.equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});if(!r.options)throw Error('REAL_SLICE:SHARPNESS_UNRESOLVED');return {value:r.options.sharpnessPhysicalMultiplier,gameVersion:versions.game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:build.equipment.provenance.sourceGameVersion,status:'PROVISIONAL'};},
     resolveElementSharpness:({build})=>{const r=root.MHWWeaponMaxSharpness.resolve(build.equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});if(!r.options)throw Error('REAL_SLICE:ELEMENT_SHARPNESS_UNRESOLVED');return {value:r.options.sharpnessElementMultiplier,gameVersion:versions.game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:build.equipment.provenance.sourceGameVersion,status:'PROVISIONAL'};},

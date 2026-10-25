@@ -10,7 +10,6 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!finite(stats?.attack)||stats.attack<=0)return unavailable('PHYSICAL_ATTACK_UNRESOLVED');
   if(!finite(stats.element)||stats.element<0)return unavailable('PHYSICAL_ELEMENT_UNRESOLVED');
   if(!finite(stats.affinity))return unavailable('PHYSICAL_AFFINITY_UNRESOLVED');
-  if(Array.isArray(build?.skills?.entries)&&build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))return unavailable('PHYSICAL_SKILLS_UNSUPPORTED');
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
   let sharp,hitzone,part;
   try{
@@ -35,7 +34,6 @@ function createSourcedElementalFormula({calculate,resolveElementSharpness,resolv
   if(coefficientUnit!=='ELEMENT_MODIFIER'||!finite(coefficient)||coefficient<0)return unavailable('ELEMENT_MODIFIER_UNRESOLVED');
   if(!finite(stats?.element)||stats.element<0)return unavailable('ELEMENT_VALUE_UNRESOLVED');
   if(!finite(stats?.affinity))return unavailable('ELEMENT_AFFINITY_UNRESOLVED');
-  if(Array.isArray(build?.skills?.entries)&&build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))return unavailable('ELEMENT_SKILLS_UNSUPPORTED');
   if(!expectedGameVersion)return unavailable('ELEMENT_VERSION_UNRESOLVED');
   let sharp,hitzone;
   try{sharp=resolveElementSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,gameVersion:expectedGameVersion});}
