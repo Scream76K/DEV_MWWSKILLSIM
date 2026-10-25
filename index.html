@@ -7545,13 +7545,21 @@ function comparisonChangeText(value){
   if(value.components.special!==null&&(value.components.special!==0||value.componentContributionPercent.special!==0))parts.push(component('special','特殊'));
   return signed(value.changePercent)+'（'+parts.join('／')+'）';
 }
-function evaluateSavedSnapshotOneHit(snapshot){
+function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null){
   const target=snapshot?.target||{};
   const moves=Array.isArray(snapshot?.combo?.moves)?snapshot.combo.moves:[];
-  const first=moves.find(x=>x&&typeof x==='object'&&String(x.techniqueId||x.canonicalTechniqueId||''));
+  if(moves.length!==1)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_MULTI_HIT_COMBO_UNSUPPORTED'};
+  const first=moves[0];
   const techniqueId=first?.canonicalTechniqueId||first?.techniqueId||'';
   if(!target.monsterId||!target.partId)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TARGET_NOT_SAVED'};
   if(!techniqueId)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_NOT_SAVED'};
+  if(expectedSnapshot){
+    const expectedTarget=expectedSnapshot.target||{};
+    const expectedMoves=Array.isArray(expectedSnapshot.combo?.moves)?expectedSnapshot.combo.moves:[];
+    const expectedTechnique=expectedMoves.length===1?(expectedMoves[0]?.canonicalTechniqueId||expectedMoves[0]?.techniqueId||''):'';
+    if(String(target.monsterId)!==String(expectedTarget.monsterId||'')||String(target.partId)!==String(expectedTarget.partId||''))return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TARGET_MISMATCH'};
+    if(techniqueId!==expectedTechnique)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_MISMATCH'};
+  }
   const adapter=window.MHWRealOneHitBrowserAdapter;
   if(!adapter||typeof adapter.evaluateCurrent!=='function')return {status:'UNAVAILABLE',reason:'REAL_SLICE:ADAPTER_UNAVAILABLE'};
   try{
@@ -7567,7 +7575,7 @@ function evaluateSavedSnapshotOneHit(snapshot){
     });
   }catch(error){return {status:'UNAVAILABLE',reason:String(error?.message||error||'REAL_SLICE:EVALUATION_FAILED')};}
 }
-function compareSnapshot(name,snapshot,cond){
+function compareSnapshot(name,snapshot,cond,expectedSnapshot=null){
   applyBuildSnapshot(snapshot,{preserveCombo:true});
   const st=calcState.stats||{};
   let dmg=null,dps=null,damageReason=null,dpsReason=null,dpsStatus='NOT_CALCULATED',comboVerification=null;
@@ -7595,11 +7603,14 @@ function compareSnapshot(name,snapshot,cond){
       saedReference={NORMAL:{status:'PENDING',reason},MAX:{status:'PENDING',reason}};
     }
   }
-  const oneHitPipeline=evaluateSavedSnapshotOneHit(snapshot);
+  const oneHitPipeline=evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot);
   return {name,kind,power,referenceCombo,saedReference,oneHitPipeline,attack:Number(st.attack)||0,attackTrue:Number(st.attackTrue)||0,affinity:Number(st.affinity)||0,maxAffinity:Number(st.maxAffinity)||0,element:st.element,elementType:String(st.elementType||''),elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason,damage:dmg,dps,dpsStatus,damageReason,dpsReason,comboVerification,referenceDps:comboVerification?.referenceDps??null,referenceDpsStatus:comboVerification?.referenceDpsStatus??'NOT_CALCULATED'};
 }
 function comparisonReasonText(reason){
   const text=String(reason||'');
+  if(text==='REAL_SLICE:COMPARISON_MULTI_HIT_COMBO_UNSUPPORTED')return '共通Pipeline比較は保存コンボ1技だけに対応しています。複数技は未算出です。';
+  if(text==='REAL_SLICE:COMPARISON_TARGET_MISMATCH')return '保存A/Bの対象モンスター・部位が異なるため、共通Pipeline比較は未算出です。';
+  if(text==='REAL_SLICE:COMPARISON_TECHNIQUE_MISMATCH')return '保存A/Bの選択技が異なるため、共通Pipeline比較は未算出です。';
   if(text.startsWith('ELEMENT_'))return '武器の属性値・種別が未確認のため、属性を含むダメージ・火力は未算出です。';
   if(text.includes('COMBO_DPS_UNVERIFIED'))return '技データ・所要時間・計算条件が未検証のためDPSは未算出です。';
   if(text.includes('COMBO_TIMING_PENDING'))return '所要時間が未確認のためDPSは未算出です。';
@@ -7906,7 +7917,8 @@ function buildCalculationFingerprint(){
   }
   const current=buildSnapshot(),cond=compareStep5Snapshot(),calculationBefore=buildCalculationFingerprint(),rows=[];
   let compareError=null,restoreError=null;
-  try{for(const n of names)rows.push(compareSnapshot(n,map[n],cond));}
+  const expectedSnapshot=map[names[0]];
+  try{for(const n of names)rows.push(compareSnapshot(n,map[n],cond,expectedSnapshot));}
   catch(e){compareError=e;}
   finally{
     // Both restoration steps must be attempted, even if either one fails.
