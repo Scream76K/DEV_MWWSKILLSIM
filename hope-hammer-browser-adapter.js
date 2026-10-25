@@ -14,7 +14,8 @@
    const level=Number(entry?.level);
    if(!name||!Number.isFinite(level)||level<0)return {id:String(entry?.id||'unknown'),name:name||'UNKNOWN',level:Number.isFinite(level)?level:0,rank:0,source,effectDisposition:'unknown'};
    const skillId=entry?.skill?.id??entry?.id??null,description=entry?.description||entry?.skill?.description||null;
-   return {id:String(entry?.id||entry?.skill?.id||name),name,level,rank:0,source,skillId,description,skillKey:(name==='Slugger'||name==='KO術'||name==='ＫＯ術')?'slugger':'unknown'};
+   const skillKey=(name==='Slugger'||name==='KO術'||name==='ＫＯ術')?'slugger':(name==='Attack Boost'||name==='攻撃')?'attack':'unknown';
+   return {id:String(entry?.id||entry?.skill?.id||name),name,level,rank:0,source,skillId,description,skillKey};
   };
   const rawSkills=weapon.skills.map(x=>classifySkill(x,skillSource));
   const canonicalSlugger=rawSkills.find(x=>x.skillKey==='slugger'&&String(x.skillId)==='36'&&Number.isInteger(x.level)&&x.level===1);
@@ -28,12 +29,22 @@
   const technique=techniqueDb?.get?.(weapon.kind,techniqueId);
   if(!technique||!Array.isArray(technique.hits)||technique.hits.length!==1)return fail('REAL_SLICE:TECHNIQUE_NOT_FOUND');
   const part=trainingRoom?.parts?.find(x=>x.id==='training-front');
-  const physicalKey=['hammer','hunting-horn'].includes(weapon.kind)?'blunt':['bow','light-bowgun','heavy-bowgun'].includes(weapon.kind)?'pierce':'slash';
+  const hitDamageType=technique.hits[0]?.damageType;
+  const physicalKey=hitDamageType==='blunt'||hitDamageType==='slash'||hitDamageType==='pierce'?hitDamageType:['hammer','hunting-horn'].includes(weapon.kind)?'blunt':['bow'].includes(weapon.kind)?'pierce':['light-bowgun','heavy-bowgun','gunlance'].includes(weapon.kind)?null:'slash';
+  if(!physicalKey)return fail('REAL_SLICE:DAMAGE_TYPE_UNRESOLVED');
   if(!part||!Number.isFinite(part.multipliers?.[physicalKey]))return fail('REAL_SLICE:TRAINING_HITZONE_UNRESOLVED');
   const maxSharpness=[...root.MHWWeaponMaxSharpness.colors].reverse().find(color=>Number(weapon.sharpness?.[color])>0);
   if(!maxSharpness)return fail('REAL_SLICE:SHARPNESS_UNRESOLVED');
   if(!weapon.damage||!Number.isFinite(weapon.damage.raw)||!Number.isFinite(weapon.affinity))return fail('REAL_SLICE:MHDB_BASE_STATS_UNKNOWN');
-  if(stats.attackTrue!==weapon.damage.raw||stats.affinity!==weapon.affinity)return fail('REAL_SLICE:CALCULATED_STATS_NOT_RAW_ONLY');
+  const attackEntries=allSkills.filter(x=>x.skillKey==='attack');
+  if(attackEntries.some(x=>!Number.isInteger(x.level)||x.level<1||x.level>5))return fail('REAL_SLICE:ATTACK_SKILL_LEVEL_UNSUPPORTED');
+  const attackLevel=attackEntries.length?Math.max(...attackEntries.map(x=>x.level)):0;
+  if(attackLevel&&!root.MHWAttackSkillResolver)return fail('REAL_SLICE:ATTACK_RULE_UNAVAILABLE');
+  const attackRule=root.MHWAttackSkillResolver?root.MHWAttackSkillResolver({攻撃:attackLevel}):{flat:0,mult:1};
+  const attackFlat=Number(attackRule.flat),attackMult=Number(attackRule.mult);
+  if(!Number.isFinite(attackFlat)||!Number.isFinite(attackMult))return fail('REAL_SLICE:ATTACK_RULE_INVALID');
+  const expectedAttack=weapon.damage.raw*attackMult+attackFlat;
+  if(stats.attackTrue!==(attackLevel?expectedAttack:weapon.damage.raw)||stats.affinity!==weapon.affinity)return fail('REAL_SLICE:CALCULATED_STATS_NOT_RAW_OR_PROVEN_ATTACK');
   const elementSpecial=elementSpecials[0], elementType=elementSpecial?.element||'none', elementValue=elementSpecial?.damage?.display??0;
   if(elementSpecial && (!Number.isFinite(elementValue)||elementValue<0||stats.element!==elementValue||stats.elementType!==elementType))return fail('REAL_SLICE:CALCULATED_ELEMENT_NOT_RAW_ONLY');
   if(!elementSpecial && (!([0,null].includes(stats.element))||stats.elementType&&!['none',''].includes(String(stats.elementType))))return fail('REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN');
@@ -43,7 +54,7 @@
   const source={capture:pinned=>({versions:pinned,equipment,effects:{},techniques:{[techniqueId]:technique}})};
   const pipeline=root.HimmelRealOneHitPipeline({versions,source,techniqueId,weaponType:weapon.kind,
    resolveBuild:(_raw,snapshot)=>({weaponType:weapon.kind,dbVersion:versions.equipment,source:'MHDB_API_CURRENT_SELECTION',equipment:{...snapshot,ids:[`api_id:${snapshot.apiId}`,`game_id:${snapshot.gameId}`],trueAttack:{status:'known',value:snapshot.damage.raw},displayElement:{status:'known',value:snapshot.elementEvidence.confirmedNone?0:snapshot.elementEvidence.display},baseAffinity:{status:'known',value:snapshot.affinity},elementType:snapshot.elementType,sourceGameVersion:snapshot.provenance.sourceGameVersion},skills:{entries:allSkills},issues:[{code:'MHDB_SOURCE',apiId:snapshot.apiId,gameId:snapshot.gameId,sourceEndpoint:snapshot.provenance.sourceUrl,apiVersion:snapshot.provenance.apiVersion,retrievedAt:snapshot.provenance.retrievedAt,sourceGameVersion:snapshot.provenance.sourceGameVersion}]}),
-   resolveEffects:()=>[],resolveSkillApplicability:entries=>entries.map(entry=>{if(entry.skillKey==='slugger'&&String(entry.skillId)==='36'&&Number.isInteger(entry.level)&&entry.level===1)return {...entry,effectDisposition:'non_damage',reason:'stun accumulation only; no HP-damage modifier',evidenceRef:`MHDB skill.id=36;level=1;${entry.source}`};throw Error('REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:'+entry.name);}),initialState:()=>({}),
+   resolveEffects:(build,_conditions)=>{const entries=build.skills.entries||[];const attack=entries.filter(x=>x.skillKey==='attack');if(attack.length){if(!root.MHWAttackSkillResolver)throw Error('REAL_SLICE:ATTACK_RULE_UNAVAILABLE');const level=Math.max(...attack.map(x=>x.level)),rule=root.MHWAttackSkillResolver({攻撃:level});if(!Number.isFinite(Number(rule.flat))||!Number.isFinite(Number(rule.mult)))throw Error('REAL_SLICE:ATTACK_RULE_INVALID');return [{id:'attack-boost-multiply',target:'physical',stage:'attack',unit:'dimensionless',amount:Number(rule.mult),operation:'multiply',order:10,source:'index.html:calcAttackSkill',condition:{type:'always'}},{id:'attack-boost-flat',target:'physical',stage:'attack',unit:'true-attack',amount:Number(rule.flat),operation:'add',order:20,source:'index.html:calcAttackSkill',condition:{type:'always'}}];}return [];},resolveSkillApplicability:entries=>entries.map(entry=>{if(entry.skillKey==='slugger'&&String(entry.skillId)==='36'&&Number.isInteger(entry.level)&&entry.level===1)return {...entry,effectDisposition:'non_damage',reason:'stun accumulation only; no HP-damage modifier',evidenceRef:`MHDB skill.id=36;level=1;${entry.source}`};if(entry.skillKey==='attack'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'HP attack effect is resolved by the shared L3 effect list',evidenceRef:'index.html:calcAttackSkill'};throw Error('REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:'+entry.name);}),initialState:()=>({}),
    canonicalPhysical:{expectedGameVersion:versions.game,
     resolveSharpness:({build})=>{const r=root.MHWWeaponMaxSharpness.resolve(build.equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});if(!r.options)throw Error('REAL_SLICE:SHARPNESS_UNRESOLVED');return {value:r.options.sharpnessPhysicalMultiplier,gameVersion:versions.game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:build.equipment.provenance.sourceGameVersion,status:'PROVISIONAL'};},
     resolveElementSharpness:({build})=>{const r=root.MHWWeaponMaxSharpness.resolve(build.equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});if(!r.options)throw Error('REAL_SLICE:ELEMENT_SHARPNESS_UNRESOLVED');return {value:r.options.sharpnessElementMultiplier,gameVersion:versions.game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:build.equipment.provenance.sourceGameVersion,status:'PROVISIONAL'};},

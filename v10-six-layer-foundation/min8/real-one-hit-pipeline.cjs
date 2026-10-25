@@ -42,10 +42,12 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   },
   resolveEffects:(build,conditions,channel,effects)=>{
    const result=resolveEffects(build,conditions,channel,effects);
-   // Any unresolved or active effect requires a future full elemental/skill route.
-   if(!Array.isArray(result)||result.length!==0)throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_EMPTY');
+   if(!Array.isArray(result))throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_ARRAY');
    const applicability=build.skills.entries.length===0?[]:(typeof resolveSkillApplicability==='function'?resolveSkillApplicability(build.skills.entries):null);
-   if(!Array.isArray(applicability)||applicability.length!==build.skills.entries.length||applicability.some(x=>x?.effectDisposition!=='non_damage'||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
+   if(!Array.isArray(applicability)||applicability.length!==build.skills.entries.length||applicability.some(x=>!['non_damage','resolved'].includes(x?.effectDisposition)||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
+   for(const effect of result){
+    if(!effect||typeof effect.id!=='string'||!['physical','element'].includes(effect.target)||!['attack','coefficient','element','affinity'].includes(effect.stage)||!['add','multiply','cap'].includes(effect.operation)||!Number.isFinite(effect.amount)||!Number.isInteger(effect.order)||typeof effect.source!=='string'||!effect.condition)throw Error('REAL_SLICE:EFFECT_SCHEMA_INVALID');
+   }
    return result;
   }
  });

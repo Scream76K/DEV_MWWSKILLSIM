@@ -23,7 +23,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!finite(hit.partModifier))throw Error('REAL_SLICE:PART_MODIFIER_PENDING');
   if(hit.partModifier!==1)throw Error('REAL_SLICE:PART_MODIFIER_UNSUPPORTED');
   const components=[{id:techniqueId+':physical:0',kind:'physical',unit:'MV',source,coefficient:hit.mv,
-   parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier})}];
+  parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier,damageType:hit.damageType??null})}];
   if(hit.elementModifier>0)components.push({id:techniqueId+':element:0',kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,
    parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source})});
   return Object.freeze({
