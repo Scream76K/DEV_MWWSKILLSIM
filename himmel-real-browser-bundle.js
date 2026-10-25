@@ -903,7 +903,8 @@ function createSourcedElementalFormula({calculate,resolveElementSharpness,resolv
   if(!valid(sharp)||sharp.value<=0)return unavailable('ELEMENT_SHARPNESS_UNRESOLVED');
   if(!valid(hitzone)||hitzone.value<0||hitzone.value>100)return unavailable('ELEMENT_HITZONE_UNRESOLVED');
   let result;
-  try{result=calculate({attack:0,affinity:stats.affinity,element:stats.element*coefficient,elementKnown:true,typeKnown:true,elementType:build.elementType||build.equipment?.elementType||'none',mv:0,hz:0,ehz:hitzone.value,sharp:1,esharp:sharp.value,critBonus:0,elementCrit:false,criticalState:'expected'});}
+  const criticalElementLevel=Number(build?.equipment?.criticalElementLevel)||0;
+  try{result=calculate({attack:0,affinity:stats.affinity,element:stats.element*coefficient,elementKnown:true,typeKnown:true,elementType:build.elementType||build.equipment?.elementType||'none',mv:0,hz:0,ehz:hitzone.value,sharp:1,esharp:sharp.value,critBonus:0,elementCrit:criticalElementLevel>0,criticalState:'expected'});}
   catch(_){return unavailable('ELEMENT_CANONICAL_FORMULA_FAILED')}
   if(!result||!finite(result.e)||result.e<0)return unavailable('ELEMENT_CANONICAL_RESULT_INVALID');
   return {status:'available',value:result.e};
@@ -957,7 +958,8 @@ function createSourcedElementalFormula({calculate,resolveElementSharpness,resolv
   if(!valid(sharp)||sharp.value<=0)return unavailable('ELEMENT_SHARPNESS_UNRESOLVED');
   if(!valid(hitzone)||hitzone.value<0||hitzone.value>100)return unavailable('ELEMENT_HITZONE_UNRESOLVED');
   let result;
-  try{result=calculate({attack:0,affinity:stats.affinity,element:stats.element*coefficient,elementKnown:true,typeKnown:true,elementType:build.elementType||build.equipment?.elementType||'none',mv:0,hz:0,ehz:hitzone.value,sharp:1,esharp:sharp.value,critBonus:0,elementCrit:false,criticalState:'expected'});}
+  const criticalElementLevel=Number(build?.equipment?.criticalElementLevel)||0;
+  try{result=calculate({attack:0,affinity:stats.affinity,element:stats.element*coefficient,elementKnown:true,typeKnown:true,elementType:build.elementType||build.equipment?.elementType||'none',mv:0,hz:0,ehz:hitzone.value,sharp:1,esharp:sharp.value,critBonus:0,elementCrit:criticalElementLevel>0,criticalState:'expected'});}
   catch(_){return unavailable('ELEMENT_CANONICAL_FORMULA_FAILED')}
   if(!result||!finite(result.e)||result.e<0)return unavailable('ELEMENT_CANONICAL_RESULT_INVALID');
   return {status:'available',value:result.e};

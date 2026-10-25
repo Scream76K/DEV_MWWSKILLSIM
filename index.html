@@ -2126,7 +2126,8 @@ function damageFromParams(params){
   const esharp=damageNumericValue(params.esharp,1);
   const critState=params.criticalState||'expected';
   const crit=criticalMultiplierForState(aff,params.critBonus,critState);
-  const ec=params.elementCrit?crit:1;
+  // Critical Element applies only to positive criticals; negative affinity does not reduce element damage.
+  const ec=params.elementCrit&&aff>0?crit:1;
   const p=roundDamage2(raw*mv*sharp*hz*crit);
   const e=roundDamage2(elem*esharp*ehz*ec);
   return {p,e,total:roundDamage2(p+e),critMultiplier:crit,criticalState:critState};
