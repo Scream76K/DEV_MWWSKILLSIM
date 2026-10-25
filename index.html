@@ -7918,8 +7918,17 @@ function buildCalculationFingerprint(){
   const current=buildSnapshot(),cond=compareStep5Snapshot(),calculationBefore=buildCalculationFingerprint(),rows=[];
   let compareError=null,restoreError=null;
   const expectedSnapshot=map[names[0]];
-  try{for(const n of names)rows.push(compareSnapshot(n,map[n],cond,expectedSnapshot));}
-  catch(e){compareError=e;}
+  try{
+    for(const n of names){
+      try{
+        applyBuildSnapshot(current,{preserveCombo:true,restoreExact:true});
+        rows.push(compareSnapshot(n,map[n],cond,expectedSnapshot));
+      }catch(e){
+        const reason='BUILD_COMPARE_ROW_FAILED:'+String(e?.message||e);
+        rows.push({name:n,kind:map[n]?.weaponKind||'',power:{},referenceCombo:null,saedReference:null,oneHitPipeline:{status:'UNAVAILABLE',reason},attack:0,attackTrue:0,affinity:0,maxAffinity:0,element:null,elementType:'',elementKnown:false,typeKnown:false,elementStatus:'UNAVAILABLE',elementReason:reason,damage:null,dps:null,dpsStatus:'BLOCKED',damageReason:reason,dpsReason:reason,comboVerification:null,referenceDps:null,referenceDpsStatus:'NOT_CALCULATED'});
+      }
+    }
+  }catch(e){compareError=e;}
   finally{
     // Both restoration steps must be attempted, even if either one fails.
     try{applyBuildSnapshot(current,{preserveCombo:true,restoreExact:true});}
