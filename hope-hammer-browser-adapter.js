@@ -3,7 +3,7 @@
  function evaluateCurrent({weapon,stats,target,skills=[],techniqueDb,trainingRoom,techniqueId,retrievedAt='UNKNOWN'}={}){
   if(typeof root.damageFromParams!=='function'||!root.MHWWeaponMaxSharpness||typeof root.HimmelRealOneHitPipeline!=='function')return fail('REAL_SLICE:BROWSER_DEPENDENCIES_UNAVAILABLE');
   if(!weapon||weapon.id!==387||weapon.gameId!==1||weapon.kind!=='hammer')return fail('REAL_SLICE:CURRENT_WEAPON_NOT_SUPPORTED');
-  if(!stats||stats.element!==0||stats.elementType||stats.elementKnown===false)return fail('REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN');
+  if(!stats||stats.element!==0||stats.elementType)return fail('REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN');
   if(!Array.isArray(weapon.specials))return fail('REAL_SLICE:WEAPON_SPECIALS_UNKNOWN');
   if(weapon.specials.length)return fail('REAL_SLICE:WEAPON_SPECIALS_UNSUPPORTED');
   if(!Array.isArray(weapon.skills))return fail('REAL_SLICE:WEAPON_SKILLS_UNKNOWN');
