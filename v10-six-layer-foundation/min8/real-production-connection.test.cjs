@@ -21,12 +21,13 @@ vm.runInNewContext(`(()=>{${html.slice(trainingStart,trainingEnd)};this.training
 const training=box.trainingRoomMonster();
 const trainingFront=training.parts.find(p=>p.id==='training-front');
 const game='1.042.00.02',id='HAM_SIDE_SWING',record=db.db.hammer[id];
-const adopted=resolveHopeHammerI();
+const mhdbHopeHammerI={id:387,gameId:1,kind:'hammer',name:'Hope Hammer I',damage:{raw:90,display:468},specials:[],affinity:0,skills:[],sharpness:{red:50,orange:60,yellow:50,green:40,blue:0,white:0,purple:0},handicraft:[5]};
+const adopted=resolveHopeHammerI(mhdbHopeHammerI,{apiVersion:'2026-04-15T01:28:18+00:00',retrievedAt:'2026-10-25T01:04:58Z'});
 const versions={game,equipment:'mhdb-source-unknown-game-version',technique:'tech-real',effects:'effects-real'};
 const request={schemaVersion:'v10-min2',build:{weapon:'hope-hammer-i'},target:{id:'training-room',hitZoneKey:'training-front'},conditions:{},evaluation:{mode:'combo',kind:'combo',signature:'hope-hammer-one-hit',techniqueIds:[id]}};
 const source={capture:pinned=>({versions:pinned,equipment:adopted.weapon,effects:{},techniques:{[id]:record}})};
 const make=()=>createRealOneHitPipeline({versions,source,
- resolveBuild:()=>({weaponType:'hammer',dbVersion:versions.equipment,source:'LARTTYLER_MHDB_HOPE_HAMMER_I',equipment:{ids:['game_id:1'],trueAttack:datum('known',adopted.weapon.attackRaw),displayElement:datum('known',0),baseAffinity:datum('known',adopted.weapon.affinity),sourceGameVersion:adopted.provenance.sourceGameVersion},skills:{entries:[]}}),
+ resolveBuild:()=>({weaponType:'hammer',dbVersion:versions.equipment,source:'LARTTYLER_MHDB_HOPE_HAMMER_I',equipment:{ids:[`api_id:${adopted.weapon.apiId}`,`game_id:${adopted.weapon.gameId}`],trueAttack:datum('known',adopted.weapon.attackRaw),displayElement:datum('known',0),baseAffinity:datum('known',adopted.weapon.affinity),sourceGameVersion:adopted.provenance.sourceGameVersion},skills:{entries:[]},issues:[{code:'MHDB_SOURCE',apiId:adopted.weapon.apiId,gameId:adopted.weapon.gameId,sourceEndpoint:adopted.provenance.sourceUrl,apiVersion:adopted.provenance.apiVersion,retrievedAt:adopted.provenance.retrievedAt,sourceGameVersion:adopted.provenance.sourceGameVersion}]}),
  resolveEffects:()=>[],initialState:()=>({}),
  canonicalPhysical:{expectedGameVersion:game,
   resolveSharpness:()=>{const r=sharpnessApi.resolve(adopted.weapon,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});return {value:r.options.sharpnessPhysicalMultiplier,gameVersion:game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:adopted.provenance.sourceGameVersion,status:'PROVISIONAL'};},
@@ -42,4 +43,15 @@ test('Hope Hammer I provisional source reaches existing production formula',()=>
   a.equal(out.channels[channel].metrics.comboDps.reason,'DURATION_UNAVAILABLE');
   a.equal(out.channels[channel].components[0].source,record.evidenceRefs[0]);
  }
+ a.equal(adopted.weapon.apiId,387);
+ a.equal(adopted.weapon.gameId,1);
+ a.equal(adopted.weapon.attackRaw,90);
+ a.equal(adopted.weapon.attackDisplay,468);
+ a.equal(adopted.weapon.handicraft[0],5);
+ a.equal(adopted.provenance.apiVersion,'2026-04-15T01:28:18+00:00');
+ a.equal(adopted.provenance.sourceGameVersion,'UNKNOWN');
+ a.equal(out.diagnostics[0].code,'MHDB_SOURCE');
+ a.equal(out.diagnostics[0].apiId,387);
+ a.equal(out.diagnostics[0].gameId,1);
+ a.equal(out.diagnostics[0].sourceGameVersion,'UNKNOWN');
 });
