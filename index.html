@@ -1454,7 +1454,10 @@ function renderArtia(){
   if(!isArtiaWeapon(w)){box.classList.add('hidden');return;}
   box.classList.remove('hidden');
   if(isBaseArtia(w)){
-    box.innerHTML='<b>アーティア生産条件</b><div>同一属性の攻撃素材3個固定</div><div class="notice">通常アーティアの生産・復元補正は原典と対象版の照合待ちです。保存済みの属性・復元指定は保持し、火力合計は未算出とします。</div>';
+    const types=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'],choices=['none','atk:I','aff:I','elem:I'];
+    box.innerHTML=`<b>アーティア生産条件（暫定採用・現行版未検証）</b><div>同一属性の攻撃素材3個固定</div><label>武器属性</label><select id="aElem">${types.map(x=>`<option value="${x}">${x}</option>`).join('')}</select><label>復元Ⅰ</label>${build.artia.restores.map((v,i)=>`<select class="aR" data-i="${i}">${[...new Set([...choices,v])].map(x=>`<option value="${x}">${x}</option>`).join('')}</select>`).join('')}`;
+    $('aElem').value=build.artia.element;$('aElem').onchange=()=>{build.artia.element=$('aElem').value;calcBuild()};
+    document.querySelectorAll('.aR').forEach((el,i)=>{el.value=build.artia.restores[i];el.onchange=()=>{build.artia.restores[i]=el.value;calcBuild()}});
     return;
   }
   const elems=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'];
@@ -1465,7 +1468,7 @@ function renderArtia(){
   box.innerHTML=`<b>★ 巨戟アーティア設定</b>
   <div class="muted">${esc(w.name)} は巨戟アーティア14種として登録されています。</div>
   <label>属性</label><select id="aElem">${elems.map(e=>`<option value="${e}">${ej[e]}</option>`).join('')}</select>
-  <div class="muted">生産素材：同一属性の攻撃素材3個固定（完成値へ重複加算しません）</div>
+  <div class="muted">生産素材：同一属性の攻撃素材3個固定（基礎＋生産＋復元、暫定採用・現行版未検証）</div>
   <label>巨戟変異タイプ（完成ステータス固定値）</label><select id="aProd">${opts.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('')}</select>
   <div class="artia-two-pane">
     <div class="artia-left"><label>復元ボーナス（5枠）</label><div id="aRestore"></div><div class="muted small">初期状態は「復元ボーナスなし」。実際の武器に付いている復元ボーナスを選択してください。</div></div>
@@ -1684,6 +1687,24 @@ function artiaProductionStats(w){
 // r18: 巨戟アーティアはMHDB同名3レコードを取り込み時に1武器へ束ね、激化タイプ別完成固定値を計算時の正本とする。
 // 進化差分は由来検証専用であり、実行時には加算しない（二重適用防止）。
 const ARTIA_ELEMENT_SOURCE_DB={"sourceUrl":"https://kuroyonhon.com/mhwilds/memo/38.php","retrievedAt":"2026-10-11","targetRarity":8,"unit":"DISPLAY_ELEMENT","targetGameVersion":null,"verificationStatus":"SOURCE_CONFIRMED_NOT_GAME_VERIFIED","scope":"BASE_PLUS_PARTS_PLUS_MUTATION_BEFORE_RESTORE_AND_SKILLS","weapons":{"great-sword":{"base":{"element":450,"poison":300,"blast":300,"paralysis":250,"sleep":250},"threePartBonus":null,"mutation":{"attack":0,"affinity":-10,"element":50},"restore":{"I":80,"II":90,"EX":110},"sourceVersionNote":null},"long-sword":{"base":{"element":270,"poison":120,"blast":120,"paralysis":70,"sleep":70},"threePartBonus":null,"mutation":{"attack":0,"affinity":-20,"element":50},"restore":{"I":50,"II":60,"EX":90},"sourceVersionNote":null},"sword-and-shield":{"base":{"element":260,"poison":110,"blast":110,"paralysis":60,"sleep":60},"threePartBonus":20,"mutation":{"attack":0,"affinity":-20,"element":40},"restore":{"I":30,"II":50,"EX":80},"sourceVersionNote":null},"dual-blades":{"base":{"element":250,"poison":100,"blast":100,"paralysis":50,"sleep":50},"threePartBonus":20,"mutation":{"attack":0,"affinity":-20,"element":30},"restore":{"I":20,"II":30,"EX":50},"sourceVersionNote":null},"hammer":{"base":{"element":320,"poison":170,"blast":170,"paralysis":120,"sleep":120},"threePartBonus":null,"mutation":{"attack":0,"affinity":-10,"element":40},"restore":{"I":50,"II":60,"EX":90},"sourceVersionNote":null},"hunting-horn":{"base":{"element":320,"poison":170,"blast":170,"paralysis":120,"sleep":120},"threePartBonus":null,"mutation":{"attack":30,"affinity":20,"element":80},"restore":{"I":50,"II":60,"EX":90},"sourceVersionNote":null},"lance":{"base":{"element":270,"poison":120,"blast":120,"paralysis":70,"sleep":70},"threePartBonus":null,"mutation":{"attack":0,"affinity":-20,"element":50},"restore":{"I":50,"II":60,"EX":90},"sourceVersionNote":null},"gunlance":{"base":{"element":370,"poison":220,"blast":220,"paralysis":170,"sleep":170},"threePartBonus":null,"mutation":{"attack":40,"affinity":30,"element":80},"restore":{"I":50,"II":60,"EX":90},"sourceVersionNote":"ver10.11"},"switch-axe":{"base":{"element":260,"poison":110,"blast":110,"paralysis":60,"sleep":60},"threePartBonus":20,"mutation":{"attack":0,"affinity":-20,"element":40},"restore":{"I":30,"II":50,"EX":80},"sourceVersionNote":null},"charge-blade":{"base":{"element":270,"poison":120,"blast":120,"paralysis":70,"sleep":70},"threePartBonus":null,"mutation":{"attack":0,"affinity":-20,"element":50},"restore":{"I":50,"II":60,"EX":80},"sourceVersionNote":null},"insect-glaive":{"base":{"element":260,"poison":110,"blast":110,"paralysis":60,"sleep":60},"threePartBonus":20,"mutation":{"attack":0,"affinity":-20,"element":40},"restore":{"I":30,"II":50,"EX":80},"sourceVersionNote":null},"bow":{"base":{"element":210,"poison":null,"blast":60,"paralysis":null,"sleep":null},"threePartBonus":20,"mutation":{"attack":0,"affinity":-20,"element":30},"restore":{"I":30,"II":40,"EX":60},"sourceVersionNote":null},"light-bowgun":{"base":null,"reason":"BOWGUN_ELEMENT_VALUE_NOT_APPLICABLE_AMMO_SEPARATE"},"heavy-bowgun":{"base":null,"reason":"BOWGUN_ELEMENT_VALUE_NOT_APPLICABLE_AMMO_SEPARATE"}}};
+const ARTIA_STAGE_ADOPTION=Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25T21:29:00Z',approvalRef:'Sentinel_b67c836659e4819188a37beddccd300a',source:'https://www.phantombrawlers.com/mhwilds/Artian',targetGameVersion:null,liveGameVerification:'PENDING',attackPerMaterial:5,materialCount:3,baseAttackByRarity:{6:170,7:180},gogmaAttack:{attack:200,affinity:180,element:190},normalRestore:{atk:5,aff:5},normalElementRows:{'great-sword':[300,150,100,30,80],'long-sword':[230,80,30,30,50],'sword-and-shield':[230,80,30,20,30],'dual-blades':[220,70,20,20,20],hammer:[270,120,70,30,50],'hunting-horn':[270,120,70,30,50],lance:[230,80,30,30,50],gunlance:[270,120,70,30,50],'switch-axe':[220,70,20,20,30],'charge-blade':[230,80,30,30,50],'insect-glaive':[220,70,20,20,30],bow:[180,30,null,20,30]}});
+function baseArtiaStats(w){
+  if(!isBaseArtia(w))return null;
+  const a=build.artia,k=canonicalWeaponKind(w),raw=w.damage?.raw;
+  const expected=ARTIA_STAGE_ADOPTION.baseAttackByRarity[w.rarity];
+  if(raw!==expected||w.affinity!==5)return null; // Reject derived/completed or ambiguous records.
+  const type=String(a.element||''),r=ARTIA_STAGE_ADOPTION.normalElementRows[k];
+  let state;
+  if(['light-bowgun','heavy-bowgun'].includes(k))state=MHWElementState.fromValue(0,'none');
+  else {
+    const n=['fire','water','ice','thunder','dragon'].includes(type),i=n?0:['poison','blast'].includes(type)?1:['paralysis','sleep'].includes(type)?2:-1;
+    const value=r&&i>=0?r[i]:null;
+    state=typeof value==='number'&&!(k==='bow'&&['poison','sleep','paralysis'].includes(type))?MHWElementState.fromValue(value+r[3],type):MHWElementState.unknown(type,'ELEMENT_BASE_ARTIA_TYPE_UNRESOLVED');
+  }
+  const production=ARTIA_STAGE_ADOPTION.attackPerMaterial*ARTIA_STAGE_ADOPTION.materialCount;
+  return {attack:raw+production,affinity:w.affinity,attackKnown:true,affinityKnown:true,...state,sourceId:w.id,stageEvidence:{...ARTIA_STAGE_ADOPTION,baseAttack:raw,productionAttack:production,mutationIncluded:false,elementStage:'BASE_PLUS_THREE_SAME_ELEMENT_PARTS'}};
+}
+function calculatedArtiaStats(w){return isBaseArtia(w)?baseArtiaStats(w):artiaFixedVariantStats(w);}
 function artiaSourceElement(w,a){
   const row=ARTIA_ELEMENT_SOURCE_DB.weapons[w.kind],type=String(a.element||'');
   const unknown=reason=>MHWElementState.unknown(type,reason);
@@ -1706,14 +1727,16 @@ function artiaFixedVariantStats(w){
   const variants=w?.artiaFixedVariants;
   const v=variants?.[key];
   if(!v) return null; // r18 fail-closed: 旧MHDB値/進化差分へフォールバックしない。
-  const attack=Number(v.attack), affinity=Number(v.affinity);
+  const raw=Number(v.attack), affinity=Number(v.affinity);
+  if(raw!==ARTIA_STAGE_ADOPTION.gogmaAttack[key])return null;
+  const production=ARTIA_STAGE_ADOPTION.attackPerMaterial*ARTIA_STAGE_ADOPTION.materialCount,attack=raw+production;
   if(!Number.isFinite(attack)||attack<=0||!Number.isFinite(affinity))return null;
   let state=MHWElementState.fromValue(v.element,String(build.artia.element||''));
   if(v.elementKnown===false||v.elementStatus==='UNKNOWN')state=MHWElementState.unknown(build.artia.element,v.elementReason||'ELEMENT_VALUE_MISSING');
   if(v.typeKnown&&v.elementType&&v.elementType!==build.artia.element)state=MHWElementState.unknown(build.artia.element,'ELEMENT_SELECTED_TYPE_NOT_RECORDED');
   // Existing completed values take precedence; derive only absent values with explicit material evidence.
   if(!state.elementKnown&&state.elementReason!=='ELEMENT_SELECTED_TYPE_NOT_RECORDED')state=artiaSourceElement(w,build.artia);
-  return {attack,affinity,attackKnown:v.attackKnown!==false,affinityKnown:v.affinityKnown!==false,...state,sourceId:v.sourceId??null,fixed:true};
+  return {attack,affinity,attackKnown:v.attackKnown!==false,affinityKnown:v.affinityKnown!==false,...state,sourceId:v.sourceId??null,fixed:true,stageEvidence:{...ARTIA_STAGE_ADOPTION,baseAttack:raw,productionAttack:production,mutationIncluded:true,elementStage:state.elementEvidence?ARTIA_ELEMENT_SOURCE_DB.scope:"RECORDED_ELEMENT_NO_READD"}};
 }
 // Only a resolved equipment inventory may interpret a missing skill as level zero.
 function realPipelineSkillsResolved(){
@@ -1732,17 +1755,16 @@ function realPipelineSkillsResolved(){
   return !!calcState.total&&typeof calcState.total==='object';
 }
 function realPipelineWeapon(pipelineWeapon){
-    if(isBaseArtia(pipelineWeapon))throw new Error('REAL_SLICE:BASE_ARTIA_PRODUCTION_RESTORE_SOURCE_PENDING');
-    if(isArtia(pipelineWeapon)){
-      const fixed=artiaFixedVariantStats(pipelineWeapon),restore=restoreStats(pipelineWeapon);
-      if(!fixed||fixed.attackKnown===false||fixed.affinityKnown===false||!fixed.elementKnown||!fixed.typeKnown)
+    if(isArtiaWeapon(pipelineWeapon)){
+      const fixed=calculatedArtiaStats(pipelineWeapon),restore=restoreStats(pipelineWeapon);
+      if(!Number.isFinite(restore.attack)||!Number.isFinite(restore.element)||!fixed||fixed.attackKnown===false||fixed.affinityKnown===false||!fixed.elementKnown||!fixed.typeKnown)
         throw new Error('REAL_SLICE:ARTIA_COMPLETED_VALUES_UNRESOLVED');
       // Equipment input before skills: use the same completed record and restoration
       // as calcBuild. Do not mutate MHDB or add production/material bonuses again.
       const type=fixed.elementType,element=fixed.element+restore.element;
       pipelineWeapon={...pipelineWeapon,damage:{...pipelineWeapon.damage,raw:fixed.attack+restore.attack},affinity:fixed.affinity+restore.affinity,
         specials:element>0?[{kind:['fire','water','ice','thunder','dragon'].includes(type)?'element':'status',element:type,status:type,damage:{display:element,raw:element/10}}]:[],
-        artiaCalculationEvidence:{sourceId:fixed.sourceId,elementEvidence:fixed.elementEvidence||null,production:build.artia.production,parts:[...build.artia.parts],sameElementPartCount:3,restores:[...build.artia.restores],stage:'COMPLETED_PLUS_RESTORE_BEFORE_SKILLS'}};
+        artiaCalculationEvidence:{...fixed.stageEvidence,sourceId:fixed.sourceId,elementEvidence:fixed.elementEvidence||null,production:build.artia.production,parts:[...build.artia.parts],sameElementPartCount:3,restores:[...build.artia.restores],stage:'BASE_PLUS_FIXED_PRODUCTION_PLUS_RESTORE_BEFORE_SKILLS'}};
     }
   return pipelineWeapon;
 }
@@ -1750,7 +1772,15 @@ function weaponElementInfoFromRecord(w){
   const state=MHWElementState.fromRecord(w,{artia:isArtia(w),...(isArtia(w)?{type:build.artia.element}:{})});
   return {...state,type:state.elementType,value:state.element};
 }
-function restoreStats(w){let st={attack:0,affinity:0,element:0,sharp:0};if(!isArtia(w))return st;
+function restoreStats(w){let st={attack:0,affinity:0,element:0,sharp:0};
+  if(isBaseArtia(w)){
+    for(const x of build.artia.restores||[]){if(x==='none')continue;const [kind,level]=String(x).split(':');
+      const value=kind==='elem'?ARTIA_STAGE_ADOPTION.normalElementRows[canonicalWeaponKind(w)]?.[4]:ARTIA_STAGE_ADOPTION.normalRestore[kind];
+      if(level!=='I'||typeof value!=='number')return {...st,attack:NaN,affinity:NaN,element:NaN,reason:'BASE_ARTIA_RESTORE_UNSUPPORTED'};
+      st[kind==='atk'?'attack':kind==='aff'?'affinity':'element']+=value;
+    }return st;
+  }
+  if(!isArtia(w))return st;
   // 生産/巨戟進化差分は完成固定値へ既に反映済み。ここでは復元ボーナスだけを加算する。
   for(const x of build.artia.restores||[]){let [t,l]=String(x).split(':');if(t==='atk')st.attack+={I:5,II:6,III:9,EX:12}[l]||0;if(t==='aff')st.affinity+={I:5,II:6,III:8,EX:10}[l]||0;if(t==='elem'){const derived=artiaFixedVariantStats(w)?.elementEvidence;st.element+=derived?(ARTIA_ELEMENT_SOURCE_DB.weapons[w.kind]?.restore?.[l]??0):artiaElementBonus(w.kind,l);}if(t==='sharp')st.sharp+={I:30,EX:50}[l]||0;}
   return st;
@@ -1849,23 +1879,23 @@ function updateWeaponCoeffDisplay(){
   renderSummary();renderDetail();syncDamage();
 }
 function calcBuild(){normalizeArtiaProduction();renderCharmLegality();
-  let total={},w=selectedWeapon(),kind=canonicalWeaponKind(w),coef=weaponCoefficient(kind),fixed=isArtia(w)?artiaFixedVariantStats(w):null;
-  if(isArtia(w)&&!fixed){
+  let total={},w=selectedWeapon(),kind=canonicalWeaponKind(w),coef=weaponCoefficient(kind),fixed=isArtiaWeapon(w)?calculatedArtiaStats(w):null;
+  if(isArtiaWeapon(w)&&!fixed){
     calcState.fixedValueError='巨戟アーティアの激化タイプ別完成固定値がMHDBから3種類揃っていません。旧値へのフォールバックを停止しました。';
   }else calcState.fixedValueError='';
   const knownNumber=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
-  const attackKnown=Boolean(w)&&(isArtia(w)?Boolean(fixed)&&fixed.attackKnown!==false&&knownNumber(fixed.attack):[w.damage?.raw,w.damage?.display,w.attack].some(knownNumber));
-  const affinityKnown=Boolean(w)&&(isArtia(w)?Boolean(fixed)&&fixed.affinityKnown!==false&&knownNumber(fixed.affinity):knownNumber(w.affinity));
+  const attackKnown=Boolean(w)&&(isArtiaWeapon(w)?Boolean(fixed)&&fixed.attackKnown!==false&&knownNumber(fixed.attack):[w.damage?.raw,w.damage?.display,w.attack].some(knownNumber));
+  const affinityKnown=Boolean(w)&&(isArtiaWeapon(w)?Boolean(fixed)&&fixed.affinityKnown!==false&&knownNumber(fixed.affinity):knownNumber(w.affinity));
   let baseAttackTrue=Number(fixed?.attack);
-  if(!isArtia(w)&&(!Number.isFinite(baseAttackTrue)||baseAttackTrue<=0)){
+  if(!isArtiaWeapon(w)&&(!Number.isFinite(baseAttackTrue)||baseAttackTrue<=0)){
     baseAttackTrue=Number(w?.damage?.raw);
     if(!Number.isFinite(baseAttackTrue)||baseAttackTrue<=0){const disp=Number(w?.damage?.display??w?.attack??0);baseAttackTrue=coef>0?disp/coef:disp;}
   }
-  if(isArtia(w)&&!fixed) baseAttackTrue=0;
-  let stats={attack:baseAttackTrue,attackTrue:baseAttackTrue,affinity:isArtia(w)?(fixed?Number(fixed.affinity):0):(Number(w?.affinity??0)),element:0,elementType:'',defense:1,weaponCoefficient:coef,weaponKind:kind};
+  if(isArtiaWeapon(w)&&!fixed) baseAttackTrue=0;
+  let stats={attack:baseAttackTrue,attackTrue:baseAttackTrue,affinity:isArtiaWeapon(w)?(fixed?Number(fixed.affinity):0):(Number(w?.affinity??0)),element:0,elementType:'',defense:1,weaponCoefficient:coef,weaponKind:kind};
   Object.assign(stats,{attackKnown,affinityKnown});
   Object.assign(stats,MHWElementState.unknown('','ELEMENT_WEAPON_NOT_SELECTED'));
-  if(w){add(total,weaponSkills(w));const ei=isArtia(w)?(fixed?{...fixed,type:fixed.elementType,value:fixed.element}:MHWElementState.unknown(build.artia.element,'ELEMENT_FIXED_VARIANT_MISSING')):weaponElementInfo(w);Object.assign(stats,{element:ei.value??ei.element,elementType:ei.type??ei.elementType,elementKnown:ei.elementKnown,typeKnown:ei.typeKnown,elementStatus:ei.elementStatus,elementReason:ei.elementReason});if(!isArtia(w)||fixed){let rs=restoreStats(w);stats.attack+=Number(rs.attack)||0;stats.affinity+=Number(rs.affinity)||0;if(stats.elementKnown)stats.element+=Number(rs.element)||0;}}
+  if(w){add(total,weaponSkills(w));const ei=isArtiaWeapon(w)?(fixed?{...fixed,type:fixed.elementType,value:fixed.element}:MHWElementState.unknown(build.artia.element,'ELEMENT_FIXED_VARIANT_MISSING')):weaponElementInfo(w);Object.assign(stats,{element:ei.value??ei.element,elementType:ei.type??ei.elementType,elementKnown:ei.elementKnown,typeKnown:ei.typeKnown,elementStatus:ei.elementStatus,elementReason:ei.elementReason});if(!isArtiaWeapon(w)||fixed){let rs=restoreStats(w);stats.attack+=Number(rs.attack);stats.affinity+=Number(rs.affinity);if(stats.elementKnown)stats.element+=Number(rs.element);}}
   for(const k of ['head','chest','arms','waist','legs']){let a=build.armor[k];if(a){add(total,armorSkills(a));stats.defense+=armorMaxDefense(a)}}
   // ハンター本体の基礎防御力1を含める。防具5部位だけではゲーム内表示より1低くなる。
   // 武器に defenseBonus が設定されている場合は、それも加算する。

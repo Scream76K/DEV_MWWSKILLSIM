@@ -242,6 +242,7 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
    if(resolvedTechniqueIds.some(id=>techniques[id]?.referenceKind==='charge-blade-saed'))for(const result of Object.values(evaluated.channels||{})){
     result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',referenceOnly:true,referenceScope:'KAN21_FULL_STOCK_FULL_HIT',sourceStatusPreserved:true};
    }
+if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',artiaAdoption:weapon.artiaCalculationEvidence};
    return evaluated;}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
  }
  root.MHWRealOneHitBrowserAdapter=Object.freeze({evaluateCurrent,normalizeTechniqueIds});
