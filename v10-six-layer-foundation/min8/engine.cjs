@@ -150,17 +150,17 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
    for(const ev of plan.events){
     try{
      const before=copy(state);
-     const decision=handler({event:copy(ev),state:copy(state),channel:ch,build:copy(build),effects:copy(effects),target:copy(req.target)});
+     const decision=handler({event:copy(ev),state:copy(state),conditions:copy(req.conditions||{}),channel:ch,build:copy(build),effects:copy(effects),target:copy(req.target)});
      ensure(decision&&typeof decision==='object','DECISION_MISSING');
      if(ev.type==='hit'){
-      const emit=decision.emit,inactive=decision.inactive,unresolved=decision.unresolved||[];
+      const emit=decision.emit,inactive=decision.inactive,unresolved=decision.unresolved||[],reasons=decision.reasons&&typeof decision.reasons==='object'?decision.reasons:{};
       ensure(Array.isArray(emit)&&Array.isArray(inactive)&&Array.isArray(unresolved),'DISPOSITIONS_MISSING');
       const all=[...emit,...inactive,...unresolved],allowed=ev.components.map(c=>c.id);
       ensure(all.length===allowed.length&&new Set(all).size===all.length&&all.every(id=>allowed.includes(id)),'DISPOSITION_INVALID');
       for(const c of ev.components){
        const meta={id:c.id,eventId:ev.id,techniqueId:ev.techniqueId,revision:ev.revision,source:c.source,coefficientUnit:c.unit,damageUnit:'damage'};
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
-       if(unresolved.includes(c.id)){components.push({...meta,...bad('UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
+       if(unresolved.includes(c.id)){components.push({...meta,...bad(typeof reasons[c.id]==='string'?reasons[c.id]:'UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
        const applied=applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
        const response=typeof f==='function'?f({kind:c.kind,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');

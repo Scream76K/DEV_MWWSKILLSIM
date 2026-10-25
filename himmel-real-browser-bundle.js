@@ -223,17 +223,17 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
    for(const ev of plan.events){
     try{
      const before=copy(state);
-     const decision=handler({event:copy(ev),state:copy(state),channel:ch,build:copy(build),effects:copy(effects),target:copy(req.target)});
+     const decision=handler({event:copy(ev),state:copy(state),conditions:copy(req.conditions||{}),channel:ch,build:copy(build),effects:copy(effects),target:copy(req.target)});
      ensure(decision&&typeof decision==='object','DECISION_MISSING');
      if(ev.type==='hit'){
-      const emit=decision.emit,inactive=decision.inactive,unresolved=decision.unresolved||[];
+      const emit=decision.emit,inactive=decision.inactive,unresolved=decision.unresolved||[],reasons=decision.reasons&&typeof decision.reasons==='object'?decision.reasons:{};
       ensure(Array.isArray(emit)&&Array.isArray(inactive)&&Array.isArray(unresolved),'DISPOSITIONS_MISSING');
       const all=[...emit,...inactive,...unresolved],allowed=ev.components.map(c=>c.id);
       ensure(all.length===allowed.length&&new Set(all).size===all.length&&all.every(id=>allowed.includes(id)),'DISPOSITION_INVALID');
       for(const c of ev.components){
        const meta={id:c.id,eventId:ev.id,techniqueId:ev.techniqueId,revision:ev.revision,source:c.source,coefficientUnit:c.unit,damageUnit:'damage'};
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
-       if(unresolved.includes(c.id)){components.push({...meta,...bad('UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
+       if(unresolved.includes(c.id)){components.push({...meta,...bad(typeof reasons[c.id]==='string'?reasons[c.id]:'UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
        const applied=applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
        const response=typeof f==='function'?f({kind:c.kind,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
@@ -444,17 +444,17 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
    for(const ev of plan.events){
     try{
      const before=copy(state);
-     const decision=handler({event:copy(ev),state:copy(state),channel:ch,build:copy(build),effects:copy(effects),target:copy(req.target)});
+     const decision=handler({event:copy(ev),state:copy(state),conditions:copy(req.conditions||{}),channel:ch,build:copy(build),effects:copy(effects),target:copy(req.target)});
      ensure(decision&&typeof decision==='object','DECISION_MISSING');
      if(ev.type==='hit'){
-      const emit=decision.emit,inactive=decision.inactive,unresolved=decision.unresolved||[];
+      const emit=decision.emit,inactive=decision.inactive,unresolved=decision.unresolved||[],reasons=decision.reasons&&typeof decision.reasons==='object'?decision.reasons:{};
       ensure(Array.isArray(emit)&&Array.isArray(inactive)&&Array.isArray(unresolved),'DISPOSITIONS_MISSING');
       const all=[...emit,...inactive,...unresolved],allowed=ev.components.map(c=>c.id);
       ensure(all.length===allowed.length&&new Set(all).size===all.length&&all.every(id=>allowed.includes(id)),'DISPOSITION_INVALID');
       for(const c of ev.components){
        const meta={id:c.id,eventId:ev.id,techniqueId:ev.techniqueId,revision:ev.revision,source:c.source,coefficientUnit:c.unit,damageUnit:'damage'};
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
-       if(unresolved.includes(c.id)){components.push({...meta,...bad('UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
+       if(unresolved.includes(c.id)){components.push({...meta,...bad(typeof reasons[c.id]==='string'?reasons[c.id]:'UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
        const applied=applyEffects(c,effects,state,build,req.target,ev),f=formulae[c.kind];
        const response=typeof f==='function'?f({kind:c.kind,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:copy(applied.stats),build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
@@ -772,7 +772,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!['VERIFIED','PARTIALLY_VERIFIED'].includes(record.verificationStatus))throw Error('REAL_SLICE:VERIFICATION_PENDING');
   if(!Array.isArray(record.evidenceRefs)||record.evidenceRefs.length===0)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   if(!Array.isArray(record.hits)||record.hits.length<1)throw Error('REAL_SLICE:HITS_REQUIRED');
-  if((record.specialComponents?.length||0)>0||record.stateRequirement&&Object.keys(record.stateRequirement).length>0||record.damageStateTransition)throw Error('REAL_SLICE:SPECIAL_ROUTE_PENDING');
+  if((record.specialComponents?.length||0)>0)throw Error('REAL_SLICE:SPECIAL_ROUTE_PENDING');
   if(record.calculationStatus==='EVIDENCE_GATED')throw Error('REAL_SLICE:EVIDENCE_GATED');
   const source=record.evidenceRefs[0];
   if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
@@ -780,12 +780,12 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   const events=[],excludedElements=[];
   record.hits.forEach((hit,index)=>{
    if(!finite(hit.mv)||hit.mv<0||!finite(hit.elementModifier)||hit.elementModifier<0)throw Error('REAL_SLICE:HIT_FIELDS_PENDING:'+index);
-   if(hit.damageStatsState!==undefined&&hit.damageStatsState!==null)throw Error('REAL_SLICE:STATE_DEPENDENT_HIT:'+index);
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    if(!finite(hit.partModifier))throw Error('REAL_SLICE:PART_MODIFIER_PENDING:'+index);
    if(hit.partModifier!==1)throw Error('REAL_SLICE:PART_MODIFIER_UNSUPPORTED:'+index);
-   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index})}];
-   if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index})});
+   const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??null};
+   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
+   if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
    events.push({type:'hit',components});
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});
   });
@@ -823,7 +823,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!['VERIFIED','PARTIALLY_VERIFIED'].includes(record.verificationStatus))throw Error('REAL_SLICE:VERIFICATION_PENDING');
   if(!Array.isArray(record.evidenceRefs)||record.evidenceRefs.length===0)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   if(!Array.isArray(record.hits)||record.hits.length<1)throw Error('REAL_SLICE:HITS_REQUIRED');
-  if((record.specialComponents?.length||0)>0||record.stateRequirement&&Object.keys(record.stateRequirement).length>0||record.damageStateTransition)throw Error('REAL_SLICE:SPECIAL_ROUTE_PENDING');
+  if((record.specialComponents?.length||0)>0)throw Error('REAL_SLICE:SPECIAL_ROUTE_PENDING');
   if(record.calculationStatus==='EVIDENCE_GATED')throw Error('REAL_SLICE:EVIDENCE_GATED');
   const source=record.evidenceRefs[0];
   if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
@@ -831,12 +831,12 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   const events=[],excludedElements=[];
   record.hits.forEach((hit,index)=>{
    if(!finite(hit.mv)||hit.mv<0||!finite(hit.elementModifier)||hit.elementModifier<0)throw Error('REAL_SLICE:HIT_FIELDS_PENDING:'+index);
-   if(hit.damageStatsState!==undefined&&hit.damageStatsState!==null)throw Error('REAL_SLICE:STATE_DEPENDENT_HIT:'+index);
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    if(!finite(hit.partModifier))throw Error('REAL_SLICE:PART_MODIFIER_PENDING:'+index);
    if(hit.partModifier!==1)throw Error('REAL_SLICE:PART_MODIFIER_UNSUPPORTED:'+index);
-   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index})}];
-   if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index})});
+   const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??null};
+   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:hit.partModifier,partModifierSource:source,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
+   if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
    events.push({type:'hit',components});
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});
   });
@@ -1016,7 +1016,33 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   }
  });
  const componentIds=(id,index)=>({physical:id+':physical:'+index,element:id+':element:'+index,shelling:id+':shelling:'+index,reference:id+':reference:'+index});
- const handlers={[weaponType]:({event,build,effects})=>{
+ const lookup=(root,key)=>{
+  if(!root||typeof root!=='object')return {found:false};
+  if(Object.prototype.hasOwnProperty.call(root,key))return {found:true,value:root[key]};
+  for(const value of Object.values(root)){if(value&&typeof value==='object'){const result=lookup(value,key);if(result.found)return result;}}
+  return {found:false};
+ };
+ const requirementIssue=(requirement,conditions,damageStatsState)=>{
+  for(const [key,expected] of Object.entries(requirement||{})){
+   let actual=lookup(conditions,key);
+   if(!actual.found&&key==='tripleExtract'){
+    const extract=lookup(conditions,'extractState');
+    if(extract.found)actual={found:true,value:extract.value==='TRIPLE_EXTRACT'||extract.value==='EXTRACT'};
+   }
+   if(!actual.found)return 'REAL_SLICE:STATE_REQUIREMENT_UNRESOLVED:'+key;
+   if(actual.value!==expected)return 'REAL_SLICE:STATE_REQUIREMENT_MISMATCH:'+key;
+  }
+  if(damageStatsState!==undefined&&damageStatsState!==null){
+   let actual=lookup(conditions,'damageStatsState');
+   if(!actual.found){const extract=lookup(conditions,'extractState');if(extract.found)actual={found:true,value:extract.value};}
+   if(!actual.found){const triple=lookup(conditions,'tripleExtract');if(triple.found)actual={found:true,value:triple.value?'TRIPLE_EXTRACT':'NO_EXTRACT'};}
+   if(!actual.found)return 'REAL_SLICE:DAMAGE_STATS_STATE_UNRESOLVED:'+damageStatsState;
+   const normalized=actual.value===true?'TRIPLE_EXTRACT':actual.value===false?'NO_EXTRACT':actual.value;
+   if(normalized!==damageStatsState)return 'REAL_SLICE:DAMAGE_STATS_STATE_MISMATCH:'+damageStatsState;
+  }
+  return null;
+ };
+ const handlers={[weaponType]:({event,build,effects,conditions})=>{
   if(event.type!=='hit'||!uniqueTechniqueIds.includes(event.techniqueId)||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   const physicalEvents=event.components.filter(c=>c.kind==='physical'),elementEvents=event.components.filter(c=>c.kind==='element'),shellingEvents=event.components.filter(c=>c.kind==='shelling'),referenceEvents=event.components.filter(c=>c.kind==='reference');
   if(shellingEvents.length){
@@ -1030,11 +1056,20 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    return {emit:referenceEvents.filter(c=>!unresolved.includes(c.id)).map(c=>c.id),inactive:[],unresolved};
   }
   if(!physicalEvents.length)return {emit:[],inactive:[],unresolved:['REAL_SLICE:PHYSICAL_COMPONENTS_UNRESOLVED']};
-  const emit=[],inactive=[],unresolved=[];
+  const emit=[],inactive=[],unresolved=[],reasons={};
   for(const physicalEvent of physicalEvents){
    const index=physicalEvent.parameters?.hitIndex,ids=componentIds(event.techniqueId,index),elementEvent=elementEvents.find(c=>c.parameters?.hitIndex===index);
    if(physicalEvent.id!==ids.physical||elementEvent&&elementEvent.id!==ids.element||(!elementEvent&&event.components.some(c=>c.id===ids.element)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
    const modifier=elementEvent?.parameters?.elementModifier??physicalEvent.parameters?.elementModifier;
+   const transition=physicalEvent.parameters?.damageStateTransition;
+   let stateIssue=requirementIssue(physicalEvent.parameters?.stateRequirement,conditions,transition?null:physicalEvent.parameters?.damageStatsState);
+   if(!stateIssue&&transition){
+    const activation=transition.requiredAtActivation;
+    if(activation==='TRIPLE_EXTRACT')stateIssue=requirementIssue({tripleExtract:true},conditions,null);
+    else if(typeof activation!=='string'||!activation)stateIssue='REAL_SLICE:STATE_TRANSITION_UNRESOLVED';
+    if(!stateIssue&&typeof transition.damageStatsState!=='string')stateIssue='REAL_SLICE:DAMAGE_STATS_STATE_UNRESOLVED';
+   }
+   if(stateIssue){unresolved.push(ids.physical);reasons[ids.physical]=stateIssue;if(elementEvent){unresolved.push(ids.element);reasons[ids.element]=stateIssue;}continue;}
    if(!Number.isFinite(modifier)||modifier<0){unresolved.push(ids.element);continue;}
    emit.push(ids.physical);
    if(modifier===0){if(elementEvent)inactive.push(ids.element);continue;}
@@ -1043,7 +1078,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(elementEvent)emit.push(ids.element);
   }
   if(event.components.some(c=>!emit.includes(c.id)&&!inactive.includes(c.id)&&!unresolved.includes(c.id)&&!physicalEvents.includes(c)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
-  return {emit,inactive,unresolved};
+  return {emit,inactive,unresolved,reasons};
  }};
  return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental,shelling:shellingFormula,reference:referenceFormula}});
 }
@@ -1108,7 +1143,33 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   }
  });
  const componentIds=(id,index)=>({physical:id+':physical:'+index,element:id+':element:'+index,shelling:id+':shelling:'+index,reference:id+':reference:'+index});
- const handlers={[weaponType]:({event,build,effects})=>{
+ const lookup=(root,key)=>{
+  if(!root||typeof root!=='object')return {found:false};
+  if(Object.prototype.hasOwnProperty.call(root,key))return {found:true,value:root[key]};
+  for(const value of Object.values(root)){if(value&&typeof value==='object'){const result=lookup(value,key);if(result.found)return result;}}
+  return {found:false};
+ };
+ const requirementIssue=(requirement,conditions,damageStatsState)=>{
+  for(const [key,expected] of Object.entries(requirement||{})){
+   let actual=lookup(conditions,key);
+   if(!actual.found&&key==='tripleExtract'){
+    const extract=lookup(conditions,'extractState');
+    if(extract.found)actual={found:true,value:extract.value==='TRIPLE_EXTRACT'||extract.value==='EXTRACT'};
+   }
+   if(!actual.found)return 'REAL_SLICE:STATE_REQUIREMENT_UNRESOLVED:'+key;
+   if(actual.value!==expected)return 'REAL_SLICE:STATE_REQUIREMENT_MISMATCH:'+key;
+  }
+  if(damageStatsState!==undefined&&damageStatsState!==null){
+   let actual=lookup(conditions,'damageStatsState');
+   if(!actual.found){const extract=lookup(conditions,'extractState');if(extract.found)actual={found:true,value:extract.value};}
+   if(!actual.found){const triple=lookup(conditions,'tripleExtract');if(triple.found)actual={found:true,value:triple.value?'TRIPLE_EXTRACT':'NO_EXTRACT'};}
+   if(!actual.found)return 'REAL_SLICE:DAMAGE_STATS_STATE_UNRESOLVED:'+damageStatsState;
+   const normalized=actual.value===true?'TRIPLE_EXTRACT':actual.value===false?'NO_EXTRACT':actual.value;
+   if(normalized!==damageStatsState)return 'REAL_SLICE:DAMAGE_STATS_STATE_MISMATCH:'+damageStatsState;
+  }
+  return null;
+ };
+ const handlers={[weaponType]:({event,build,effects,conditions})=>{
   if(event.type!=='hit'||!uniqueTechniqueIds.includes(event.techniqueId)||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   const physicalEvents=event.components.filter(c=>c.kind==='physical'),elementEvents=event.components.filter(c=>c.kind==='element'),shellingEvents=event.components.filter(c=>c.kind==='shelling'),referenceEvents=event.components.filter(c=>c.kind==='reference');
   if(shellingEvents.length){
@@ -1122,11 +1183,20 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    return {emit:referenceEvents.filter(c=>!unresolved.includes(c.id)).map(c=>c.id),inactive:[],unresolved};
   }
   if(!physicalEvents.length)return {emit:[],inactive:[],unresolved:['REAL_SLICE:PHYSICAL_COMPONENTS_UNRESOLVED']};
-  const emit=[],inactive=[],unresolved=[];
+  const emit=[],inactive=[],unresolved=[],reasons={};
   for(const physicalEvent of physicalEvents){
    const index=physicalEvent.parameters?.hitIndex,ids=componentIds(event.techniqueId,index),elementEvent=elementEvents.find(c=>c.parameters?.hitIndex===index);
    if(physicalEvent.id!==ids.physical||elementEvent&&elementEvent.id!==ids.element||(!elementEvent&&event.components.some(c=>c.id===ids.element)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
    const modifier=elementEvent?.parameters?.elementModifier??physicalEvent.parameters?.elementModifier;
+   const transition=physicalEvent.parameters?.damageStateTransition;
+   let stateIssue=requirementIssue(physicalEvent.parameters?.stateRequirement,conditions,transition?null:physicalEvent.parameters?.damageStatsState);
+   if(!stateIssue&&transition){
+    const activation=transition.requiredAtActivation;
+    if(activation==='TRIPLE_EXTRACT')stateIssue=requirementIssue({tripleExtract:true},conditions,null);
+    else if(typeof activation!=='string'||!activation)stateIssue='REAL_SLICE:STATE_TRANSITION_UNRESOLVED';
+    if(!stateIssue&&typeof transition.damageStatsState!=='string')stateIssue='REAL_SLICE:DAMAGE_STATS_STATE_UNRESOLVED';
+   }
+   if(stateIssue){unresolved.push(ids.physical);reasons[ids.physical]=stateIssue;if(elementEvent){unresolved.push(ids.element);reasons[ids.element]=stateIssue;}continue;}
    if(!Number.isFinite(modifier)||modifier<0){unresolved.push(ids.element);continue;}
    emit.push(ids.physical);
    if(modifier===0){if(elementEvent)inactive.push(ids.element);continue;}
@@ -1135,7 +1205,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(elementEvent)emit.push(ids.element);
   }
   if(event.components.some(c=>!emit.includes(c.id)&&!inactive.includes(c.id)&&!unresolved.includes(c.id)&&!physicalEvents.includes(c)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
-  return {emit,inactive,unresolved};
+  return {emit,inactive,unresolved,reasons};
  }};
  return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental,shelling:shellingFormula,reference:referenceFormula}});
 }
