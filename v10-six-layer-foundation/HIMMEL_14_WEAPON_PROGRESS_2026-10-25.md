@@ -52,3 +52,10 @@
 - `抜刀術【力】` は `conditions.drawAttack === true` かつ `conditions.mounted !== true` のHitだけで、Lv1/2/3のHP攻撃加算 `[3,5,7]` を共通physical attackへ渡す。気絶蓄積は別成分で未接続。条件不明・騎乗中は未算出理由を返す。
 - 根拠: `MACARONGAMEMO_DAMAGE_UP_2025-04-16`、`MACARONGAMEMO_SKILLS_LIST_2025-03-08`。対象ゲーム版適合は未確認。
 - `属性変換` は武器属性加算と別の龍属性追撃であり、トリガー・クールダウン・補正順が未確定のため、`REAL_SLICE:ATTRIBUTE_CONVERSION_TRIGGER_PENDING` として停止する。耐性変換も負耐性・上限・丸め・対象属性の不足が残るため、自動換算しない。
+
+## 2026-10-25 属性変換・雷耐性変換の限定接続
+
+- `属性変換` は `conditions.attributeConversionActive === true` かつ龍属性武器のときだけ、Lv1/2/3の表示龍属性加算 `+80/+120/+180` をL3の属性加算へ渡す。非龍武器へ龍属性は付与しない。
+- 属性変換の固定追撃（固定値＋龍属性肉質依存）は別イベント入力が必要で、発動回数・再発動条件が未確定のため総計へ自動加算しない。
+- `耐性変換【雷】` は雷属性武器かつ `conditions.thunderResistanceConversionActive === true`、有限非負の総雷耐性、Lv1の明示入力だけを対象にする。武器種係数は大剣/ハンマー/笛=5、LBG/HBG=2、その他=4。負耐性・上限・丸めは未確定。
+- 根拠: `KUROYONHON_SKILL_TABLE_ATTRIBUTE_CONVERSION_20261025`、`KUROYONHON_SKILL_TABLE_THUNDER_RESISTANCE_CONVERSION_20261025`。現行ゲーム版適合は未確認。
