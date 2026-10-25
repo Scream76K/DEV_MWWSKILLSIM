@@ -10,9 +10,9 @@
   }).filter(Boolean);
   return {ids:normalized,unresolved};
  }
- function evaluateCurrent({weapon,stats,target,skills=[],conditions={},gunlanceState=null,bowState=null,hbgState=null,lightBowgunState=null,techniqueDb,trainingRoom,techniqueId,techniqueIds,retrievedAt='UNKNOWN'}={}){
+ function evaluateCurrent({weapon,stats,target,skills=[],conditions={},gunlanceState=null,bowState=null,hbgState=null,lightBowgunState=null,chargeBladeState=null,techniqueDb,trainingRoom,techniqueId,techniqueIds,retrievedAt='UNKNOWN'}={}){
   if(typeof root.damageFromParams!=='function'||!root.MHWWeaponMaxSharpness||typeof root.HimmelRealOneHitPipeline!=='function')return fail('REAL_SLICE:BROWSER_DEPENDENCIES_UNAVAILABLE');
-  if(!weapon||!Number.isInteger(weapon.id)||!Number.isInteger(weapon.gameId)||typeof weapon.kind!=='string'||weapon.kind==='charge-blade')return fail('REAL_SLICE:CURRENT_WEAPON_NOT_SUPPORTED');
+  if(!weapon||!Number.isInteger(weapon.id)||!Number.isInteger(weapon.gameId)||typeof weapon.kind!=='string')return fail('REAL_SLICE:CURRENT_WEAPON_NOT_SUPPORTED');
   if(!Array.isArray(weapon.specials))return fail('REAL_SLICE:WEAPON_SPECIALS_UNKNOWN');
   const elementSpecials=weapon.specials.filter(x=>x?.kind==='element');
   if(weapon.specials.some(x=>x?.kind!=='element'))return fail('REAL_SLICE:WEAPON_SPECIALS_UNSUPPORTED');
@@ -61,7 +61,7 @@
   const part=trainingRoom?.parts?.find(x=>x.id==='training-front');
   const isShellingOnly=resolvedTechniqueIds.every(id=>{const r=techniques[id];return Array.isArray(r?.specialComponents)&&r.specialComponents.some(x=>String(x).includes('SHELL'));});
   const isReferenceOnly=resolvedTechniqueIds.every(id=>['bow','heavy-bowgun','light-bowgun'].includes(techniques[id]?.referenceKind));
-  const physicalKeyForTechnique=id=>{const hits=techniques[id]?.hits||[],keys=hits.map(hit=>{const kind=hit?.damageType;return kind==='blunt'||kind==='slash'||kind==='pierce'?kind:['hammer','hunting-horn'].includes(weapon.kind)?'blunt':null;});return keys.length&&keys.every(Boolean)&&new Set(keys).size===1?keys[0]:null;};
+  const physicalKeyForTechnique=id=>{const hits=techniques[id]?.hits||[],keys=hits.map(hit=>{const kind=hit?.damageType;return kind==='blunt'||kind==='slash'||kind==='pierce'?kind:['hammer','hunting-horn'].includes(weapon.kind)?'blunt':weapon.kind==='charge-blade'?'slash':null;});return keys.length&&keys.every(Boolean)&&new Set(keys).size===1?keys[0]:null;};
   const physicalKeys=resolvedTechniqueIds.map(physicalKeyForTechnique);
   if(!isShellingOnly&&!isReferenceOnly&&physicalKeys.some(x=>!x))return fail('REAL_SLICE:DAMAGE_TYPE_UNRESOLVED');
   if(!isShellingOnly&&!isReferenceOnly&&new Set(physicalKeys).size>1)return fail('REAL_SLICE:MIXED_DAMAGE_TYPES_UNSUPPORTED');
@@ -94,7 +94,7 @@
   const versions={game:'1.042.00.02',equipment:'mhdb-source-unknown-game-version',technique:'tech-real',effects:'effects-real'};
   const conditionPlan=stats.conditionalConditionPlan||null;
   const provenance={sourceUrl:`https://wilds.mhdb.io/en/weapons/${weapon.id}`,sourceGameVersion:'UNKNOWN',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',targetGameVersion:versions.game,retrievedAt,apiVersion:'UNKNOWN'};
-  const equipment={...weapon,apiId:weapon.id,maxSharpness,maxSharpnessEvidenceRef:provenance.sourceUrl,elementType,criticalBoostLevel,elementCalculatedValue:elementValue,conditionalAttackMultiplier:Number(conditionPlan?.attackComponents?.conditionalMultiplier??1),conditionalAttackFlat:Number(conditionPlan?.attackComponents?.conditionalFlat??0),conditionalPlanStatus:conditionPlan?.status||'REFERENCE_ONLY',conditionalPending:Array.isArray(conditionPlan?.pending)?conditionPlan.pending:[],elementEvidence:elementSpecial?{sourceUrl:provenance.sourceUrl,raw:elementSpecial.damage.raw,display:elementRawValue,kind:'element'}:{sourceUrl:provenance.sourceUrl,confirmedNone:true},provenance};
+  const equipment={...weapon,apiId:weapon.id,maxSharpness,maxSharpnessEvidenceRef:provenance.sourceUrl,elementType,criticalBoostLevel,chargeBladeState,elementCalculatedValue:elementValue,conditionalAttackMultiplier:Number(conditionPlan?.attackComponents?.conditionalMultiplier??1),conditionalAttackFlat:Number(conditionPlan?.attackComponents?.conditionalFlat??0),conditionalPlanStatus:conditionPlan?.status||'REFERENCE_ONLY',conditionalPending:Array.isArray(conditionPlan?.pending)?conditionPlan.pending:[],elementEvidence:elementSpecial?{sourceUrl:provenance.sourceUrl,raw:elementSpecial.damage.raw,display:elementRawValue,kind:'element'}:{sourceUrl:provenance.sourceUrl,confirmedNone:true},provenance};
   const source={capture:pinned=>({versions:pinned,equipment,effects:{},techniques})};
   const pipeline=root.HimmelRealOneHitPipeline({versions,source,techniqueId,techniqueIds:resolvedTechniqueIds,weaponType:weapon.kind,
    resolveBuild:(_raw,snapshot)=>({weaponType:weapon.kind,dbVersion:versions.equipment,source:'MHDB_API_CURRENT_SELECTION',equipment:{...snapshot,ids:[`api_id:${snapshot.apiId}`,`game_id:${snapshot.gameId}`],conditionalAttackMultiplier:Number(snapshot.conditionalAttackMultiplier??1),conditionalAttackFlat:Number(snapshot.conditionalAttackFlat??0),conditionalPlanStatus:snapshot.conditionalPlanStatus||'REFERENCE_ONLY',conditionalPending:Array.isArray(snapshot.conditionalPending)?snapshot.conditionalPending:[],trueAttack:{status:'known',value:snapshot.damage.raw},displayElement:{status:'known',value:snapshot.elementEvidence.confirmedNone?0:snapshot.elementCalculatedValue},baseAffinity:{status:'known',value:snapshot.affinity},elementType:snapshot.elementType,sourceGameVersion:snapshot.provenance.sourceGameVersion},skills:{entries:allSkills},issues:[{code:'MHDB_SOURCE',apiId:snapshot.apiId,gameId:snapshot.gameId,sourceEndpoint:snapshot.provenance.sourceUrl,apiVersion:snapshot.provenance.apiVersion,retrievedAt:snapshot.provenance.retrievedAt,sourceGameVersion:snapshot.provenance.sourceGameVersion}]}),
