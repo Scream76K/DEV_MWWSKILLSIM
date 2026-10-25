@@ -28,3 +28,5 @@ SERIE-STATE-CONNECTION: オーナー2026-10-25 14:46 UTC承認によりserieが�
 SERIE-STATE-CONNECTION completed: product commit 119abbb0a73807f498cef83311f0983e4bdb4fef. Evidence: docs/reports/r252-state-connection/. Limited index.html edit ownership returned.
 
 SERIE-BOW-REAL-AB: owner continuation 2026-10-25T14:55Z; base05c1565; serie owns adapter skill-name mapping and tools/bow-real-saved-comparison-proof.cjs plus docs/reports/r252-bow-real-ab. No index.html, snapshot policy, Artia, or other weapon formula changes.
+
+SERIE-BOW-REAL-AB completed: product 01c18a568a5ba0e666d537bcd2300e6cc759fe4c; evidence docs/reports/r252-bow-real-ab/. Adapter edit ownership returned.

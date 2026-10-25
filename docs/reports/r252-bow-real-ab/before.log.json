@@ -1,0 +1,1111 @@
+{
+  "executionSha": "05c156597e38e891fb6d5cf35500499d792f4c22",
+  "codeHashes": {
+    "index.html": "4fa78059a6e279b6ea9d58a285befe87fa480c1b34878c214dd745e0ad4fd097",
+    "hope-hammer-browser-adapter.js": "03ddb219825fa6feb93cac9966a5d4becf357b80a7e25291de6a1382bf8bacfa",
+    "himmel-real-browser-bundle.js": "b545c7a05c5a443b6956affbac89d4876baff3f2d25c0b6341ee98beae6e90c9",
+    "v10-six-layer-foundation/min8/engine.cjs": "259d6e3091f1e0601b44873e7f50710cb9aa72c80b2a060db53a22560de29152"
+  },
+  "harnessSha256": "455863d09b07975fbe74e03c89bc1002ec48993889628873bf07cd26f12cdbc7",
+  "checks": [
+    {
+      "name": "original slot and coating legality",
+      "pass": true
+    },
+    {
+      "name": "real equipment aggregation and expected single results",
+      "pass": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'incomplete'\n- 'complete'\n"
+    },
+    {
+      "name": "actual save load and comparison match both singles",
+      "pass": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'incomplete'\n- 'complete'\n"
+    },
+    {
+      "name": "stage conditions and values survive comparison",
+      "pass": false,
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ []\n- [\n-   3,\n-   4,\n-   5\n- ]\n"
+    },
+    {
+      "name": "finally restores original B and common conditions",
+      "pass": true
+    },
+    {
+      "name": "real single and comparison render values",
+      "pass": false,
+      "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'incomplete'\n- 'complete'\n"
+    },
+    {
+      "name": "Rapid Fire Up is not Tetrad Shot",
+      "pass": false,
+      "error": "The expression evaluated to a falsy value:\n\n  assert.ok(!JSON.stringify(rapid).includes('\"attackAdd\":3'))\n"
+    },
+    {
+      "name": "no JSDOM execution errors",
+      "pass": true
+    }
+  ],
+  "aSkills": {
+    "\u5203\u9c57\u5897\u88c5": 1,
+    "\u30d5\u30a9\u30fc\u30b9\u30b7\u30e7\u30c3\u30c8": 1
+  },
+  "aPipeline": {
+    "status": "OK",
+    "weaponType": "bow",
+    "diagnostics": [
+      {
+        "code": "MHDB_SOURCE",
+        "apiId": 1067,
+        "gameId": 13,
+        "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/1067",
+        "apiVersion": "UNKNOWN",
+        "retrievedAt": "UNKNOWN",
+        "sourceGameVersion": "UNKNOWN"
+      }
+    ],
+    "versions": {
+      "game": "1.042.00.02",
+      "equipment": "mhdb-source-unknown-game-version",
+      "technique": "tech-real",
+      "effects": "effects-real"
+    },
+    "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"bowState\":{\"chargeLevel\":3,\"coating\":\"CLOSE_RANGE\",\"range\":\"CRITICAL\",\"startShot\":3},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"phialType\":null,\"shieldBoosted\":null},\"chargeLevel\":3,\"coating\":\"CLOSE_RANGE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"startShot\":3,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"BOW_SHOT_3\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"BOW_POWER_SHOT_3\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"BOW_POWER_VOLLEY_3\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+    "comparisonContext": {
+      "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"bowState\":{\"chargeLevel\":3,\"coating\":\"CLOSE_RANGE\",\"range\":\"CRITICAL\",\"startShot\":3},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"phialType\":null,\"shieldBoosted\":null},\"chargeLevel\":3,\"coating\":\"CLOSE_RANGE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"startShot\":3,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"BOW_SHOT_3\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"BOW_POWER_SHOT_3\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"BOW_POWER_VOLLEY_3\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+      "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"bowState\":{\"chargeLevel\":3,\"coating\":\"CLOSE_RANGE\",\"range\":\"CRITICAL\",\"startShot\":3},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"phialType\":null,\"shieldBoosted\":null},\"chargeLevel\":3,\"coating\":\"CLOSE_RANGE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"startShot\":3,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"BOW_SHOT_3\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"BOW_POWER_SHOT_3\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"BOW_POWER_VOLLEY_3\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+    },
+    "channels": {
+      "normal": {
+        "execution": {
+          "status": "incomplete",
+          "expected": [
+            "0:0",
+            "1:0",
+            "2:0"
+          ],
+          "executed": [],
+          "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:\u30d5\u30a9\u30fc\u30b9\u30b7\u30e7\u30c3\u30c8"
+        },
+        "components": [],
+        "issues": [
+          {
+            "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:\u30d5\u30a9\u30fc\u30b9\u30b7\u30e7\u30c3\u30c8"
+          }
+        ],
+        "finalState": {},
+        "diagnostics": {
+          "formalStatus": "UNVERIFIED",
+          "provisionalEffects": []
+        },
+        "metrics": {
+          "comboTotalDamage": {
+            "status": "unavailable",
+            "reason": "EXECUTION_INCOMPLETE"
+          },
+          "comboDuration": {
+            "status": "unavailable",
+            "reason": "DURATION_UNAVAILABLE"
+          },
+          "comboDps": {
+            "status": "unavailable",
+            "reason": "EXECUTION_INCOMPLETE"
+          }
+        }
+      },
+      "maximum": {
+        "execution": {
+          "status": "incomplete",
+          "expected": [
+            "0:0",
+            "1:0",
+            "2:0"
+          ],
+          "executed": [],
+          "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:\u30d5\u30a9\u30fc\u30b9\u30b7\u30e7\u30c3\u30c8"
+        },
+        "components": [],
+        "issues": [
+          {
+            "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:\u30d5\u30a9\u30fc\u30b9\u30b7\u30e7\u30c3\u30c8"
+          }
+        ],
+        "finalState": {},
+        "diagnostics": {
+          "formalStatus": "UNVERIFIED",
+          "provisionalEffects": []
+        },
+        "metrics": {
+          "comboTotalDamage": {
+            "status": "unavailable",
+            "reason": "EXECUTION_INCOMPLETE"
+          },
+          "comboDuration": {
+            "status": "unavailable",
+            "reason": "DURATION_UNAVAILABLE"
+          },
+          "comboDps": {
+            "status": "unavailable",
+            "reason": "EXECUTION_INCOMPLETE"
+          }
+        }
+      }
+    }
+  },
+  "rapidFireMisclassified": {
+    "status": "OK",
+    "weaponType": "bow",
+    "diagnostics": [
+      {
+        "code": "MHDB_SOURCE",
+        "apiId": 1067,
+        "gameId": 13,
+        "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/1067",
+        "apiVersion": "UNKNOWN",
+        "retrievedAt": "UNKNOWN",
+        "sourceGameVersion": "UNKNOWN"
+      }
+    ],
+    "versions": {
+      "game": "1.042.00.02",
+      "equipment": "mhdb-source-unknown-game-version",
+      "technique": "tech-real",
+      "effects": "effects-real"
+    },
+    "conditionKey": "{\"conditions\":{\"aff\":\"25\",\"attack\":\"190\",\"bowState\":{\"chargeLevel\":3,\"coating\":\"CLOSE_RANGE\",\"range\":\"CRITICAL\",\"startShot\":3},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"phialType\":null,\"shieldBoosted\":null},\"chargeLevel\":3,\"coating\":\"CLOSE_RANGE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"startShot\":3,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"BOW_SHOT_3\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"BOW_POWER_SHOT_3\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"BOW_POWER_VOLLEY_3\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+    "comparisonContext": {
+      "damage": "{\"conditions\":{\"aff\":\"25\",\"attack\":\"190\",\"bowState\":{\"chargeLevel\":3,\"coating\":\"CLOSE_RANGE\",\"range\":\"CRITICAL\",\"startShot\":3},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"phialType\":null,\"shieldBoosted\":null},\"chargeLevel\":3,\"coating\":\"CLOSE_RANGE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"startShot\":3,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"BOW_SHOT_3\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"BOW_POWER_SHOT_3\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"BOW_POWER_VOLLEY_3\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+      "dps": "{\"conditions\":{\"aff\":\"25\",\"attack\":\"190\",\"bowState\":{\"chargeLevel\":3,\"coating\":\"CLOSE_RANGE\",\"range\":\"CRITICAL\",\"startShot\":3},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"phialType\":null,\"shieldBoosted\":null},\"chargeLevel\":3,\"coating\":\"CLOSE_RANGE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"startShot\":3,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"BOW_SHOT_3\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"BOW_POWER_SHOT_3\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"BOW_POWER_VOLLEY_3\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+    },
+    "channels": {
+      "normal": {
+        "execution": {
+          "status": "complete",
+          "expected": [
+            "0:0",
+            "1:0",
+            "2:0"
+          ],
+          "executed": [
+            "0:0",
+            "1:0",
+            "2:0"
+          ],
+          "reason": null
+        },
+        "components": [
+          {
+            "id": "BOW_SHOT_3:reference:0",
+            "eventId": "0:0",
+            "techniqueId": "BOW_SHOT_3",
+            "revision": "1",
+            "source": "MACARONGAMEMO_BOW_MOTION_CURRENT",
+            "coefficientUnit": "REFERENCE",
+            "damageUnit": "damage",
+            "status": "available",
+            "value": 89.53559999999999,
+            "details": {
+              "scope": "FIXED_THREE_SHOT_SOURCE_REFERENCE",
+              "trace": [
+                {
+                  "techniqueId": "BOW_SHOT_3",
+                  "name": "\u5c04\u6483\uff08\u6e9c\u30813\uff09",
+                  "hit": 1,
+                  "mv": 12,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 29.8452,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 3,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_SHOT_3",
+                  "name": "\u5c04\u6483\uff08\u6e9c\u30813\uff09",
+                  "hit": 2,
+                  "mv": 12,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 29.8452,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 3,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_SHOT_3",
+                  "name": "\u5c04\u6483\uff08\u6e9c\u30813\uff09",
+                  "hit": 3,
+                  "mv": 12,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 29.8452,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 3,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                }
+              ],
+              "forceShotStage": {
+                "techniqueId": "BOW_SHOT_3",
+                "ordinal": 3,
+                "attackAdd": 0,
+                "affinityAdd": 0,
+                "attack": 190,
+                "affinity": 25
+              },
+              "bladescaleStage": null,
+              "bladescaleStatus": "INACTIVE"
+            },
+            "disposition": "emitted",
+            "effectsApplied": []
+          },
+          {
+            "id": "BOW_POWER_SHOT_3:reference:0",
+            "eventId": "1:0",
+            "techniqueId": "BOW_POWER_SHOT_3",
+            "revision": "1",
+            "source": "MACARONGAMEMO_BOW_MOTION_CURRENT",
+            "coefficientUnit": "REFERENCE",
+            "damageUnit": "damage",
+            "status": "available",
+            "value": 154.435512,
+            "details": {
+              "scope": "FIXED_THREE_SHOT_SOURCE_REFERENCE",
+              "trace": [
+                {
+                  "techniqueId": "BOW_POWER_SHOT_3",
+                  "name": "\u525b\u5c043",
+                  "hit": 1,
+                  "mv": 12,
+                  "elementModifier": 0.8,
+                  "component": "ARROW",
+                  "physical": 30.887102399999996,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 4,
+                  "forceAttackAdd": 3,
+                  "forceAffinityAdd": 8,
+                  "shotAffinity": 33,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0825,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_SHOT_3",
+                  "name": "\u525b\u5c043",
+                  "hit": 2,
+                  "mv": 12,
+                  "elementModifier": 0.8,
+                  "component": "ARROW",
+                  "physical": 30.887102399999996,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 4,
+                  "forceAttackAdd": 3,
+                  "forceAffinityAdd": 8,
+                  "shotAffinity": 33,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0825,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_SHOT_3",
+                  "name": "\u525b\u5c043",
+                  "hit": 3,
+                  "mv": 12,
+                  "elementModifier": 0.8,
+                  "component": "ARROW",
+                  "physical": 30.887102399999996,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 4,
+                  "forceAttackAdd": 3,
+                  "forceAffinityAdd": 8,
+                  "shotAffinity": 33,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0825,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_SHOT_3",
+                  "name": "\u525b\u5c043",
+                  "hit": 4,
+                  "mv": 12,
+                  "elementModifier": 0.8,
+                  "component": "ARROW",
+                  "physical": 30.887102399999996,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 4,
+                  "forceAttackAdd": 3,
+                  "forceAffinityAdd": 8,
+                  "shotAffinity": 33,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0825,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_SHOT_3",
+                  "name": "\u525b\u5c043",
+                  "hit": 5,
+                  "mv": 12,
+                  "elementModifier": 0.8,
+                  "component": "ARROW",
+                  "physical": 30.887102399999996,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 4,
+                  "forceAttackAdd": 3,
+                  "forceAffinityAdd": 8,
+                  "shotAffinity": 33,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0825,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                }
+              ],
+              "forceShotStage": {
+                "techniqueId": "BOW_POWER_SHOT_3",
+                "ordinal": 4,
+                "attackAdd": 3,
+                "affinityAdd": 8,
+                "attack": 193,
+                "affinity": 33
+              },
+              "bladescaleStage": null,
+              "bladescaleStatus": "INACTIVE"
+            },
+            "disposition": "emitted",
+            "effectsApplied": []
+          },
+          {
+            "id": "BOW_POWER_VOLLEY_3:reference:0",
+            "eventId": "2:0",
+            "techniqueId": "BOW_POWER_VOLLEY_3",
+            "revision": "1",
+            "source": "MACARONGAMEMO_BOW_MOTION_CURRENT",
+            "coefficientUnit": "REFERENCE",
+            "damageUnit": "damage",
+            "status": "available",
+            "value": 228.05244,
+            "details": {
+              "scope": "FIXED_THREE_SHOT_SOURCE_REFERENCE",
+              "trace": [
+                {
+                  "techniqueId": "BOW_POWER_VOLLEY_3",
+                  "name": "\u525b\u9023\u5c043",
+                  "hit": 1,
+                  "mv": 15,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 38.00874,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 5,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 8,
+                  "shotAffinity": 33,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0825,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_VOLLEY_3",
+                  "name": "\u525b\u9023\u5c043",
+                  "hit": 2,
+                  "mv": 15,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 38.00874,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 5,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 8,
+                  "shotAffinity": 33,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0825,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_VOLLEY_3",
+                  "name": "\u525b\u9023\u5c043",
+                  "hit": 3,
+                  "mv": 15,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 38.00874,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 5,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 8,
+                  "shotAffinity": 33,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0825,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_VOLLEY_3",
+                  "name": "\u525b\u9023\u5c043",
+                  "hit": 4,
+                  "mv": 15,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 38.00874,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 5,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 8,
+                  "shotAffinity": 33,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0825,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_VOLLEY_3",
+                  "name": "\u525b\u9023\u5c043",
+                  "hit": 5,
+                  "mv": 15,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 38.00874,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 5,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 8,
+                  "shotAffinity": 33,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0825,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_VOLLEY_3",
+                  "name": "\u525b\u9023\u5c043",
+                  "hit": 6,
+                  "mv": 15,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 38.00874,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1,
+                  "forceShotOrdinal": 5,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 8,
+                  "shotAffinity": 33,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0825,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                }
+              ],
+              "forceShotStage": {
+                "techniqueId": "BOW_POWER_VOLLEY_3",
+                "ordinal": 5,
+                "attackAdd": 0,
+                "affinityAdd": 8,
+                "attack": 190,
+                "affinity": 33
+              },
+              "bladescaleStage": null,
+              "bladescaleStatus": "INACTIVE"
+            },
+            "disposition": "emitted",
+            "effectsApplied": []
+          }
+        ],
+        "issues": [],
+        "finalState": {},
+        "diagnostics": {
+          "formalStatus": "UNVERIFIED",
+          "provisionalEffects": []
+        },
+        "metrics": {
+          "comboTotalDamage": {
+            "status": "available",
+            "value": 472.023552
+          },
+          "comboDuration": {
+            "status": "unavailable",
+            "reason": "DURATION_UNAVAILABLE"
+          },
+          "comboDps": {
+            "status": "unavailable",
+            "reason": "DURATION_UNAVAILABLE"
+          }
+        }
+      },
+      "maximum": {
+        "execution": {
+          "status": "complete",
+          "expected": [
+            "0:0",
+            "1:0",
+            "2:0"
+          ],
+          "executed": [
+            "0:0",
+            "1:0",
+            "2:0"
+          ],
+          "reason": null
+        },
+        "components": [
+          {
+            "id": "BOW_SHOT_3:reference:0",
+            "eventId": "0:0",
+            "techniqueId": "BOW_SHOT_3",
+            "revision": "1",
+            "source": "MACARONGAMEMO_BOW_MOTION_CURRENT",
+            "coefficientUnit": "REFERENCE",
+            "damageUnit": "damage",
+            "status": "available",
+            "value": 111.9195,
+            "details": {
+              "scope": "FIXED_THREE_SHOT_SOURCE_REFERENCE",
+              "trace": [
+                {
+                  "techniqueId": "BOW_SHOT_3",
+                  "name": "\u5c04\u6483\uff08\u6e9c\u30813\uff09",
+                  "hit": 1,
+                  "mv": 12,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 37.3065,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_SHOT_3",
+                  "name": "\u5c04\u6483\uff08\u6e9c\u30813\uff09",
+                  "hit": 2,
+                  "mv": 12,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 37.3065,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_SHOT_3",
+                  "name": "\u5c04\u6483\uff08\u6e9c\u30813\uff09",
+                  "hit": 3,
+                  "mv": 12,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 37.3065,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                }
+              ],
+              "forceShotStage": {
+                "techniqueId": "BOW_SHOT_3",
+                "ordinal": null,
+                "attackAdd": 0,
+                "affinityAdd": 0,
+                "attack": 190,
+                "affinity": 25
+              },
+              "bladescaleStage": {
+                "techniqueId": "BOW_SHOT_3",
+                "shotCost": 1,
+                "remainingShots": 2
+              },
+              "bladescaleStatus": "ACTIVE_REFERENCE"
+            },
+            "disposition": "emitted",
+            "effectsApplied": []
+          },
+          {
+            "id": "BOW_POWER_SHOT_3:reference:0",
+            "eventId": "1:0",
+            "techniqueId": "BOW_POWER_SHOT_3",
+            "revision": "1",
+            "source": "MACARONGAMEMO_BOW_MOTION_CURRENT",
+            "coefficientUnit": "REFERENCE",
+            "damageUnit": "damage",
+            "status": "available",
+            "value": 186.5325,
+            "details": {
+              "scope": "FIXED_THREE_SHOT_SOURCE_REFERENCE",
+              "trace": [
+                {
+                  "techniqueId": "BOW_POWER_SHOT_3",
+                  "name": "\u525b\u5c043",
+                  "hit": 1,
+                  "mv": 12,
+                  "elementModifier": 0.8,
+                  "component": "ARROW",
+                  "physical": 37.3065,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_SHOT_3",
+                  "name": "\u525b\u5c043",
+                  "hit": 2,
+                  "mv": 12,
+                  "elementModifier": 0.8,
+                  "component": "ARROW",
+                  "physical": 37.3065,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_SHOT_3",
+                  "name": "\u525b\u5c043",
+                  "hit": 3,
+                  "mv": 12,
+                  "elementModifier": 0.8,
+                  "component": "ARROW",
+                  "physical": 37.3065,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_SHOT_3",
+                  "name": "\u525b\u5c043",
+                  "hit": 4,
+                  "mv": 12,
+                  "elementModifier": 0.8,
+                  "component": "ARROW",
+                  "physical": 37.3065,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_SHOT_3",
+                  "name": "\u525b\u5c043",
+                  "hit": 5,
+                  "mv": 12,
+                  "elementModifier": 0.8,
+                  "component": "ARROW",
+                  "physical": 37.3065,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                }
+              ],
+              "forceShotStage": {
+                "techniqueId": "BOW_POWER_SHOT_3",
+                "ordinal": null,
+                "attackAdd": 0,
+                "affinityAdd": 0,
+                "attack": 190,
+                "affinity": 25
+              },
+              "bladescaleStage": {
+                "techniqueId": "BOW_POWER_SHOT_3",
+                "shotCost": 1,
+                "remainingShots": 1
+              },
+              "bladescaleStatus": "ACTIVE_REFERENCE"
+            },
+            "disposition": "emitted",
+            "effectsApplied": []
+          },
+          {
+            "id": "BOW_POWER_VOLLEY_3:reference:0",
+            "eventId": "2:0",
+            "techniqueId": "BOW_POWER_VOLLEY_3",
+            "revision": "1",
+            "source": "MACARONGAMEMO_BOW_MOTION_CURRENT",
+            "coefficientUnit": "REFERENCE",
+            "damageUnit": "damage",
+            "status": "available",
+            "value": 279.79875000000004,
+            "details": {
+              "scope": "FIXED_THREE_SHOT_SOURCE_REFERENCE",
+              "trace": [
+                {
+                  "techniqueId": "BOW_POWER_VOLLEY_3",
+                  "name": "\u525b\u9023\u5c043",
+                  "hit": 1,
+                  "mv": 15,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 46.63312500000001,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_VOLLEY_3",
+                  "name": "\u525b\u9023\u5c043",
+                  "hit": 2,
+                  "mv": 15,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 46.63312500000001,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_VOLLEY_3",
+                  "name": "\u525b\u9023\u5c043",
+                  "hit": 3,
+                  "mv": 15,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 46.63312500000001,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_VOLLEY_3",
+                  "name": "\u525b\u9023\u5c043",
+                  "hit": 4,
+                  "mv": 15,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 46.63312500000001,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_VOLLEY_3",
+                  "name": "\u525b\u9023\u5c043",
+                  "hit": 5,
+                  "mv": 15,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 46.63312500000001,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                },
+                {
+                  "techniqueId": "BOW_POWER_VOLLEY_3",
+                  "name": "\u525b\u9023\u5c043",
+                  "hit": 6,
+                  "mv": 15,
+                  "elementModifier": 1,
+                  "component": "ARROW",
+                  "physical": 46.63312500000001,
+                  "element": 0,
+                  "rangePhysicalModifier": 1.1,
+                  "coatingPhysicalModifier": 1.4,
+                  "shotSkillPhysicalModifier": 1,
+                  "bladescalePhysicalModifier": 1.25,
+                  "forceShotOrdinal": null,
+                  "forceAttackAdd": 0,
+                  "forceAffinityAdd": 0,
+                  "shotAffinity": 25,
+                  "chargeMasterElementModifier": 1,
+                  "criticalElementModifier": 1,
+                  "elementCriticalExpectation": 1,
+                  "criticalExpectation": 1.0625,
+                  "sharpnessApplied": false,
+                  "coatingElementApplied": false
+                }
+              ],
+              "forceShotStage": {
+                "techniqueId": "BOW_POWER_VOLLEY_3",
+                "ordinal": null,
+                "attackAdd": 0,
+                "affinityAdd": 0,
+                "attack": 190,
+                "affinity": 25
+              },
+              "bladescaleStage": {
+                "techniqueId": "BOW_POWER_VOLLEY_3",
+                "shotCost": 1,
+                "remainingShots": 0
+              },
+              "bladescaleStatus": "ACTIVE_REFERENCE"
+            },
+            "disposition": "emitted",
+            "effectsApplied": []
+          }
+        ],
+        "issues": [],
+        "finalState": {},
+        "diagnostics": {
+          "formalStatus": "UNVERIFIED",
+          "provisionalEffects": []
+        },
+        "metrics": {
+          "comboTotalDamage": {
+            "status": "available",
+            "value": 578.25075
+          },
+          "comboDuration": {
+            "status": "unavailable",
+            "reason": "DURATION_UNAVAILABLE"
+          },
+          "comboDps": {
+            "status": "unavailable",
+            "reason": "DURATION_UNAVAILABLE"
+          }
+        }
+      }
+    }
+  }
+}
