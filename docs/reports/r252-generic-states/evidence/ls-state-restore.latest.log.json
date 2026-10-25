@@ -1,0 +1,58 @@
+{
+  "sourceSha": "5f75427339641ba73e89c09635e66df97f7a004d",
+  "input": {
+    "weaponId": 836,
+    "gameId": 1,
+    "kind": "long-sword",
+    "name": "ホープエッジⅠ",
+    "techniqueId": "canonical:LS_RED_BLADE_I",
+    "target": "training-room/training-front"
+  },
+  "sequence": [
+    "RED calcBuild/evaluateCurrent",
+    "save buildSnapshot",
+    "YELLOW calcBuild/evaluateCurrent",
+    "applyBuildSnapshot normal read",
+    "RED calcBuild/evaluateCurrent"
+  ],
+  "observed": {
+    "before": {
+      "state": "RED",
+      "normal": 37.05,
+      "maximum": 37.05,
+      "execution": "complete"
+    },
+    "changed": {
+      "state": "YELLOW",
+      "channels": {
+        "normal": {
+          "status": "complete",
+          "totalStatus": "unavailable",
+          "totalValue": null,
+          "reasons": "COMPONENT_UNAVAILABLE"
+        },
+        "maximum": {
+          "status": "complete",
+          "totalStatus": "unavailable",
+          "totalValue": null,
+          "reasons": "COMPONENT_UNAVAILABLE"
+        }
+      }
+    },
+    "after": {
+      "state": "RED",
+      "normal": 37.05,
+      "maximum": 37.05,
+      "execution": "complete"
+    }
+  },
+  "assertions": {
+    "stateChanged": true,
+    "yellowRejected": true,
+    "restoredState": true,
+    "techniqueRestored": true,
+    "finiteAvailableComplete": true,
+    "numericRestored": true,
+    "note": "YELLOW is rejected by the red-technique state requirement; this verifies state transmission/restoration, not a spirit-color damage delta."
+  }
+}
