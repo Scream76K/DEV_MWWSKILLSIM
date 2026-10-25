@@ -7988,14 +7988,18 @@ function buildCalculationFingerprint(){
     $('compareOut').textContent='異なる武器種の火力指数・会心率は直接比較できません。武器種間の比較は検証済みコンボDPSが揃った場合のみ対応します。現在は比較を保留します。';return;
   }
   const current=buildSnapshot(),cond=compareStep5Snapshot(),calculationBefore=buildCalculationFingerprint(),rows=[];
-  let compareError=null,restoreError=null;
+  let compareError=null,restoreError=null,rowError=false;
   const expectedSnapshot=map[names[0]];
   try{
     for(const n of names){
       try{
-        applyBuildSnapshot(current,{preserveCombo:true,restoreExact:true});
+        // The first row already starts from the captured current build. Restore
+        // the same baseline only between rows; the finally block still restores
+        // it after every comparison outcome.
+        if(rows.length) applyBuildSnapshot(current,{preserveCombo:true,restoreExact:true});
         rows.push(compareSnapshot(n,map[n],cond,expectedSnapshot));
       }catch(e){
+        rowError=true;
         const reason='BUILD_COMPARE_ROW_FAILED:'+String(e?.message||e);
         rows.push({name:n,kind:map[n]?.weaponKind||'',power:{},referenceCombo:null,saedReference:null,oneHitPipeline:{status:'UNAVAILABLE',reason},attack:0,attackTrue:0,affinity:0,maxAffinity:0,element:null,elementType:'',elementKnown:false,typeKnown:false,elementStatus:'UNAVAILABLE',elementReason:reason,damage:null,dps:null,dpsStatus:'BLOCKED',damageReason:reason,dpsReason:reason,comboVerification:null,referenceDps:null,referenceDpsStatus:'NOT_CALCULATED'});
       }
@@ -8010,6 +8014,10 @@ function buildCalculationFingerprint(){
   }
   if(restoreError){$('compareOut').textContent='比較後の元ビルド・比較条件の復元に失敗しました：'+String(restoreError.message||restoreError)+'。保存済みビルドを読み込み直してください。';return;}
   if(compareError){$('compareOut').textContent='比較を中止しました：'+String(compareError.message||compareError);return;}
+  if(rowError&&rows.every(row=>row?.oneHitPipeline?.status==='UNAVAILABLE')){
+    const reason=rows.map(row=>row?.oneHitPipeline?.reason||'BUILD_COMPARE_ROW_FAILED').join(' / ');
+    $('compareOut').textContent='比較を中止しました：'+reason;return;
+  }
   // A successful restore call is not proof that the original build/conditions survived.
   // Verify the actual restored state before publishing any comparison results.
   try{
