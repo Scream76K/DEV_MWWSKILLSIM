@@ -1,0 +1,329 @@
+{
+  "weapon": {
+    "phial": "element",
+    "gameId": 25,
+    "crafting": {
+      "weapon": {
+        "id": 103
+      },
+      "craftable": false,
+      "previous": {
+        "name": "ウズ・ヴァレロヤⅠ",
+        "id": 102
+      },
+      "branches": [
+        {
+          "name": "ウズ・ヴァレロヤⅢ",
+          "id": 104
+        }
+      ],
+      "craftingMaterials": [],
+      "craftingZennyCost": 0,
+      "upgradeMaterials": [
+        {
+          "item": {
+            "id": 60,
+            "gameId": 62,
+            "rarity": 7,
+            "name": "いにしえの龍骨",
+            "description": "骨塚で採取できる貴重な上位素材。 はるかなる昔、この地で息絶えた 龍の貴重な骨。",
+            "value": 1600,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 42,
+              "kind": "bone",
+              "colorId": 9,
+              "color": "ivory"
+            }
+          },
+          "quantity": 1,
+          "id": 43129
+        },
+        {
+          "item": {
+            "id": 282,
+            "gameId": 315,
+            "rarity": 6,
+            "name": "沙海竜の狩猟証Ｓ",
+            "description": "バーラハーラのクエストに成功した 者に与えられる、ギルドの証明書。 装備の作成に使用する。",
+            "value": 1020,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 30,
+              "kind": "certificate",
+              "colorId": 2,
+              "color": "gray"
+            }
+          },
+          "quantity": 1,
+          "id": 43130
+        },
+        {
+          "item": {
+            "id": 546,
+            "gameId": 596,
+            "rarity": 6,
+            "name": "大水袋",
+            "description": "モンスターの内臓器官の１つ。 大量の水を溜め込んでいる、 保水性に優れた巨大な袋。",
+            "value": 1530,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 11,
+              "kind": "powder",
+              "colorId": 17,
+              "color": "blue"
+            }
+          },
+          "quantity": 3,
+          "id": 43131
+        }
+      ],
+      "upgradeZennyCost": 4000,
+      "column": 5,
+      "row": 12,
+      "id": 103
+    },
+    "rarity": 5,
+    "kind": "charge-blade",
+    "damage": {
+      "raw": 190,
+      "display": 684
+    },
+    "specials": [
+      {
+        "element": "water",
+        "kind": "element",
+        "weapon": {
+          "id": 103
+        },
+        "damage": {
+          "raw": 26,
+          "display": 260
+        },
+        "hidden": false,
+        "id": 7088
+      }
+    ],
+    "name": "ウズ・ヴァレロヤⅡ",
+    "description": "ウズ・トゥナの素材を用いた盾斧。 美しき盾は主を守り、水を纏った 斧は、重撃で対象を押しつぶす。",
+    "defenseBonus": 0,
+    "elderseal": null,
+    "slots": [
+      2,
+      1
+    ],
+    "affinity": -15,
+    "skills": [
+      {
+        "skill": {
+          "id": 104,
+          "name": "強化持続",
+          "description": "太刀、双剣、剣斧、盾斧、操虫棍で 発生する、強化状態の持続時間を 長くする。"
+        },
+        "level": 2,
+        "name": null,
+        "description": "強化時間を延長",
+        "setPiecesRequired": null,
+        "id": 262
+      }
+    ],
+    "series": {
+      "id": 24,
+      "gameId": 501778656,
+      "name": "波衣竜派生"
+    },
+    "id": 103,
+    "sharpness": {
+      "red": 60,
+      "orange": 70,
+      "yellow": 120,
+      "green": 50,
+      "blue": 0,
+      "white": 0,
+      "purple": 0
+    },
+    "handicraft": [
+      5
+    ]
+  },
+  "armor": {
+    "kind": "legs",
+    "name": "コンガグリーヴβ",
+    "description": "ババコンガの素材で作られた 脚防具。そのワイルドな作りは 荒野を駆ける者にふさわしい。",
+    "rank": "high",
+    "rarity": 5,
+    "resistances": {
+      "fire": -3,
+      "water": 1,
+      "ice": -1,
+      "thunder": 1,
+      "dragon": 2
+    },
+    "defense": {
+      "base": 36,
+      "max": 76
+    },
+    "skills": [
+      {
+        "skill": {
+          "id": 95,
+          "gameId": 565867136,
+          "name": "連撃",
+          "kind": "armor",
+          "icon": {
+            "id": 9,
+            "kind": "offense"
+          }
+        },
+        "level": 1,
+        "name": null,
+        "description": "攻撃ヒット時、一定時間 基礎攻撃力と属性攻撃値がわずかに上昇 ５回継続で効果が強化される",
+        "setPiecesRequired": null,
+        "id": 236
+      },
+      {
+        "skill": {
+          "id": 97,
+          "gameId": 583598144,
+          "name": "毛皮の誘惑",
+          "kind": "group",
+          "icon": {
+            "id": 13,
+            "kind": "group"
+          }
+        },
+        "level": 1,
+        "name": "陽動",
+        "description": "攻撃を当てた時、モンスターの注意を より強く引くようになる",
+        "setPiecesRequired": 3,
+        "id": 242
+      }
+    ],
+    "slots": [
+      2
+    ],
+    "armorSet": {
+      "id": 21,
+      "name": "コンガβ"
+    },
+    "crafting": {
+      "armor": {
+        "id": 93
+      },
+      "materials": [
+        {
+          "item": {
+            "id": 90,
+            "gameId": 98,
+            "rarity": 6,
+            "name": "鋭利な牙",
+            "description": "様々な形状がある牙の総称。 小ぶりだが、小型モンスターの 鱗程度であれば簡単に貫ける。",
+            "value": 425,
+            "carryLimit": 10,
+            "recipes": [],
+            "icon": {
+              "id": 45,
+              "kind": "claw",
+              "colorId": 7,
+              "color": "orange"
+            }
+          },
+          "quantity": 1,
+          "id": 274
+        },
+        {
+          "item": {
+            "id": 467,
+            "gameId": 509,
+            "rarity": 6,
+            "name": "桃毛獣の剛毛",
+            "description": "ババコンガの上質な毛。 硬く丈夫なその毛は、加工されて 装備品の大事な素材となる。",
+            "value": 930,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 44,
+              "kind": "hide",
+              "colorId": 4,
+              "color": "pink"
+            }
+          },
+          "quantity": 2,
+          "id": 275
+        },
+        {
+          "item": {
+            "id": 469,
+            "gameId": 511,
+            "rarity": 6,
+            "name": "桃毛獣の鋭牙",
+            "description": "ババコンガの特に太い牙。かじる ではなく、圧し潰すと形容できる ほどの硬さと重さをもつ。",
+            "value": 1674,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 45,
+              "kind": "claw",
+              "colorId": 4,
+              "color": "pink"
+            }
+          },
+          "quantity": 1,
+          "id": 276
+        },
+        {
+          "item": {
+            "id": 535,
+            "gameId": 585,
+            "rarity": 6,
+            "name": "桃毛獣の狩猟証Ｓ",
+            "description": "ババコンガのクエストに成功した 者に与えられる、ギルドの証明書。 装備の作成に使用する。",
+            "value": 930,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 30,
+              "kind": "certificate",
+              "colorId": 4,
+              "color": "pink"
+            }
+          },
+          "quantity": 1,
+          "id": 277
+        }
+      ],
+      "zennyCost": 3000,
+      "id": 93
+    },
+    "id": 93
+  },
+  "decoration": {
+    "name": "流水珠【１】",
+    "description": "装備に装着すると、 水属性攻撃強化スキルが 発動する装飾品。",
+    "value": 150,
+    "slot": 1,
+    "rarity": 3,
+    "kind": "weapon",
+    "skills": [
+      {
+        "skill": {
+          "id": 91,
+          "name": "水属性攻撃強化"
+        },
+        "level": 1,
+        "description": "水属性攻撃値＋４０",
+        "setPiecesRequired": null,
+        "id": 227
+      }
+    ],
+    "icon": {
+      "color": "blue",
+      "colorId": 17
+    },
+    "id": 61,
+    "gameId": -1394596736
+  }
+}
