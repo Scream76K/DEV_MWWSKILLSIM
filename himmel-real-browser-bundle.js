@@ -219,7 +219,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
     out.stats.attack=out.attackComponents.weaponBase*out.attackComponents.normalMultiplier+out.attackComponents.normalFlat;
    }else {const dest=e.stage==='coefficient'?out:out.stats,key=e.stage;const v=dest[key];dest[key]=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);}
    ensure(finite(out.coefficient)&&Object.values(out.stats).every(finite),'EFFECT_RESULT_NON_FINITE');
-   out.trace.push({id:e.id,stage:e.stage,unit:e.unit,order:e.order,source:e.source});
+   out.trace.push({id:e.id,target:e.target,stage:e.stage,unit:e.unit,order:e.order,source:e.source,...(e.status?{status:e.status}: {})});
   }
   return out;
  }
@@ -229,7 +229,8 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const sum=componentsValid?run.components.reduce((s,c)=>s+c.value,0):null;
   const total=!complete?bad('EXECUTION_INCOMPLETE'):!componentsValid?bad('COMPONENT_UNAVAILABLE'):!finite(sum)?bad('TOTAL_NON_FINITE'):good(sum);
   const time=num(duration)&&duration>0?good(duration):bad('DURATION_UNAVAILABLE');
-  return {...run,metrics:{comboTotalDamage:total,comboDuration:time,comboDps:total.status==='available'&&time.status==='available'?(finite(total.value/time.value)?good(total.value/time.value):bad('DPS_NON_FINITE')):bad(total.status==='available'?'DURATION_UNAVAILABLE':total.reason)}};
+  const provisionalEffects=run.components.flatMap(c=>Array.isArray(c.effectsApplied)?c.effectsApplied:[]).filter(e=>e.status==='PROVISIONALLY_ADOPTED');
+  return {...run,diagnostics:{formalStatus:provisionalEffects.length?'PROVISIONAL':'VERIFIED',provisionalEffects:copy(provisionalEffects)},metrics:{comboTotalDamage:total,comboDuration:time,comboDps:total.status==='available'&&time.status==='available'?(finite(total.value/time.value)?good(total.value/time.value):bad('DPS_NON_FINITE')):bad(total.status==='available'?'DURATION_UNAVAILABLE':total.reason)}};
  }
  function runChannel(build,req,plan,ch,s){
   const executed=[],components=[],issues=[];let state;
@@ -458,7 +459,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
     out.stats.attack=out.attackComponents.weaponBase*out.attackComponents.normalMultiplier+out.attackComponents.normalFlat;
    }else {const dest=e.stage==='coefficient'?out:out.stats,key=e.stage;const v=dest[key];dest[key]=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);}
    ensure(finite(out.coefficient)&&Object.values(out.stats).every(finite),'EFFECT_RESULT_NON_FINITE');
-   out.trace.push({id:e.id,stage:e.stage,unit:e.unit,order:e.order,source:e.source});
+   out.trace.push({id:e.id,target:e.target,stage:e.stage,unit:e.unit,order:e.order,source:e.source,...(e.status?{status:e.status}: {})});
   }
   return out;
  }
@@ -468,7 +469,8 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const sum=componentsValid?run.components.reduce((s,c)=>s+c.value,0):null;
   const total=!complete?bad('EXECUTION_INCOMPLETE'):!componentsValid?bad('COMPONENT_UNAVAILABLE'):!finite(sum)?bad('TOTAL_NON_FINITE'):good(sum);
   const time=num(duration)&&duration>0?good(duration):bad('DURATION_UNAVAILABLE');
-  return {...run,metrics:{comboTotalDamage:total,comboDuration:time,comboDps:total.status==='available'&&time.status==='available'?(finite(total.value/time.value)?good(total.value/time.value):bad('DPS_NON_FINITE')):bad(total.status==='available'?'DURATION_UNAVAILABLE':total.reason)}};
+  const provisionalEffects=run.components.flatMap(c=>Array.isArray(c.effectsApplied)?c.effectsApplied:[]).filter(e=>e.status==='PROVISIONALLY_ADOPTED');
+  return {...run,diagnostics:{formalStatus:provisionalEffects.length?'PROVISIONAL':'VERIFIED',provisionalEffects:copy(provisionalEffects)},metrics:{comboTotalDamage:total,comboDuration:time,comboDps:total.status==='available'&&time.status==='available'?(finite(total.value/time.value)?good(total.value/time.value):bad('DPS_NON_FINITE')):bad(total.status==='available'?'DURATION_UNAVAILABLE':total.reason)}};
  }
  function runChannel(build,req,plan,ch,s){
   const executed=[],components=[],issues=[];let state;
