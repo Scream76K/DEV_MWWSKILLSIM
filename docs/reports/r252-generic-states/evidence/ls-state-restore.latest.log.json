@@ -1,5 +1,5 @@
 {
-  "sourceSha": "d48749d1b5d7da00d5524339fcbe75cb8ef70849",
+  "sourceSha": "bc505cddccc529faf0fcaf99455d873c8588ec30",
   "input": {
     "weaponId": 836,
     "gameId": 1,
@@ -49,7 +49,8 @@
             "REAL_SLICE:STATE_REQUIREMENT_MISMATCH:spiritGauge"
           ]
         }
-      }
+      },
+      "renderedUnavailable": true
     },
     "after": {
       "state": "RED",
@@ -61,6 +62,7 @@
   "assertions": {
     "stateChanged": true,
     "yellowRejected": true,
+    "renderedUnavailable": true,
     "restoredState": true,
     "techniqueRestored": true,
     "finiteAvailableComplete": true,
