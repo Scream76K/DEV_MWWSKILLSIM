@@ -1,0 +1,44 @@
+{
+  "executionSha": "d5ad5efce39963691e442d9592adc2b43010bd1b",
+  "input": {
+    "weaponId": 914,
+    "gameId": 1,
+    "name": "ホープアックスⅠ",
+    "kind": "switch-axe",
+    "phial": {
+      "kind": "power"
+    },
+    "techniqueId": "SA_SWORD_VERTICAL"
+  },
+  "sword": {
+    "state": {
+      "mode": "SWORD",
+      "awakened": false
+    },
+    "status": "OK",
+    "normal": {
+      "status": "available",
+      "value": 24.95
+    },
+    "maximum": {
+      "status": "available",
+      "value": 24.95
+    },
+    "execution": "complete",
+    "phialComponents": 0
+  },
+  "axe": {
+    "state": {
+      "mode": "AXE",
+      "awakened": false
+    },
+    "status": "UNAVAILABLE",
+    "reason": "REAL_SLICE:STATE_REQUIREMENT_MISMATCH:mode"
+  },
+  "assertions": {
+    "swordModeAvailable": true,
+    "axeModeRejected": true,
+    "noNumericPhialEffectInvented": true
+  },
+  "note": "MHDB power phial is retained as weapon metadata. SA_SWORD_VERTICAL has no DB phial component/value; scorch is source-confirmed but calculationReady:false, so neither is included in HP total."
+}

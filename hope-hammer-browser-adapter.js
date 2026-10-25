@@ -118,6 +118,10 @@
   }
   techniqueId=resolvedTechniqueIds[0];
   const technique=techniques[techniqueId];
+  if(weapon.kind==='switch-axe'&&resolvedTechniqueIds.includes('SA_SWORD_VERTICAL')){
+   if(!switchAxeState||typeof switchAxeState.mode!=='string'||!switchAxeState.mode)return fail('REAL_SLICE:STATE_REQUIREMENT_UNRESOLVED:mode');
+   if(switchAxeState.mode!=='SWORD')return fail('REAL_SLICE:STATE_REQUIREMENT_MISMATCH:mode');
+  }
   const part=trainingRoom?.parts?.find(x=>x.id==='training-front');
   const isShellingOnly=resolvedTechniqueIds.every(id=>{const r=techniques[id];return Array.isArray(r?.specialComponents)&&r.specialComponents.some(x=>String(x).includes('SHELL'));});
   const isReferenceOnly=resolvedTechniqueIds.every(id=>['bow','heavy-bowgun','light-bowgun','charge-blade-saed','hunting-horn-sound'].includes(techniques[id]?.referenceKind));
