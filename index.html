@@ -1048,6 +1048,19 @@ function isBaseArtia(w){
   const rare8=BASE_ARTIA_RARE8_IDENTITIES[w.id];
   return !!(w.rarity===8&&rare8&&w.name===rare8[0]&&w.kind===rare8[1])||(BASE_ARTIA_MHDB_IDS.has(Number(w.id))&&[6,7].includes(w.rarity)&&/^アーティア/.test(String(w.name||'')));
 }
+// Owner 2026-10-25 22:43 UTC: capacity restoration only on Artia II / Gogma bowguns.
+function isArtiaBowgun(w){return !!w&&['light-bowgun','heavy-bowgun'].includes(canonicalWeaponKind(w));}
+function artiaCapacityRestoreEligible(w){
+  if(!isArtiaBowgun(w))return false;
+  if(isGogmaArtia(w))return true;
+  return isBaseArtia(w)&&w.rarity===7&&((Number(w.id)===827&&w.kind==='light-bowgun'&&w.name==='アーティアブラストⅡ')||(Number(w.id)===522&&w.kind==='heavy-bowgun'&&w.name==='アーティアバスターⅡ'));
+}
+function artiaRestoreOptionLabel(value,w){
+  if(typeof value==='string'&&value.startsWith('capacity:'))return artiaCapacityRestoreEligible(w)?'装填数強化（計算未対応）':'保存された装填数指定（対象外）';
+  if(typeof value==='string'&&value.startsWith('sharp:')&&isArtiaBowgun(w))return artiaCapacityRestoreEligible(w)?'旧装填数指定（計算未対応）':'旧装填数指定（対象外）';
+  if(value==='sharp:I'&&isNormalArtiaMelee(w))return '斬れ味強化Ⅰ（白維持・ゲージ長未計算）';
+  return value;
+}
 function isNormalArtiaMelee(w){return isBaseArtia(w)&&!['bow','light-bowgun','heavy-bowgun'].includes(canonicalWeaponKind(w));}
 function isArtiaWeapon(w){return isGogmaArtia(w)||isBaseArtia(w);}
 const ARTIA_NAMES=new Set(['忘却のオストランツァ','斬罪のエルガンシオ','破滅のキリエヴェルド','永訣のクラウクライス','禁戒のデスヴァンケル','闇黒のテルプリティカ','暗黒のテルプリティカ','天涯のゲガルンロウ','前兆のプロフェネシス','邪執のコンキエレガン','代償のネイディ・ギア','堕在のラクリエリカ','荊冠のデストレーター','戦慄のヘルシャフェン','亡国のクピドバイン']);
@@ -1460,8 +1473,8 @@ function renderArtia(){
   if(!isArtiaWeapon(w)){box.classList.add('hidden');return;}
   box.classList.remove('hidden');
   if(isBaseArtia(w)){
-    const types=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'],choices=['none','atk:I','aff:I','elem:I',...(isNormalArtiaMelee(w)?['sharp:I']:[])];
-    box.innerHTML=`<b>アーティア生産条件（暫定採用・現行版未検証）</b><div>同一属性の攻撃素材3個固定</div><label>武器属性</label><select id="aElem">${types.map(x=>`<option value="${x}">${x}</option>`).join('')}</select><label>復元Ⅰ</label>${build.artia.restores.map((v,i)=>`<select class="aR" data-i="${i}">${[...new Set([...choices,v])].map(x=>`<option value="${x}">${x==='sharp:I'?'斬れ味強化Ⅰ（白維持・ゲージ長未計算）':x}</option>`).join('')}</select>`).join('')}`;
+    const types=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'],choices=['none','atk:I','aff:I','elem:I',...(isNormalArtiaMelee(w)?['sharp:I']:[]),...(artiaCapacityRestoreEligible(w)?['capacity:pending']:[])];
+    box.innerHTML=`<b>アーティア生産条件（暫定採用・現行版未検証）</b><div>同一属性の攻撃素材3個固定</div><label>武器属性</label><select id="aElem">${types.map(x=>`<option value="${x}">${x}</option>`).join('')}</select><label>復元Ⅰ</label>${build.artia.restores.map((v,i)=>`<select class="aR" data-i="${i}">${[...new Set([...choices,v])].map(x=>`<option value="${x}">${esc(artiaRestoreOptionLabel(x,w))}</option>`).join('')}</select>`).join('')}`;
     $('aElem').value=build.artia.element;$('aElem').onchange=()=>{build.artia.element=$('aElem').value;calcBuild()};
     document.querySelectorAll('.aR').forEach((el,i)=>{el.value=build.artia.restores[i];el.onchange=()=>{build.artia.restores[i]=el.value;calcBuild()}});
     return;
@@ -1484,8 +1497,8 @@ function renderArtia(){
   <label>武器スロット</label><div class="equip-skill-preview" id="aWeaponSlotPreview"></div>`;
   $('aProd').value=build.artia.production; $('aElem').value=build.artia.element; $('aSeries').value=build.artia.seriesSkill||''; $('aGroup').value=build.artia.groupSkill||'';
   const updateSkillStatus=()=>{const ss=skillById($('aSeries').value),gg=skillById($('aGroup').value);let lines=[];for(const [label,skill,type] of [['シリーズ',ss,'series'],['グループ',gg,'group']]){if(!skill)continue;const a=artiaSkillActivation(skill,type);const req=a.required?`必要${a.required}部位`:'条件未定義';lines.push(`${label}：${esc(skill.name)} → ${a.active?`発動（${a.count}/${req}）`:`未発動（${a.count}/${req}）`}`);} $('aSkillStatus').innerHTML=lines.length?lines.join('<br>'):'シリーズ/グループスキル未選択';};
-  const choices=[['none','なし'],['atk:I','基礎攻撃力強化Ⅰ +5'],['atk:II','基礎攻撃力強化Ⅱ +6'],['atk:III','基礎攻撃力強化Ⅲ +9'],['atk:EX','基礎攻撃力強化EX +12'],['aff:I','会心強化Ⅰ +5%'],['aff:II','会心強化Ⅱ +6%'],['aff:III','会心強化Ⅲ +8%'],['aff:EX','会心強化EX +10%'],['elem:I','属性強化Ⅰ'],['elem:II','属性強化Ⅱ'],['elem:EX','属性強化EX'],['sharp:I','斬れ味・装填数強化Ⅰ +30'],['sharp:EX','斬れ味・装填数強化EX +50']];
-  const r=$('aRestore');r.innerHTML=build.artia.restores.map((v,i)=>`<select class="aR" data-i="${i}">${choices.map(c=>`<option value="${c[0]}">${c[1]}</option>`).join('')}</select>`).join('');
+  const choices=[['none','なし'],['atk:I','基礎攻撃力強化Ⅰ +5'],['atk:II','基礎攻撃力強化Ⅱ +6'],['atk:III','基礎攻撃力強化Ⅲ +9'],['atk:EX','基礎攻撃力強化EX +12'],['aff:I','会心強化Ⅰ +5%'],['aff:II','会心強化Ⅱ +6%'],['aff:III','会心強化Ⅲ +8%'],['aff:EX','会心強化EX +10%'],['elem:I','属性強化Ⅰ'],['elem:II','属性強化Ⅱ'],['elem:EX','属性強化EX'],...(!['bow','light-bowgun','heavy-bowgun'].includes(canonicalWeaponKind(w))?[['sharp:I','斬れ味強化Ⅰ +30'],['sharp:EX','斬れ味強化EX +50']]:[]),...(artiaCapacityRestoreEligible(w)?[['capacity:pending','装填数強化（計算未対応）']]:[])];
+  const r=$('aRestore');r.innerHTML=build.artia.restores.map((v,i)=>`<select class="aR" data-i="${i}">${(choices.some(c=>c[0]===v)?choices:[...choices,[v,artiaRestoreOptionLabel(v,w)]]).map(c=>`<option value="${esc(c[0])}">${esc(c[1])}</option>`).join('')}</select>`).join('');
   document.querySelectorAll('.aR').forEach((el,i)=>{el.value=build.artia.restores[i];el.onchange=()=>{build.artia.restores[i]=el.value;calcBuild()}});
   const artiaSlot=$('aWeaponSlotPreview');if(artiaSlot){const slots=slotLevels(w.slots);artiaSlot.innerHTML=slots.length?inlineDecoRows(slots,'w'):'';bindInlineDecos(artiaSlot);}
   $('aProd').onchange=()=>{build.artia.production=$('aProd').value;calcBuild()};$('aElem').onchange=()=>{build.artia.element=$('aElem').value;calcBuild()};
@@ -1789,6 +1802,7 @@ function restoreStats(w){let st={attack:0,affinity:0,element:0,sharp:0};
   if(!Array.isArray(restores)||restores.length>5)return invalid('ARTIA_RESTORE_LIST_INVALID');
   for(const x of restores){
     if(x==='none'||x===''||x===null||x===undefined)continue;
+    if(typeof x==='string'&&(x.startsWith('capacity:')||(isArtiaBowgun(w)&&x.startsWith('sharp:'))))return invalid((artiaCapacityRestoreEligible(w)?'ARTIA_CAPACITY_RESTORE_UNIMPLEMENTED:':'ARTIA_CAPACITY_RESTORE_NOT_APPLICABLE:')+x);
     if(typeof x!=='string'||! /^(atk|aff|elem|sharp):(I|II|III|EX)$/.test(x))return invalid('ARTIA_RESTORE_UNKNOWN:'+String(x));
     const [kind,level]=x.split(':');
     if(isBaseArtia(w)){
@@ -1863,7 +1877,7 @@ function artiaProductionBreakdown(w){return isArtia(w)?'生産：同一属性の
 function artiaRestoreBreakdown(w){
   if(!isArtia(w)) return '';
   const labels={ 'atk:I':'+5攻撃','atk:II':'+6攻撃','atk:III':'+9攻撃','atk:EX':'+12攻撃','aff:I':'+5%会心','aff:II':'+6%会心','aff:III':'+8%会心','aff:EX':'+10%会心','sharp:I':'+30斬れ味','sharp:EX':'+50斬れ味'};
-  const vals=(build.artia.restores||[]).map(x=>x==='none'?'なし':(labels[x]||x));
+  const vals=(build.artia.restores||[]).map(x=>x==='none'?'なし':esc(artiaRestoreOptionLabel(x,w)!==x?artiaRestoreOptionLabel(x,w):(labels[x]||x)));
   const atk=(build.artia.restores||[]).reduce((n,x)=>x.startsWith('atk:')?n+({'I':5,'II':6,'III':9,'EX':12}[x.split(':')[1]]||0):n,0);
   const aff=(build.artia.restores||[]).reduce((n,x)=>x.startsWith('aff:')?n+({'I':5,'II':6,'III':8,'EX':10}[x.split(':')[1]]||0):n,0);
   const elem=(build.artia.restores||[]).reduce((n,x)=>x.startsWith('elem:')?n+artiaElementBonus(w.kind,x.split(':')[1]):n,0);
