@@ -6696,7 +6696,13 @@ function recoveryBonusClassified(e){
 function hpRelevantBonusEffects(effects){
   const recovery=effects.filter(recoveryBonusClassified);
   // Invalid or duplicated ranks must remain gated instead of being silently discarded.
-  return recovery.length>1?effects:effects.filter(e=>!recoveryBonusClassified(e));
+  const relevant=recovery.length>1?effects:effects.filter(e=>!recoveryBonusClassified(e));
+  // MHDB skill4 rank1: three-piece Guardian's Protection reduces incoming
+  // elemental/special damage in Ruins of Wyveria; no outgoing HP bonus.
+  const guardian=e=>e?.name==='竜都の護り'&&e.bonusName==='護竜の守り'&&e.source==='group'&&e.bonusSkillId===4&&e.rankLevel===1&&e.required===3&&Number.isInteger(e.count)&&e.count>=3;
+  const guards=relevant.filter(guardian);
+  // Keep malformed/duplicated activations gated instead of silently discarding them.
+  return guards.length===1?relevant.filter(e=>!guardian(e)):relevant;
 }
 function bonusDamagePendingReason(st={}){
   if(st.elementKnown===false||st.typeKnown===false||st.elementStatus==='UNKNOWN'||st.element===null)return st.elementReason||'ELEMENT_VALUE_MISSING';

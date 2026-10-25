@@ -30,3 +30,5 @@ SERIE-STATE-CONNECTION completed: product commit 119abbb0a73807f498cef83311f0983
 SERIE-BOW-REAL-AB: owner continuation 2026-10-25T14:55Z; base05c1565; serie owns adapter skill-name mapping and tools/bow-real-saved-comparison-proof.cjs plus docs/reports/r252-bow-real-ab. No index.html, snapshot policy, Artia, or other weapon formula changes.
 
 SERIE-BOW-REAL-AB completed: product 01c18a568a5ba0e666d537bcd2300e6cc759fe4c; evidence docs/reports/r252-bow-real-ab/. Adapter edit ownership returned.
+
+SERIE-BONUS-BOUNDARIES: base003b7c2, continuation approved. Limited ownership: index.html hpRelevantBonusEffects, adapter non-damage skill classification, tools/bonus-boundary-saved-comparison-proof.cjs and docs/reports/r252-bonus-boundaries. Real MHDB series1/2/4 and group2/3 only; no Artia edits or other-weapon reruns.
