@@ -1,0 +1,909 @@
+{
+  "executionSha": "e613b2996838732779d41c73d1c38b0366950e86",
+  "beforeSha": "e613b2996838732779d41c73d1c38b0366950e86",
+  "indexSha256": "cf9387ae35184aa9a0ab0f8c20eb2c3debce5b50a845128ff8ed33f13de88ce4",
+  "checks": [
+    {
+      "name": "A fixed premise, retained fields, completed values once",
+      "pass": false,
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   'affinity',\n+   'none',\n+   'affinity'\n-   'attack',\n-   'attack',\n-   'attack'\n  ]\n"
+    },
+    {
+      "name": "B fixed premise, retained fields, completed values once",
+      "pass": false,
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   'none',\n+   'none',\n+   'none'\n-   'attack',\n-   'attack',\n-   'attack'\n  ]\n"
+    },
+    {
+      "name": "single/comparison equality, finally restoration and legacy JSON untouched",
+      "pass": false,
+      "error": "Cannot read properties of undefined (reading 'normal')"
+    },
+    {
+      "name": "ordinary Artia I/II retain original record values and giant exclusion",
+      "pass": true
+    },
+    {
+      "name": "new save writes fixed premise without rewriting old saves",
+      "pass": false,
+      "error": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   'none',\n+   'none',\n+   'none'\n-   'attack',\n-   'attack',\n-   'attack'\n  ]\n"
+    },
+    {
+      "name": "no browser errors",
+      "pass": true
+    }
+  ],
+  "singles": [
+    {
+      "name": "A",
+      "snapshot": {
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "1139",
+        "weaponKind": "bow",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "",
+              "level": 1,
+              "type": "armor"
+            },
+            {
+              "name": "",
+              "level": 1,
+              "type": "armor"
+            },
+            {
+              "name": "",
+              "level": 1,
+              "type": "armor"
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": [],
+          "weaponSlot": false
+        },
+        "artia": {
+          "production": "attack",
+          "element": "water",
+          "parts": [
+            "affinity",
+            "none",
+            "affinity"
+          ],
+          "sameElementPartCount": 2,
+          "restores": [
+            "atk:II",
+            "aff:I",
+            "elem:I",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "canonical:BOW_SHOT_3"
+            },
+            {
+              "techniqueId": "canonical:BOW_POWER_SHOT_3"
+            },
+            {
+              "techniqueId": "canonical:BOW_POWER_VOLLEY_3"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": null,
+            "axeBoosted": null,
+            "phialType": null,
+            "enhancedPhial": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        }
+      },
+      "stats": {
+        "attack": 206,
+        "affinity": -5,
+        "element": 240,
+        "type": "water"
+      },
+      "real": {
+        "status": "UNAVAILABLE",
+        "reason": "REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN"
+      },
+      "summary": "\n    攻撃力247真 206\n    会心率-5%\n    最大会心率-5%\n    属性240\n    防御力1\n    選択技の実計算未算出：REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN\n  ",
+      "record": {
+        "coatings": [
+          "close-range"
+        ],
+        "gameId": 91,
+        "crafting": {
+          "weapon": {
+            "id": 1139
+          },
+          "craftable": true,
+          "previous": null,
+          "branches": [],
+          "craftingMaterials": [],
+          "craftingZennyCost": 300,
+          "upgradeMaterials": [],
+          "upgradeZennyCost": 0,
+          "column": 0,
+          "row": 0,
+          "id": 1139
+        },
+        "rarity": 8,
+        "kind": "bow",
+        "damage": {
+          "raw": 200,
+          "display": 240
+        },
+        "specials": [],
+        "name": "亡国のクピドバイン",
+        "description": "秘めたる性能を呑みこむ異形の 悲嘆。在りし日の懺悔が求めるは、 宿願たる天罰の訪れ。",
+        "defenseBonus": 0,
+        "elderseal": null,
+        "slots": [
+          3,
+          3,
+          3
+        ],
+        "affinity": -10,
+        "skills": [],
+        "series": null,
+        "id": 1139,
+        "artiaFixedVariants": {
+          "attack": {
+            "attack": 200,
+            "attackKnown": true,
+            "affinityKnown": true,
+            "affinity": -10,
+            "element": null,
+            "elementType": "",
+            "elementKnown": false,
+            "typeKnown": false,
+            "elementStatus": "UNKNOWN",
+            "elementReason": "ELEMENT_VALUE_MISSING",
+            "sourceId": 1139
+          },
+          "element": {
+            "attack": 190,
+            "attackKnown": true,
+            "affinityKnown": true,
+            "affinity": 0,
+            "element": null,
+            "elementType": "",
+            "elementKnown": false,
+            "typeKnown": false,
+            "elementStatus": "UNKNOWN",
+            "elementReason": "ELEMENT_VALUE_MISSING",
+            "sourceId": 1141
+          },
+          "affinity": {
+            "attack": 180,
+            "attackKnown": true,
+            "affinityKnown": true,
+            "affinity": 15,
+            "element": null,
+            "elementType": "",
+            "elementKnown": false,
+            "typeKnown": false,
+            "elementStatus": "UNKNOWN",
+            "elementReason": "ELEMENT_VALUE_MISSING",
+            "sourceId": 1140
+          }
+        },
+        "artiaFixedValueStatus": "MHDB_FIXED_COMPLETE",
+        "artiaVariantSourceIds": [
+          1139,
+          1141,
+          1140
+        ]
+      }
+    },
+    {
+      "name": "B",
+      "snapshot": {
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "1139",
+        "weaponKind": "bow",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "",
+              "level": 1,
+              "type": "armor"
+            },
+            {
+              "name": "",
+              "level": 1,
+              "type": "armor"
+            },
+            {
+              "name": "",
+              "level": 1,
+              "type": "armor"
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": [],
+          "weaponSlot": false
+        },
+        "artia": {
+          "production": "attack",
+          "element": "water",
+          "parts": [
+            "none",
+            "none",
+            "none"
+          ],
+          "restores": [
+            "atk:II",
+            "aff:I",
+            "elem:I",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "canonical:BOW_SHOT_3"
+            },
+            {
+              "techniqueId": "canonical:BOW_POWER_SHOT_3"
+            },
+            {
+              "techniqueId": "canonical:BOW_POWER_VOLLEY_3"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": null,
+            "axeBoosted": null,
+            "phialType": null,
+            "enhancedPhial": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        }
+      },
+      "stats": {
+        "attack": 206,
+        "affinity": -5,
+        "element": null,
+        "type": "water"
+      },
+      "real": {
+        "status": "UNAVAILABLE",
+        "reason": "REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN"
+      },
+      "summary": "\n    攻撃力247真 206\n    会心率-5%\n    最大会心率-5%\n    属性未算出\n    防御力1\n    選択技の実計算未算出：REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN\n  ",
+      "record": {
+        "coatings": [
+          "close-range"
+        ],
+        "gameId": 91,
+        "crafting": {
+          "weapon": {
+            "id": 1139
+          },
+          "craftable": true,
+          "previous": null,
+          "branches": [],
+          "craftingMaterials": [],
+          "craftingZennyCost": 300,
+          "upgradeMaterials": [],
+          "upgradeZennyCost": 0,
+          "column": 0,
+          "row": 0,
+          "id": 1139
+        },
+        "rarity": 8,
+        "kind": "bow",
+        "damage": {
+          "raw": 200,
+          "display": 240
+        },
+        "specials": [],
+        "name": "亡国のクピドバイン",
+        "description": "秘めたる性能を呑みこむ異形の 悲嘆。在りし日の懺悔が求めるは、 宿願たる天罰の訪れ。",
+        "defenseBonus": 0,
+        "elderseal": null,
+        "slots": [
+          3,
+          3,
+          3
+        ],
+        "affinity": -10,
+        "skills": [],
+        "series": null,
+        "id": 1139,
+        "artiaFixedVariants": {
+          "attack": {
+            "attack": 200,
+            "attackKnown": true,
+            "affinityKnown": true,
+            "affinity": -10,
+            "element": null,
+            "elementType": "",
+            "elementKnown": false,
+            "typeKnown": false,
+            "elementStatus": "UNKNOWN",
+            "elementReason": "ELEMENT_VALUE_MISSING",
+            "sourceId": 1139
+          },
+          "element": {
+            "attack": 190,
+            "attackKnown": true,
+            "affinityKnown": true,
+            "affinity": 0,
+            "element": null,
+            "elementType": "",
+            "elementKnown": false,
+            "typeKnown": false,
+            "elementStatus": "UNKNOWN",
+            "elementReason": "ELEMENT_VALUE_MISSING",
+            "sourceId": 1141
+          },
+          "affinity": {
+            "attack": 180,
+            "attackKnown": true,
+            "affinityKnown": true,
+            "affinity": 15,
+            "element": null,
+            "elementType": "",
+            "elementKnown": false,
+            "typeKnown": false,
+            "elementStatus": "UNKNOWN",
+            "elementReason": "ELEMENT_VALUE_MISSING",
+            "sourceId": 1140
+          }
+        },
+        "artiaFixedValueStatus": "MHDB_FIXED_COMPLETE",
+        "artiaVariantSourceIds": [
+          1139,
+          1141,
+          1140
+        ]
+      }
+    }
+  ],
+  "before": {
+    "snapshot": {
+      "combatBuffs": {
+        "meal": null,
+        "charm": null,
+        "otherBuffs": null
+      },
+      "weaponId": "1139",
+      "weaponKind": "bow",
+      "armor": {
+        "head": "",
+        "chest": "",
+        "arms": "",
+        "waist": "",
+        "legs": ""
+      },
+      "charmCustom": {
+        "skills": [
+          {
+            "name": "",
+            "level": 1,
+            "type": "armor"
+          },
+          {
+            "name": "",
+            "level": 1,
+            "type": "armor"
+          },
+          {
+            "name": "",
+            "level": 1,
+            "type": "armor"
+          }
+        ],
+        "slots": [
+          0,
+          0,
+          0
+        ],
+        "weaponSlots": [],
+        "weaponSlot": false
+      },
+      "artia": {
+        "production": "attack",
+        "element": "water",
+        "parts": [
+          "none",
+          "none",
+          "none"
+        ],
+        "restores": [
+          "atk:II",
+          "aff:I",
+          "elem:I",
+          "none",
+          "none"
+        ],
+        "seriesSkill": "",
+        "groupSkill": ""
+      },
+      "decos": {},
+      "combo": {
+        "moves": [
+          {
+            "techniqueId": "canonical:BOW_SHOT_3"
+          },
+          {
+            "techniqueId": "canonical:BOW_POWER_SHOT_3"
+          },
+          {
+            "techniqueId": "canonical:BOW_POWER_VOLLEY_3"
+          }
+        ],
+        "uptime": 85,
+        "uptimeMode": "1",
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "chargeBladeState": {
+          "shieldBoosted": null,
+          "axeBoosted": null,
+          "phialType": null,
+          "enhancedPhial": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        }
+      },
+      "target": {
+        "monsterId": "training-room",
+        "partId": "training-front"
+      }
+    },
+    "conditions": {
+      "attack": "206",
+      "aff": "-5",
+      "elem": "0",
+      "mv": "100",
+      "hz": "80",
+      "ehz": "30",
+      "sharp": "1.32",
+      "esharp": "1.15",
+      "cb": "0",
+      "eCrit": "0",
+      "dragonHz": "",
+      "dragonHitzoneSource": {
+        "kind": "UNSET"
+      },
+      "gutsState": "BEFORE",
+      "fortifyCount": 2,
+      "bowState": {
+        "chargeLevel": 3,
+        "coating": "CLOSE_RANGE",
+        "range": "CRITICAL",
+        "startShot": 3
+      },
+      "drawAttack": false,
+      "mounted": false,
+      "everlastingStage": null,
+      "hbgState": {
+        "ammoType": "NORMAL",
+        "ammoLevel": null,
+        "range": null,
+        "normalModeLevel": null,
+        "magazineCapacity": null,
+        "shotOrdinal": null,
+        "fullMagazine": null
+      },
+      "uptime": "85",
+      "uptimeMode": "1",
+      "chargeBladeState": {
+        "shieldBoosted": null,
+        "axeBoosted": null,
+        "phialType": null,
+        "enhancedPhial": null
+      },
+      "dualBladesState": {
+        "demonMode": null
+      },
+      "longSwordState": {
+        "spiritGauge": null
+      },
+      "switchAxeState": {
+        "mode": null,
+        "awakened": null
+      },
+      "insectGlaiveState": {
+        "extractState": null,
+        "kinsectState": null
+      },
+      "huntingHornState": {
+        "echoState": null,
+        "melodyState": null
+      },
+      "lightBowgunState": {
+        "shotMode": null,
+        "ammoType": null,
+        "ammoLevel": null,
+        "range": null,
+        "normalModeLevel": null,
+        "contactPolicy": null
+      },
+      "gunlanceState": {
+        "shellingType": null,
+        "shellingPower": null,
+        "loadedRounds": null,
+        "chargedRounds": null,
+        "fireHitzone": null
+      }
+    }
+  },
+  "after": {
+    "snapshot": {
+      "combatBuffs": {
+        "meal": null,
+        "charm": null,
+        "otherBuffs": null
+      },
+      "weaponId": "1139",
+      "weaponKind": "bow",
+      "armor": {
+        "head": "",
+        "chest": "",
+        "arms": "",
+        "waist": "",
+        "legs": ""
+      },
+      "charmCustom": {
+        "skills": [
+          {
+            "name": "",
+            "level": 1,
+            "type": "armor"
+          },
+          {
+            "name": "",
+            "level": 1,
+            "type": "armor"
+          },
+          {
+            "name": "",
+            "level": 1,
+            "type": "armor"
+          }
+        ],
+        "slots": [
+          0,
+          0,
+          0
+        ],
+        "weaponSlots": [],
+        "weaponSlot": false
+      },
+      "artia": {
+        "production": "attack",
+        "element": "water",
+        "parts": [
+          "none",
+          "none",
+          "none"
+        ],
+        "restores": [
+          "atk:II",
+          "aff:I",
+          "elem:I",
+          "none",
+          "none"
+        ],
+        "seriesSkill": "",
+        "groupSkill": ""
+      },
+      "decos": {},
+      "combo": {
+        "moves": [
+          {
+            "techniqueId": "canonical:BOW_SHOT_3"
+          },
+          {
+            "techniqueId": "canonical:BOW_POWER_SHOT_3"
+          },
+          {
+            "techniqueId": "canonical:BOW_POWER_VOLLEY_3"
+          }
+        ],
+        "uptime": 85,
+        "uptimeMode": "1",
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "chargeBladeState": {
+          "shieldBoosted": null,
+          "axeBoosted": null,
+          "phialType": null,
+          "enhancedPhial": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        }
+      },
+      "target": {
+        "monsterId": "training-room",
+        "partId": "training-front"
+      }
+    },
+    "conditions": {
+      "attack": "206",
+      "aff": "-5",
+      "elem": "0",
+      "mv": "100",
+      "hz": "80",
+      "ehz": "30",
+      "sharp": "1.32",
+      "esharp": "1.15",
+      "cb": "0",
+      "eCrit": "0",
+      "dragonHz": "",
+      "dragonHitzoneSource": {
+        "kind": "UNSET"
+      },
+      "gutsState": "BEFORE",
+      "fortifyCount": 2,
+      "bowState": {
+        "chargeLevel": 3,
+        "coating": "CLOSE_RANGE",
+        "range": "CRITICAL",
+        "startShot": 3
+      },
+      "drawAttack": false,
+      "mounted": false,
+      "everlastingStage": null,
+      "hbgState": {
+        "ammoType": "NORMAL",
+        "ammoLevel": null,
+        "range": null,
+        "normalModeLevel": null,
+        "magazineCapacity": null,
+        "shotOrdinal": null,
+        "fullMagazine": null
+      },
+      "uptime": "85",
+      "uptimeMode": "1",
+      "chargeBladeState": {
+        "shieldBoosted": null,
+        "axeBoosted": null,
+        "phialType": null,
+        "enhancedPhial": null
+      },
+      "dualBladesState": {
+        "demonMode": null
+      },
+      "longSwordState": {
+        "spiritGauge": null
+      },
+      "switchAxeState": {
+        "mode": null,
+        "awakened": null
+      },
+      "insectGlaiveState": {
+        "extractState": null,
+        "kinsectState": null
+      },
+      "huntingHornState": {
+        "echoState": null,
+        "melodyState": null
+      },
+      "lightBowgunState": {
+        "shotMode": null,
+        "ammoType": null,
+        "ammoLevel": null,
+        "range": null,
+        "normalModeLevel": null,
+        "contactPolicy": null
+      },
+      "gunlanceState": {
+        "shellingType": null,
+        "shellingPower": null,
+        "loadedRounds": null,
+        "chargedRounds": null,
+        "fireHitzone": null
+      }
+    },
+    "rows": [
+      {
+        "name": "A",
+        "real": {
+          "status": "UNAVAILABLE",
+          "reason": "REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN"
+        }
+      },
+      {
+        "name": "B",
+        "real": {
+          "status": "UNAVAILABLE",
+          "reason": "REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN"
+        }
+      }
+    ],
+    "display": "基準ダメージ：559.8（A・選択した通常側の比較条件、ゲーム表示の丸め前）比較の基準ビルド（通常側の期待ダメージ）AB比較結果をJSON保存比較結果をコピーコンボの技別・未検証項目を表示検証作業リストを表示実機検証の証拠参照を照合（JSON）証拠参照を照合実機ダメージ・Hit数・時間の記録を照合（JSON）実機計測記録を照合Technique DBと計測値を照合（診断）ダメージ計算条件を監査実測と計算値の成分別差異を診断Technique DBと計算エンジンの接続状況Technique DBと実機条件の受渡し診断斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。MHDB斬れ味データ構造を調査選択装備と計算条件を照合攻撃スキル照合会心・超会心・スキル条件を照合攻撃補正・モンスター肉質を照合物理ダメージ参考計算（安全条件のみ）ガンランス自動連携の検証状況検証済みA/Bを自動登録比較可能：通常 1/2件 ／ 最大 1/2件 ／ DPS 0/2件。算出不能な結果は推測で補完しません。比較保留の原因を確認（4項目）同じビルドが通常・最大・DPSの複数項目で表示される場合があります。原因別集計固定STANDARDの技構成が一致しないため比較できません。：1ビルド／3項目（通常1・最大1・DPS1）計算に必要な武器・技の補正または入力条件が未対応・未確定です。：1ビルド／1項目（通常0・最大0・DPS1）個別の保留内容A ／ DPS：計算に必要な武器・技の補正または入力条件が未対応・未確定です。 RANGED_REFERENCE:P0_ROUTE_CONTEXT_REQUIREDB ／ 通常：固定STANDARDの技構成が一致しないため比較できません。 STANDARD_PROFILE_MISMATCHB ／ 最大：固定STANDARDの技構成が一致しないため比較できません。 STANDARD_PROFILE_MISMATCHB ／ DPS：固定STANDARDの技構成が一致しないため比較できません。 STANDARD_PROFILE_MISMATCH比較の計算状況火力指数は固定STANDARDで計算します。ヘビィで通常弾を選択した場合は、選択条件の3連射を追加参考計算します。DPSには⑦ コンボDPSのコンボ登録と所要時間が必要です。計算値について：装備・スキル構成の相対的な火力比較を目的とした参考値です。一部の技・補正には実測資料などから暫定採用したデータを使用しています。ゲーム内の実ダメージと一致しない場合があります。資料の確度が上がり次第、計算データを更新します。A：共通Pipeline：未算出（計算に必要な武器・技の補正または入力条件が未対応・未確定です。）DPS：計算に必要な武器・技の補正または入力条件が未対応・未確定です。弓の記録条件：溜め3／接撃ビン／適正距離。資料ベースの参考計算（実機照合は未完了）。これらの条件はコンボDPSへ未接続です。B：火力指数：武器の属性値・種別が未確認のため、属性を含むダメージ・火力は未算出です。最大火力指数：武器の属性値・種別が未確認のため、属性を含むダメージ・火力は未算出です。1ヒット期待値：武器の属性値・種別が未確認のため、属性を含むダメージ・火力は未算出です。共通Pipeline：未算出（計算に必要な武器・技の補正または入力条件が未対応・未確定です。）DPS：武器の属性値・種別が未確認のため、属性を含むダメージ・火力は未算出です。弓の記録条件：溜め3／接撃ビン／適正距離。資料ベースの参考計算（実機照合は未完了）。これらの条件はコンボDPSへ未接続です。表が画面に収まらない場合は、表の中を横にスワイプして比較できます。項目AB表示攻撃力247247真攻撃力206206会心率-5%-5%最大会心率-5%-5%属性水240水未算出火力指数（計算値）［非正規化］559.8—火力指数（計算値）［非正規化］・基準比0.0%（物0.0%／属0.0%）—最大火力指数（計算値）［非正規化］559.8—最大火力指数（計算値）［非正規化］・基準比0.0%（物0.0%／属0.0%）—相対火力（基準100）100.0—最大相対火力（基準100）100.0—1ヒット期待値223.1—共通Pipeline通常合計未算出未算出共通Pipeline最大合計未算出未算出DPS未算出：計算に必要な武器・技の補正または入力条件が未対応・未確定です。未算出：武器の属性値・種別が未確認のため、属性を含むダメージ・火力は未算出です。DPS指数——基準比増減——指定コンボ合計（暫定・参考）559.8未算出指定コンボ相対（基準100）100.0（+0.0%）未算出指定コンボ保留理由—ELEMENT_ARTIA_PART_COUNT_UNKNOWN基準：A。火力指数は各ビルドの非正規化計算値です。基準ダメージは同武器・同STANDARDの基準ビルドの通常期待ダメージです。比較ビルドの通常・最大と基準ビルドの最大は、基準比の行でのみこの通常ダメージからの変化率を表示します。括弧内の物・属は各成分の増減を基準全体のダメージで割った寄与率です。特殊成分があれば別記します。丸め前の寄与率の合計が全体の変化率になります。最大火力指数は対応済みの条件付き攻撃力・攻めの守勢と最大会心率を適用した参考値です。攻撃力の乗算を先に行い、加算はその後に適用します。攻めの守勢・激励は事前に発動した前提です。死中に活は状態異常中、根性【果敢】は選択した消費前／後の条件を適用します。これらのグループ効果と連撃強化はコンボDPSへ未接続です。フルチャージと逆恨みは同時加算しません。ダークアーツ・火事場力とフルチャージの併用時は、満タンと赤ゲージ・低体力のコンボ全体を別々に比較します。それ以外は同時成立する条件内で攻撃加算を選びます。未対応の条件付き補正がある場合は最大側を保留します。連撃は5回攻撃後の強化状態が事前に成立した前提で、初回分を重ねて加算しません。急襲は事前発動した最大側に攻撃倍率を適用します。属性吸収は3回被弾後の強化が成立した最大側で、火・水・雷・氷・龍の属性値を加算します。状態異常の蓄積値はSTANDARDの属性HPダメージに算入しません。連撃強化Ⅰ・Ⅱは連撃を装備した最大側に基礎攻撃力＋8／＋18を加えます。通常側と連撃なしでは加算しません。連撃の数値はGameWith資料の参考値で、実機版との照合は未完了です。グループ／シリーズ効果の計算分類が未完了の装備は、効果を無視せず火力指数・装備由来のコンボDPSを保留します。防御・補助効果だけのものも分類完了までは保留します。全スキル・武器状態の上限対応は未完了です。肉質・斬れ味はStep 5の共通条件、超会心は各ビルドの装備スキルを使用します。所要時間は使用しません。B：火力指数は保留（武器の属性値・種別が未確認のため、属性を含むダメージ・火力は未算出です。）基準：A。DPSは非正規化の計算値です。DPS指数・増減率は補助情報です。基準DPSが未算出・0以下の場合、指数と増減率は算出しません。太字は各項目で数値が最大のセットです。1ヒット期待値とDPSは現在Step 5の攻撃条件を共通条件として計算します。DPSは最大会心率を使用します。所要時間は参考値のためDPSも参考値です。"
+  }
+}
