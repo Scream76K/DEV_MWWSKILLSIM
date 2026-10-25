@@ -147,5 +147,17 @@
     "pipelineNumeric": false,
     "blocker": "STATE_OBJECT_INVALID during min8 channel execution; both normal and maximum totals are unavailable (EXECUTION_INCOMPLETE).",
     "harnessNote": "JSDOM harness supplied structuredClone because this DOM runtime lacks it; this is not a real-browser E2E result."
+  },
+  "diagnosis": {
+    "errorLocation": "min8 engine validateState() before first event execution",
+    "errorReason": "STATE_OBJECT_INVALID",
+    "normalAndMaximum": "both channels; executed=[] before transition/hit events",
+    "startStateSource": "hope-hammer-browser-adapter.js createRealOneHitPipeline initialState:()=>({})",
+    "startStateObserved": "empty plain object; constructor name Object",
+    "prototypeCheck": "Object.getPrototypeOf(startState) !== Object.prototype used by bundled engine validator",
+    "realmFinding": "JSDOM window realm object was validated against a different realm Object.prototype; debug harness changed only the diagnostic label to STATE_OBJECT_INVALID_PROTO_Object_REALM_false",
+    "bundleBoundary": "himmel-real-browser-bundle.js was loaded as an inline script in the JSDOM window; no Node require of the Adapter or bundle was used",
+    "productChange": "none",
+    "minimalFixProposal": "Use a same-realm plain-state validator/clone boundary in the JSDOM harness, or make engine validation realm-agnostic; do not alter product state or claim numeric PASS until a same-realm run produces available metrics."
   }
 }
