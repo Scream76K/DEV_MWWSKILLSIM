@@ -1048,14 +1048,20 @@ function isBaseArtia(w){
   const rare8=BASE_ARTIA_RARE8_IDENTITIES[w.id];
   return !!(w.rarity===8&&rare8&&w.name===rare8[0]&&w.kind===rare8[1])||(BASE_ARTIA_MHDB_IDS.has(Number(w.id))&&[6,7].includes(w.rarity)&&/^アーティア/.test(String(w.name||'')));
 }
-// Owner 2026-10-25 22:43 UTC: capacity restoration only on Artia II / Gogma bowguns.
+// Latest owner rare8 table supersedes the earlier exclusion of ordinary rare8.
+const NORMAL_ARTIA_R8_RESTORE=Object.freeze({source:'OWNER_2026-10-25T22:53Z_RARE8_RESTORATION',limits:{atk:5,aff:3,sharp:2,elem:4,capacity:2},attack:5,affinity:5,sharpnessLength:30,capacity:1});
+const GOGMA_SHARP_CAPACITY_RESTORE=Object.freeze({source:'OWNER_2026-10-25T22:53Z_GOGMA_SHARP_CAPACITY',sharp:{I:30,EX:50},capacity:{I:1,EX:2},stageAliases:{I:'通常',EX:'EXMAX'}});
+function isNormalArtiaRare8(w){return isBaseArtia(w)&&w.rarity===8;}
 function isArtiaBowgun(w){return !!w&&['light-bowgun','heavy-bowgun'].includes(canonicalWeaponKind(w));}
 function artiaCapacityRestoreEligible(w){
   if(!isArtiaBowgun(w))return false;
-  if(isGogmaArtia(w))return true;
-  return isBaseArtia(w)&&w.rarity===7&&((Number(w.id)===827&&w.kind==='light-bowgun'&&w.name==='アーティアブラストⅡ')||(Number(w.id)===522&&w.kind==='heavy-bowgun'&&w.name==='アーティアバスターⅡ'));
+  if(isGogmaArtia(w)||isNormalArtiaRare8(w))return true;
+  return false; // Owner category Artia II means ordinary rare8, not the raw weapon-name suffix II.
 }
 function artiaRestoreOptionLabel(value,w){
+  if(value==='capacity:I'&&isNormalArtiaRare8(w)&&isArtiaBowgun(w))return '装填数強化 +1（通常弾対応・最大2枠）';
+  if(isGogmaArtia(w)&&isArtiaBowgun(w)&&['capacity:I','capacity:EX','sharp:I','sharp:EX'].includes(value)){const level=value.split(':')[1];return '装填数強化 '+GOGMA_SHARP_CAPACITY_RESTORE.stageAliases[level]+' +'+GOGMA_SHARP_CAPACITY_RESTORE.capacity[level]+'（通常弾対応）';}
+  if(isNormalArtiaRare8(w)&&isArtiaBowgun(w)&&value==='sharp:I')return '旧装填数指定 +1（通常弾対応）';
   if(typeof value==='string'&&value.startsWith('capacity:'))return artiaCapacityRestoreEligible(w)?'装填数強化（計算未対応）':'保存された装填数指定（対象外）';
   if(typeof value==='string'&&value.startsWith('sharp:')&&isArtiaBowgun(w))return artiaCapacityRestoreEligible(w)?'旧装填数指定（計算未対応）':'旧装填数指定（対象外）';
   if(value==='sharp:I'&&isNormalArtiaMelee(w))return '斬れ味強化Ⅰ（白維持・ゲージ長未計算）';
@@ -1473,8 +1479,8 @@ function renderArtia(){
   if(!isArtiaWeapon(w)){box.classList.add('hidden');return;}
   box.classList.remove('hidden');
   if(isBaseArtia(w)){
-    const types=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'],choices=['none','atk:I','aff:I','elem:I',...(isNormalArtiaMelee(w)?['sharp:I']:[]),...(artiaCapacityRestoreEligible(w)?['capacity:pending']:[])];
-    box.innerHTML=`<b>アーティア生産条件（暫定採用・現行版未検証）</b><div>同一属性の攻撃素材3個固定</div><label>武器属性</label><select id="aElem">${types.map(x=>`<option value="${x}">${x}</option>`).join('')}</select><label>復元Ⅰ</label>${build.artia.restores.map((v,i)=>`<select class="aR" data-i="${i}">${[...new Set([...choices,v])].map(x=>`<option value="${x}">${esc(artiaRestoreOptionLabel(x,w))}</option>`).join('')}</select>`).join('')}`;
+    const types=['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'],choices=['none','atk:I','aff:I','elem:I',...(isNormalArtiaMelee(w)?['sharp:I']:[]),...(artiaCapacityRestoreEligible(w)?[isNormalArtiaRare8(w)?'capacity:I':'capacity:pending']:[])];
+    box.innerHTML=`<b>${isNormalArtiaRare8(w)?'アーティアⅡ（通常レア8）':'通常アーティア（原典レア'+w.rarity+'）'} 生産条件（暫定採用・現行版未検証）</b><div>同一属性の攻撃素材3個固定</div><label>武器属性</label><select id="aElem">${types.map(x=>`<option value="${x}">${x}</option>`).join('')}</select><label>復元Ⅰ</label>${build.artia.restores.map((v,i)=>`<select class="aR" data-i="${i}">${[...new Set([...choices,v])].map(x=>`<option value="${x}">${esc(artiaRestoreOptionLabel(x,w))}</option>`).join('')}</select>`).join('')}`;
     $('aElem').value=build.artia.element;$('aElem').onchange=()=>{build.artia.element=$('aElem').value;calcBuild()};
     document.querySelectorAll('.aR').forEach((el,i)=>{el.value=build.artia.restores[i];el.onchange=()=>{build.artia.restores[i]=el.value;calcBuild()}});
     return;
@@ -1497,7 +1503,7 @@ function renderArtia(){
   <label>武器スロット</label><div class="equip-skill-preview" id="aWeaponSlotPreview"></div>`;
   $('aProd').value=build.artia.production; $('aElem').value=build.artia.element; $('aSeries').value=build.artia.seriesSkill||''; $('aGroup').value=build.artia.groupSkill||'';
   const updateSkillStatus=()=>{const ss=skillById($('aSeries').value),gg=skillById($('aGroup').value);let lines=[];for(const [label,skill,type] of [['シリーズ',ss,'series'],['グループ',gg,'group']]){if(!skill)continue;const a=artiaSkillActivation(skill,type);const req=a.required?`必要${a.required}部位`:'条件未定義';lines.push(`${label}：${esc(skill.name)} → ${a.active?`発動（${a.count}/${req}）`:`未発動（${a.count}/${req}）`}`);} $('aSkillStatus').innerHTML=lines.length?lines.join('<br>'):'シリーズ/グループスキル未選択';};
-  const choices=[['none','なし'],['atk:I','基礎攻撃力強化Ⅰ +5'],['atk:II','基礎攻撃力強化Ⅱ +6'],['atk:III','基礎攻撃力強化Ⅲ +9'],['atk:EX','基礎攻撃力強化EX +12'],['aff:I','会心強化Ⅰ +5%'],['aff:II','会心強化Ⅱ +6%'],['aff:III','会心強化Ⅲ +8%'],['aff:EX','会心強化EX +10%'],['elem:I','属性強化Ⅰ'],['elem:II','属性強化Ⅱ'],['elem:EX','属性強化EX'],...(!['bow','light-bowgun','heavy-bowgun'].includes(canonicalWeaponKind(w))?[['sharp:I','斬れ味強化Ⅰ +30'],['sharp:EX','斬れ味強化EX +50']]:[]),...(artiaCapacityRestoreEligible(w)?[['capacity:pending','装填数強化（計算未対応）']]:[])];
+  const choices=[['none','なし'],['atk:I','基礎攻撃力強化Ⅰ +5'],['atk:II','基礎攻撃力強化Ⅱ +6'],['atk:III','基礎攻撃力強化Ⅲ +9'],['atk:EX','基礎攻撃力強化EX +12'],['aff:I','会心強化Ⅰ +5%'],['aff:II','会心強化Ⅱ +6%'],['aff:III','会心強化Ⅲ +8%'],['aff:EX','会心強化EX +10%'],['elem:I','属性強化Ⅰ'],['elem:II','属性強化Ⅱ'],['elem:EX','属性強化EX'],...(!['bow','light-bowgun','heavy-bowgun'].includes(canonicalWeaponKind(w))?[['sharp:I','斬れ味強化Ⅰ +30'],['sharp:EX','斬れ味強化EXMAX +50']]:[]),...(artiaCapacityRestoreEligible(w)?['capacity:I','capacity:EX'].map(x=>[x,artiaRestoreOptionLabel(x,w)]):[])];
   const r=$('aRestore');r.innerHTML=build.artia.restores.map((v,i)=>`<select class="aR" data-i="${i}">${(choices.some(c=>c[0]===v)?choices:[...choices,[v,artiaRestoreOptionLabel(v,w)]]).map(c=>`<option value="${esc(c[0])}">${esc(c[1])}</option>`).join('')}</select>`).join('');
   document.querySelectorAll('.aR').forEach((el,i)=>{el.value=build.artia.restores[i];el.onchange=()=>{build.artia.restores[i]=el.value;calcBuild()}});
   const artiaSlot=$('aWeaponSlotPreview');if(artiaSlot){const slots=slotLevels(w.slots);artiaSlot.innerHTML=slots.length?inlineDecoRows(slots,'w'):'';bindInlineDecos(artiaSlot);}
@@ -1757,6 +1763,7 @@ function artiaFixedVariantStats(w){
   if(v.typeKnown&&v.elementType&&v.elementType!==build.artia.element)state=MHWElementState.unknown(build.artia.element,'ELEMENT_SELECTED_TYPE_NOT_RECORDED');
   // Existing completed values take precedence; derive only absent values with explicit material evidence.
   if(!state.elementKnown&&state.elementReason!=='ELEMENT_SELECTED_TYPE_NOT_RECORDED')state=artiaSourceElement(w,build.artia);
+  if(isArtiaBowgun(w)&&Array.isArray(w.ammo)&&Array.isArray(w.specials)&&w.specials.length===0)state=MHWElementState.fromValue(0,'none'); // Weapon element only; ammo elements are separate.
   return {attack,affinity,attackKnown:v.attackKnown!==false,affinityKnown:v.affinityKnown!==false,...state,sourceId:v.sourceId??null,fixed:true,stageEvidence:{...ARTIA_STAGE_ADOPTION,baseAttack:raw,productionAttack:production,mutationIncluded:true,elementStage:state.elementEvidence?ARTIA_ELEMENT_SOURCE_DB.scope:"RECORDED_ELEMENT_NO_READD"}};
 }
 // Only a resolved equipment inventory may interpret a missing skill as level zero.
@@ -1785,9 +1792,18 @@ function realPipelineWeapon(pipelineWeapon){
       // as calcBuild. Do not mutate MHDB or add production/material bonuses again.
       const type=fixed.elementType,element=fixed.element+restore.element;
       const sharpnessPremise=isNormalArtiaMelee(pipelineWeapon)?{color:'white',status:'OWNER_SPECIFIED',source:'OWNER_2026-10-25T22:35Z_NORMAL_ARTIA_MELEE_WHITE',scope:'MAX_COLOR_ONLY',gaugeLength:null,depletionModelled:false}:null;
-      pipelineWeapon={...pipelineWeapon,damage:{...pipelineWeapon.damage,raw:fixed.attack+restore.attack},affinity:fixed.affinity+restore.affinity,
+      let ammo=pipelineWeapon.ammo;
+      let capacityEvidence=null;
+      if(restore.capacity>0){
+        if(!Array.isArray(ammo)||!ammo.some(a=>a.kind==='normal'))throw new Error('REAL_SLICE:ARTIA_CAPACITY_BASE_AMMO_UNRESOLVED');
+        const rows=ammo.filter(a=>a.kind==='normal');
+        if(rows.some(a=>!Number.isInteger(a.capacity)||a.capacity<=0))throw new Error('REAL_SLICE:ARTIA_CAPACITY_BASE_AMMO_UNRESOLVED');
+        capacityEvidence={source:isGogmaArtia(pipelineWeapon)?GOGMA_SHARP_CAPACITY_RESTORE.source:NORMAL_ARTIA_R8_RESTORE.source,scope:'NORMAL_AMMO_ONLY',bonus:restore.capacity,rows:rows.map(a=>({id:a.id,kind:a.kind,level:a.level,base:a.capacity,restoration:restore.capacity,total:a.capacity+restore.capacity})),pendingAmmoKinds:ammo.filter(a=>a.kind!=='normal').map(a=>a.kind)};
+        ammo=ammo.map(a=>a.kind==='normal'?{...a,capacity:a.capacity+restore.capacity}:a);
+      }
+      pipelineWeapon={...pipelineWeapon,ammo,damage:{...pipelineWeapon.damage,raw:fixed.attack+restore.attack},affinity:fixed.affinity+restore.affinity,
         specials:element>0?[{kind:['fire','water','ice','thunder','dragon'].includes(type)?'element':'status',element:type,status:type,damage:{display:element,raw:element/10}}]:[],
-        artiaCalculationEvidence:{...fixed.stageEvidence,sharpnessPremise,sourceId:fixed.sourceId,elementEvidence:fixed.elementEvidence||null,production:build.artia.production,parts:[...build.artia.parts],sameElementPartCount:3,restores:[...build.artia.restores],stage:'BASE_PLUS_FIXED_PRODUCTION_PLUS_RESTORE_BEFORE_SKILLS'}};
+        artiaCalculationEvidence:{...fixed.stageEvidence,sharpnessPremise,capacityEvidence,restorationContract:isNormalArtiaRare8(pipelineWeapon)?NORMAL_ARTIA_R8_RESTORE:null,sourceId:fixed.sourceId,elementEvidence:fixed.elementEvidence||null,production:build.artia.production,parts:[...build.artia.parts],sameElementPartCount:3,restores:[...build.artia.restores],stage:'BASE_PLUS_FIXED_PRODUCTION_PLUS_RESTORE_BEFORE_SKILLS'}};
     }
   return pipelineWeapon;
 }
@@ -1795,13 +1811,44 @@ function weaponElementInfoFromRecord(w){
   const state=MHWElementState.fromRecord(w,{artia:isArtia(w),...(isArtia(w)?{type:build.artia.element}:{})});
   return {...state,type:state.elementType,value:state.element};
 }
-function restoreStats(w){let st={attack:0,affinity:0,element:0,sharp:0};
+function restoreStats(w){let st={attack:0,affinity:0,element:0,sharp:0,capacity:0};
   if(!isArtiaWeapon(w))return st;
   const invalid=reason=>({...st,attack:NaN,affinity:NaN,element:NaN,reason});
   const restores=build.artia.restores;
   if(!Array.isArray(restores)||restores.length>5)return invalid('ARTIA_RESTORE_LIST_INVALID');
+  const counts={};
   for(const x of restores){
     if(x==='none'||x===''||x===null||x===undefined)continue;
+    if(isNormalArtiaRare8(w)){
+      const m=typeof x==='string'&&x.match(/^(atk|aff|elem|sharp|capacity):I$/);
+      if(!m)return invalid('ARTIA_R8_RESTORE_UNSUPPORTED:'+String(x));
+      let kind=m[1];
+      // Retain the old shared save key; interpret it only at the bowgun boundary.
+      if(kind==='sharp'&&isArtiaBowgun(w))kind='capacity';
+      counts[kind]=(counts[kind]||0)+1;
+      if(counts[kind]>NORMAL_ARTIA_R8_RESTORE.limits[kind])return invalid('ARTIA_R8_RESTORE_LIMIT:'+kind);
+      if(kind==='capacity'){
+        if(!isArtiaBowgun(w))return invalid('ARTIA_CAPACITY_RESTORE_NOT_APPLICABLE:'+x);
+        st.capacity+=NORMAL_ARTIA_R8_RESTORE.capacity;continue;
+      }
+      if(kind==='sharp'){
+        if(!isNormalArtiaMelee(w))return invalid('ARTIA_SHARPNESS_RESTORE_NOT_APPLICABLE:'+x);
+        st.sharp+=NORMAL_ARTIA_R8_RESTORE.sharpnessLength;continue;
+      }
+      if(kind==='elem'){
+        if(isArtiaBowgun(w)||!['fire','water','ice','thunder','dragon','poison','paralysis','sleep','blast'].includes(build.artia.element))return invalid('ARTIA_ELEMENT_RESTORE_NOT_APPLICABLE:'+x);
+        const value=ARTIA_STAGE_ADOPTION.normalElementRows[canonicalWeaponKind(w)]?.[4];
+        if(!Number.isFinite(value)||value<=0)return invalid('ARTIA_RESTORE_ELEMENT_UNRESOLVED:'+x);
+        st.element+=value;continue;
+      }
+      st[kind==='atk'?'attack':'affinity']+=NORMAL_ARTIA_R8_RESTORE[kind==='atk'?'attack':'affinity'];continue;
+    }
+    if(isGogmaArtia(w)&&typeof x==='string'&&(x.startsWith('capacity:')||(isArtiaBowgun(w)&&x.startsWith('sharp:')))){
+      if(!isArtiaBowgun(w))return invalid('ARTIA_CAPACITY_RESTORE_NOT_APPLICABLE:'+x);
+      const match=x.match(/^(?:capacity|sharp):(I|EX)$/),level=match?.[1],value=GOGMA_SHARP_CAPACITY_RESTORE.capacity[level];
+      if(!Number.isFinite(value))return invalid('ARTIA_CAPACITY_RESTORE_STAGE_UNSUPPORTED:'+x);
+      st.capacity+=value;continue;
+    }
     if(typeof x==='string'&&(x.startsWith('capacity:')||(isArtiaBowgun(w)&&x.startsWith('sharp:'))))return invalid((artiaCapacityRestoreEligible(w)?'ARTIA_CAPACITY_RESTORE_UNIMPLEMENTED:':'ARTIA_CAPACITY_RESTORE_NOT_APPLICABLE:')+x);
     if(typeof x!=='string'||! /^(atk|aff|elem|sharp):(I|II|III|EX)$/.test(x))return invalid('ARTIA_RESTORE_UNKNOWN:'+String(x));
     const [kind,level]=x.split(':');
@@ -1814,7 +1861,7 @@ function restoreStats(w){let st={attack:0,affinity:0,element:0,sharp:0};
       let value;
       if(kind==='atk')value={I:5,II:6,III:9,EX:12}[level];
       if(kind==='aff')value={I:5,II:6,III:8,EX:10}[level];
-      if(kind==='sharp')value={I:30,EX:50}[level];
+      if(kind==='sharp'){if(canonicalWeaponKind(w)==='bow')return invalid('ARTIA_SHARPNESS_RESTORE_NOT_APPLICABLE:'+x);value=GOGMA_SHARP_CAPACITY_RESTORE.sharp[level];}
       if(kind==='elem'){
         if(!['I','II','EX'].includes(level))return invalid('ARTIA_RESTORE_UNSUPPORTED:'+x);
         const derived=artiaFixedVariantStats(w)?.elementEvidence;
