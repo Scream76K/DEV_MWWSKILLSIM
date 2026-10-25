@@ -44,3 +44,7 @@ isGogmaArtiaは旧isArtiaの条件を保持。既存巨戟呼出しは互換alia
 ## CB混在ルーティング追記
 
 通常/参照式の登録共存を修正。実公開経路はSAED出典ゲートREFERENCE_SOURCE_PENDINGが先に停止するため、実コンボは未成立。既存の暫定SAED契約と新PipelineのSOURCE_CONFIRMED要求の整合、および先行技後の残弾/盾/斧状態は別の未完事項。資料や承認なしにゲート解除・満装填5命中の単純加算をしない。詳細 ../r253-cb-routing/REVIEW.md。
+
+## 後続照合による更新
+
+朝の判断1/2はSTAGE_RECONCILIATION.mdへ集約。数値の正誤をユーザーに選ばせない。公開資料は基礎と固定生産15の分離を支持し、r17の「完成固定値」は素材包含の実測証拠ではない。SAED旧REFERENCE_SOURCE_PENDING/装填Lv未接続は後続a9c2a0で限定解消済み、混在状態遷移は引き続き未完。
