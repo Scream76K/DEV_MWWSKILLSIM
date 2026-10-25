@@ -9,7 +9,7 @@ const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
- const elemental=canonicalPhysical?createSourcedElementalFormula({...canonicalPhysical,resolveHitzone:canonicalPhysical.resolveElementHitzone||canonicalPhysical.resolveHitzone}):formulae?.element;
+ const elemental=canonicalPhysical&&typeof canonicalPhysical.resolveElementSharpness==='function'&&typeof canonicalPhysical.resolveElementHitzone==='function'?createSourcedElementalFormula({...canonicalPhysical,resolveElementSharpness:canonicalPhysical.resolveElementSharpness,resolveHitzone:canonicalPhysical.resolveElementHitzone}):formulae?.element;
  if(typeof physical!=='function')throw Error('REAL_SLICE:PHYSICAL_FORMULA_REQUIRED');
  if(canonicalPhysical?.expectedGameVersion!==undefined && canonicalPhysical.expectedGameVersion!==versions?.game)throw Error('REAL_SLICE:GAME_VERSION_MISMATCH');
  if(typeof resolveBuild!=='function'||typeof resolveEffects!=='function'||typeof initialState!=='function')throw Error('REAL_SLICE:RESOLVERS_REQUIRED');
@@ -44,6 +44,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    const result=resolveEffects(build,conditions,channel,effects);
    // Any unresolved or active effect requires a future full elemental/skill route.
    if(!Array.isArray(result)||result.length!==0)throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_EMPTY');
+   if(!Array.isArray(build?.skills?.entries)||build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
    return result;
   }
  });

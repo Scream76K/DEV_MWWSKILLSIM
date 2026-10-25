@@ -13,7 +13,7 @@
    const name=entry?.skill?.name||entry?.name;
    const level=Number(entry?.level);
    if(!name||!Number.isFinite(level)||level<0)return {id:String(entry?.id||'unknown'),name:name||'UNKNOWN',level:Number.isFinite(level)?level:0,rank:0,source,effectDisposition:'unknown'};
-   if(name==='Slugger'||name==='KO術'||name==='ＫＯ術')return {id:String(entry?.id||entry?.skill?.id||name),name,level,rank:0,source,effectDisposition:'non_damage',reason:'stun accumulation only; no HP-damage modifier',evidenceRef:source};
+   if(name==='Slugger'||name==='KO術'||name==='ＫＯ術')return {id:String(entry?.id||entry?.skill?.id||name),name,level,rank:0,source,effectDisposition:'non_damage',reason:'stun accumulation only; no HP-damage modifier',evidenceRef:`${source}:skill.description`};
    return {id:String(entry?.id||entry?.skill?.id||name),name,level,rank:0,source,effectDisposition:'unknown'};
   };
   const rawSkills=weapon.skills.map(x=>classifySkill(x,skillSource));
@@ -43,8 +43,9 @@
    resolveEffects:()=>[],initialState:()=>({}),
    canonicalPhysical:{expectedGameVersion:versions.game,
     resolveSharpness:({build})=>{const r=root.MHWWeaponMaxSharpness.resolve(build.equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});if(!r.options)throw Error('REAL_SLICE:SHARPNESS_UNRESOLVED');return {value:r.options.sharpnessPhysicalMultiplier,gameVersion:versions.game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:build.equipment.provenance.sourceGameVersion,status:'PROVISIONAL'};},
+    resolveElementSharpness:({build})=>{const r=root.MHWWeaponMaxSharpness.resolve(build.equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});if(!r.options)throw Error('REAL_SLICE:ELEMENT_SHARPNESS_UNRESOLVED');return {value:r.options.sharpnessElementMultiplier,gameVersion:versions.game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:build.equipment.provenance.sourceGameVersion,status:'PROVISIONAL'};},
     resolveHitzone:()=>({value:part.multipliers.blunt*100,gameVersion:versions.game,evidenceRef:'index.html:trainingRoomMonster:training-front',sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'}),
-    resolveElementHitzone:()=>({value:elementSpecial?(part.multipliers[elementType]||0)*100:0,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:${elementType}`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'}),
+    resolveElementHitzone:()=>{if(!elementSpecial)return {value:0,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:none`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'};const value=part.multipliers?.[elementType];if(typeof value!=='number'||!Number.isFinite(value)||value<0||value>1)throw Error('REAL_SLICE:ELEMENT_HITZONE_UNRESOLVED');return {value:value*100,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:${elementType}`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'};},
     resolvePartModifier:({parameters})=>({value:parameters.partModifier,gameVersion:versions.game,evidenceRef:parameters.partModifierSource}),
     calculate:root.damageFromParams}});
   try{return pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:'training-room',hitZoneKey:'training-front'},conditions:{},evaluation:{mode:'combo',kind:'combo',signature:'current-selection-hammer-one-hit',techniqueIds:[techniqueId]}})}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}

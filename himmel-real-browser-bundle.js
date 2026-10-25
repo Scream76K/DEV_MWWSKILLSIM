@@ -854,8 +854,8 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   return {status:'available',value:result.p};
  }
 }
-function createSourcedElementalFormula({calculate,resolveSharpness,resolveHitzone,expectedGameVersion}={}){
- if(typeof calculate!=='function'||typeof resolveSharpness!=='function'||typeof resolveHitzone!=='function')throw Error('ELEMENT_SOURCE_RESOLVERS_REQUIRED');
+function createSourcedElementalFormula({calculate,resolveElementSharpness,resolveHitzone,expectedGameVersion}={}){
+ if(typeof calculate!=='function'||typeof resolveElementSharpness!=='function'||typeof resolveHitzone!=='function')throw Error('ELEMENT_SOURCE_RESOLVERS_REQUIRED');
  return function elemental({coefficient,coefficientUnit,target,stats,build,state}={}){
   if(coefficientUnit!=='ELEMENT_MODIFIER'||!finite(coefficient)||coefficient<0)return unavailable('ELEMENT_MODIFIER_UNRESOLVED');
   if(!finite(stats?.element)||stats.element<0)return unavailable('ELEMENT_VALUE_UNRESOLVED');
@@ -863,7 +863,7 @@ function createSourcedElementalFormula({calculate,resolveSharpness,resolveHitzon
   if(Array.isArray(build?.skills?.entries)&&build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))return unavailable('ELEMENT_SKILLS_UNSUPPORTED');
   if(!expectedGameVersion)return unavailable('ELEMENT_VERSION_UNRESOLVED');
   let sharp,hitzone;
-  try{sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,gameVersion:expectedGameVersion});}
+  try{sharp=resolveElementSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,gameVersion:expectedGameVersion});}
   catch(_){return unavailable('ELEMENT_CONTEXT_RESOLUTION_FAILED')}
   const valid=x=>x&&x.gameVersion===expectedGameVersion&&typeof x.evidenceRef==='string'&&x.evidenceRef.length>0&&finite(x.value);
   if(!valid(sharp)||sharp.value<=0)return unavailable('ELEMENT_SHARPNESS_UNRESOLVED');
@@ -910,8 +910,8 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   return {status:'available',value:result.p};
  }
 }
-function createSourcedElementalFormula({calculate,resolveSharpness,resolveHitzone,expectedGameVersion}={}){
- if(typeof calculate!=='function'||typeof resolveSharpness!=='function'||typeof resolveHitzone!=='function')throw Error('ELEMENT_SOURCE_RESOLVERS_REQUIRED');
+function createSourcedElementalFormula({calculate,resolveElementSharpness,resolveHitzone,expectedGameVersion}={}){
+ if(typeof calculate!=='function'||typeof resolveElementSharpness!=='function'||typeof resolveHitzone!=='function')throw Error('ELEMENT_SOURCE_RESOLVERS_REQUIRED');
  return function elemental({coefficient,coefficientUnit,target,stats,build,state}={}){
   if(coefficientUnit!=='ELEMENT_MODIFIER'||!finite(coefficient)||coefficient<0)return unavailable('ELEMENT_MODIFIER_UNRESOLVED');
   if(!finite(stats?.element)||stats.element<0)return unavailable('ELEMENT_VALUE_UNRESOLVED');
@@ -919,7 +919,7 @@ function createSourcedElementalFormula({calculate,resolveSharpness,resolveHitzon
   if(Array.isArray(build?.skills?.entries)&&build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'))return unavailable('ELEMENT_SKILLS_UNSUPPORTED');
   if(!expectedGameVersion)return unavailable('ELEMENT_VERSION_UNRESOLVED');
   let sharp,hitzone;
-  try{sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,gameVersion:expectedGameVersion});}
+  try{sharp=resolveElementSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,gameVersion:expectedGameVersion});}
   catch(_){return unavailable('ELEMENT_CONTEXT_RESOLUTION_FAILED')}
   const valid=x=>x&&x.gameVersion===expectedGameVersion&&typeof x.evidenceRef==='string'&&x.evidenceRef.length>0&&finite(x.value);
   if(!valid(sharp)||sharp.value<=0)return unavailable('ELEMENT_SHARPNESS_UNRESOLVED');
@@ -946,7 +946,7 @@ const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
- const elemental=canonicalPhysical?createSourcedElementalFormula({...canonicalPhysical,resolveHitzone:canonicalPhysical.resolveElementHitzone||canonicalPhysical.resolveHitzone}):formulae?.element;
+ const elemental=canonicalPhysical&&typeof canonicalPhysical.resolveElementSharpness==='function'&&typeof canonicalPhysical.resolveElementHitzone==='function'?createSourcedElementalFormula({...canonicalPhysical,resolveElementSharpness:canonicalPhysical.resolveElementSharpness,resolveHitzone:canonicalPhysical.resolveElementHitzone}):formulae?.element;
  if(typeof physical!=='function')throw Error('REAL_SLICE:PHYSICAL_FORMULA_REQUIRED');
  if(canonicalPhysical?.expectedGameVersion!==undefined && canonicalPhysical.expectedGameVersion!==versions?.game)throw Error('REAL_SLICE:GAME_VERSION_MISMATCH');
  if(typeof resolveBuild!=='function'||typeof resolveEffects!=='function'||typeof initialState!=='function')throw Error('REAL_SLICE:RESOLVERS_REQUIRED');
@@ -981,6 +981,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    const result=resolveEffects(build,conditions,channel,effects);
    // Any unresolved or active effect requires a future full elemental/skill route.
    if(!Array.isArray(result)||result.length!==0)throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_EMPTY');
+   if(!Array.isArray(build?.skills?.entries)||build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
    return result;
   }
  });
@@ -1013,7 +1014,7 @@ const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
 function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,initialState,formulae,canonicalPhysical,weaponType='hammer',techniqueId='HAM_SIDE_SWING'}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
- const elemental=canonicalPhysical?createSourcedElementalFormula({...canonicalPhysical,resolveHitzone:canonicalPhysical.resolveElementHitzone||canonicalPhysical.resolveHitzone}):formulae?.element;
+ const elemental=canonicalPhysical&&typeof canonicalPhysical.resolveElementSharpness==='function'&&typeof canonicalPhysical.resolveElementHitzone==='function'?createSourcedElementalFormula({...canonicalPhysical,resolveElementSharpness:canonicalPhysical.resolveElementSharpness,resolveHitzone:canonicalPhysical.resolveElementHitzone}):formulae?.element;
  if(typeof physical!=='function')throw Error('REAL_SLICE:PHYSICAL_FORMULA_REQUIRED');
  if(canonicalPhysical?.expectedGameVersion!==undefined && canonicalPhysical.expectedGameVersion!==versions?.game)throw Error('REAL_SLICE:GAME_VERSION_MISMATCH');
  if(typeof resolveBuild!=='function'||typeof resolveEffects!=='function'||typeof initialState!=='function')throw Error('REAL_SLICE:RESOLVERS_REQUIRED');
@@ -1048,6 +1049,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,i
    const result=resolveEffects(build,conditions,channel,effects);
    // Any unresolved or active effect requires a future full elemental/skill route.
    if(!Array.isArray(result)||result.length!==0)throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_EMPTY');
+   if(!Array.isArray(build?.skills?.entries)||build.skills.entries.some(x=>x?.effectDisposition!=='non_damage'||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
    return result;
   }
  });
