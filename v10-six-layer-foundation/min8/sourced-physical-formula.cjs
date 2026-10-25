@@ -37,7 +37,7 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
 }
 function createSourcedElementalFormula({calculate,resolveElementSharpness,resolveHitzone,expectedGameVersion}={}){
  if(typeof calculate!=='function'||typeof resolveElementSharpness!=='function'||typeof resolveHitzone!=='function')throw Error('ELEMENT_SOURCE_RESOLVERS_REQUIRED');
- return function elemental({coefficient,coefficientUnit,target,stats,build,state}={}){
+ return function elemental({coefficient,coefficientUnit,target,parameters,stats,build,state}={}){
   if(coefficientUnit!=='ELEMENT_MODIFIER'||!finite(coefficient)||coefficient<0)return unavailable('ELEMENT_MODIFIER_UNRESOLVED');
   if(!finite(stats?.element)||stats.element<0)return unavailable('ELEMENT_VALUE_UNRESOLVED');
   if(!finite(stats?.affinity))return unavailable('ELEMENT_AFFINITY_UNRESOLVED');

@@ -1,0 +1,27 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
+const {JSDOM,VirtualConsole}=require('/Users/scream/Documents/Codex/2026-10-18/task/himmel-db-route-pqr4v6qt/dependencies/node_modules/jsdom');
+const root=process.cwd();
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8').replace(/<script\b([^>]*?)\bsrc=["']([^"']+)["']([^>]*)>\s*<\/script>/gi,(tag,before,src,after)=>{if(/^(?:[a-z]+:)?\/\//i.test(src))return tag;const file=path.resolve(root,src);return `<script${before}${after}>\n${fs.readFileSync(file,'utf8').replace(/<\/script/gi,'<\\/script')}\n</script>`;});
+const weapon=JSON.parse(fs.readFileSync(path.join(root,'docs/reports/r252-generic-states/evidence/mhdb-switch-axe-power-element.api.json'),'utf8'));
+const vc=new VirtualConsole(),errors=[];vc.on('jsdomError',e=>errors.push(e.message));
+const dom=new JSDOM(html,{url:'https://simulator.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}});
+const w=dom.window,js=x=>JSON.stringify(x);
+w.eval(`clearWeaponBuckets();DB.weapons=[${js(weapon)}];weaponIndexByKind['switch-axe']=DB.weapons;weaponKind.value='switch-axe';weapon.innerHTML='<option value="939">ウズ・オラアチャⅠ</option>';weapon.value='939';DB.monsters=[{id:'training-room',name:'訓練場',parts:[{id:'training-front',name:'正面',multipliers:{slash:.5,blunt:.5,pierce:.5,fire:.2,water:.3,thunder:.2,ice:.2,dragon:.2}}]}];renderMonsters();monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';renderComboForWeapon();document.getElementById('comboSAMode').value='SWORD';document.getElementById('comboSAAwakened').value='0';App.combo.syncFromDOM();App.state.combo.moves=[{techniqueId:'SA_SWORD_VERTICAL'}];calcBuild();`);
+const real=w.eval('calcState.realOneHit');
+const metric=ch=>real?.channels?.[ch]?.metrics?.comboTotalDamage;
+if(real?.status!=='OK')throw Error('PIPELINE_NOT_OK:'+JSON.stringify(real));
+for(const ch of ['normal','maximum']){const m=metric(ch);if(m?.status!=='available'||!Number.isFinite(m.value)||real.channels[ch].execution.status!=='complete')throw Error('CHANNEL_NOT_COMPLETE:'+ch);}
+if(errors.length)throw Error('JSDOM_ERROR:'+errors.join('|'));
+const normal=real.channels.normal;
+const physical=normal.components.filter(c=>c.id?.includes(':physical:'));
+const elemental=normal.components.filter(c=>c.id?.includes(':element:'));
+const effects=normal.components.flatMap(c=>c.effectsApplied||[]);
+if(!physical.length||!elemental.length)throw Error('PHYSICAL_OR_ELEMENT_COMPONENT_MISSING');
+if(effects.filter(x=>x.id==='switch-axe-power-element-phial-element').length!==1)throw Error('ELEMENT_PHIAL_EFFECT_NOT_APPLIED_ONCE');
+if(physical.flatMap(c=>c.effectsApplied||[]).some(x=>x.id==='switch-axe-power-element-phial-element'))throw Error('ELEMENT_PHIAL_APPLIED_TO_PHYSICAL');
+if(!elemental.flatMap(c=>c.effectsApplied||[]).some(x=>x.id==='switch-axe-power-element-phial-element'))throw Error('ELEMENT_PHIAL_NOT_APPLIED_TO_ELEMENT');
+const summary=w.document.getElementById('buildSummary')?.textContent||'';
+if(!summary.includes('選択技の実計算')||!summary.includes('通常'))throw Error('REAL_RENDER_SUMMARY_MISSING');
+const out={executionSha:cp.execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),input:{weaponId:weapon.id,gameId:weapon.gameId,name:weapon.name,kind:weapon.kind,damage:weapon.damage,affinity:weapon.affinity,element:weapon.specials?.[0],phial:weapon.phial,techniqueId:'SA_SWORD_VERTICAL',state:{mode:'SWORD',awakened:false},trainingHitzone:{slash:.5,water:.3}},channels:{normal:metric('normal'),maximum:metric('maximum'),execution:{normal:real.channels.normal.execution.status,maximum:real.channels.maximum.execution.status}},components:{physical:physical.map(c=>({id:c.id,value:c.value,effectsApplied:c.effectsApplied})),element:elemental.map(c=>({id:c.id,value:c.value,effectsApplied:c.effectsApplied}))},effectsApplied:effects,renderedSummary:summary,assertions:{physicalAvailable:true,elementAvailable:true,elementPhialAppliedOnce:true,physicalUnaffectedByElementPhial:true,awakenedFalseOnly:true,normalMaximumComplete:true},note:'Power Element Phial 1.45 is PROVISIONALLY_ADOPTED from kuro yonhon memo 11; current game-version verification remains pending. Awakened sword scorch is intentionally out of scope.'};
+console.log(JSON.stringify(out,null,2));dom.window.close();
