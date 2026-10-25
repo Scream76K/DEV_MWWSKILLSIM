@@ -20,3 +20,7 @@
 編集ロック：index.htmlはhimmelのみ。sein OCR経路、stark確認UI、heiter SALADA/MHDB、frieren 14武器DPS、fern回帰/並列、eisen独立レビュー、serie品質ゲートを読取委任し、全7担当から回収済み。結果はdocs/reports/r250-stage3へ統合。共有FSの独立編集分離は実施していない。
 
 承認：根拠付き最小不具合修正はユーザー指示内。実画像golden未確定、数値/座標の推測変更禁止を維持。commit/push/PR/merge/rebase/公開は未承認・未実施。
+
+## 2026-10-25 限定修正の引継ぎ
+
+SERIE-STATE-CONNECTION: オーナー2026-10-25 14:46 UTC承認によりserieが担当。基準8338ab0、開始時の4ファイル差分を保持。対象index.html（MHWeaponEffectDBのみ）、hope-hammer-browser-adapter.js、min8/engine.cjsと生成bundle、限定検証tools/serie-state-connection-proof.cjsおよび証拠。弓3射列・SA属性順のみ。SA1.45はOWNER_APPROVED_PROVISIONAL、現行版未検証。ローカルcommit可、push/merge/公開不可。index.htmlの担当はこの限定修正のみ引継ぎ、完了時返却。

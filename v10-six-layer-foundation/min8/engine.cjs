@@ -119,7 +119,9 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const stats=stateStats&&typeof stateStats==='object'?{attack:stateStats.attack,element:stateStats.element,affinity:stateStats.affinity}:{attack:build.trueAttack,element:build.element,affinity:build.affinity};
   const sourceAttackComponents=build?.equipment?.attackComponents;
   const attackComponents=sourceAttackComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceAttackComponents[k]))?{weaponBase:sourceAttackComponents.weaponBase,normalMultiplier:sourceAttackComponents.normalMultiplier,normalFlat:sourceAttackComponents.normalFlat}:null;
-  const out={coefficient:component.coefficient,stats,attackComponents,post:[],trace:[]};
+  const sourceElementComponents=build?.equipment?.elementComponents;
+  const elementComponents=sourceElementComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceElementComponents[k]))?{weaponBase:sourceElementComponents.weaponBase,normalMultiplier:sourceElementComponents.normalMultiplier,normalFlat:sourceElementComponents.normalFlat}:null;
+  const out={coefficient:component.coefficient,stats,attackComponents,elementComponents,post:[],trace:[]};
   const appliedAffinityGroups=new Set();
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
   const targets=Array.isArray(component.parameters?.effectTargets)&&component.parameters.effectTargets.length?component.parameters.effectTargets:[component.kind];
@@ -144,7 +146,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
     else if(e.operation==='add')out.attackComponents.normalFlat+=e.amount;
     else out.stats.attack=Math.min(out.stats.attack,e.amount);
     out.stats.attack=out.attackComponents.weaponBase*out.attackComponents.normalMultiplier+out.attackComponents.normalFlat;
-   }else {const dest=e.stage==='coefficient'?out:out.stats,key=e.stage;const v=dest[key];dest[key]=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);}
+   }else if(e.stage==='element'&&out.elementComponents){if(e.operation==='multiply')out.elementComponents.normalMultiplier*=e.amount;else if(e.operation==='add')out.elementComponents.normalFlat+=e.amount;else out.stats.element=Math.min(out.stats.element,e.amount);out.stats.element=out.elementComponents.weaponBase*out.elementComponents.normalMultiplier+out.elementComponents.normalFlat;}else {const dest=e.stage==='coefficient'?out:out.stats,key=e.stage;const v=dest[key];dest[key]=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);}
    ensure(finite(out.coefficient)&&Object.values(out.stats).every(finite),'EFFECT_RESULT_NON_FINITE');
    out.trace.push({id:e.id,target:e.target,stage:e.stage,unit:e.unit,order:e.order,source:e.source,...(e.status?{status:e.status}: {})});
   }
@@ -156,7 +158,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const sum=componentsValid?run.components.reduce((s,c)=>s+c.value,0):null;
   const total=!complete?bad('EXECUTION_INCOMPLETE'):!componentsValid?bad('COMPONENT_UNAVAILABLE'):!finite(sum)?bad('TOTAL_NON_FINITE'):good(sum);
   const time=num(duration)&&duration>0?good(duration):bad('DURATION_UNAVAILABLE');
-  const provisionalEffects=run.components.flatMap(c=>Array.isArray(c.effectsApplied)?c.effectsApplied:[]).filter(e=>e.status==='PROVISIONALLY_ADOPTED');
+  const provisionalEffects=run.components.flatMap(c=>Array.isArray(c.effectsApplied)?c.effectsApplied:[]).filter(e=>['PROVISIONALLY_ADOPTED','OWNER_APPROVED_PROVISIONAL'].includes(e.status));
   return {...run,diagnostics:{formalStatus:provisionalEffects.length?'PROVISIONAL':'UNVERIFIED',provisionalEffects:copy(provisionalEffects)},metrics:{comboTotalDamage:total,comboDuration:time,comboDps:total.status==='available'&&time.status==='available'?(finite(total.value/time.value)?good(total.value/time.value):bad('DPS_NON_FINITE')):bad(total.status==='available'?'DURATION_UNAVAILABLE':total.reason)}};
  }
  function runChannel(build,req,plan,ch,s){
