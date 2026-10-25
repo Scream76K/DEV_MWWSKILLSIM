@@ -1,5 +1,5 @@
 {
-  "executionSha": "43aa118096c370c0684efd69d21e679e485c47aa",
+  "executionSha": "b46916e431bf6c849fdc5fb4eda2d40abf512a58",
   "input": {
     "weaponId": 914,
     "gameId": 1,
@@ -18,14 +18,39 @@
     "status": "OK",
     "normal": {
       "status": "available",
-      "value": 24.95
+      "value": 29.19
     },
     "maximum": {
       "status": "available",
-      "value": 24.95
+      "value": 29.19
     },
     "execution": "complete",
-    "phialComponents": 0
+    "diagnostics": {
+      "formalStatus": "PROVISIONAL",
+      "provisionalEffects": [
+        {
+          "id": "switch-axe-power-phial-physical",
+          "target": "physical",
+          "stage": "attack",
+          "unit": "dimensionless",
+          "order": 20,
+          "source": "https://kuroyonhon.com/mhwilds/memo/11.php:POWER_PHIAL_SWORD_1.17_BEFORE_ADDITIVE:PROVISIONALLY_ADOPTED",
+          "status": "PROVISIONALLY_ADOPTED"
+        }
+      ]
+    },
+    "phialComponents": 0,
+    "effectsApplied": [
+      {
+        "id": "switch-axe-power-phial-physical",
+        "target": "physical",
+        "stage": "attack",
+        "unit": "dimensionless",
+        "order": 20,
+        "source": "https://kuroyonhon.com/mhwilds/memo/11.php:POWER_PHIAL_SWORD_1.17_BEFORE_ADDITIVE:PROVISIONALLY_ADOPTED",
+        "status": "PROVISIONALLY_ADOPTED"
+      }
+    ]
   },
   "axe": {
     "state": {
@@ -38,7 +63,9 @@
   "assertions": {
     "swordModeAvailable": true,
     "axeModeRejected": true,
-    "noNumericPhialEffectInvented": true
+    "powerPhialPhysicalEffectAppliedOnce": true,
+    "provisionalStatusExposed": true,
+    "phialComponentNotAdded": true
   },
-  "note": "MHDB power phial is retained as weapon metadata. SA_SWORD_VERTICAL has no DB phial component/value; scorch is source-confirmed but calculationReady:false, so neither is included in HP total."
+  "note": "MHDB power phial is retained as weapon metadata. The registered source supports a provisional 1.17 sword physical multiplier before additive attack effects; SA_SWORD_VERTICAL has no separate phial explosion component. Scorch is source-confirmed but calculationReady:false and remains excluded."
 }
