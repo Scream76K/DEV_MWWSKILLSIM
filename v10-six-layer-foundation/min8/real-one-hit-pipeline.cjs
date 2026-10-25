@@ -54,18 +54,25 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    return result;
   }
  });
- const componentIds=id=>({physical:id+':physical:0',element:id+':element:0'});
+ const componentIds=(id,index)=>({physical:id+':physical:'+index,element:id+':element:'+index});
  const handlers={[weaponType]:({event,build,effects})=>{
   if(event.type!=='hit'||!uniqueTechniqueIds.includes(event.techniqueId)||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
-  const ids=componentIds(event.techniqueId);
-  const physicalEvent=event.components.find(c=>c.id===ids.physical),elementEvent=event.components.find(c=>c.id===ids.element);
-  if(!physicalEvent||event.components.some(c=>![ids.physical,ids.element].includes(c.id)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
-  const modifier=elementEvent?.parameters?.elementModifier??physicalEvent.parameters?.elementModifier;
-  if(!Number.isFinite(modifier)||modifier<0)throw Error('REAL_SLICE:ELEMENT_COMPONENT_UNRESOLVED');
-  if(modifier===0)return {emit:[ids.physical],inactive:[],unresolved:[]};
-  if(build?.element===0)return {emit:[ids.physical],inactive:[ids.element],unresolved:[]};
-  if(!Number.isFinite(build?.element)||!Array.isArray(effects))return {emit:[ids.physical],inactive:[],unresolved:[ids.element]};
-  return {emit:[ids.physical,ids.element],inactive:[],unresolved:[]};
+  const physicalEvents=event.components.filter(c=>c.kind==='physical'),elementEvents=event.components.filter(c=>c.kind==='element');
+  if(!physicalEvents.length)return {emit:[],inactive:[],unresolved:['REAL_SLICE:PHYSICAL_COMPONENTS_UNRESOLVED']};
+  const emit=[],inactive=[],unresolved=[];
+  for(const physicalEvent of physicalEvents){
+   const index=physicalEvent.parameters?.hitIndex,ids=componentIds(event.techniqueId,index),elementEvent=elementEvents.find(c=>c.parameters?.hitIndex===index);
+   if(physicalEvent.id!==ids.physical||elementEvent&&elementEvent.id!==ids.element||(!elementEvent&&event.components.some(c=>c.id===ids.element)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+   const modifier=elementEvent?.parameters?.elementModifier??physicalEvent.parameters?.elementModifier;
+   if(!Number.isFinite(modifier)||modifier<0){unresolved.push(ids.element);continue;}
+   emit.push(ids.physical);
+   if(modifier===0){if(elementEvent)inactive.push(ids.element);continue;}
+   if(build?.element===0){if(elementEvent)inactive.push(ids.element);continue;}
+   if(!Number.isFinite(build?.element)||!Array.isArray(effects)){if(elementEvent)unresolved.push(ids.element);continue;}
+   if(elementEvent)emit.push(ids.element);
+  }
+  if(event.components.some(c=>!emit.includes(c.id)&&!inactive.includes(c.id)&&!unresolved.includes(c.id)&&!physicalEvents.includes(c)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+  return {emit,inactive,unresolved};
  }};
  return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental}});
 }

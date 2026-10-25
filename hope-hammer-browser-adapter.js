@@ -39,13 +39,13 @@
   const techniques={};
   for(const id of [...new Set(resolvedTechniqueIds)]){
    const technique=techniqueDb?.get?.(weapon.kind,id);
-   if(!technique||!Array.isArray(technique.hits)||technique.hits.length!==1)return fail('REAL_SLICE:TECHNIQUE_NOT_FOUND:'+id);
+   if(!technique||!Array.isArray(technique.hits)||!technique.hits.length)return fail('REAL_SLICE:TECHNIQUE_NOT_FOUND:'+id);
    techniques[id]=technique;
   }
   techniqueId=resolvedTechniqueIds[0];
   const technique=techniques[techniqueId];
   const part=trainingRoom?.parts?.find(x=>x.id==='training-front');
-  const physicalKeyForTechnique=id=>{const hitDamageType=techniques[id]?.hits?.[0]?.damageType;return hitDamageType==='blunt'||hitDamageType==='slash'||hitDamageType==='pierce'?hitDamageType:['hammer','hunting-horn'].includes(weapon.kind)?'blunt':null;};
+  const physicalKeyForTechnique=id=>{const hits=techniques[id]?.hits||[],keys=hits.map(hit=>{const kind=hit?.damageType;return kind==='blunt'||kind==='slash'||kind==='pierce'?kind:['hammer','hunting-horn'].includes(weapon.kind)?'blunt':null;});return keys.length&&keys.every(Boolean)&&new Set(keys).size===1?keys[0]:null;};
   const physicalKeys=resolvedTechniqueIds.map(physicalKeyForTechnique);
   if(physicalKeys.some(x=>!x))return fail('REAL_SLICE:DAMAGE_TYPE_UNRESOLVED');
   if(new Set(physicalKeys).size>1)return fail('REAL_SLICE:MIXED_DAMAGE_TYPES_UNSUPPORTED');
@@ -83,7 +83,7 @@
    canonicalPhysical:{expectedGameVersion:versions.game,
     resolveSharpness:({build})=>{const r=root.MHWWeaponMaxSharpness.resolve(build.equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});if(!r.options)throw Error('REAL_SLICE:SHARPNESS_UNRESOLVED');return {value:r.options.sharpnessPhysicalMultiplier,gameVersion:versions.game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:build.equipment.provenance.sourceGameVersion,status:'PROVISIONAL'};},
     resolveElementSharpness:({build})=>{const r=root.MHWWeaponMaxSharpness.resolve(build.equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});if(!r.options)throw Error('REAL_SLICE:ELEMENT_SHARPNESS_UNRESOLVED');return {value:r.options.sharpnessElementMultiplier,gameVersion:versions.game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:build.equipment.provenance.sourceGameVersion,status:'PROVISIONAL'};},
-    resolveHitzone:()=>({value:part.multipliers[physicalKey]*100,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:${physicalKey}`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'}),
+    resolveHitzone:({parameters}={})=>{const key=parameters?.damageType||physicalKey,value=part.multipliers?.[key];if(typeof value!=='number'||!Number.isFinite(value))throw Error('REAL_SLICE:TRAINING_HITZONE_UNRESOLVED:'+key);return {value:value*100,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:${key}`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'};},
     resolveElementHitzone:()=>{if(!elementSpecial)return {value:0,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:none`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'};const value=part.multipliers?.[elementType];if(typeof value!=='number'||!Number.isFinite(value)||value<0||value>1)throw Error('REAL_SLICE:ELEMENT_HITZONE_UNRESOLVED');return {value:value*100,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:${elementType}`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'};},
     resolvePartModifier:({parameters})=>({value:parameters.partModifier,gameVersion:versions.game,evidenceRef:parameters.partModifierSource}),
     calculate:root.damageFromParams}});
