@@ -61,12 +61,8 @@
    if(referenceKind==='light-bowgun'){
     const level=Number(String(id).match(/^LBG_NORMAL_AMMO_([12])$/)?.[1]||0);
     if(!Number.isInteger(level)||level<1)return state;
-    state.ammoType=state.ammoType??'NORMAL';
     state.ammoLevel=state.ammoLevel??level;
-    state.range=state.range??'CRITICAL';
-    state.normalModeLevel=state.normalModeLevel??0;
-    state.contactPolicy=state.contactPolicy??sourceState.contactPolicy??(sourceState.hitCount===3?'ALL_THREE':null);
-    state.resolutionSource=state.resolutionSource||'TECHNIQUE_DB_SPECIAL_SOURCE_VALUES';
+    state.resolutionSource=state.resolutionSource||'TECHNIQUE_DB_AMMO_LEVEL_FROM_ID';
    }else if(referenceKind==='heavy-bowgun'){
     state.ammoType=state.ammoType??null;
     state.contactPolicy=state.contactPolicy??(sourceState.hitCount===3?'ALL_THREE':null);
