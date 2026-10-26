@@ -80,6 +80,11 @@
   const rapidMorphEntries=allSkills.filter(x=>x.skillKey==='rapidMorph'),rapidMorphLevel=Math.max(0,...rapidMorphEntries.map(x=>x.level));
   if(rapidMorphEntries.length&&(!['charge-blade','switch-axe'].includes(weapon.kind)||rapidMorphEntries.some(x=>Number(x.skillId)!==7||!Number.isInteger(x.level)||x.level<1||x.level>3)))return fail('REAL_SLICE:RAPID_MORPH_SCOPE_OR_LEVEL_UNRESOLVED');
   if(rapidMorphEntries.length&&(!rapidRule||rapidRule.status!=='OWNER_APPROVED_PROVISIONAL'||resolvedTechniqueIds.some(id=>weapon.kind==='charge-blade'?!root.ChargeBladeEngine?.techniques?.[id]:!['SA_SWORD_VERTICAL','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'].includes(id))))return fail('REAL_SLICE:RAPID_MORPH_TECHNIQUE_SCOPE_UNRESOLVED');
+  // The production bridge emits hits only: neither charge/guard provenance nor stock transitions are resolved.
+  if(weapon.kind==='charge-blade'&&rapidMorphLevel>1){
+   const originPending=resolvedTechniqueIds.find(id=>['CB_ELEMENT_DISCHARGE_1','CB_AED','CB_SAED','CB_SAED_AED_DERIVED'].includes(id));
+   if(originPending)return fail('REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED:'+originPending);
+  }
   if(weapon.kind==='charge-blade'&&resolvedTechniqueIds.includes('CB_SWORD_TO_AXE_MORPH')){
    if(typeof chargeBladeState?.axeBoosted!=='boolean'||typeof chargeBladeState?.shieldBoosted!=='boolean')return fail('REAL_SLICE:CB_MORPH_SHIELD_AXE_STATE_REQUIRED');
    if(chargeBladeState.axeBoosted)return fail('REAL_SLICE:CB_MORPH_AXE_BOOST_COMPONENTS_UNCONNECTED');
