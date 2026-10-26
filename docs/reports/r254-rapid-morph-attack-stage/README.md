@@ -1,3 +1,5 @@
+> SA morph rows below are superseded by r262-sa-hit-mode: they tested an incorrect assumption that start mode equals every Hit mode. Owner clarified SWORD→[SWORD,AXE]→AXE and AXE→[SWORD]→SWORD. Old logs retained; CB evidence is unaffected.
+
 > 後続訂正：ED Iを非対象とした対照は派生元不明を非成立扱いしていたため撤回。r254-cb-morph-origin/README.md参照。旧ログは実行SHAの履歴として保持。
 
 # 高速変形の攻撃段階への訂正

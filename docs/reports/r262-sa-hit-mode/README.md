@@ -1,0 +1,9 @@
+# SA start / Hit / exit mode — owner clarified
+
+Owner Sentinel_79dd4282e1708191b5cdc66f3cd066b4: SWORD_MORPH_DOUBLE startsSWORD, hits[SWORD,AXE], exitsAXE; AXE_MORPH_SLASH startsAXE, hits[SWORD], exitsSWORD. Added Technique DB modeContract with owner source/status, retained MV30/50/33 and version discrepancy. Not newly game-version verified.
+
+Technique adapter emits shared transition events before each Hit and at exit. Handler checks previous mode, common engine validates operations. Phial effects now use state-equals switchAxe.mode SWORD, not initial conditions.mode always. Rapid morph remains technique-ID attack-stage scope; no per-Hit mode filter added to it. Same-mode ordinary sword input retains its existing requirement. Awake remains rejected. Scope is NON_AWAKENED_BODY_PHIAL_MODIFIERS_MODE_ONLY_GAUGE_UNMODELED: mode flow is calculated, gauge cost/recovery and awakened followup are not. Diagnostics referenceOnly preserves that boundary, including owner modeContracts. Not a full executable resource combo claim.
+
+Minimal contract: captured MHDB914 body input, target slash.4. Double→axeSlash: physical power modifier flags true/false/true, total46.76; axeSlash alone14.59. Synthetic power-element weapon/fire100 contrast: same flags on elemental components, totals54.41/16.82. Independent expected per-Hit formulas assert existing1.17/1.45 exactly once; no real power-element equipped-build claim. Both channels finalSWORD, unknown and mismatched starts reject. Actual DB numeric Hit values used. No stage3 all-skill audit/stage4 representative build.
+
+before.json records old Adapter assumption; after.json tested source hashes + precommit execution SHA. Initial synthetic missing elementType failure preserved separately. related-state.log narrowly exercises existing state contract. Old r254 SA evidence annotated but retained; CB evidence unchanged. CI/Safari not run. Original checkout/stage3 patch/server/browser/storage untouched.

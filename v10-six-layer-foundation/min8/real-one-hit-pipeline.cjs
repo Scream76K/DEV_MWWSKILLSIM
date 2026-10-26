@@ -85,6 +85,12 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   return null;
  };
  const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type==='transition'&&event.contract==='SA_HIT_MODE'&&weaponType==='switch-axe'){
+   if(!['SWORD','AXE'].includes(state?.switchAxe?.mode))throw Error('REAL_SLICE:SA_START_MODE_UNRESOLVED');
+   if(state.switchAxe.mode!==event.requiredMode)throw Error('REAL_SLICE:SA_MODE_TRANSITION_MISMATCH');
+   const mode=event.operations?.[0]?.value;if(!['SWORD','AXE'].includes(mode))throw Error('REAL_SLICE:SA_HIT_MODE_UNRESOLVED');
+   return {nextState:{...state,switchAxe:{...state.switchAxe,mode}}};
+  }
   if(event.type==='consume'&&['GL_NORMAL_ROUNDS','GL_CHARGED_ROUNDS'].includes(event.contract)&&weaponType==='gunlance'){const nextState=JSON.parse(JSON.stringify(state));nextState.gunlance.loadedRounds-=event.amount;return {nextState};}
   if(event.type!=='hit'&&event.contract==='CB_ED1_NORMAL_RESOURCE'&&weaponType==='charge-blade'&&event.techniqueId==='CB_ELEMENT_DISCHARGE_1'){
    const nextState=JSON.parse(JSON.stringify(state));
@@ -118,7 +124,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(physicalEvent.id!==ids.physical||elementEvent&&elementEvent.id!==ids.element||(!elementEvent&&event.components.some(c=>c.id===ids.element)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
    const modifier=elementEvent?.parameters?.elementModifier??physicalEvent.parameters?.elementModifier;
    const transition=physicalEvent.parameters?.damageStateTransition;
-   let stateIssue=requirementIssue(physicalEvent.parameters?.stateRequirement,conditions,transition?null:physicalEvent.parameters?.damageStatsState);
+   let stateIssue=physicalEvent.parameters?.saHitMode?(state?.switchAxe?.mode===physicalEvent.parameters.saHitMode?null:'REAL_SLICE:SA_HIT_MODE_MISMATCH'):requirementIssue(physicalEvent.parameters?.stateRequirement,conditions,transition?null:physicalEvent.parameters?.damageStatsState);
    if(!stateIssue&&transition){
     const activation=transition.requiredAtActivation;
     if(activation==='TRIPLE_EXTRACT')stateIssue=requirementIssue({tripleExtract:true},conditions,null);

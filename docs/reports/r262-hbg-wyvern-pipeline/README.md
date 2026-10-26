@@ -14,8 +14,8 @@ before-adapter.json loads git-show baseline Adapter with current page to isolate
 
 ## Current 14-weapon Formula map (source inspection, not completion)
 - GS/LS/SNS/DB/Hammer/Lance: shared physical/element Formula; technique/state eligibility remains weapon-specific. SNS approved mixed Hit routing connected; other missing classifications not inferred.
-- GL: dedicated shell Formula; normal-shell-only stock consume connected. Other action sequences pending.
-- SA: body plus adopted power/power-element phial stages; mixed-mode transition and awakened followup pending.
+- GL: dedicated shell Formula; normal-shell-only stock consume connected. Explicit NORMAL/CHARGED sequences consume current stock (r262-gl-charged-resource); other action sequences pending.
+- SA: body plus adopted power/power-element phial stages; owner-defined two morph techniques now use start/Hit/exit mode transitions (r262-sa-hit-mode). Gauge resources and awakened followup pending.
 - CB: body/phial Formula and single ED I state; SAED reference. Axe followup and broader sequences pending.
 - IG: body plus adopted triple-extract state; kinsect and consumption pending.
 - HH: body; special source-estimate Formula exists but formal aggregation/version/rounding pending.

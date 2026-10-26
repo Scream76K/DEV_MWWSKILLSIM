@@ -853,18 +853,22 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   const elementResolved=elementContext?.displayElement===0&&elementContext?.effectsResolved===true&&Array.isArray(elementContext.activeElementEffects)&&elementContext.activeElementEffects.length===0;
   const events=[],excludedElements=[];
+  const saMode=weaponType==='switch-axe'?(record.modeContract||(record.stateRequirement?.mode?{startMode:record.stateRequirement.mode,hitModes:record.hits.map(()=>record.stateRequirement.mode),endMode:record.stateRequirement.mode}:null)):null;
+  if(saMode&&(!['SWORD','AXE'].includes(saMode.startMode)||!['SWORD','AXE'].includes(saMode.endMode)||saMode.hitModes?.length!==record.hits.length||saMode.hitModes.some(m=>!['SWORD','AXE'].includes(m))))throw Error('REAL_SLICE:SA_MODE_CONTRACT_INVALID');
   record.hits.forEach((hit,index)=>{
+   if(saMode)events.push({type:'transition',contract:'SA_HIT_MODE',requiredMode:index?saMode.hitModes[index-1]:saMode.startMode,operations:[{op:'set',path:['switchAxe','mode'],value:saMode.hitModes[index]}]});
    if(!finite(hit.mv)||hit.mv<0||!finite(hit.elementModifier)||hit.elementModifier<0)throw Error('REAL_SLICE:HIT_FIELDS_PENDING:'+index);
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    // Preserve the sourced part-durability modifier for provenance. The
    // canonical HP formula validates it but does not apply it to HP damage.
-   const stateMetadata={resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):record.adoption||null};
+   const stateMetadata={saHitMode:saMode?.hitModes[index]??null,resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):record.adoption||null};
    const partModifierKnown=finite(hit.partModifier);
    const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,shieldBoostAxeBody:record.shieldBoostAxeBody===true,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
    if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
    events.push({type:'hit',components});
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});
   });
+  if(saMode)events.push({type:'transition',contract:'SA_HIT_MODE',requiredMode:saMode.hitModes[saMode.hitModes.length-1],operations:[{op:'set',path:['switchAxe','mode'],value:saMode.endMode}]});
   if(record.phialReference?.status==='OBSERVED'&&Number.isInteger(record.phialReference.hitCount)&&record.phialReference.hitCount>0){
    const phialTarget=record.phialState?.phialType==='POWER_ELEMENT'?'element':'physical';
    events[0].components.push({id:techniqueId+':phial:0',kind:'phial',unit:'PHIAL',source:record.phialReference.sourceRefs?.[0]??source,coefficient:1,parameters:Object.freeze({hitIndex:0,phialCount:record.phialReference.hitCount,phialReference:Object.freeze({...record.phialReference}),phialState:record.phialState?Object.freeze({...record.phialState}):null,excludedEffectIds:record.resourceContract?[record.resourceContract.rapidMorphEffectId]:[],effectTargets:[phialTarget],effectStages:[phialTarget==='element'?'element':'attack'],sourceTechniqueId:techniqueId})});
@@ -931,18 +935,22 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   const elementResolved=elementContext?.displayElement===0&&elementContext?.effectsResolved===true&&Array.isArray(elementContext.activeElementEffects)&&elementContext.activeElementEffects.length===0;
   const events=[],excludedElements=[];
+  const saMode=weaponType==='switch-axe'?(record.modeContract||(record.stateRequirement?.mode?{startMode:record.stateRequirement.mode,hitModes:record.hits.map(()=>record.stateRequirement.mode),endMode:record.stateRequirement.mode}:null)):null;
+  if(saMode&&(!['SWORD','AXE'].includes(saMode.startMode)||!['SWORD','AXE'].includes(saMode.endMode)||saMode.hitModes?.length!==record.hits.length||saMode.hitModes.some(m=>!['SWORD','AXE'].includes(m))))throw Error('REAL_SLICE:SA_MODE_CONTRACT_INVALID');
   record.hits.forEach((hit,index)=>{
+   if(saMode)events.push({type:'transition',contract:'SA_HIT_MODE',requiredMode:index?saMode.hitModes[index-1]:saMode.startMode,operations:[{op:'set',path:['switchAxe','mode'],value:saMode.hitModes[index]}]});
    if(!finite(hit.mv)||hit.mv<0||!finite(hit.elementModifier)||hit.elementModifier<0)throw Error('REAL_SLICE:HIT_FIELDS_PENDING:'+index);
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    // Preserve the sourced part-durability modifier for provenance. The
    // canonical HP formula validates it but does not apply it to HP damage.
-   const stateMetadata={resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):record.adoption||null};
+   const stateMetadata={saHitMode:saMode?.hitModes[index]??null,resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):record.adoption||null};
    const partModifierKnown=finite(hit.partModifier);
    const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,shieldBoostAxeBody:record.shieldBoostAxeBody===true,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
    if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
    events.push({type:'hit',components});
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});
   });
+  if(saMode)events.push({type:'transition',contract:'SA_HIT_MODE',requiredMode:saMode.hitModes[saMode.hitModes.length-1],operations:[{op:'set',path:['switchAxe','mode'],value:saMode.endMode}]});
   if(record.phialReference?.status==='OBSERVED'&&Number.isInteger(record.phialReference.hitCount)&&record.phialReference.hitCount>0){
    const phialTarget=record.phialState?.phialType==='POWER_ELEMENT'?'element':'physical';
    events[0].components.push({id:techniqueId+':phial:0',kind:'phial',unit:'PHIAL',source:record.phialReference.sourceRefs?.[0]??source,coefficient:1,parameters:Object.freeze({hitIndex:0,phialCount:record.phialReference.hitCount,phialReference:Object.freeze({...record.phialReference}),phialState:record.phialState?Object.freeze({...record.phialState}):null,excludedEffectIds:record.resourceContract?[record.resourceContract.rapidMorphEffectId]:[],effectTargets:[phialTarget],effectStages:[phialTarget==='element'?'element':'attack'],sourceTechniqueId:techniqueId})});
@@ -1176,6 +1184,12 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   return null;
  };
  const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type==='transition'&&event.contract==='SA_HIT_MODE'&&weaponType==='switch-axe'){
+   if(!['SWORD','AXE'].includes(state?.switchAxe?.mode))throw Error('REAL_SLICE:SA_START_MODE_UNRESOLVED');
+   if(state.switchAxe.mode!==event.requiredMode)throw Error('REAL_SLICE:SA_MODE_TRANSITION_MISMATCH');
+   const mode=event.operations?.[0]?.value;if(!['SWORD','AXE'].includes(mode))throw Error('REAL_SLICE:SA_HIT_MODE_UNRESOLVED');
+   return {nextState:{...state,switchAxe:{...state.switchAxe,mode}}};
+  }
   if(event.type==='consume'&&['GL_NORMAL_ROUNDS','GL_CHARGED_ROUNDS'].includes(event.contract)&&weaponType==='gunlance'){const nextState=JSON.parse(JSON.stringify(state));nextState.gunlance.loadedRounds-=event.amount;return {nextState};}
   if(event.type!=='hit'&&event.contract==='CB_ED1_NORMAL_RESOURCE'&&weaponType==='charge-blade'&&event.techniqueId==='CB_ELEMENT_DISCHARGE_1'){
    const nextState=JSON.parse(JSON.stringify(state));
@@ -1209,7 +1223,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(physicalEvent.id!==ids.physical||elementEvent&&elementEvent.id!==ids.element||(!elementEvent&&event.components.some(c=>c.id===ids.element)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
    const modifier=elementEvent?.parameters?.elementModifier??physicalEvent.parameters?.elementModifier;
    const transition=physicalEvent.parameters?.damageStateTransition;
-   let stateIssue=requirementIssue(physicalEvent.parameters?.stateRequirement,conditions,transition?null:physicalEvent.parameters?.damageStatsState);
+   let stateIssue=physicalEvent.parameters?.saHitMode?(state?.switchAxe?.mode===physicalEvent.parameters.saHitMode?null:'REAL_SLICE:SA_HIT_MODE_MISMATCH'):requirementIssue(physicalEvent.parameters?.stateRequirement,conditions,transition?null:physicalEvent.parameters?.damageStatsState);
    if(!stateIssue&&transition){
     const activation=transition.requiredAtActivation;
     if(activation==='TRIPLE_EXTRACT')stateIssue=requirementIssue({tripleExtract:true},conditions,null);
@@ -1324,6 +1338,12 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   return null;
  };
  const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type==='transition'&&event.contract==='SA_HIT_MODE'&&weaponType==='switch-axe'){
+   if(!['SWORD','AXE'].includes(state?.switchAxe?.mode))throw Error('REAL_SLICE:SA_START_MODE_UNRESOLVED');
+   if(state.switchAxe.mode!==event.requiredMode)throw Error('REAL_SLICE:SA_MODE_TRANSITION_MISMATCH');
+   const mode=event.operations?.[0]?.value;if(!['SWORD','AXE'].includes(mode))throw Error('REAL_SLICE:SA_HIT_MODE_UNRESOLVED');
+   return {nextState:{...state,switchAxe:{...state.switchAxe,mode}}};
+  }
   if(event.type==='consume'&&['GL_NORMAL_ROUNDS','GL_CHARGED_ROUNDS'].includes(event.contract)&&weaponType==='gunlance'){const nextState=JSON.parse(JSON.stringify(state));nextState.gunlance.loadedRounds-=event.amount;return {nextState};}
   if(event.type!=='hit'&&event.contract==='CB_ED1_NORMAL_RESOURCE'&&weaponType==='charge-blade'&&event.techniqueId==='CB_ELEMENT_DISCHARGE_1'){
    const nextState=JSON.parse(JSON.stringify(state));
@@ -1357,7 +1377,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(physicalEvent.id!==ids.physical||elementEvent&&elementEvent.id!==ids.element||(!elementEvent&&event.components.some(c=>c.id===ids.element)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
    const modifier=elementEvent?.parameters?.elementModifier??physicalEvent.parameters?.elementModifier;
    const transition=physicalEvent.parameters?.damageStateTransition;
-   let stateIssue=requirementIssue(physicalEvent.parameters?.stateRequirement,conditions,transition?null:physicalEvent.parameters?.damageStatsState);
+   let stateIssue=physicalEvent.parameters?.saHitMode?(state?.switchAxe?.mode===physicalEvent.parameters.saHitMode?null:'REAL_SLICE:SA_HIT_MODE_MISMATCH'):requirementIssue(physicalEvent.parameters?.stateRequirement,conditions,transition?null:physicalEvent.parameters?.damageStatsState);
    if(!stateIssue&&transition){
     const activation=transition.requiredAtActivation;
     if(activation==='TRIPLE_EXTRACT')stateIssue=requirementIssue({tripleExtract:true},conditions,null);
