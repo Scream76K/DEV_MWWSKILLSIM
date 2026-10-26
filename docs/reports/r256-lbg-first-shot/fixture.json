@@ -1,0 +1,334 @@
+{
+  "provenance": {
+    "source": "https://wilds.mhdb.io/ja/weapons?limit=250&offset=750",
+    "decorationSource": "https://wilds.mhdb.io/ja/decorations",
+    "skillSource": "https://wilds.mhdb.io/ja/skills",
+    "retrieval": "Existing /tmp MHDB response cache; original acquisition timestamp not recorded; reused 2026-10-26, not newly measured",
+    "decorationReuse": "docs/reports/r253-first-shot/fixture.json"
+  },
+  "weapon": {
+    "ammo": [
+      {
+        "kind": "normal",
+        "level": 1,
+        "capacity": 4,
+        "rapid": false,
+        "id": 221
+      },
+      {
+        "kind": "pierce",
+        "level": 1,
+        "capacity": 5,
+        "rapid": true,
+        "id": 222
+      },
+      {
+        "kind": "spread",
+        "level": 1,
+        "capacity": 3,
+        "rapid": false,
+        "id": 223
+      },
+      {
+        "kind": "sticky",
+        "level": 1,
+        "capacity": 2,
+        "rapid": false,
+        "id": 224
+      },
+      {
+        "kind": "poison",
+        "level": 2,
+        "capacity": 3,
+        "rapid": true,
+        "id": 225
+      },
+      {
+        "kind": "flaming",
+        "level": 1,
+        "capacity": 5,
+        "rapid": true,
+        "id": 226
+      },
+      {
+        "kind": "tranq",
+        "level": 1,
+        "capacity": 4,
+        "rapid": false,
+        "id": 227
+      }
+    ],
+    "specialAmmo": "adhesive",
+    "gameId": 33,
+    "crafting": {
+      "weapon": {
+        "id": 793
+      },
+      "craftable": false,
+      "previous": {
+        "name": "火竜砲Ⅰ",
+        "id": 792
+      },
+      "branches": [],
+      "craftingMaterials": [],
+      "craftingZennyCost": 0,
+      "upgradeMaterials": [
+        {
+          "item": {
+            "id": 506,
+            "gameId": 556,
+            "rarity": 6,
+            "name": "火竜の上鱗",
+            "description": "リオレウスから剥ぎ取った 上質な鱗。確かな厚みによって 並々ならぬ強度を備えている。",
+            "value": 1380,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 43,
+              "kind": "scale",
+              "colorId": 5,
+              "color": "red"
+            }
+          },
+          "quantity": 6,
+          "id": 45595
+        },
+        {
+          "item": {
+            "id": 509,
+            "gameId": 559,
+            "rarity": 6,
+            "name": "火竜の尻尾",
+            "description": "リオレウスの尻尾。 鋭利な棘と甲殻で構成され、 用途が多岐にわたる貴重な素材。",
+            "value": 2760,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 47,
+              "kind": "tail",
+              "colorId": 5,
+              "color": "red"
+            }
+          },
+          "quantity": 1,
+          "id": 45596
+        },
+        {
+          "item": {
+            "id": 510,
+            "gameId": 560,
+            "rarity": 7,
+            "name": "火竜の紅玉",
+            "description": "リオレウスの体内で、まれに生成 される希少な玉石。思わず加工に 出すのをためらってしまう。",
+            "value": 8280,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 20,
+              "kind": "gem",
+              "colorId": 5,
+              "color": "red"
+            }
+          },
+          "quantity": 1,
+          "id": 45597
+        },
+        {
+          "item": {
+            "id": 607,
+            "gameId": 660,
+            "rarity": 7,
+            "name": "歴戦狩猟の証Ⅱ",
+            "description": "手強い歴戦の個体を狩猟した証。 ギルドに猛者として認められた 名誉の証でもある。",
+            "value": 2000,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 30,
+              "kind": "certificate",
+              "colorId": 10,
+              "color": "yellow"
+            }
+          },
+          "quantity": 5,
+          "id": 45598
+        }
+      ],
+      "upgradeZennyCost": 20000,
+      "column": 8,
+      "row": 17,
+      "id": 793
+    },
+    "rarity": 8,
+    "kind": "light-bowgun",
+    "damage": {
+      "raw": 200,
+      "display": 260
+    },
+    "specials": [],
+    "name": "鳳仙火竜砲",
+    "description": "火竜砲の強化形態。その力を 眼前にした獲物は恐怖し、最後の 抗いは断末魔へと変わる。",
+    "defenseBonus": 0,
+    "elderseal": null,
+    "slots": [
+      3,
+      2,
+      1
+    ],
+    "affinity": 10,
+    "skills": [
+      {
+        "skill": {
+          "id": 22,
+          "name": "超会心",
+          "description": "会心攻撃のダメージが増加する。"
+        },
+        "level": 3,
+        "name": null,
+        "description": "会心攻撃時のダメージ倍率を １．３４倍に強化する",
+        "setPiecesRequired": null,
+        "id": 51
+      }
+    ],
+    "series": {
+      "id": 13,
+      "gameId": -622134208,
+      "name": "火竜派生"
+    },
+    "id": 793
+  },
+  "decoration": {
+    "name": "初弾珠【１】",
+    "description": "装備に装着すると、 ファーストショットスキルが 発動する装飾品。",
+    "value": 150,
+    "slot": 1,
+    "rarity": 3,
+    "kind": "weapon",
+    "skills": [
+      {
+        "skill": {
+          "id": 140,
+          "name": "ファーストショット"
+        },
+        "level": 1,
+        "description": "ボウガンの装填速度と条件を満たした 弾の威力が少し上昇する",
+        "setPiecesRequired": null,
+        "id": 363
+      }
+    ],
+    "icon": {
+      "color": "white",
+      "colorId": 1
+    },
+    "id": 358,
+    "gameId": 2092268800
+  },
+  "skills": [
+    {
+      "name": "超会心",
+      "kind": "weapon",
+      "description": "会心攻撃のダメージが増加する。",
+      "ranks": [
+        {
+          "skill": {
+            "id": 22
+          },
+          "level": 1,
+          "name": null,
+          "description": "会心攻撃時のダメージ倍率を １．２８倍に強化する",
+          "setPiecesRequired": null,
+          "id": 49
+        },
+        {
+          "skill": {
+            "id": 22
+          },
+          "level": 2,
+          "name": null,
+          "description": "会心攻撃時のダメージ倍率を １．３１倍に強化する",
+          "setPiecesRequired": null,
+          "id": 50
+        },
+        {
+          "skill": {
+            "id": 22
+          },
+          "level": 3,
+          "name": null,
+          "description": "会心攻撃時のダメージ倍率を １．３４倍に強化する",
+          "setPiecesRequired": null,
+          "id": 51
+        },
+        {
+          "skill": {
+            "id": 22
+          },
+          "level": 4,
+          "name": null,
+          "description": "会心攻撃時のダメージ倍率を １．３７倍に強化する",
+          "setPiecesRequired": null,
+          "id": 52
+        },
+        {
+          "skill": {
+            "id": 22
+          },
+          "level": 5,
+          "name": null,
+          "description": "会心攻撃時のダメージ倍率を １．４倍に強化する",
+          "setPiecesRequired": null,
+          "id": 53
+        }
+      ],
+      "icon": {
+        "id": 2,
+        "kind": "affinity"
+      },
+      "id": 22,
+      "gameId": -1607763456
+    },
+    {
+      "name": "ファーストショット",
+      "kind": "weapon",
+      "description": "ボウガンの装填速度が上がる。 最大まで装填している時に発射した弾の 威力が上昇する。",
+      "ranks": [
+        {
+          "skill": {
+            "id": 140
+          },
+          "level": 1,
+          "name": null,
+          "description": "ボウガンの装填速度と条件を満たした 弾の威力が少し上昇する",
+          "setPiecesRequired": null,
+          "id": 363
+        },
+        {
+          "skill": {
+            "id": 140
+          },
+          "level": 2,
+          "name": null,
+          "description": "ボウガンの装填速度と条件を満たした 弾の威力が上昇する",
+          "setPiecesRequired": null,
+          "id": 364
+        },
+        {
+          "skill": {
+            "id": 140
+          },
+          "level": 3,
+          "name": null,
+          "description": "ボウガンの装填速度と条件を満たした 弾の威力が大きく上昇する",
+          "setPiecesRequired": null,
+          "id": 365
+        }
+      ],
+      "icon": {
+        "id": 5,
+        "kind": "ranged"
+      },
+      "id": 140,
+      "gameId": 1711950720
+    }
+  ]
+}

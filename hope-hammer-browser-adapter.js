@@ -63,6 +63,8 @@
   if(weapon.kind==='charge-blade'&&!officialPhialType)return fail('REAL_SLICE:CB_PHIAL_TYPE_UNRESOLVED_FROM_MHDB');
   const shellingInput={shellingState:gunlanceState,loadShellsLevel:loadShellEntries.length?Math.max(...loadShellEntries.map(x=>x.level)):0,artilleryLevel:artilleryEntries.length?Math.max(...artilleryEntries.map(x=>x.level)):0,normalAttackComponents:stats.attackComponents?{weaponBase:Number(stats.attackComponents.weaponBase),normalMultiplier:1,normalFlat:0}:null,unreviewedSkills:allSkills.filter(x=>!['attack','affinity','criticalBoost','conditionalAttack','shelling','slugger','fire','water','thunder','ice','dragon','normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].includes(x.skillKey)).map(x=>x.name)};
   const referenceSkills=Object.fromEntries(['normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].map(key=>[key,Math.max(...allSkills.filter(x=>x.skillKey===key).map(x=>x.level),0)]));
+  if(weapon.kind==='light-bowgun'&&referenceSkills.firstShot>0&&resolvedTechniqueIds.length!==1)return fail('REAL_SLICE:LBG_FIRST_SHOT_SINGLE_SHOT_REQUIRED');
+  if(weapon.kind==='light-bowgun'&&referenceSkills.firstShot>0&&(!Number.isInteger(lightBowgunState?.shotOrdinal)||lightBowgunState.shotOrdinal<1||typeof lightBowgunState?.fullMagazine!=='boolean'))return fail('REAL_SLICE:LBG_SHOT_POSITION_PENDING');
   const referenceCriticalBoostLevel=Math.max(...allSkills.filter(x=>x.skillKey==='criticalBoost').map(x=>x.level),0),criticalElementLevel=Math.max(...allSkills.filter(x=>x.skillKey==='criticalElement').map(x=>x.level),0);
   const gsCharge=root.MHGreatSwordChargeMasterDB;
   const gsChargeActive=weapon.kind==='great-sword'&&referenceSkills.chargeMaster>0;
@@ -105,6 +107,8 @@
     if(!Number.isInteger(level)||level<1)return state;
     state.ammoLevel=state.ammoLevel??level;
     state.weaponAmmoEntry=Array.isArray(weapon?.ammo)?weapon.ammo.find(x=>x?.kind==='normal'&&x.level===level)||null:null;
+    state.magazineCapacity=state.weaponAmmoEntry?.capacity??null;
+    if(referenceSkills.firstShot>0&&(!Number.isInteger(state.magazineCapacity)||state.magazineCapacity<1||state.shotOrdinal>state.magazineCapacity))throw Error('REAL_SLICE:LBG_SHOT_CAPACITY_UNRESOLVED');
     state.resolutionSource=state.resolutionSource||'TECHNIQUE_DB_AMMO_LEVEL_FROM_ID';
    }else if(referenceKind==='heavy-bowgun'){
     state.ammoType=state.ammoType??null;
