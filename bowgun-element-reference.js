@@ -16,5 +16,19 @@
   const attackDependentElement=attack/100*base/10*multiplier*ehz/100*elementModifier,flatElement=flat/10*ehz/100,element=attackDependentElement+flatElement;
   return {status:'SOURCE_REFERENCE',weaponKind,physicalModifier,elementModifier,adoptionStatus:record.adoptionStatus??'SOURCE_CONFIRMED',sourceVersion:record.sourceVersion??record.baselineGameVersion,scope:rule.scope,physical,element,total:physical+element,attackDependentElement,flatElement,ammoLevel:o.ammoLevel,range:o.range,physicalMv:mv,displayedElement:base,criticalExpectation,damageIncluded:false,elementCriticalIncluded:false,rounding:'UNROUNDED_REFERENCE',liveGameVerification:'PENDING',evidenceRefs:[...record.evidenceRefs],formula:'(attack/100*displayedElement*multiplier*elementModifier+flat)/10*elementalHitzone/100'};
  }
- const api=Object.freeze({firstHit});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowgunElementReference=api;
+ function contactSequence(o,engine){
+  if(!['heavy-bowgun','light-bowgun'].includes(o?.weaponKind))throw Error('HBG_ELEMENT:CONTACT_WEAPON_UNSUPPORTED');
+  const model=engine?.get(o.weaponKind,o.weaponKind==='light-bowgun'?'LBG_ELEMENT_FIRST_HIT_REFERENCE':'HBG_ELEMENT_FIRST_HIT_REFERENCE')?.specialSourceValues?.contactModel;
+  if(!['OWNER_APPROVED_PROVISIONAL','SOURCE_BACKED_PROVISIONAL'].includes(model?.status))throw Error('HBG_ELEMENT:CONTACT_MODEL_REQUIRED');
+  if(!Array.isArray(o.contacts)||o.contacts.length<1||o.contacts.length>model.physicalMultipliers.length)throw Error('HBG_ELEMENT:CONTACT_COUNT_UNSUPPORTED');
+  const contacts=o.contacts.map((c,i)=>{
+   if(c?.ordinal!==i+1||typeof c.targetId!=='string'||!c.targetId||typeof c.partId!=='string'||!c.partId)throw Error('HBG_ELEMENT:CONTACT_IDENTITY_REQUIRED');
+   if(model.rangeScope==='CRITICAL_ONLY'&&c.range!=='CRITICAL')throw Error('LBG_ELEMENT:CONTACT_RANGE_UNSUPPORTED');
+   const hit=firstHit({...o,range:c.range,physicalHitzone:c.physicalHitzone,elementalHitzone:c.elementalHitzone},engine);
+   const physical=hit.physical*model.physicalMultipliers[i];
+   return {...hit,ordinal:i+1,targetId:c.targetId,partId:c.partId,physicalMultiplier:model.physicalMultipliers[i],physical,total:physical+hit.element};
+  });
+  return {status:model.status,scope:model.scope,model,contacts,physical:contacts.reduce((s,h)=>s+h.physical,0),element:contacts.reduce((s,h)=>s+h.element,0),total:contacts.reduce((s,h)=>s+h.total,0),rounding:'UNROUNDED_REFERENCE',liveGameVerification:'PENDING'};
+ }
+ const api=Object.freeze({firstHit,contactSequence});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowgunElementReference=api;
 })(typeof window!=='undefined'?window:globalThis);

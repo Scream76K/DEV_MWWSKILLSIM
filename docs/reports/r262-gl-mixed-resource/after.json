@@ -1,0 +1,686 @@
+{
+  "executionSha": "e357f1beae822456aa6db314c06845cd2d375b06",
+  "adapterHash": "362a9917f00df07842e1d4f9bdfc0b9033b21b0dcc5244bc4b6cf25189d148c0",
+  "ids": [
+    "GL_SLAM",
+    "reference:gl_NORMAL",
+    "GL_SWEEP",
+    "reference:gl_CHARGED"
+  ],
+  "rows": [
+    {
+      "loaded": 3,
+      "result": {
+        "status": "OK",
+        "weaponType": "gunlance",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 315,
+            "gameId": 1,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/315",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"chargedRounds\":2,\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"loadedRounds\":3,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"GL_SLAM\\\",\\\"revision\\\":\\\"2\\\"},{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"GL_SWEEP\\\",\\\"revision\\\":\\\"2\\\"},{\\\"id\\\":\\\"reference:gl_CHARGED\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"chargedRounds\":2,\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"loadedRounds\":3,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"GL_SLAM\\\",\\\"revision\\\":\\\"2\\\"},{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"GL_SWEEP\\\",\\\"revision\\\":\\\"2\\\"},{\\\"id\\\":\\\"reference:gl_CHARGED\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"chargedRounds\":2,\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"loadedRounds\":3,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"GL_SLAM\\\",\\\"revision\\\":\\\"2\\\"},{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"GL_SWEEP\\\",\\\"revision\\\":\\\"2\\\"},{\\\"id\\\":\\\"reference:gl_CHARGED\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "1:0",
+                "1:1",
+                "2:0",
+                "3:0",
+                "3:1"
+              ],
+              "executed": [
+                "0:0",
+                "1:0",
+                "1:1",
+                "2:0",
+                "3:0",
+                "3:1"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "GL_SLAM:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "GL_SLAM",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 43.09,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "GL_SLAM:element:0",
+                "eventId": "0:0",
+                "techniqueId": "GL_SLAM",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              },
+              {
+                "id": "reference:gl_NORMAL:shelling:0",
+                "eventId": "1:0",
+                "techniqueId": "reference:gl_NORMAL",
+                "revision": "1",
+                "source": "MACARONGAMEMO_GL_R49_SOURCE",
+                "coefficientUnit": "SHELLING",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 8.6,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "GL_SWEEP:physical:0",
+                "eventId": "2:0",
+                "techniqueId": "GL_SWEEP",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 30.24,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "GL_SWEEP:element:0",
+                "eventId": "2:0",
+                "techniqueId": "GL_SWEEP",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              },
+              {
+                "id": "reference:gl_CHARGED:shelling:0",
+                "eventId": "3:0",
+                "techniqueId": "reference:gl_CHARGED",
+                "revision": "1",
+                "source": "MACARONGAMEMO_GL_R49_SOURCE",
+                "coefficientUnit": "SHELLING",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 28.720000000000002,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {
+              "gunlance": {
+                "loadedRounds": 0
+              }
+            },
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 110.65
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "1:0",
+                "1:1",
+                "2:0",
+                "3:0",
+                "3:1"
+              ],
+              "executed": [
+                "0:0",
+                "1:0",
+                "1:1",
+                "2:0",
+                "3:0",
+                "3:1"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "GL_SLAM:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "GL_SLAM",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 43.09,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "GL_SLAM:element:0",
+                "eventId": "0:0",
+                "techniqueId": "GL_SLAM",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              },
+              {
+                "id": "reference:gl_NORMAL:shelling:0",
+                "eventId": "1:0",
+                "techniqueId": "reference:gl_NORMAL",
+                "revision": "1",
+                "source": "MACARONGAMEMO_GL_R49_SOURCE",
+                "coefficientUnit": "SHELLING",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 8.6,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "GL_SWEEP:physical:0",
+                "eventId": "2:0",
+                "techniqueId": "GL_SWEEP",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 30.24,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "GL_SWEEP:element:0",
+                "eventId": "2:0",
+                "techniqueId": "GL_SWEEP",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              },
+              {
+                "id": "reference:gl_CHARGED:shelling:0",
+                "eventId": "3:0",
+                "techniqueId": "reference:gl_CHARGED",
+                "revision": "1",
+                "source": "MACARONGAMEMO_GL_R49_SOURCE",
+                "coefficientUnit": "SHELLING",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 28.720000000000002,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {
+              "gunlance": {
+                "loadedRounds": 0
+              }
+            },
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 110.65
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "loaded": 2,
+      "result": {
+        "status": "OK",
+        "weaponType": "gunlance",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 315,
+            "gameId": 1,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/315",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"chargedRounds\":2,\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"loadedRounds\":2,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"GL_SLAM\\\",\\\"revision\\\":\\\"2\\\"},{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"GL_SWEEP\\\",\\\"revision\\\":\\\"2\\\"},{\\\"id\\\":\\\"reference:gl_CHARGED\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"chargedRounds\":2,\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"loadedRounds\":2,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"GL_SLAM\\\",\\\"revision\\\":\\\"2\\\"},{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"GL_SWEEP\\\",\\\"revision\\\":\\\"2\\\"},{\\\"id\\\":\\\"reference:gl_CHARGED\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"chargedRounds\":2,\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"loadedRounds\":2,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"GL_SLAM\\\",\\\"revision\\\":\\\"2\\\"},{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"},{\\\"id\\\":\\\"GL_SWEEP\\\",\\\"revision\\\":\\\"2\\\"},{\\\"id\\\":\\\"reference:gl_CHARGED\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "incomplete",
+              "expected": [
+                "0:0",
+                "1:0",
+                "1:1",
+                "2:0",
+                "3:0",
+                "3:1"
+              ],
+              "executed": [
+                "0:0",
+                "1:0",
+                "1:1",
+                "2:0"
+              ],
+              "reason": "REAL_SLICE:GL_CHARGED_ROUNDS_INSUFFICIENT"
+            },
+            "components": [
+              {
+                "id": "GL_SLAM:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "GL_SLAM",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 43.09,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "GL_SLAM:element:0",
+                "eventId": "0:0",
+                "techniqueId": "GL_SLAM",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              },
+              {
+                "id": "reference:gl_NORMAL:shelling:0",
+                "eventId": "1:0",
+                "techniqueId": "reference:gl_NORMAL",
+                "revision": "1",
+                "source": "MACARONGAMEMO_GL_R49_SOURCE",
+                "coefficientUnit": "SHELLING",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 8.6,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "GL_SWEEP:physical:0",
+                "eventId": "2:0",
+                "techniqueId": "GL_SWEEP",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 30.24,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "GL_SWEEP:element:0",
+                "eventId": "2:0",
+                "techniqueId": "GL_SWEEP",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              }
+            ],
+            "issues": [
+              {
+                "eventId": "3:0",
+                "reason": "REAL_SLICE:GL_CHARGED_ROUNDS_INSUFFICIENT"
+              }
+            ],
+            "finalState": {
+              "gunlance": {
+                "loadedRounds": 1
+              }
+            },
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "incomplete",
+              "expected": [
+                "0:0",
+                "1:0",
+                "1:1",
+                "2:0",
+                "3:0",
+                "3:1"
+              ],
+              "executed": [
+                "0:0",
+                "1:0",
+                "1:1",
+                "2:0"
+              ],
+              "reason": "REAL_SLICE:GL_CHARGED_ROUNDS_INSUFFICIENT"
+            },
+            "components": [
+              {
+                "id": "GL_SLAM:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "GL_SLAM",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 43.09,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "GL_SLAM:element:0",
+                "eventId": "0:0",
+                "techniqueId": "GL_SLAM",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              },
+              {
+                "id": "reference:gl_NORMAL:shelling:0",
+                "eventId": "1:0",
+                "techniqueId": "reference:gl_NORMAL",
+                "revision": "1",
+                "source": "MACARONGAMEMO_GL_R49_SOURCE",
+                "coefficientUnit": "SHELLING",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 8.6,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "GL_SWEEP:physical:0",
+                "eventId": "2:0",
+                "techniqueId": "GL_SWEEP",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 30.24,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "GL_SWEEP:element:0",
+                "eventId": "2:0",
+                "techniqueId": "GL_SWEEP",
+                "revision": "2",
+                "source": "MACARONGAMEMO_GUNLANCE_MOTION_CURRENT",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              }
+            ],
+            "issues": [
+              {
+                "eventId": "3:0",
+                "reason": "REAL_SLICE:GL_CHARGED_ROUNDS_INSUFFICIENT"
+              }
+            ],
+            "finalState": {
+              "gunlance": {
+                "loadedRounds": 1
+              }
+            },
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

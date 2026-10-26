@@ -97,17 +97,20 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    return {nextState:{...state,switchAxe:{...state.switchAxe,mode}}};
   }
   if(event.type==='consume'&&['GL_NORMAL_ROUNDS','GL_CHARGED_ROUNDS'].includes(event.contract)&&weaponType==='gunlance'){const nextState=JSON.parse(JSON.stringify(state));nextState.gunlance.loadedRounds-=event.amount;return {nextState};}
-  if(event.type!=='hit'&&event.contract==='CB_ED1_NORMAL_RESOURCE'&&weaponType==='charge-blade'&&event.techniqueId==='CB_ELEMENT_DISCHARGE_1'){
+  if(event.type!=='hit'&&event.contract==='CB_ED1_NORMAL_RESOURCE'&&weaponType==='charge-blade'&&['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED'].includes(event.techniqueId)){
    const nextState=JSON.parse(JSON.stringify(state));
-   if(event.type==='consume')nextState.chargeBlade.normalPhials-=event.amount;
+   if(event.type==='consume'){const key=event.resourcePath?.[1];if(!['normalPhials','enhancedPhials'].includes(key))throw Error('REAL_SLICE:CB_ED1_RESOURCE_KEY_INVALID');nextState.chargeBlade[key]-=event.amount;}
    else if(event.type==='transition')nextState.chargeBlade.previousAction=event.techniqueId;
    else throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
    return {nextState};
   }
   const resource=event.components?.find(c=>c.parameters?.resourceContract)?.parameters.resourceContract;
   if(resource){
-   if(!['CHARGE','AXE_NEUTRAL'].includes(state?.chargeBlade?.previousAction)||!Number.isInteger(state?.chargeBlade?.normalPhials))throw Error('REAL_SLICE:CB_ED1_START_STATE_UNRESOLVED');
-   if(state.chargeBlade.normalPhials<resource.consumeNormalPhials)throw Error('REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT');
+   if(state?.chargeBlade?.previousAction!==resource.requiredPreviousAction||typeof state?.chargeBlade?.normalPhials!=='number'||!Number.isSafeInteger(state?.chargeBlade?.normalPhials*2))throw Error('REAL_SLICE:CB_ED1_START_STATE_UNRESOLVED');
+   const actualKey=(state.chargeBlade.enhancedPhials??0)>0?'enhancedPhials':'normalPhials';
+   if(actualKey!==resource.resourceKey)throw Error('REAL_SLICE:CB_RESOURCE_PRIORITY_MISMATCH');
+   const stock=state.chargeBlade[resource.resourceKey??'normalPhials'];
+   if(typeof stock!=='number'||!Number.isSafeInteger(stock*2)||stock<resource.consumeNormalPhials)throw Error('REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT');
   }
   if(event.type!=='hit'||!uniqueTechniqueIds.includes(event.techniqueId)||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   const physicalEvents=event.components.filter(c=>c.kind==='physical'),elementEvents=event.components.filter(c=>c.kind==='element'),shellingEvents=event.components.filter(c=>c.kind==='shelling'),referenceEvents=event.components.filter(c=>c.kind==='reference'),phialEvents=event.components.filter(c=>c.kind==='phial');
