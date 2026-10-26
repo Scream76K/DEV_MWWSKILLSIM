@@ -1,6 +1,12 @@
 (function(root){
  'use strict';
  const finite=(x,min,max)=>typeof x==='number'&&Number.isFinite(x)&&x>=min&&x<=max;
+ function consumedRounds(action,s){
+  if(action==='NORMAL')return 1;
+  if(action==='CHARGED'){if(!Number.isInteger(s.chargedRounds)||s.chargedRounds<1||s.chargedRounds>s.loadedRounds)throw Error('GL_SHELL:CHARGED_ROUNDS_PENDING');return s.chargedRounds;}
+  if(action==='FULL_BURST')return s.loadedRounds;
+  throw Error('GL_SHELL:ACTION_COMPONENT_PENDING');
+ }
  // DB owns all adopted coefficients. The existing common engine owns arithmetic.
  function calculate(o,engine,generic){
   const rulesRecord=engine?.get('gunlance','GL_SHELL_NORMAL_MEDIUM'),rules=rulesRecord?.specialSourceValues?.p0ReferenceRules,s=o?.state;
@@ -26,15 +32,15 @@
     artilleryMultiplier=artillery.physicalMultipliers[level];fireAdd=artillery.fireDisplayAdds[level];
     if(!finite(artilleryMultiplier,0,10)||!finite(fireAdd,0,10000)||artillery.fireUnit!=='DISPLAY_ELEMENT')throw Error('GL_SHELL:ARTILLERY_SOURCE_PENDING');
   }
-  let count,multiplier;
-  if(o.action==='NORMAL'){count=1;multiplier=rules.normalPhysicalMultiplier;}
-  else if(o.action==='CHARGED'){count=s.chargedRounds;multiplier=rules.chargedPhysicalMultiplier;if(!Number.isInteger(count)||count<1||count>s.loadedRounds)throw Error('GL_SHELL:CHARGED_ROUNDS_PENDING');}
-  else if(o.action==='FULL_BURST'){count=s.loadedRounds;multiplier=rules.fullBurstPhysicalMultiplier[s.shellingType];}
+  const count=consumedRounds(o.action,s);let multiplier;
+  if(o.action==='NORMAL'){multiplier=rules.normalPhysicalMultiplier;}
+  else if(o.action==='CHARGED'){multiplier=rules.chargedPhysicalMultiplier;}
+  else if(o.action==='FULL_BURST'){multiplier=rules.fullBurstPhysicalMultiplier[s.shellingType];}
   else throw Error('GL_SHELL:ACTION_COMPONENT_PENDING');
   if(!finite(multiplier,0,10))throw Error('GL_SHELL:MODIFIER_SOURCE_PENDING');
   const hit={mv:value.unparenthesizedValue,elementModifier:rules.fireElementModifier,physicalAttackModifier:{multiplier:multiplier*artilleryMultiplier,adoptionStatus:'ADOPTED',evidenceRef:level>0?artillery.evidenceRef:rules.evidenceRef}};
   const r=generic({status:'ADOPTED',hits:Array.from({length:count},()=>({...hit}))},{baseAttack:o.weaponBaseAttack,displayedElement:value.parenthesizedValue+fireAdd,elementType:'fire',elementKnown:true,typeKnown:true,physicalHitzone:100,elementalHitzone:s.fireHitzone,sharpnessPhysical:1,sharpnessElement:1,affinity:0,maxAffinity:0});
   return {...r,total:r.comparisonPower,hits:r.trace.map(h=>({p:h.physical,e:h.element,total:h.physical+h.element,component:'SHELL_RAW_AND_FIRE'})),consumedRounds:count,remainingRounds:s.loadedRounds-count,sourceTechniqueId:id,action:o.action,weaponApplicability:'UNVERIFIED',verificationStatus:'UNVERIFIED',adoptionStatus:rules.adoptionStatus,evidenceRefs:[...source.evidenceRefs,rules.evidenceRef,...(level>0?[artillery.evidenceRef]:[]),...(loadLevel>0?[loadRule.evidenceRef]:[])],loadShellsLevel:loadLevel,capacity,artilleryLevel:level,state:{...s},scope:'EXPLICIT_COMMON_SHELL_REFERENCE'};
  }
- const api=Object.freeze({calculate});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.GunlanceShellReference=api;
+ const api=Object.freeze({calculate,consumedRounds});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.GunlanceShellReference=api;
 })(typeof window!=='undefined'?window:globalThis);

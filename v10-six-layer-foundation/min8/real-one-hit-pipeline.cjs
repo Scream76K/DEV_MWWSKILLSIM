@@ -85,6 +85,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   return null;
  };
  const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type==='consume'&&event.contract==='GL_NORMAL_ROUNDS'&&weaponType==='gunlance'){const nextState=JSON.parse(JSON.stringify(state));nextState.gunlance.loadedRounds-=event.amount;return {nextState};}
   if(event.type!=='hit'&&event.contract==='CB_ED1_NORMAL_RESOURCE'&&weaponType==='charge-blade'&&event.techniqueId==='CB_ELEMENT_DISCHARGE_1'){
    const nextState=JSON.parse(JSON.stringify(state));
    if(event.type==='consume')nextState.chargeBlade.normalPhials-=event.amount;
@@ -100,6 +101,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   if(event.type!=='hit'||!uniqueTechniqueIds.includes(event.techniqueId)||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   const physicalEvents=event.components.filter(c=>c.kind==='physical'),elementEvents=event.components.filter(c=>c.kind==='element'),shellingEvents=event.components.filter(c=>c.kind==='shelling'),referenceEvents=event.components.filter(c=>c.kind==='reference'),phialEvents=event.components.filter(c=>c.kind==='phial');
   if(shellingEvents.length){
+   for(const c of shellingEvents){const r=c.parameters?.shellingResource;if(r&&(!Number.isInteger(state?.gunlance?.loadedRounds)||state.gunlance.loadedRounds<r.amount))throw Error('REAL_SLICE:GL_NORMAL_ROUNDS_INSUFFICIENT');}
    if(physicalEvents.length||elementEvents.length||shellingEvents.length!==event.components.length)return {emit:[],inactive:[],unresolved:['REAL_SLICE:SHELLING_COMPONENT_MIXED']};
    const unresolved=shellingEvents.filter(c=>c.id!==componentIds(event.techniqueId,c.parameters?.hitIndex).shelling).map(c=>c.id);
    return {emit:shellingEvents.filter(c=>!unresolved.includes(c.id)).map(c=>c.id),inactive:[],unresolved};

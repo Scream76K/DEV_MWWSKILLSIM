@@ -9,9 +9,11 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   const shelling=Array.isArray(record.specialComponents)&&record.specialComponents.some(x=>String(x).includes('SHELL'));
   const reference=record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='light-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound';
   if(shelling){
+   const resource=record.shellingResource;
+   if(resource&&(resource.id!=='GL_NORMAL_ROUNDS'||record.shellingAction!=='NORMAL'||!Number.isInteger(resource.amount)||resource.amount<=0||!resource.source))throw Error('REAL_SLICE:GL_RESOURCE_CONTRACT_INVALID');
    if(record.weaponType!=='gunlance'||record.numericStatus!=='SOURCE_CONFIRMED'||!record.specialSourceValues)throw Error('REAL_SLICE:SHELLING_SOURCE_PENDING');
    const source=record.evidenceRefs[0];
-   return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':shelling:0',kind:'shelling',unit:'SHELLING',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:['physical'],effectStages:['attack'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),shellingSource:record.specialSourceValues,shellingAction:record.shellingAction,shellingInput:record.shellingInput})}]}]});
+   return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':shelling:0',kind:'shelling',unit:'SHELLING',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:['physical'],effectStages:['attack'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),shellingSource:record.specialSourceValues,shellingAction:record.shellingAction,shellingInput:record.shellingInput,shellingResource:resource||null})}]},...(resource?[{type:'consume',contract:resource.id,source:resource.source,resourcePath:['gunlance','loadedRounds'],amount:resource.amount}]:[])]});
   }
   if(reference){
    const saed=record.phialReference;
