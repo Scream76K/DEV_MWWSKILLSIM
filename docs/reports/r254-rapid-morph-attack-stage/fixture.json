@@ -1,0 +1,432 @@
+{
+  "weapons": [
+    {
+      "phial": "impact",
+      "gameId": 71,
+      "crafting": {
+        "weapon": {
+          "id": 147
+        },
+        "craftable": true,
+        "previous": null,
+        "branches": [],
+        "craftingMaterials": [],
+        "craftingZennyCost": 200,
+        "upgradeMaterials": [],
+        "upgradeZennyCost": 0,
+        "column": 0,
+        "row": 0,
+        "id": 147
+      },
+      "rarity": 8,
+      "kind": "charge-blade",
+      "damage": {
+        "raw": 190,
+        "display": 684
+      },
+      "specials": [],
+      "name": "テンプス・ギア",
+      "description": "秘めたる性能を持ち得る太古の 盾斧。修復によって動き出した針は 秒読みを始め、最早止められぬ。",
+      "defenseBonus": 0,
+      "elderseal": null,
+      "slots": [
+        3,
+        3,
+        3
+      ],
+      "affinity": 5,
+      "skills": [],
+      "series": null,
+      "id": 147,
+      "sharpness": {
+        "red": 80,
+        "orange": 40,
+        "yellow": 60,
+        "green": 80,
+        "blue": 70,
+        "white": 20,
+        "purple": 0
+      },
+      "handicraft": [
+        5
+      ]
+    },
+    {
+      "phial": {
+        "kind": "power"
+      },
+      "gameId": 80,
+      "crafting": {
+        "weapon": {
+          "id": 1175
+        },
+        "craftable": true,
+        "previous": null,
+        "branches": [],
+        "craftingMaterials": [],
+        "craftingZennyCost": 300,
+        "upgradeMaterials": [],
+        "upgradeZennyCost": 0,
+        "column": 0,
+        "row": 0,
+        "id": 1175
+      },
+      "rarity": 8,
+      "kind": "switch-axe",
+      "damage": {
+        "raw": 200,
+        "display": 700
+      },
+      "specials": [],
+      "name": "邪執のコンキエレガン",
+      "description": "秘めたる性能を呑みこむ異形の 寵辱。苛む苦痛はやがて目醒め、 天地を永劫に喰らう歪みとなる。",
+      "defenseBonus": 0,
+      "elderseal": null,
+      "slots": [
+        3,
+        3,
+        3
+      ],
+      "affinity": -10,
+      "skills": [],
+      "series": null,
+      "id": 1175,
+      "sharpness": {
+        "red": 140,
+        "orange": 40,
+        "yellow": 40,
+        "green": 80,
+        "blue": 30,
+        "white": 20,
+        "purple": 0
+      },
+      "handicraft": [
+        5
+      ]
+    }
+  ],
+  "decorations": [
+    {
+      "name": "速変珠Ⅲ【３】",
+      "description": "装備に装着すると、 高速変形スキルが発動する装飾品。",
+      "value": 250,
+      "slot": 3,
+      "rarity": 5,
+      "kind": "weapon",
+      "skills": [
+        {
+          "skill": {
+            "id": 7,
+            "name": "高速変形"
+          },
+          "level": 3,
+          "description": "速度が１．３倍になり、 変形攻撃の威力が１．２倍になる",
+          "setPiecesRequired": null,
+          "id": 15
+        }
+      ],
+      "icon": {
+        "color": "blue",
+        "colorId": 17
+      },
+      "id": 46,
+      "gameId": -1569165952
+    },
+    {
+      "name": "攻撃珠【１】",
+      "description": "装備に装着すると、 攻撃スキルが発動する装飾品。",
+      "value": 150,
+      "slot": 1,
+      "rarity": 3,
+      "kind": "weapon",
+      "skills": [
+        {
+          "skill": {
+            "id": 72,
+            "name": "攻撃"
+          },
+          "level": 1,
+          "description": "基礎攻撃力＋３",
+          "setPiecesRequired": null,
+          "id": 175
+        }
+      ],
+      "icon": {
+        "color": "pink",
+        "colorId": 4
+      },
+      "id": 255,
+      "gameId": 130724024
+    }
+  ],
+  "skills": [
+    {
+      "name": "高速変形",
+      "kind": "weapon",
+      "description": "スラッシュアックスと チャージアックスの変形アクションの 速度と火力が上昇する。",
+      "ranks": [
+        {
+          "skill": {
+            "id": 7
+          },
+          "level": 1,
+          "name": null,
+          "description": "速度が１．１倍になる",
+          "setPiecesRequired": null,
+          "id": 13
+        },
+        {
+          "skill": {
+            "id": 7
+          },
+          "level": 2,
+          "name": null,
+          "description": "速度が１．２倍になり、 変形攻撃の威力が１．１倍になる",
+          "setPiecesRequired": null,
+          "id": 14
+        },
+        {
+          "skill": {
+            "id": 7
+          },
+          "level": 3,
+          "name": null,
+          "description": "速度が１．３倍になり、 変形攻撃の威力が１．２倍になる",
+          "setPiecesRequired": null,
+          "id": 15
+        }
+      ],
+      "icon": {
+        "id": 9,
+        "kind": "offense"
+      },
+      "id": 7,
+      "gameId": -1961116288
+    },
+    {
+      "name": "攻撃",
+      "kind": "weapon",
+      "description": "プレイヤーの攻撃力を上げる。",
+      "ranks": [
+        {
+          "skill": {
+            "id": 72
+          },
+          "level": 1,
+          "name": null,
+          "description": "基礎攻撃力＋３",
+          "setPiecesRequired": null,
+          "id": 175
+        },
+        {
+          "skill": {
+            "id": 72
+          },
+          "level": 2,
+          "name": null,
+          "description": "基礎攻撃力＋５",
+          "setPiecesRequired": null,
+          "id": 176
+        },
+        {
+          "skill": {
+            "id": 72
+          },
+          "level": 3,
+          "name": null,
+          "description": "基礎攻撃力＋７",
+          "setPiecesRequired": null,
+          "id": 177
+        },
+        {
+          "skill": {
+            "id": 72
+          },
+          "level": 4,
+          "name": null,
+          "description": "攻撃力を１．０２倍し、 基礎攻撃力＋８",
+          "setPiecesRequired": null,
+          "id": 178
+        },
+        {
+          "skill": {
+            "id": 72
+          },
+          "level": 5,
+          "name": null,
+          "description": "攻撃力を１．０４倍し、 基礎攻撃力＋９",
+          "setPiecesRequired": null,
+          "id": 179
+        }
+      ],
+      "icon": {
+        "id": 1,
+        "kind": "attack"
+      },
+      "id": 72,
+      "gameId": 1
+    }
+  ],
+  "source": "Previously retrieved MHDB records; exact original retrieval timestamp unavailable. No synthetic equipment values.",
+  "sourceRows": [
+    {
+      "phial": {
+        "kind": "power"
+      },
+      "gameId": 80,
+      "crafting": {
+        "weapon": {
+          "id": 1175
+        },
+        "craftable": true,
+        "previous": null,
+        "branches": [],
+        "craftingMaterials": [],
+        "craftingZennyCost": 300,
+        "upgradeMaterials": [],
+        "upgradeZennyCost": 0,
+        "column": 0,
+        "row": 0,
+        "id": 1175
+      },
+      "rarity": 8,
+      "kind": "switch-axe",
+      "damage": {
+        "raw": 200,
+        "display": 700
+      },
+      "specials": [],
+      "name": "邪執のコンキエレガン",
+      "description": "秘めたる性能を呑みこむ異形の 寵辱。苛む苦痛はやがて目醒め、 天地を永劫に喰らう歪みとなる。",
+      "defenseBonus": 0,
+      "elderseal": null,
+      "slots": [
+        3,
+        3,
+        3
+      ],
+      "affinity": -10,
+      "skills": [],
+      "series": null,
+      "id": 1175,
+      "sharpness": {
+        "red": 140,
+        "orange": 40,
+        "yellow": 40,
+        "green": 80,
+        "blue": 30,
+        "white": 20,
+        "purple": 0
+      },
+      "handicraft": [
+        5
+      ]
+    },
+    {
+      "phial": {
+        "kind": "element"
+      },
+      "gameId": 81,
+      "crafting": {
+        "weapon": {
+          "id": 1176
+        },
+        "craftable": true,
+        "previous": null,
+        "branches": [],
+        "craftingMaterials": [],
+        "craftingZennyCost": 300,
+        "upgradeMaterials": [],
+        "upgradeZennyCost": 0,
+        "column": 0,
+        "row": 0,
+        "id": 1176
+      },
+      "rarity": 8,
+      "kind": "switch-axe",
+      "damage": {
+        "raw": 180,
+        "display": 630
+      },
+      "specials": [],
+      "name": "邪執のコンキエレガン",
+      "description": "秘めたる性能を呑みこむ異形の 寵辱。苛む苦痛はやがて目醒め、 天地を永劫に喰らう歪みとなる。",
+      "defenseBonus": 0,
+      "elderseal": null,
+      "slots": [
+        3,
+        3,
+        3
+      ],
+      "affinity": 15,
+      "skills": [],
+      "series": null,
+      "id": 1176,
+      "sharpness": {
+        "red": 140,
+        "orange": 40,
+        "yellow": 40,
+        "green": 50,
+        "blue": 70,
+        "white": 10,
+        "purple": 0
+      },
+      "handicraft": [
+        5
+      ]
+    },
+    {
+      "phial": {
+        "kind": "element"
+      },
+      "gameId": 82,
+      "crafting": {
+        "weapon": {
+          "id": 1177
+        },
+        "craftable": true,
+        "previous": null,
+        "branches": [],
+        "craftingMaterials": [],
+        "craftingZennyCost": 300,
+        "upgradeMaterials": [],
+        "upgradeZennyCost": 0,
+        "column": 0,
+        "row": 0,
+        "id": 1177
+      },
+      "rarity": 8,
+      "kind": "switch-axe",
+      "damage": {
+        "raw": 190,
+        "display": 665
+      },
+      "specials": [],
+      "name": "邪執のコンキエレガン",
+      "description": "秘めたる性能を呑みこむ異形の 寵辱。苛む苦痛はやがて目醒め、 天地を永劫に喰らう歪みとなる。",
+      "defenseBonus": 0,
+      "elderseal": null,
+      "slots": [
+        3,
+        3,
+        3
+      ],
+      "affinity": 0,
+      "skills": [],
+      "series": null,
+      "id": 1177,
+      "sharpness": {
+        "red": 140,
+        "orange": 40,
+        "yellow": 40,
+        "green": 80,
+        "blue": 30,
+        "white": 20,
+        "purple": 0
+      },
+      "handicraft": [
+        5
+      ]
+    }
+  ]
+}
