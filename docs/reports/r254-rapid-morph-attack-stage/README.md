@@ -1,3 +1,5 @@
+> 後続訂正：ED Iを非対象とした対照は派生元不明を非成立扱いしていたため撤回。r254-cb-morph-origin/README.md参照。旧ログは実行SHAの履歴として保持。
+
 # 高速変形の攻撃段階への訂正
 
 採用: OWNER_APPROVED_PROVISIONAL。2026-10-25 23:53 UTC、Sentinel_97f55cacbddc819197a6c09997391956。

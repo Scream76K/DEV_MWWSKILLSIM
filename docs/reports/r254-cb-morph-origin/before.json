@@ -1,0 +1,1413 @@
+{
+  "codeSHA": "508e25878efef2f81bfd7dbcde5a7b295af69d7f",
+  "adapterSource": "ab7ac965c0132f717470521cfa9b2ae52c121725",
+  "adapterHash": "88831c02691e6c9c5f8bb73970c3691ba84dfd273c39ff194ef9d3826d5777eb",
+  "cases": [
+    {
+      "level": 0,
+      "real": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 147,
+            "gameId": 71,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/147",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"axeBoosted\":false,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"phialType\":\"IMPACT\",\"shieldBoosted\":true},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"IMPACT\",\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_ELEMENT_DISCHARGE_1\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"axeBoosted\":false,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"phialType\":\"IMPACT\",\"shieldBoosted\":true},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"IMPACT\",\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_ELEMENT_DISCHARGE_1\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"axeBoosted\":false,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"phialType\":\"IMPACT\",\"shieldBoosted\":true},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"IMPACT\",\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_ELEMENT_DISCHARGE_1\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_ELEMENT_DISCHARGE_1:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 122.96,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_ELEMENT_DISCHARGE_1:element:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 10.35,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_ELEMENT_DISCHARGE_1:phial:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+                "revision": "2",
+                "source": "USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4",
+                "coefficientUnit": "PHIAL",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 34.440000000000005,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "artiaAdoption": {
+                "status": "OWNER_APPROVED_PROVISIONAL",
+                "approvedAt": "2026-10-25T21:29:00Z",
+                "approvalRef": "Sentinel_b67c836659e4819188a37beddccd300a",
+                "source": "https://www.phantombrawlers.com/mhwilds/Artian",
+                "targetGameVersion": null,
+                "liveGameVerification": "PENDING",
+                "attackPerMaterial": 5,
+                "materialCount": 3,
+                "baseAttackByRarity": {
+                  "6": 170,
+                  "7": 180,
+                  "8": 190
+                },
+                "gogmaAttack": {
+                  "attack": 200,
+                  "affinity": 180,
+                  "element": 190
+                },
+                "normalRestore": {
+                  "atk": 5,
+                  "aff": 5
+                },
+                "normalElementRows": {
+                  "great-sword": [
+                    300,
+                    150,
+                    100,
+                    30,
+                    80
+                  ],
+                  "long-sword": [
+                    230,
+                    80,
+                    30,
+                    30,
+                    50
+                  ],
+                  "sword-and-shield": [
+                    230,
+                    80,
+                    30,
+                    20,
+                    30
+                  ],
+                  "dual-blades": [
+                    220,
+                    70,
+                    20,
+                    20,
+                    20
+                  ],
+                  "hammer": [
+                    270,
+                    120,
+                    70,
+                    30,
+                    50
+                  ],
+                  "hunting-horn": [
+                    270,
+                    120,
+                    70,
+                    30,
+                    50
+                  ],
+                  "lance": [
+                    230,
+                    80,
+                    30,
+                    30,
+                    50
+                  ],
+                  "gunlance": [
+                    270,
+                    120,
+                    70,
+                    30,
+                    50
+                  ],
+                  "switch-axe": [
+                    220,
+                    70,
+                    20,
+                    20,
+                    30
+                  ],
+                  "charge-blade": [
+                    230,
+                    80,
+                    30,
+                    30,
+                    50
+                  ],
+                  "insect-glaive": [
+                    220,
+                    70,
+                    20,
+                    20,
+                    30
+                  ],
+                  "bow": [
+                    180,
+                    30,
+                    null,
+                    20,
+                    30
+                  ]
+                },
+                "baseAttack": 190,
+                "productionAttack": 15,
+                "mutationIncluded": false,
+                "elementStage": "BASE_PLUS_THREE_SAME_ELEMENT_PARTS",
+                "sharpnessPremise": {
+                  "color": "white",
+                  "status": "OWNER_SPECIFIED",
+                  "source": "OWNER_2026-10-25T22:35Z_NORMAL_ARTIA_MELEE_WHITE",
+                  "scope": "MAX_COLOR_ONLY",
+                  "gaugeLength": null,
+                  "depletionModelled": false
+                },
+                "capacityEvidence": null,
+                "restorationContract": {
+                  "source": "OWNER_2026-10-25T22:53Z_RARE8_RESTORATION",
+                  "limits": {
+                    "atk": 5,
+                    "aff": 3,
+                    "sharp": 2,
+                    "elem": 4,
+                    "capacity": 2
+                  },
+                  "attack": 5,
+                  "affinity": 5,
+                  "sharpnessLength": 30,
+                  "capacity": 1
+                },
+                "sourceId": 147,
+                "elementEvidence": null,
+                "production": "attack",
+                "parts": [
+                  "attack",
+                  "attack",
+                  "attack"
+                ],
+                "sameElementPartCount": 3,
+                "restores": [
+                  "none",
+                  "none",
+                  "none",
+                  "none",
+                  "none"
+                ],
+                "stage": "BASE_PLUS_FIXED_PRODUCTION_PLUS_RESTORE_BEFORE_SKILLS"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 167.75
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_ELEMENT_DISCHARGE_1:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 122.96,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_ELEMENT_DISCHARGE_1:element:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 10.35,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_ELEMENT_DISCHARGE_1:phial:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+                "revision": "2",
+                "source": "USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4",
+                "coefficientUnit": "PHIAL",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 34.440000000000005,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "artiaAdoption": {
+                "status": "OWNER_APPROVED_PROVISIONAL",
+                "approvedAt": "2026-10-25T21:29:00Z",
+                "approvalRef": "Sentinel_b67c836659e4819188a37beddccd300a",
+                "source": "https://www.phantombrawlers.com/mhwilds/Artian",
+                "targetGameVersion": null,
+                "liveGameVerification": "PENDING",
+                "attackPerMaterial": 5,
+                "materialCount": 3,
+                "baseAttackByRarity": {
+                  "6": 170,
+                  "7": 180,
+                  "8": 190
+                },
+                "gogmaAttack": {
+                  "attack": 200,
+                  "affinity": 180,
+                  "element": 190
+                },
+                "normalRestore": {
+                  "atk": 5,
+                  "aff": 5
+                },
+                "normalElementRows": {
+                  "great-sword": [
+                    300,
+                    150,
+                    100,
+                    30,
+                    80
+                  ],
+                  "long-sword": [
+                    230,
+                    80,
+                    30,
+                    30,
+                    50
+                  ],
+                  "sword-and-shield": [
+                    230,
+                    80,
+                    30,
+                    20,
+                    30
+                  ],
+                  "dual-blades": [
+                    220,
+                    70,
+                    20,
+                    20,
+                    20
+                  ],
+                  "hammer": [
+                    270,
+                    120,
+                    70,
+                    30,
+                    50
+                  ],
+                  "hunting-horn": [
+                    270,
+                    120,
+                    70,
+                    30,
+                    50
+                  ],
+                  "lance": [
+                    230,
+                    80,
+                    30,
+                    30,
+                    50
+                  ],
+                  "gunlance": [
+                    270,
+                    120,
+                    70,
+                    30,
+                    50
+                  ],
+                  "switch-axe": [
+                    220,
+                    70,
+                    20,
+                    20,
+                    30
+                  ],
+                  "charge-blade": [
+                    230,
+                    80,
+                    30,
+                    30,
+                    50
+                  ],
+                  "insect-glaive": [
+                    220,
+                    70,
+                    20,
+                    20,
+                    30
+                  ],
+                  "bow": [
+                    180,
+                    30,
+                    null,
+                    20,
+                    30
+                  ]
+                },
+                "baseAttack": 190,
+                "productionAttack": 15,
+                "mutationIncluded": false,
+                "elementStage": "BASE_PLUS_THREE_SAME_ELEMENT_PARTS",
+                "sharpnessPremise": {
+                  "color": "white",
+                  "status": "OWNER_SPECIFIED",
+                  "source": "OWNER_2026-10-25T22:35Z_NORMAL_ARTIA_MELEE_WHITE",
+                  "scope": "MAX_COLOR_ONLY",
+                  "gaugeLength": null,
+                  "depletionModelled": false
+                },
+                "capacityEvidence": null,
+                "restorationContract": {
+                  "source": "OWNER_2026-10-25T22:53Z_RARE8_RESTORATION",
+                  "limits": {
+                    "atk": 5,
+                    "aff": 3,
+                    "sharp": 2,
+                    "elem": 4,
+                    "capacity": 2
+                  },
+                  "attack": 5,
+                  "affinity": 5,
+                  "sharpnessLength": 30,
+                  "capacity": 1
+                },
+                "sourceId": 147,
+                "elementEvidence": null,
+                "production": "attack",
+                "parts": [
+                  "attack",
+                  "attack",
+                  "attack"
+                ],
+                "sameElementPartCount": 3,
+                "restores": [
+                  "none",
+                  "none",
+                  "none",
+                  "none",
+                  "none"
+                ],
+                "stage": "BASE_PLUS_FIXED_PRODUCTION_PLUS_RESTORE_BEFORE_SKILLS"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 167.75
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      },
+      "summary": "\n    攻撃力738真 205\n    会心率5%\n    最大会心率5%\n    属性300\n    防御力1\n    選択技の実計算技 選択技 / 通常 167.8 [MACARONGAMEMO_CHARGE_BLADE_MOTION rev.2] [暫定・資料ベース] / 最大 167.8 [MACARONGAMEMO_CHARGE_BLADE_MOTION rev.2] [暫定・資料ベース]\n  ",
+      "snapshot": {
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "147",
+        "weaponKind": "charge-blade",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "attack",
+          "element": "water",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "canonical:CB_ELEMENT_DISCHARGE_1"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": true,
+            "axeBoosted": false,
+            "phialType": "IMPACT",
+            "enhancedPhial": true
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        }
+      },
+      "conditions": {
+        "attack": "205",
+        "aff": "5",
+        "elem": "300",
+        "mv": "100",
+        "hz": "80",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": true,
+          "axeBoosted": false,
+          "phialType": "IMPACT",
+          "enhancedPhial": true
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      }
+    },
+    {
+      "level": 3,
+      "real": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 147,
+            "gameId": 71,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/147",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"5\",\"attack\":\"205\",\"axeBoosted\":false,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"phialType\":\"IMPACT\",\"shieldBoosted\":true},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"300\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"IMPACT\",\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_ELEMENT_DISCHARGE_1\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"5\",\"attack\":\"205\",\"axeBoosted\":false,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"phialType\":\"IMPACT\",\"shieldBoosted\":true},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"300\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"IMPACT\",\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_ELEMENT_DISCHARGE_1\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"5\",\"attack\":\"205\",\"axeBoosted\":false,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"phialType\":\"IMPACT\",\"shieldBoosted\":true},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"300\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"IMPACT\",\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_ELEMENT_DISCHARGE_1\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_ELEMENT_DISCHARGE_1:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 122.96,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_ELEMENT_DISCHARGE_1:element:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 10.35,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_ELEMENT_DISCHARGE_1:phial:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+                "revision": "2",
+                "source": "USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4",
+                "coefficientUnit": "PHIAL",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 34.440000000000005,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "rapidMorphAdoption": {
+                "skillId": 7,
+                "multipliers": [
+                  1,
+                  1,
+                  1.1,
+                  1.2
+                ],
+                "stage": "attack",
+                "target": "physical",
+                "status": "OWNER_APPROVED_PROVISIONAL",
+                "approvedAt": "2026-10-25T23:53:00Z",
+                "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                "sourceVersion": "UNSPECIFIED",
+                "liveGameVerification": "PENDING",
+                "unconnectedScope": [
+                  "SA_AXE_SWEEP_MORPH_ALL_HITS",
+                  "SA_FOCUS_MORPH_WOUND_TRANSFORM_HITS",
+                  "CB_CHARGE_DERIVED_ED1",
+                  "CB_SHIELD_THRUST_OR_GUARD_DERIVED_AED",
+                  "CB_GUARD_DERIVED_SAED",
+                  "CB_ELEMENT_SPIN_AXE_BOOST",
+                  "CB_ELIGIBLE_AXE_FOLLOWUP",
+                  "CORRUPTED_MANTLE_FOLLOWUP"
+                ],
+                "excludedScope": [
+                  "SA_FOLLOWUP_EXPLOSION",
+                  "CB_PHIAL_EXPLOSION"
+                ],
+                "techniqueIds": [
+                  "CB_SWORD_TO_AXE_MORPH",
+                  "SA_SWORD_MORPH_DOUBLE",
+                  "SA_AXE_MORPH_SLASH"
+                ]
+              },
+              "artiaAdoption": {
+                "status": "OWNER_APPROVED_PROVISIONAL",
+                "approvedAt": "2026-10-25T21:29:00Z",
+                "approvalRef": "Sentinel_b67c836659e4819188a37beddccd300a",
+                "source": "https://www.phantombrawlers.com/mhwilds/Artian",
+                "targetGameVersion": null,
+                "liveGameVerification": "PENDING",
+                "attackPerMaterial": 5,
+                "materialCount": 3,
+                "baseAttackByRarity": {
+                  "6": 170,
+                  "7": 180,
+                  "8": 190
+                },
+                "gogmaAttack": {
+                  "attack": 200,
+                  "affinity": 180,
+                  "element": 190
+                },
+                "normalRestore": {
+                  "atk": 5,
+                  "aff": 5
+                },
+                "normalElementRows": {
+                  "great-sword": [
+                    300,
+                    150,
+                    100,
+                    30,
+                    80
+                  ],
+                  "long-sword": [
+                    230,
+                    80,
+                    30,
+                    30,
+                    50
+                  ],
+                  "sword-and-shield": [
+                    230,
+                    80,
+                    30,
+                    20,
+                    30
+                  ],
+                  "dual-blades": [
+                    220,
+                    70,
+                    20,
+                    20,
+                    20
+                  ],
+                  "hammer": [
+                    270,
+                    120,
+                    70,
+                    30,
+                    50
+                  ],
+                  "hunting-horn": [
+                    270,
+                    120,
+                    70,
+                    30,
+                    50
+                  ],
+                  "lance": [
+                    230,
+                    80,
+                    30,
+                    30,
+                    50
+                  ],
+                  "gunlance": [
+                    270,
+                    120,
+                    70,
+                    30,
+                    50
+                  ],
+                  "switch-axe": [
+                    220,
+                    70,
+                    20,
+                    20,
+                    30
+                  ],
+                  "charge-blade": [
+                    230,
+                    80,
+                    30,
+                    30,
+                    50
+                  ],
+                  "insect-glaive": [
+                    220,
+                    70,
+                    20,
+                    20,
+                    30
+                  ],
+                  "bow": [
+                    180,
+                    30,
+                    null,
+                    20,
+                    30
+                  ]
+                },
+                "baseAttack": 190,
+                "productionAttack": 15,
+                "mutationIncluded": false,
+                "elementStage": "BASE_PLUS_THREE_SAME_ELEMENT_PARTS",
+                "sharpnessPremise": {
+                  "color": "white",
+                  "status": "OWNER_SPECIFIED",
+                  "source": "OWNER_2026-10-25T22:35Z_NORMAL_ARTIA_MELEE_WHITE",
+                  "scope": "MAX_COLOR_ONLY",
+                  "gaugeLength": null,
+                  "depletionModelled": false
+                },
+                "capacityEvidence": null,
+                "restorationContract": {
+                  "source": "OWNER_2026-10-25T22:53Z_RARE8_RESTORATION",
+                  "limits": {
+                    "atk": 5,
+                    "aff": 3,
+                    "sharp": 2,
+                    "elem": 4,
+                    "capacity": 2
+                  },
+                  "attack": 5,
+                  "affinity": 5,
+                  "sharpnessLength": 30,
+                  "capacity": 1
+                },
+                "sourceId": 147,
+                "elementEvidence": null,
+                "production": "attack",
+                "parts": [
+                  "attack",
+                  "attack",
+                  "attack"
+                ],
+                "sameElementPartCount": 3,
+                "restores": [
+                  "none",
+                  "none",
+                  "none",
+                  "none",
+                  "none"
+                ],
+                "stage": "BASE_PLUS_FIXED_PRODUCTION_PLUS_RESTORE_BEFORE_SKILLS"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 167.75
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_ELEMENT_DISCHARGE_1:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 122.96,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_ELEMENT_DISCHARGE_1:element:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 10.35,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_ELEMENT_DISCHARGE_1:phial:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+                "revision": "2",
+                "source": "USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4",
+                "coefficientUnit": "PHIAL",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 34.440000000000005,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "rapidMorphAdoption": {
+                "skillId": 7,
+                "multipliers": [
+                  1,
+                  1,
+                  1.1,
+                  1.2
+                ],
+                "stage": "attack",
+                "target": "physical",
+                "status": "OWNER_APPROVED_PROVISIONAL",
+                "approvedAt": "2026-10-25T23:53:00Z",
+                "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                "sourceVersion": "UNSPECIFIED",
+                "liveGameVerification": "PENDING",
+                "unconnectedScope": [
+                  "SA_AXE_SWEEP_MORPH_ALL_HITS",
+                  "SA_FOCUS_MORPH_WOUND_TRANSFORM_HITS",
+                  "CB_CHARGE_DERIVED_ED1",
+                  "CB_SHIELD_THRUST_OR_GUARD_DERIVED_AED",
+                  "CB_GUARD_DERIVED_SAED",
+                  "CB_ELEMENT_SPIN_AXE_BOOST",
+                  "CB_ELIGIBLE_AXE_FOLLOWUP",
+                  "CORRUPTED_MANTLE_FOLLOWUP"
+                ],
+                "excludedScope": [
+                  "SA_FOLLOWUP_EXPLOSION",
+                  "CB_PHIAL_EXPLOSION"
+                ],
+                "techniqueIds": [
+                  "CB_SWORD_TO_AXE_MORPH",
+                  "SA_SWORD_MORPH_DOUBLE",
+                  "SA_AXE_MORPH_SLASH"
+                ]
+              },
+              "artiaAdoption": {
+                "status": "OWNER_APPROVED_PROVISIONAL",
+                "approvedAt": "2026-10-25T21:29:00Z",
+                "approvalRef": "Sentinel_b67c836659e4819188a37beddccd300a",
+                "source": "https://www.phantombrawlers.com/mhwilds/Artian",
+                "targetGameVersion": null,
+                "liveGameVerification": "PENDING",
+                "attackPerMaterial": 5,
+                "materialCount": 3,
+                "baseAttackByRarity": {
+                  "6": 170,
+                  "7": 180,
+                  "8": 190
+                },
+                "gogmaAttack": {
+                  "attack": 200,
+                  "affinity": 180,
+                  "element": 190
+                },
+                "normalRestore": {
+                  "atk": 5,
+                  "aff": 5
+                },
+                "normalElementRows": {
+                  "great-sword": [
+                    300,
+                    150,
+                    100,
+                    30,
+                    80
+                  ],
+                  "long-sword": [
+                    230,
+                    80,
+                    30,
+                    30,
+                    50
+                  ],
+                  "sword-and-shield": [
+                    230,
+                    80,
+                    30,
+                    20,
+                    30
+                  ],
+                  "dual-blades": [
+                    220,
+                    70,
+                    20,
+                    20,
+                    20
+                  ],
+                  "hammer": [
+                    270,
+                    120,
+                    70,
+                    30,
+                    50
+                  ],
+                  "hunting-horn": [
+                    270,
+                    120,
+                    70,
+                    30,
+                    50
+                  ],
+                  "lance": [
+                    230,
+                    80,
+                    30,
+                    30,
+                    50
+                  ],
+                  "gunlance": [
+                    270,
+                    120,
+                    70,
+                    30,
+                    50
+                  ],
+                  "switch-axe": [
+                    220,
+                    70,
+                    20,
+                    20,
+                    30
+                  ],
+                  "charge-blade": [
+                    230,
+                    80,
+                    30,
+                    30,
+                    50
+                  ],
+                  "insect-glaive": [
+                    220,
+                    70,
+                    20,
+                    20,
+                    30
+                  ],
+                  "bow": [
+                    180,
+                    30,
+                    null,
+                    20,
+                    30
+                  ]
+                },
+                "baseAttack": 190,
+                "productionAttack": 15,
+                "mutationIncluded": false,
+                "elementStage": "BASE_PLUS_THREE_SAME_ELEMENT_PARTS",
+                "sharpnessPremise": {
+                  "color": "white",
+                  "status": "OWNER_SPECIFIED",
+                  "source": "OWNER_2026-10-25T22:35Z_NORMAL_ARTIA_MELEE_WHITE",
+                  "scope": "MAX_COLOR_ONLY",
+                  "gaugeLength": null,
+                  "depletionModelled": false
+                },
+                "capacityEvidence": null,
+                "restorationContract": {
+                  "source": "OWNER_2026-10-25T22:53Z_RARE8_RESTORATION",
+                  "limits": {
+                    "atk": 5,
+                    "aff": 3,
+                    "sharp": 2,
+                    "elem": 4,
+                    "capacity": 2
+                  },
+                  "attack": 5,
+                  "affinity": 5,
+                  "sharpnessLength": 30,
+                  "capacity": 1
+                },
+                "sourceId": 147,
+                "elementEvidence": null,
+                "production": "attack",
+                "parts": [
+                  "attack",
+                  "attack",
+                  "attack"
+                ],
+                "sameElementPartCount": 3,
+                "restores": [
+                  "none",
+                  "none",
+                  "none",
+                  "none",
+                  "none"
+                ],
+                "stage": "BASE_PLUS_FIXED_PRODUCTION_PLUS_RESTORE_BEFORE_SKILLS"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 167.75
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      },
+      "summary": "\n    攻撃力738真 205\n    会心率5%\n    最大会心率5%\n    属性300\n    防御力1\n    選択技の実計算技 選択技 / 通常 167.8 [MACARONGAMEMO_CHARGE_BLADE_MOTION rev.2] [暫定・資料ベース] / 最大 167.8 [MACARONGAMEMO_CHARGE_BLADE_MOTION rev.2] [暫定・資料ベース]\n  ",
+      "snapshot": {
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "147",
+        "weaponKind": "charge-blade",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "attack",
+          "element": "water",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {
+          "w0": "46"
+        },
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "canonical:CB_ELEMENT_DISCHARGE_1"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": true,
+            "axeBoosted": false,
+            "phialType": "IMPACT",
+            "enhancedPhial": true
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        }
+      },
+      "conditions": {
+        "attack": "205",
+        "aff": "5",
+        "elem": "300",
+        "mv": "100",
+        "hz": "80",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": true,
+          "axeBoosted": false,
+          "phialType": "IMPACT",
+          "enhancedPhial": true
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      }
+    }
+  ],
+  "checks": [
+    {
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'OK'\n- 'UNAVAILABLE'\n\n    at Object.<anonymous> (/Users/scream/Documents/Codex/2026-10-18/task/himmel-v10-real-db-element-gate/tools/cb-morph-origin-proof.cjs:13:219)\n    at Module._compile (node:internal/modules/cjs/loader:1929:14)\n    at Object..js (node:internal/modules/cjs/loader:2060:10)\n    at Module.load (node:internal/modules/cjs/loader:1651:32)\n    at Module._load (node:internal/modules/cjs/loader:1443:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+    }
+  ]
+}
