@@ -1967,6 +1967,17 @@ function updateWeaponCoeffDisplay(){
   if(note)note.textContent=on?'ON：ゲーム内表示攻撃力（武器係数あり）':'OFF：真攻撃力（武器係数なし）';
   renderSummary();renderDetail();syncDamage();
 }
+// MHDB armor contribution only; never substitute this for total hunter resistance.
+function armorThunderResistanceInput(armor){
+  const rows=[],missing=[];let sum=0;
+  for(const slot of ['head','chest','arms','waist','legs']){
+    const a=armor?.[slot];if(a==null){rows.push({slot,equipped:false,value:0});continue;}
+    const value=a.resistances?.thunder;
+    if(!Number.isInteger(a.id)||a.kind!==slot||typeof value!=='number'||!Number.isFinite(value)){missing.push(slot);rows.push({slot,equipped:true,id:a.id??null,value:null});continue;}
+    sum+=value;rows.push({slot,equipped:true,id:a.id,value,sourceUrl:`https://wilds.mhdb.io/ja/armor/${a.id}`});
+  }
+  return {status:missing.length?'UNRESOLVED':'ARMOR_BASE_ONLY',armorBase:missing.length?null:sum,total:null,rows,missing,reason:missing.length?'ARMOR_RESISTANCE_RECORD_UNRESOLVED':'SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED'};
+}
 function calcBuild(){normalizeArtiaProduction();renderCharmLegality();
   let total={},w=selectedWeapon(),kind=canonicalWeaponKind(w),coef=weaponCoefficient(kind),fixed=isArtiaWeapon(w)?calculatedArtiaStats(w):null;
   if(isArtiaWeapon(w)&&!fixed){
@@ -1982,7 +1993,7 @@ function calcBuild(){normalizeArtiaProduction();renderCharmLegality();
   }
   if(isArtiaWeapon(w)&&!fixed) baseAttackTrue=0;
   let stats={attack:baseAttackTrue,attackTrue:baseAttackTrue,affinity:isArtiaWeapon(w)?(fixed?Number(fixed.affinity):0):(Number(w?.affinity??0)),element:0,elementType:'',defense:1,weaponCoefficient:coef,weaponKind:kind};
-  Object.assign(stats,{attackKnown,affinityKnown});
+  Object.assign(stats,{attackKnown,affinityKnown,armorThunderResistanceInput:armorThunderResistanceInput(build.armor)});
   Object.assign(stats,MHWElementState.unknown('','ELEMENT_WEAPON_NOT_SELECTED'));
   if(w){add(total,weaponSkills(w));const ei=isArtiaWeapon(w)?(fixed?{...fixed,type:fixed.elementType,value:fixed.element}:MHWElementState.unknown(build.artia.element,'ELEMENT_FIXED_VARIANT_MISSING')):weaponElementInfo(w);Object.assign(stats,{element:ei.value??ei.element,elementType:ei.type??ei.elementType,elementKnown:ei.elementKnown,typeKnown:ei.typeKnown,elementStatus:ei.elementStatus,elementReason:ei.elementReason});if(!isArtiaWeapon(w)||fixed){let rs=restoreStats(w);stats.attack+=Number(rs.attack);stats.affinity+=Number(rs.affinity);if(stats.elementKnown)stats.element+=Number(rs.element);}}
   for(const k of ['head','chest','arms','waist','legs']){let a=build.armor[k];if(a){add(total,armorSkills(a));stats.defense+=armorMaxDefense(a)}}

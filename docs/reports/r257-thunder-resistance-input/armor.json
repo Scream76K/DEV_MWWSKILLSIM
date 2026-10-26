@@ -1,0 +1,139 @@
+{
+  "source": "https://wilds.mhdb.io/ja/armor",
+  "retrieval": "existing /tmp/armor1000.json; acquisition timestamp unknown, reused 2026-10-26",
+  "armor": {
+    "kind": "head",
+    "name": "インゴットヘルム",
+    "description": "金の光沢が美しい鉱石で作られた 頭防具。頭部をしっかり覆えるよう 作られている。",
+    "rank": "low",
+    "rarity": 3,
+    "resistances": {
+      "fire": -2,
+      "water": 0,
+      "ice": -1,
+      "thunder": 3,
+      "dragon": 0
+    },
+    "defense": {
+      "base": 16,
+      "max": 32
+    },
+    "skills": [
+      {
+        "skill": {
+          "id": 122,
+          "gameId": 1346775424,
+          "name": "精霊の加護",
+          "kind": "armor",
+          "icon": {
+            "id": 6,
+            "kind": "defense"
+          }
+        },
+        "level": 1,
+        "name": null,
+        "description": "効果発動時、ダメージを １５％軽減する",
+        "setPiecesRequired": null,
+        "id": 318
+      }
+    ],
+    "slots": [],
+    "armorSet": {
+      "id": 64,
+      "name": "インゴット"
+    },
+    "crafting": {
+      "armor": {
+        "id": 272
+      },
+      "materials": [
+        {
+          "item": {
+            "id": 52,
+            "gameId": 54,
+            "rarity": 4,
+            "name": "マカライト鉱石",
+            "description": "鉱脈で採掘できる鉱石。 鉄鉱石よりも良質な マカライト鋼に精製できる。",
+            "value": 160,
+            "carryLimit": 10,
+            "recipes": [],
+            "icon": {
+              "id": 38,
+              "kind": "ore",
+              "colorId": 17,
+              "color": "blue"
+            }
+          },
+          "quantity": 1,
+          "id": 811
+        },
+        {
+          "item": {
+            "id": 53,
+            "gameId": 55,
+            "rarity": 4,
+            "name": "ドラグライト鉱石",
+            "description": "鉱脈で採掘できる鉱石。 希少価値が高く、強固な 装備の作製に欠かせない。",
+            "value": 480,
+            "carryLimit": 10,
+            "recipes": [],
+            "icon": {
+              "id": 38,
+              "kind": "ore",
+              "colorId": 14,
+              "color": "green"
+            }
+          },
+          "quantity": 1,
+          "id": 812
+        }
+      ],
+      "zennyCost": 400,
+      "id": 272
+    },
+    "id": 272
+  },
+  "skill": {
+    "name": "精霊の加護",
+    "kind": "armor",
+    "description": "プレイヤーが受けるダメージを 一定確率で減少させる。",
+    "ranks": [
+      {
+        "skill": {
+          "id": 122
+        },
+        "level": 1,
+        "name": null,
+        "description": "効果発動時、ダメージを １５％軽減する",
+        "setPiecesRequired": null,
+        "id": 318
+      },
+      {
+        "skill": {
+          "id": 122
+        },
+        "level": 2,
+        "name": null,
+        "description": "効果発動時、ダメージを ３０％軽減する",
+        "setPiecesRequired": null,
+        "id": 319
+      },
+      {
+        "skill": {
+          "id": 122
+        },
+        "level": 3,
+        "name": null,
+        "description": "効果発動時、ダメージを ５０％軽減する",
+        "setPiecesRequired": null,
+        "id": 320
+      }
+    ],
+    "icon": {
+      "id": 6,
+      "kind": "defense"
+    },
+    "id": 122,
+    "gameId": 1346775424
+  }
+}
