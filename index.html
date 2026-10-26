@@ -2258,7 +2258,7 @@ function equipmentElementDisplay(state={},options={}){
   if(typeof MHWElementDisplay!=='undefined')return MHWElementDisplay.render(view,options);
   return reason?'未算出：'+esc(comparisonReasonText(reason)):esc(Number.isFinite(state.element)?Math.round(state.element):'未算出');
 }
-function attributeConversionDisplay(d){const c=d?.attributeConversion;return c?`［属性変換${c.active?'発動':'非発動'}・龍${c.baseElement}→${c.effectiveElement}・本体限定参考値／固定・龍追撃を含まない］`:'';}
+function attributeConversionDisplay(d){const c=d?.attributeConversion;return c?`［属性変換${typeof c.active==='boolean'?(c.active?'発動':'非発動'):'状態未入力'}・龍${c.baseElement}→${c.effectiveElement??'未算出'}・本体限定参考値／固定・龍追撃を含まない］`:'';}
 function thunderConversionDisplay(d){const c=d?.thunderResistanceConversion;return c?`［耐性変換・雷${Number(c.baseElement)}→${Number(c.effectiveElement)}／装備由来・本体限定・食事/一時効果なし］`:'';}
 function renderSummary(){
   let t=calcState.total,s=calcState.stats;
@@ -7967,10 +7967,11 @@ function comparisonReadinessHtml(rows,baseline){
     const pipeline=row.oneHitPipeline;
     const pipelineNormal=pipeline?.channels?.normal?.metrics?.comboTotalDamage;
     const pipelineMaximum=pipeline?.channels?.maximum?.metrics?.comboTotalDamage;
-    if(pipeline?.status==='OK'&&pipelineNormal?.status==='available'&&pipelineMaximum?.status==='available'){
+    if(pipeline?.status==='OK'&&(pipelineNormal?.status==='available'||pipelineMaximum?.status==='available')){
       if(pipeline.channels?.normal?.diagnostics?.thunderResistanceConversion)lines.push(thunderConversionDisplay(pipeline.channels.normal.diagnostics));
       if(pipeline.channels?.normal?.diagnostics?.attributeConversion)lines.push('通常'+attributeConversionDisplay(pipeline.channels.normal.diagnostics)+'／最大'+attributeConversionDisplay(pipeline.channels.maximum.diagnostics));
-      const pd=pipeline?.channels?.normal?.diagnostics?.formalStatus||pipeline?.channels?.maximum?.diagnostics?.formalStatus;lines.push('共通Pipeline通常／最大：'+comparisonDisplayNumber(pipelineNormal.value)+'／'+comparisonDisplayNumber(pipelineMaximum.value)+'（保存対象・選択技を独立評価）'+(pipeline?.channels?.normal?.diagnostics?.referenceOnly?'［参考値・暫定］':pd==='PROVISIONAL'?'［暫定・資料ベース］':pd==='UNVERIFIED'?'［未検証範囲あり］':''));
+      const channelValue=ch=>{const c=pipeline.channels?.[ch],m=c?.metrics?.comboTotalDamage;return m?.status==='available'?comparisonDisplayNumber(m.value):'未算出（'+comparisonReasonText(c?.execution?.reason||c?.issues?.[0]?.code||m?.reason||'PIPELINE_UNAVAILABLE')+'）';};
+      const pd=pipeline?.channels?.normal?.diagnostics?.formalStatus||pipeline?.channels?.maximum?.diagnostics?.formalStatus;lines.push('共通Pipeline通常／最大：'+channelValue('normal')+'／'+channelValue('maximum')+'（保存対象・選択技を独立評価）'+(pipeline?.channels?.normal?.diagnostics?.referenceOnly?'［参考値・暫定］':pd==='PROVISIONAL'?'［暫定・資料ベース］':pd==='UNVERIFIED'?'［未検証範囲あり］':''));
     }else if(pipeline){
       lines.push('共通Pipeline：未算出（'+comparisonReasonText(pipeline.reason||pipeline.channels?.normal?.execution?.reason||pipeline.channels?.maximum?.execution?.reason||pipelineNormal?.reason||pipelineMaximum?.reason||'PIPELINE_UNAVAILABLE')+'）');
     }
