@@ -821,7 +821,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    const m=record.hhModel;
    if(weaponType!=='hunting-horn'||m.id!=='HH_NORMAL_MELODY_PROVISIONAL'||m.status!=='OWNER_APPROVED_PROVISIONAL'||!m.techniques?.[techniqueId])throw Error('REAL_SLICE:HH_MODEL_INVALID');
    const n=m.input?.melodies?.length,b=m.input?.echoBubbles;
-   if(!Number.isSafeInteger(n)||n<1||n>m.maxMelodies||!Number.isSafeInteger(b)||b<0||b>m.maxEchoBubbles||m.input.melodies.some(x=>x!=='SELF_IMPROVEMENT'))throw Error('REAL_SLICE:HH_MODEL_INPUT_INVALID');
+   if(!Number.isSafeInteger(n)||n<1||n>m.maxMelodies||!Number.isSafeInteger(b)||b<0||b>m.maxEchoBubbles||m.input.melodies.some(x=>x!=='SELF_IMPROVEMENT'&&!m.attackMelodies[x]))throw Error('REAL_SLICE:HH_MODEL_INPUT_INVALID');
    const adoption={status:m.status,verificationStatus:m.verificationStatus,source:m.source,approval:m.approval,scope:m.scope,updateOrder:m.updateOrder};
    const body={...record,hhModel:null,specialComponents:[],calculationStatus:'READY_BODY_COMPONENT',stateRequirement:{},adoption,hits:record.hits.map(h=>({...h,damageType:h.damageType??m.bodyDamageType,partModifier:h.partModifier??m.bodyPartModifier}))};
    const adapted=adaptOrdinaryPhysicalHit({weaponType,techniqueId,record:body,dbVersion,elementContext,allowUnresolvedElement});
@@ -833,7 +833,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
     for(let i=0;i<n;i++){
      if(m.action==='performance')add('HH_PERFORMANCE_SHOCKWAVE',m.soundPerMelody);
      add('HH_ECHO_BUBBLE_MELODY_EVENT',b*m.echoPerTrigger);
-     events.push({type:'transition',contract:'HH_MELODY_ESTABLISHED',operations:[{op:'add',path:['huntingHorn','selfImprovementLevel'],amount:1,cap:m.selfImprovementCap}]});
+     events.push({type:'transition',contract:'HH_MELODY_ESTABLISHED',operations:[{op:'add',path:['huntingHorn',m.input.melodies[i]==='SELF_IMPROVEMENT'?'selfImprovementLevel':'attackMelodyLevel'],amount:1,cap:m.input.melodies[i]==='SELF_IMPROVEMENT'?m.selfImprovementCap:m.attackMelodyCap}]});
     }
    }
    return Object.freeze({...adapted,events});
@@ -882,11 +882,20 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    // Preserve the sourced part-durability modifier for provenance. The
    // canonical HP formula validates it but does not apply it to HP damage.
-   const stateMetadata={saHitMode:saMode?.hitModes[index]??null,resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):record.adoption||null};
+   const stateMetadata={excludedEffectIds:record.saAwakened?[record.saAwakened.elementEffectId]:[],saHitMode:saMode?.hitModes[index]??null,resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):record.adoption||null};
    const partModifierKnown=finite(hit.partModifier);
-   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,shieldBoostAxeBody:record.shieldBoostAxeBody===true,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
-   if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
+   const hitSource=hit.componentSource??source;
+   if(typeof hitSource!=='string'||!hitSource)throw Error('REAL_SLICE:HIT_SOURCE_REQUIRED:'+index);
+   if(hit.shieldBoostAxeBody!==undefined&&typeof hit.shieldBoostAxeBody!=='boolean')throw Error('REAL_SLICE:HIT_SHIELD_SCOPE_INVALID:'+index);
+   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source:hitSource,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,shieldBoostAxeBody:(hit.shieldBoostAxeBody??record.shieldBoostAxeBody)===true,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
+   if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source:hitSource,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
    events.push({type:'hit',components});
+   if(record.saAwakened&&saMode?.hitModes[index]==='SWORD'){
+    const m=record.saAwakened,h=m.followupRecord?.hits?.[0],followIndex=record.hits.length+index;
+    if(m.status!=='OWNER_APPROVED_PROVISIONAL'||!m.techniqueIds.includes(techniqueId)||!finite(h?.mv)||!finite(h?.elementModifier)||!finite(h?.partModifier))throw Error('REAL_SLICE:SA_AWAKENED_MODEL_INVALID');
+    const parameters={...stateMetadata,hitIndex:followIndex,saFollowup:true,damageType:m.damageType,partModifier:h.partModifier,partModifierStatus:'RESOLVED',partModifierSource:m.source,elementModifier:h.elementModifier,excludedEffectIds:['rapid-morph-attack:'+techniqueId],adoption:m};
+    events.push({type:'hit',components:[{id:techniqueId+':physical:'+followIndex,kind:'physical',unit:'MV',source:m.source,coefficient:h.mv,parameters},{id:techniqueId+':element:'+followIndex,kind:'element',unit:'ELEMENT_MODIFIER',source:m.source,coefficient:h.elementModifier,parameters}]});
+   }
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});
   });
   if(saMode)events.push({type:'transition',contract:'SA_HIT_MODE',requiredMode:saMode.hitModes[saMode.hitModes.length-1],operations:[{op:'set',path:['switchAxe','mode'],value:saMode.endMode}]});
@@ -924,7 +933,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    const m=record.hhModel;
    if(weaponType!=='hunting-horn'||m.id!=='HH_NORMAL_MELODY_PROVISIONAL'||m.status!=='OWNER_APPROVED_PROVISIONAL'||!m.techniques?.[techniqueId])throw Error('REAL_SLICE:HH_MODEL_INVALID');
    const n=m.input?.melodies?.length,b=m.input?.echoBubbles;
-   if(!Number.isSafeInteger(n)||n<1||n>m.maxMelodies||!Number.isSafeInteger(b)||b<0||b>m.maxEchoBubbles||m.input.melodies.some(x=>x!=='SELF_IMPROVEMENT'))throw Error('REAL_SLICE:HH_MODEL_INPUT_INVALID');
+   if(!Number.isSafeInteger(n)||n<1||n>m.maxMelodies||!Number.isSafeInteger(b)||b<0||b>m.maxEchoBubbles||m.input.melodies.some(x=>x!=='SELF_IMPROVEMENT'&&!m.attackMelodies[x]))throw Error('REAL_SLICE:HH_MODEL_INPUT_INVALID');
    const adoption={status:m.status,verificationStatus:m.verificationStatus,source:m.source,approval:m.approval,scope:m.scope,updateOrder:m.updateOrder};
    const body={...record,hhModel:null,specialComponents:[],calculationStatus:'READY_BODY_COMPONENT',stateRequirement:{},adoption,hits:record.hits.map(h=>({...h,damageType:h.damageType??m.bodyDamageType,partModifier:h.partModifier??m.bodyPartModifier}))};
    const adapted=adaptOrdinaryPhysicalHit({weaponType,techniqueId,record:body,dbVersion,elementContext,allowUnresolvedElement});
@@ -936,7 +945,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
     for(let i=0;i<n;i++){
      if(m.action==='performance')add('HH_PERFORMANCE_SHOCKWAVE',m.soundPerMelody);
      add('HH_ECHO_BUBBLE_MELODY_EVENT',b*m.echoPerTrigger);
-     events.push({type:'transition',contract:'HH_MELODY_ESTABLISHED',operations:[{op:'add',path:['huntingHorn','selfImprovementLevel'],amount:1,cap:m.selfImprovementCap}]});
+     events.push({type:'transition',contract:'HH_MELODY_ESTABLISHED',operations:[{op:'add',path:['huntingHorn',m.input.melodies[i]==='SELF_IMPROVEMENT'?'selfImprovementLevel':'attackMelodyLevel'],amount:1,cap:m.input.melodies[i]==='SELF_IMPROVEMENT'?m.selfImprovementCap:m.attackMelodyCap}]});
     }
    }
    return Object.freeze({...adapted,events});
@@ -985,11 +994,20 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    // Preserve the sourced part-durability modifier for provenance. The
    // canonical HP formula validates it but does not apply it to HP damage.
-   const stateMetadata={saHitMode:saMode?.hitModes[index]??null,resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):record.adoption||null};
+   const stateMetadata={excludedEffectIds:record.saAwakened?[record.saAwakened.elementEffectId]:[],saHitMode:saMode?.hitModes[index]??null,resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):record.adoption||null};
    const partModifierKnown=finite(hit.partModifier);
-   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,shieldBoostAxeBody:record.shieldBoostAxeBody===true,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
-   if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
+   const hitSource=hit.componentSource??source;
+   if(typeof hitSource!=='string'||!hitSource)throw Error('REAL_SLICE:HIT_SOURCE_REQUIRED:'+index);
+   if(hit.shieldBoostAxeBody!==undefined&&typeof hit.shieldBoostAxeBody!=='boolean')throw Error('REAL_SLICE:HIT_SHIELD_SCOPE_INVALID:'+index);
+   const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source:hitSource,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,shieldBoostAxeBody:(hit.shieldBoostAxeBody??record.shieldBoostAxeBody)===true,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
+   if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source:hitSource,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
    events.push({type:'hit',components});
+   if(record.saAwakened&&saMode?.hitModes[index]==='SWORD'){
+    const m=record.saAwakened,h=m.followupRecord?.hits?.[0],followIndex=record.hits.length+index;
+    if(m.status!=='OWNER_APPROVED_PROVISIONAL'||!m.techniqueIds.includes(techniqueId)||!finite(h?.mv)||!finite(h?.elementModifier)||!finite(h?.partModifier))throw Error('REAL_SLICE:SA_AWAKENED_MODEL_INVALID');
+    const parameters={...stateMetadata,hitIndex:followIndex,saFollowup:true,damageType:m.damageType,partModifier:h.partModifier,partModifierStatus:'RESOLVED',partModifierSource:m.source,elementModifier:h.elementModifier,excludedEffectIds:['rapid-morph-attack:'+techniqueId],adoption:m};
+    events.push({type:'hit',components:[{id:techniqueId+':physical:'+followIndex,kind:'physical',unit:'MV',source:m.source,coefficient:h.mv,parameters},{id:techniqueId+':element:'+followIndex,kind:'element',unit:'ELEMENT_MODIFIER',source:m.source,coefficient:h.elementModifier,parameters}]});
+   }
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});
   });
   if(saMode)events.push({type:'transition',contract:'SA_HIT_MODE',requiredMode:saMode.hitModes[saMode.hitModes.length-1],operations:[{op:'set',path:['switchAxe','mode'],value:saMode.endMode}]});
@@ -1227,9 +1245,9 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
  };
  const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
   if(event.type==='transition'&&event.contract==='HH_MELODY_ESTABLISHED'&&weaponType==='hunting-horn'){
-   const level=state?.huntingHorn?.selfImprovementLevel,op=event.operations?.[0];
-   if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn','selfImprovementLevel']))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');
-   return {nextState:{...state,huntingHorn:{...state.huntingHorn,selfImprovementLevel:Math.min(level+op.amount,op.cap)}}};
+   const op=event.operations?.[0],key=op?.path?.[1],level=state?.huntingHorn?.[key];
+   if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||!['selfImprovementLevel','attackMelodyLevel'].includes(key)||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn',key]))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');
+   return {nextState:{...state,huntingHorn:{...state.huntingHorn,[key]:Math.min(level+op.amount,op.cap)}}};
   }
   if(event.type==='transition'&&event.contract==='SA_HIT_MODE'&&weaponType==='switch-axe'){
    if(!['SWORD','AXE'].includes(state?.switchAxe?.mode))throw Error('REAL_SLICE:SA_START_MODE_UNRESOLVED');
@@ -1386,9 +1404,9 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
  };
  const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
   if(event.type==='transition'&&event.contract==='HH_MELODY_ESTABLISHED'&&weaponType==='hunting-horn'){
-   const level=state?.huntingHorn?.selfImprovementLevel,op=event.operations?.[0];
-   if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn','selfImprovementLevel']))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');
-   return {nextState:{...state,huntingHorn:{...state.huntingHorn,selfImprovementLevel:Math.min(level+op.amount,op.cap)}}};
+   const op=event.operations?.[0],key=op?.path?.[1],level=state?.huntingHorn?.[key];
+   if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||!['selfImprovementLevel','attackMelodyLevel'].includes(key)||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn',key]))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');
+   return {nextState:{...state,huntingHorn:{...state.huntingHorn,[key]:Math.min(level+op.amount,op.cap)}}};
   }
   if(event.type==='transition'&&event.contract==='SA_HIT_MODE'&&weaponType==='switch-axe'){
    if(!['SWORD','AXE'].includes(state?.switchAxe?.mode))throw Error('REAL_SLICE:SA_START_MODE_UNRESOLVED');

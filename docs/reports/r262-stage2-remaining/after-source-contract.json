@@ -1,0 +1,2825 @@
+{
+  "scope": "STAGE2_SYNTHETIC_CONTRACT_NOT_STAGE4",
+  "executionSha": "059c61bdc8f2fc659926dd82440854463938e56f",
+  "hashes": {
+    "index.html": "b503e8d56dcc8188026eb6fc9f466994cd1f2aabe732bdc1ec9adc7d0b0189cf",
+    "hope-hammer-browser-adapter.js": "6e9a9b4c002eee0892b03b8a5b1162b24f008813344794a809fed41372acbb15",
+    "v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs": "8590ba1c7af6d3f13f38fb211b8dbe40aaca8551487b4d70b3c8247b1a93bf37",
+    "himmel-real-browser-bundle.js": "9cd108b8ed0c9c7d7eee311e1e160c07ffcc941a462ee95c8a1de92137acf3a9",
+    "tools/cb-axe-followup-contract-proof.cjs": "a395fc4a8db76efa3e40f4bfd2964acca4643f45e98724ce6c10849d047765b4"
+  },
+  "rows": [
+    {
+      "label": "OFF",
+      "result": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 147,
+            "gameId": 71,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/147",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shieldBoosted\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SWORD_TO_AXE_MORPH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shieldBoosted\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SWORD_TO_AXE_MORPH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shieldBoosted\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SWORD_TO_AXE_MORPH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 109.7,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 3.45,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 113.15
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 126.44,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 3.45,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 129.89
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "ON",
+      "result": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 147,
+            "gameId": 71,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/147",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":true,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shieldBoosted\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SWORD_TO_AXE_MORPH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":true,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shieldBoosted\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SWORD_TO_AXE_MORPH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":true,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shieldBoosted\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SWORD_TO_AXE_MORPH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1",
+                "0:2",
+                "0:3",
+                "0:4"
+              ],
+              "executed": [
+                "0:0",
+                "0:1",
+                "0:2",
+                "0:3",
+                "0:4"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 109.7,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 3.45,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:1",
+                "eventId": "0:1",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 24.38,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:1",
+                "eventId": "0:1",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:2",
+                "eventId": "0:2",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 24.38,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:2",
+                "eventId": "0:2",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:3",
+                "eventId": "0:3",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 24.38,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:3",
+                "eventId": "0:3",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:4",
+                "eventId": "0:4",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 24.38,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:4",
+                "eventId": "0:4",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "techniqueAdoption": {
+                "status": "EXISTING_ADOPTED_REFERENCE",
+                "verificationStatus": "UNVERIFIED",
+                "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+              },
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 213.42999999999998
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1",
+                "0:2",
+                "0:3",
+                "0:4"
+              ],
+              "executed": [
+                "0:0",
+                "0:1",
+                "0:2",
+                "0:3",
+                "0:4"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 126.44,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 3.45,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:1",
+                "eventId": "0:1",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 28.1,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:1",
+                "eventId": "0:1",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:2",
+                "eventId": "0:2",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 28.1,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:2",
+                "eventId": "0:2",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:3",
+                "eventId": "0:3",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 28.1,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:3",
+                "eventId": "0:3",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:4",
+                "eventId": "0:4",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 28.1,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:4",
+                "eventId": "0:4",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "techniqueAdoption": {
+                "status": "EXISTING_ADOPTED_REFERENCE",
+                "verificationStatus": "UNVERIFIED",
+                "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+              },
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 245.04999999999995
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "SHIELD",
+      "result": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 147,
+            "gameId": 71,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/147",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":true,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SWORD_TO_AXE_MORPH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":true,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SWORD_TO_AXE_MORPH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":true,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SWORD_TO_AXE_MORPH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1",
+                "0:2",
+                "0:3",
+                "0:4"
+              ],
+              "executed": [
+                "0:0",
+                "0:1",
+                "0:2",
+                "0:3",
+                "0:4"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 120.67,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 3.45,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:1",
+                "eventId": "0:1",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 24.38,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:1",
+                "eventId": "0:1",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:2",
+                "eventId": "0:2",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 24.38,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:2",
+                "eventId": "0:2",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:3",
+                "eventId": "0:3",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 24.38,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:3",
+                "eventId": "0:3",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:4",
+                "eventId": "0:4",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 24.38,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:4",
+                "eventId": "0:4",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "techniqueAdoption": {
+                "status": "EXISTING_ADOPTED_REFERENCE",
+                "verificationStatus": "UNVERIFIED",
+                "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+              },
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 224.39999999999998
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1",
+                "0:2",
+                "0:3",
+                "0:4"
+              ],
+              "executed": [
+                "0:0",
+                "0:1",
+                "0:2",
+                "0:3",
+                "0:4"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 139.09,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 3.45,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:1",
+                "eventId": "0:1",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 28.1,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:1",
+                "eventId": "0:1",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:2",
+                "eventId": "0:2",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 28.1,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:2",
+                "eventId": "0:2",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:3",
+                "eventId": "0:3",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 28.1,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:3",
+                "eventId": "0:3",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:4",
+                "eventId": "0:4",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 28.1,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:4",
+                "eventId": "0:4",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "techniqueAdoption": {
+                "status": "EXISTING_ADOPTED_REFERENCE",
+                "verificationStatus": "UNVERIFIED",
+                "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+              },
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 257.7
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "RAPID",
+      "result": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 147,
+            "gameId": 71,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/147",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":true,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SWORD_TO_AXE_MORPH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":true,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SWORD_TO_AXE_MORPH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":true,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SWORD_TO_AXE_MORPH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1",
+                "0:2",
+                "0:3",
+                "0:4"
+              ],
+              "executed": [
+                "0:0",
+                "0:1",
+                "0:2",
+                "0:3",
+                "0:4"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 144.8,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                    "status": "OWNER_APPROVED_PROVISIONAL"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 3.45,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:1",
+                "eventId": "0:1",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 29.25,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                    "status": "OWNER_APPROVED_PROVISIONAL"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:1",
+                "eventId": "0:1",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:2",
+                "eventId": "0:2",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 29.25,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                    "status": "OWNER_APPROVED_PROVISIONAL"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:2",
+                "eventId": "0:2",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:3",
+                "eventId": "0:3",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 29.25,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                    "status": "OWNER_APPROVED_PROVISIONAL"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:3",
+                "eventId": "0:3",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:4",
+                "eventId": "0:4",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 29.25,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                    "status": "OWNER_APPROVED_PROVISIONAL"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:4",
+                "eventId": "0:4",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [
+                {
+                  "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "order": 10,
+                  "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                },
+                {
+                  "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "order": 10,
+                  "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                },
+                {
+                  "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "order": 10,
+                  "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                },
+                {
+                  "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "order": 10,
+                  "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                },
+                {
+                  "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "order": 10,
+                  "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                }
+              ],
+              "techniqueAdoption": {
+                "status": "EXISTING_ADOPTED_REFERENCE",
+                "verificationStatus": "UNVERIFIED",
+                "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+              },
+              "rapidMorphAdoption": {
+                "skillId": 7,
+                "multipliers": [
+                  1,
+                  1,
+                  1.1,
+                  1.2
+                ],
+                "stage": "attack",
+                "target": "physical",
+                "status": "OWNER_APPROVED_PROVISIONAL",
+                "approvedAt": "2026-10-25T23:53:00Z",
+                "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                "sourceVersion": "UNSPECIFIED",
+                "liveGameVerification": "PENDING",
+                "unconnectedScope": [
+                  "SA_AXE_SWEEP_MORPH_ALL_HITS",
+                  "SA_FOCUS_MORPH_WOUND_TRANSFORM_HITS",
+                  "CB_CHARGE_DERIVED_ED1",
+                  "CB_SHIELD_THRUST_OR_GUARD_DERIVED_AED",
+                  "CB_GUARD_DERIVED_SAED",
+                  "CB_ELEMENT_SPIN_AXE_BOOST",
+                  "CB_ELIGIBLE_AXE_FOLLOWUP",
+                  "CORRUPTED_MANTLE_FOLLOWUP"
+                ],
+                "excludedScope": [
+                  "SA_FOLLOWUP_EXPLOSION",
+                  "CB_PHIAL_EXPLOSION"
+                ],
+                "techniqueIds": [
+                  "CB_SWORD_TO_AXE_MORPH",
+                  "SA_SWORD_MORPH_DOUBLE",
+                  "SA_AXE_MORPH_SLASH"
+                ]
+              },
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 268.01
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1",
+                "0:2",
+                "0:3",
+                "0:4"
+              ],
+              "executed": [
+                "0:0",
+                "0:1",
+                "0:2",
+                "0:3",
+                "0:4"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 165.64,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                    "status": "OWNER_APPROVED_PROVISIONAL"
+                  },
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 3.45,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:1",
+                "eventId": "0:1",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 33.46,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                    "status": "OWNER_APPROVED_PROVISIONAL"
+                  },
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:1",
+                "eventId": "0:1",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:2",
+                "eventId": "0:2",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 33.46,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                    "status": "OWNER_APPROVED_PROVISIONAL"
+                  },
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:2",
+                "eventId": "0:2",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:3",
+                "eventId": "0:3",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 33.46,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                    "status": "OWNER_APPROVED_PROVISIONAL"
+                  },
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:3",
+                "eventId": "0:3",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:physical:4",
+                "eventId": "0:4",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 33.46,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                    "status": "OWNER_APPROVED_PROVISIONAL"
+                  },
+                  {
+                    "id": "conditional-attack-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 30,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              },
+              {
+                "id": "CB_SWORD_TO_AXE_MORPH:element:4",
+                "eventId": "0:4",
+                "techniqueId": "CB_SWORD_TO_AXE_MORPH",
+                "revision": "1",
+                "source": "index.html:CHARGE_BLADE_TECHNIQUES.CB_SWORD_TO_AXE_MORPH.axeBoostHits",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "EXISTING_ADOPTED_REFERENCE",
+                  "verificationStatus": "UNVERIFIED",
+                  "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                  "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                  "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+                },
+                "status": "available",
+                "value": 0.69,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [
+                {
+                  "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "order": 10,
+                  "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                },
+                {
+                  "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "order": 10,
+                  "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                },
+                {
+                  "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "order": 10,
+                  "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                },
+                {
+                  "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "order": 10,
+                  "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                },
+                {
+                  "id": "rapid-morph-attack:CB_SWORD_TO_AXE_MORPH",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "order": 10,
+                  "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                }
+              ],
+              "techniqueAdoption": {
+                "status": "EXISTING_ADOPTED_REFERENCE",
+                "verificationStatus": "UNVERIFIED",
+                "source": "TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES",
+                "scope": "SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL",
+                "rapidMorphSource": "https://kuroyonhon.com/mhwilds/memo/26.php"
+              },
+              "rapidMorphAdoption": {
+                "skillId": 7,
+                "multipliers": [
+                  1,
+                  1,
+                  1.1,
+                  1.2
+                ],
+                "stage": "attack",
+                "target": "physical",
+                "status": "OWNER_APPROVED_PROVISIONAL",
+                "approvedAt": "2026-10-25T23:53:00Z",
+                "source": "https://kuroyonhon.com/mhwilds/memo/26.php",
+                "sourceVersion": "UNSPECIFIED",
+                "liveGameVerification": "PENDING",
+                "unconnectedScope": [
+                  "SA_AXE_SWEEP_MORPH_ALL_HITS",
+                  "SA_FOCUS_MORPH_WOUND_TRANSFORM_HITS",
+                  "CB_CHARGE_DERIVED_ED1",
+                  "CB_SHIELD_THRUST_OR_GUARD_DERIVED_AED",
+                  "CB_GUARD_DERIVED_SAED",
+                  "CB_ELEMENT_SPIN_AXE_BOOST",
+                  "CB_ELIGIBLE_AXE_FOLLOWUP",
+                  "CORRUPTED_MANTLE_FOLLOWUP"
+                ],
+                "excludedScope": [
+                  "SA_FOLLOWUP_EXPLOSION",
+                  "CB_PHIAL_EXPLOSION"
+                ],
+                "techniqueIds": [
+                  "CB_SWORD_TO_AXE_MORPH",
+                  "SA_SWORD_MORPH_DOUBLE",
+                  "SA_AXE_MORPH_SLASH"
+                ]
+              },
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 305.68999999999994
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "error": null
+}
