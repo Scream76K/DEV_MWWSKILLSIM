@@ -7863,6 +7863,7 @@ function compareSnapshot(name,snapshot,cond,expectedSnapshot=null){
 }
 function comparisonReasonText(reason){
   const text=String(reason||'');
+  if(text.startsWith('REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED:'))return '高速変形の派生元（チャージ・盾突き・ガード）が未確定のため計算できません。';
   if(text==='REAL_SLICE:COMPARISON_MULTI_HIT_COMBO_UNSUPPORTED')return '共通Pipeline比較は保存コンボ1技だけに対応しています。複数技は未算出です。';
   if(text==='REAL_SLICE:COMPARISON_TARGET_MISMATCH')return '保存A/Bの対象モンスター・部位が異なるため、共通Pipeline比較は未算出です。';
   if(text==='REAL_SLICE:COMPARISON_TECHNIQUE_MISMATCH')return '保存A/Bの選択技が異なるため、共通Pipeline比較は未算出です。';
