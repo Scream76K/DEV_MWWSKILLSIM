@@ -271,6 +271,9 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        if(result!==null){for(const post of applied.post){result=post.operation==='add'?result+post.amount:post.operation==='multiply'?result*post.amount:Math.min(result,post.amount);ensure(num(result),'POST_DAMAGE_NON_FINITE')}}
        components.push({...meta,...(result===null?bad(response.reason):good(result)),...(response?.details?{details:copy(response.details)}:{}),disposition:'emitted',effectsApplied:applied.trace});
       }
+      // A resource-consuming action cannot commit consumption/transitions after a required component failed.
+      const failedComponent=components.find(c=>c.eventId===ev.id&&c.status==='unavailable');
+      if(failedComponent&&plan.events.some(next=>next.techniqueId===ev.techniqueId&&next.type==='consume'))throw Error(failedComponent.reason);
      }else{
        ensure(decision.nextState&&typeof decision.nextState==='object','NEXT_STATE_REQUIRED');
        const after=decision.nextState;validateState(after);
@@ -522,6 +525,9 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        if(result!==null){for(const post of applied.post){result=post.operation==='add'?result+post.amount:post.operation==='multiply'?result*post.amount:Math.min(result,post.amount);ensure(num(result),'POST_DAMAGE_NON_FINITE')}}
        components.push({...meta,...(result===null?bad(response.reason):good(result)),...(response?.details?{details:copy(response.details)}:{}),disposition:'emitted',effectsApplied:applied.trace});
       }
+      // A resource-consuming action cannot commit consumption/transitions after a required component failed.
+      const failedComponent=components.find(c=>c.eventId===ev.id&&c.status==='unavailable');
+      if(failedComponent&&plan.events.some(next=>next.techniqueId===ev.techniqueId&&next.type==='consume'))throw Error(failedComponent.reason);
      }else{
        ensure(decision.nextState&&typeof decision.nextState==='object','NEXT_STATE_REQUIRED');
        const after=decision.nextState;validateState(after);
