@@ -1,0 +1,86 @@
+{
+  "head": "d0bbce5fdfa025e2efa64a5aef938bd81c3d1dd0",
+  "hashes": {
+    "index.html": "517c587bc2539239f20cf9a2b123326704b77b29381b9051a6db7541577617f1",
+    "docs/reports/r253-skill-scope/fixture.json": "1c365eab8241b4d6b31094fa15aad119e63a9db9cfa1c94513d20e0eb7b58aae",
+    "docs/reports/r254-conditional-affinity/fixture.json": "97488419ccfda3ff35c20499b03b8a173cd29726f3b570aab1227f4fc7c11e5f",
+    "docs/reports/r254-rapid-morph-attack-stage/fixture.json": "b450fbafc3fdc2334edb332021c2ea5888082c478a4ad728454c6524722171cd"
+  },
+  "scope": "Actual cached MHDB equipment; JSDOM production events/save/load; isolated Chromium display only; no user storage",
+  "cases": [
+    {
+      "name": "A",
+      "skills": {
+        "チャージマスター": 1,
+        "集中": 1,
+        "弱点特効": 2
+      },
+      "stats": {
+        "attack": 864,
+        "affinity": 0,
+        "maxAffinity": 15,
+        "element": 450,
+        "type": "fire"
+      },
+      "summary": "\n    攻撃力864真 180\n    会心率0%\n    最大会心率15%\n    属性火450\n    防御力93\n    選択技の実計算技 選択技 / 通常 836.9 [MACARONGAMEMO_GREAT_SWORD_VER1040 rev.3] [暫定・資料ベース] / 最大 865.0 [MACARONGAMEMO_GREAT_SWORD_VER1040 rev.3] [暫定・資料ベース]\n  ",
+      "skillText": "通常スキルチャージマスターLv1弱点特効Lv2集中Lv1シリーズスキルグループスキル",
+      "visible": true
+    },
+    {
+      "name": "B",
+      "skills": {
+        "チャージマスター": 1,
+        "集中": 1,
+        "弱点特効": 2,
+        "攻撃": 1
+      },
+      "stats": {
+        "attack": 878.4,
+        "affinity": 0,
+        "maxAffinity": 15,
+        "element": 450,
+        "type": "fire"
+      },
+      "summary": "\n    攻撃力878真 183\n    会心率0%\n    最大会心率15%\n    属性火450\n    防御力93\n    選択技の実計算技 選択技 / 通常 849.4 [MACARONGAMEMO_GREAT_SWORD_VER1040 rev.3] [暫定・資料ベース] / 最大 878.0 [MACARONGAMEMO_GREAT_SWORD_VER1040 rev.3] [暫定・資料ベース]\n  ",
+      "skillText": "通常スキルチャージマスターLv1攻撃Lv1弱点特効Lv2集中Lv1シリーズスキルグループスキル",
+      "visible": true
+    },
+    {
+      "name": "pipelineUnavailable",
+      "skills": {
+        "チャージマスター": 1,
+        "集中": 1,
+        "弱点特効": 2,
+        "攻撃": 1
+      },
+      "stats": {
+        "attack": 878.4,
+        "affinity": 0,
+        "maxAffinity": 15,
+        "element": 450,
+        "type": "fire"
+      },
+      "summary": "\n    攻撃力878真 183\n    会心率0%\n    最大会心率15%\n    属性火450\n    防御力93\n    選択技の実計算未算出：REAL_SLICE:GS_CHARGE_MASTER_TECHNIQUE_NOT_ADOPTED\n  ",
+      "skillText": "通常スキルチャージマスターLv1攻撃Lv1弱点特効Lv2集中Lv1シリーズスキルグループスキル",
+      "visible": true
+    },
+    {
+      "name": "noElementWeapon",
+      "skills": {
+        "弱点特効": 2
+      },
+      "stats": {
+        "attack": 432,
+        "affinity": 0,
+        "maxAffinity": 15,
+        "element": 0,
+        "type": "none"
+      },
+      "summary": "\n    攻撃力432真 90\n    会心率0%\n    最大会心率15%\n    属性無属性0\n    防御力93\n    選択技の実計算技 選択技 / 通常 375.7 [MACARONGAMEMO_GREAT_SWORD_VER1040 rev.3] [未検証範囲あり] / 最大 389.8 [MACARONGAMEMO_GREAT_SWORD_VER1040 rev.3] [未検証範囲あり]\n  ",
+      "skillText": "通常スキル弱点特効Lv2シリーズスキルグループスキル",
+      "visible": true
+    }
+  ],
+  "pass": true,
+  "saveLoadEqual": true
+}
