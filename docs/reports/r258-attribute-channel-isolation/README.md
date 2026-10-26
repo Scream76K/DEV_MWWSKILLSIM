@@ -1,0 +1,10 @@
+# Attribute conversion channel isolation
+Product 9fbb56ebb70fb86bfebf9dbad204d6bc6dac84b6. Existing owner-approved body-only contract; no new coefficients or scope.
+
+Global missing-activation gate moved into channel L3 resolveEffects. Shared equipment/scope/cap interaction errors remain shared. Unknown is null, never false, with null effectiveElement. Comparison renderer now preserves any available channel and shows unavailable for the other. Known diagnostics retain source, OWNER_APPROVED_PROVISIONAL, referenceOnly and BODY_ONLY_REFERENCE. No fixed/dragon follow-up total claimed.
+
+Existing real MHDB fixture ../r258-attribute-conversion/fixture.json: weapon900, head521, skill152 Lv1, RED LS_RED_BLADE_I, no decorations. No computed result/skill/state-plan replacement. Expected and observed Unknown/ON: normal unavailable STATE_REQUIRED, maximum74.83; ON/Unknown: normal74.83, maximum unavailable STATE_REQUIRED. Known execution complete refers only to selected body. DOM displays74.8 and unknown/body-only exclusion text. Each scenario saved as A/B same equipment and same current common activation conditions; real runBuildCompare returns identical channel objects for both, full before/after state equality. This validates partial failure and restore, not different-equipment skill-level contrast. preserveCombo remains unchanged.
+
+Executed tools/attribute-conversion-channel-proof.cjs only. initial.json preserves first harness failure: initial equipment-derived UI defaults caused stale comparison identity before first recalc. Initialized calcBuild before capturing scenarios; after.json passes. Old r258-attribute-conversion initial/after logs untouched. Its missing-state assertion updated, not rerun. New proof does not rerun OFF/OFF or wider feature checks.
+
+Execution HEAD and hashes recorded in after.json; exact four product hashes checked against product commit above. Eight bundled source modules verified present unchanged. No CI, Safari, game measurement, broad regression, or new feature execution.
