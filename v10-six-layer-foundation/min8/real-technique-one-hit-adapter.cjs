@@ -7,7 +7,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!record||record.techniqueId!==techniqueId||(record.weaponType!==undefined&&record.weaponType!==weaponType))throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
   if(!Number.isInteger(record.revision)||record.revision<1)throw Error('REAL_SLICE:REVISION_REQUIRED');
   const shelling=Array.isArray(record.specialComponents)&&record.specialComponents.some(x=>String(x).includes('SHELL'));
-  const reference=record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound';
+  const reference=record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='light-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound';
   if(shelling){
    if(record.weaponType!=='gunlance'||record.numericStatus!=='SOURCE_CONFIRMED'||!record.specialSourceValues)throw Error('REAL_SLICE:SHELLING_SOURCE_PENDING');
    const source=record.evidenceRefs[0];
