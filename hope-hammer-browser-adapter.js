@@ -191,13 +191,14 @@
   const hasShelling=resolvedTechniqueIds.some(isShellingTechnique);
   const isReferenceOnly=resolvedTechniqueIds.every(id=>['bow','heavy-bowgun','heavy-bowgun-element','light-bowgun-element','light-bowgun','charge-blade-saed','hunting-horn-sound'].includes(techniques[id]?.referenceKind));
   const hasReference=resolvedTechniqueIds.some(id=>['bow','heavy-bowgun','heavy-bowgun-element','light-bowgun-element','light-bowgun','charge-blade-saed','hunting-horn-sound'].includes(techniques[id]?.referenceKind));
-  const physicalKeyForTechnique=id=>{const hits=techniques[id]?.hits||[],keys=hits.map(hit=>{const kind=hit?.damageType;return kind==='blunt'||kind==='slash'||kind==='pierce'?kind:STANDARD_NORMAL_HIT_CONTRACT[id]?.damageType??(['hammer','hunting-horn'].includes(weapon.kind)?'blunt':weapon.kind==='charge-blade'?'slash':null);});return keys.length&&keys.every(Boolean)&&new Set(keys).size===1?keys[0]:null;};
-  const physicalKeys=resolvedTechniqueIds.filter(id=>!techniques[id]?.referenceKind&&!isShellingTechnique(id)).map(physicalKeyForTechnique);
-  if(!isShellingOnly&&!isReferenceOnly&&physicalKeys.some(x=>!x))return fail('REAL_SLICE:DAMAGE_TYPE_UNRESOLVED');
-  if(!isShellingOnly&&!isReferenceOnly&&new Set(physicalKeys).size>1)return fail('REAL_SLICE:MIXED_DAMAGE_TYPES_UNSUPPORTED');
+  // Validate every ordinary Hit before resolving its own hitzone. Special components do not enter this path.
+  const physicalKeys=resolvedTechniqueIds.filter(id=>!techniques[id]?.referenceKind&&!isShellingTechnique(id)).flatMap(id=>(techniques[id]?.hits||[]).map(hit=>{
+   if(hit.damageType!==undefined&&hit.damageType!==null)return ['blunt','slash','pierce'].includes(hit.damageType)?hit.damageType:null;
+   return STANDARD_NORMAL_HIT_CONTRACT[id]?.damageType??(['hammer','hunting-horn'].includes(weapon.kind)?'blunt':weapon.kind==='charge-blade'?'slash':null);
+  }));
+  if(!isShellingOnly&&!isReferenceOnly&&(!physicalKeys.length||physicalKeys.some(x=>!x)))return fail('REAL_SLICE:DAMAGE_TYPE_UNRESOLVED');
   const physicalKey=isShellingOnly?'blunt':isReferenceOnly?'pierce':physicalKeys[0];
-  if(!isShellingOnly&&!isReferenceOnly&&!physicalKey)return fail('REAL_SLICE:DAMAGE_TYPE_UNRESOLVED');
-  if(!isShellingOnly&&!isReferenceOnly&&(!part||!Number.isFinite(part.multipliers?.[physicalKey])))return fail('REAL_SLICE:TRAINING_HITZONE_UNRESOLVED');
+  if(!isShellingOnly&&!isReferenceOnly&&(!part||physicalKeys.some(key=>!Number.isFinite(part.multipliers?.[key]))))return fail('REAL_SLICE:TRAINING_HITZONE_UNRESOLVED');
   const sharpnessPremise=weapon.artiaCalculationEvidence?.sharpnessPremise;
   const normalArtiaWhite=weapon.artiaCalculationEvidence?.mutationIncluded===false&&sharpnessPremise?.source==='OWNER_2026-10-25T22:35Z_NORMAL_ARTIA_MELEE_WHITE'&&sharpnessPremise.color==='white'&&!['bow','light-bowgun','heavy-bowgun'].includes(weapon.kind);
   const maxSharpness=normalArtiaWhite?sharpnessPremise.color:[...root.MHWWeaponMaxSharpness.colors].reverse().find(color=>Number(weapon.sharpness?.[color])>0);
@@ -337,6 +338,7 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
    }
 if(ed1Requested)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,resourceContract:ed1Rule,resourceScope:'SINGLE_ED1_NORMAL_PHIAL_AXE_OFF'};
 if(rapidMorphLevel>1)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',rapidMorphAdoption:rapidRule};
+if(resolvedTechniqueIds.includes('SNS_BASH_UPPERCUT'))for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',techniqueAdoption:techniques.SNS_BASH_UPPERCUT.adoption};
 if(gsChargeActive)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',chargeMasterAdoption:gsCharge};
 if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',artiaAdoption:weapon.artiaCalculationEvidence};
    for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,armorThunderResistanceInput:equipment.armorThunderResistanceInput};

@@ -5913,6 +5913,17 @@ const TECHNIQUE_DB=techniqueDbDeepFreeze(Object.fromEntries(Object.entries(TECHN
       if(evidence&&entry)entries[id]={...entry,phialReference:{status:'OBSERVED',adoptionStatus:'PROVISIONALLY_ADOPTED',verificationStatus:'PROVISIONAL',eventCount:evidence.count,hitCount:evidence.count,sourceType:'USER_VIDEO_OBSERVATION',sourceRefs:[evidence.source],gameVersion:'UNCONFIRMED',calculationUse:'PROVISIONAL_PIPELINE_ONLY'}};
     }
   }
+  if(kind==='sword-and-shield'){
+    const old=entries.SNS_BASH_UPPERCUT;
+    const source='https://kuroyonhon.com/mhwilds/memo/5.php';
+    entries.SNS_BASH_UPPERCUT={...old,revision:old.revision+1,replacedRecord:old,
+      hits:old.hits.map((hit,index)=>({...hit,damageType:index<2?'slash':'blunt',damageTypeSource:source})),
+      calculationStatus:'READY_BODY_COMPONENT',calculationScope:'HP_BODY_ONLY',currentVersionAudit:'PENDING',
+      unresolvedReasons:(old.unresolvedReasons||[]).filter(x=>x!=='HIT_COMPONENT_RULE_PENDING'),
+      evidenceRefs:[...old.evidenceRefs,source],
+      adoption:{status:'OWNER_APPROVED_PROVISIONAL',approvalRef:'Sentinel_daaea057cce4819184f457adbb4e31c4',scope:'SNS_BASH_UPPERCUT_FOUR_HIT_TYPES_ONLY',source,liveGameVerification:'PENDING'},
+      revisionHistory:[...(old.revisionHistory||[]),{decision:'OWNER_APPROVED_HIT_CLASSIFICATION',source,scope:'HITS_1_2_SLASH_HITS_3_4_BLUNT',numericChanges:false}]};
+  }
   if(kind==='heavy-bowgun'){
     const old=entries.HBG_WYVERN_AMMO;
     entries.HBG_WYVERN_AMMO={...old,revision:old.revision+1,baselineGameVersion:null,currentVersionAudit:'PROVISIONAL_OWNER_MEASURED_GAME_VERSION_NUMBER_UNKNOWN',specialSourceValues:null,sourceScope:'OWNER_FIXED_TWO_HIT_PROVISIONAL_MODEL',unresolvedReasons:['GAME_VERSION_NUMBER_UNKNOWN','UNREVIEWED_BUFFS_AND_MODES_OUTSIDE_SCOPE','DISPLAY_ROUNDING_NOT_INTERNAL_VERIFIED'],verificationStatus:'PROVISIONAL',numericStatus:'PROVISIONALLY_ADOPTED',calculationStatus:'EVIDENCE_GATED',calculationScope:'TWO_HIT_PROVISIONAL_ONLY',specialComponents:[],excludedComponents:[],hits:[{mv:80,elementModifier:0,fireAttack:400,artilleryTarget:true,fireSkillTarget:false},{mv:19,elementModifier:0,fireAttack:200,artilleryTarget:false,fireSkillTarget:true}],replacedRecord:old,

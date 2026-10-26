@@ -1,0 +1,134 @@
+{
+  "scope": "REAL_TECHNIQUE_DIFFERENT_HITZONES_CONTRACT_NOT_REPRESENTATIVE_BUILD",
+  "baselineAdapter": true,
+  "executionSha": "951c93af8c4ac40c71d29d04e85566cc906a3a78",
+  "record": {
+    "weaponType": "sword-and-shield",
+    "techniqueId": "SNS_BASH_UPPERCUT",
+    "techniqueName": "バッシュアッパー",
+    "revision": 2,
+    "validFromVersion": null,
+    "validToVersion": null,
+    "baselineGameVersion": "1.042.00.02",
+    "numericStatus": "SOURCE_CONFIRMED",
+    "verificationStatus": "PARTIALLY_VERIFIED",
+    "calculationStatus": "READY_BODY_COMPONENT",
+    "currentVersionAudit": "PENDING",
+    "unresolvedReasons": [
+      "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+    ],
+    "evidenceRefs": [
+      "MACARONGAMEMO_SNS_R47_SOURCE",
+      "https://kuroyonhon.com/mhwilds/memo/5.php"
+    ],
+    "sourceLocator": "バッシュアッパー",
+    "hits": [
+      {
+        "mv": 15,
+        "elementModifier": 1,
+        "partModifier": 1,
+        "damageType": "slash",
+        "damageTypeSource": "https://kuroyonhon.com/mhwilds/memo/5.php"
+      },
+      {
+        "mv": 15,
+        "elementModifier": 1,
+        "partModifier": 1,
+        "damageType": "slash",
+        "damageTypeSource": "https://kuroyonhon.com/mhwilds/memo/5.php"
+      },
+      {
+        "mv": 20,
+        "elementModifier": 0,
+        "partModifier": 1,
+        "damageType": "blunt",
+        "damageTypeSource": "https://kuroyonhon.com/mhwilds/memo/5.php"
+      },
+      {
+        "mv": 20,
+        "elementModifier": 0,
+        "partModifier": 1,
+        "damageType": "blunt",
+        "damageTypeSource": "https://kuroyonhon.com/mhwilds/memo/5.php"
+      }
+    ],
+    "stateRequirement": {},
+    "specialComponents": [],
+    "replacedRecord": {
+      "weaponType": "sword-and-shield",
+      "techniqueId": "SNS_BASH_UPPERCUT",
+      "techniqueName": "バッシュアッパー",
+      "revision": 1,
+      "validFromVersion": null,
+      "validToVersion": null,
+      "baselineGameVersion": "1.042.00.02",
+      "numericStatus": "SOURCE_CONFIRMED",
+      "verificationStatus": "PARTIALLY_VERIFIED",
+      "calculationStatus": "EVIDENCE_GATED",
+      "currentVersionAudit": "PENDING",
+      "unresolvedReasons": [
+        "HIT_COMPONENT_RULE_PENDING",
+        "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"
+      ],
+      "evidenceRefs": [
+        "MACARONGAMEMO_SNS_R47_SOURCE"
+      ],
+      "sourceLocator": "バッシュアッパー",
+      "hits": [
+        {
+          "mv": 15,
+          "elementModifier": 1,
+          "partModifier": 1
+        },
+        {
+          "mv": 15,
+          "elementModifier": 1,
+          "partModifier": 1
+        },
+        {
+          "mv": 20,
+          "elementModifier": 0,
+          "partModifier": 1
+        },
+        {
+          "mv": 20,
+          "elementModifier": 0,
+          "partModifier": 1
+        }
+      ],
+      "stateRequirement": {},
+      "specialComponents": []
+    },
+    "calculationScope": "HP_BODY_ONLY",
+    "adoption": {
+      "status": "OWNER_APPROVED_PROVISIONAL",
+      "approvalRef": "Sentinel_daaea057cce4819184f457adbb4e31c4",
+      "scope": "SNS_BASH_UPPERCUT_FOUR_HIT_TYPES_ONLY",
+      "source": "https://kuroyonhon.com/mhwilds/memo/5.php",
+      "liveGameVerification": "PENDING"
+    },
+    "revisionHistory": [
+      {
+        "decision": "OWNER_APPROVED_HIT_CLASSIFICATION",
+        "source": "https://kuroyonhon.com/mhwilds/memo/5.php",
+        "scope": "HITS_1_2_SLASH_HITS_3_4_BLUNT",
+        "numericChanges": false
+      }
+    ]
+  },
+  "hashes": {
+    "index.html": "01510a73c30b8f7564ea2988932f1452fe7155ca702e97d15493e7ef789c8fb5",
+    "hope-hammer-browser-adapter.js": "6b7d5be907b1c2d104d6c1517f32650184a967c229109b319ca84d1903ad3ae8",
+    "himmel-real-browser-bundle.js": "8e92f094fbf8d83285ea1594955397f524ad016497098d6af8126f3d626e2d80",
+    "v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs": "4e1ee17298ebac5b1547fa76cc94aea862f07e8718e13a113cb1d0180f5feb36"
+  },
+  "rows": [
+    {
+      "mode": "mixed",
+      "result": {
+        "status": "UNAVAILABLE",
+        "reason": "REAL_SLICE:DAMAGE_TYPE_UNRESOLVED"
+      }
+    }
+  ]
+}
