@@ -1,0 +1,1184 @@
+{
+  "scope": "CONTRACT_REAL_DB_SYNTHETIC_DIFFERENT_HITZONES",
+  "executionSha": "54a4c1d20acb15746174c44b25311553dae0153b",
+  "hashes": {
+    "index.html": "63ca68e424225fdae280a8d6ce54fd8f81b09bbf27331d5e57dfa22c6028781b",
+    "hope-hammer-browser-adapter.js": "faf64f7e9abbe5f14a8de47cf17d00892c2e4cd04b7f5fd3647a530b6d816468",
+    "himmel-real-browser-bundle.js": "ed43e112ed215536bf93a60ba8bce6b1d2ca5803c13d68b946bd688292913397"
+  },
+  "rows": [
+    {
+      "id": "LAN_MID_THRUST_I",
+      "record": {
+        "weaponType": "lance",
+        "techniqueId": "LAN_MID_THRUST_I",
+        "techniqueName": "中段突きⅠ",
+        "revision": 3,
+        "validFromVersion": "1.040.00",
+        "validToVersion": null,
+        "verificationStatus": "VERIFIED",
+        "evidenceRefs": [
+          "MACARONGAMEMO_LANCE_VER1021",
+          "MACARONGAMEMO_LANCE_VER1040"
+        ],
+        "hits": [
+          {
+            "mv": 26,
+            "damageType": "slash",
+            "damageTypeSource": "https://kuroyonhon.com/mhwilds/memo/9.php",
+            "damageTypeStatus": "SOURCE_CONFIRMED",
+            "elementModifier": 1.2,
+            "partModifier": 1
+          }
+        ],
+        "sourceHitRules": {
+          "scorch": {
+            "eligible": true,
+            "hitScope": "ALL_HITS",
+            "status": "SOURCE_CONFIRMED",
+            "hitTimingStatus": "PENDING",
+            "calculationReady": false,
+            "url": "https://kuroyonhon.com/mhwilds/memo/32.php",
+            "retrievedAt": "2026-10-07",
+            "liveGameVerification": "PENDING"
+          }
+        }
+      },
+      "result": {
+        "status": "OK",
+        "weaponType": "lance",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 685,
+            "gameId": 1,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/685",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LAN_MID_THRUST_I\\\",\\\"revision\\\":\\\"3\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LAN_MID_THRUST_I\\\",\\\"revision\\\":\\\"3\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LAN_MID_THRUST_I\\\",\\\"revision\\\":\\\"3\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "LAN_MID_THRUST_I:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_MID_THRUST_I",
+                "revision": "3",
+                "source": "MACARONGAMEMO_LANCE_VER1021",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 9.83,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "LAN_MID_THRUST_I:element:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_MID_THRUST_I",
+                "revision": "3",
+                "source": "MACARONGAMEMO_LANCE_VER1021",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 9.83
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "LAN_MID_THRUST_I:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_MID_THRUST_I",
+                "revision": "3",
+                "source": "MACARONGAMEMO_LANCE_VER1021",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 9.83,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "LAN_MID_THRUST_I:element:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_MID_THRUST_I",
+                "revision": "3",
+                "source": "MACARONGAMEMO_LANCE_VER1021",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 9.83
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "LAN_MID_THRUST_II",
+      "record": {
+        "weaponType": "lance",
+        "techniqueId": "LAN_MID_THRUST_II",
+        "techniqueName": "中段突きⅡ",
+        "revision": 3,
+        "validFromVersion": "1.040.00",
+        "validToVersion": null,
+        "verificationStatus": "VERIFIED",
+        "evidenceRefs": [
+          "MACARONGAMEMO_LANCE_VER1021",
+          "MACARONGAMEMO_LANCE_VER1040"
+        ],
+        "hits": [
+          {
+            "mv": 26,
+            "damageType": "slash",
+            "damageTypeSource": "https://kuroyonhon.com/mhwilds/memo/9.php",
+            "damageTypeStatus": "SOURCE_CONFIRMED",
+            "elementModifier": 1.2,
+            "partModifier": 1
+          }
+        ],
+        "sourceHitRules": {
+          "scorch": {
+            "eligible": true,
+            "hitScope": "ALL_HITS",
+            "status": "SOURCE_CONFIRMED",
+            "hitTimingStatus": "PENDING",
+            "calculationReady": false,
+            "url": "https://kuroyonhon.com/mhwilds/memo/32.php",
+            "retrievedAt": "2026-10-07",
+            "liveGameVerification": "PENDING"
+          }
+        }
+      },
+      "result": {
+        "status": "OK",
+        "weaponType": "lance",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 685,
+            "gameId": 1,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/685",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LAN_MID_THRUST_II\\\",\\\"revision\\\":\\\"3\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LAN_MID_THRUST_II\\\",\\\"revision\\\":\\\"3\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LAN_MID_THRUST_II\\\",\\\"revision\\\":\\\"3\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "LAN_MID_THRUST_II:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_MID_THRUST_II",
+                "revision": "3",
+                "source": "MACARONGAMEMO_LANCE_VER1021",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 9.83,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "LAN_MID_THRUST_II:element:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_MID_THRUST_II",
+                "revision": "3",
+                "source": "MACARONGAMEMO_LANCE_VER1021",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 9.83
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "LAN_MID_THRUST_II:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_MID_THRUST_II",
+                "revision": "3",
+                "source": "MACARONGAMEMO_LANCE_VER1021",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 9.83,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "LAN_MID_THRUST_II:element:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_MID_THRUST_II",
+                "revision": "3",
+                "source": "MACARONGAMEMO_LANCE_VER1021",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 9.83
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "LAN_MID_THRUST_III",
+      "record": {
+        "weaponType": "lance",
+        "techniqueId": "LAN_MID_THRUST_III",
+        "techniqueName": "中段突きⅢ",
+        "revision": 3,
+        "validFromVersion": "1.040.00",
+        "validToVersion": null,
+        "verificationStatus": "VERIFIED",
+        "evidenceRefs": [
+          "MACARONGAMEMO_LANCE_VER1021",
+          "MACARONGAMEMO_LANCE_VER1040"
+        ],
+        "hits": [
+          {
+            "mv": 35,
+            "damageType": "slash",
+            "damageTypeSource": "https://kuroyonhon.com/mhwilds/memo/9.php",
+            "damageTypeStatus": "SOURCE_CONFIRMED",
+            "elementModifier": 1.4,
+            "partModifier": 1
+          }
+        ],
+        "sourceHitRules": {
+          "scorch": {
+            "eligible": true,
+            "hitScope": "ALL_HITS",
+            "status": "SOURCE_CONFIRMED",
+            "hitTimingStatus": "PENDING",
+            "calculationReady": false,
+            "url": "https://kuroyonhon.com/mhwilds/memo/32.php",
+            "retrievedAt": "2026-10-07",
+            "liveGameVerification": "PENDING"
+          }
+        }
+      },
+      "result": {
+        "status": "OK",
+        "weaponType": "lance",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 685,
+            "gameId": 1,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/685",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LAN_MID_THRUST_III\\\",\\\"revision\\\":\\\"3\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LAN_MID_THRUST_III\\\",\\\"revision\\\":\\\"3\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LAN_MID_THRUST_III\\\",\\\"revision\\\":\\\"3\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "LAN_MID_THRUST_III:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_MID_THRUST_III",
+                "revision": "3",
+                "source": "MACARONGAMEMO_LANCE_VER1021",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 13.23,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "LAN_MID_THRUST_III:element:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_MID_THRUST_III",
+                "revision": "3",
+                "source": "MACARONGAMEMO_LANCE_VER1021",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 13.23
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "LAN_MID_THRUST_III:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_MID_THRUST_III",
+                "revision": "3",
+                "source": "MACARONGAMEMO_LANCE_VER1021",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 13.23,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "LAN_MID_THRUST_III:element:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_MID_THRUST_III",
+                "revision": "3",
+                "source": "MACARONGAMEMO_LANCE_VER1021",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 13.23
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "LAN_TRIPLE_THRUST",
+      "record": {
+        "weaponType": "lance",
+        "techniqueId": "LAN_TRIPLE_THRUST",
+        "techniqueName": "三段突き",
+        "revision": 2,
+        "validFromVersion": "1.040.00",
+        "validToVersion": null,
+        "verificationStatus": "VERIFIED",
+        "evidenceRefs": [
+          "MACARONGAMEMO_LANCE_VER1040_HISTORY"
+        ],
+        "hits": [
+          {
+            "mv": 25,
+            "damageType": "slash",
+            "damageTypeSource": "https://kuroyonhon.com/mhwilds/memo/9.php",
+            "damageTypeStatus": "SOURCE_CONFIRMED",
+            "elementModifier": 1.3,
+            "partModifier": 1
+          },
+          {
+            "mv": 25,
+            "damageType": "slash",
+            "damageTypeSource": "https://kuroyonhon.com/mhwilds/memo/9.php",
+            "damageTypeStatus": "SOURCE_CONFIRMED",
+            "elementModifier": 1.3,
+            "partModifier": 1
+          },
+          {
+            "mv": 42,
+            "damageType": "slash",
+            "damageTypeSource": "https://kuroyonhon.com/mhwilds/memo/9.php",
+            "damageTypeStatus": "SOURCE_CONFIRMED",
+            "elementModifier": 1.5,
+            "partModifier": 1
+          }
+        ],
+        "sourceHitRules": {
+          "scorch": {
+            "eligible": true,
+            "hitScope": "ALL_HITS",
+            "status": "SOURCE_CONFIRMED",
+            "hitTimingStatus": "PENDING",
+            "calculationReady": false,
+            "url": "https://kuroyonhon.com/mhwilds/memo/32.php",
+            "retrievedAt": "2026-10-07",
+            "liveGameVerification": "PENDING"
+          }
+        }
+      },
+      "result": {
+        "status": "OK",
+        "weaponType": "lance",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 685,
+            "gameId": 1,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/685",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LAN_TRIPLE_THRUST\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LAN_TRIPLE_THRUST\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactPolicy\":null,\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LAN_TRIPLE_THRUST\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1",
+                "0:2"
+              ],
+              "executed": [
+                "0:0",
+                "0:1",
+                "0:2"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "LAN_TRIPLE_THRUST:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_TRIPLE_THRUST",
+                "revision": "2",
+                "source": "MACARONGAMEMO_LANCE_VER1040_HISTORY",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 9.45,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "LAN_TRIPLE_THRUST:element:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_TRIPLE_THRUST",
+                "revision": "2",
+                "source": "MACARONGAMEMO_LANCE_VER1040_HISTORY",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              },
+              {
+                "id": "LAN_TRIPLE_THRUST:physical:1",
+                "eventId": "0:1",
+                "techniqueId": "LAN_TRIPLE_THRUST",
+                "revision": "2",
+                "source": "MACARONGAMEMO_LANCE_VER1040_HISTORY",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 9.45,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "LAN_TRIPLE_THRUST:element:1",
+                "eventId": "0:1",
+                "techniqueId": "LAN_TRIPLE_THRUST",
+                "revision": "2",
+                "source": "MACARONGAMEMO_LANCE_VER1040_HISTORY",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              },
+              {
+                "id": "LAN_TRIPLE_THRUST:physical:2",
+                "eventId": "0:2",
+                "techniqueId": "LAN_TRIPLE_THRUST",
+                "revision": "2",
+                "source": "MACARONGAMEMO_LANCE_VER1040_HISTORY",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 15.88,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "LAN_TRIPLE_THRUST:element:2",
+                "eventId": "0:2",
+                "techniqueId": "LAN_TRIPLE_THRUST",
+                "revision": "2",
+                "source": "MACARONGAMEMO_LANCE_VER1040_HISTORY",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 34.78
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1",
+                "0:2"
+              ],
+              "executed": [
+                "0:0",
+                "0:1",
+                "0:2"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "LAN_TRIPLE_THRUST:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_TRIPLE_THRUST",
+                "revision": "2",
+                "source": "MACARONGAMEMO_LANCE_VER1040_HISTORY",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 9.45,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "LAN_TRIPLE_THRUST:element:0",
+                "eventId": "0:0",
+                "techniqueId": "LAN_TRIPLE_THRUST",
+                "revision": "2",
+                "source": "MACARONGAMEMO_LANCE_VER1040_HISTORY",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              },
+              {
+                "id": "LAN_TRIPLE_THRUST:physical:1",
+                "eventId": "0:1",
+                "techniqueId": "LAN_TRIPLE_THRUST",
+                "revision": "2",
+                "source": "MACARONGAMEMO_LANCE_VER1040_HISTORY",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 9.45,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "LAN_TRIPLE_THRUST:element:1",
+                "eventId": "0:1",
+                "techniqueId": "LAN_TRIPLE_THRUST",
+                "revision": "2",
+                "source": "MACARONGAMEMO_LANCE_VER1040_HISTORY",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              },
+              {
+                "id": "LAN_TRIPLE_THRUST:physical:2",
+                "eventId": "0:2",
+                "techniqueId": "LAN_TRIPLE_THRUST",
+                "revision": "2",
+                "source": "MACARONGAMEMO_LANCE_VER1040_HISTORY",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 15.88,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "LAN_TRIPLE_THRUST:element:2",
+                "eventId": "0:2",
+                "techniqueId": "LAN_TRIPLE_THRUST",
+                "revision": "2",
+                "source": "MACARONGAMEMO_LANCE_VER1040_HISTORY",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 0,
+                "disposition": "confirmed_inactive"
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 34.78
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "unknown",
+      "record": {
+        "weaponType": "lance",
+        "techniqueId": "LAN_MID_THRUST_I",
+        "techniqueName": "中段突きⅠ",
+        "revision": 3,
+        "validFromVersion": "1.040.00",
+        "validToVersion": null,
+        "verificationStatus": "VERIFIED",
+        "evidenceRefs": [
+          "MACARONGAMEMO_LANCE_VER1021",
+          "MACARONGAMEMO_LANCE_VER1040"
+        ],
+        "hits": [
+          {
+            "mv": 26,
+            "damageType": "unknown",
+            "damageTypeSource": "https://kuroyonhon.com/mhwilds/memo/9.php",
+            "damageTypeStatus": "SOURCE_CONFIRMED",
+            "elementModifier": 1.2,
+            "partModifier": 1
+          }
+        ],
+        "sourceHitRules": {
+          "scorch": {
+            "eligible": true,
+            "hitScope": "ALL_HITS",
+            "status": "SOURCE_CONFIRMED",
+            "hitTimingStatus": "PENDING",
+            "calculationReady": false,
+            "url": "https://kuroyonhon.com/mhwilds/memo/32.php",
+            "retrievedAt": "2026-10-07",
+            "liveGameVerification": "PENDING"
+          }
+        }
+      },
+      "result": {
+        "status": "UNAVAILABLE",
+        "reason": "REAL_SLICE:DAMAGE_TYPE_UNRESOLVED"
+      }
+    }
+  ]
+}
