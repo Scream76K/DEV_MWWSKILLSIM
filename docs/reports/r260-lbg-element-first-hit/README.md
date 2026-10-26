@@ -19,3 +19,6 @@ Same fixture at NEAR and RAPID returns LBG_ELEMENT:NON_RAPID_CRITICAL_FIRST_HIT_
 One direct synthetic common-Formula compatibility control (not an actual-equipment claim) confirms omitted weaponKind still HBG physical5.76+element5.4=11.16. HBG full UI suite not rerun. initial.json was first successful run; after.json repeats only the same tiny harness after the explanatory UI text was finalized. Logs/harness/fixture hashes retained, product hashes equal commit above, bundle8 modules match sources.
 
 Not executed: CI, Safari, real-game measurement, broad regression, LBG Lv2/attribute skill combinations, partial-channel failure. No full-shot Hit count, near/far adoption, rapid/chase, DPS, main/develop integration or deployment.
+
+## Later flat-order correction
+The above original implementation statement that0.7 multiplies both attack-dependent and flat contributions is superseded by ../r260-lbg-element-skill/README.md. Direct source verification places the flat outside0.7; original logs (flat0) remain unchanged and valid for their limited no-skill input.
