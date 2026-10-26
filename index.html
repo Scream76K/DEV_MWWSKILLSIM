@@ -1978,6 +1978,24 @@ function armorThunderResistanceInput(armor){
   }
   return {status:missing.length?'UNRESOLVED':'ARMOR_BASE_ONLY',armorBase:missing.length?null:sum,total:null,rows,missing,reason:missing.length?'ARMOR_RESISTANCE_RECORD_UNRESOLVED':'SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED'};
 }
+function equipmentThunderResistanceInput(base,total){
+  const result={...base,contributions:[],scope:'ARMOR_AND_UNCONDITIONAL_SKILLS_NO_FOOD_TEMPORARY_OR_AMMO',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',source:'https://kuroyonhon.com/mhwilds/program/skill.php',verificationStatus:'UNVERIFIED'};
+  const reject=reason=>({...result,status:'UNRESOLVED',total:null,reason});
+  if(base.status!=='ARMOR_BASE_ONLY')return reject(base.reason);
+  for(const [name,level] of Object.entries(total))if(level>0){const record=(DB.skills||[]).find(x=>x.name===name);if([131,133,153].includes(record?.id)||['属性吸収','ヌシの魂','波衣竜の守護','根性【果敢】','守護のヴェール'].includes(name))return reject('CONDITIONAL_RESISTANCE_UNSUPPORTED:'+name);}
+  // Reject potentially conditional resistance on equipped set/group records as well; no assumed uptime.
+  for(const a of Object.values(build.armor||{}))for(const entry of a?.skills||[])if([131,133,153].includes(entry.skill?.id))return reject('CONDITIONAL_RESISTANCE_EQUIPMENT_UNSUPPORTED:'+entry.skill.id);
+  let value=base.armorBase;
+  for(const [id,name] of [[156,'雷耐性'],[118,'防御']]){
+    const db=(DB.skills||[]).find(x=>x.id===id),level=Number(total[db?.name||name]||0);if(!level)continue;
+    const rank=db?.ranks?.find(x=>x.level===level);if(!rank)return reject('RESISTANCE_SKILL_RANK_UNRESOLVED:'+id);
+    const text=String(rank.description||'').normalize('NFKC'),match=text.match(id===156?/雷耐性\s*\+\s*(\d+)/:/全属性耐性(?:値)?\s*\+\s*(\d+)/);
+    if(!match&&!(id===118&&level>=1&&level<=3))return reject('RESISTANCE_SKILL_VALUE_UNRESOLVED:'+id);
+    const add=match?Number(match[1]):0;value+=add;result.contributions.push({skillId:id,level,add,description:rank.description,sourceUrl:`https://wilds.mhdb.io/ja/skills/${id}`});
+  }
+  if(!Number.isInteger(value)||value<0)return reject('NEGATIVE_OR_FRACTIONAL_THUNDER_RESISTANCE_UNSUPPORTED');
+  return {...result,status:'KNOWN_LIMITED',total:value,reason:null};
+}
 function calcBuild(){normalizeArtiaProduction();renderCharmLegality();
   let total={},w=selectedWeapon(),kind=canonicalWeaponKind(w),coef=weaponCoefficient(kind),fixed=isArtiaWeapon(w)?calculatedArtiaStats(w):null;
   if(isArtiaWeapon(w)&&!fixed){
@@ -2011,6 +2029,7 @@ function calcBuild(){normalizeArtiaProduction();renderCharmLegality();
   calcSetSkills(total);
   const rawTotal={...total};
   total=clampSkillTotals(total);
+  stats.thunderResistanceInput=equipmentThunderResistanceInput(stats.armorThunderResistanceInput,total);
   if(isArtia(w) && $('aSkillStatus')){let lines=[];for(const [label,skill,type] of [['シリーズ',skillById(build.artia.seriesSkill),'series'],['グループ',skillById(build.artia.groupSkill),'group']]){if(skill){const a=artiaSkillActivation(skill,type);lines.push(`${label}：${esc(skill.name)} → ${a.active?`発動（${a.count}/${a.required||"条件"}）`:`未発動（${a.count}/${a.required||"条件"}）`}`)}}$('aSkillStatus').innerHTML=lines.length?lines.join('<br>'):'シリーズ/グループスキル未選択';}
   // Always-on/selected-state combat stats
   const atk=calcAttackSkill(total);
@@ -2239,6 +2258,7 @@ function equipmentElementDisplay(state={},options={}){
   if(typeof MHWElementDisplay!=='undefined')return MHWElementDisplay.render(view,options);
   return reason?'未算出：'+esc(comparisonReasonText(reason)):esc(Number.isFinite(state.element)?Math.round(state.element):'未算出');
 }
+function thunderConversionDisplay(d){const c=d?.thunderResistanceConversion;return c?`［耐性変換・雷${Number(c.baseElement)}→${Number(c.effectiveElement)}／装備由来・本体限定・食事/一時効果なし］`:'';}
 function renderSummary(){
   let t=calcState.total,s=calcState.stats;
   const raw=calcState.rawTotal||t;
@@ -2247,8 +2267,9 @@ function renderSummary(){
   const one=calcState.realOneHit||{status:'UNAVAILABLE',reason:'REAL_SLICE:NOT_EVALUATED'};
   const channelText=ch=>{const m=one.channels?.[ch]?.metrics?.comboTotalDamage,c=one.channels?.[ch]?.components?.[0],d=one.channels?.[ch]?.diagnostics;const reason=one.channels?.[ch]?.execution?.reason||one.channels?.[ch]?.issues?.[0]?.reason||m?.reason||one.reason||'RESULT_UNAVAILABLE';return m?.status==='available'?`${Number(m.value).toFixed(1)}${c?` [${esc(c.source)} rev.${esc(c.revision)}]`:''}${d?.referenceOnly?' [参考値・暫定]':d?.formalStatus==='PROVISIONAL'?' [暫定・資料ベース]':d?.formalStatus==='UNVERIFIED'?' [未検証範囲あり]':''}`:`未算出：${esc(reason)}`;};
   const finalCB=one.channels?.normal?.finalState?.chargeBlade;
+  const conversionText=thunderConversionDisplay(one.channels?.normal?.diagnostics);
   const finalCBText=finalCB?` / ${one.channels?.normal?.execution?.status==='complete'?'実行後':'中断時'}：通常ビン${esc(finalCB.normalPhials)}本・直前行動${esc(finalCB.previousAction)}`:'';
-  const oneText=one.status==='OK'?`技 ${esc(one.conditionKey?.includes('HAM_SIDE_SWING')?'HAM_SIDE_SWING':'選択技')} / 通常 ${channelText('normal')} / 最大 ${channelText('maximum')}${finalCBText}`:`未算出：${esc(one.reason||'RESULT_UNAVAILABLE')}`;
+  const oneText=one.status==='OK'?`技 ${esc(one.conditionKey?.includes('HAM_SIDE_SWING')?'HAM_SIDE_SWING':'選択技')} / 通常 ${channelText('normal')} / 最大 ${channelText('maximum')}${finalCBText}${conversionText}`:`未算出：${esc(one.reason||'RESULT_UNAVAILABLE')}`;
   $('buildSummary').innerHTML=`<div class="game-status" style="grid-column:1/-1">
     <div class="gs-row"><span class="gs-label">攻撃力</span><span class="gs-value">${Math.round(s.attack)}<span class="gs-sub">真 ${Math.round(s.attackTrue)}</span></span></div>
     <div class="gs-row"><span class="gs-label">会心率</span><span class="gs-value">${aff}%</span></div>
@@ -7941,6 +7962,7 @@ function comparisonReadinessHtml(rows,baseline){
     const pipelineNormal=pipeline?.channels?.normal?.metrics?.comboTotalDamage;
     const pipelineMaximum=pipeline?.channels?.maximum?.metrics?.comboTotalDamage;
     if(pipeline?.status==='OK'&&pipelineNormal?.status==='available'&&pipelineMaximum?.status==='available'){
+      if(pipeline.channels?.normal?.diagnostics?.thunderResistanceConversion)lines.push(thunderConversionDisplay(pipeline.channels.normal.diagnostics));
       const pd=pipeline?.channels?.normal?.diagnostics?.formalStatus||pipeline?.channels?.maximum?.diagnostics?.formalStatus;lines.push('共通Pipeline通常／最大：'+comparisonDisplayNumber(pipelineNormal.value)+'／'+comparisonDisplayNumber(pipelineMaximum.value)+'（保存対象・選択技を独立評価）'+(pipeline?.channels?.normal?.diagnostics?.referenceOnly?'［参考値・暫定］':pd==='PROVISIONAL'?'［暫定・資料ベース］':pd==='UNVERIFIED'?'［未検証範囲あり］':''));
     }else if(pipeline){
       lines.push('共通Pipeline：未算出（'+comparisonReasonText(pipeline.reason||pipeline.channels?.normal?.execution?.reason||pipeline.channels?.maximum?.execution?.reason||pipelineNormal?.reason||pipelineMaximum?.reason||'PIPELINE_UNAVAILABLE')+'）');
