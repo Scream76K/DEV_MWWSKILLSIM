@@ -1,0 +1,486 @@
+{
+  "weapon": {
+    "gameId": 67,
+    "crafting": {
+      "weapon": {
+        "id": 900
+      },
+      "craftable": false,
+      "previous": {
+        "name": "闢蛮刀Ⅰ",
+        "id": 892
+      },
+      "branches": [
+        {
+          "name": "ガルシュエンシスⅡ",
+          "id": 901
+        }
+      ],
+      "craftingMaterials": [],
+      "craftingZennyCost": 0,
+      "upgradeMaterials": [
+        {
+          "item": {
+            "id": 417,
+            "gameId": 454,
+            "rarity": 4,
+            "name": "護竜の鱗",
+            "description": "未知なる成分を含んだ護竜の鱗。 白く変色しており、本来の性質と 異なる性質を獲得している。",
+            "value": 500,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 43,
+              "kind": "scale",
+              "colorId": 1,
+              "color": "white"
+            }
+          },
+          "quantity": 3,
+          "id": 45941
+        },
+        {
+          "item": {
+            "id": 538,
+            "gameId": 588,
+            "rarity": 4,
+            "name": "たくましい護骨",
+            "description": "竜都の跡形の骨塚で採れる骨素材。 異常なほどに発達した骨格は、 この地の生物にのみ見られる特徴。",
+            "value": 600,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 42,
+              "kind": "bone",
+              "colorId": 16,
+              "color": "sky"
+            }
+          },
+          "quantity": 2,
+          "id": 45942
+        },
+        {
+          "item": {
+            "id": 556,
+            "gameId": 607,
+            "rarity": 4,
+            "name": "護竜の血",
+            "description": "未知なる成分を含んだ護竜の血。 研究の対象となり得る貴重な素材。",
+            "value": 1100,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 73,
+              "kind": "extract",
+              "colorId": 1,
+              "color": "white"
+            }
+          },
+          "quantity": 1,
+          "id": 45943
+        },
+        {
+          "item": {
+            "id": 611,
+            "gameId": 664,
+            "rarity": 4,
+            "name": "護竜の毛皮",
+            "description": "未知なる成分を含んだ護竜の毛皮。 白く変色しており、エネルギーが 蓄えられているようにも見える。",
+            "value": 500,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 44,
+              "kind": "hide",
+              "colorId": 1,
+              "color": "white"
+            }
+          },
+          "quantity": 3,
+          "id": 45944
+        }
+      ],
+      "upgradeZennyCost": 2600,
+      "column": 4,
+      "row": 10,
+      "id": 900
+    },
+    "rarity": 4,
+    "kind": "long-sword",
+    "damage": {
+      "raw": 170,
+      "display": 561
+    },
+    "specials": [
+      {
+        "element": "dragon",
+        "kind": "element",
+        "weapon": {
+          "id": 900
+        },
+        "damage": {
+          "raw": 14,
+          "display": 140
+        },
+        "hidden": false,
+        "id": 7568
+      }
+    ],
+    "name": "ガルシュエンシスⅠ",
+    "description": "護竜の素材で作成された太刀。 竜と対峙するたびに、握る柄が 少しずつ手に馴染む感覚がある。",
+    "defenseBonus": 0,
+    "elderseal": null,
+    "slots": [
+      1,
+      1
+    ],
+    "affinity": -10,
+    "skills": [
+      {
+        "skill": {
+          "id": 60,
+          "name": "集中",
+          "description": "溜め攻撃の溜まる速度が速くなり、 太刀、双剣、銃槍、剣斧、盾斧、弓、 ボウガンのゲージが溜まりやすくなる。"
+        },
+        "level": 2,
+        "name": null,
+        "description": "ゲージ上昇率が少し上がる 溜め時間１０％短縮",
+        "setPiecesRequired": null,
+        "id": 149
+      }
+    ],
+    "series": {
+      "id": 27,
+      "gameId": 559385600,
+      "name": "護鎖刃竜派生"
+    },
+    "id": 900,
+    "sharpness": {
+      "red": 100,
+      "orange": 30,
+      "yellow": 90,
+      "green": 30,
+      "blue": 0,
+      "white": 0,
+      "purple": 0
+    },
+    "handicraft": [
+      5
+    ]
+  },
+  "armor": {
+    "kind": "head",
+    "name": "シュバルカヘルムβ",
+    "description": "アルシュベルドの素材で作られた 頭防具。かつて世界を震撼させた 亡国の騎士の兜を模している。",
+    "rank": "high",
+    "rarity": 8,
+    "resistances": {
+      "fire": 2,
+      "water": 0,
+      "ice": 0,
+      "thunder": -1,
+      "dragon": -3
+    },
+    "defense": {
+      "base": 66,
+      "max": 86
+    },
+    "skills": [
+      {
+        "skill": {
+          "id": 33,
+          "gameId": -964369920,
+          "name": "鎖刃竜の飢餓",
+          "kind": "set",
+          "icon": {
+            "id": 14,
+            "kind": "set"
+          }
+        },
+        "level": 1,
+        "name": "加速再生Ⅰ",
+        "description": "継続してモンスターに攻撃を当てると、 体力が少し回復する （武器種により回復量は変動）",
+        "setPiecesRequired": 2,
+        "id": 75
+      },
+      {
+        "skill": {
+          "id": 97,
+          "gameId": 583598144,
+          "name": "毛皮の誘惑",
+          "kind": "group",
+          "icon": {
+            "id": 13,
+            "kind": "group"
+          }
+        },
+        "level": 1,
+        "name": "陽動",
+        "description": "攻撃を当てた時、モンスターの注意を より強く引くようになる",
+        "setPiecesRequired": 3,
+        "id": 242
+      },
+      {
+        "skill": {
+          "id": 152,
+          "gameId": 2083363072,
+          "name": "属性変換",
+          "kind": "armor",
+          "icon": {
+            "id": 1,
+            "kind": "attack"
+          }
+        },
+        "level": 1,
+        "name": null,
+        "description": "効果発動中、属性ダメージを蓄積させる と追加で龍属性ダメージが発生する。 龍属性攻撃値がわずかに上昇する。",
+        "setPiecesRequired": null,
+        "id": 398
+      }
+    ],
+    "slots": [
+      3,
+      2,
+      1
+    ],
+    "armorSet": {
+      "id": 136,
+      "name": "シュバルカβ"
+    },
+    "crafting": {
+      "armor": {
+        "id": 521
+      },
+      "materials": [
+        {
+          "item": {
+            "id": 422,
+            "gameId": 459,
+            "rarity": 6,
+            "name": "鎖刃竜の上鱗",
+            "description": "アルシュベルドの上質な鱗。 ずっしりと密度が高く極めて堅牢 だが、末端はもろく欠けやすい。",
+            "value": 3000,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 43,
+              "kind": "scale",
+              "colorId": 1,
+              "color": "white"
+            }
+          },
+          "quantity": 5,
+          "id": 1646
+        },
+        {
+          "item": {
+            "id": 423,
+            "gameId": 460,
+            "rarity": 6,
+            "name": "鎖刃竜の堅鎧殻",
+            "description": "アルシュベルドの堅牢な甲殻。 甲殻同士が甲冑のように重なって いるため、特に鎧殻と呼ばれる。",
+            "value": 4500,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 46,
+              "kind": "shell",
+              "colorId": 1,
+              "color": "white"
+            }
+          },
+          "quantity": 3,
+          "id": 1647
+        },
+        {
+          "item": {
+            "id": 424,
+            "gameId": 462,
+            "rarity": 6,
+            "name": "鎖刃竜の白毛",
+            "description": "アルシュベルドの白い体毛。 強度の高いそれらが絡まり合い、 身を守る機能をより高めている。",
+            "value": 5400,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 44,
+              "kind": "hide",
+              "colorId": 1,
+              "color": "white"
+            }
+          },
+          "quantity": 2,
+          "id": 1648
+        },
+        {
+          "item": {
+            "id": 426,
+            "gameId": 464,
+            "rarity": 6,
+            "name": "鎖刃竜の尖角",
+            "description": "アルシュベルドの鋭く尖った角。 大きく湾曲したその角がもたらす 威風で、対峙した者は気圧される。",
+            "value": 6600,
+            "carryLimit": 99,
+            "recipes": [],
+            "icon": {
+              "id": 45,
+              "kind": "claw",
+              "colorId": 1,
+              "color": "white"
+            }
+          },
+          "quantity": 3,
+          "id": 1649
+        }
+      ],
+      "zennyCost": 10000,
+      "id": 521
+    },
+    "id": 521
+  },
+  "skills": [
+    {
+      "name": "鎖刃竜の飢餓",
+      "kind": "set",
+      "description": null,
+      "ranks": [
+        {
+          "skill": {
+            "id": 33
+          },
+          "level": 1,
+          "name": "加速再生Ⅰ",
+          "description": "継続してモンスターに攻撃を当てると、 体力が少し回復する （武器種により回復量は変動）",
+          "setPiecesRequired": 2,
+          "id": 75
+        },
+        {
+          "skill": {
+            "id": 33
+          },
+          "level": 2,
+          "name": "加速再生Ⅱ",
+          "description": "継続してモンスターに攻撃を当てると、 体力が回復する （武器種により回復量は変動）",
+          "setPiecesRequired": 4,
+          "id": 76
+        }
+      ],
+      "icon": {
+        "id": 14,
+        "kind": "set"
+      },
+      "id": 33,
+      "gameId": -964369920
+    },
+    {
+      "name": "集中",
+      "kind": "weapon",
+      "description": "溜め攻撃の溜まる速度が速くなり、 太刀、双剣、銃槍、剣斧、盾斧、弓、 ボウガンのゲージが溜まりやすくなる。",
+      "ranks": [
+        {
+          "skill": {
+            "id": 60
+          },
+          "level": 1,
+          "name": null,
+          "description": "ゲージ上昇率がわずかに上がる 溜め時間５％短縮",
+          "setPiecesRequired": null,
+          "id": 148
+        },
+        {
+          "skill": {
+            "id": 60
+          },
+          "level": 2,
+          "name": null,
+          "description": "ゲージ上昇率が少し上がる 溜め時間１０％短縮",
+          "setPiecesRequired": null,
+          "id": 149
+        },
+        {
+          "skill": {
+            "id": 60
+          },
+          "level": 3,
+          "name": null,
+          "description": "ゲージ上昇率が上がる 溜め時間１５％短縮",
+          "setPiecesRequired": null,
+          "id": 150
+        }
+      ],
+      "icon": {
+        "id": 9,
+        "kind": "offense"
+      },
+      "id": 60,
+      "gameId": -283334048
+    },
+    {
+      "name": "毛皮の誘惑",
+      "kind": "group",
+      "description": null,
+      "ranks": [
+        {
+          "skill": {
+            "id": 97
+          },
+          "level": 1,
+          "name": "陽動",
+          "description": "攻撃を当てた時、モンスターの注意を より強く引くようになる",
+          "setPiecesRequired": 3,
+          "id": 242
+        }
+      ],
+      "icon": {
+        "id": 13,
+        "kind": "group"
+      },
+      "id": 97,
+      "gameId": 583598144
+    },
+    {
+      "name": "属性変換",
+      "kind": "armor",
+      "description": "属性攻撃を受けると発動し、一定時間、 龍属性に関する効果を得る。（効果終了 の後、一定時間は発動しなくなります）",
+      "ranks": [
+        {
+          "skill": {
+            "id": 152
+          },
+          "level": 1,
+          "name": null,
+          "description": "効果発動中、属性ダメージを蓄積させる と追加で龍属性ダメージが発生する。 龍属性攻撃値がわずかに上昇する。",
+          "setPiecesRequired": null,
+          "id": 398
+        },
+        {
+          "skill": {
+            "id": 152
+          },
+          "level": 2,
+          "name": null,
+          "description": "追加で発生する龍属性ダメージが 上昇する。龍属性攻撃値が上昇する。",
+          "setPiecesRequired": null,
+          "id": 399
+        },
+        {
+          "skill": {
+            "id": 152
+          },
+          "level": 3,
+          "name": null,
+          "description": "追加で発生する龍属性ダメージが さらに上昇する。龍属性攻撃値が 大きく上昇する。",
+          "setPiecesRequired": null,
+          "id": 400
+        }
+      ],
+      "icon": {
+        "id": 1,
+        "kind": "attack"
+      },
+      "id": 152,
+      "gameId": 2083363072
+    }
+  ],
+  "provenance": "Existing MHDB ja/weapons offset750, ja/armor, ja/skills cache reused 2026-10-26; original retrieval timestamp unknown"
+}
