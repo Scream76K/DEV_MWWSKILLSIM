@@ -1,0 +1,547 @@
+{
+  "scope": "SYNTHETIC_STATE_ATTACK_STAGE_CONTRACT_NOT_GAME_DAMAGE",
+  "executionSha": "54a4c1d20acb15746174c44b25311553dae0153b",
+  "hashes": {
+    "hope-hammer-browser-adapter.js": "faf64f7e9abbe5f14a8de47cf17d00892c2e4cd04b7f5fd3647a530b6d816468",
+    "v10-six-layer-foundation/min8/engine.cjs": "105d622bcd5633473aa7f7a95cbb1f6c38a2c28847d74763a897440ba32364a4",
+    "himmel-real-browser-bundle.js": "ed43e112ed215536bf93a60ba8bce6b1d2ca5803c13d68b946bd688292913397"
+  },
+  "rows": [
+    {
+      "multiplier": 1,
+      "withEffect": false,
+      "expected": 90,
+      "result": {
+        "status": "OK",
+        "weaponType": "insect-glaive",
+        "diagnostics": [],
+        "versions": {
+          "game": "contract",
+          "equipment": "e",
+          "technique": "t",
+          "effects": "fx"
+        },
+        "conditionKey": "{\"conditions\":{\"stateStatsByState\":{\"selected\":{\"affinity\":0,\"attack\":90,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1,\"weaponBase\":90},\"element\":0}}},\"plan\":\"[{\\\"id\\\":\\\"m\\\",\\\"revision\\\":1}]\",\"target\":{\"id\":\"contract\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"stateStatsByState\":{\"selected\":{\"affinity\":0,\"attack\":90,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1,\"weaponBase\":90},\"element\":0}}},\"plan\":\"[{\\\"id\\\":\\\"m\\\",\\\"revision\\\":1}]\",\"target\":{\"id\":\"contract\"}}",
+          "dps": "{\"conditions\":{\"stateStatsByState\":{\"selected\":{\"affinity\":0,\"attack\":90,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1,\"weaponBase\":90},\"element\":0}}},\"plan\":\"[{\\\"id\\\":\\\"m\\\",\\\"revision\\\":1}]\",\"target\":{\"id\":\"contract\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "c",
+                "eventId": "0:0",
+                "techniqueId": "m",
+                "revision": 1,
+                "source": "SYNTHETIC_CONTRACT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 90,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": []
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 90
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "c",
+                "eventId": "0:0",
+                "techniqueId": "m",
+                "revision": 1,
+                "source": "SYNTHETIC_CONTRACT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 90,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": []
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 90
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "multiplier": 1,
+      "withEffect": true,
+      "expected": 102.00000000000001,
+      "result": {
+        "status": "OK",
+        "weaponType": "insect-glaive",
+        "diagnostics": [],
+        "versions": {
+          "game": "contract",
+          "equipment": "e",
+          "technique": "t",
+          "effects": "fx"
+        },
+        "conditionKey": "{\"conditions\":{\"stateStatsByState\":{\"selected\":{\"affinity\":0,\"attack\":90,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1,\"weaponBase\":90},\"element\":0}}},\"plan\":\"[{\\\"id\\\":\\\"m\\\",\\\"revision\\\":1}]\",\"target\":{\"id\":\"contract\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"stateStatsByState\":{\"selected\":{\"affinity\":0,\"attack\":90,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1,\"weaponBase\":90},\"element\":0}}},\"plan\":\"[{\\\"id\\\":\\\"m\\\",\\\"revision\\\":1}]\",\"target\":{\"id\":\"contract\"}}",
+          "dps": "{\"conditions\":{\"stateStatsByState\":{\"selected\":{\"affinity\":0,\"attack\":90,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1,\"weaponBase\":90},\"element\":0}}},\"plan\":\"[{\\\"id\\\":\\\"m\\\",\\\"revision\\\":1}]\",\"target\":{\"id\":\"contract\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "c",
+                "eventId": "0:0",
+                "techniqueId": "m",
+                "revision": 1,
+                "source": "SYNTHETIC_CONTRACT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 102.00000000000001,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "attack-mult",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "SYNTHETIC_STAGE_CONTRACT"
+                  },
+                  {
+                    "id": "attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 40,
+                    "source": "SYNTHETIC_STAGE_CONTRACT"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": []
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 102.00000000000001
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "c",
+                "eventId": "0:0",
+                "techniqueId": "m",
+                "revision": 1,
+                "source": "SYNTHETIC_CONTRACT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 102.00000000000001,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "attack-mult",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "SYNTHETIC_STAGE_CONTRACT"
+                  },
+                  {
+                    "id": "attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 40,
+                    "source": "SYNTHETIC_STAGE_CONTRACT"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": []
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 102.00000000000001
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "multiplier": 1.15,
+      "withEffect": false,
+      "expected": 103.49999999999999,
+      "result": {
+        "status": "OK",
+        "weaponType": "insect-glaive",
+        "diagnostics": [],
+        "versions": {
+          "game": "contract",
+          "equipment": "e",
+          "technique": "t",
+          "effects": "fx"
+        },
+        "conditionKey": "{\"conditions\":{\"stateStatsByState\":{\"selected\":{\"affinity\":0,\"attack\":103.49999999999999,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1.15,\"weaponBase\":90},\"element\":0}}},\"plan\":\"[{\\\"id\\\":\\\"m\\\",\\\"revision\\\":1}]\",\"target\":{\"id\":\"contract\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"stateStatsByState\":{\"selected\":{\"affinity\":0,\"attack\":103.49999999999999,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1.15,\"weaponBase\":90},\"element\":0}}},\"plan\":\"[{\\\"id\\\":\\\"m\\\",\\\"revision\\\":1}]\",\"target\":{\"id\":\"contract\"}}",
+          "dps": "{\"conditions\":{\"stateStatsByState\":{\"selected\":{\"affinity\":0,\"attack\":103.49999999999999,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1.15,\"weaponBase\":90},\"element\":0}}},\"plan\":\"[{\\\"id\\\":\\\"m\\\",\\\"revision\\\":1}]\",\"target\":{\"id\":\"contract\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "c",
+                "eventId": "0:0",
+                "techniqueId": "m",
+                "revision": 1,
+                "source": "SYNTHETIC_CONTRACT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 103.49999999999999,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": []
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 103.49999999999999
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "c",
+                "eventId": "0:0",
+                "techniqueId": "m",
+                "revision": 1,
+                "source": "SYNTHETIC_CONTRACT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 103.49999999999999,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": []
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 103.49999999999999
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "multiplier": 1.15,
+      "withEffect": true,
+      "expected": 116.85,
+      "result": {
+        "status": "OK",
+        "weaponType": "insect-glaive",
+        "diagnostics": [],
+        "versions": {
+          "game": "contract",
+          "equipment": "e",
+          "technique": "t",
+          "effects": "fx"
+        },
+        "conditionKey": "{\"conditions\":{\"stateStatsByState\":{\"selected\":{\"affinity\":0,\"attack\":103.49999999999999,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1.15,\"weaponBase\":90},\"element\":0}}},\"plan\":\"[{\\\"id\\\":\\\"m\\\",\\\"revision\\\":1}]\",\"target\":{\"id\":\"contract\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"stateStatsByState\":{\"selected\":{\"affinity\":0,\"attack\":103.49999999999999,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1.15,\"weaponBase\":90},\"element\":0}}},\"plan\":\"[{\\\"id\\\":\\\"m\\\",\\\"revision\\\":1}]\",\"target\":{\"id\":\"contract\"}}",
+          "dps": "{\"conditions\":{\"stateStatsByState\":{\"selected\":{\"affinity\":0,\"attack\":103.49999999999999,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1.15,\"weaponBase\":90},\"element\":0}}},\"plan\":\"[{\\\"id\\\":\\\"m\\\",\\\"revision\\\":1}]\",\"target\":{\"id\":\"contract\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "c",
+                "eventId": "0:0",
+                "techniqueId": "m",
+                "revision": 1,
+                "source": "SYNTHETIC_CONTRACT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 102.00000000000001,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "attack-mult",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "SYNTHETIC_STAGE_CONTRACT"
+                  },
+                  {
+                    "id": "attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 40,
+                    "source": "SYNTHETIC_STAGE_CONTRACT"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": []
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 102.00000000000001
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "c",
+                "eventId": "0:0",
+                "techniqueId": "m",
+                "revision": 1,
+                "source": "SYNTHETIC_CONTRACT",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 102.00000000000001,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "attack-mult",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "SYNTHETIC_STAGE_CONTRACT"
+                  },
+                  {
+                    "id": "attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 40,
+                    "source": "SYNTHETIC_STAGE_CONTRACT"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": []
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 102.00000000000001
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

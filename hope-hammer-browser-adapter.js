@@ -316,7 +316,7 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
     resolvePartModifier:({parameters})=>({value:parameters.partModifier,gameVersion:versions.game,evidenceRef:parameters.partModifierSource}),
     calculate:root.damageFromParams}});
   const baseAttack=stats?.attackComponents?.weaponBase,baseElement=stats?.elementComponents?.weaponBase,baseAffinity=weapon.affinity;
-  const stateStatsByState=weapon.kind==='insect-glaive'&&Number.isFinite(baseAttack)&&Number.isFinite(baseElement)&&Number.isFinite(baseAffinity)?{NO_EXTRACT:{attack:baseAttack,element:baseElement,affinity:baseAffinity},TRIPLE_EXTRACT:{attack:baseAttack*1.15,element:baseElement,affinity:baseAffinity}}:conditions?.stateStatsByState;
+  const stateStatsByState=weapon.kind==='insect-glaive'&&Number.isFinite(baseAttack)&&Number.isFinite(baseElement)&&Number.isFinite(baseAffinity)?{NO_EXTRACT:{attack:baseAttack,attackComponents:{weaponBase:baseAttack,normalMultiplier:1,normalFlat:0},element:baseElement,affinity:baseAffinity},TRIPLE_EXTRACT:{attack:baseAttack*1.15,attackComponents:{weaponBase:baseAttack,normalMultiplier:1.15,normalFlat:0},element:baseElement,affinity:baseAffinity}}:conditions?.stateStatsByState;
   const pipelineConditions={...(conditions||{})};
   const selectedStateBundle={
    'insect-glaive':insectGlaiveState,

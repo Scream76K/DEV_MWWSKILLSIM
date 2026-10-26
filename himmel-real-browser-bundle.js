@@ -190,7 +190,14 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const stateStats=stateKey&&conditions?.stateStatsByState&&typeof conditions.stateStatsByState==='object'?conditions.stateStatsByState[stateKey]:null;
   if(stateKey&&!stateStats)throw Error('REAL_SLICE:STATE_STATS_UNRESOLVED:'+stateKey);
   const stats=stateStats&&typeof stateStats==='object'?{attack:stateStats.attack,element:stateStats.element,affinity:stateStats.affinity}:{attack:build.trueAttack,element:build.element,affinity:build.affinity};
-  const sourceAttackComponents=build?.equipment?.attackComponents;
+  // A selected damage state owns its attack decomposition as well as its value.
+  // Legacy state values without decomposition are atomic pre-effect attack values.
+  const sourceAttackComponents=stateStats?(stateStats.attackComponents??{weaponBase:stateStats.attack,normalMultiplier:1,normalFlat:0}):build?.equipment?.attackComponents;
+  if(stateStats){
+   ensure(sourceAttackComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceAttackComponents[k])),'STATE_ATTACK_COMPONENTS_INVALID');
+   const composed=sourceAttackComponents.weaponBase*sourceAttackComponents.normalMultiplier+sourceAttackComponents.normalFlat;
+   ensure(finite(composed)&&Math.abs(composed-stateStats.attack)<=1e-9*Math.max(1,Math.abs(stateStats.attack)),'STATE_ATTACK_COMPONENTS_MISMATCH');
+  }
   const attackComponents=sourceAttackComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceAttackComponents[k]))?{weaponBase:sourceAttackComponents.weaponBase,normalMultiplier:sourceAttackComponents.normalMultiplier,normalFlat:sourceAttackComponents.normalFlat}:null;
   const sourceElementComponents=build?.equipment?.elementComponents;
   const elementComponents=sourceElementComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceElementComponents[k]))?{weaponBase:sourceElementComponents.weaponBase,normalMultiplier:sourceElementComponents.normalMultiplier,normalFlat:sourceElementComponents.normalFlat}:null;
@@ -434,7 +441,14 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const stateStats=stateKey&&conditions?.stateStatsByState&&typeof conditions.stateStatsByState==='object'?conditions.stateStatsByState[stateKey]:null;
   if(stateKey&&!stateStats)throw Error('REAL_SLICE:STATE_STATS_UNRESOLVED:'+stateKey);
   const stats=stateStats&&typeof stateStats==='object'?{attack:stateStats.attack,element:stateStats.element,affinity:stateStats.affinity}:{attack:build.trueAttack,element:build.element,affinity:build.affinity};
-  const sourceAttackComponents=build?.equipment?.attackComponents;
+  // A selected damage state owns its attack decomposition as well as its value.
+  // Legacy state values without decomposition are atomic pre-effect attack values.
+  const sourceAttackComponents=stateStats?(stateStats.attackComponents??{weaponBase:stateStats.attack,normalMultiplier:1,normalFlat:0}):build?.equipment?.attackComponents;
+  if(stateStats){
+   ensure(sourceAttackComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceAttackComponents[k])),'STATE_ATTACK_COMPONENTS_INVALID');
+   const composed=sourceAttackComponents.weaponBase*sourceAttackComponents.normalMultiplier+sourceAttackComponents.normalFlat;
+   ensure(finite(composed)&&Math.abs(composed-stateStats.attack)<=1e-9*Math.max(1,Math.abs(stateStats.attack)),'STATE_ATTACK_COMPONENTS_MISMATCH');
+  }
   const attackComponents=sourceAttackComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceAttackComponents[k]))?{weaponBase:sourceAttackComponents.weaponBase,normalMultiplier:sourceAttackComponents.normalMultiplier,normalFlat:sourceAttackComponents.normalFlat}:null;
   const sourceElementComponents=build?.equipment?.elementComponents;
   const elementComponents=sourceElementComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceElementComponents[k]))?{weaponBase:sourceElementComponents.weaponBase,normalMultiplier:sourceElementComponents.normalMultiplier,normalFlat:sourceElementComponents.normalFlat}:null;
