@@ -1,3 +1,5 @@
+> R-01訂正：開始状態未入力・高速変形Lv0の旧互換経路は廃止。現行の入口検証は ../r256-ed1-required-state/README.md を参照。以下は当時の実行履歴として保持。
+
 # チャージ完了後開始→通常ビンEDⅠの最小接続
 
 承認: 2026-10-26 00:35 UTC Sentinel_0e41b1370e348191b629f759852d578a、斧強化OFFのEDⅠは通常ビン1本消費。爆発命中数とは別定義。高速変形の攻撃段階契約は既存23:53承認と https://kuroyonhon.com/mhwilds/memo/26.php 。前段チャージからのEDⅠは https://kuroyonhon.com/mhwilds/memo/12.php の連携表。

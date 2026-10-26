@@ -81,7 +81,8 @@
   if(rapidMorphEntries.length&&(!['charge-blade','switch-axe'].includes(weapon.kind)||rapidMorphEntries.some(x=>Number(x.skillId)!==7||!Number.isInteger(x.level)||x.level<1||x.level>3)))return fail('REAL_SLICE:RAPID_MORPH_SCOPE_OR_LEVEL_UNRESOLVED');
   if(rapidMorphEntries.length&&(!rapidRule||rapidRule.status!=='OWNER_APPROVED_PROVISIONAL'||resolvedTechniqueIds.some(id=>weapon.kind==='charge-blade'?!root.ChargeBladeEngine?.techniques?.[id]:!['SA_SWORD_VERTICAL','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'].includes(id))))return fail('REAL_SLICE:RAPID_MORPH_TECHNIQUE_SCOPE_UNRESOLVED');
   const ed1Rule=root.MHCBED1ResourceRule;
-  const ed1Requested=weapon.kind==='charge-blade'&&resolvedTechniqueIds.includes('CB_ELEMENT_DISCHARGE_1')&&(rapidMorphLevel>1||chargeBladeState?.previousAction!=null||chargeBladeState?.normalPhials!=null);
+  // Every ED I result uses the resource contract, including skill Lv0 and missing UI state.
+  const ed1Requested=weapon.kind==='charge-blade'&&resolvedTechniqueIds.includes('CB_ELEMENT_DISCHARGE_1');
   if(ed1Requested){
    if(resolvedTechniqueIds.length!==1)return fail('REAL_SLICE:CB_ED1_SEQUENCE_SCOPE_UNCONNECTED');
    if(!ed1Rule||ed1Rule.status!=='OWNER_APPROVED')return fail('REAL_SLICE:CB_ED1_RESOURCE_CONTRACT_UNAVAILABLE');
