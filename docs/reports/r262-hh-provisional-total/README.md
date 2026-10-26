@@ -36,7 +36,7 @@ Before implementation the public input failed SPECIAL_ROUTE_PENDING. Interim dev
 
 Relevant existing source-helper regression: tests/r61-horn-source-estimate.test.cjs, 6 passed. No broad suite, game verification, Safari, CI or saved A/B runtime was executed. Shared save/load and comparison-condition serialization was statically traced; this is not an A/B execution claim. Original stage③ six-file diff SHA256 remains 5781b032f789a9531391ef06834e5657a2c465d0f83ed817adfcacdfa6194ed8; original checkout and server untouched.
 
-Execution base SHA and exact working-tree source/bundle/harness hashes are in evidence/after-working-tree.json; they match the current files. There is no new product commit SHA: the staging/commit command was rejected by automatic approval review as conflicting with the earlier commit prohibition. Read-only checks confirmed an empty staged diff and unchanged HEAD e2c7516. No retry, indirect commit or push was performed. evidence/execution-manifest.json records this distinction. The last read remote development SHA was e2c7516; origin/develop was 8ba21ea (0 remote-only / 334 local-only commits at baseline, 380 differing paths). This is not a newly pushed delivery.
+Execution base SHA and exact working-tree source/bundle/harness hashes are in evidence/after-working-tree.json; they match the current files. At the initial blocked snapshot there was no new product commit SHA: the staging/commit command was rejected by automatic approval review as conflicting with the earlier commit prohibition. Read-only checks confirmed an empty staged diff and unchanged HEAD e2c7516. No retry, indirect commit or push was performed. evidence/execution-manifest.json records this distinction. The last read remote development SHA was e2c7516; origin/develop was 8ba21ea (0 remote-only / 334 local-only commits at baseline, 380 differing paths). That paragraph records the initial blocked state; the later authorized retry outcome follows below.
 
 
 ## Read-only review finding and bounded correction before publication
@@ -52,3 +52,8 @@ The owner supplied new explicit authorization for the previously rejected stagin
 3. Left swing body29.94 plus ordinary echo5.4 at attack108:35.34. Total254.10 in each channel; elemental components are explicitly0 for this no-element weapon.
 
 The HH compiler first recursively adapts a local body-only projection with hhModel:null and specialComponents:[], producing body physical/element events only, then appends each DB-backed special event once and immediately returns. The source DB is not mutated; specialTechniqueIds are not recursively expanded anywhere in this compiler. The public plan rejects standalone special-record IDs with this model, preventing explicit plus automatic duplicate special components.
+
+
+## Authorized retry outcome
+
+Product commit: f20a88aa2d40e5ba86b915b1b1fb81f55784926d. The new explicit owner authorization allowed the single staging/commit retry. All source/bundle/harness hashes in after-working-tree.json match the committed blobs. The execution itself used the earlier base HEAD with these uncommitted sources; it is not mislabeled as a post-commit rerun. This documentation-only follow-up records the correspondence. Normal push and remote HEAD confirmation are reported in the final task result. No additional product tests, CI, Safari or saved A/B execution were added.
