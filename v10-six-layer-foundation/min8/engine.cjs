@@ -127,7 +127,9 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const targets=Array.isArray(component.parameters?.effectTargets)&&component.parameters.effectTargets.length?component.parameters.effectTargets:[component.kind];
   const stages=Array.isArray(component.parameters?.effectStages)&&component.parameters.effectStages.length?component.parameters.effectStages:null;
   const unit={coefficient:component.unit,attack:'true-attack',element:'display-element',affinity:'percent',damage:'damage'};
-  for(const e of [...effects].filter(x=>targets.includes(x.target)&&(!stages||stages.includes(x.stage))).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id))){
+  const excludedEffectIds=component.parameters?.excludedEffectIds||[];
+  ensure(Array.isArray(excludedEffectIds)&&excludedEffectIds.every(x=>typeof x==='string'),'EFFECT_EXCLUSIONS_INVALID');
+  for(const e of [...effects].filter(x=>!excludedEffectIds.includes(x.id)&&targets.includes(x.target)&&(!stages||stages.includes(x.stage))).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id))){
    ensure(unit[e.stage]&&num(e.amount)&&['add','multiply','cap'].includes(e.operation),'EFFECT_INVALID');
    ensure(e.operation==='multiply'?e.unit==='dimensionless':e.unit===unit[e.stage],'EFFECT_UNIT_MISMATCH');
    const active=condition(e.condition,{state,target,event});

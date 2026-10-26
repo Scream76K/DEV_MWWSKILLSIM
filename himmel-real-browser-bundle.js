@@ -200,7 +200,9 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const targets=Array.isArray(component.parameters?.effectTargets)&&component.parameters.effectTargets.length?component.parameters.effectTargets:[component.kind];
   const stages=Array.isArray(component.parameters?.effectStages)&&component.parameters.effectStages.length?component.parameters.effectStages:null;
   const unit={coefficient:component.unit,attack:'true-attack',element:'display-element',affinity:'percent',damage:'damage'};
-  for(const e of [...effects].filter(x=>targets.includes(x.target)&&(!stages||stages.includes(x.stage))).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id))){
+  const excludedEffectIds=component.parameters?.excludedEffectIds||[];
+  ensure(Array.isArray(excludedEffectIds)&&excludedEffectIds.every(x=>typeof x==='string'),'EFFECT_EXCLUSIONS_INVALID');
+  for(const e of [...effects].filter(x=>!excludedEffectIds.includes(x.id)&&targets.includes(x.target)&&(!stages||stages.includes(x.stage))).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id))){
    ensure(unit[e.stage]&&num(e.amount)&&['add','multiply','cap'].includes(e.operation),'EFFECT_INVALID');
    ensure(e.operation==='multiply'?e.unit==='dimensionless':e.unit===unit[e.stage],'EFFECT_UNIT_MISMATCH');
    const active=condition(e.condition,{state,target,event});
@@ -442,7 +444,9 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const targets=Array.isArray(component.parameters?.effectTargets)&&component.parameters.effectTargets.length?component.parameters.effectTargets:[component.kind];
   const stages=Array.isArray(component.parameters?.effectStages)&&component.parameters.effectStages.length?component.parameters.effectStages:null;
   const unit={coefficient:component.unit,attack:'true-attack',element:'display-element',affinity:'percent',damage:'damage'};
-  for(const e of [...effects].filter(x=>targets.includes(x.target)&&(!stages||stages.includes(x.stage))).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id))){
+  const excludedEffectIds=component.parameters?.excludedEffectIds||[];
+  ensure(Array.isArray(excludedEffectIds)&&excludedEffectIds.every(x=>typeof x==='string'),'EFFECT_EXCLUSIONS_INVALID');
+  for(const e of [...effects].filter(x=>!excludedEffectIds.includes(x.id)&&targets.includes(x.target)&&(!stages||stages.includes(x.stage))).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id))){
    ensure(unit[e.stage]&&num(e.amount)&&['add','multiply','cap'].includes(e.operation),'EFFECT_INVALID');
    ensure(e.operation==='multiply'?e.unit==='dimensionless':e.unit===unit[e.stage],'EFFECT_UNIT_MISMATCH');
    const active=condition(e.condition,{state,target,event});
@@ -837,7 +841,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    // Preserve the sourced part-durability modifier for provenance. The
    // canonical HP formula validates it but does not apply it to HP damage.
-   const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):null};
+   const stateMetadata={resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):null};
    const partModifierKnown=finite(hit.partModifier);
    const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,shieldBoostAxeBody:record.shieldBoostAxeBody===true,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
    if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
@@ -846,7 +850,13 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   });
   if(record.phialReference?.status==='OBSERVED'&&Number.isInteger(record.phialReference.hitCount)&&record.phialReference.hitCount>0){
    const phialTarget=record.phialState?.phialType==='POWER_ELEMENT'?'element':'physical';
-   events[0].components.push({id:techniqueId+':phial:0',kind:'phial',unit:'PHIAL',source:record.phialReference.sourceRefs?.[0]??source,coefficient:1,parameters:Object.freeze({hitIndex:0,phialCount:record.phialReference.hitCount,phialReference:Object.freeze({...record.phialReference}),phialState:record.phialState?Object.freeze({...record.phialState}):null,effectTargets:[phialTarget],effectStages:[phialTarget==='element'?'element':'attack'],sourceTechniqueId:techniqueId})});
+   events[0].components.push({id:techniqueId+':phial:0',kind:'phial',unit:'PHIAL',source:record.phialReference.sourceRefs?.[0]??source,coefficient:1,parameters:Object.freeze({hitIndex:0,phialCount:record.phialReference.hitCount,phialReference:Object.freeze({...record.phialReference}),phialState:record.phialState?Object.freeze({...record.phialState}):null,excludedEffectIds:record.resourceContract?[record.resourceContract.rapidMorphEffectId]:[],effectTargets:[phialTarget],effectStages:[phialTarget==='element'?'element':'attack'],sourceTechniqueId:techniqueId})});
+  }
+  if(record.resourceContract){
+   const r=record.resourceContract;
+   if(weaponType!=='charge-blade'||techniqueId!=='CB_ELEMENT_DISCHARGE_1'||r.id!=='CB_ED1_NORMAL_RESOURCE'||r.status!=='OWNER_APPROVED'||!Number.isInteger(r.consumeNormalPhials)||r.consumeNormalPhials<=0)throw Error('REAL_SLICE:CB_ED1_RESOURCE_CONTRACT_INVALID');
+   events.push({type:'consume',contract:r.id,source:r.source,resourcePath:['chargeBlade','normalPhials'],amount:r.consumeNormalPhials});
+   events.push({type:'transition',contract:r.id,source:r.source,operations:[{op:'set',path:['chargeBlade','previousAction'],value:techniqueId}]});
   }
   return Object.freeze({
     id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',
@@ -906,7 +916,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    // Preserve the sourced part-durability modifier for provenance. The
    // canonical HP formula validates it but does not apply it to HP damage.
-   const stateMetadata={stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):null};
+   const stateMetadata={resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):null};
    const partModifierKnown=finite(hit.partModifier);
    const components=[{id:techniqueId+':physical:'+index,kind:'physical',unit:'MV',source,coefficient:hit.mv,parameters:Object.freeze({partModifier:partModifierKnown?hit.partModifier:null,partModifierStatus:partModifierKnown?'RESOLVED':'UNRESOLVED',partModifierSource:hit.partModifierSource??source,shieldBoostAxeBody:record.shieldBoostAxeBody===true,elementModifier:hit.elementModifier,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})}];
    if(hit.elementModifier>0)components.push({id:techniqueId+':element:'+index,kind:'element',unit:'ELEMENT_MODIFIER',source,coefficient:hit.elementModifier,parameters:Object.freeze({elementModifier:hit.elementModifier,elementSource:source,damageType:hit.damageType??null,hitIndex:index,...stateMetadata})});
@@ -915,7 +925,13 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   });
   if(record.phialReference?.status==='OBSERVED'&&Number.isInteger(record.phialReference.hitCount)&&record.phialReference.hitCount>0){
    const phialTarget=record.phialState?.phialType==='POWER_ELEMENT'?'element':'physical';
-   events[0].components.push({id:techniqueId+':phial:0',kind:'phial',unit:'PHIAL',source:record.phialReference.sourceRefs?.[0]??source,coefficient:1,parameters:Object.freeze({hitIndex:0,phialCount:record.phialReference.hitCount,phialReference:Object.freeze({...record.phialReference}),phialState:record.phialState?Object.freeze({...record.phialState}):null,effectTargets:[phialTarget],effectStages:[phialTarget==='element'?'element':'attack'],sourceTechniqueId:techniqueId})});
+   events[0].components.push({id:techniqueId+':phial:0',kind:'phial',unit:'PHIAL',source:record.phialReference.sourceRefs?.[0]??source,coefficient:1,parameters:Object.freeze({hitIndex:0,phialCount:record.phialReference.hitCount,phialReference:Object.freeze({...record.phialReference}),phialState:record.phialState?Object.freeze({...record.phialState}):null,excludedEffectIds:record.resourceContract?[record.resourceContract.rapidMorphEffectId]:[],effectTargets:[phialTarget],effectStages:[phialTarget==='element'?'element':'attack'],sourceTechniqueId:techniqueId})});
+  }
+  if(record.resourceContract){
+   const r=record.resourceContract;
+   if(weaponType!=='charge-blade'||techniqueId!=='CB_ELEMENT_DISCHARGE_1'||r.id!=='CB_ED1_NORMAL_RESOURCE'||r.status!=='OWNER_APPROVED'||!Number.isInteger(r.consumeNormalPhials)||r.consumeNormalPhials<=0)throw Error('REAL_SLICE:CB_ED1_RESOURCE_CONTRACT_INVALID');
+   events.push({type:'consume',contract:r.id,source:r.source,resourcePath:['chargeBlade','normalPhials'],amount:r.consumeNormalPhials});
+   events.push({type:'transition',contract:r.id,source:r.source,operations:[{op:'set',path:['chargeBlade','previousAction'],value:techniqueId}]});
   }
   return Object.freeze({
     id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',
@@ -1139,7 +1155,19 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   }
   return null;
  };
- const handlers={[weaponType]:({event,build,effects,conditions})=>{
+ const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type!=='hit'&&event.contract==='CB_ED1_NORMAL_RESOURCE'&&weaponType==='charge-blade'&&event.techniqueId==='CB_ELEMENT_DISCHARGE_1'){
+   const nextState=JSON.parse(JSON.stringify(state));
+   if(event.type==='consume')nextState.chargeBlade.normalPhials-=event.amount;
+   else if(event.type==='transition')nextState.chargeBlade.previousAction=event.techniqueId;
+   else throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+   return {nextState};
+  }
+  const resource=event.components?.find(c=>c.parameters?.resourceContract)?.parameters.resourceContract;
+  if(resource){
+   if(!['CHARGE','AXE_NEUTRAL'].includes(state?.chargeBlade?.previousAction)||!Number.isInteger(state?.chargeBlade?.normalPhials))throw Error('REAL_SLICE:CB_ED1_START_STATE_UNRESOLVED');
+   if(state.chargeBlade.normalPhials<resource.consumeNormalPhials)throw Error('REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT');
+  }
   if(event.type!=='hit'||!uniqueTechniqueIds.includes(event.techniqueId)||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   const physicalEvents=event.components.filter(c=>c.kind==='physical'),elementEvents=event.components.filter(c=>c.kind==='element'),shellingEvents=event.components.filter(c=>c.kind==='shelling'),referenceEvents=event.components.filter(c=>c.kind==='reference'),phialEvents=event.components.filter(c=>c.kind==='phial');
   if(shellingEvents.length){
@@ -1273,7 +1301,19 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   }
   return null;
  };
- const handlers={[weaponType]:({event,build,effects,conditions})=>{
+ const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type!=='hit'&&event.contract==='CB_ED1_NORMAL_RESOURCE'&&weaponType==='charge-blade'&&event.techniqueId==='CB_ELEMENT_DISCHARGE_1'){
+   const nextState=JSON.parse(JSON.stringify(state));
+   if(event.type==='consume')nextState.chargeBlade.normalPhials-=event.amount;
+   else if(event.type==='transition')nextState.chargeBlade.previousAction=event.techniqueId;
+   else throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+   return {nextState};
+  }
+  const resource=event.components?.find(c=>c.parameters?.resourceContract)?.parameters.resourceContract;
+  if(resource){
+   if(!['CHARGE','AXE_NEUTRAL'].includes(state?.chargeBlade?.previousAction)||!Number.isInteger(state?.chargeBlade?.normalPhials))throw Error('REAL_SLICE:CB_ED1_START_STATE_UNRESOLVED');
+   if(state.chargeBlade.normalPhials<resource.consumeNormalPhials)throw Error('REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT');
+  }
   if(event.type!=='hit'||!uniqueTechniqueIds.includes(event.techniqueId)||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   const physicalEvents=event.components.filter(c=>c.kind==='physical'),elementEvents=event.components.filter(c=>c.kind==='element'),shellingEvents=event.components.filter(c=>c.kind==='shelling'),referenceEvents=event.components.filter(c=>c.kind==='reference'),phialEvents=event.components.filter(c=>c.kind==='phial');
   if(shellingEvents.length){

@@ -84,7 +84,19 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   }
   return null;
  };
- const handlers={[weaponType]:({event,build,effects,conditions})=>{
+ const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type!=='hit'&&event.contract==='CB_ED1_NORMAL_RESOURCE'&&weaponType==='charge-blade'&&event.techniqueId==='CB_ELEMENT_DISCHARGE_1'){
+   const nextState=JSON.parse(JSON.stringify(state));
+   if(event.type==='consume')nextState.chargeBlade.normalPhials-=event.amount;
+   else if(event.type==='transition')nextState.chargeBlade.previousAction=event.techniqueId;
+   else throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
+   return {nextState};
+  }
+  const resource=event.components?.find(c=>c.parameters?.resourceContract)?.parameters.resourceContract;
+  if(resource){
+   if(!['CHARGE','AXE_NEUTRAL'].includes(state?.chargeBlade?.previousAction)||!Number.isInteger(state?.chargeBlade?.normalPhials))throw Error('REAL_SLICE:CB_ED1_START_STATE_UNRESOLVED');
+   if(state.chargeBlade.normalPhials<resource.consumeNormalPhials)throw Error('REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT');
+  }
   if(event.type!=='hit'||!uniqueTechniqueIds.includes(event.techniqueId)||!Array.isArray(event.components))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   const physicalEvents=event.components.filter(c=>c.kind==='physical'),elementEvents=event.components.filter(c=>c.kind==='element'),shellingEvents=event.components.filter(c=>c.kind==='shelling'),referenceEvents=event.components.filter(c=>c.kind==='reference'),phialEvents=event.components.filter(c=>c.kind==='phial');
   if(shellingEvents.length){
