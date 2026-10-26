@@ -326,6 +326,11 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
 #skillWorkspaceRight .skill-game-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
 #skillWorkspaceRight .skill-game { min-width:0; }
 #skillWorkspaceRight .skill-game-name { overflow-wrap:anywhere; }
+/* The build panel is narrow even on desktop; keep status values inside it. */
+#buildSummary .game-status{grid-template-columns:minmax(0,1fr)}
+#buildSummary .gs-row{min-width:0;gap:8px;border-right:0}
+#buildSummary .gs-label{flex:0 0 auto}
+#buildSummary .gs-value{min-width:0;overflow-wrap:anywhere;text-align:right}
 .element-display{display:inline-flex;align-items:center;gap:4px;max-width:100%;flex-wrap:wrap}
 .element-icon{width:22px;height:22px;flex:0 0 22px}
 .element-label,.element-value{color:inherit}
@@ -2275,7 +2280,7 @@ function renderSummary(){
     <div class="gs-row"><span class="gs-label">攻撃力</span><span class="gs-value">${Math.round(s.attack)}<span class="gs-sub">真 ${Math.round(s.attackTrue)}</span></span></div>
     <div class="gs-row"><span class="gs-label">会心率</span><span class="gs-value">${aff}%</span></div>
     <div class="gs-row"><span class="gs-label">最大会心率</span><span class="gs-value">${maxAff}%</span></div>
-    <div class="gs-row"><span class="gs-label">属性</span><span class="gs-value">${equipmentElementDisplay(s)}</span></div>
+    <div class="gs-row"><span class="gs-label">属性</span><span class="gs-value">${equipmentElementDisplay(s,{detail:true})}</span></div>
     <div class="gs-row"><span class="gs-label">防御力</span><span class="gs-value">${Math.round(s.defense)}</span></div>
     <div class="gs-row"><span class="gs-label">選択技の実計算</span><span class="gs-value">${oneText}</span></div>
   </div>`;
