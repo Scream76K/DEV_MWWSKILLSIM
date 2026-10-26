@@ -19,7 +19,7 @@ before-adapter.json loads git-show baseline Adapter with current page to isolate
 - CB: body/phial Formula and single ED I state; SAED reference. Axe followup and broader sequences pending.
 - IG: body plus adopted triple-extract state; kinsect and consumption pending.
 - HH: body; special source-estimate Formula exists but formal aggregation/version/rounding pending.
-- Bow: existing dedicated fixed-sequence Formula; other state sequences pending.
+- Bow: existing dedicated fixed-sequence Formula; common resolved element basis now reaches CM pre-flat stage (r262-bow-element-basis). Other state sequences pending.
 - LBG: normal-ammo and adopted element first-Hit-only references; rapid modes/full elemental shot pending.
 - HBG: normal-ammo, element first-Hit-only, now adopted Wyvern full-two-Hit reference Formula connected. Other specials and stock sequences pending.
 

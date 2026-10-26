@@ -1,0 +1,9 @@
+# Stage2 Bow element basis connection
+
+Existing formula only: CM applies to weaponBase * normalMultiplier; normalFlat and conditionalFlat remain outside. No coefficient changes. Engine now forwards its resolved elementComponents to Formula; maximum conditional add is tagged by the common producer and retained separately. Bow Adapter no longer supplies null basis or coerces unknown element to0.
+
+Synthetic public Adapter contract, actual existing Bow Technique DB and skill resolver, not legal representative equipment/stage4: base100, Fire3 rule1.2/+60, CM1 existing1.05, maximum conditional+20. Expected effective element186/206. Existing three IDs BOW_SHOT_3/BOW_POWER_SHOT_3/BOW_POWER_VOLLEY_3, critical range, no coating. Each elemental Hit checked independently against expected element and existing Hit modifier. Totals normal195.67200000000003/max200.872. Direct existing Formula confirms CM physical unchanged, missing basis/mismatched basis/null element reject, confirmed element0 remains0.
+
+before.json uses HEAD bfb98d6 Adapter through git show with updated engine/bundle to isolate the null Adapter boundary; both channels return COMPONENT_UNAVAILABLE with CHARGE_MASTER_ELEMENT_COMPONENTS_UNRESOLVED. Its hashes describe loaded working files, not the baseline Adapter. after.json records tested uncommitted source hashes and base execution SHA. initial-missing-game-id.json retains initial synthetic fixture failure (missing required gameId), corrected in harness without product bypass.
+
+Test tools/bow-element-basis-proof.cjs; engine-related.log existing4 related tests pass. No whole-skill audit, representative-build/save UI test, CI/Safari, DPS or new skill adoption. Bundle regenerated; checked against evidence hash. Original stage3 dirty checkout/browser/server untouched. Stage2 partial completion only; SA Hit-mode pending.

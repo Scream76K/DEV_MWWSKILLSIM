@@ -127,7 +127,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   }
   const attackComponents=sourceAttackComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceAttackComponents[k]))?{weaponBase:sourceAttackComponents.weaponBase,normalMultiplier:sourceAttackComponents.normalMultiplier,normalFlat:sourceAttackComponents.normalFlat}:null;
   const sourceElementComponents=build?.equipment?.elementComponents;
-  const elementComponents=sourceElementComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceElementComponents[k]))?{weaponBase:sourceElementComponents.weaponBase,normalMultiplier:sourceElementComponents.normalMultiplier,normalFlat:sourceElementComponents.normalFlat}:null;
+  const elementComponents=sourceElementComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceElementComponents[k]))?{weaponBase:sourceElementComponents.weaponBase,normalMultiplier:sourceElementComponents.normalMultiplier,normalFlat:sourceElementComponents.normalFlat,conditionalFlat:0}:null;
   const out={coefficient:component.coefficient,stats,attackComponents,elementComponents,post:[],trace:[]};
   const appliedAffinityGroups=new Set();
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
@@ -155,7 +155,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
     else if(e.operation==='add')out.attackComponents.normalFlat+=e.amount;
     else out.stats.attack=Math.min(out.stats.attack,e.amount);
     out.stats.attack=out.attackComponents.weaponBase*out.attackComponents.normalMultiplier+out.attackComponents.normalFlat;
-   }else if(e.stage==='element'&&out.elementComponents){if(e.operation==='multiply')out.elementComponents.normalMultiplier*=e.amount;else if(e.operation==='add')out.elementComponents.normalFlat+=e.amount;else out.stats.element=Math.min(out.stats.element,e.amount);out.stats.element=out.elementComponents.weaponBase*out.elementComponents.normalMultiplier+out.elementComponents.normalFlat;}else {const dest=e.stage==='coefficient'?out:out.stats,key=e.stage;const v=dest[key];dest[key]=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);}
+   }else if(e.stage==='element'&&out.elementComponents){if(e.operation==='multiply')out.elementComponents.normalMultiplier*=e.amount;else if(e.operation==='add'){if(e.flatComponent==='conditional')out.elementComponents.conditionalFlat+=e.amount;else out.elementComponents.normalFlat+=e.amount;}else out.stats.element=Math.min(out.stats.element,e.amount);out.stats.element=out.elementComponents.weaponBase*out.elementComponents.normalMultiplier+out.elementComponents.normalFlat+out.elementComponents.conditionalFlat;}else {const dest=e.stage==='coefficient'?out:out.stats,key=e.stage;const v=dest[key];dest[key]=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);}
    ensure(finite(out.coefficient)&&Object.values(out.stats).every(finite),'EFFECT_RESULT_NON_FINITE');
    out.trace.push({id:e.id,target:e.target,stage:e.stage,unit:e.unit,order:e.order,source:e.source,...(e.status?{status:e.status}: {})});
   }
@@ -192,7 +192,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
        if(unresolved.includes(c.id)){components.push({...meta,...bad(typeof reasons[c.id]==='string'?reasons[c.id]:'UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
        const applied=applyEffects(c,effects,state,build,req.target,ev,req.conditions||{}),f=formulae[c.kind];
-       const response=typeof f==='function'?f({kind:c.kind,channel:ch,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:{...copy(applied.stats),...(applied.attackComponents?{attackComponents:copy(applied.attackComponents)}:{})},build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
+       const response=typeof f==='function'?f({kind:c.kind,channel:ch,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:{...copy(applied.stats),...(applied.attackComponents?{attackComponents:copy(applied.attackComponents)}:{}),...(applied.elementComponents?{elementComponents:copy(applied.elementComponents)}:{})},build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
        if(result!==null){for(const post of applied.post){result=post.operation==='add'?result+post.amount:post.operation==='multiply'?result*post.amount:Math.min(result,post.amount);ensure(num(result),'POST_DAMAGE_NON_FINITE')}}
