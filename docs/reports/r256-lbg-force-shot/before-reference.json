@@ -1,0 +1,1859 @@
+{
+  "codeSHA": "42d5cc9422e83a473cf282efcd986b1adb6e8b80",
+  "hashes": {
+    "index.html": "639faec0656f0ba6abbbbc2de361a4c5b43d48fb367254b7f941d35a294541c3",
+    "bowgun-normal-reference.js": "b56c1a459b463e7dd3b240ebe459729cc58db649479c26d37739b52a9caf2dc9",
+    "hope-hammer-browser-adapter.js": "128b850825087efa55308158f1d7e696a165f33311f970d50fe4b76e538b1e84",
+    "himmel-real-browser-bundle.js": "1db7c1b38e1c64c7209500d89fa91e04e38a27a6e347fefa2df0f959ea614e4b"
+  },
+  "cases": [],
+  "checks": [
+    {
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'unavailable'\n- 'available'\n\n    at Object.<anonymous> (/Users/scream/Documents/Codex/2026-10-18/task/himmel-v10-real-db-element-gate/tools/lbg-force-shot-proof.cjs:11:274)\n    at Module._compile (node:internal/modules/cjs/loader:1929:14)\n    at Object..js (node:internal/modules/cjs/loader:2060:10)\n    at Module.load (node:internal/modules/cjs/loader:1651:32)\n    at Module._load (node:internal/modules/cjs/loader:1443:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+    }
+  ],
+  "pairs": [
+    {
+      "ordinal": 4,
+      "cases": [
+        {
+          "name": "A",
+          "real": {
+            "status": "OK",
+            "weaponType": "light-bowgun",
+            "diagnostics": [
+              {
+                "code": "MHDB_SOURCE",
+                "apiId": 817,
+                "gameId": 57,
+                "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/817",
+                "apiVersion": "UNKNOWN",
+                "retrievedAt": "UNKNOWN",
+                "sourceGameVersion": "UNKNOWN"
+              }
+            ],
+            "versions": {
+              "game": "1.042.00.02",
+              "equipment": "mhdb-source-unknown-game-version",
+              "technique": "tech-real",
+              "effects": "effects-real"
+            },
+            "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"300\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+            "comparisonContext": {
+              "damage": "{\"conditions\":{\"aff\":\"0\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"300\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+              "dps": "{\"conditions\":{\"aff\":\"0\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"300\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+            },
+            "channels": {
+              "normal": {
+                "execution": {
+                  "status": "complete",
+                  "expected": [
+                    "0:0"
+                  ],
+                  "executed": [
+                    "0:0"
+                  ],
+                  "reason": null
+                },
+                "components": [
+                  {
+                    "id": "LBG_NORMAL_AMMO_1:reference:0",
+                    "eventId": "0:0",
+                    "techniqueId": "LBG_NORMAL_AMMO_1",
+                    "revision": "1",
+                    "source": "MACARONGAMEMO_LBG_R49_SOURCE",
+                    "coefficientUnit": "REFERENCE",
+                    "damageUnit": "damage",
+                    "status": "available",
+                    "value": 72.25680000000001,
+                    "details": {
+                      "state": {
+                        "shotMode": "NORMAL",
+                        "ammoType": "NORMAL",
+                        "ammoLevel": 1,
+                        "range": "CRITICAL",
+                        "normalModeLevel": 0,
+                        "contactPolicy": "ALL_THREE",
+                        "shotOrdinal": 4,
+                        "fullMagazine": true,
+                        "weaponAmmoEntry": {
+                          "kind": "normal",
+                          "level": 1,
+                          "capacity": 6,
+                          "rapid": false,
+                          "id": 378
+                        },
+                        "magazineCapacity": 6,
+                        "resolutionSource": "TECHNIQUE_DB_AMMO_LEVEL_FROM_ID"
+                      },
+                      "scope": "EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO",
+                      "trace": [
+                        {
+                          "hit": 1,
+                          "techniqueId": "LBG_NORMAL_AMMO_1",
+                          "mv": 17,
+                          "physical": 24.085600000000003,
+                          "element": 0,
+                          "weaponPhysicalModifier": 0.8,
+                          "rangePhysicalModifier": 1,
+                          "normalModeModifier": 1,
+                          "normalUpModifier": 1,
+                          "criticalExpectation": 0.9625,
+                          "shotOrdinal": 4,
+                          "shotAttackAdd": 0,
+                          "shotAffinityAdd": 0,
+                          "effectiveAffinity": -15,
+                          "sharpnessApplied": false,
+                          "weaponElementApplied": false
+                        },
+                        {
+                          "hit": 2,
+                          "techniqueId": "LBG_NORMAL_AMMO_1",
+                          "mv": 17,
+                          "physical": 24.085600000000003,
+                          "element": 0,
+                          "weaponPhysicalModifier": 0.8,
+                          "rangePhysicalModifier": 1,
+                          "normalModeModifier": 1,
+                          "normalUpModifier": 1,
+                          "criticalExpectation": 0.9625,
+                          "shotOrdinal": 4,
+                          "shotAttackAdd": 0,
+                          "shotAffinityAdd": 0,
+                          "effectiveAffinity": -15,
+                          "sharpnessApplied": false,
+                          "weaponElementApplied": false
+                        },
+                        {
+                          "hit": 3,
+                          "techniqueId": "LBG_NORMAL_AMMO_1",
+                          "mv": 17,
+                          "physical": 24.085600000000003,
+                          "element": 0,
+                          "weaponPhysicalModifier": 0.8,
+                          "rangePhysicalModifier": 1,
+                          "normalModeModifier": 1,
+                          "normalUpModifier": 1,
+                          "criticalExpectation": 0.9625,
+                          "shotOrdinal": 4,
+                          "shotAttackAdd": 0,
+                          "shotAffinityAdd": 0,
+                          "effectiveAffinity": -15,
+                          "sharpnessApplied": false,
+                          "weaponElementApplied": false
+                        }
+                      ]
+                    },
+                    "disposition": "emitted",
+                    "effectsApplied": []
+                  }
+                ],
+                "issues": [],
+                "finalState": {},
+                "diagnostics": {
+                  "formalStatus": "UNVERIFIED",
+                  "provisionalEffects": []
+                },
+                "metrics": {
+                  "comboTotalDamage": {
+                    "status": "available",
+                    "value": 72.25680000000001
+                  },
+                  "comboDuration": {
+                    "status": "unavailable",
+                    "reason": "DURATION_UNAVAILABLE"
+                  },
+                  "comboDps": {
+                    "status": "unavailable",
+                    "reason": "DURATION_UNAVAILABLE"
+                  }
+                }
+              },
+              "maximum": {
+                "execution": {
+                  "status": "complete",
+                  "expected": [
+                    "0:0"
+                  ],
+                  "executed": [
+                    "0:0"
+                  ],
+                  "reason": null
+                },
+                "components": [
+                  {
+                    "id": "LBG_NORMAL_AMMO_1:reference:0",
+                    "eventId": "0:0",
+                    "techniqueId": "LBG_NORMAL_AMMO_1",
+                    "revision": "1",
+                    "source": "MACARONGAMEMO_LBG_R49_SOURCE",
+                    "coefficientUnit": "REFERENCE",
+                    "damageUnit": "damage",
+                    "status": "available",
+                    "value": 72.25680000000001,
+                    "details": {
+                      "state": {
+                        "shotMode": "NORMAL",
+                        "ammoType": "NORMAL",
+                        "ammoLevel": 1,
+                        "range": "CRITICAL",
+                        "normalModeLevel": 0,
+                        "contactPolicy": "ALL_THREE",
+                        "shotOrdinal": 4,
+                        "fullMagazine": true,
+                        "weaponAmmoEntry": {
+                          "kind": "normal",
+                          "level": 1,
+                          "capacity": 6,
+                          "rapid": false,
+                          "id": 378
+                        },
+                        "magazineCapacity": 6,
+                        "resolutionSource": "TECHNIQUE_DB_AMMO_LEVEL_FROM_ID"
+                      },
+                      "scope": "EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO",
+                      "trace": [
+                        {
+                          "hit": 1,
+                          "techniqueId": "LBG_NORMAL_AMMO_1",
+                          "mv": 17,
+                          "physical": 24.085600000000003,
+                          "element": 0,
+                          "weaponPhysicalModifier": 0.8,
+                          "rangePhysicalModifier": 1,
+                          "normalModeModifier": 1,
+                          "normalUpModifier": 1,
+                          "criticalExpectation": 0.9625,
+                          "shotOrdinal": 4,
+                          "shotAttackAdd": 0,
+                          "shotAffinityAdd": 0,
+                          "effectiveAffinity": -15,
+                          "sharpnessApplied": false,
+                          "weaponElementApplied": false
+                        },
+                        {
+                          "hit": 2,
+                          "techniqueId": "LBG_NORMAL_AMMO_1",
+                          "mv": 17,
+                          "physical": 24.085600000000003,
+                          "element": 0,
+                          "weaponPhysicalModifier": 0.8,
+                          "rangePhysicalModifier": 1,
+                          "normalModeModifier": 1,
+                          "normalUpModifier": 1,
+                          "criticalExpectation": 0.9625,
+                          "shotOrdinal": 4,
+                          "shotAttackAdd": 0,
+                          "shotAffinityAdd": 0,
+                          "effectiveAffinity": -15,
+                          "sharpnessApplied": false,
+                          "weaponElementApplied": false
+                        },
+                        {
+                          "hit": 3,
+                          "techniqueId": "LBG_NORMAL_AMMO_1",
+                          "mv": 17,
+                          "physical": 24.085600000000003,
+                          "element": 0,
+                          "weaponPhysicalModifier": 0.8,
+                          "rangePhysicalModifier": 1,
+                          "normalModeModifier": 1,
+                          "normalUpModifier": 1,
+                          "criticalExpectation": 0.9625,
+                          "shotOrdinal": 4,
+                          "shotAttackAdd": 0,
+                          "shotAffinityAdd": 0,
+                          "effectiveAffinity": -15,
+                          "sharpnessApplied": false,
+                          "weaponElementApplied": false
+                        }
+                      ]
+                    },
+                    "disposition": "emitted",
+                    "effectsApplied": []
+                  }
+                ],
+                "issues": [],
+                "finalState": {},
+                "diagnostics": {
+                  "formalStatus": "UNVERIFIED",
+                  "provisionalEffects": []
+                },
+                "metrics": {
+                  "comboTotalDamage": {
+                    "status": "available",
+                    "value": 72.25680000000001
+                  },
+                  "comboDuration": {
+                    "status": "unavailable",
+                    "reason": "DURATION_UNAVAILABLE"
+                  },
+                  "comboDps": {
+                    "status": "unavailable",
+                    "reason": "DURATION_UNAVAILABLE"
+                  }
+                }
+              }
+            }
+          },
+          "total": {
+            "ファーストショット": 3
+          },
+          "summary": "\n    攻撃力299真 230\n    会心率-15%\n    最大会心率-15%\n    属性0\n    防御力1\n    選択技の実計算技 選択技 / 通常 72.3 [MACARONGAMEMO_LBG_R49_SOURCE rev.1] [未検証範囲あり] / 最大 72.3 [MACARONGAMEMO_LBG_R49_SOURCE rev.1] [未検証範囲あり]\n  ",
+          "snapshot": {
+            "combatBuffs": {
+              "meal": null,
+              "charm": null,
+              "otherBuffs": null
+            },
+            "weaponId": "817",
+            "weaponKind": "light-bowgun",
+            "armor": {
+              "head": "",
+              "chest": "",
+              "arms": "",
+              "waist": "",
+              "legs": ""
+            },
+            "charmCustom": {
+              "skills": [],
+              "slots": [
+                0,
+                0,
+                0
+              ],
+              "weaponSlots": []
+            },
+            "artia": {
+              "production": "element",
+              "element": "fire",
+              "parts": [
+                "attack",
+                "attack",
+                "attack"
+              ],
+              "sameElementPartCount": 3,
+              "elementParts": 0,
+              "restores": [
+                "none",
+                "none",
+                "none",
+                "none",
+                "none"
+              ],
+              "seriesSkill": "",
+              "groupSkill": ""
+            },
+            "decos": {},
+            "combo": {
+              "moves": [
+                {
+                  "techniqueId": "canonical:LBG_NORMAL_AMMO_1"
+                }
+              ],
+              "uptime": 85,
+              "uptimeMode": "1",
+              "hbgWyvernState": {
+                "mode": null,
+                "fireHitzone": null
+              },
+              "chargeBladeState": {
+                "shieldBoosted": null,
+                "axeBoosted": null,
+                "phialType": null,
+                "enhancedPhial": null,
+                "previousAction": null,
+                "normalPhials": null
+              },
+              "insectGlaiveState": {
+                "extractState": null,
+                "kinsectState": null
+              },
+              "huntingHornState": {
+                "echoState": null,
+                "melodyState": null
+              },
+              "lightBowgunState": {
+                "shotMode": "NORMAL",
+                "ammoType": "NORMAL",
+                "ammoLevel": 1,
+                "range": "CRITICAL",
+                "normalModeLevel": 0,
+                "contactPolicy": "ALL_THREE",
+                "shotOrdinal": 4,
+                "fullMagazine": true
+              },
+              "gunlanceState": {
+                "shellingType": null,
+                "shellingPower": null,
+                "loadedRounds": null,
+                "chargedRounds": null,
+                "fireHitzone": null
+              },
+              "dualBladesState": {
+                "demonMode": null
+              },
+              "longSwordState": {
+                "spiritGauge": null
+              },
+              "switchAxeState": {
+                "mode": null,
+                "awakened": null
+              }
+            },
+            "target": {
+              "monsterId": "training-room",
+              "partId": "training-front"
+            }
+          },
+          "conditions": {
+            "attack": "230",
+            "aff": "-15",
+            "elem": "0",
+            "mv": "100",
+            "hz": "80",
+            "ehz": "30",
+            "sharp": "1.32",
+            "esharp": "1.15",
+            "cb": "0",
+            "eCrit": "0",
+            "dragonHz": "",
+            "dragonHitzoneSource": {
+              "kind": "UNSET"
+            },
+            "gutsState": "BEFORE",
+            "fortifyCount": 2,
+            "bowState": {
+              "chargeLevel": 3,
+              "coating": null,
+              "range": null,
+              "startShot": null
+            },
+            "drawAttack": false,
+            "mounted": false,
+            "everlastingStage": null,
+            "hbgState": {
+              "ammoType": "NORMAL",
+              "ammoLevel": null,
+              "range": null,
+              "normalModeLevel": null,
+              "magazineCapacity": null,
+              "shotOrdinal": null,
+              "fullMagazine": null
+            },
+            "uptime": "85",
+            "uptimeMode": "1",
+            "chargeBladeState": {
+              "shieldBoosted": null,
+              "axeBoosted": null,
+              "phialType": null,
+              "enhancedPhial": null,
+              "previousAction": null,
+              "normalPhials": null
+            },
+            "dualBladesState": {
+              "demonMode": null
+            },
+            "longSwordState": {
+              "spiritGauge": null
+            },
+            "switchAxeState": {
+              "mode": null,
+              "awakened": null
+            },
+            "insectGlaiveState": {
+              "extractState": null,
+              "kinsectState": null
+            },
+            "huntingHornState": {
+              "echoState": null,
+              "melodyState": null
+            },
+            "lightBowgunState": {
+              "shotMode": "NORMAL",
+              "ammoType": "NORMAL",
+              "ammoLevel": 1,
+              "range": "CRITICAL",
+              "normalModeLevel": 0,
+              "contactPolicy": "ALL_THREE",
+              "shotOrdinal": 4,
+              "fullMagazine": true
+            },
+            "gunlanceState": {
+              "shellingType": null,
+              "shellingPower": null,
+              "loadedRounds": null,
+              "chargedRounds": null,
+              "fireHitzone": null
+            }
+          }
+        },
+        {
+          "name": "B",
+          "real": {
+            "status": "OK",
+            "weaponType": "light-bowgun",
+            "diagnostics": [
+              {
+                "code": "MHDB_SOURCE",
+                "apiId": 817,
+                "gameId": 57,
+                "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/817",
+                "apiVersion": "UNKNOWN",
+                "retrievedAt": "UNKNOWN",
+                "sourceGameVersion": "UNKNOWN"
+              }
+            ],
+            "versions": {
+              "game": "1.042.00.02",
+              "equipment": "mhdb-source-unknown-game-version",
+              "technique": "tech-real",
+              "effects": "effects-real"
+            },
+            "conditionKey": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+            "comparisonContext": {
+              "damage": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+              "dps": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+            },
+            "channels": {
+              "normal": {
+                "execution": {
+                  "status": "complete",
+                  "expected": [
+                    "0:0"
+                  ],
+                  "executed": [
+                    "0:0"
+                  ],
+                  "reason": null
+                },
+                "components": [
+                  {
+                    "id": "LBG_NORMAL_AMMO_1:reference:0",
+                    "eventId": "0:0",
+                    "techniqueId": "LBG_NORMAL_AMMO_1",
+                    "revision": "1",
+                    "source": "MACARONGAMEMO_LBG_R49_SOURCE",
+                    "coefficientUnit": "REFERENCE",
+                    "damageUnit": "damage",
+                    "status": "unavailable",
+                    "reason": "LBG_NORMAL:UNREVIEWED_SKILL",
+                    "disposition": "emitted",
+                    "effectsApplied": []
+                  }
+                ],
+                "issues": [],
+                "finalState": {},
+                "diagnostics": {
+                  "formalStatus": "UNVERIFIED",
+                  "provisionalEffects": []
+                },
+                "metrics": {
+                  "comboTotalDamage": {
+                    "status": "unavailable",
+                    "reason": "COMPONENT_UNAVAILABLE"
+                  },
+                  "comboDuration": {
+                    "status": "unavailable",
+                    "reason": "DURATION_UNAVAILABLE"
+                  },
+                  "comboDps": {
+                    "status": "unavailable",
+                    "reason": "COMPONENT_UNAVAILABLE"
+                  }
+                }
+              },
+              "maximum": {
+                "execution": {
+                  "status": "complete",
+                  "expected": [
+                    "0:0"
+                  ],
+                  "executed": [
+                    "0:0"
+                  ],
+                  "reason": null
+                },
+                "components": [
+                  {
+                    "id": "LBG_NORMAL_AMMO_1:reference:0",
+                    "eventId": "0:0",
+                    "techniqueId": "LBG_NORMAL_AMMO_1",
+                    "revision": "1",
+                    "source": "MACARONGAMEMO_LBG_R49_SOURCE",
+                    "coefficientUnit": "REFERENCE",
+                    "damageUnit": "damage",
+                    "status": "unavailable",
+                    "reason": "LBG_NORMAL:UNREVIEWED_SKILL",
+                    "disposition": "emitted",
+                    "effectsApplied": []
+                  }
+                ],
+                "issues": [],
+                "finalState": {},
+                "diagnostics": {
+                  "formalStatus": "UNVERIFIED",
+                  "provisionalEffects": []
+                },
+                "metrics": {
+                  "comboTotalDamage": {
+                    "status": "unavailable",
+                    "reason": "COMPONENT_UNAVAILABLE"
+                  },
+                  "comboDuration": {
+                    "status": "unavailable",
+                    "reason": "DURATION_UNAVAILABLE"
+                  },
+                  "comboDps": {
+                    "status": "unavailable",
+                    "reason": "COMPONENT_UNAVAILABLE"
+                  }
+                }
+              }
+            }
+          },
+          "total": {
+            "ファーストショット": 3,
+            "フォースショット": 3
+          },
+          "summary": "\n    攻撃力299真 230\n    会心率-15%\n    最大会心率-15%\n    属性0\n    防御力1\n    選択技の実計算技 選択技 / 通常 未算出：COMPONENT_UNAVAILABLE / 最大 未算出：COMPONENT_UNAVAILABLE\n  ",
+          "snapshot": {
+            "combatBuffs": {
+              "meal": null,
+              "charm": null,
+              "otherBuffs": null
+            },
+            "weaponId": "817",
+            "weaponKind": "light-bowgun",
+            "armor": {
+              "head": "",
+              "chest": "",
+              "arms": "",
+              "waist": "",
+              "legs": ""
+            },
+            "charmCustom": {
+              "skills": [],
+              "slots": [
+                0,
+                0,
+                0
+              ],
+              "weaponSlots": []
+            },
+            "artia": {
+              "production": "element",
+              "element": "fire",
+              "parts": [
+                "attack",
+                "attack",
+                "attack"
+              ],
+              "sameElementPartCount": 3,
+              "elementParts": 0,
+              "restores": [
+                "none",
+                "none",
+                "none",
+                "none",
+                "none"
+              ],
+              "seriesSkill": "",
+              "groupSkill": ""
+            },
+            "decos": {
+              "w0": "12"
+            },
+            "combo": {
+              "moves": [
+                {
+                  "techniqueId": "canonical:LBG_NORMAL_AMMO_1"
+                }
+              ],
+              "uptime": 85,
+              "uptimeMode": "1",
+              "hbgWyvernState": {
+                "mode": null,
+                "fireHitzone": null
+              },
+              "chargeBladeState": {
+                "shieldBoosted": null,
+                "axeBoosted": null,
+                "phialType": null,
+                "enhancedPhial": null,
+                "previousAction": null,
+                "normalPhials": null
+              },
+              "insectGlaiveState": {
+                "extractState": null,
+                "kinsectState": null
+              },
+              "huntingHornState": {
+                "echoState": null,
+                "melodyState": null
+              },
+              "lightBowgunState": {
+                "shotMode": "NORMAL",
+                "ammoType": "NORMAL",
+                "ammoLevel": 1,
+                "range": "CRITICAL",
+                "normalModeLevel": 0,
+                "contactPolicy": "ALL_THREE",
+                "shotOrdinal": 4,
+                "fullMagazine": true
+              },
+              "gunlanceState": {
+                "shellingType": null,
+                "shellingPower": null,
+                "loadedRounds": null,
+                "chargedRounds": null,
+                "fireHitzone": null
+              },
+              "dualBladesState": {
+                "demonMode": null
+              },
+              "longSwordState": {
+                "spiritGauge": null
+              },
+              "switchAxeState": {
+                "mode": null,
+                "awakened": null
+              }
+            },
+            "target": {
+              "monsterId": "training-room",
+              "partId": "training-front"
+            }
+          },
+          "conditions": {
+            "attack": "230",
+            "aff": "-15",
+            "elem": "0",
+            "mv": "100",
+            "hz": "80",
+            "ehz": "30",
+            "sharp": "1.32",
+            "esharp": "1.15",
+            "cb": "0",
+            "eCrit": "0",
+            "dragonHz": "",
+            "dragonHitzoneSource": {
+              "kind": "UNSET"
+            },
+            "gutsState": "BEFORE",
+            "fortifyCount": 2,
+            "bowState": {
+              "chargeLevel": 3,
+              "coating": null,
+              "range": null,
+              "startShot": null
+            },
+            "drawAttack": false,
+            "mounted": false,
+            "everlastingStage": null,
+            "hbgState": {
+              "ammoType": "NORMAL",
+              "ammoLevel": null,
+              "range": null,
+              "normalModeLevel": null,
+              "magazineCapacity": null,
+              "shotOrdinal": null,
+              "fullMagazine": null
+            },
+            "uptime": "85",
+            "uptimeMode": "1",
+            "chargeBladeState": {
+              "shieldBoosted": null,
+              "axeBoosted": null,
+              "phialType": null,
+              "enhancedPhial": null,
+              "previousAction": null,
+              "normalPhials": null
+            },
+            "dualBladesState": {
+              "demonMode": null
+            },
+            "longSwordState": {
+              "spiritGauge": null
+            },
+            "switchAxeState": {
+              "mode": null,
+              "awakened": null
+            },
+            "insectGlaiveState": {
+              "extractState": null,
+              "kinsectState": null
+            },
+            "huntingHornState": {
+              "echoState": null,
+              "melodyState": null
+            },
+            "lightBowgunState": {
+              "shotMode": "NORMAL",
+              "ammoType": "NORMAL",
+              "ammoLevel": 1,
+              "range": "CRITICAL",
+              "normalModeLevel": 0,
+              "contactPolicy": "ALL_THREE",
+              "shotOrdinal": 4,
+              "fullMagazine": true
+            },
+            "gunlanceState": {
+              "shellingType": null,
+              "shellingPower": null,
+              "loadedRounds": null,
+              "chargedRounds": null,
+              "fireHitzone": null
+            }
+          }
+        }
+      ],
+      "before": {
+        "real": {
+          "status": "OK",
+          "weaponType": "light-bowgun",
+          "diagnostics": [
+            {
+              "code": "MHDB_SOURCE",
+              "apiId": 817,
+              "gameId": 57,
+              "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/817",
+              "apiVersion": "UNKNOWN",
+              "retrievedAt": "UNKNOWN",
+              "sourceGameVersion": "UNKNOWN"
+            }
+          ],
+          "versions": {
+            "game": "1.042.00.02",
+            "equipment": "mhdb-source-unknown-game-version",
+            "technique": "tech-real",
+            "effects": "effects-real"
+          },
+          "conditionKey": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "comparisonContext": {
+            "damage": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+            "dps": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+          },
+          "channels": {
+            "normal": {
+              "execution": {
+                "status": "complete",
+                "expected": [
+                  "0:0"
+                ],
+                "executed": [
+                  "0:0"
+                ],
+                "reason": null
+              },
+              "components": [
+                {
+                  "id": "LBG_NORMAL_AMMO_1:reference:0",
+                  "eventId": "0:0",
+                  "techniqueId": "LBG_NORMAL_AMMO_1",
+                  "revision": "1",
+                  "source": "MACARONGAMEMO_LBG_R49_SOURCE",
+                  "coefficientUnit": "REFERENCE",
+                  "damageUnit": "damage",
+                  "status": "unavailable",
+                  "reason": "LBG_NORMAL:UNREVIEWED_SKILL",
+                  "disposition": "emitted",
+                  "effectsApplied": []
+                }
+              ],
+              "issues": [],
+              "finalState": {},
+              "diagnostics": {
+                "formalStatus": "UNVERIFIED",
+                "provisionalEffects": []
+              },
+              "metrics": {
+                "comboTotalDamage": {
+                  "status": "unavailable",
+                  "reason": "COMPONENT_UNAVAILABLE"
+                },
+                "comboDuration": {
+                  "status": "unavailable",
+                  "reason": "DURATION_UNAVAILABLE"
+                },
+                "comboDps": {
+                  "status": "unavailable",
+                  "reason": "COMPONENT_UNAVAILABLE"
+                }
+              }
+            },
+            "maximum": {
+              "execution": {
+                "status": "complete",
+                "expected": [
+                  "0:0"
+                ],
+                "executed": [
+                  "0:0"
+                ],
+                "reason": null
+              },
+              "components": [
+                {
+                  "id": "LBG_NORMAL_AMMO_1:reference:0",
+                  "eventId": "0:0",
+                  "techniqueId": "LBG_NORMAL_AMMO_1",
+                  "revision": "1",
+                  "source": "MACARONGAMEMO_LBG_R49_SOURCE",
+                  "coefficientUnit": "REFERENCE",
+                  "damageUnit": "damage",
+                  "status": "unavailable",
+                  "reason": "LBG_NORMAL:UNREVIEWED_SKILL",
+                  "disposition": "emitted",
+                  "effectsApplied": []
+                }
+              ],
+              "issues": [],
+              "finalState": {},
+              "diagnostics": {
+                "formalStatus": "UNVERIFIED",
+                "provisionalEffects": []
+              },
+              "metrics": {
+                "comboTotalDamage": {
+                  "status": "unavailable",
+                  "reason": "COMPONENT_UNAVAILABLE"
+                },
+                "comboDuration": {
+                  "status": "unavailable",
+                  "reason": "DURATION_UNAVAILABLE"
+                },
+                "comboDps": {
+                  "status": "unavailable",
+                  "reason": "COMPONENT_UNAVAILABLE"
+                }
+              }
+            }
+          }
+        },
+        "total": {
+          "ファーストショット": 3,
+          "フォースショット": 3
+        },
+        "summary": "\n    攻撃力299真 230\n    会心率-15%\n    最大会心率-15%\n    属性0\n    防御力1\n    選択技の実計算技 選択技 / 通常 未算出：COMPONENT_UNAVAILABLE / 最大 未算出：COMPONENT_UNAVAILABLE\n  ",
+        "snapshot": {
+          "combatBuffs": {
+            "meal": null,
+            "charm": null,
+            "otherBuffs": null
+          },
+          "weaponId": "817",
+          "weaponKind": "light-bowgun",
+          "armor": {
+            "head": "",
+            "chest": "",
+            "arms": "",
+            "waist": "",
+            "legs": ""
+          },
+          "charmCustom": {
+            "skills": [],
+            "slots": [
+              0,
+              0,
+              0
+            ],
+            "weaponSlots": []
+          },
+          "artia": {
+            "production": "element",
+            "element": "fire",
+            "parts": [
+              "attack",
+              "attack",
+              "attack"
+            ],
+            "sameElementPartCount": 3,
+            "elementParts": 0,
+            "restores": [
+              "none",
+              "none",
+              "none",
+              "none",
+              "none"
+            ],
+            "seriesSkill": "",
+            "groupSkill": ""
+          },
+          "decos": {
+            "w0": "12"
+          },
+          "combo": {
+            "moves": [
+              {
+                "techniqueId": "canonical:LBG_NORMAL_AMMO_1"
+              }
+            ],
+            "uptime": 85,
+            "uptimeMode": "1",
+            "hbgWyvernState": {
+              "mode": null,
+              "fireHitzone": null
+            },
+            "chargeBladeState": {
+              "shieldBoosted": null,
+              "axeBoosted": null,
+              "phialType": null,
+              "enhancedPhial": null,
+              "previousAction": null,
+              "normalPhials": null
+            },
+            "insectGlaiveState": {
+              "extractState": null,
+              "kinsectState": null
+            },
+            "huntingHornState": {
+              "echoState": null,
+              "melodyState": null
+            },
+            "lightBowgunState": {
+              "shotMode": "NORMAL",
+              "ammoType": "NORMAL",
+              "ammoLevel": 1,
+              "range": "CRITICAL",
+              "normalModeLevel": 0,
+              "contactPolicy": "ALL_THREE",
+              "shotOrdinal": 4,
+              "fullMagazine": true
+            },
+            "gunlanceState": {
+              "shellingType": null,
+              "shellingPower": null,
+              "loadedRounds": null,
+              "chargedRounds": null,
+              "fireHitzone": null
+            },
+            "dualBladesState": {
+              "demonMode": null
+            },
+            "longSwordState": {
+              "spiritGauge": null
+            },
+            "switchAxeState": {
+              "mode": null,
+              "awakened": null
+            }
+          },
+          "target": {
+            "monsterId": "training-room",
+            "partId": "training-front"
+          }
+        },
+        "conditions": {
+          "attack": "230",
+          "aff": "-15",
+          "elem": "0",
+          "mv": "100",
+          "hz": "80",
+          "ehz": "30",
+          "sharp": "1.32",
+          "esharp": "1.15",
+          "cb": "0",
+          "eCrit": "0",
+          "dragonHz": "",
+          "dragonHitzoneSource": {
+            "kind": "UNSET"
+          },
+          "gutsState": "BEFORE",
+          "fortifyCount": 2,
+          "bowState": {
+            "chargeLevel": 3,
+            "coating": null,
+            "range": null,
+            "startShot": null
+          },
+          "drawAttack": false,
+          "mounted": false,
+          "everlastingStage": null,
+          "hbgState": {
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "uptime": "85",
+          "uptimeMode": "1",
+          "chargeBladeState": {
+            "shieldBoosted": null,
+            "axeBoosted": null,
+            "phialType": null,
+            "enhancedPhial": null,
+            "previousAction": null,
+            "normalPhials": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": "NORMAL",
+            "ammoType": "NORMAL",
+            "ammoLevel": 1,
+            "range": "CRITICAL",
+            "normalModeLevel": 0,
+            "contactPolicy": "ALL_THREE",
+            "shotOrdinal": 4,
+            "fullMagazine": true
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          }
+        }
+      },
+      "rows": [
+        {
+          "name": "A",
+          "real": {
+            "status": "OK",
+            "weaponType": "light-bowgun",
+            "diagnostics": [
+              {
+                "code": "MHDB_SOURCE",
+                "apiId": 817,
+                "gameId": 57,
+                "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/817",
+                "apiVersion": "UNKNOWN",
+                "retrievedAt": "UNKNOWN",
+                "sourceGameVersion": "UNKNOWN"
+              }
+            ],
+            "versions": {
+              "game": "1.042.00.02",
+              "equipment": "mhdb-source-unknown-game-version",
+              "technique": "tech-real",
+              "effects": "effects-real"
+            },
+            "conditionKey": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"standardEvaluation\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+            "comparisonContext": {
+              "damage": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"standardEvaluation\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+              "dps": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"standardEvaluation\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+            },
+            "channels": {
+              "normal": {
+                "execution": {
+                  "status": "complete",
+                  "expected": [
+                    "0:0"
+                  ],
+                  "executed": [
+                    "0:0"
+                  ],
+                  "reason": null
+                },
+                "components": [
+                  {
+                    "id": "LBG_NORMAL_AMMO_1:reference:0",
+                    "eventId": "0:0",
+                    "techniqueId": "LBG_NORMAL_AMMO_1",
+                    "revision": "1",
+                    "source": "MACARONGAMEMO_LBG_R49_SOURCE",
+                    "coefficientUnit": "REFERENCE",
+                    "damageUnit": "damage",
+                    "status": "available",
+                    "value": 72.25680000000001,
+                    "details": {
+                      "state": {
+                        "shotMode": "NORMAL",
+                        "ammoType": "NORMAL",
+                        "ammoLevel": 1,
+                        "range": "CRITICAL",
+                        "normalModeLevel": 0,
+                        "contactPolicy": "ALL_THREE",
+                        "shotOrdinal": 4,
+                        "fullMagazine": true,
+                        "weaponAmmoEntry": {
+                          "kind": "normal",
+                          "level": 1,
+                          "capacity": 6,
+                          "rapid": false,
+                          "id": 378
+                        },
+                        "magazineCapacity": 6,
+                        "resolutionSource": "TECHNIQUE_DB_AMMO_LEVEL_FROM_ID"
+                      },
+                      "scope": "EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO",
+                      "trace": [
+                        {
+                          "hit": 1,
+                          "techniqueId": "LBG_NORMAL_AMMO_1",
+                          "mv": 17,
+                          "physical": 24.085600000000003,
+                          "element": 0,
+                          "weaponPhysicalModifier": 0.8,
+                          "rangePhysicalModifier": 1,
+                          "normalModeModifier": 1,
+                          "normalUpModifier": 1,
+                          "criticalExpectation": 0.9625,
+                          "shotOrdinal": 4,
+                          "shotAttackAdd": 0,
+                          "shotAffinityAdd": 0,
+                          "effectiveAffinity": -15,
+                          "sharpnessApplied": false,
+                          "weaponElementApplied": false
+                        },
+                        {
+                          "hit": 2,
+                          "techniqueId": "LBG_NORMAL_AMMO_1",
+                          "mv": 17,
+                          "physical": 24.085600000000003,
+                          "element": 0,
+                          "weaponPhysicalModifier": 0.8,
+                          "rangePhysicalModifier": 1,
+                          "normalModeModifier": 1,
+                          "normalUpModifier": 1,
+                          "criticalExpectation": 0.9625,
+                          "shotOrdinal": 4,
+                          "shotAttackAdd": 0,
+                          "shotAffinityAdd": 0,
+                          "effectiveAffinity": -15,
+                          "sharpnessApplied": false,
+                          "weaponElementApplied": false
+                        },
+                        {
+                          "hit": 3,
+                          "techniqueId": "LBG_NORMAL_AMMO_1",
+                          "mv": 17,
+                          "physical": 24.085600000000003,
+                          "element": 0,
+                          "weaponPhysicalModifier": 0.8,
+                          "rangePhysicalModifier": 1,
+                          "normalModeModifier": 1,
+                          "normalUpModifier": 1,
+                          "criticalExpectation": 0.9625,
+                          "shotOrdinal": 4,
+                          "shotAttackAdd": 0,
+                          "shotAffinityAdd": 0,
+                          "effectiveAffinity": -15,
+                          "sharpnessApplied": false,
+                          "weaponElementApplied": false
+                        }
+                      ]
+                    },
+                    "disposition": "emitted",
+                    "effectsApplied": []
+                  }
+                ],
+                "issues": [],
+                "finalState": {},
+                "diagnostics": {
+                  "formalStatus": "UNVERIFIED",
+                  "provisionalEffects": []
+                },
+                "metrics": {
+                  "comboTotalDamage": {
+                    "status": "available",
+                    "value": 72.25680000000001
+                  },
+                  "comboDuration": {
+                    "status": "unavailable",
+                    "reason": "DURATION_UNAVAILABLE"
+                  },
+                  "comboDps": {
+                    "status": "unavailable",
+                    "reason": "DURATION_UNAVAILABLE"
+                  }
+                }
+              },
+              "maximum": {
+                "execution": {
+                  "status": "complete",
+                  "expected": [
+                    "0:0"
+                  ],
+                  "executed": [
+                    "0:0"
+                  ],
+                  "reason": null
+                },
+                "components": [
+                  {
+                    "id": "LBG_NORMAL_AMMO_1:reference:0",
+                    "eventId": "0:0",
+                    "techniqueId": "LBG_NORMAL_AMMO_1",
+                    "revision": "1",
+                    "source": "MACARONGAMEMO_LBG_R49_SOURCE",
+                    "coefficientUnit": "REFERENCE",
+                    "damageUnit": "damage",
+                    "status": "available",
+                    "value": 72.25680000000001,
+                    "details": {
+                      "state": {
+                        "shotMode": "NORMAL",
+                        "ammoType": "NORMAL",
+                        "ammoLevel": 1,
+                        "range": "CRITICAL",
+                        "normalModeLevel": 0,
+                        "contactPolicy": "ALL_THREE",
+                        "shotOrdinal": 4,
+                        "fullMagazine": true,
+                        "weaponAmmoEntry": {
+                          "kind": "normal",
+                          "level": 1,
+                          "capacity": 6,
+                          "rapid": false,
+                          "id": 378
+                        },
+                        "magazineCapacity": 6,
+                        "resolutionSource": "TECHNIQUE_DB_AMMO_LEVEL_FROM_ID"
+                      },
+                      "scope": "EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO",
+                      "trace": [
+                        {
+                          "hit": 1,
+                          "techniqueId": "LBG_NORMAL_AMMO_1",
+                          "mv": 17,
+                          "physical": 24.085600000000003,
+                          "element": 0,
+                          "weaponPhysicalModifier": 0.8,
+                          "rangePhysicalModifier": 1,
+                          "normalModeModifier": 1,
+                          "normalUpModifier": 1,
+                          "criticalExpectation": 0.9625,
+                          "shotOrdinal": 4,
+                          "shotAttackAdd": 0,
+                          "shotAffinityAdd": 0,
+                          "effectiveAffinity": -15,
+                          "sharpnessApplied": false,
+                          "weaponElementApplied": false
+                        },
+                        {
+                          "hit": 2,
+                          "techniqueId": "LBG_NORMAL_AMMO_1",
+                          "mv": 17,
+                          "physical": 24.085600000000003,
+                          "element": 0,
+                          "weaponPhysicalModifier": 0.8,
+                          "rangePhysicalModifier": 1,
+                          "normalModeModifier": 1,
+                          "normalUpModifier": 1,
+                          "criticalExpectation": 0.9625,
+                          "shotOrdinal": 4,
+                          "shotAttackAdd": 0,
+                          "shotAffinityAdd": 0,
+                          "effectiveAffinity": -15,
+                          "sharpnessApplied": false,
+                          "weaponElementApplied": false
+                        },
+                        {
+                          "hit": 3,
+                          "techniqueId": "LBG_NORMAL_AMMO_1",
+                          "mv": 17,
+                          "physical": 24.085600000000003,
+                          "element": 0,
+                          "weaponPhysicalModifier": 0.8,
+                          "rangePhysicalModifier": 1,
+                          "normalModeModifier": 1,
+                          "normalUpModifier": 1,
+                          "criticalExpectation": 0.9625,
+                          "shotOrdinal": 4,
+                          "shotAttackAdd": 0,
+                          "shotAffinityAdd": 0,
+                          "effectiveAffinity": -15,
+                          "sharpnessApplied": false,
+                          "weaponElementApplied": false
+                        }
+                      ]
+                    },
+                    "disposition": "emitted",
+                    "effectsApplied": []
+                  }
+                ],
+                "issues": [],
+                "finalState": {},
+                "diagnostics": {
+                  "formalStatus": "UNVERIFIED",
+                  "provisionalEffects": []
+                },
+                "metrics": {
+                  "comboTotalDamage": {
+                    "status": "available",
+                    "value": 72.25680000000001
+                  },
+                  "comboDuration": {
+                    "status": "unavailable",
+                    "reason": "DURATION_UNAVAILABLE"
+                  },
+                  "comboDps": {
+                    "status": "unavailable",
+                    "reason": "DURATION_UNAVAILABLE"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "B",
+          "real": {
+            "status": "OK",
+            "weaponType": "light-bowgun",
+            "diagnostics": [
+              {
+                "code": "MHDB_SOURCE",
+                "apiId": 817,
+                "gameId": 57,
+                "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/817",
+                "apiVersion": "UNKNOWN",
+                "retrievedAt": "UNKNOWN",
+                "sourceGameVersion": "UNKNOWN"
+              }
+            ],
+            "versions": {
+              "game": "1.042.00.02",
+              "equipment": "mhdb-source-unknown-game-version",
+              "technique": "tech-real",
+              "effects": "effects-real"
+            },
+            "conditionKey": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"standardEvaluation\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+            "comparisonContext": {
+              "damage": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"standardEvaluation\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+              "dps": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"standardEvaluation\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+            },
+            "channels": {
+              "normal": {
+                "execution": {
+                  "status": "complete",
+                  "expected": [
+                    "0:0"
+                  ],
+                  "executed": [
+                    "0:0"
+                  ],
+                  "reason": null
+                },
+                "components": [
+                  {
+                    "id": "LBG_NORMAL_AMMO_1:reference:0",
+                    "eventId": "0:0",
+                    "techniqueId": "LBG_NORMAL_AMMO_1",
+                    "revision": "1",
+                    "source": "MACARONGAMEMO_LBG_R49_SOURCE",
+                    "coefficientUnit": "REFERENCE",
+                    "damageUnit": "damage",
+                    "status": "unavailable",
+                    "reason": "LBG_NORMAL:UNREVIEWED_SKILL",
+                    "disposition": "emitted",
+                    "effectsApplied": []
+                  }
+                ],
+                "issues": [],
+                "finalState": {},
+                "diagnostics": {
+                  "formalStatus": "UNVERIFIED",
+                  "provisionalEffects": []
+                },
+                "metrics": {
+                  "comboTotalDamage": {
+                    "status": "unavailable",
+                    "reason": "COMPONENT_UNAVAILABLE"
+                  },
+                  "comboDuration": {
+                    "status": "unavailable",
+                    "reason": "DURATION_UNAVAILABLE"
+                  },
+                  "comboDps": {
+                    "status": "unavailable",
+                    "reason": "COMPONENT_UNAVAILABLE"
+                  }
+                }
+              },
+              "maximum": {
+                "execution": {
+                  "status": "complete",
+                  "expected": [
+                    "0:0"
+                  ],
+                  "executed": [
+                    "0:0"
+                  ],
+                  "reason": null
+                },
+                "components": [
+                  {
+                    "id": "LBG_NORMAL_AMMO_1:reference:0",
+                    "eventId": "0:0",
+                    "techniqueId": "LBG_NORMAL_AMMO_1",
+                    "revision": "1",
+                    "source": "MACARONGAMEMO_LBG_R49_SOURCE",
+                    "coefficientUnit": "REFERENCE",
+                    "damageUnit": "damage",
+                    "status": "unavailable",
+                    "reason": "LBG_NORMAL:UNREVIEWED_SKILL",
+                    "disposition": "emitted",
+                    "effectsApplied": []
+                  }
+                ],
+                "issues": [],
+                "finalState": {},
+                "diagnostics": {
+                  "formalStatus": "UNVERIFIED",
+                  "provisionalEffects": []
+                },
+                "metrics": {
+                  "comboTotalDamage": {
+                    "status": "unavailable",
+                    "reason": "COMPONENT_UNAVAILABLE"
+                  },
+                  "comboDuration": {
+                    "status": "unavailable",
+                    "reason": "DURATION_UNAVAILABLE"
+                  },
+                  "comboDps": {
+                    "status": "unavailable",
+                    "reason": "COMPONENT_UNAVAILABLE"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "after": {
+        "real": {
+          "status": "OK",
+          "weaponType": "light-bowgun",
+          "diagnostics": [
+            {
+              "code": "MHDB_SOURCE",
+              "apiId": 817,
+              "gameId": 57,
+              "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/817",
+              "apiVersion": "UNKNOWN",
+              "retrievedAt": "UNKNOWN",
+              "sourceGameVersion": "UNKNOWN"
+            }
+          ],
+          "versions": {
+            "game": "1.042.00.02",
+            "equipment": "mhdb-source-unknown-game-version",
+            "technique": "tech-real",
+            "effects": "effects-real"
+          },
+          "conditionKey": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "comparisonContext": {
+            "damage": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+            "dps": "{\"conditions\":{\"aff\":\"-15\",\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"attack\":\"230\",\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"contactPolicy\":\"ALL_THREE\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"fullMagazine\":true,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":1,\"ammoType\":\"NORMAL\",\"contactPolicy\":\"ALL_THREE\",\"fullMagazine\":true,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"shotMode\":\"NORMAL\",\"shotOrdinal\":4,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"LBG_NORMAL_AMMO_1\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+          },
+          "channels": {
+            "normal": {
+              "execution": {
+                "status": "complete",
+                "expected": [
+                  "0:0"
+                ],
+                "executed": [
+                  "0:0"
+                ],
+                "reason": null
+              },
+              "components": [
+                {
+                  "id": "LBG_NORMAL_AMMO_1:reference:0",
+                  "eventId": "0:0",
+                  "techniqueId": "LBG_NORMAL_AMMO_1",
+                  "revision": "1",
+                  "source": "MACARONGAMEMO_LBG_R49_SOURCE",
+                  "coefficientUnit": "REFERENCE",
+                  "damageUnit": "damage",
+                  "status": "unavailable",
+                  "reason": "LBG_NORMAL:UNREVIEWED_SKILL",
+                  "disposition": "emitted",
+                  "effectsApplied": []
+                }
+              ],
+              "issues": [],
+              "finalState": {},
+              "diagnostics": {
+                "formalStatus": "UNVERIFIED",
+                "provisionalEffects": []
+              },
+              "metrics": {
+                "comboTotalDamage": {
+                  "status": "unavailable",
+                  "reason": "COMPONENT_UNAVAILABLE"
+                },
+                "comboDuration": {
+                  "status": "unavailable",
+                  "reason": "DURATION_UNAVAILABLE"
+                },
+                "comboDps": {
+                  "status": "unavailable",
+                  "reason": "COMPONENT_UNAVAILABLE"
+                }
+              }
+            },
+            "maximum": {
+              "execution": {
+                "status": "complete",
+                "expected": [
+                  "0:0"
+                ],
+                "executed": [
+                  "0:0"
+                ],
+                "reason": null
+              },
+              "components": [
+                {
+                  "id": "LBG_NORMAL_AMMO_1:reference:0",
+                  "eventId": "0:0",
+                  "techniqueId": "LBG_NORMAL_AMMO_1",
+                  "revision": "1",
+                  "source": "MACARONGAMEMO_LBG_R49_SOURCE",
+                  "coefficientUnit": "REFERENCE",
+                  "damageUnit": "damage",
+                  "status": "unavailable",
+                  "reason": "LBG_NORMAL:UNREVIEWED_SKILL",
+                  "disposition": "emitted",
+                  "effectsApplied": []
+                }
+              ],
+              "issues": [],
+              "finalState": {},
+              "diagnostics": {
+                "formalStatus": "UNVERIFIED",
+                "provisionalEffects": []
+              },
+              "metrics": {
+                "comboTotalDamage": {
+                  "status": "unavailable",
+                  "reason": "COMPONENT_UNAVAILABLE"
+                },
+                "comboDuration": {
+                  "status": "unavailable",
+                  "reason": "DURATION_UNAVAILABLE"
+                },
+                "comboDps": {
+                  "status": "unavailable",
+                  "reason": "COMPONENT_UNAVAILABLE"
+                }
+              }
+            }
+          }
+        },
+        "total": {
+          "ファーストショット": 3,
+          "フォースショット": 3
+        },
+        "summary": "\n    攻撃力299真 230\n    会心率-15%\n    最大会心率-15%\n    属性0\n    防御力1\n    選択技の実計算技 選択技 / 通常 未算出：COMPONENT_UNAVAILABLE / 最大 未算出：COMPONENT_UNAVAILABLE\n  ",
+        "snapshot": {
+          "combatBuffs": {
+            "meal": null,
+            "charm": null,
+            "otherBuffs": null
+          },
+          "weaponId": "817",
+          "weaponKind": "light-bowgun",
+          "armor": {
+            "head": "",
+            "chest": "",
+            "arms": "",
+            "waist": "",
+            "legs": ""
+          },
+          "charmCustom": {
+            "skills": [],
+            "slots": [
+              0,
+              0,
+              0
+            ],
+            "weaponSlots": []
+          },
+          "artia": {
+            "production": "element",
+            "element": "fire",
+            "parts": [
+              "attack",
+              "attack",
+              "attack"
+            ],
+            "sameElementPartCount": 3,
+            "elementParts": 0,
+            "restores": [
+              "none",
+              "none",
+              "none",
+              "none",
+              "none"
+            ],
+            "seriesSkill": "",
+            "groupSkill": ""
+          },
+          "decos": {
+            "w0": "12"
+          },
+          "combo": {
+            "moves": [
+              {
+                "techniqueId": "canonical:LBG_NORMAL_AMMO_1"
+              }
+            ],
+            "uptime": 85,
+            "uptimeMode": "1",
+            "hbgWyvernState": {
+              "mode": null,
+              "fireHitzone": null
+            },
+            "chargeBladeState": {
+              "shieldBoosted": null,
+              "axeBoosted": null,
+              "phialType": null,
+              "enhancedPhial": null,
+              "previousAction": null,
+              "normalPhials": null
+            },
+            "insectGlaiveState": {
+              "extractState": null,
+              "kinsectState": null
+            },
+            "huntingHornState": {
+              "echoState": null,
+              "melodyState": null
+            },
+            "lightBowgunState": {
+              "shotMode": "NORMAL",
+              "ammoType": "NORMAL",
+              "ammoLevel": 1,
+              "range": "CRITICAL",
+              "normalModeLevel": 0,
+              "contactPolicy": "ALL_THREE",
+              "shotOrdinal": 4,
+              "fullMagazine": true
+            },
+            "gunlanceState": {
+              "shellingType": null,
+              "shellingPower": null,
+              "loadedRounds": null,
+              "chargedRounds": null,
+              "fireHitzone": null
+            },
+            "dualBladesState": {
+              "demonMode": null
+            },
+            "longSwordState": {
+              "spiritGauge": null
+            },
+            "switchAxeState": {
+              "mode": null,
+              "awakened": null
+            }
+          },
+          "target": {
+            "monsterId": "training-room",
+            "partId": "training-front"
+          }
+        },
+        "conditions": {
+          "attack": "230",
+          "aff": "-15",
+          "elem": "0",
+          "mv": "100",
+          "hz": "80",
+          "ehz": "30",
+          "sharp": "1.32",
+          "esharp": "1.15",
+          "cb": "0",
+          "eCrit": "0",
+          "dragonHz": "",
+          "dragonHitzoneSource": {
+            "kind": "UNSET"
+          },
+          "gutsState": "BEFORE",
+          "fortifyCount": 2,
+          "bowState": {
+            "chargeLevel": 3,
+            "coating": null,
+            "range": null,
+            "startShot": null
+          },
+          "drawAttack": false,
+          "mounted": false,
+          "everlastingStage": null,
+          "hbgState": {
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "uptime": "85",
+          "uptimeMode": "1",
+          "chargeBladeState": {
+            "shieldBoosted": null,
+            "axeBoosted": null,
+            "phialType": null,
+            "enhancedPhial": null,
+            "previousAction": null,
+            "normalPhials": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": "NORMAL",
+            "ammoType": "NORMAL",
+            "ammoLevel": 1,
+            "range": "CRITICAL",
+            "normalModeLevel": 0,
+            "contactPolicy": "ALL_THREE",
+            "shotOrdinal": 4,
+            "fullMagazine": true
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          }
+        }
+      }
+    }
+  ],
+  "baselineReference": true
+}
