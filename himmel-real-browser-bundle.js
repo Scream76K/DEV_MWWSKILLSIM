@@ -817,6 +817,27 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!weaponType||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
   if(!record||record.techniqueId!==techniqueId||(record.weaponType!==undefined&&record.weaponType!==weaponType))throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
   if(!Number.isInteger(record.revision)||record.revision<1)throw Error('REAL_SLICE:REVISION_REQUIRED');
+  if(record.hhModel){
+   const m=record.hhModel;
+   if(weaponType!=='hunting-horn'||m.id!=='HH_NORMAL_MELODY_PROVISIONAL'||m.status!=='OWNER_APPROVED_PROVISIONAL'||!m.techniques?.[techniqueId])throw Error('REAL_SLICE:HH_MODEL_INVALID');
+   const n=m.input?.melodies?.length,b=m.input?.echoBubbles;
+   if(!Number.isSafeInteger(n)||n<1||n>m.maxMelodies||!Number.isSafeInteger(b)||b<0||b>m.maxEchoBubbles||m.input.melodies.some(x=>x!=='SELF_IMPROVEMENT'))throw Error('REAL_SLICE:HH_MODEL_INPUT_INVALID');
+   const adoption={status:m.status,verificationStatus:m.verificationStatus,source:m.source,approval:m.approval,scope:m.scope,updateOrder:m.updateOrder};
+   const body={...record,hhModel:null,specialComponents:[],calculationStatus:'READY_BODY_COMPONENT',stateRequirement:{},adoption,hits:record.hits.map(h=>({...h,damageType:h.damageType??m.bodyDamageType,partModifier:h.partModifier??m.bodyPartModifier}))};
+   const adapted=adaptOrdinaryPhysicalHit({weaponType,techniqueId,record:body,dbVersion,elementContext,allowUnresolvedElement});
+   const events=[...adapted.events];let index=0;
+   const add=(id,count)=>{if(count===0)return;const r=m.specialRecords[id];if(r?.sourceFormula?.status!=='SOURCE_CONFIRMED')throw Error('REAL_SLICE:HH_EVENT_SOURCE_PENDING');events.push({type:'hit',components:[{id:techniqueId+':reference:'+index,kind:'reference',unit:'REFERENCE',source:r.evidenceRefs[0],coefficient:1,parameters:{hitIndex:index++,referenceKind:'hunting-horn-model-event',hhRecord:r,hhCount:count,adoption,effectTargets:id==='HH_MELODY_COMPLETION_FIXED_10'?['fixed']:['physical','element'],effectStages:['attack','element']}}]});};
+   if(m.action==='ordinary')add('HH_ECHO_BUBBLE_FOLLOWUP',b*m.echoPerTrigger);
+   else{
+    if(m.action==='encore')add('HH_MELODY_COMPLETION_FIXED_10',Math.max(n+m.fixedCountOffset,0));
+    for(let i=0;i<n;i++){
+     if(m.action==='performance')add('HH_PERFORMANCE_SHOCKWAVE',m.soundPerMelody);
+     add('HH_ECHO_BUBBLE_MELODY_EVENT',b*m.echoPerTrigger);
+     events.push({type:'transition',contract:'HH_MELODY_ESTABLISHED',operations:[{op:'add',path:['huntingHorn','selfImprovementLevel'],amount:1,cap:m.selfImprovementCap}]});
+    }
+   }
+   return Object.freeze({...adapted,events});
+  }
   const shelling=Array.isArray(record.specialComponents)&&record.specialComponents.some(x=>String(x).includes('SHELL'));
   const reference=record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='light-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound'||record.referenceKind==='heavy-bowgun-wyvern';
   if(shelling){
@@ -899,6 +920,27 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!weaponType||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
   if(!record||record.techniqueId!==techniqueId||(record.weaponType!==undefined&&record.weaponType!==weaponType))throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
   if(!Number.isInteger(record.revision)||record.revision<1)throw Error('REAL_SLICE:REVISION_REQUIRED');
+  if(record.hhModel){
+   const m=record.hhModel;
+   if(weaponType!=='hunting-horn'||m.id!=='HH_NORMAL_MELODY_PROVISIONAL'||m.status!=='OWNER_APPROVED_PROVISIONAL'||!m.techniques?.[techniqueId])throw Error('REAL_SLICE:HH_MODEL_INVALID');
+   const n=m.input?.melodies?.length,b=m.input?.echoBubbles;
+   if(!Number.isSafeInteger(n)||n<1||n>m.maxMelodies||!Number.isSafeInteger(b)||b<0||b>m.maxEchoBubbles||m.input.melodies.some(x=>x!=='SELF_IMPROVEMENT'))throw Error('REAL_SLICE:HH_MODEL_INPUT_INVALID');
+   const adoption={status:m.status,verificationStatus:m.verificationStatus,source:m.source,approval:m.approval,scope:m.scope,updateOrder:m.updateOrder};
+   const body={...record,hhModel:null,specialComponents:[],calculationStatus:'READY_BODY_COMPONENT',stateRequirement:{},adoption,hits:record.hits.map(h=>({...h,damageType:h.damageType??m.bodyDamageType,partModifier:h.partModifier??m.bodyPartModifier}))};
+   const adapted=adaptOrdinaryPhysicalHit({weaponType,techniqueId,record:body,dbVersion,elementContext,allowUnresolvedElement});
+   const events=[...adapted.events];let index=0;
+   const add=(id,count)=>{if(count===0)return;const r=m.specialRecords[id];if(r?.sourceFormula?.status!=='SOURCE_CONFIRMED')throw Error('REAL_SLICE:HH_EVENT_SOURCE_PENDING');events.push({type:'hit',components:[{id:techniqueId+':reference:'+index,kind:'reference',unit:'REFERENCE',source:r.evidenceRefs[0],coefficient:1,parameters:{hitIndex:index++,referenceKind:'hunting-horn-model-event',hhRecord:r,hhCount:count,adoption,effectTargets:id==='HH_MELODY_COMPLETION_FIXED_10'?['fixed']:['physical','element'],effectStages:['attack','element']}}]});};
+   if(m.action==='ordinary')add('HH_ECHO_BUBBLE_FOLLOWUP',b*m.echoPerTrigger);
+   else{
+    if(m.action==='encore')add('HH_MELODY_COMPLETION_FIXED_10',Math.max(n+m.fixedCountOffset,0));
+    for(let i=0;i<n;i++){
+     if(m.action==='performance')add('HH_PERFORMANCE_SHOCKWAVE',m.soundPerMelody);
+     add('HH_ECHO_BUBBLE_MELODY_EVENT',b*m.echoPerTrigger);
+     events.push({type:'transition',contract:'HH_MELODY_ESTABLISHED',operations:[{op:'add',path:['huntingHorn','selfImprovementLevel'],amount:1,cap:m.selfImprovementCap}]});
+    }
+   }
+   return Object.freeze({...adapted,events});
+  }
   const shelling=Array.isArray(record.specialComponents)&&record.specialComponents.some(x=>String(x).includes('SHELL'));
   const reference=record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='light-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound'||record.referenceKind==='heavy-bowgun-wyvern';
   if(shelling){
@@ -1184,6 +1226,11 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   return null;
  };
  const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type==='transition'&&event.contract==='HH_MELODY_ESTABLISHED'&&weaponType==='hunting-horn'){
+   const level=state?.huntingHorn?.selfImprovementLevel,op=event.operations?.[0];
+   if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn','selfImprovementLevel']))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');
+   return {nextState:{...state,huntingHorn:{...state.huntingHorn,selfImprovementLevel:Math.min(level+op.amount,op.cap)}}};
+  }
   if(event.type==='transition'&&event.contract==='SA_HIT_MODE'&&weaponType==='switch-axe'){
    if(!['SWORD','AXE'].includes(state?.switchAxe?.mode))throw Error('REAL_SLICE:SA_START_MODE_UNRESOLVED');
    if(state.switchAxe.mode!==event.requiredMode)throw Error('REAL_SLICE:SA_MODE_TRANSITION_MISMATCH');
@@ -1338,6 +1385,11 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   return null;
  };
  const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type==='transition'&&event.contract==='HH_MELODY_ESTABLISHED'&&weaponType==='hunting-horn'){
+   const level=state?.huntingHorn?.selfImprovementLevel,op=event.operations?.[0];
+   if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn','selfImprovementLevel']))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');
+   return {nextState:{...state,huntingHorn:{...state.huntingHorn,selfImprovementLevel:Math.min(level+op.amount,op.cap)}}};
+  }
   if(event.type==='transition'&&event.contract==='SA_HIT_MODE'&&weaponType==='switch-axe'){
    if(!['SWORD','AXE'].includes(state?.switchAxe?.mode))throw Error('REAL_SLICE:SA_START_MODE_UNRESOLVED');
    if(state.switchAxe.mode!==event.requiredMode)throw Error('REAL_SLICE:SA_MODE_TRANSITION_MISMATCH');

@@ -97,3 +97,8 @@ No retry occurred before the subsequent explicit documentation-only authorizatio
 ### Documentation-only publication authorization
 
 The owner subsequently explicitly approved commit/push. This update publishes only this research document, not product implementation, explicit-melody adoption or formal-total gate changes. The previous denied command had not staged or committed files. Video bytes, images, private Library identifiers, transfer URLs and cloud filesystem paths are excluded.
+
+
+### Subsequent owner-approved occurrence model
+
+The earlier source-only and pending-adoption statements above describe the historical inspection. The owner subsequently authorized an explicit provisional total model; implementation scope, assumptions, limitations and contract evidence are recorded in [HH provisional total](../r262-hh-provisional-total/README.md). Video-derived event attribution remains unverified; it is not the source of the new occurrence counts.

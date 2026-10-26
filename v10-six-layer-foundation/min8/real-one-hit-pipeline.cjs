@@ -85,6 +85,11 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   return null;
  };
  const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type==='transition'&&event.contract==='HH_MELODY_ESTABLISHED'&&weaponType==='hunting-horn'){
+   const level=state?.huntingHorn?.selfImprovementLevel,op=event.operations?.[0];
+   if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn','selfImprovementLevel']))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');
+   return {nextState:{...state,huntingHorn:{...state.huntingHorn,selfImprovementLevel:Math.min(level+op.amount,op.cap)}}};
+  }
   if(event.type==='transition'&&event.contract==='SA_HIT_MODE'&&weaponType==='switch-axe'){
    if(!['SWORD','AXE'].includes(state?.switchAxe?.mode))throw Error('REAL_SLICE:SA_START_MODE_UNRESOLVED');
    if(state.switchAxe.mode!==event.requiredMode)throw Error('REAL_SLICE:SA_MODE_TRANSITION_MISMATCH');

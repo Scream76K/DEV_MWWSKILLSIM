@@ -18,7 +18,7 @@ before-adapter.json loads git-show baseline Adapter with current page to isolate
 - SA: body plus adopted power/power-element phial stages; owner-defined two morph techniques now use start/Hit/exit mode transitions (r262-sa-hit-mode). Gauge resources and awakened followup pending.
 - CB: body/phial Formula and single ED I state; SAED reference. Axe followup and broader sequences pending.
 - IG: body plus adopted triple-extract state; kinsect and consumption pending.
-- HH: body; special source-estimate Formula exists. Four-event kind mapping, encore fixed-10 count, formal aggregation/version/rounding remain pending; source reconciliation and precise missing evidence are in ../r262-hh-event-reconciliation/README.md. No arithmetic rewrite or automatic event-count adoption is justified by that inspection.
+- HH: owner-approved provisional self-improvement/preplaced-bubble model now composes body, sound, echo and fixed components through the common Pipeline (../r262-hh-provisional-total/README.md). Other normal melody effects/refilled sequences remain unconnected; special melodies/placement are outside this model. Video attribution and current-version/game-rounding verification remain separate and pending.
 - Bow: existing dedicated fixed-sequence Formula; common resolved element basis now reaches CM pre-flat stage (r262-bow-element-basis). Other state sequences pending.
 - LBG: normal-ammo and adopted element first-Hit-only references; rapid modes/full elemental shot pending.
 - HBG: normal-ammo, element first-Hit-only, now adopted Wyvern full-two-Hit reference Formula connected. Other specials and stock sequences pending.

@@ -1,0 +1,31 @@
+{
+  "status": "UNAVAILABLE",
+  "reason": "REAL_SLICE:SPECIAL_ROUTE_PENDING"
+}
+node:assert:152
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: {"status":"UNAVAILABLE","reason":"REAL_SLICE:SPECIAL_ROUTE_PENDING"}
++ actual - expected
+
++ undefined
+- 'available'
+
+    at Object.<anonymous> (/Users/scream/Documents/Codex/2026-10-25/task/stage2-hit-hitzone/tools/hh-provisional-events-proof.cjs:10:46)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: 'available',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.21.0

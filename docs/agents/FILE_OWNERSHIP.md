@@ -16,3 +16,6 @@
 統合順序：heiterの根拠監査 → eisenの境界/影響確認 → 必要なユーザー仕様承認 → frieren計算 → sein独立OCR → stark表示 → fern回帰 → himmel最終照合。依存しないファイルの調査は並行可能。これはGit merge実行指示ではなく、承認済み変更案を取り込む審査順序。
 
 共有index.htmlの複数担当同時編集、別タスクの変更の上書き、期待値だけを合わせる統合を禁止。担当が意図しない差分を見つけたら触らず報告する。
+
+
+2026-10-26 HH provisional-total delegation: himmel owns the isolated stage2-hit-hitzone index.html changes (HH event-model DB data, explicit conditions, save/restore and provisional result wording), common technique/handler bridge and browser Adapter. Owner-approved occurrence model and continued commit/push are the task authority. Original served checkout's stage③ changes remain untouched. Parent review remains pending; no independent reviewer is claimed.
