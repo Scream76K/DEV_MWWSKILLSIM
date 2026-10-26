@@ -1,0 +1,17 @@
+# Attribute conversion: explicit body-only reference
+
+Owner approval Sentinel_3253d2e4d5a481919df52ab5db1fd38c. Product 41c32dbcad05f2f29385ff1b82415af0af58a900. Existing +80/+120/+180 moved into shared MHAttributeConversionRule, OWNER_APPROVED_PROVISIONAL / UNVERIFIED, https://kuroyonhon.com/mhwilds/program/skill.php . Official MHDB152 is elemental-hit-triggered timed effect, not passive. No timer, cooldown, accumulation threshold or follow-up count invented.
+
+UI normal/maximum each OFF/ON/unknown. calcBuild→compareStep5Snapshot.attributeConversionState→equipment snapshot→channel-specific L3 element-flat order60. Missing either channel rejects, never coerces false. No conversion skill leaves ordinary pipeline unchanged. Normal named-build loading restores saved states; comparison preserveCombo:true uses current common states, then finally restores. New fields sync through existing App.combo snapshot.
+
+Scope: dragon weapon body only; reference/shelling/phial/SA combinations excluded pending separate interaction verification. Body metrics carry BODY_ONLY_REFERENCE, diagnostics.referenceOnly=true and excluded FIXED_FOLLOWUP/DRAGON_FOLLOWUP. Single and comparison renderer explicitly state fixed/dragon follow-up excluded. Even OFF result uses same body-reference scope for comparability. Complete execution means selected body events executed, not complete skill-inclusive damage. No dragon attribute granted to other-element weapons.
+
+Conservative existing cap/rounding guard retained for active state: integer resulting element below base+350, no GS CM, active bonus or other conditional maximum element interaction. This rejects uncertain combinations, does not implement a damage cap. Wider combinations/Lv2–3 not independently run.
+
+Real input: MHDB long sword900 ガルシュエンシスI raw170 affinity-10 dragon140 Focus1; armor521 シュバルカヘルムβ, attribute conversion1 and one each of set/group records (below activation threshold). No decorations or fabricated slots. LS_RED_BLADE_I explicit RED. Fixture contains original MHDB records/ranks, existing cache provenance acquisition timestamp unknown. Computed stats/skills/plans/results not overwritten.
+
+Results (body-only): OFF/OFF normal72.43 maximum72.43; OFF/ON72.43/74.83; ON/OFF74.83/72.43. Active dragon140→220, physical hit components identical, attribute effect emitted exactly once per element component only on active channel. Unknown/OΝ unavailable ATTRIBUTE_CONVERSION_STATE_REQUIRED. Actual renderer shows both scope and states.
+
+Saved A=OFF/OFF and B=OFF/ON use same real equipment. Ordinary B load after unknown state restores false/true. Comparison run under common false/true produces72.43/74.83 for BOTH rows, matching standalone under those same common conditions; it does not reuse independent saved activation states during comparison. Full equipment/conditions/result restoration asserted. This proves condition handling and restoration, not a different-equipment skill-level A/B contrast.
+
+initial.json preserved: numeric/independent channel assertions passed, named-load state failed because first implementation omitted App.combo sync; fixed, final after.json passes. Execution HEAD5771c83 with working edits, recorded hashes exactly match product commit. Bundle8 module inclusion verified, no internal bundle changes. No broad regression, CI/Safari execution or game-version measurement. Fixed/dragon follow-up remains uncomputed, and no full-skill total is claimed.
