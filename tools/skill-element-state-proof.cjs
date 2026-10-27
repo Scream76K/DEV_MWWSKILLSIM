@@ -1,0 +1,27 @@
+'use strict';
+// Normal shell resource contract using captured calcBuild input and real shell DB.
+const fs=require('fs'),path=require('path'),assert=require('node:assert/strict'),crypto=require('crypto');
+const repo=path.resolve(__dirname,'..');const {JSDOM,VirtualConsole}=require('jsdom');
+const d=new JSDOM(require('./dom-test-setup.cjs').readSimulatorHtml(),{url:'https://routing.test/',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}),w=d.window;
+if(process.env.BASELINE)w.eval(require('child_process').execFileSync('git',['show','HEAD:hope-hammer-browser-adapter.js'],{cwd:repo,encoding:'utf8'}));
+const weapon=JSON.parse(fs.readFileSync(path.join(repo,'docs/reports/r252-generic-states/evidence/mhdb-insect-glaive-hope.api.json')));
+w.eval(`clearWeaponBuckets();DB.weapons=${JSON.stringify([weapon])};weaponIndexByKind['insect-glaive']=[DB.weapons[0]];weaponKind.value='insect-glaive';weapon.innerHTML='<option value="608">Hope</option>';weapon.value='608';renderComboForWeapon();App.state.combo.moves=[{techniqueId:'IG_ENHANCED_DIAGONAL_SLASH'}];DB.monsters=[{id:'training-room',name:'訓練場',parts:[{id:'training-front',name:'正面',multipliers:{slash:.4,blunt:.8,pierce:.5,fire:.2,water:.2,thunder:.2,ice:.2,dragon:.2}}]}];renderMonsters();monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';`);
+w.eval("document.getElementById('comboIGExtract').value='TRIPLE_EXTRACT';document.getElementById('comboIGKinsect').value='STOWED';App.combo.syncFromDOM();");
+let args;const adapter=w.MHWRealOneHitBrowserAdapter;w.MHWRealOneHitBrowserAdapter={...adapter,evaluateCurrent(a){args=a;return adapter.evaluateCurrent(a)}};w.calcBuild();assert.ok(args);args={...args,trainingRoom:{...args.trainingRoom,parts:args.trainingRoom.parts.map(p=>p.id==='training-front'?{...p,multipliers:{...p.multipliers,slash:.4,blunt:.8}}:p)}};
+
+w.eval(`DB.skills=${fs.readFileSync('docs/reports/r263-skill-audit/mhdb-skills.json','utf8')};`);
+const rows=[];
+for(const level of [0,2]){
+ const element=100*(level?1.1:1)+(level?50:0);
+ const input={...args,weapon:{...args.weapon,specials:[{kind:'element',element:'fire',damage:{raw:10,display:100}}]},stats:{...args.stats,element,elementType:'fire',elementKnown:true,typeKnown:true,elementComponents:{weaponBase:100,normalMultiplier:level?1.1:1,normalFlat:level?50:0}},techniqueIds:['IG_ENHANCED_DIAGONAL_SLASH'],skills:level?[['火属性攻撃強化',2]]:[],equipmentSkillsResolved:true};
+ delete input.stats.conditionalConditionPlan;
+ input.stats.conditionalConditionPlan=w.MHWStandardPowerConditionPlan(input.stats,level?{火属性攻撃強化:2}:{},"insect-glaive",{});
+ const result=adapter.evaluateCurrent(input);rows.push({level,result});
+}
+if(process.env.ASSERT_AFTER)for(const ch of ['normal','maximum']){
+ const values=r=>Array.from(r.result.channels[ch].components,c=>c.value);
+ assert.deepEqual(values(rows[0]),[7.82,2.4,12.17,2.4]);
+ assert.deepEqual(values(rows[1]),[7.82,3.84,12.17,3.84]);
+ assert.equal(rows[1].result.channels[ch].execution.status,'complete');
+}
+console.log(JSON.stringify({scope:'SYNTHETIC_ELEMENT_AND_SKILL_CONTRACT_NOT_REAL_BUILD',executionSha:require('child_process').execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),hashes:Object.fromEntries(['hope-hammer-browser-adapter.js','himmel-real-browser-bundle.js'].map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')])),rows},null,2));w.close();

@@ -1,5 +1,7 @@
 # Stage II review scope — 2026-10-26 local work
 
+最新の受入整理は [STAGE2_ACCEPTANCE.md](../r262-review-boundary/STAGE2_ACCEPTANCE.md)。以下は時系列調査履歴であり、過去の未接続・未commit記述を最新状態と混同しない。
+
 Base e357f1beae822456aa6db314c06845cd2d375b06 plus uncommitted IG/body and HBG/LBG contact work. Not stage-II-wide completion. No stage III skill audit or stage IV representative-build sweep.
 
 Both channels use the same technique/target/weapon-state contract, with independent ordinary/maximum effect input. Core physical and elemental formulas live in real-one-hit-pipeline.cjs; real-technique-one-hit-adapter.cjs compiles typed components; hope-hammer-browser-adapter.js connects equipment and dedicated references. Data acceptance remains per record. A generic Handler is not evidence that every technique is supported.

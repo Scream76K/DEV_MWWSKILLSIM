@@ -1,0 +1,842 @@
+{
+  "scope": "GL_NORMAL_ARTILLERY_BEFORE_FLAT_OWNER_PROVISIONAL",
+  "contrast": [],
+  "hashes": {
+    "index.html": "d45532d2db25230caa7f096f30a4feb386eb61dd14bd47bc51089c3845b03362",
+    "hope-hammer-browser-adapter.js": "85387ce00175d3d39717d5badd5e799e15d052c7256afb0d9bc3f30590581e74",
+    "gunlance-shell-reference.js": "f145c4739b6a89a177269a440d6e802265ffb3aa8129f20e1cfd9c48bc91c60c",
+    "himmel-real-browser-bundle.js": "2bb1ee39e6727a75c227031f4c89f18baa9298207c0d6a7c4f6839f931ec1db6"
+  },
+  "rows": [
+    {
+      "artillery": 0,
+      "result": {
+        "status": "OK",
+        "weaponType": "gunlance",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 315,
+            "gameId": 1,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/315",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"chargedRounds\":1,\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"loadedRounds\":6,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"chargedRounds\":1,\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"loadedRounds\":6,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"chargedRounds\":1,\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"loadedRounds\":6,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1"
+              ],
+              "executed": [
+                "0:0",
+                "0:1"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "reference:gl_NORMAL:shelling:0",
+                "eventId": "0:0",
+                "techniqueId": "reference:gl_NORMAL",
+                "revision": "1",
+                "source": "MACARONGAMEMO_GL_R49_SOURCE",
+                "coefficientUnit": "SHELLING",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 9.4,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "black-eclipse-normal-attack",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "https://kuroyonhon.com/mhwilds/program/skill.php"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {
+              "gunlance": {
+                "loadedRounds": 5
+              }
+            },
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "black-eclipse-normal-attack",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "operation": "add",
+                  "amount": 10,
+                  "order": 50,
+                  "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "blackEclipse": {
+                "rank": 2,
+                "normalState": "INFECTED",
+                "maximumState": "OVERCOME",
+                "normalAttackAdd": 10,
+                "normalAffinityAdd": 0,
+                "maximumAttackAdd": 15,
+                "maximumAffinityAdd": 25,
+                "antivirusLevel": 3,
+                "skillId": 106,
+                "status": "OWNER_APPROVED_PROVISIONAL",
+                "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                "sourceGameVersion": "UNVERIFIED",
+                "states": [
+                  "BEFORE",
+                  "INFECTED",
+                  "OVERCOME"
+                ],
+                "attackByRank": {
+                  "1": {
+                    "BEFORE": 0,
+                    "INFECTED": 0,
+                    "OVERCOME": 0
+                  },
+                  "2": {
+                    "BEFORE": 0,
+                    "INFECTED": 10,
+                    "OVERCOME": 15
+                  }
+                },
+                "overcomeAffinity": 15,
+                "antivirusAdds": [
+                  0,
+                  3,
+                  6,
+                  10
+                ]
+              },
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 9.4
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1"
+              ],
+              "executed": [
+                "0:0",
+                "0:1"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "reference:gl_NORMAL:shelling:0",
+                "eventId": "0:0",
+                "techniqueId": "reference:gl_NORMAL",
+                "revision": "1",
+                "source": "MACARONGAMEMO_GL_R49_SOURCE",
+                "coefficientUnit": "SHELLING",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 9.8,
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {
+              "gunlance": {
+                "loadedRounds": 5
+              }
+            },
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "conditional-attack-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 15,
+                  "operation": "add",
+                  "order": 50,
+                  "source": "index.html:standardPowerConditionPlan",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 25,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 25,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "blackEclipse": {
+                "rank": 2,
+                "normalState": "INFECTED",
+                "maximumState": "OVERCOME",
+                "normalAttackAdd": 10,
+                "normalAffinityAdd": 0,
+                "maximumAttackAdd": 15,
+                "maximumAffinityAdd": 25,
+                "antivirusLevel": 3,
+                "skillId": 106,
+                "status": "OWNER_APPROVED_PROVISIONAL",
+                "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                "sourceGameVersion": "UNVERIFIED",
+                "states": [
+                  "BEFORE",
+                  "INFECTED",
+                  "OVERCOME"
+                ],
+                "attackByRank": {
+                  "1": {
+                    "BEFORE": 0,
+                    "INFECTED": 0,
+                    "OVERCOME": 0
+                  },
+                  "2": {
+                    "BEFORE": 0,
+                    "INFECTED": 10,
+                    "OVERCOME": 15
+                  }
+                },
+                "overcomeAffinity": 15,
+                "antivirusAdds": [
+                  0,
+                  3,
+                  6,
+                  10
+                ]
+              },
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 9.8
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "artillery": 1,
+      "result": {
+        "status": "OK",
+        "weaponType": "gunlance",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 315,
+            "gameId": 1,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/315",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"chargedRounds\":1,\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"loadedRounds\":6,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"chargedRounds\":1,\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"loadedRounds\":6,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"chargedRounds\":1,\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fireHitzone\":20,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":1,\"fireHitzone\":20,\"loadedRounds\":6,\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\"},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"loadedRounds\":6,\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"shellingPower\":\"MEDIUM\",\"shellingType\":\"NORMAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"reference:gl_NORMAL\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "incomplete",
+              "expected": [
+                "0:0",
+                "0:1"
+              ],
+              "executed": [],
+              "reason": "GL_SHELL:ARTILLERY_ATTACK_ORDER_PENDING:砲術と攻撃補正の順序が未照合です。"
+            },
+            "components": [
+              {
+                "id": "reference:gl_NORMAL:shelling:0",
+                "eventId": "0:0",
+                "techniqueId": "reference:gl_NORMAL",
+                "revision": "1",
+                "source": "MACARONGAMEMO_GL_R49_SOURCE",
+                "coefficientUnit": "SHELLING",
+                "damageUnit": "damage",
+                "status": "unavailable",
+                "reason": "GL_SHELL:ARTILLERY_ATTACK_ORDER_PENDING:砲術と攻撃補正の順序が未照合です。",
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "black-eclipse-normal-attack",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "https://kuroyonhon.com/mhwilds/program/skill.php"
+                  }
+                ]
+              }
+            ],
+            "issues": [
+              {
+                "eventId": "0:0",
+                "reason": "GL_SHELL:ARTILLERY_ATTACK_ORDER_PENDING:砲術と攻撃補正の順序が未照合です。"
+              }
+            ],
+            "finalState": {
+              "gunlance": {
+                "loadedRounds": 6
+              }
+            },
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "black-eclipse-normal-attack",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "operation": "add",
+                  "amount": 10,
+                  "order": 50,
+                  "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "blackEclipse": {
+                "rank": 2,
+                "normalState": "INFECTED",
+                "maximumState": "OVERCOME",
+                "normalAttackAdd": 10,
+                "normalAffinityAdd": 0,
+                "maximumAttackAdd": 15,
+                "maximumAffinityAdd": 25,
+                "antivirusLevel": 3,
+                "skillId": 106,
+                "status": "OWNER_APPROVED_PROVISIONAL",
+                "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                "sourceGameVersion": "UNVERIFIED",
+                "states": [
+                  "BEFORE",
+                  "INFECTED",
+                  "OVERCOME"
+                ],
+                "attackByRank": {
+                  "1": {
+                    "BEFORE": 0,
+                    "INFECTED": 0,
+                    "OVERCOME": 0
+                  },
+                  "2": {
+                    "BEFORE": 0,
+                    "INFECTED": 10,
+                    "OVERCOME": 15
+                  }
+                },
+                "overcomeAffinity": 15,
+                "antivirusAdds": [
+                  0,
+                  3,
+                  6,
+                  10
+                ]
+              },
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "incomplete",
+              "expected": [
+                "0:0",
+                "0:1"
+              ],
+              "executed": [],
+              "reason": "GL_SHELL:ARTILLERY_ATTACK_ORDER_PENDING:砲術と攻撃補正の順序が未照合です。"
+            },
+            "components": [
+              {
+                "id": "reference:gl_NORMAL:shelling:0",
+                "eventId": "0:0",
+                "techniqueId": "reference:gl_NORMAL",
+                "revision": "1",
+                "source": "MACARONGAMEMO_GL_R49_SOURCE",
+                "coefficientUnit": "SHELLING",
+                "damageUnit": "damage",
+                "status": "unavailable",
+                "reason": "GL_SHELL:ARTILLERY_ATTACK_ORDER_PENDING:砲術と攻撃補正の順序が未照合です。",
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  }
+                ]
+              }
+            ],
+            "issues": [
+              {
+                "eventId": "0:0",
+                "reason": "GL_SHELL:ARTILLERY_ATTACK_ORDER_PENDING:砲術と攻撃補正の順序が未照合です。"
+              }
+            ],
+            "finalState": {
+              "gunlance": {
+                "loadedRounds": 6
+              }
+            },
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "conditional-attack-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 15,
+                  "operation": "add",
+                  "order": 50,
+                  "source": "index.html:standardPowerConditionPlan",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 25,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 25,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "blackEclipse": {
+                "rank": 2,
+                "normalState": "INFECTED",
+                "maximumState": "OVERCOME",
+                "normalAttackAdd": 10,
+                "normalAffinityAdd": 0,
+                "maximumAttackAdd": 15,
+                "maximumAffinityAdd": 25,
+                "antivirusLevel": 3,
+                "skillId": 106,
+                "status": "OWNER_APPROVED_PROVISIONAL",
+                "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                "sourceGameVersion": "UNVERIFIED",
+                "states": [
+                  "BEFORE",
+                  "INFECTED",
+                  "OVERCOME"
+                ],
+                "attackByRank": {
+                  "1": {
+                    "BEFORE": 0,
+                    "INFECTED": 0,
+                    "OVERCOME": 0
+                  },
+                  "2": {
+                    "BEFORE": 0,
+                    "INFECTED": 10,
+                    "OVERCOME": 15
+                  }
+                },
+                "overcomeAffinity": 15,
+                "antivirusAdds": [
+                  0,
+                  3,
+                  6,
+                  10
+                ]
+              },
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

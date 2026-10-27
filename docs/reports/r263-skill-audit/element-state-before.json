@@ -1,0 +1,803 @@
+{
+  "scope": "SYNTHETIC_ELEMENT_AND_SKILL_CONTRACT_NOT_REAL_BUILD",
+  "inputKeys": [
+    "weapon",
+    "stats",
+    "target",
+    "skills",
+    "equipmentSkillsResolved",
+    "conditions",
+    "conditionalConditionPlan",
+    "gunlanceState",
+    "bowState",
+    "hbgState",
+    "lightBowgunState",
+    "chargeBladeState",
+    "dualBladesState",
+    "longSwordState",
+    "switchAxeState",
+    "huntingHornState",
+    "insectGlaiveState",
+    "techniqueId",
+    "techniqueIds",
+    "techniqueDb",
+    "trainingRoom",
+    "retrievedAt"
+  ],
+  "rows": [
+    {
+      "level": 0,
+      "result": {
+        "status": "OK",
+        "weaponType": "insect-glaive",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 608,
+            "gameId": 1,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/608",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"extractState\":\"TRIPLE_EXTRACT\",\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":\"TRIPLE_EXTRACT\",\"kinsectState\":\"STOWED\"},\"kinsectState\":\"STOWED\",\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"stateStatsByState\":{\"NO_EXTRACT\":{\"affinity\":0,\"attack\":90,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1,\"weaponBase\":90},\"element\":100},\"TRIPLE_EXTRACT\":{\"affinity\":0,\"attack\":103.49999999999999,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1.15,\"weaponBase\":90},\"element\":100}},\"stateStatsSource\":\"MACARONGAMEMO_DAMAGE_UP_2025-04-16_PROVISIONAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"IG_ENHANCED_DIAGONAL_SLASH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}|IG_BODY_ONLY_KINSECT_EXCLUDED",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"extractState\":\"TRIPLE_EXTRACT\",\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":\"TRIPLE_EXTRACT\",\"kinsectState\":\"STOWED\"},\"kinsectState\":\"STOWED\",\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"stateStatsByState\":{\"NO_EXTRACT\":{\"affinity\":0,\"attack\":90,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1,\"weaponBase\":90},\"element\":100},\"TRIPLE_EXTRACT\":{\"affinity\":0,\"attack\":103.49999999999999,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1.15,\"weaponBase\":90},\"element\":100}},\"stateStatsSource\":\"MACARONGAMEMO_DAMAGE_UP_2025-04-16_PROVISIONAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"IG_ENHANCED_DIAGONAL_SLASH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"extractState\":\"TRIPLE_EXTRACT\",\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":\"TRIPLE_EXTRACT\",\"kinsectState\":\"STOWED\"},\"kinsectState\":\"STOWED\",\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"stateStatsByState\":{\"NO_EXTRACT\":{\"affinity\":0,\"attack\":90,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1,\"weaponBase\":90},\"element\":100},\"TRIPLE_EXTRACT\":{\"affinity\":0,\"attack\":103.49999999999999,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1.15,\"weaponBase\":90},\"element\":100}},\"stateStatsSource\":\"MACARONGAMEMO_DAMAGE_UP_2025-04-16_PROVISIONAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"IG_ENHANCED_DIAGONAL_SLASH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1"
+              ],
+              "executed": [
+                "0:0",
+                "0:1"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 7.82,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:element:0",
+                "eventId": "0:0",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 2.4,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:physical:1",
+                "eventId": "0:1",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 12.17,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:element:1",
+                "eventId": "0:1",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 2.4,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "calculationScope": "IG_BODY_ONLY_KINSECT_EXCLUDED",
+              "excludedComponents": [
+                {
+                  "id": "KINSECT_DAMAGE",
+                  "reason": "OWNER_SCOPE_EXCLUDED"
+                }
+              ],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 24.79,
+                "scope": "IG_BODY_ONLY_KINSECT_EXCLUDED"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1"
+              ],
+              "executed": [
+                "0:0",
+                "0:1"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 7.82,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:element:0",
+                "eventId": "0:0",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 2.4,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:physical:1",
+                "eventId": "0:1",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 12.17,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:element:1",
+                "eventId": "0:1",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 2.4,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "calculationScope": "IG_BODY_ONLY_KINSECT_EXCLUDED",
+              "excludedComponents": [
+                {
+                  "id": "KINSECT_DAMAGE",
+                  "reason": "OWNER_SCOPE_EXCLUDED"
+                }
+              ],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 24.79,
+                "scope": "IG_BODY_ONLY_KINSECT_EXCLUDED"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "level": 2,
+      "result": {
+        "status": "OK",
+        "weaponType": "insect-glaive",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 608,
+            "gameId": 1,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/608",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"extractState\":\"TRIPLE_EXTRACT\",\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":\"TRIPLE_EXTRACT\",\"kinsectState\":\"STOWED\"},\"kinsectState\":\"STOWED\",\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"stateStatsByState\":{\"NO_EXTRACT\":{\"affinity\":0,\"attack\":90,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1,\"weaponBase\":90},\"element\":100},\"TRIPLE_EXTRACT\":{\"affinity\":0,\"attack\":103.49999999999999,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1.15,\"weaponBase\":90},\"element\":100}},\"stateStatsSource\":\"MACARONGAMEMO_DAMAGE_UP_2025-04-16_PROVISIONAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"IG_ENHANCED_DIAGONAL_SLASH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}|IG_BODY_ONLY_KINSECT_EXCLUDED",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"extractState\":\"TRIPLE_EXTRACT\",\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":\"TRIPLE_EXTRACT\",\"kinsectState\":\"STOWED\"},\"kinsectState\":\"STOWED\",\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"stateStatsByState\":{\"NO_EXTRACT\":{\"affinity\":0,\"attack\":90,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1,\"weaponBase\":90},\"element\":100},\"TRIPLE_EXTRACT\":{\"affinity\":0,\"attack\":103.49999999999999,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1.15,\"weaponBase\":90},\"element\":100}},\"stateStatsSource\":\"MACARONGAMEMO_DAMAGE_UP_2025-04-16_PROVISIONAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"IG_ENHANCED_DIAGONAL_SLASH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"0\",\"attack\":\"300\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"extractState\":\"TRIPLE_EXTRACT\",\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":\"TRIPLE_EXTRACT\",\"kinsectState\":\"STOWED\"},\"kinsectState\":\"STOWED\",\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"sharp\":\"1.32\",\"stateStatsByState\":{\"NO_EXTRACT\":{\"affinity\":0,\"attack\":90,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1,\"weaponBase\":90},\"element\":100},\"TRIPLE_EXTRACT\":{\"affinity\":0,\"attack\":103.49999999999999,\"attackComponents\":{\"normalFlat\":0,\"normalMultiplier\":1.15,\"weaponBase\":90},\"element\":100}},\"stateStatsSource\":\"MACARONGAMEMO_DAMAGE_UP_2025-04-16_PROVISIONAL\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"IG_ENHANCED_DIAGONAL_SLASH\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1"
+              ],
+              "executed": [
+                "0:0",
+                "0:1"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 7.82,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:element:0",
+                "eventId": "0:0",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 2.4,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:physical:1",
+                "eventId": "0:1",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 12.17,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:element:1",
+                "eventId": "0:1",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 2.4,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "calculationScope": "IG_BODY_ONLY_KINSECT_EXCLUDED",
+              "excludedComponents": [
+                {
+                  "id": "KINSECT_DAMAGE",
+                  "reason": "OWNER_SCOPE_EXCLUDED"
+                }
+              ],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 24.79,
+                "scope": "IG_BODY_ONLY_KINSECT_EXCLUDED"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0",
+                "0:1"
+              ],
+              "executed": [
+                "0:0",
+                "0:1"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:physical:0",
+                "eventId": "0:0",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 7.82,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:element:0",
+                "eventId": "0:0",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 2.4,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:physical:1",
+                "eventId": "0:1",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "MV",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 12.17,
+                "disposition": "emitted",
+                "effectsApplied": []
+              },
+              {
+                "id": "IG_ENHANCED_DIAGONAL_SLASH:element:1",
+                "eventId": "0:1",
+                "techniqueId": "IG_ENHANCED_DIAGONAL_SLASH",
+                "revision": "1",
+                "source": "MACARONGAMEMO_IG_R49_SOURCE",
+                "coefficientUnit": "ELEMENT_MODIFIER",
+                "damageUnit": "damage",
+                "adoption": {
+                  "status": "OWNER_APPROVED_PROVISIONAL",
+                  "approvedAt": "2026-10-25",
+                  "scope": "HP_DAMAGE_ONLY",
+                  "sourceGameVersion": "1.042.00.02",
+                  "officialVersionAudit": "PENDING",
+                  "unresolvedReasons": [
+                    "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+                    "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+                  ]
+                },
+                "status": "available",
+                "value": 2.4,
+                "disposition": "emitted",
+                "effectsApplied": []
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "calculationScope": "IG_BODY_ONLY_KINSECT_EXCLUDED",
+              "excludedComponents": [
+                {
+                  "id": "KINSECT_DAMAGE",
+                  "reason": "OWNER_SCOPE_EXCLUDED"
+                }
+              ],
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 24.79,
+                "scope": "IG_BODY_ONLY_KINSECT_EXCLUDED"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

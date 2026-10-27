@@ -13,7 +13,7 @@
   const rangePhysicalModifier=valid(rule.rangePhysical[state.range],0,2),coatingPhysicalModifier=valid(rule.coatingPhysical[state.coating],1,2);
   const skills={normalUp:0,spreadUp:0,chargeMaster:0,criticalElement:0,bladescaleLoading:0,firstShot:0,forceShot:0,...o.skills},skillRules=rule.skillRules;
   const modifier=name=>{const level=skills[name],r=skillRules?.[name];if(!Number.isInteger(level)||level<0||!r||!Object.hasOwn(r.multipliers,level))throw Error('BOW_REFERENCE:SKILL_LEVEL_INVALID:'+name);return valid(r.multipliers[level],1,2);};
-  const normalUp=modifier('normalUp'),chargeMaster=modifier('chargeMaster'),criticalElement=modifier('criticalElement'),bladescale=modifier('bladescaleLoading');
+  const normalUp=modifier('normalUp'),chargeMaster=modifier('chargeMaster'),criticalElement=o.criticalElementMultiplier===undefined?modifier('criticalElement'):valid(o.criticalElementMultiplier,1,2),bladescale=modifier('bladescaleLoading');
   modifier('firstShot');
   if(skillRules.firstShot.component!=='NOT_APPLICABLE_TO_BOW'||skillRules.firstShot.scope!=='BOWGUN_ONLY')throw Error('BOW_REFERENCE:FIRST_SHOT_SCOPE_UNRESOLVED');
   const firstShot={level:skills.firstShot,status:'NOT_APPLICABLE_TO_BOW',damageIncluded:false,scope:skillRules.firstShot.scope};
@@ -33,8 +33,8 @@
   let effectiveElement=element;
   if(skills.chargeMaster&&element>0){
    const b=o.elementBasis;
-   if(!b||!['weaponBase','normalMultiplier','normalFlat','conditionalFlat'].every(k=>typeof b[k]==='number'&&Number.isFinite(b[k])&&b[k]>=0)||Math.abs(b.weaponBase*b.normalMultiplier+b.normalFlat+b.conditionalFlat-element)>1e-6)throw Error('BOW_REFERENCE:CHARGE_MASTER_ELEMENT_COMPONENTS_UNRESOLVED');
-   effectiveElement=b.weaponBase*b.normalMultiplier*chargeMaster+b.normalFlat+b.conditionalFlat;
+   if(!b||!['weaponBase','normalMultiplier','normalFlat','conditionalFlat'].every(k=>typeof b[k]==='number'&&Number.isFinite(b[k])&&b[k]>=0)||Math.abs(Math.min(b.weaponBase*b.normalMultiplier+b.normalFlat+b.conditionalFlat,b.capLimit??Infinity)-element)>1e-6)throw Error('BOW_REFERENCE:CHARGE_MASTER_ELEMENT_COMPONENTS_UNRESOLVED');
+   effectiveElement=Math.min(b.weaponBase*b.normalMultiplier*chargeMaster+b.normalFlat+b.conditionalFlat,b.capLimit??Infinity);
   }
   let physical=0,elementTotal=0;const trace=[];
   for(const [stageIndex,id] of techniqueIds.entries()){

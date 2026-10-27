@@ -1,0 +1,1155 @@
+{
+  "executionEvidence": {
+    "head": "6c71e818919379b0b0649d2389237470cbe3802f",
+    "productHashes": {
+      "index.html": "077f11b95aedcdba244ba8bd0ad2fddfa67b92814621398b154597fb86ed7469",
+      "hope-hammer-browser-adapter.js": "657d63857c24cfdfe57727db7383ff6c8e1bc3bec0981245fe1b8c549baf335f",
+      "himmel-real-browser-bundle.js": "a16155679cfd36ee0e63ad18c13ab2ac55ac3cde39407686da494929a4700172",
+      "bowgun-element-reference.js": "627cb341b8575eb8a12b8e251395d6bb86bdeba5a989ffcc82e4f05d34043ab6",
+      "bow-reference.js": "9962e193c0738b6a5603ff3a2b136822becf2c12de64b795feb3a5470080c2f0",
+      "v10-six-layer-foundation/min8/sourced-physical-formula.cjs": "4a11af04e05b819df41e3654d210674abea19dbffad7a500c8c40aafdac6641c"
+    },
+    "harnessSha256": "fee84fb606ce8376292a080a20d8b2ffe7afea08d3575a390e735e8ca02545c5"
+  },
+  "scope": "HBG_PUBLIC_AND_LBG_SHARED_FORMULA_CRIT_AFTER_FLAT",
+  "rows": [
+    {
+      "level": 0,
+      "result": {
+        "status": "OK",
+        "weaponType": "heavy-bowgun",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 467,
+            "gameId": 4,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/467",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"4\",\"ammoLevel\":1,\"ammoType\":\"ELEMENT\",\"attack\":\"160\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"contactTargetPolicy\":\"CURRENT_TARGET\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"elementType\":\"thunder\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":1,\"ammoType\":\"ELEMENT\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":\"thunder\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"HBG_ELEMENT_FIRST_HIT_REFERENCE\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"4\",\"ammoLevel\":1,\"ammoType\":\"ELEMENT\",\"attack\":\"160\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"contactTargetPolicy\":\"CURRENT_TARGET\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"elementType\":\"thunder\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":1,\"ammoType\":\"ELEMENT\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":\"thunder\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"HBG_ELEMENT_FIRST_HIT_REFERENCE\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"4\",\"ammoLevel\":1,\"ammoType\":\"ELEMENT\",\"attack\":\"160\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"contactTargetPolicy\":\"CURRENT_TARGET\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"elementType\":\"thunder\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":1,\"ammoType\":\"ELEMENT\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":\"thunder\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"HBG_ELEMENT_FIRST_HIT_REFERENCE\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "HBG_ELEMENT_FIRST_HIT_REFERENCE:reference:0",
+                "eventId": "0:0",
+                "techniqueId": "HBG_ELEMENT_FIRST_HIT_REFERENCE",
+                "revision": "1",
+                "source": "HBG_R118_FORMULA_SOURCE",
+                "coefficientUnit": "REFERENCE",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 19.9424,
+                "details": {
+                  "status": "SOURCE_REFERENCE",
+                  "weaponKind": "heavy-bowgun",
+                  "physicalModifier": 1,
+                  "elementModifier": 1,
+                  "adoptionStatus": "SOURCE_CONFIRMED",
+                  "sourceVersion": "1.042.00.02",
+                  "scope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT",
+                  "physicalAttackAdd": 0,
+                  "physical": 10.3424,
+                  "element": 9.6,
+                  "total": 19.9424,
+                  "attackDependentElement": 9.6,
+                  "flatElement": 0,
+                  "ammoLevel": 1,
+                  "range": "CRITICAL",
+                  "physicalMv": 8,
+                  "displayedElement": 200,
+                  "criticalExpectation": 1.01,
+                  "damageIncluded": false,
+                  "elementCriticalIncluded": false,
+                  "elementCriticalMultiplier": 1,
+                  "elementCriticalExpectation": 1,
+                  "rounding": "UNROUNDED_REFERENCE",
+                  "liveGameVerification": "PENDING",
+                  "evidenceRefs": [
+                    "HBG_R118_FORMULA_SOURCE",
+                    "HBG_R118_PHYSICAL_SOURCE"
+                  ],
+                  "formula": "(attack/100*displayedElement*multiplier*elementModifier+flat)/10*elementalHitzone/100",
+                  "state": {
+                    "contactPolicy": null,
+                    "contactCount": null,
+                    "contactTargetPolicy": "CURRENT_TARGET",
+                    "elementType": "thunder",
+                    "ammoType": "ELEMENT",
+                    "ammoLevel": 1,
+                    "range": "CRITICAL",
+                    "normalModeLevel": 0,
+                    "magazineCapacity": 7,
+                    "shotOrdinal": null,
+                    "fullMagazine": null,
+                    "weaponAmmoEntry": {
+                      "kind": "thunder",
+                      "level": 1,
+                      "capacity": 7,
+                      "id": 32
+                    }
+                  },
+                  "elementRule": {
+                    "add": 0,
+                    "mult": 1
+                  }
+                },
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "critical-eye-affinity",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 30,
+                    "source": "index.html:calcAffinityBonus"
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "critical-eye-affinity",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 4,
+                  "operation": "add",
+                  "order": 30,
+                  "source": "index.html:calcAffinityBonus",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "critical-eye-affinity-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 4,
+                  "operation": "add",
+                  "order": 30,
+                  "source": "index.html:calcAffinityBonus",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT",
+              "contactModel": null,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "value": null,
+                "reason": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "firstHitReference": {
+                "status": "available",
+                "value": 19.9424,
+                "scope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "HBG_ELEMENT_FIRST_HIT_REFERENCE:reference:0",
+                "eventId": "0:0",
+                "techniqueId": "HBG_ELEMENT_FIRST_HIT_REFERENCE",
+                "revision": "1",
+                "source": "HBG_R118_FORMULA_SOURCE",
+                "coefficientUnit": "REFERENCE",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 19.9424,
+                "details": {
+                  "status": "SOURCE_REFERENCE",
+                  "weaponKind": "heavy-bowgun",
+                  "physicalModifier": 1,
+                  "elementModifier": 1,
+                  "adoptionStatus": "SOURCE_CONFIRMED",
+                  "sourceVersion": "1.042.00.02",
+                  "scope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT",
+                  "physicalAttackAdd": 0,
+                  "physical": 10.3424,
+                  "element": 9.6,
+                  "total": 19.9424,
+                  "attackDependentElement": 9.6,
+                  "flatElement": 0,
+                  "ammoLevel": 1,
+                  "range": "CRITICAL",
+                  "physicalMv": 8,
+                  "displayedElement": 200,
+                  "criticalExpectation": 1.01,
+                  "damageIncluded": false,
+                  "elementCriticalIncluded": false,
+                  "elementCriticalMultiplier": 1,
+                  "elementCriticalExpectation": 1,
+                  "rounding": "UNROUNDED_REFERENCE",
+                  "liveGameVerification": "PENDING",
+                  "evidenceRefs": [
+                    "HBG_R118_FORMULA_SOURCE",
+                    "HBG_R118_PHYSICAL_SOURCE"
+                  ],
+                  "formula": "(attack/100*displayedElement*multiplier*elementModifier+flat)/10*elementalHitzone/100",
+                  "state": {
+                    "contactPolicy": null,
+                    "contactCount": null,
+                    "contactTargetPolicy": "CURRENT_TARGET",
+                    "elementType": "thunder",
+                    "ammoType": "ELEMENT",
+                    "ammoLevel": 1,
+                    "range": "CRITICAL",
+                    "normalModeLevel": 0,
+                    "magazineCapacity": 7,
+                    "shotOrdinal": null,
+                    "fullMagazine": null,
+                    "weaponAmmoEntry": {
+                      "kind": "thunder",
+                      "level": 1,
+                      "capacity": 7,
+                      "id": 32
+                    }
+                  },
+                  "elementRule": {
+                    "add": 0,
+                    "mult": 1
+                  }
+                },
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "critical-eye-affinity",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 30,
+                    "source": "index.html:calcAffinityBonus"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "critical-eye-affinity",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 4,
+                  "operation": "add",
+                  "order": 30,
+                  "source": "index.html:calcAffinityBonus",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "critical-eye-affinity-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 4,
+                  "operation": "add",
+                  "order": 30,
+                  "source": "index.html:calcAffinityBonus",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 0,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 0,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT",
+              "contactModel": null,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "value": null,
+                "reason": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "firstHitReference": {
+                "status": "available",
+                "value": 19.9424,
+                "scope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "level": 3,
+      "result": {
+        "status": "OK",
+        "weaponType": "heavy-bowgun",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 467,
+            "gameId": 4,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/467",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"aff\":\"4\",\"ammoLevel\":1,\"ammoType\":\"ELEMENT\",\"attack\":\"160\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"contactTargetPolicy\":\"CURRENT_TARGET\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"elementType\":\"thunder\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":1,\"ammoType\":\"ELEMENT\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":\"thunder\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"HBG_ELEMENT_FIRST_HIT_REFERENCE\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"aff\":\"4\",\"ammoLevel\":1,\"ammoType\":\"ELEMENT\",\"attack\":\"160\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"contactTargetPolicy\":\"CURRENT_TARGET\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"elementType\":\"thunder\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":1,\"ammoType\":\"ELEMENT\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":\"thunder\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"HBG_ELEMENT_FIRST_HIT_REFERENCE\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"aff\":\"4\",\"ammoLevel\":1,\"ammoType\":\"ELEMENT\",\"attack\":\"160\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":null,\"enhancedPhial\":null,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":null,\"previousAction\":null,\"shieldBoosted\":null},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"contactTargetPolicy\":\"CURRENT_TARGET\",\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"0\",\"elementType\":\"thunder\",\"esharp\":\"1.15\",\"everlastingStage\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":1,\"ammoType\":\"ELEMENT\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":\"thunder\",\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"normalModeLevel\":0,\"range\":\"CRITICAL\",\"sharp\":\"1.32\",\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\"},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"HBG_ELEMENT_FIRST_HIT_REFERENCE\\\",\\\"revision\\\":\\\"1\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "HBG_ELEMENT_FIRST_HIT_REFERENCE:reference:0",
+                "eventId": "0:0",
+                "techniqueId": "HBG_ELEMENT_FIRST_HIT_REFERENCE",
+                "revision": "1",
+                "source": "HBG_R118_FORMULA_SOURCE",
+                "coefficientUnit": "REFERENCE",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 20.023039999999998,
+                "details": {
+                  "status": "SOURCE_REFERENCE",
+                  "weaponKind": "heavy-bowgun",
+                  "physicalModifier": 1,
+                  "elementModifier": 1,
+                  "adoptionStatus": "SOURCE_CONFIRMED",
+                  "sourceVersion": "1.042.00.02",
+                  "scope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT",
+                  "physicalAttackAdd": 0,
+                  "physical": 10.3424,
+                  "element": 9.680639999999999,
+                  "total": 20.023039999999998,
+                  "attackDependentElement": 9.6,
+                  "flatElement": 0,
+                  "ammoLevel": 1,
+                  "range": "CRITICAL",
+                  "physicalMv": 8,
+                  "displayedElement": 200,
+                  "criticalExpectation": 1.01,
+                  "damageIncluded": false,
+                  "elementCriticalIncluded": true,
+                  "elementCriticalMultiplier": 1.21,
+                  "elementCriticalExpectation": 1.0084,
+                  "rounding": "UNROUNDED_REFERENCE",
+                  "liveGameVerification": "PENDING",
+                  "evidenceRefs": [
+                    "HBG_R118_FORMULA_SOURCE",
+                    "HBG_R118_PHYSICAL_SOURCE"
+                  ],
+                  "formula": "(attack/100*displayedElement*multiplier*elementModifier+flat)/10*elementalHitzone/100",
+                  "state": {
+                    "contactPolicy": null,
+                    "contactCount": null,
+                    "contactTargetPolicy": "CURRENT_TARGET",
+                    "elementType": "thunder",
+                    "ammoType": "ELEMENT",
+                    "ammoLevel": 1,
+                    "range": "CRITICAL",
+                    "normalModeLevel": 0,
+                    "magazineCapacity": 7,
+                    "shotOrdinal": null,
+                    "fullMagazine": null,
+                    "weaponAmmoEntry": {
+                      "kind": "thunder",
+                      "level": 1,
+                      "capacity": 7,
+                      "id": 32
+                    }
+                  },
+                  "elementRule": {
+                    "add": 0,
+                    "mult": 1
+                  }
+                },
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "critical-eye-affinity",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 30,
+                    "source": "index.html:calcAffinityBonus"
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "critical-eye-affinity",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 4,
+                  "operation": "add",
+                  "order": 30,
+                  "source": "index.html:calcAffinityBonus",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "critical-eye-affinity-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 4,
+                  "operation": "add",
+                  "order": 30,
+                  "source": "index.html:calcAffinityBonus",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT",
+              "contactModel": null,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "value": null,
+                "reason": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "firstHitReference": {
+                "status": "available",
+                "value": 20.023039999999998,
+                "scope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "HBG_ELEMENT_FIRST_HIT_REFERENCE:reference:0",
+                "eventId": "0:0",
+                "techniqueId": "HBG_ELEMENT_FIRST_HIT_REFERENCE",
+                "revision": "1",
+                "source": "HBG_R118_FORMULA_SOURCE",
+                "coefficientUnit": "REFERENCE",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 20.023039999999998,
+                "details": {
+                  "status": "SOURCE_REFERENCE",
+                  "weaponKind": "heavy-bowgun",
+                  "physicalModifier": 1,
+                  "elementModifier": 1,
+                  "adoptionStatus": "SOURCE_CONFIRMED",
+                  "sourceVersion": "1.042.00.02",
+                  "scope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT",
+                  "physicalAttackAdd": 0,
+                  "physical": 10.3424,
+                  "element": 9.680639999999999,
+                  "total": 20.023039999999998,
+                  "attackDependentElement": 9.6,
+                  "flatElement": 0,
+                  "ammoLevel": 1,
+                  "range": "CRITICAL",
+                  "physicalMv": 8,
+                  "displayedElement": 200,
+                  "criticalExpectation": 1.01,
+                  "damageIncluded": false,
+                  "elementCriticalIncluded": true,
+                  "elementCriticalMultiplier": 1.21,
+                  "elementCriticalExpectation": 1.0084,
+                  "rounding": "UNROUNDED_REFERENCE",
+                  "liveGameVerification": "PENDING",
+                  "evidenceRefs": [
+                    "HBG_R118_FORMULA_SOURCE",
+                    "HBG_R118_PHYSICAL_SOURCE"
+                  ],
+                  "formula": "(attack/100*displayedElement*multiplier*elementModifier+flat)/10*elementalHitzone/100",
+                  "state": {
+                    "contactPolicy": null,
+                    "contactCount": null,
+                    "contactTargetPolicy": "CURRENT_TARGET",
+                    "elementType": "thunder",
+                    "ammoType": "ELEMENT",
+                    "ammoLevel": 1,
+                    "range": "CRITICAL",
+                    "normalModeLevel": 0,
+                    "magazineCapacity": 7,
+                    "shotOrdinal": null,
+                    "fullMagazine": null,
+                    "weaponAmmoEntry": {
+                      "kind": "thunder",
+                      "level": 1,
+                      "capacity": 7,
+                      "id": 32
+                    }
+                  },
+                  "elementRule": {
+                    "add": 0,
+                    "mult": 1
+                  }
+                },
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "critical-eye-affinity",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 30,
+                    "source": "index.html:calcAffinityBonus"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "critical-eye-affinity",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 4,
+                  "operation": "add",
+                  "order": 30,
+                  "source": "index.html:calcAffinityBonus",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "critical-eye-affinity-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 4,
+                  "operation": "add",
+                  "order": 30,
+                  "source": "index.html:calcAffinityBonus",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 0,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 0,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "UNVERIFIED",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT",
+              "contactModel": null,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "value": null,
+                "reason": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "firstHitReference": {
+                "status": "available",
+                "value": 20.023039999999998,
+                "scope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "contrasts": [
+    {
+      "weaponKind": "heavy-bowgun",
+      "a": {
+        "status": "SOURCE_REFERENCE",
+        "weaponKind": "heavy-bowgun",
+        "physicalModifier": 1,
+        "elementModifier": 1,
+        "adoptionStatus": "SOURCE_CONFIRMED",
+        "sourceVersion": "1.042.00.02",
+        "scope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT",
+        "physicalAttackAdd": 0,
+        "physical": 6.4799999999999995,
+        "element": 7.44,
+        "total": 13.92,
+        "attackDependentElement": 5.94,
+        "flatElement": 1.5,
+        "ammoLevel": 1,
+        "range": "CRITICAL",
+        "physicalMv": 8,
+        "displayedElement": 200,
+        "criticalExpectation": 1.125,
+        "damageIncluded": false,
+        "elementCriticalIncluded": false,
+        "elementCriticalMultiplier": 1,
+        "elementCriticalExpectation": 1,
+        "rounding": "UNROUNDED_REFERENCE",
+        "liveGameVerification": "PENDING",
+        "evidenceRefs": [
+          "HBG_R118_FORMULA_SOURCE",
+          "HBG_R118_PHYSICAL_SOURCE"
+        ],
+        "formula": "(attack/100*displayedElement*multiplier*elementModifier+flat)/10*elementalHitzone/100"
+      },
+      "b": {
+        "status": "SOURCE_REFERENCE",
+        "weaponKind": "heavy-bowgun",
+        "physicalModifier": 1,
+        "elementModifier": 1,
+        "adoptionStatus": "SOURCE_CONFIRMED",
+        "sourceVersion": "1.042.00.02",
+        "scope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT",
+        "physicalAttackAdd": 0,
+        "physical": 6.4799999999999995,
+        "element": 8.2212,
+        "total": 14.7012,
+        "attackDependentElement": 5.94,
+        "flatElement": 1.5,
+        "ammoLevel": 1,
+        "range": "CRITICAL",
+        "physicalMv": 8,
+        "displayedElement": 200,
+        "criticalExpectation": 1.125,
+        "damageIncluded": false,
+        "elementCriticalIncluded": true,
+        "elementCriticalMultiplier": 1.21,
+        "elementCriticalExpectation": 1.105,
+        "rounding": "UNROUNDED_REFERENCE",
+        "liveGameVerification": "PENDING",
+        "evidenceRefs": [
+          "HBG_R118_FORMULA_SOURCE",
+          "HBG_R118_PHYSICAL_SOURCE"
+        ],
+        "formula": "(attack/100*displayedElement*multiplier*elementModifier+flat)/10*elementalHitzone/100"
+      }
+    },
+    {
+      "weaponKind": "light-bowgun",
+      "a": {
+        "status": "SOURCE_REFERENCE",
+        "weaponKind": "light-bowgun",
+        "physicalModifier": 0.7,
+        "elementModifier": 0.7,
+        "adoptionStatus": "OWNER_APPROVED_PROVISIONAL",
+        "sourceVersion": "1.011.00;CURRENT_VERSION_UNVERIFIED",
+        "scope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT",
+        "physicalAttackAdd": 0,
+        "physical": 4.536,
+        "element": 5.658,
+        "total": 10.193999999999999,
+        "attackDependentElement": 4.158,
+        "flatElement": 1.5,
+        "ammoLevel": 1,
+        "range": "CRITICAL",
+        "physicalMv": 8,
+        "displayedElement": 200,
+        "criticalExpectation": 1.125,
+        "damageIncluded": false,
+        "elementCriticalIncluded": false,
+        "elementCriticalMultiplier": 1,
+        "elementCriticalExpectation": 1,
+        "rounding": "UNROUNDED_REFERENCE",
+        "liveGameVerification": "PENDING",
+        "evidenceRefs": [
+          "HBG_R118_FORMULA_SOURCE",
+          "HBG_R118_PHYSICAL_SOURCE",
+          "LBG_ELEMENT_OWNER_SOURCE",
+          "LBG_ELEMENT_FLAT_ORDER_SOURCE"
+        ],
+        "formula": "(attack/100*displayedElement*multiplier*elementModifier+flat)/10*elementalHitzone/100"
+      },
+      "b": {
+        "status": "SOURCE_REFERENCE",
+        "weaponKind": "light-bowgun",
+        "physicalModifier": 0.7,
+        "elementModifier": 0.7,
+        "adoptionStatus": "OWNER_APPROVED_PROVISIONAL",
+        "sourceVersion": "1.011.00;CURRENT_VERSION_UNVERIFIED",
+        "scope": "FIRST_HIT_ONLY_NOT_WHOLE_SHOT",
+        "physicalAttackAdd": 0,
+        "physical": 4.536,
+        "element": 6.08235,
+        "total": 10.61835,
+        "attackDependentElement": 4.158,
+        "flatElement": 1.5,
+        "ammoLevel": 1,
+        "range": "CRITICAL",
+        "physicalMv": 8,
+        "displayedElement": 200,
+        "criticalExpectation": 1.125,
+        "damageIncluded": false,
+        "elementCriticalIncluded": true,
+        "elementCriticalMultiplier": 1.15,
+        "elementCriticalExpectation": 1.075,
+        "rounding": "UNROUNDED_REFERENCE",
+        "liveGameVerification": "PENDING",
+        "evidenceRefs": [
+          "HBG_R118_FORMULA_SOURCE",
+          "HBG_R118_PHYSICAL_SOURCE",
+          "LBG_ELEMENT_OWNER_SOURCE",
+          "LBG_ELEMENT_FLAT_ORDER_SOURCE"
+        ],
+        "formula": "(attack/100*displayedElement*multiplier*elementModifier+flat)/10*elementalHitzone/100"
+      }
+    }
+  ]
+}

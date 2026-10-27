@@ -46,10 +46,11 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   },
   resolveEffects:(build,conditions,channel,effects)=>{
    const result=resolveEffects(build,conditions,channel,effects);
-   if(!Array.isArray(result))throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_ARRAY');
+   const list=Array.isArray(result)?result:result?.effects,unresolved=Array.isArray(result)?[]:result?.unresolved;
+   if(!Array.isArray(list)||!Array.isArray(unresolved))throw Error('REAL_SLICE:EFFECTS_NOT_RESOLVED_ARRAY');
    const applicability=build.skills.entries.length===0?[]:(typeof resolveSkillApplicability==='function'?resolveSkillApplicability(build.skills.entries):null);
-   if(!Array.isArray(applicability)||applicability.length!==build.skills.entries.length||applicability.some(x=>!['non_damage','resolved'].includes(x?.effectDisposition)||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
-   for(const effect of result){
+   if(!Array.isArray(applicability)||applicability.length!==build.skills.entries.length||applicability.some(x=>!(['non_damage','resolved'].includes(x?.effectDisposition)||x?.effectDisposition==='unresolved'&&unresolved.some(u=>u.id==='bonus:'+x.name))||typeof x.reason!=='string'||typeof x.evidenceRef!=='string'))throw Error('REAL_SLICE:SKILL_APPLICABILITY_UNRESOLVED');
+   for(const effect of list){
     if(!effect||typeof effect.id!=='string'||!['physical','element'].includes(effect.target)||!['attack','coefficient','element','affinity'].includes(effect.stage)||!['add','multiply','cap'].includes(effect.operation)||!Number.isFinite(effect.amount)||!Number.isInteger(effect.order)||typeof effect.source!=='string'||!effect.condition)throw Error('REAL_SLICE:EFFECT_SCHEMA_INVALID');
    }
    return result;

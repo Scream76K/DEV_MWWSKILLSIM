@@ -1,0 +1,6 @@
+# 弱点特効Hit条件接続
+原典 https://kuroyonhon.com/mhwilds/program/skill.php ：傷前の物理肉質45以上、弱点の傷のみ追加。既存Lv係数を共有WEAKNESS_EXPLOIT_RULEへ移し、表示calcMaxAffinityは従来の条件最大を維持。実式は弱点特効を除いた最大会心から開始し、MHWWeaknessExploitForHitのHit別加算を両チャンネルへ一度適用。
+共通本体はcomponentIdsで物理/属性Hitを限定。SA追撃もmodeContractに従い剣Hit後だけ対応。Bow/SAED本体はreference component、属性弾はfirstHitまたは各contactの肉質で解決。非会心ビン/砲撃/音波は対象外。傷ありでoriginalMultipliers不明なら理由付き拒否、未知種別も拒否。明示contactsはoriginalPhysicalHitzoneとwoundedを内部条件として使用可能。
+GS公開4条件：肉質20無傷0、45無傷30、傷後80/傷前45で50、傷後80/傷前40で0。通常最大一致、表示最大50維持。混在slash20/blunt80は共通resolverで0/30を確認（SNS公開列未実行）。HBG公開3条件も同じ0/30/50差を確認。Bow/SAED/SA/複数contactは静的確認のみ、追加全武器実行なし。
+HBG試験の最初の失敗はfixtureのスキルDB不足、次は基礎会心4を期待値から除いていた試験側不備。原典全skillsを読み込み、取得stats.affinityを基準に修正後成功。製品期待値を合わせる変更なし。元の失敗ツール出力を履歴保持。
+属性上限承認は受領済み、次バッチで実装。今回cap変更なし。commit/pushなし。CI/Safari/実機なし。

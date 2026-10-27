@@ -28,14 +28,17 @@ function createPipeline({versions,openDataSnapshot,resolveBuild,resolveEffects,r
       resolveEffects:(build,conditions,ch,version)=>{
        // L3: preserve semantic stage/unit and deferred state predicates; no common effect calculations here.
        const found=snapshot.resolveEffects(cp(build),cp(conditions),ch,version);
-       if(!Array.isArray(found))throw Error('L3_EFFECT_LIST_INVALID');
-       return found.map(e=>{
+       const list=Array.isArray(found)?found:found?.effects,unresolved=Array.isArray(found)?[]:found?.unresolved;
+       if(!Array.isArray(list)||!Array.isArray(unresolved))throw Error('L3_EFFECT_LIST_INVALID');
+       for(const u of unresolved)if(!u||['id','reason','target','source'].some(k=>typeof u[k]!=='string'||!u[k]))throw Error('L3_UNRESOLVED_EFFECT_SCHEMA_INVALID');
+       const effects=list.map(e=>{
         if(!e || typeof e.id!=='string'||typeof e.target!=='string'||typeof e.stage!=='string'||typeof e.unit!=='string'||typeof e.source!=='string')throw Error('L3_EFFECT_SCHEMA_INVALID');
         if(!Number.isInteger(e.order)||!['add','multiply','cap'].includes(e.operation)||typeof e.amount!=='number'||!Number.isFinite(e.amount))throw Error('L3_EFFECT_VALUE_INVALID');
         if(!e.condition || !['always','state-equals','target-equals','event-equals'].includes(e.condition.type))throw Error('L3_CONDITION_INVALID');
         if(e.condition.type!=='always' && (!Object.hasOwn(e.condition,'value') || (e.condition.path===undefined ? (typeof e.condition.key!=='string'||!e.condition.key) : (!Array.isArray(e.condition.path)||!e.condition.path.length||e.condition.path.some(k=>(typeof k!=='string'||!k)&&!Number.isInteger(k))))))throw Error('L3_CONDITION_SCHEMA_INVALID');
         return cp(e);
        });
+       return Array.isArray(found)?effects:{effects,unresolved:cp(unresolved)};
       }
     };
    },

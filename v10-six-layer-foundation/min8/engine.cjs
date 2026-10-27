@@ -127,7 +127,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   }
   const attackComponents=sourceAttackComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceAttackComponents[k]))?{weaponBase:sourceAttackComponents.weaponBase,normalMultiplier:sourceAttackComponents.normalMultiplier,normalFlat:sourceAttackComponents.normalFlat}:null;
   const sourceElementComponents=build?.equipment?.elementComponents;
-  const elementComponents=sourceElementComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceElementComponents[k]))?{weaponBase:sourceElementComponents.weaponBase,normalMultiplier:sourceElementComponents.normalMultiplier,normalFlat:sourceElementComponents.normalFlat,conditionalFlat:0}:null;
+  const elementComponents=sourceElementComponents&&['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(sourceElementComponents[k]))?{weaponBase:sourceElementComponents.weaponBase,normalMultiplier:sourceElementComponents.normalMultiplier,normalFlat:sourceElementComponents.normalFlat,conditionalFlat:0,capBase:sourceElementComponents.weaponBase}:null;
   const out={coefficient:component.coefficient,stats,attackComponents,elementComponents,post:[],trace:[]};
   const appliedAffinityGroups=new Set();
   for(const [k,v] of Object.entries(out.stats))ensure(num(v),'BASE_STAT_INVALID_'+k);
@@ -137,6 +137,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   const excludedEffectIds=component.parameters?.excludedEffectIds||[];
   ensure(Array.isArray(excludedEffectIds)&&excludedEffectIds.every(x=>typeof x==='string'),'EFFECT_EXCLUSIONS_INVALID');
   for(const e of [...effects].filter(x=>!excludedEffectIds.includes(x.id)&&targets.includes(x.target)&&(!stages||stages.includes(x.stage))).sort((a,b)=>a.order-b.order||a.id.localeCompare(b.id))){
+   if(e.componentIds!==undefined){ensure(Array.isArray(e.componentIds)&&e.componentIds.length>0&&e.componentIds.every(x=>typeof x==='string'),'EFFECT_COMPONENT_SCOPE_INVALID');if(!e.componentIds.includes(component.id))continue;}
    ensure(unit[e.stage]&&num(e.amount)&&['add','multiply','cap'].includes(e.operation),'EFFECT_INVALID');
    ensure(e.operation==='multiply'?e.unit==='dimensionless':e.unit===unit[e.stage],'EFFECT_UNIT_MISMATCH');
    const active=condition(e.condition,{state,target,event});
@@ -155,9 +156,17 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
     else if(e.operation==='add')out.attackComponents.normalFlat+=e.amount;
     else out.stats.attack=Math.min(out.stats.attack,e.amount);
     out.stats.attack=out.attackComponents.weaponBase*out.attackComponents.normalMultiplier+out.attackComponents.normalFlat;
-   }else if(e.stage==='element'&&out.elementComponents){if(e.operation==='multiply')out.elementComponents.normalMultiplier*=e.amount;else if(e.operation==='add'){if(e.flatComponent==='conditional')out.elementComponents.conditionalFlat+=e.amount;else out.elementComponents.normalFlat+=e.amount;}else out.stats.element=Math.min(out.stats.element,e.amount);out.stats.element=out.elementComponents.weaponBase*out.elementComponents.normalMultiplier+out.elementComponents.normalFlat+out.elementComponents.conditionalFlat;}else {const dest=e.stage==='coefficient'?out:out.stats,key=e.stage;const v=dest[key];dest[key]=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);}
+   }else if(e.stage==='element'&&out.elementComponents){if(e.operation==='multiply'){out.elementComponents.normalMultiplier*=e.amount;if(e.elementCapBaseScaling)out.elementComponents.capBase*=e.amount;}else if(e.operation==='add'){if(e.flatComponent==='conditional')out.elementComponents.conditionalFlat+=e.amount;else out.elementComponents.normalFlat+=e.amount;}else out.stats.element=Math.min(out.stats.element,e.amount);out.stats.element=out.elementComponents.weaponBase*out.elementComponents.normalMultiplier+out.elementComponents.normalFlat+out.elementComponents.conditionalFlat;}else {const dest=e.stage==='coefficient'?out:out.stats,key=e.stage;const v=dest[key];dest[key]=e.operation==='add'?v+e.amount:e.operation==='multiply'?v*e.amount:Math.min(v,e.amount);}
    ensure(finite(out.coefficient)&&Object.values(out.stats).every(finite),'EFFECT_RESULT_NON_FINITE');
    out.trace.push({id:e.id,target:e.target,stage:e.stage,unit:e.unit,order:e.order,source:e.source,...(e.status?{status:e.status}: {})});
+  }
+  const capRule=build?.equipment?.elementCapRule;
+  if(out.elementComponents&&capRule){
+   ensure(finite(capRule.flat)&&finite(capRule.multiplier),'ELEMENT_CAP_RULE_INVALID');
+   const b=out.elementComponents.capBase;
+   const limit=Math.max(b+capRule.flat,b*capRule.multiplier);
+   out.elementComponents.capLimit=limit;out.elementComponents.uncapped=out.stats.element;
+   out.stats.element=Math.min(out.stats.element,limit);
   }
   return out;
  }
@@ -171,11 +180,16 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
   return {...run,diagnostics:{formalStatus:provisionalEffects.length?'PROVISIONAL':'UNVERIFIED',provisionalEffects:copy(provisionalEffects)},metrics:{comboTotalDamage:total,comboDuration:time,comboDps:total.status==='available'&&time.status==='available'?(finite(total.value/time.value)?good(total.value/time.value):bad('DPS_NON_FINITE')):bad(total.status==='available'?'DURATION_UNAVAILABLE':total.reason)}};
  }
  function runChannel(build,req,plan,ch,s){
-  const executed=[],components=[],issues=[];let state;
+  const executed=[],components=[],issues=[];let state,effectPlan;
   try{
    state=copy(initialState(copy(build),ch,copy(req.conditions)));ensure(state&&typeof state==='object','STATE_INVALID');validateState(state);
-   const effects=s.snapshot.resolveEffects(copy(build),copy(req.conditions),ch,pinned.effects);
-   ensure(Array.isArray(effects),'EFFECTS_INVALID');
+   const resolvedEffects=s.snapshot.resolveEffects(copy(build),copy(req.conditions),ch,pinned.effects);
+   const effects=Array.isArray(resolvedEffects)?resolvedEffects:resolvedEffects?.effects;
+   const unresolved=Array.isArray(resolvedEffects)?[]:resolvedEffects?.unresolved;
+   ensure(Array.isArray(effects)&&Array.isArray(unresolved),'EFFECTS_INVALID');
+   effectPlan={effects:copy(effects),unresolved:copy(unresolved)};
+   // Required unresolved effects stop this channel before any damage or resource mutation.
+   if(unresolved.length)throw Error('UNRESOLVED_EFFECTS:'+unresolved.map(x=>x.reason).join(','));
    const handler=handlers[build.weaponType];ensure(typeof handler==='function','HANDLER_NOT_IMPLEMENTED');
    for(const ev of plan.events){
     try{
@@ -235,7 +249,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
     }catch(err){issues.push({eventId:ev.id,reason:err.message});break}
    }
   }catch(err){issues.push({reason:err.message})}
-  return aggregate({execution:{status:executed.length===plan.expected.length&&!issues.length?'complete':'incomplete',expected:copy(plan.expected),executed,reason:issues[0]?.reason||null},components,issues,finalState:state},req.evaluation.duration);
+  return aggregate({execution:{status:executed.length===plan.expected.length&&!issues.length?'complete':'incomplete',expected:copy(plan.expected),executed,reason:issues[0]?.reason||null},components,issues,finalState:state,...(effectPlan?{effectPlan}:{})},req.evaluation.duration);
  }
  function evaluate(req,s=session()){
   ensure(req?.build&&req?.target&&req?.evaluation,'REQUEST_INVALID');

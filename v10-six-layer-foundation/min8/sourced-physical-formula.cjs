@@ -50,10 +50,12 @@ function createSourcedElementalFormula({calculate,resolveElementSharpness,resolv
   if(!valid(hitzone)||hitzone.value<0||hitzone.value>100)return unavailable('ELEMENT_HITZONE_UNRESOLVED');
   let result;
   const criticalElementLevel=Number(build?.equipment?.criticalElementLevel)||0;
-  try{result=calculate({attack:0,affinity:stats.affinity,element:stats.element*coefficient,elementKnown:true,typeKnown:true,elementType:build.elementType||build.equipment?.elementType||'none',mv:0,hz:0,ehz:hitzone.value,sharp:1,esharp:sharp.value,critBonus:0,elementCrit:criticalElementLevel>0,criticalState:'expected'});}
+  const elementCriticalMultiplier=criticalElementLevel?build?.equipment?.criticalElementMultiplier:1;
+  if(!finite(elementCriticalMultiplier)||elementCriticalMultiplier<1)return unavailable('ELEMENT_CRITICAL_RULE_UNRESOLVED');
+  try{result=calculate({attack:0,affinity:stats.affinity,element:stats.element*coefficient,elementKnown:true,typeKnown:true,elementType:build.elementType||build.equipment?.elementType||'none',mv:0,hz:0,ehz:hitzone.value,sharp:1,esharp:sharp.value,critBonus:0,elementCrit:false,elementCriticalMultiplier,criticalState:'expected'});}
   catch(_){return unavailable('ELEMENT_CANONICAL_FORMULA_FAILED')}
   if(!result||!finite(result.e)||result.e<0)return unavailable('ELEMENT_CANONICAL_RESULT_INVALID');
-  return {status:'available',value:result.e};
+  return {status:'available',value:result.e,details:{appliedElement:stats.element,elementComponents:stats.elementComponents??null,elementCapRule:build?.equipment?.elementCapRule??null,elementCriticalMultiplier}};
  };
 }
 module.exports={createSourcedPhysicalFormula,createSourcedElementalFormula};

@@ -1,0 +1,148 @@
+{
+  "base": "6c71e818919379b0b0649d2389237470cbe3802f",
+  "indexHash": "4d9412a12b731d144ada635b0e795008432260534498a104ee732dcc6d7d8b33",
+  "plan": {
+    "normal": {
+      "attackTrue": 105,
+      "attackComponents": {
+        "weaponBase": 100,
+        "normalMultiplier": 1.05,
+        "normalFlat": 0
+      },
+      "element": 0,
+      "elementType": null,
+      "elementKnown": true,
+      "typeKnown": true,
+      "affinity": 0,
+      "maxAffinity": 0,
+      "activeBonusEffects": [
+        {
+          "name": "黒蝕一体Ⅱ",
+          "bonusName": "黒蝕竜の力",
+          "source": "series",
+          "required": 4,
+          "count": 4,
+          "rankLevel": 2,
+          "bonusSkillId": 106
+        }
+      ],
+      "resolvedBonusEffects": [
+        {
+          "skill": "根性【果敢】",
+          "attackAdd": 0,
+          "attackMultiplier": 1.05,
+          "condition": "GUTS_NOT_CONSUMED",
+          "bonusSource": true,
+          "appliesToNormal": true,
+          "evidenceRef": "https://kuroyonhon.com/mhwilds/program/skill.php",
+          "numericOrigin": "SOURCE_CONFIRMED_NOT_LIVE_VERIFIED"
+        }
+      ]
+    },
+    "maximum": {
+      "attackTrue": 105,
+      "attackComponents": {
+        "weaponBase": 100,
+        "normalMultiplier": 1,
+        "normalFlat": 0
+      },
+      "element": 0,
+      "elementType": null,
+      "elementKnown": true,
+      "typeKnown": true,
+      "affinity": 0,
+      "maxAffinity": 0,
+      "activeBonusEffects": [
+        {
+          "name": "黒蝕一体Ⅱ",
+          "bonusName": "黒蝕竜の力",
+          "source": "series",
+          "required": 4,
+          "count": 4,
+          "rankLevel": 2,
+          "bonusSkillId": 106
+        }
+      ],
+      "resolvedBonusEffects": [
+        {
+          "skill": "根性【果敢】",
+          "attackAdd": 0,
+          "attackMultiplier": 1.05,
+          "condition": "GUTS_NOT_CONSUMED",
+          "bonusSource": true,
+          "appliesToNormal": true,
+          "evidenceRef": "https://kuroyonhon.com/mhwilds/program/skill.php",
+          "numericOrigin": "SOURCE_CONFIRMED_NOT_LIVE_VERIFIED"
+        }
+      ]
+    },
+    "applied": [
+      {
+        "skill": "根性【果敢】",
+        "attackAdd": 0,
+        "attackMultiplier": 1.05,
+        "condition": "GUTS_NOT_CONSUMED",
+        "bonusSource": true,
+        "appliesToNormal": true,
+        "evidenceRef": "https://kuroyonhon.com/mhwilds/program/skill.php",
+        "numericOrigin": "SOURCE_CONFIRMED_NOT_LIVE_VERIFIED"
+      }
+    ],
+    "excluded": [],
+    "pending": [
+      "BONUS_DAMAGE_EFFECT_PENDING:黒蝕一体Ⅱ"
+    ],
+    "groupPlan": {
+      "attackMultiplier": 1.05,
+      "maximumFlat": 0,
+      "applied": [
+        {
+          "skill": "根性【果敢】",
+          "attackAdd": 0,
+          "attackMultiplier": 1.05,
+          "condition": "GUTS_NOT_CONSUMED",
+          "bonusSource": true,
+          "appliesToNormal": true,
+          "evidenceRef": "https://kuroyonhon.com/mhwilds/program/skill.php",
+          "numericOrigin": "SOURCE_CONFIRMED_NOT_LIVE_VERIFIED"
+        }
+      ],
+      "unresolvedEffects": [
+        {
+          "id": "bonus:黒蝕一体Ⅱ",
+          "reason": "BONUS_DAMAGE_EFFECT_PENDING:黒蝕一体Ⅱ",
+          "target": "all",
+          "source": "index.html:standardGroupPowerPlan",
+          "activation": [
+            {
+              "name": "黒蝕一体Ⅱ",
+              "bonusName": "黒蝕竜の力",
+              "source": "series",
+              "required": 4,
+              "count": 4,
+              "rankLevel": 2,
+              "bonusSkillId": 106
+            }
+          ]
+        }
+      ],
+      "nonDamageEffects": [],
+      "gutsState": "BEFORE",
+      "status": "PARTIAL",
+      "scope": "GENERIC_STANDARD_POWER_ONLY"
+    },
+    "status": "PARTIAL",
+    "scope": "ADOPTED_CONDITIONAL_ATTACK_ELEMENT_MAX_AFFINITY",
+    "attackOrder": "WEAPON_BASE_TIMES_MULTIPLIERS_PLUS_FLATS",
+    "attackComponents": {
+      "weaponBase": 100,
+      "normalMultiplier": 1,
+      "normalFlat": 0,
+      "conditionalMultiplier": 1,
+      "groupMultiplier": 1.05,
+      "conditionalFlat": 0
+    },
+    "evidenceGameVersion": "NOT_VERIFIED"
+  },
+  "pass": true
+}
