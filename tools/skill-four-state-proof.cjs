@@ -1,0 +1,28 @@
+const fs=require('fs'),assert=require('assert/strict');
+const root=process.cwd(),r=require(root+'/weapon-max-sharpness.js');
+const fixture={sharpness:{red:50,orange:50,yellow:50,green:50,blue:50,white:0,purple:0},handicraft:[1,4]};
+assert.equal(r.fromMHDB(fixture,0).color,'blue');assert.equal(r.fromMHDB(fixture,1).color,'blue');assert.equal(r.fromMHDB(fixture,2).color,'white');assert.equal(r.fromMHDB({...fixture,handicraft:undefined},2).reason,'HANDICRAFT_DATA_UNRESOLVED');
+const {JSDOM,VirtualConsole}=require('/Users/scream/Documents/Codex/2026-10-18/task/himmel-db-route-pqr4v6qt/dependencies/node_modules/jsdom');
+const w=new JSDOM(require(root+'/tools/dom-test-setup.cjs').readSimulatorHtml(),{url:'https://stage3.test/',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){w.fetch=()=>Promise.reject(Error('offline'));w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}).window;
+const weapon=JSON.parse(fs.readFileSync('docs/reports/r252-generic-states/evidence/mhdb-great-sword-hope-blade-i.api.json'));
+w.eval(`clearWeaponBuckets();DB.weapons=${JSON.stringify([weapon])};weaponIndexByKind['great-sword']=DB.weapons;weaponKind.value='great-sword';weapon.innerHTML='<option value="236">Hope</option>';weapon.value='236';App.build.setWeapon(DB.weapons[0]);renderMonsters();monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';renderComboForWeapon();`);
+let args;const adapter=w.MHWRealOneHitBrowserAdapter;w.MHWRealOneHitBrowserAdapter={...adapter,evaluateCurrent(a){args=a;return adapter.evaluateCurrent(a)}};w.calcBuild();w.eval(`DB.skills=${fs.readFileSync('docs/reports/r263-skill-audit/mhdb-skills.json','utf8')};`);
+
+const total={'革細工の滑性':1,'パワーストーン':1,'炎の料理人':1,'連携プログラム':1};
+const slide={name:'滑走強化',bonusName:'革細工の滑性',source:'group',required:3,count:3,rankLevel:1,bonusSkillId:89};
+const explicit={normal:{sliding:false,oreAdds:[],cooking:'NONE',cooperation:false},maximum:{sliding:true,oreAdds:[30,30,30,10],cooking:'WELL',cooperation:true}};
+const st={...args.stats,activeBonusEffects:[slide]};
+const plan=w.MHWStandardPowerConditionPlan(st,total,'great-sword',{selfSkillState:explicit});assert.equal(plan.pending.length,0,JSON.stringify(plan));
+assert.equal(plan.selfStatePlan.maximum.reduce((n,e)=>n+e.attackAdd,0),90);assert.equal(plan.selfStatePlan.maximum.reduce((n,e)=>n+e.affinityAdd,0),55);
+const result=adapter.evaluateCurrent({...args,stats:{...st,conditionalConditionPlan:plan},skills:Object.entries(total),equipmentSkillsResolved:true});
+for(const ch of ['normal','maximum'])assert.equal(result.channels?.[ch]?.execution.status,'complete',JSON.stringify(result));assert.ok(result.channels.maximum.metrics.comboTotalDamage.value>result.channels.normal.metrics.comboTotalDamage.value);
+const resonance={name:'レゾナンスⅡ',bonusName:'オメガレゾナンス',source:'series',required:4,count:4,rankLevel:2,bonusSkillId:173};
+const boosted=w.MHWAdoptedSelfStatePlan({...st,activeBonusEffects:[slide,resonance]},total,{selfSkillState:explicit});assert.equal(boosted.maximum.find(e=>e.skillId===174).affinityAdd,25);
+const burnt=w.MHWAdoptedSelfStatePlan(st,total,{selfSkillState:{...explicit,maximum:{...explicit.maximum,cooking:'BURNT'}}});assert.equal(burnt.maximum.find(e=>e.skillId===171).affinityAdd,0);assert.equal(burnt.maximum.find(e=>e.skillId===171).elementAdd,300);
+w.document.getElementById('powerSelfSkillState').value=JSON.stringify(explicit);const saved=w.eval('compareStep5Snapshot()');w.document.getElementById('powerSelfSkillState').value='';w.eval('restoreExplicitAffinityState('+JSON.stringify(saved)+')');assert.deepEqual(JSON.parse(w.document.getElementById('powerSelfSkillState').value),explicit);
+const elementalStats={...st,element:100,elementType:'fire',elementKnown:true,typeKnown:true,elementStatus:'KNOWN',elementComponents:{weaponBase:100,normalMultiplier:1,normalFlat:0}};
+const elementalPlan=w.MHWStandardPowerConditionPlan(elementalStats,total,'great-sword',{selfSkillState:explicit});
+const elemental=adapter.evaluateCurrent({...args,weapon:{...args.weapon,specials:[{kind:'element',element:'fire',damage:{raw:10,display:100}}]},stats:{...elementalStats,conditionalConditionPlan:elementalPlan},skills:Object.entries(total),equipmentSkillsResolved:true});
+for(const ch of ['normal','maximum'])assert.equal(elemental.channels?.[ch]?.execution.status,'complete',JSON.stringify(elemental));
+assert.equal(elementalPlan.maximum.element,400);
+console.log(JSON.stringify({plan,result,elemental,boosted,burnt,savedState:saved.selfSkillState,limitations:'Omega base near/far remains pending; no new technique'},null,2));w.close();

@@ -6,7 +6,7 @@ const {createPipeline}=require('./pipeline.cjs');
 const {adaptOrdinaryPhysicalHit}=require('./real-technique-one-hit-adapter.cjs');
 const {createSourcedPhysicalFormula,createSourcedElementalFormula}=require('./sourced-physical-formula.cjs');
 const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
-function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,resolveSkillApplicability,initialState,formulae,canonicalPhysical,shellingFormula,referenceFormula,phialFormula,weaponType='hammer',techniqueId='HAM_SIDE_SWING',techniqueIds=null}){
+function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,resolveSkillApplicability,resolveComponentIssue,initialState,formulae,canonicalPhysical,shellingFormula,referenceFormula,phialFormula,weaponType='hammer',techniqueId='HAM_SIDE_SWING',techniqueIds=null}){
  if(typeof source?.capture!=='function')throw Error('REAL_SLICE:ATOMIC_CAPTURE_REQUIRED');
  const physical=canonicalPhysical?createSourcedPhysicalFormula(canonicalPhysical):formulae?.physical;
  const elemental=canonicalPhysical&&typeof canonicalPhysical.resolveElementSharpness==='function'&&typeof canonicalPhysical.resolveElementHitzone==='function'?createSourcedElementalFormula({...canonicalPhysical,resolveElementSharpness:canonicalPhysical.resolveElementSharpness,resolveHitzone:canonicalPhysical.resolveElementHitzone}):formulae?.element;
@@ -155,6 +155,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   if(event.components.some(c=>!emit.includes(c.id)&&!inactive.includes(c.id)&&!unresolved.includes(c.id)))throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
   return {emit,inactive,unresolved,reasons};
  }};
+ if(resolveComponentIssue){const original=handlers[weaponType];handlers[weaponType]=context=>{const result=original(context);if(context.event.type!=='hit')return result;const emit=[...(result.emit||[])],unresolved=[...(result.unresolved||[])],reasons={...(result.reasons||{})};for(const c of context.event.components||[]){if(!emit.includes(c.id))continue;const reason=resolveComponentIssue({...context,component:c});if(reason){emit.splice(emit.indexOf(c.id),1);unresolved.push(c.id);reasons[c.id]=reason;}}return {...result,emit,unresolved,reasons};};}
  return createPipeline({versions,openDataSnapshot,initialState,handlers,formulae:{physical,element:elemental,shelling:shellingFormula,reference:referenceFormula,phial:phialFormula}});
 }
 module.exports={createRealOneHitPipeline};

@@ -1,0 +1,12 @@
+# pass31 local checkpoint
+
+- Owner scope: equipped Handicraft uses MHDB highest attained color; maximum-color-only means both damage channels share that weapon state. No depletion simulation. Existing owner Artia white premise remains authoritative; no manual sharpness override was introduced.
+- MHDB source: https://docs.wilds.mhdb.io/#handicraft . Missing/invalid Handicraft arrays remain diagnosed; Lv0 does not require extension data. Boundary [1,4]: Lv0/1 same color, Lv2 next color.
+- Four owner-approved provisional effects: sliding affinity30 with exact group3 activation; explicit active ore additions10/15/30 capped90; latest cooking NONE/RARE/WELL/BURNT replaces prior result; cooperation self affinity15, validated resonanceII replaces with25.
+- Source: https://kuroyonhon.com/mhwilds/program/skill.php . Explicit normal/maximum JSON is saved through compareStep5Snapshot/restoreExplicitAffinityState; no guessed uptime, extra technique, party damage, or automatic state activation.
+- Self effects enter shared attack-flat, affinity, and weapon-element-flat stages once. Existing critical eligibility and element cap remain downstream. Cooking does not create innate weapon element; ammo/special-source elemental scope remains unresolved. Omega near/far adoption is not implied by cooperation enhancement.
+- Evidence: handicraft-after.json (documented synthetic boundary through public Pipeline); four-state-after.json (shared GS contract, ore cap90, affinity55, cooking100+300=400 in Formula details, resonance25 replacement, burnt affinity0, snapshot restoration).
+- Missing conditions throw channel-specific reasons. Invalid group activation is not accepted. No full weapon regression, live UI, CI, or baseline execution was run. Handicraft's actual equipment save/load roundtrip remains unexecuted; the existing equipment-skill input is reused.
+- Product files changed this pass: weapon-max-sharpness.js, hope-hammer-browser-adapter.js, index.html. Bundle unchanged because no bundled engine module changed. Manifest pass31-manifest.json fixes current file hashes and proof hashes.
+- Classification: complete22 / partial55 / missing8 / annotation6 / nonHP88. No new full-completion claim; four missing entries moved to partial after actual common-path connection. Existing supplemental historical classifications are retained, not new completion evidence.
+- No commit/push, integration, publication, Safari/storage/server operations. Original Stage3 checkout preserved.
