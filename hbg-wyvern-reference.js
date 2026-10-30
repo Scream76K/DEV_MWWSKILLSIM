@@ -19,8 +19,15 @@ function calculate(input,engine){
  if(!finite(meal)||!finite(charm))throw Error('HBG_WYVERN:FOOD_OR_CHARM_PENDING');
  if(input.unreviewedSkills?.length)throw Error('HBG_WYVERN:CONDITIONAL_EFFECT_SCOPE_PENDING:'+input.unreviewedSkills.join('/'));
  const attack=aggregateAttack(input.attackComponents,[{id:'meal',value:meal,source:rules.buffEvidence,status:'PROVISIONAL'},{id:'powercharm',value:charm,source:rules.buffEvidence,status:'PROVISIONAL'}]);
- const hits=record.hits.map(h=>{const physical=h.mv/100*(attack.multipliedBase*(h.artilleryTarget?am:1)+attack.skillFlat+attack.externalFlat);const fireValue=h.fireSkillTarget?h.fireAttack*fm+ff:h.fireAttack;const element=fireValue/rules.displayElementDivisor*input.fireHitzone/100;return {mv:h.mv,p:physical,e:element,total:physical+element,component:'RAW_AND_FIRE',criticalState:'NO_CRITICAL',artilleryTarget:h.artilleryTarget,fireSkillTarget:h.fireSkillTarget};});
- return {total:hits.reduce((n,h)=>n+h.total,0),hits,displayHits:hits.map(h=>Math.round((h.total+Number.EPSILON)*10)/10),attackComponents:attack,verificationStatus:'PROVISIONAL',adoptionStatus:'PROVISIONAL',evidenceRefs:record.evidenceRefs,scope:'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',gameVersion:rules.gameVersion};
+ if(typeof root.BowgunNormalReference?.shotSkillBonuses!=='function')throw Error('HBG_WYVERN:SHOT_RESOLVER_UNAVAILABLE');
+ const shotSkills=root.BowgunNormalReference.shotSkillBonuses(input,input,rules.shotSkills);
+ const ballisticsLevel=input.ballisticsLevel??0,ballisticsRule=root.MHCommonSkillDamageRules?.ballistics;
+ if(!Number.isInteger(ballisticsLevel)||ballisticsLevel<0||ballisticsLevel>3)throw Error('HBG_WYVERN:BALLISTICS_LEVEL_INVALID');
+ if(ballisticsLevel===3&&(rules.ballisticsAdoption?.status!=='OWNER_APPROVED_PROVISIONAL'||input.range!=='CRITICAL'))throw Error('HBG_WYVERN:BALLISTICS_EXPLICIT_CRITICAL_RANGE_REQUIRED');
+ const ballisticsAttackAdd=ballisticsLevel===3?ballisticsRule?.criticalRangeAttackAdds?.[ballisticsLevel]:0;
+ if(!finite(ballisticsAttackAdd))throw Error('HBG_WYVERN:BALLISTICS_RULE_UNRESOLVED');
+ const hits=record.hits.map(h=>{const physical=h.mv/100*(attack.multipliedBase*(h.artilleryTarget?am:1)+attack.skillFlat+attack.externalFlat+shotSkills.shotAttackAdd+ballisticsAttackAdd);const fireValue=h.fireSkillTarget?h.fireAttack*fm*shotSkills.shotElementMultiplier+ff:h.fireAttack;const element=fireValue/rules.displayElementDivisor*input.fireHitzone/100;return {fireValue,mv:h.mv,p:physical,e:element,total:physical+element,component:'RAW_AND_FIRE',criticalState:'NO_CRITICAL',artilleryTarget:h.artilleryTarget,fireSkillTarget:h.fireSkillTarget};});
+ return {ballisticsAttackAdd,ballisticsRange:input.range??null,ballisticsAdoption:ballisticsLevel===3?rules.ballisticsAdoption:null,shotSkills,shotOrderAdoption:rules.shotOrderAdoption,total:hits.reduce((n,h)=>n+h.total,0),hits,displayHits:hits.map(h=>Math.round((h.total+Number.EPSILON)*10)/10),attackComponents:attack,verificationStatus:'PROVISIONAL',adoptionStatus:'PROVISIONAL',evidenceRefs:record.evidenceRefs,scope:'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',gameVersion:rules.gameVersion};
 }
 root.CombatAttackAggregation=Object.freeze({aggregate:aggregateAttack});root.HBGWyvernReference=Object.freeze({calculate});
 })(typeof window==='undefined'?globalThis:window);

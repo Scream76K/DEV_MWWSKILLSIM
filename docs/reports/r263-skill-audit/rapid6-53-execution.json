@@ -1,0 +1,118 @@
+{
+  "status": "LOCAL_MINIMAL_PASS_REVIEW_PENDING",
+  "approval": "Sentinel_9421e719eda08191818a70a24efe9c2f",
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/rapid6-53-proof.cjs",
+  "runs": [
+    {
+      "output": "rapid6-53-before.json",
+      "exitCode": 1,
+      "reason": "Harness initially asserted new trace field on unchanged baseline; corrected optional baseline trace assertion"
+    },
+    {
+      "output": "rapid6-53-before-gate.json",
+      "exitCode": 1,
+      "reason": "Expected public SKILL_COMBINATION_NOT_ADOPTED"
+    },
+    {
+      "output": "rapid6-53-after.json",
+      "exitCode": 0
+    }
+  ],
+  "sourceHashes": {
+    "index.html": "7ead32d5d4a1793b0dc4eb07862d8fe1027431e277b3b9f289ea7597efebedcb",
+    "hope-hammer-browser-adapter.js": "038ce772383cc73d856d50cd94dcb1bec6851aa7321e8787725fb492f4d1f90d",
+    "bowgun-normal-reference.js": "2b3e9d56e166c9bd73daebda526e92511069b7b427bdb5e413ab67dd8b0ed089",
+    "./tools/rapid6-53-proof.cjs": "8b7720b46e69ebac279d47a0915203c193fc19edbbdcf51aa7c939ae456b71ed"
+  },
+  "patchSHA256": "2f3ccab6f983a6151e471c997784a50f91a26dcfc0934870b191c7afe76a1f24",
+  "results": [
+    {
+      "case": "rapid",
+      "totals": {
+        "normal": {
+          "status": "available",
+          "value": 52.56146700000001
+        },
+        "maximum": {
+          "status": "available",
+          "value": 55.0102371
+        }
+      },
+      "reason": null
+    },
+    {
+      "case": "normalUp",
+      "totals": {
+        "normal": {
+          "status": "available",
+          "value": 55.18954035000001
+        },
+        "maximum": {
+          "status": "available",
+          "value": 57.760748955
+        }
+      },
+      "reason": null
+    },
+    {
+      "case": "b1",
+      "totals": {
+        "normal": {
+          "status": "available",
+          "value": 55.18954035000001
+        },
+        "maximum": {
+          "status": "available",
+          "value": 57.760748955
+        }
+      },
+      "reason": null
+    },
+    {
+      "case": "b2",
+      "totals": {
+        "normal": {
+          "status": "available",
+          "value": 55.18954035000001
+        },
+        "maximum": {
+          "status": "available",
+          "value": 57.760748955
+        }
+      },
+      "reason": null
+    },
+    {
+      "case": "b3",
+      "totals": {
+        "normal": {
+          "status": "available",
+          "value": 57.8790891
+        },
+        "maximum": {
+          "status": "available",
+          "value": 60.469977330000006
+        }
+      },
+      "reason": null
+    },
+    {
+      "case": "normal-invalid",
+      "totals": {},
+      "reason": "LBG_RAPID:COEXISTING_SKILL_CONTRACT_INVALID"
+    },
+    {
+      "case": "ballistics-invalid",
+      "totals": {},
+      "reason": "LBG_RAPID:COEXISTING_SKILL_CONTRACT_INVALID"
+    },
+    {
+      "case": "twoSavedComparison",
+      "totals": {},
+      "reason": null
+    }
+  ],
+  "F01": "Engine, event adapter and bundle unchanged. Prior rapid23 proof is prior source hash evidence, not current full regression. Current cases assert 5 components/consumption once.",
+  "scope": "Synthetic JSDOM public calcBuild; no actual equipment legality or live gameplay verification",
+  "saveComparison": "Two saved builds normalUp/b3, normal restore/shared comparison/current restoration equality"
+}

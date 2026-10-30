@@ -59,5 +59,17 @@
  }
  function standard(o,engine,ids){if(!Array.isArray(ids)||ids.length!==3)throw Error('BOW_REFERENCE:TECHNIQUE_DB_REQUIRED');return calculate(o,engine,ids);}
  function technique(o,engine,id){return calculate(o,engine,[id]);}
- const api=Object.freeze({standard,technique});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowReference=api;
+ function thousandDragons(o,engine){
+  const record=engine.get('bow','BOW_THOUSAND_DRAGONS'),r=record?.sourceFormula;
+  if(r?.scope!=='THOUSAND_DRAGONS_SINGLE_SHOT_HP_REFERENCE'||r.status!=='OWNER_APPROVED_PROVISIONAL'||!Array.isArray(record.hits)||!record.hits.length)throw Error('BOW_THOUSAND:SOURCE_REQUIRED');
+  if(o.state?.range!=='CRITICAL'||o.state?.coating!=='NONE'||o.state?.guided===true||o.element!==0)throw Error('BOW_THOUSAND:STATE_NOT_ADOPTED');
+  const level=o.specialAmmoLevel;if(!Number.isInteger(level)||!Object.hasOwn(r.specialAmmoMultipliers,level))throw Error('BOW_THOUSAND:SKILL_LEVEL_INVALID');
+  const pierceLevel=o.pierceUpLevel??0;if(!Number.isInteger(pierceLevel)||![0,r.pierceUp?.level].includes(pierceLevel))throw Error('BOW_THOUSAND:PIERCE_SKILL_LEVEL_INVALID');
+  const pierceMultiplier=pierceLevel?r.pierceUp.multiplier:1;
+  const attack=valid(o.attack,0,10000),affinity=valid(o.affinity,-100,100),critical=valid(o.criticalMultiplier,1,2),hz=valid(o.physicalHitzone,0,100);
+  const expectation=affinity>=0?1+affinity/100*(critical-1):1+affinity/100*.25;
+  const trace=record.hits.map((h,hitIndex)=>({hitIndex,mv:h.mv,attack,affinity,criticalExpectation:expectation,physical:attack*valid(h.mv,0,10000)/100*hz/100*expectation*r.shotPhysical*r.rangePhysical*r.coatingPhysical*r.specialAmmoMultipliers[level]*pierceMultiplier,element:0}));
+  return {total:trace.reduce((n,h)=>n+h.physical,0),trace,shotCount:1,hitCount:record.hits.length,physicalShotMultiplier:r.shotPhysical,rangeMultiplier:r.rangePhysical,specialAmmoMultiplier:r.specialAmmoMultipliers[level],pierceUpMultiplier:pierceMultiplier,scope:r.scope,adoption:r,chargeLevelApplied:false,partDamageCalculated:false,liveGameVerification:'PENDING'};
+ }
+ const api=Object.freeze({standard,technique,thousandDragons});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowReference=api;
 })(typeof window!=='undefined'?window:globalThis);

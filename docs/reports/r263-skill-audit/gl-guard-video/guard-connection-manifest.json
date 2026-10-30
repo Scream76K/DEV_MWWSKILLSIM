@@ -1,0 +1,57 @@
+{
+  "productHashes": {
+    "index.html": "3cd44d8fae5ea4411c2869fd2c06acc74f9a8f310a3b813341235de0ea546863",
+    "hope-hammer-browser-adapter.js": "c97418cba1b983ba450f356fa96478c8d2ae0ff0218e0a9e62cc973c1c063597",
+    "gunlance-shell-reference.js": "3e13e44cc4f6d00f68e7e8582fe0d2a8b661e755e4a640a214c92aee8e2a9015"
+  },
+  "commands": [
+    {
+      "command": "node tools/gl-guard-connection-proof.cjs before",
+      "exit": 0,
+      "stdout": "connection-high-before.json",
+      "scope": "pre-edit source snapshots; initial harness version"
+    },
+    {
+      "command": "node tools/gl-guard-connection-proof.cjs after",
+      "exit": 0,
+      "stdout": "connection-after-pass.json",
+      "stderr": "connection-after-pass.stderr",
+      "scope": "final product, 7 contract cases and 1 saved build vs current comparison"
+    },
+    {
+      "command": "node tools/gl-guard-medium-boundary-proof.cjs",
+      "exit": 0,
+      "stdout": "connection-medium-pass.json",
+      "stderr": "connection-medium-pass.stderr"
+    }
+  ],
+  "intermediateFailures": [
+    "connection-after.stderr: alias ID validation rejected existing English name; fixed null-ID legacy alias handling; non-null wrong ID remains rejected",
+    "connection-after-final.stderr and connection-after-verified.stderr: four synthetic custom skills exceeded existing saved charm limit; save case reduced to two skills, no save-product changes",
+    "connection-after-accepted.stderr: savedAt timestamp-only comparison; existing comparable snapshot used",
+    "connection-medium.stderr: assertion confused execution complete with metric availability; corrected to require unavailable total and exact guard reason, no product change"
+  ],
+  "equipmentEvidence": {
+    "api": "https://wilds.mhdb.io/ja/weapons?q={\"kind\":\"gunlance\"}",
+    "retrievedUTC": "2026-10-30T00:46:38.678027+00:00",
+    "saved": "mhdb-gunlance-350.json",
+    "id": 350,
+    "gameId": 36,
+    "shell": "wide",
+    "shellLevel": 3,
+    "name": "Alras Rook I",
+    "sourcePair": "docs/reports/gl-applicability-audit/REPORT.md; https://kuroyonhon.com/mhwilds/buki/gannsu.php",
+    "videoWeaponIdentified": false,
+    "sha256": "0491e9435d63b263053fbe533afb6b128634a02dbd427162797cfb776695bfd1"
+  },
+  "scope": "OWNER_APPROVED_PROVISIONAL normal/charged only. No live-game order verification; synthetic custom skill configurations, not full equipment legality. No F01 engine changes or beta regression.",
+  "beforeHashes": {
+    "index.html": "7ead32d5d4a1793b0dc4eb07862d8fe1027431e277b3b9f289ea7597efebedcb",
+    "hope-hammer-browser-adapter.js": "ca524a5d00bc0647850059c2d6889dd5016c07b66780a1b19238ce101db3e588",
+    "gunlance-shell-reference.js": "ff908bb14ba5eef81b123b059eb0ad1860f1158a34363e927ea04e7fb9fbe5ab"
+  },
+  "proofHashes": {
+    "tools/gl-guard-connection-proof.cjs": "c91f6b00732e1f5053e13c4d4176a2ba05b89f4c2dbc313990a779e97f53fdbe",
+    "tools/gl-guard-medium-boundary-proof.cjs": "402d3e8c324f1ef4ac09b566b555faf84e8065d44791dedc62fbd9821fc42716"
+  }
+}

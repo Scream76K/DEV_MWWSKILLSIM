@@ -1,0 +1,16 @@
+{"off":"UNAVAILABLE","on":{"status":"UNAVAILABLE","reason":"allSkills is not defined"}}
+./tools/bludgeoner-owner-exclusion-proof.cjs:23
+ for(const ch of ['normal','maximum']){assert.equal(on.result.channels[ch].metrics.comboTotalDamage.status,'available');assert.deepEqual(on.result.channels[ch].metrics,off.result.channels[ch].metrics);assert.deepEqual(on.result.channels[ch].components,off.result.channels[ch].components);assert.equal(on.result.channels[ch].diagnostics.excludedCalculationSkills[0].skillId,85);}
+                                                                      ^
+
+TypeError: Cannot read properties of undefined (reading 'normal')
+    at Object.<anonymous> (./tools/bludgeoner-owner-exclusion-proof.cjs:23:71)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+
+Node.js v24.22.1

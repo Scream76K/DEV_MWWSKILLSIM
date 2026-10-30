@@ -1,0 +1,1907 @@
+{
+  "mode": "before",
+  "cases": [
+    {
+      "label": "off",
+      "result": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 103,
+            "gameId": 25,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/103",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-15\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-15\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-15\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "incomplete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [],
+              "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+            },
+            "components": [],
+            "issues": [
+              {
+                "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+              }
+            ],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "incomplete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [],
+              "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+            },
+            "components": [],
+            "issues": [
+              {
+                "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+              }
+            ],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              }
+            }
+          }
+        }
+      },
+      "snapshot": {
+        "version": "7.2.2-template-rootfix-r7",
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "103",
+        "weaponKind": "charge-blade",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "抜刀術【力】",
+              "level": 3
+            },
+            {
+              "name": "挑戦者",
+              "level": 1
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "element",
+          "element": "fire",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "elementParts": 0,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "canonical:CB_SAED"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "explicitAffinityState": {
+            "absorbedElement": null,
+            "selfSkillState": null,
+            "wetState": {
+              "normal": null,
+              "maximum": null
+            },
+            "criticalDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "punishingDrawHits": {
+              "normal": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "maximum": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            "festivalId": null
+          },
+          "hbgReferenceState": {
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "elementType": null,
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "attributeConversionState": {
+            "normal": null,
+            "maximum": null
+          },
+          "blackEclipseState": null,
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": true,
+            "axeBoosted": false,
+            "phialType": "POWER_ELEMENT",
+            "enhancedPhial": true,
+            "previousAction": null,
+            "enhancedPhials": null,
+            "normalPhials": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        },
+        "savedAt": "2026-10-29T06:14:44.006Z"
+      },
+      "conditions": {
+        "absorbedElement": null,
+        "selfSkillState": null,
+        "wetState": {
+          "normal": null,
+          "maximum": null
+        },
+        "criticalDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "punishingDrawHits": {
+          "normal": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          },
+          "maximum": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          }
+        },
+        "festivalId": null,
+        "blackEclipseState": null,
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "attack": "190",
+        "aff": "-12",
+        "elem": "260",
+        "mv": "100",
+        "hz": "60",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "elementType": null,
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": true,
+          "axeBoosted": false,
+          "phialType": "POWER_ELEMENT",
+          "enhancedPhial": true,
+          "previousAction": null,
+          "enhancedPhials": null,
+          "normalPhials": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "attributeConversionState": {
+          "normal": null,
+          "maximum": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      }
+    },
+    {
+      "label": "active",
+      "result": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 103,
+            "gameId": 25,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/103",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "incomplete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [],
+              "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+            },
+            "components": [],
+            "issues": [
+              {
+                "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+              }
+            ],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "incomplete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [],
+              "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+            },
+            "components": [],
+            "issues": [
+              {
+                "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+              }
+            ],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              }
+            }
+          }
+        }
+      },
+      "snapshot": {
+        "version": "7.2.2-template-rootfix-r7",
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "103",
+        "weaponKind": "charge-blade",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "抜刀術【力】",
+              "level": 3
+            },
+            {
+              "name": "挑戦者",
+              "level": 1
+            },
+            {
+              "name": "心眼",
+              "level": 3
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "element",
+          "element": "fire",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "elementParts": 0,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "canonical:CB_SAED"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "explicitAffinityState": {
+            "absorbedElement": null,
+            "selfSkillState": null,
+            "wetState": {
+              "normal": null,
+              "maximum": null
+            },
+            "criticalDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "punishingDrawHits": {
+              "normal": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "maximum": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            "festivalId": null
+          },
+          "hbgReferenceState": {
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "elementType": null,
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "attributeConversionState": {
+            "normal": null,
+            "maximum": null
+          },
+          "blackEclipseState": null,
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": true,
+            "axeBoosted": false,
+            "phialType": "POWER_ELEMENT",
+            "enhancedPhial": true,
+            "previousAction": null,
+            "enhancedPhials": null,
+            "normalPhials": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        },
+        "savedAt": "2026-10-29T06:14:44.010Z"
+      },
+      "conditions": {
+        "absorbedElement": null,
+        "selfSkillState": null,
+        "wetState": {
+          "normal": null,
+          "maximum": null
+        },
+        "criticalDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "punishingDrawHits": {
+          "normal": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          },
+          "maximum": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          }
+        },
+        "festivalId": null,
+        "blackEclipseState": null,
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "attack": "190",
+        "aff": "-12",
+        "elem": "260",
+        "mv": "100",
+        "hz": "60",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "elementType": null,
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": true,
+          "axeBoosted": false,
+          "phialType": "POWER_ELEMENT",
+          "enhancedPhial": true,
+          "previousAction": null,
+          "enhancedPhials": null,
+          "normalPhials": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "attributeConversionState": {
+          "normal": null,
+          "maximum": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      }
+    },
+    {
+      "label": "inactive",
+      "result": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 103,
+            "gameId": 25,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/103",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "incomplete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [],
+              "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+            },
+            "components": [],
+            "issues": [
+              {
+                "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+              }
+            ],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "incomplete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [],
+              "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+            },
+            "components": [],
+            "issues": [
+              {
+                "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+              }
+            ],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              }
+            }
+          }
+        }
+      },
+      "snapshot": {
+        "version": "7.2.2-template-rootfix-r7",
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "103",
+        "weaponKind": "charge-blade",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "抜刀術【力】",
+              "level": 3
+            },
+            {
+              "name": "挑戦者",
+              "level": 1
+            },
+            {
+              "name": "心眼",
+              "level": 3
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "element",
+          "element": "fire",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "elementParts": 0,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "canonical:CB_SAED"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "explicitAffinityState": {
+            "absorbedElement": null,
+            "selfSkillState": null,
+            "wetState": {
+              "normal": null,
+              "maximum": null
+            },
+            "criticalDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "punishingDrawHits": {
+              "normal": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "maximum": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            "festivalId": null
+          },
+          "hbgReferenceState": {
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "elementType": null,
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "attributeConversionState": {
+            "normal": null,
+            "maximum": null
+          },
+          "blackEclipseState": null,
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": true,
+            "axeBoosted": false,
+            "phialType": "POWER_ELEMENT",
+            "enhancedPhial": true,
+            "previousAction": null,
+            "enhancedPhials": null,
+            "normalPhials": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        },
+        "savedAt": "2026-10-29T06:14:44.013Z"
+      },
+      "conditions": {
+        "absorbedElement": null,
+        "selfSkillState": null,
+        "wetState": {
+          "normal": null,
+          "maximum": null
+        },
+        "criticalDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "punishingDrawHits": {
+          "normal": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          },
+          "maximum": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          }
+        },
+        "festivalId": null,
+        "blackEclipseState": null,
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "attack": "190",
+        "aff": "-12",
+        "elem": "260",
+        "mv": "100",
+        "hz": "60",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "elementType": null,
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": true,
+          "axeBoosted": false,
+          "phialType": "POWER_ELEMENT",
+          "enhancedPhial": true,
+          "previousAction": null,
+          "enhancedPhials": null,
+          "normalPhials": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "attributeConversionState": {
+          "normal": null,
+          "maximum": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      }
+    },
+    {
+      "label": "missing",
+      "result": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 103,
+            "gameId": 25,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/103",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "incomplete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [],
+              "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+            },
+            "components": [],
+            "issues": [
+              {
+                "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+              }
+            ],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "incomplete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [],
+              "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+            },
+            "components": [],
+            "issues": [
+              {
+                "reason": "REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:散弾・剛射強化"
+              }
+            ],
+            "finalState": {},
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "EXECUTION_INCOMPLETE"
+              }
+            }
+          }
+        }
+      },
+      "snapshot": {
+        "version": "7.2.2-template-rootfix-r7",
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "103",
+        "weaponKind": "charge-blade",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "抜刀術【力】",
+              "level": 3
+            },
+            {
+              "name": "挑戦者",
+              "level": 1
+            },
+            {
+              "name": "心眼",
+              "level": 3
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "element",
+          "element": "fire",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "elementParts": 0,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "canonical:CB_SAED"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "explicitAffinityState": {
+            "absorbedElement": null,
+            "selfSkillState": null,
+            "wetState": {
+              "normal": null,
+              "maximum": null
+            },
+            "criticalDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "punishingDrawHits": {
+              "normal": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "maximum": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            "festivalId": null
+          },
+          "hbgReferenceState": {
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "elementType": null,
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "attributeConversionState": {
+            "normal": null,
+            "maximum": null
+          },
+          "blackEclipseState": null,
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": true,
+            "axeBoosted": false,
+            "phialType": "POWER_ELEMENT",
+            "enhancedPhial": true,
+            "previousAction": null,
+            "enhancedPhials": null,
+            "normalPhials": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        },
+        "savedAt": "2026-10-29T06:14:44.017Z"
+      },
+      "conditions": {
+        "absorbedElement": null,
+        "selfSkillState": null,
+        "wetState": {
+          "normal": null,
+          "maximum": null
+        },
+        "criticalDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "punishingDrawHits": {
+          "normal": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          },
+          "maximum": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          }
+        },
+        "festivalId": null,
+        "blackEclipseState": null,
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "attack": "190",
+        "aff": "-12",
+        "elem": "260",
+        "mv": "100",
+        "hz": "60",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "elementType": null,
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": true,
+          "axeBoosted": false,
+          "phialType": "POWER_ELEMENT",
+          "enhancedPhial": true,
+          "previousAction": null,
+          "enhancedPhials": null,
+          "normalPhials": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "attributeConversionState": {
+          "normal": null,
+          "maximum": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      }
+    }
+  ],
+  "scope": "Synthetic CB103 weapon Attack5 and charm Punishing3/Agitator1/MindsEye3; original44/current60 wounded. Public calcBuild JSDOM; not game/equipment validation.",
+  "hashes": {
+    "index.html": "7c4d1c30ed5ffc470bd9f17a87fd706b99efa837244b343dfcb34b36520d6c75",
+    "hope-hammer-browser-adapter.js": "7c7dc4216253244059ed35ff726f2287105ee836c460557cde01ac2465f4f3ee",
+    "./tools/saed-mindseye-proof.cjs": "c1370e7a9616fbf08ad11da0e5d6240f21b9199feab53a8d55e8e93939379015"
+  }
+}

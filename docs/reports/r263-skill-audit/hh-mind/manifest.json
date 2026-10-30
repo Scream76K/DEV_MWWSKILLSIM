@@ -1,0 +1,38 @@
+{
+  "status": "LOCAL_REVIEW_PENDING",
+  "hashes": {
+    "index.html": "c7ae95528915ccc764deb81ea70df378a51564f065d45af08aef630b449ef593",
+    "hope-hammer-browser-adapter.js": "e784f6072d844ffc0a034c9d87b2d806bfd9427e00ae8c689214574ea6df2c7e",
+    "./tools/hh-mind-proof.cjs": "d2e5442c9cc9ac0438245a8d5808eda740f0e14b96ca24e00da0915f1001dc9d"
+  },
+  "commands": [
+    {
+      "command": "node tools/hh-mind-proof.cjs before",
+      "exit": 1,
+      "stderr": "before.stderr",
+      "reason": "expected special guard but actual original-hitzone guard"
+    },
+    {
+      "command": "node tools/hh-mind-proof.cjs before",
+      "exit": 1,
+      "stderr": "before-diagnosis.stderr"
+    },
+    {
+      "command": "node tools/hh-mind-proof.cjs before",
+      "exit": 0,
+      "stdout": "before.json",
+      "stderr": "before-corrected.stderr"
+    },
+    {
+      "command": "node tools/hh-mind-proof.cjs after",
+      "exit": 1,
+      "stderr": "after-identity-failure.stderr"
+    },
+    {
+      "command": "node tools/hh-mind-proof.cjs after",
+      "exit": 0,
+      "stdout": "after.json",
+      "stderr": "after.stderr"
+    }
+  ]
+}

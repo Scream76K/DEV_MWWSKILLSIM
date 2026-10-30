@@ -1,0 +1,61 @@
+{
+  "status": "LOCAL_REVIEW_PENDING",
+  "classification": "unchanged80complete4partial; ID7notpromoted",
+  "commands": [
+    {
+      "command": "node tools/saed-guard-rapid-proof.cjs before",
+      "stdout": "before.json",
+      "stderr": "before.stderr",
+      "exit": 1,
+      "note": "expected inner guard but outer existing technique guard rejected first"
+    },
+    {
+      "command": "node tools/saed-guard-rapid-proof.cjs before",
+      "stdout": "before2.json",
+      "stderr": "before2.stderr",
+      "exit": 1,
+      "note": "diagnostic confirmed outer guard"
+    },
+    {
+      "command": "node tools/saed-guard-rapid-proof.cjs before",
+      "stdout": "before-final.json",
+      "stderr": "before-final.stderr",
+      "exit": 0,
+      "note": "outer rejection demonstrated"
+    },
+    {
+      "command": "node tools/saed-guard-rapid-proof.cjs after",
+      "stdout": "after.json",
+      "stderr": "after.stderr",
+      "exit": 1,
+      "note": "positive and saves passed; derived remains outer technique guard, not inner guard; assertion corrected to actual preserved boundary"
+    },
+    {
+      "command": "node tools/saed-guard-rapid-proof.cjs after",
+      "stdout": "final.json",
+      "stderr": "final.stderr",
+      "exit": 0
+    }
+  ],
+  "sha256": {
+    "index.html": "c8d94ca420a63d877dd0bbed59c919fe18ee560e579c9d9c5235ad9cd7d125ef",
+    "hope-hammer-browser-adapter.js": "a4b5055ea7c8fdde6caa1504e05883a14710eea3f28b574277b58bb965f4a261",
+    "tools/saed-guard-rapid-proof.cjs": "f1f54844c1a654eee648fa5b5612e28fc1aa90fb8f406fe529611a1f2b3ef208"
+  },
+  "artifactsSha256": {
+    "before.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "after.stderr": "f64eb59639a86bbf05379a0ef2966c47ce388ba55ca52dc120b31a8dbb905a9f",
+    "before-adapter.js": "98c5c58d38009c42141dc4731ac2bf8556ba3b56bd271990217aa3728bd93c7b",
+    "before2.stderr": "5b145f56d4f19f6d97174143ef05234afadb861d5e3c4ff1577721d22a3c7eed",
+    "before-index.html": "7099f129b6c3ac25dd6c6c761549ac5f7f3cfcf6b3f63e98d650836a78502b66",
+    "connection.patch": "14f031d064d8212d46fce336482baef5d0f9a14203006d6fd82d391aa9c50f42",
+    "REPORT.md": "ced18bb8cd1aea7f90a69dbcf904092f28ddaf8f26f919e9d90a65f2e5f7adc0",
+    "before2.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "after.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "before.stderr": "3c1ccdd5f492954c47c9daae76fad64c3a4276a876bcdc2c048f0a5f56cb34a9",
+    "final.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "final.json": "5a136174556468093da561bb535032387fd488cd9c6509ac5ab62531df99d449",
+    "before-final.json": "145c880f75824c35ebfcb89fd944d068275a977a37e32e874e5e2043d7cf08a1",
+    "before-final.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

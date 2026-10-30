@@ -1,0 +1,59 @@
+{
+  "status": "LOCAL_REVIEW_PENDING",
+  "counts": {
+    "火力非対象": 88,
+    "完全接続": 80,
+    "部分接続": 2,
+    "ユーザー指定対象外": 3,
+    "固定ダメージ系・注釈のみ": 6
+  },
+  "denominator": 82,
+  "commands": [
+    {
+      "command": "node tools/draw-owner-exclusion-proof.cjs before",
+      "stdout": "before.json",
+      "stderr": "before.stderr",
+      "exit": 0
+    },
+    {
+      "command": "node tools/draw-owner-exclusion-proof.cjs after",
+      "stdout": "after.json",
+      "stderr": "after.stderr",
+      "exit": 1,
+      "reason": "synthetic4skill charm truncated by existing3slot save contract; fixture Attack5 moved to weapon; no product change"
+    },
+    {
+      "command": "node tools/draw-owner-exclusion-proof.cjs after",
+      "stdout": "final.json",
+      "stderr": "final.stderr",
+      "exit": 0
+    },
+    {
+      "command": "node tools/draw-owner-body-proof.cjs",
+      "stdout": "body.json",
+      "stderr": "body.stderr",
+      "exit": 0
+    }
+  ],
+  "sha256": {
+    "index.html": "dfb0e9fb9bc1c1b39d5051c9dc50869b255d12040a5a8ce75b1ecefa57357733",
+    "hope-hammer-browser-adapter.js": "a4b5055ea7c8fdde6caa1504e05883a14710eea3f28b574277b58bb965f4a261",
+    "tools/draw-owner-exclusion-proof.cjs": "4d0c3c0938f414fe6570e692054fad301a41e0a56157b007912291d610b106fb",
+    "tools/draw-owner-body-proof.cjs": "94dafcbb7b665b0f8b6077ee093531c93181db832660f6ab7119a14f1c6290b1",
+    "docs/reports/r263-skill-audit/skill-matrix.json": "9f9c2a101ac6c3469a6104d0f49794804c2d4a82de79163644e8198c3d8a713d"
+  },
+  "artifactsSha256": {
+    "before.json": "e0f71c3a105cab454ef70cafd781559f3df3c122d06ae1ac7ff4bd98264859b0",
+    "after.stderr": "5a405d9a08d9e5213c462f2872c9ef05e5340b98591fddd61004f09d5913d9bd",
+    "before-adapter.js": "a4b5055ea7c8fdde6caa1504e05883a14710eea3f28b574277b58bb965f4a261",
+    "before-index.html": "020b50e1dc8547ad7d2fcd589649e038d22d0ec00db4f43e9da65818f298f8e7",
+    "connection.patch": "3a73622c7f9c87472523867071674efd5c94f1c6ba4d985a4ccee47e64284cb8",
+    "REPORT.md": "d77df4e66876bd68351a6bbe94ea9e14ad79dc35db1899bd0fa15fddfa42b181",
+    "after.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "final.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "body.json": "e3ddea2e3241a1bc5bd9f34665edb2eb63192d88c804f57e4ec3bbaa2c9bbd07",
+    "final.json": "8004f6390401be418f1df13cd507cee5fd556d970748ec0692fd7cb1d4f7fc6d",
+    "body.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

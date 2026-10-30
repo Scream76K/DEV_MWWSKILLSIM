@@ -1,0 +1,152 @@
+{
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/conversion-rank-one-proof.cjs <before|after>",
+  "scope": "Synthetic GS rankI/II34+165 and167+152; no legal equipment/live-game validation",
+  "before": {
+    "exitCode": 0,
+    "chunk": "546e10",
+    "raw": "conversion-rank-one-before.raw.json",
+    "hashes": {
+      "index.html": "0dcfac03ec4bddf7845c2875d7ef8f2448d033228469ba188e7c10968c647cd9",
+      "hope-hammer-browser-adapter.js": "a1ae41b04e491368abb2cbf596799d8f12e5c28b08dc8a3f18103fd4459a20db",
+      "./tools/conversion-rank-one-proof.cjs": "c99f270082f2448ca754a789ec98f18a8402d772e0e5647fe566be6794a6f1cb"
+    },
+    "note": "Original harness before diagnostic/fixture corrections; rankI refusal and rankII available preserved"
+  },
+  "after": {
+    "exitCode": 0,
+    "chunk": "afbe1c",
+    "raw": "conversion-rank-one-after.raw.json",
+    "hashes": {
+      "index.html": "363a63edce9e401787211aebd5993f5d62d3e44bc882e52a3f2c94fbb41afbcc",
+      "hope-hammer-browser-adapter.js": "32b764e672f007834fcea88875aab60fa9b928eabe340af13c44f22b2b23ed17",
+      "./tools/conversion-rank-one-proof.cjs": "b9252cff5e23c22c8c560f57e61b275af8710f709f862ed6fd29e8dc82a05d75"
+    }
+  },
+  "priorFailures": [
+    {
+      "exitCode": 1,
+      "chunk": "fa940a",
+      "reason": "Assert used pre-adapter conditionPlan.maximum.attackTrue; unresolved conversion diagnostic leaves null although public result is complete",
+      "stderr": "conversion-rank-one-initial-assert.stderr.txt"
+    },
+    {
+      "exitCode": 1,
+      "chunk": "d8979a",
+      "reason": "Diagnostic assertion retained full pre-adapter stats; product unchanged",
+      "stderr": "conversion-rank-one-diagnostic-assert.stderr.txt"
+    },
+    {
+      "exitCode": 1,
+      "chunk": "b81d77",
+      "reason": "Fixture reused same armor IDs with different series; saved lookup changed. Replaced by separate stable IDs, product unchanged",
+      "stderr": "conversion-rank-one-fixture-identity.stderr.txt"
+    }
+  ],
+  "summary": [
+    {
+      "case": "festival-I",
+      "normal": 1154.01,
+      "maximum": 1154.01,
+      "elements": {
+        "normal": [
+          550,
+          550,
+          550
+        ],
+        "maximum": [
+          550,
+          550,
+          550
+        ]
+      }
+    },
+    {
+      "case": "seregios-I",
+      "normal": 1144.54,
+      "maximum": 1231.18,
+      "elements": {
+        "normal": [
+          500,
+          500,
+          500
+        ],
+        "maximum": [
+          680,
+          680,
+          680
+        ]
+      }
+    },
+    {
+      "case": "festival-II",
+      "normal": 1248.49,
+      "maximum": 1248.49,
+      "elements": {
+        "normal": [
+          550,
+          550,
+          550
+        ],
+        "maximum": [
+          550,
+          550,
+          550
+        ]
+      }
+    },
+    {
+      "case": "seregios-II",
+      "normal": 1144.54,
+      "maximum": 1283.6599999999999,
+      "elements": {
+        "normal": [
+          500,
+          500,
+          500
+        ],
+        "maximum": [
+          680,
+          680,
+          680
+        ]
+      }
+    }
+  ],
+  "comparison": {
+    "normalLoadMatches": true,
+    "savedABMatches": true,
+    "sharedFestivalId": 34,
+    "activeUnchanged": true
+  },
+  "negative": {
+    "input": "valid adopted GS technique, rankI count1",
+    "reason": "REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED",
+    "unresolvedEffects": [
+      {
+        "id": "bonus:地の恵み【花舞】Ⅰ",
+        "reason": "BONUS_DAMAGE_EFFECT_PENDING:地の恵み【花舞】Ⅰ",
+        "target": "all",
+        "source": "index.html:standardGroupPowerPlan",
+        "activation": [
+          {
+            "name": "地の恵み【花舞】Ⅰ",
+            "level": 1,
+            "source": "series",
+            "displayType": "series",
+            "bonusName": "花舞の祈り",
+            "bonusSkillId": 34,
+            "rankLevel": 1,
+            "count": 1,
+            "required": 2
+          }
+        ]
+      }
+    ]
+  },
+  "limitations": [
+    "Other three festival IDs static only",
+    "No real equipment/Safari/game/CI",
+    "Before and final harness hashes differ; documented diagnostic and fixture corrections only",
+    "No classification promotion of152/165 pending independent review"
+  ]
+}

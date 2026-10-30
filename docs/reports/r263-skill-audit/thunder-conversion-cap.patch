@@ -1,0 +1,32 @@
+--- a/hope-hammer-browser-adapter.js
++++ b/hope-hammer-browser-adapter.js
+@@ -370,15 +370,16 @@
+   }
+ 
+   const resistanceConversionLevel=Math.max(...allSkills.filter(x=>x.skillKey==='resistanceConversionThunder').map(x=>x.level),0),resistanceInput=stats.thunderResistanceInput,thunderResistance=resistanceInput?.total,resistanceKinds={"great-sword":5,hammer:5,'hunting-horn':5,'light-bowgun':2,'heavy-bowgun':2},resistanceConversionCoefficient=resistanceKinds[weapon.kind]??4;
+-  let resistanceConversionAdd=0;
++  let resistanceConversionAdd=0,resistanceConversionCapLimit=null;
+   if(resistanceConversionLevel){
+    if(resistanceConversionLevel!==1)return fail('REAL_SLICE:THUNDER_RESISTANCE_CONVERSION_LEVEL_UNSUPPORTED');
+    if(elementType!=='thunder'||isReferenceOnly||isShellingOnly||weapon.kind==='switch-axe'||resolvedTechniqueIds.some(id=>(techniques[id]?.specialComponents?.length||root.ChargeBladeEngine?.techniques?.[id]?.phial)))return fail('REAL_SLICE:THUNDER_CONVERSION_BODY_SCOPE_UNSUPPORTED');
+    if(resistanceInput?.status!=='KNOWN_LIMITED')return fail('REAL_SLICE:THUNDER_RESISTANCE_UNRESOLVED:'+String(resistanceInput?.reason||'missing'));
+    resistanceConversionAdd=thunderResistance*resistanceConversionCoefficient;
+-   // Conservative eligibility bound only, NOT a new damage cap: below both documented pre/post1.04 caps.
+-   const candidate=elementValue+resistanceConversionAdd;
+-   if(!Number.isInteger(candidate)||candidate>=elementRawValue+350||activeBonusEffects.length||Number(stats.conditionalConditionPlan?.maximum?.element)!==Number(stats.element)||gsChargeActive)return fail('REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED');
++   // The adopted common engine caps this body element after the conversion flat.
++   const candidate=elementValue+resistanceConversionAdd,capRule=root.MHWElementCapRule;
++   if(!Number.isInteger(candidate)||capRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(capRule?.flat)||!Number.isFinite(capRule?.multiplier)||activeBonusEffects.length||Number(stats.conditionalConditionPlan?.maximum?.element)!==Number(stats.element)||gsChargeActive)return fail('REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED');
++   resistanceConversionCapLimit=Math.max(elementRawValue+capRule.flat,elementRawValue*capRule.multiplier);
+   }
+   if(elementSpecial && (!Number.isFinite(elementRawValue)||elementRawValue<0||!elementRule||stats.element!==elementValue||stats.elementType!==elementType))return fail('REAL_SLICE:CALCULATED_ELEMENT_NOT_PROVEN');
+   if(!elementSpecial && (!([0,null].includes(stats.element))||stats.elementType&&!['none',''].includes(String(stats.elementType))))return fail('REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN');
+@@ -629,7 +630,7 @@
+ if(gsChargeActive)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',chargeMasterAdoption:gsCharge};
+ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',artiaAdoption:weapon.artiaCalculationEvidence};
+    for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,armorThunderResistanceInput:equipment.armorThunderResistanceInput};
+-   if(resistanceConversionLevel)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',thunderResistanceConversion:{input:resistanceInput,baseElement:elementValue,effectiveElement:elementValue+resistanceConversionAdd,add:resistanceConversionAdd,source:'https://kuroyonhon.com/mhwilds/program/skill.php',eligibilitySource:'https://kuroyonhon.com/mhwilds/memo/31.php',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',verificationStatus:'UNVERIFIED',scope:'THUNDER_WEAPON_BODY_EQUIPMENT_ONLY_NO_FOOD_TEMPORARY_OR_AMMO'}};
++   if(resistanceConversionLevel)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',thunderResistanceConversion:{input:resistanceInput,baseElement:elementValue,effectiveElement:Math.min(elementValue+resistanceConversionAdd,resistanceConversionCapLimit),uncappedElement:elementValue+resistanceConversionAdd,capLimit:resistanceConversionCapLimit,add:resistanceConversionAdd,source:'https://kuroyonhon.com/mhwilds/program/skill.php',eligibilitySource:'https://kuroyonhon.com/mhwilds/memo/31.php',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',verificationStatus:'UNVERIFIED',scope:'THUNDER_WEAPON_BODY_EQUIPMENT_ONLY_NO_FOOD_TEMPORARY_OR_AMMO'}};
+    if(attributeConversionLevel)for(const [ch,result] of Object.entries(evaluated.channels||{})){result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',referenceOnly:true,referenceScope:attributeRule.scope,attributeConversion:{...attributeRule,active:attributeState?.[ch]??null,baseElement:elementValue,effectiveElement:typeof attributeState?.[ch]==='boolean'?elementValue+(attributeState[ch]?attributeRule.adds[attributeConversionLevel]:0):null,excludedComponents:['FIXED_FOLLOWUP','DRAGON_FOLLOWUP']}};if(result.metrics?.comboTotalDamage)result.metrics.comboTotalDamage.scope='BODY_ONLY_REFERENCE';}
+    return evaluated;}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
+  }

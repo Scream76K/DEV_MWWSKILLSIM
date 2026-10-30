@@ -1,0 +1,38 @@
+{
+  "status": "LOCAL_MINIMAL_PUBLIC_PIPELINE_PASS_REVIEW_PENDING",
+  "scope": "Synthetic GL315 green/clone white; public JSDOM calcBuild. Not game or equipment legality. Single GL_SLAM body Hit.",
+  "sourceHashes": {
+    "index.html": "a4ed6961ecf81056b80e55412d8105e08074d03043922a860f4fb766a5b08d96",
+    "hope-hammer-browser-adapter.js": "97925a700d3d4071657a855bc2a6ff6d24229cad10b9c54bdd5a6d272e8dd6bd"
+  },
+  "runs": [
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/bladescale163-proof.cjs before",
+      "exitCode": 0,
+      "raw": "bladescale163-before.json",
+      "stderr": "bladescale163-before.stderr"
+    },
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/bladescale163-proof.cjs after",
+      "exitCode": 0,
+      "raw": "bladescale163-after.json",
+      "stderr": "bladescale163-after.stderr"
+    }
+  ],
+  "harnessSHA256": "e7e2097d5900d1c286d87abc29d0a5e0347bbcca6c0ccee2077d4fd3df9039ac",
+  "artifacts": {
+    "bladescale163.patch": "ed125b88ea0ebe2f8b2089ff377b7db7ddd1df4421db14d8e90c186933901579",
+    "bladescale163-before.json": "670b33be9838e8934b181f35b37b50fe9a0be4be3f3dcd27a277b9f0170a9a2c",
+    "bladescale163-after.json": "27305afecf56206e17c3f915f8fcc13508ef5a68eb2c3cd9a28979fe2ef0a9b6"
+  },
+  "notExecuted": [
+    "other 13 allowed technique IDs",
+    "invalid Lv runtime",
+    "unknown technique runtime",
+    "multiHit standalone runtime",
+    "real equipment legality",
+    "live game",
+    "full regression"
+  ],
+  "comparison": "two saved synthetic builds green/white; normal load equality; shared comparison equality and restoration asserted"
+}

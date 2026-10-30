@@ -1,0 +1,33 @@
+--- before/index.html
++++ after/index.html
+@@ -7080,6 +7080,7 @@
+ window.MHFortifySource=STANDARD_FORTIFY_SOURCE;
+ window.MHNamedBonusFlatRules=Object.freeze({group:STANDARD_GROUP_POWER_RULES,series:STANDARD_SERIES_POWER_RULES});
+ const STANDARD_DARK_ARTS_BODY_SOURCE=techniqueDbDeepFreeze({url:'https://kuroyonhon.com/mhwilds/program/skill.php',retrievedAt:'2026-10-07',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',supportedKinds:['great-sword','long-sword','sword-and-shield','dual-blades','hammer','lance','switch-axe'],highMultiplierKinds:['great-sword','hammer','hunting-horn'],highMultiplier:1.2,otherMultiplier:1.14,scope:'GENERIC_BODY_WITH_GS_NORMAL_WAVE_BRIDGE'});
++window.MHDarkArtsBodySource=STANDARD_DARK_ARTS_BODY_SOURCE;
+ const STANDARD_SERIES_ACTIVATION_FLATS=techniqueDbDeepFreeze({
+  62:{parent:'凍峰竜の反逆',prefix:'束縛反攻',adds:[0,25,50],condition:'BIND_RELEASE_OR_CLASH_PREACTIVATED',status:'OWNER_APPROVED_PROVISIONAL'},
+  107:{parent:'雪獅子の闘志',prefix:'ウォークライ',adds:[0,3,6],condition:'SELF_WAR_CRY_PREACTIVATED',status:'OWNER_APPROVED_PROVISIONAL'},
+@@ -7166,7 +7167,7 @@
+     if(e?.name==='ダークアーツ'){
+       if(e.bonusName!=='暗黒騎士の証'||e.source!=='series'||e.required!==2||e.rankLevel!==1||e.bonusSkillId!==172||!Number.isInteger(e.count)||e.count<2||e.count>=4||seen.has(e.name)||!STANDARD_DARK_ARTS_BODY_SOURCE.supportedKinds.includes(kind)){unresolved.push('ダークアーツ');continue;}
+       seen.add(e.name);
+-      applied.push({skill:e.name,attackAdd:0,attackMultiplier:1,elementMultiplier:STANDARD_DARK_ARTS_BODY_SOURCE.highMultiplierKinds.includes(kind)?STANDARD_DARK_ARTS_BODY_SOURCE.highMultiplier:STANDARD_DARK_ARTS_BODY_SOURCE.otherMultiplier,condition:'RECOVERABLE_DAMAGE',exclusiveGroup:'HEALTH',bonusSource:true,appliesToNormal:false,evidenceRef:STANDARD_DARK_ARTS_BODY_SOURCE.url,numericOrigin:STANDARD_DARK_ARTS_BODY_SOURCE.status});
++      applied.push({skill:e.name,darkArtsActivation:{...e},attackAdd:0,attackMultiplier:1,elementMultiplier:STANDARD_DARK_ARTS_BODY_SOURCE.highMultiplierKinds.includes(kind)?STANDARD_DARK_ARTS_BODY_SOURCE.highMultiplier:STANDARD_DARK_ARTS_BODY_SOURCE.otherMultiplier,condition:'RECOVERABLE_DAMAGE',exclusiveGroup:'HEALTH',bonusSource:true,appliesToNormal:false,evidenceRef:STANDARD_DARK_ARTS_BODY_SOURCE.url,numericOrigin:STANDARD_DARK_ARTS_BODY_SOURCE.status});
+       continue;
+     }
+     const series=e&&Object.prototype.hasOwnProperty.call(STANDARD_SERIES_POWER_RULES,e.name),rule=series?STANDARD_SERIES_POWER_RULES[e.name]:(e&&Object.prototype.hasOwnProperty.call(STANDARD_GROUP_POWER_RULES,e.name)?STANDARD_GROUP_POWER_RULES[e.name]:null);
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -366,6 +366,11 @@
+   // Only adopted Guts/Veil/Omega/Black Eclipse or DB-defined series attack flats with a resolved, activation-checked plan may coexist here.
+   const conversionGroupPlan=stats.conditionalConditionPlan?.groupPlan,conversionSelfPlan=stats.conditionalConditionPlan?.selfStatePlan;
+   const conversionResistanceBonusesResolved=activeBonusEffects.length>0&&activeBonusEffects.every(e=>{
++   if(e.bonusSkillId===172){
++    const rule=root.MHDarkArtsBodySource,rows=conversionGroupPlan?.applied?.filter(a=>a.skill==='ダークアーツ')||[],a=rows[0];
++    if(!rule||!rule.supportedKinds.includes(weapon.kind)||e.name!=='ダークアーツ'||e.bonusName!=='暗黒騎士の証'||e.source!=='series'||e.rankLevel!==1||e.required!==2||!Number.isInteger(e.count)||e.count<2||e.count>=4||rows.length!==1||!a?.darkArtsActivation)return false;
++    return ['bonusSkillId','name','bonusName','source','rankLevel','required','count'].every(k=>a.darkArtsActivation[k]===e[k])&&a.attackAdd===0&&a.attackMultiplier===1&&a.elementMultiplier===(rule.highMultiplierKinds.includes(weapon.kind)?rule.highMultiplier:rule.otherMultiplier)&&a.condition==='RECOVERABLE_DAMAGE'&&a.exclusiveGroup==='HEALTH'&&a.appliesToNormal===false&&a.evidenceRef===rule.url&&a.numericOrigin===rule.status;
++   }
+    if([131,153,173].includes(e.bonusSkillId))return conversionGroupPlan?.applied?.some(a=>a.skillId===e.bonusSkillId&&a.skill===e.name);
+    if([34,161,170,180].includes(e.bonusSkillId)){
+     const rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===e.bonusSkillId)||[],a=rows[0];

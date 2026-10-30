@@ -1,0 +1,15 @@
+./tools/wyvern-shot-order-proof.cjs:12
+ for(const ch of ['normal','maximum']){const c=r.real.channels[ch];assert.equal(c.execution.status,'complete',JSON.stringify(r.real));const h=c.components[0].details.hits,base=208,af=9;assert.ok(Math.abs(h[0].p-.8*(base*1.3+af+flat))<1e-9);assert.ok(Math.abs(h[1].p-.19*(base+af+flat))<1e-9);assert.equal(h[0].e,12);assert.ok(Math.abs(h[1].e-fire/10*.3)<1e-9);}
+                                                              ^
+
+TypeError: Cannot read properties of undefined (reading 'normal')
+    at Object.<anonymous> (./tools/wyvern-shot-order-proof.cjs:12:63)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+
+Node.js v24.21.0

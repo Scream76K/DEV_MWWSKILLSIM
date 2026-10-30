@@ -1,0 +1,39 @@
+--- before/index.html
++++ after/index.html
+@@ -7109,6 +7109,8 @@
+  return out;
+ }
+ window.MHWAdoptedSelfStatePlan=adoptedSelfStatePlan;
++const STANDARD_NON_NUMERIC_RANK_ONE=techniqueDbDeepFreeze({34:['花舞の祈り','地の恵み【花舞】Ⅰ'],161:['踊火の祈り','地の恵み【踊火】Ⅰ'],170:['夢灯の祈り','地の恵み【夢灯】Ⅰ'],180:['祝謡の祈り','地の恵み【祝謡】Ⅰ'],167:['千刃竜の闘志','千刃の身躱しⅠ']});
++window.MHNonNumericRankOne=STANDARD_NON_NUMERIC_RANK_ONE;
+ function standardGroupPowerPlan(st={},gutsState='BEFORE',total={},kind=null,cond={}){
+   const original=st.activeBonusEffects??[],seen=new Set(),applied=[],unresolved=[];
+   if(!Array.isArray(original))throw Error('BONUS_DAMAGE_EFFECT_PENDING:INVALID_ACTIVE_EFFECTS');
+@@ -7118,11 +7120,11 @@
+     const e=effects[i];
+     if([89,173,153].includes(e?.bonusSkillId)){const r=adoptedSelfStatePlan(st,total,cond);if(r.ids.includes(e.bonusSkillId)&&!r.pending.some(x=>x.includes('SERIES_ACTIVATION_INVALID'))){applied.push({skill:e.name,parent:e.bonusName,skillId:e.bonusSkillId,attackAdd:0,attackMultiplier:1,bonusSource:true,appliesToNormal:true,condition:'EXPLICIT_SELF_STATE',numericOrigin:'OWNER_APPROVED_PROVISIONAL'});continue;}}
+     // MHDB rank I has only rewards/duration, not the rank II attack effect.
+-    const nonNumericRankOne={34:['花舞の祈り','地の恵み【花舞】Ⅰ'],161:['踊火の祈り','地の恵み【踊火】Ⅰ'],170:['夢灯の祈り','地の恵み【夢灯】Ⅰ'],180:['祝謡の祈り','地の恵み【祝謡】Ⅰ'],167:['千刃竜の闘志','千刃の身躱しⅠ']}[e?.bonusSkillId];
++    const nonNumericRankOne=STANDARD_NON_NUMERIC_RANK_ONE[e?.bonusSkillId];
+     if(nonNumericRankOne&&e.rankLevel===1){
+       const key='NON_NUMERIC_RANK_ONE:'+e.bonusSkillId;
+       if(e.bonusName!==nonNumericRankOne[0]||e.name!==nonNumericRankOne[1]||e.source!=='series'||e.required!==2||!Number.isInteger(e.count)||e.count<2||e.count>=4||seen.has(key)){unresolved.push(e?.name||key);continue;}
+-      seen.add(key);applied.push({skill:e.name,skillId:e.bonusSkillId,rank:1,attackAdd:0,attackMultiplier:1,bonusSource:true,appliesToNormal:true,condition:'NO_DIRECT_HP_EFFECT',effectDisposition:'non_damage',scope:e.bonusSkillId===167?'DURATION_ONLY_EXISTING_ADRENALINE_RUSH_VALUE_UNCHANGED':'FESTIVAL_REWARDS_ONLY',evidenceRef:'MHDB_JA_SKILLS_20261026:'+e.bonusSkillId,numericOrigin:'MHDB_DESCRIPTION_NO_DAMAGE_COEFFICIENT'});continue;
++      seen.add(key);applied.push({skill:e.name,parent:e.bonusName,rankOneActivation:{...e},skillId:e.bonusSkillId,rank:1,attackAdd:0,attackMultiplier:1,bonusSource:true,appliesToNormal:true,condition:'NO_DIRECT_HP_EFFECT',effectDisposition:'non_damage',scope:e.bonusSkillId===167?'DURATION_ONLY_EXISTING_ADRENALINE_RUSH_VALUE_UNCHANGED':'FESTIVAL_REWARDS_ONLY',evidenceRef:'MHDB_JA_SKILLS_20261026:'+e.bonusSkillId,numericOrigin:'MHDB_DESCRIPTION_NO_DAMAGE_COEFFICIENT'});continue;
+     }
+     if([34,161,170,180,167].includes(e?.bonusSkillId)&&e.rankLevel===2){
+       const names={34:['花舞の祈り','地の恵み【花舞】Ⅱ'],161:['踊火の祈り','地の恵み【踊火】Ⅱ'],170:['夢灯の祈り','地の恵み【夢灯】Ⅱ'],180:['祝謡の祈り','地の恵み【祝謡】Ⅱ'],167:['千刃竜の闘志','千刃の身躱しⅡ']}[e.bonusSkillId];
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -372,6 +372,11 @@
+     return ['bonusSkillId','name','bonusName','source','rankLevel','required','count'].every(k=>a.darkArtsActivation[k]===e[k])&&a.attackAdd===0&&a.attackMultiplier===1&&a.elementMultiplier===(rule.highMultiplierKinds.includes(weapon.kind)?rule.highMultiplier:rule.otherMultiplier)&&a.condition==='RECOVERABLE_DAMAGE'&&a.exclusiveGroup==='HEALTH'&&a.appliesToNormal===false&&a.evidenceRef===rule.url&&a.numericOrigin===rule.status;
+    }
+    if([131,153,173].includes(e.bonusSkillId))return conversionGroupPlan?.applied?.some(a=>a.skillId===e.bonusSkillId&&a.skill===e.name);
++   if([34,161,170,180,167].includes(e.bonusSkillId)&&e.rankLevel===1){
++    const names=root.MHNonNumericRankOne?.[e.bonusSkillId],rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===e.bonusSkillId)||[],a=rows[0];
++    if(!names||e.bonusName!==names[0]||e.name!==names[1]||e.source!=='series'||e.required!==2||!Number.isInteger(e.count)||e.count<2||e.count>=4||rows.length!==1||!a?.rankOneActivation)return false;
++    return ['bonusSkillId','name','bonusName','source','rankLevel','required','count'].every(k=>a.rankOneActivation[k]===e[k])&&a.skill===e.name&&a.parent===e.bonusName&&a.rank===1&&a.attackAdd===0&&a.attackMultiplier===1&&a.bonusSource===true&&a.appliesToNormal===true&&a.condition==='NO_DIRECT_HP_EFFECT'&&a.effectDisposition==='non_damage'&&a.scope===(e.bonusSkillId===167?'DURATION_ONLY_EXISTING_ADRENALINE_RUSH_VALUE_UNCHANGED':'FESTIVAL_REWARDS_ONLY')&&a.evidenceRef==='MHDB_JA_SKILLS_20261026:'+e.bonusSkillId&&a.numericOrigin==='MHDB_DESCRIPTION_NO_DAMAGE_COEFFICIENT';
++   }
+    if([34,161,170,180].includes(e.bonusSkillId)){
+     const rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===e.bonusSkillId)||[],a=rows[0];
+     if(e.source!=='series'||e.rankLevel!==2||e.required!==4||!Number.isInteger(e.count)||e.count<4||rows.length!==1||!a?.festivalActivation)return false;

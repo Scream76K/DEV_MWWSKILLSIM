@@ -1,0 +1,36 @@
+{
+  "commands": [
+    {
+      "command": "node tools/gl-guard-fb-public-proof.cjs before",
+      "exit": 0,
+      "stdout": "before.json",
+      "stderr": "before.stderr"
+    },
+    {
+      "command": "node tools/gl-guard-fb-public-proof.cjs after",
+      "exit": 0,
+      "stdout": "after.json",
+      "stderr": "after.stderr"
+    }
+  ],
+  "hashes": {
+    "index.html": "0e5ad0e78b39a7be129e194ce437ca27cfea8ab50971bba809bff90d5c15c1a2",
+    "hope-hammer-browser-adapter.js": "88d5257586d63249061b3c60c6152d984070f595ac29214ff6680bc62200ef0b",
+    "gunlance-shell-reference.js": "e51ba64a0baf58c2d887bd47e7a899ee530add116f572d1123ba341fd1a0f3b9",
+    "./tools/gl-guard-fb-public-proof.cjs": "b8074645a39f7bb67cf996f9de67cb0682da24b9f2da103bcf664bb78f144444"
+  },
+  "productChanges": [
+    "index.html offensiveGuardReference adoption",
+    "gunlance-shell-reference.js scope validation only"
+  ],
+  "scope": "Synthetic MHDB Hope315 MEDIUM NORMAL shell type, Attack5/Artillery3/Guard3; public calcBuild, two saved compare. Corn four-skill negative is contract-only, not legal equipment. HIGH uses MHDB350 metadata.",
+  "adoption": "OWNER_APPROVED_PROVISIONAL",
+  "liveGameVerification": "FB_UNVERIFIED",
+  "limitations": [
+    "No all shell types sweep; public representative NORMAL/MEDIUM only",
+    "No F01 failure injection rerun; execution/consumption code untouched",
+    "No full beta regression or Safari run",
+    "HIGH FB and Cornpopper active FB remain unadopted"
+  ],
+  "classification": "ID66 partial pending independent review; 79/6/0 unchanged"
+}

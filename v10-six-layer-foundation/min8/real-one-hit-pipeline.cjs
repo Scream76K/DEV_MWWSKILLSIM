@@ -97,6 +97,10 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    const mode=event.operations?.[0]?.value;if(!['SWORD','AXE'].includes(mode))throw Error('REAL_SLICE:SA_HIT_MODE_UNRESOLVED');
    return {nextState:{...state,switchAxe:{...state.switchAxe,mode}}};
   }
+  if(event.type==='consume'&&event.contract==='LBG_RAPID_ROUND'&&weaponType==='light-bowgun'){
+   if(!Number.isInteger(event.amount)||event.amount<1||!Number.isInteger(state?.lightBowgun?.loadedRounds)||state.lightBowgun.loadedRounds<event.amount)throw Error('LBG_RAPID:RESOURCE_INVALID');
+   return {nextState:{...state,lightBowgun:{...state.lightBowgun,loadedRounds:state.lightBowgun.loadedRounds-event.amount}}};
+  }
   if(event.type==='consume'&&['GL_NORMAL_ROUNDS','GL_CHARGED_ROUNDS'].includes(event.contract)&&weaponType==='gunlance'){const nextState=JSON.parse(JSON.stringify(state));nextState.gunlance.loadedRounds-=event.amount;return {nextState};}
   if(event.type!=='hit'&&event.contract==='CB_ED1_NORMAL_RESOURCE'&&weaponType==='charge-blade'&&['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED'].includes(event.techniqueId)){
    const nextState=JSON.parse(JSON.stringify(state));
@@ -122,6 +126,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    return {emit:shellingEvents.filter(c=>!unresolved.includes(c.id)).map(c=>c.id),inactive:[],unresolved};
   }
   if(referenceEvents.length){
+   for(const c of referenceEvents){const n=c.parameters?.rapidResource;if(n!=null&&(!Number.isInteger(state?.lightBowgun?.loadedRounds)||state.lightBowgun.loadedRounds<n))throw Error('LBG_RAPID:LOADED_ROUNDS_INSUFFICIENT');}
    if(physicalEvents.length||elementEvents.length||shellingEvents.length||referenceEvents.length!==event.components.length)return {emit:[],inactive:[],unresolved:['REAL_SLICE:REFERENCE_COMPONENT_MIXED']};
    const unresolved=referenceEvents.filter(c=>c.id!==componentIds(event.techniqueId,c.parameters?.hitIndex).reference).map(c=>c.id);
    return {emit:referenceEvents.filter(c=>!unresolved.includes(c.id)).map(c=>c.id),inactive:[],unresolved};

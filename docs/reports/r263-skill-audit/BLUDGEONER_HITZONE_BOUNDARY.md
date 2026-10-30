@@ -1,0 +1,11 @@
+# 鈍器と傷前肉質の不要依存を分離
+
+既存MHContextAttackSkillRules: 鈍器は選択斬れ味、心眼は傷前物理肉質で判定。adapterのcontextAttackEffects生成で双方へORIGINAL_HITZONE_UNRESOLVEDを要求していた。既採用GL_SLAM本体・緑・攻撃5・鈍器3、現在肉質を維持し傷あり/元肉質未指定とする合成公開calcBuildで修正前拒否を再現。
+
+検査をID136だけへ限定。鈍器の効果traceに無関係な元肉質を出さない。係数/適用順/特殊成分gate/保存条件/engineは無変更。既存の色による本体倍率を維持し、未知の特殊成分は解禁しない。
+
+before/after生出力・実行コマンド・終了コード・対象hash・具体値はbludgeoner-hitzone-execution.json。afterは通常/最大とも元肉質あり対照と完全一致、心眼は元肉質不足で従来どおり拒否。公開calcBuildのadapter入力で傷状態を注入した契約検証で、UIでの実操作や実装備成立/実機実測ではない。保存比較は今回再実行なし（保存経路変更なし）。
+
+8/103: SAEDはDB本体配列→referenceDrawAdds/referencePunishingAdds→bodyHit配列consumerが既接続。保存入力はindex explicitAffinityState/restoreExplicitAffinityStateの独立集合を維持。HH音波/竜撃弾等の新対象は未承認。7のSAED派生前段、136のSAED以外追撃適否、85の特殊適否は今回採用しない。朝の実測待ち3件も維持。
+
+分類77/8/0/6/88据置。今回の製品差分はadapter2箇所のみ。commit/pushなし。

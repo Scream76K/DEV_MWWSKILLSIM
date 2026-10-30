@@ -1,0 +1,75 @@
+{
+  "status": "LOCAL_REVIEW_PENDING",
+  "counts": {
+    "火力非対象": 88,
+    "完全接続": 80,
+    "部分接続": 4,
+    "固定ダメージ系・注釈のみ": 6,
+    "ユーザー指定対象外": 1
+  },
+  "denominator": 84,
+  "commands": [
+    {
+      "command": "node tools/bludgeoner-owner-exclusion-proof.cjs before",
+      "stdout": "before.json",
+      "stderr": "before.stderr",
+      "exit": 0
+    },
+    {
+      "command": "node tools/bludgeoner-owner-exclusion-proof.cjs after",
+      "stdout": "after.json",
+      "stderr": "after.stderr",
+      "exit": 1,
+      "reason": "new declarations inserted in wrong scope; corrected locally"
+    },
+    {
+      "command": "node tools/bludgeoner-owner-exclusion-proof.cjs after",
+      "stdout": "attempt2.json",
+      "stderr": "attempt2.stderr",
+      "exit": 1,
+      "reason": "diagnostic repeat locates allSkills scope error"
+    },
+    {
+      "command": "node tools/bludgeoner-owner-exclusion-proof.cjs after",
+      "stdout": "attempt3.json",
+      "stderr": "attempt3.stderr",
+      "exit": 1,
+      "reason": "public input clamps invalid Mind Eye Lv4 toLv3; negative case invalid, not product regression"
+    },
+    {
+      "command": "node tools/bludgeoner-owner-exclusion-proof.cjs after",
+      "stdout": "final.json",
+      "stderr": "final.stderr",
+      "exit": 0
+    }
+  ],
+  "sha256": {
+    "index.html": "7099f129b6c3ac25dd6c6c761549ac5f7f3cfcf6b3f63e98d650836a78502b66",
+    "hope-hammer-browser-adapter.js": "98c5c58d38009c42141dc4731ac2bf8556ba3b56bd271990217aa3728bd93c7b",
+    "gunlance-shell-reference.js": "e51ba64a0baf58c2d887bd47e7a899ee530add116f572d1123ba341fd1a0f3b9",
+    "tools/bludgeoner-owner-exclusion-proof.cjs": "e4e95b9330c04ac6070a057438ef273f4a836b568ac4c2d636f74d3ee6e6bee5",
+    "docs/reports/r263-skill-audit/skill-matrix.json": "95170533d722bd736e612c5089a61dc0780c19fdfc6d1396f96a9fec6899fafd"
+  },
+  "limits": [
+    "synthetic charm/contract inputs; no legal build proof",
+    "Mind Eye special guards source unchanged; no special-ref full test",
+    "no Safari/live game/full regression",
+    "no commit/push"
+  ],
+  "artifactsSha256": {
+    "before.json": "bbce494b2a488d997bcec39dc34f58dd68628356a54e1f3829304694f5cc9050",
+    "after.stderr": "a72dcf2839be215072f17f7b68fbacd653b57cc00429d863860550cce41e7adf",
+    "before-adapter.js": "88d5257586d63249061b3c60c6152d984070f595ac29214ff6680bc62200ef0b",
+    "before-index.html": "0e5ad0e78b39a7be129e194ce437ca27cfea8ab50971bba809bff90d5c15c1a2",
+    "attempt2.stderr": "ebd9d34739bec029899806916f69827a007478b9c055782a6e3a388c10faae0d",
+    "connection.patch": "0d0b0f194b05f2ca8f357852794000d80ed4501a42a4621aae51e21d4c9ad690",
+    "REPORT.md": "b729ad36c7ed8ec0201b93a36b3d949069b61bbd9d6bfa48c9215037a24aea77",
+    "after.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "before.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "final.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attempt3.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attempt2.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attempt3.stderr": "9de6846adb9861facbc27a9c094147f08e87ead2adcfdc29bef03830806acf13",
+    "final.json": "44dc0a5dff6bab5bcc335a2dd1e893aea4b591a5aa6b09dfac895ed3308a5bde"
+  }
+}

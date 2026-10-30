@@ -1,0 +1,25 @@
+--- before/index.html
++++ after/index.html
+@@ -7146,7 +7146,7 @@
+       const rule=SKILL_EXTRA_DAMAGE_POLICIES[e.bonusSkillId],rank=e.rankLevel,required=rank===1?2:4,prefix=e.bonusSkillId===149?'恨撃':'蒼雷一閃';
+       if(![1,2].includes(rank)||e.name!==prefix+(rank===1?'Ⅰ':'Ⅱ')||e.bonusName!==rule.name||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4)||seen.has(rule.name)){unresolved.push(e?.name||'EXTRA_DAMAGE_ACTIVATION_INVALID');continue;}
+       seen.add(rule.name);
+-      applied.push({skill:e.name,skillId:e.bonusSkillId,...(e.bonusSkillId===149?{rank,parent:e.bonusName,annotationActivation:{...e}}:{}),attackAdd:0,attackMultiplier:1,bonusSource:true,appliesToNormal:true,annotationOnly:true,bodyEffect:rule.bodyEffect,policy:'FIXED_DAMAGE_SKILL_ANNOTATION_ONLY',excludedComponents:rule.components,evidenceRef:'MHDB_JA_SKILLS_20261026:'+e.bonusSkillId,numericOrigin:'ANNOTATION_FORMULA_NOT_ADOPTED',condition:'EXTRA_DAMAGE_EXCLUDED_BODY_EFFECT_RETAINED'});
++      applied.push({skill:e.name,skillId:e.bonusSkillId,rank,parent:e.bonusName,annotationActivation:{...e},attackAdd:0,attackMultiplier:1,bonusSource:true,appliesToNormal:true,annotationOnly:true,bodyEffect:rule.bodyEffect,policy:'FIXED_DAMAGE_SKILL_ANNOTATION_ONLY',excludedComponents:rule.components,evidenceRef:'MHDB_JA_SKILLS_20261026:'+e.bonusSkillId,numericOrigin:'ANNOTATION_FORMULA_NOT_ADOPTED',condition:'EXTRA_DAMAGE_EXCLUDED_BODY_EFFECT_RETAINED'});
+       continue;
+     }
+     if(e?.bonusSkillId===71){
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -383,6 +383,11 @@
+     const enabled=!series||level>0;
+     return a.skill===e.name&&a.parent===e.bonusName&&a.rank===e.rankLevel&&a.attackAdd===(enabled?rule.attackAdd:0)&&a.attackMultiplier===1&&a.appliesToNormal===false&&a.condition===(enabled?rule.condition:'BURST_INACTIVE_OR_UNRESOLVED');
+    }
++   if(e.bonusSkillId===162){
++    const policy=root.MHSkillExtraDamagePolicies?.[162],rank=e.rankLevel,required=rank===1?2:4,rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===162)||[],a=rows[0];
++    if(!policy||policy.bodyEffect!==true||![1,2].includes(rank)||e.name!=='蒼雷一閃'+(rank===1?'Ⅰ':'Ⅱ')||e.bonusName!==policy.name||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4)||e.level!==1||skillTotal[e.name]!==e.level||['海竜の渦雷','蒼雷一閃','蒼雷一閃Ⅰ','蒼雷一閃Ⅱ'].some(name=>name!==e.name&&Number(skillTotal[name]||0)!==0)||typeof root.MHWMaxAffinityResolver!=='function'||rows.length!==1||!a?.annotationActivation)return false;
++    return ['bonusSkillId','name','level','bonusName','source','rankLevel','required','count'].every(k=>a.annotationActivation[k]===e[k])&&a.skill===e.name&&a.parent===e.bonusName&&a.rank===rank&&a.bodyEffect===true&&a.annotationOnly===true&&a.policy==='FIXED_DAMAGE_SKILL_ANNOTATION_ONLY'&&a.attackAdd===0&&a.attackMultiplier===1&&a.appliesToNormal===true&&Array.isArray(a.excludedComponents)&&a.excludedComponents.length===policy.components.length&&a.excludedComponents.every((x,i)=>x===policy.components[i])&&a.condition==='EXTRA_DAMAGE_EXCLUDED_BODY_EFFECT_RETAINED';
++   }
+    if([71,149].includes(e.bonusSkillId)){
+     const policy=root.MHSkillExtraDamagePolicies?.[e.bonusSkillId],rank=e.rankLevel,required=rank===1?2:4,prefix=e.bonusSkillId===71?'灼熱化':'恨撃',rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===e.bonusSkillId)||[],a=rows[0];
+     if(!policy||policy.bodyEffect!==false||![1,2].includes(rank)||e.name!==prefix+(rank===1?'Ⅰ':'Ⅱ')||e.bonusName!==policy.name||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4)||rows.length!==1||!a?.annotationActivation)return false;

@@ -1,0 +1,194 @@
+{
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/conversion-resistance-series-proof.cjs after",
+  "before": {
+    "exitCode": 0,
+    "chunk": "29d0b7",
+    "asserted": "expected legacy entry rejection",
+    "raw": "conversion-series-before.raw.json"
+  },
+  "after": {
+    "exitCode": 0,
+    "chunk": "6301bd",
+    "raw": "conversion-series-after.raw.json",
+    "stderr": "conversion-series-after.stderr.txt"
+  },
+  "hashes": {
+    "index.html": "c634f03889a62f5d73d72c10726907f6bcb6c99d3e2ce8bf2370fb004bdf54cc",
+    "hope-hammer-browser-adapter.js": "16fdfafb759b573a738dc297a5ac01770ee702f872636feac2229444fc30088b",
+    "./tools/conversion-resistance-series-proof.cjs": "fb58e6207f02070733a9d51578833d7600465c685514c259f2b5801fc1a3fc52"
+  },
+  "summary": [
+    {
+      "case": "inactive",
+      "resistance": 10,
+      "contributions": [
+        {
+          "skillId": 131,
+          "rank": 1,
+          "add": 0,
+          "scope": "ALL_RESISTANCES;THUNDER_INPUT_ONLY",
+          "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+          "status": "OWNER_APPROVED_PROVISIONAL"
+        },
+        {
+          "skillId": 153,
+          "rank": 2,
+          "add": 0,
+          "scope": "ALL_RESISTANCES;THUNDER_INPUT_ONLY",
+          "source": "https://a-to-monhan.com/2025/04/02/eilds-syugonove-ru/",
+          "status": "OWNER_APPROVED_PROVISIONAL"
+        }
+      ],
+      "channels": {
+        "normal": {
+          "total": 1206.5,
+          "physical": 1102.15,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        },
+        "maximum": {
+          "total": 1206.5,
+          "physical": 1102.15,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        }
+      }
+    },
+    {
+      "case": "active",
+      "resistance": 25,
+      "contributions": [
+        {
+          "skillId": 131,
+          "rank": 1,
+          "add": 3,
+          "scope": "ALL_RESISTANCES;THUNDER_INPUT_ONLY",
+          "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+          "status": "OWNER_APPROVED_PROVISIONAL"
+        },
+        {
+          "skillId": 153,
+          "rank": 2,
+          "add": 12,
+          "scope": "ALL_RESISTANCES;THUNDER_INPUT_ONLY",
+          "source": "https://a-to-monhan.com/2025/04/02/eilds-syugonove-ru/",
+          "status": "OWNER_APPROVED_PROVISIONAL"
+        }
+      ],
+      "channels": {
+        "normal": {
+          "total": 1168.25,
+          "physical": 1049.6599999999999,
+          "elements": [
+            625,
+            625,
+            625
+          ]
+        },
+        "maximum": {
+          "total": 1168.25,
+          "physical": 1049.6599999999999,
+          "elements": [
+            625,
+            625,
+            625
+          ]
+        }
+      }
+    },
+    {
+      "case": "capped",
+      "resistance": 215,
+      "contributions": [
+        {
+          "skillId": 131,
+          "rank": 1,
+          "add": 3,
+          "scope": "ALL_RESISTANCES;THUNDER_INPUT_ONLY",
+          "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+          "status": "OWNER_APPROVED_PROVISIONAL"
+        },
+        {
+          "skillId": 153,
+          "rank": 2,
+          "add": 12,
+          "scope": "ALL_RESISTANCES;THUNDER_INPUT_ONLY",
+          "source": "https://a-to-monhan.com/2025/04/02/eilds-syugonove-ru/",
+          "status": "OWNER_APPROVED_PROVISIONAL"
+        }
+      ],
+      "channels": {
+        "normal": {
+          "total": 1267.87,
+          "physical": 1049.6599999999999,
+          "elements": [
+            1150,
+            1150,
+            1150
+          ]
+        },
+        "maximum": {
+          "total": 1267.87,
+          "physical": 1049.6599999999999,
+          "elements": [
+            1150,
+            1150,
+            1150
+          ]
+        }
+      }
+    },
+    {
+      "case": "dragon",
+      "resistance": 25,
+      "contributions": [
+        {
+          "skillId": 131,
+          "rank": 1,
+          "add": 3,
+          "scope": "ALL_RESISTANCES;THUNDER_INPUT_ONLY",
+          "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+          "status": "OWNER_APPROVED_PROVISIONAL"
+        },
+        {
+          "skillId": 153,
+          "rank": 2,
+          "add": 12,
+          "scope": "ALL_RESISTANCES;THUNDER_INPUT_ONLY",
+          "source": "https://a-to-monhan.com/2025/04/02/eilds-syugonove-ru/",
+          "status": "OWNER_APPROVED_PROVISIONAL"
+        }
+      ],
+      "channels": {
+        "normal": {
+          "total": 1144.54,
+          "physical": 1049.6599999999999,
+          "elements": [
+            500,
+            500,
+            500
+          ]
+        },
+        "maximum": {
+          "total": 1178.6899999999998,
+          "physical": 1049.6599999999999,
+          "elements": [
+            680,
+            680,
+            680
+          ]
+        }
+      }
+    }
+  ],
+  "savedComparison": "active/capped outputs match originals; current snapshot/stats/conditions/result unchanged",
+  "negative": "valid captured GS with unknown active series and recomputed unresolved group plan -> THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED",
+  "postReadAssertions": "Guts BEFORE physical greater than AFTER; both channels equal physical; resistance/cap cases do not change physical",
+  "scope": "Synthetic four-slot armor with MHDB rank definitions and resistance10/200; not legal equipment/game verification"
+}

@@ -1,0 +1,34 @@
+--- before/index.html
++++ after/index.html
+@@ -7146,7 +7146,7 @@
+       const rule=SKILL_EXTRA_DAMAGE_POLICIES[e.bonusSkillId],rank=e.rankLevel,required=rank===1?2:4,prefix=e.bonusSkillId===149?'恨撃':'蒼雷一閃';
+       if(![1,2].includes(rank)||e.name!==prefix+(rank===1?'Ⅰ':'Ⅱ')||e.bonusName!==rule.name||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4)||seen.has(rule.name)){unresolved.push(e?.name||'EXTRA_DAMAGE_ACTIVATION_INVALID');continue;}
+       seen.add(rule.name);
+-      applied.push({skill:e.name,skillId:e.bonusSkillId,attackAdd:0,attackMultiplier:1,bonusSource:true,appliesToNormal:true,annotationOnly:true,bodyEffect:rule.bodyEffect,policy:'FIXED_DAMAGE_SKILL_ANNOTATION_ONLY',excludedComponents:rule.components,evidenceRef:'MHDB_JA_SKILLS_20261026:'+e.bonusSkillId,numericOrigin:'ANNOTATION_FORMULA_NOT_ADOPTED',condition:'EXTRA_DAMAGE_EXCLUDED_BODY_EFFECT_RETAINED'});
++      applied.push({skill:e.name,skillId:e.bonusSkillId,...(e.bonusSkillId===149?{rank,parent:e.bonusName,annotationActivation:{...e}}:{}),attackAdd:0,attackMultiplier:1,bonusSource:true,appliesToNormal:true,annotationOnly:true,bodyEffect:rule.bodyEffect,policy:'FIXED_DAMAGE_SKILL_ANNOTATION_ONLY',excludedComponents:rule.components,evidenceRef:'MHDB_JA_SKILLS_20261026:'+e.bonusSkillId,numericOrigin:'ANNOTATION_FORMULA_NOT_ADOPTED',condition:'EXTRA_DAMAGE_EXCLUDED_BODY_EFFECT_RETAINED'});
+       continue;
+     }
+     if(e?.bonusSkillId===71){
+@@ -7155,7 +7155,7 @@
+       seen.add('SCORCH_ANNOTATION');
+       const reference=window.ScorchReference?.damage({rank:'upper',level:rank,fireAttack:0,fireHitzone:100});
+       if(!reference){unresolved.push(e.name);continue;}
+-      applied.push({skill:e.name,attackAdd:0,attackMultiplier:1,bonusSource:true,appliesToNormal:true,annotationOnly:true,policy:'FIXED_DAMAGE_SKILL_ANNOTATION_ONLY',excludedComponents:['FIXED','FIRE'],fixedReference:reference.fixed,fireDisplayReference:reference.element*10,referenceRank:'upper',evidenceRef:reference.evidence.url,numericOrigin:reference.evidence.status,adoptionStatus:'OWNER_APPROVED_SCOPE_EXCLUSION',condition:'NOT_INCLUDED_IN_NORMAL_OR_MAXIMUM'});
++      applied.push({skill:e.name,skillId:71,rank,parent:e.bonusName,annotationActivation:{...e},bodyEffect:SKILL_EXTRA_DAMAGE_POLICIES[71].bodyEffect,attackAdd:0,attackMultiplier:1,bonusSource:true,appliesToNormal:true,annotationOnly:true,policy:'FIXED_DAMAGE_SKILL_ANNOTATION_ONLY',excludedComponents:['FIXED','FIRE'],fixedReference:reference.fixed,fireDisplayReference:reference.element*10,referenceRank:'upper',evidenceRef:reference.evidence.url,numericOrigin:reference.evidence.status,adoptionStatus:'OWNER_APPROVED_SCOPE_EXCLUSION',condition:'NOT_INCLUDED_IN_NORMAL_OR_MAXIMUM'});
+       continue;
+     }
+     if(e?.name==='ダークアーツ'){
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -383,6 +383,11 @@
+     const enabled=!series||level>0;
+     return a.skill===e.name&&a.parent===e.bonusName&&a.rank===e.rankLevel&&a.attackAdd===(enabled?rule.attackAdd:0)&&a.attackMultiplier===1&&a.appliesToNormal===false&&a.condition===(enabled?rule.condition:'BURST_INACTIVE_OR_UNRESOLVED');
+    }
++   if([71,149].includes(e.bonusSkillId)){
++    const policy=root.MHSkillExtraDamagePolicies?.[e.bonusSkillId],rank=e.rankLevel,required=rank===1?2:4,prefix=e.bonusSkillId===71?'灼熱化':'恨撃',rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===e.bonusSkillId)||[],a=rows[0];
++    if(!policy||policy.bodyEffect!==false||![1,2].includes(rank)||e.name!==prefix+(rank===1?'Ⅰ':'Ⅱ')||e.bonusName!==policy.name||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4)||rows.length!==1||!a?.annotationActivation)return false;
++    return ['bonusSkillId','name','bonusName','source','rankLevel','required','count'].every(k=>a.annotationActivation[k]===e[k])&&a.skill===e.name&&a.parent===e.bonusName&&a.rank===rank&&a.bodyEffect===false&&a.annotationOnly===true&&a.policy==='FIXED_DAMAGE_SKILL_ANNOTATION_ONLY'&&a.attackAdd===0&&a.attackMultiplier===1&&a.appliesToNormal===true&&Array.isArray(a.excludedComponents)&&a.excludedComponents.length===policy.components.length&&a.excludedComponents.every((x,i)=>x===policy.components[i])&&a.condition===(e.bonusSkillId===71?'NOT_INCLUDED_IN_NORMAL_OR_MAXIMUM':'EXTRA_DAMAGE_EXCLUDED_BODY_EFFECT_RETAINED');
++   }
+    if(e.bonusSkillId===150){
+     const rule=root.MHNamedBonusFlatRules?.group?.[e.name],source=root.MHFortifySource,rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===150)||[],a=rows[0],count=conditions.fortifyCount===undefined?source?.maximumDeathCount:conditions.fortifyCount;
+     if(e.name!=='不屈'||!rule||!source||e.bonusName!==rule.parent||e.source!=='group'||e.rankLevel!==1||e.required!==3||!Number.isInteger(e.count)||e.count<3||rows.length!==1||!Number.isInteger(count)||count<0||count>source.maximumDeathCount||stats.conditionalConditionPlan?.pending?.some(x=>x.startsWith('不屈:')))return false;

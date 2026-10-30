@@ -1,0 +1,244 @@
+{
+  "sources": [
+    {
+      "path": "external-evidence/private-video/HBG_WyvernAmmmo/GL1.MP4",
+      "bytes": 35429036,
+      "durationSeconds": 35.636,
+      "frameSize": [
+        1920,
+        1080
+      ],
+      "mtimeUTC": "2026-10-29T23:59:17+00:00",
+      "sha256": "654df468a0ee4764fa9826f0206c50a94c7f9b85d89c5e69dbf286ed9aad3062"
+    },
+    {
+      "path": "external-evidence/private-video/HBG_WyvernAmmmo/GL2.MP4",
+      "bytes": 44114216,
+      "durationSeconds": 43.878,
+      "frameSize": [
+        1920,
+        1080
+      ],
+      "mtimeUTC": "2026-10-29T23:59:21+00:00",
+      "sha256": "95e4235f173d1285a3795d3ab99486f51e7e8ea193b9516c0c246e509303457d"
+    }
+  ],
+  "method": "Local AVFoundation exact-time frame requests, manual visual transcription. Timestamps are visible sample times, not exact collision times. No OCR inference of damage components.",
+  "observations": [
+    {
+      "video": "GL1",
+      "sampleSeconds": 4,
+      "action": "水平突きI",
+      "floatingDamage": 99.4,
+      "aggregateDisplay": 99,
+      "frame": "GL1-4.0.png"
+    },
+    {
+      "video": "GL1",
+      "sampleSeconds": 5.5,
+      "action": "砲撃",
+      "floatingDamage": 53.1,
+      "aggregateDisplay": 53,
+      "frame": "GL1detail-5.5.png"
+    },
+    {
+      "video": "GL1",
+      "sampleSeconds": 9.5,
+      "action": "溜め砲撃",
+      "floatingDamage": 92.9,
+      "aggregateDisplay": 92,
+      "frame": "GL1detail-9.5.png"
+    },
+    {
+      "video": "GL1",
+      "sampleSeconds": 14,
+      "action": "水平突きI・傷口破壊通知あり",
+      "floatingDamage": 114.4,
+      "aggregateDisplay": 114,
+      "frame": "GL1detail-14.0.png"
+    },
+    {
+      "video": "GL1",
+      "sampleSeconds": 16,
+      "action": "砲撃",
+      "floatingDamage": 53.1,
+      "aggregateDisplay": 53,
+      "frame": "GL1-16.0.png"
+    },
+    {
+      "video": "GL1",
+      "sampleSeconds": 20.5,
+      "action": "溜め砲撃",
+      "floatingDamage": 92.9,
+      "aggregateDisplay": 92,
+      "frame": "GL1detail-20.5.png"
+    },
+    {
+      "video": "GL1",
+      "sampleSeconds": 24.5,
+      "action": "水平突きI",
+      "floatingDamage": 99.4,
+      "aggregateDisplay": 99,
+      "frame": "GL1detail-24.5.png"
+    },
+    {
+      "video": "GL2",
+      "sampleSeconds": 6.5,
+      "action": "水平突きI・守勢発動通知",
+      "floatingDamage": 108.0,
+      "aggregateDisplay": 108,
+      "frame": "GL2detail-6.5.png"
+    },
+    {
+      "video": "GL2",
+      "sampleSeconds": 8,
+      "action": "砲撃・本体との累計168/2Hit",
+      "floatingDamage": 60.2,
+      "aggregateDisplay": 168,
+      "frame": "GL2-8.0.png"
+    },
+    {
+      "video": "GL2",
+      "sampleSeconds": 12.5,
+      "action": "溜め砲撃・当該Hit由来の傷口破壊通知残留",
+      "floatingDamage": 105.7,
+      "aggregateDisplay": 105,
+      "frame": "GL2detail-12.5.png"
+    },
+    {
+      "video": "GL2",
+      "sampleSeconds": 24,
+      "action": "水平突きI・守勢発動通知",
+      "floatingDamage": 108.0,
+      "aggregateDisplay": 108,
+      "frame": "GL2-24.0.png"
+    },
+    {
+      "video": "GL2",
+      "sampleSeconds": 38.5,
+      "action": "砲撃・本体との累計168/2Hit",
+      "floatingDamage": 60.2,
+      "aggregateDisplay": 168,
+      "frame": "GL2detail-38.5.png"
+    },
+    {
+      "video": "GL2",
+      "sampleSeconds": 42,
+      "action": "溜め砲撃・傷口破壊通知",
+      "floatingDamage": 105.7,
+      "aggregateDisplay": 105,
+      "frame": "GL2-42.0.png"
+    },
+    {
+      "video": "GL2",
+      "sampleSeconds": 29.0,
+      "action": "Charged shell; no wound-break notification in inspected surrounding frames",
+      "floatingDamage": 105.7,
+      "aggregateDisplay": 105,
+      "frame": "GL2wound-29.0.png"
+    }
+  ],
+  "limitations": [
+    "GL2 has no inspected equipment status menu; identical equipment across clip gap not proved",
+    "Wound changes occur; body114.4 excluded from clean positive comparison",
+    "No decomposition into physical/fire or proof of attack-flat multiplication order",
+    "Latest at recording time per user, confirmed 2026-10-30; numeric version unconfirmed"
+  ],
+  "extractionIssues": [
+    "Initial sandbox decode -11821/-12911; explicit escalated decoder execution succeeded",
+    "Initial default Swift module-cache write unavailable; compiler cache explicitly moved to /tmp",
+    "GL1 request36s exceeded35.636s and failed; no observation uses it"
+  ],
+  "productHashes": {
+    "index.html": "7ead32d5d4a1793b0dc4eb07862d8fe1027431e277b3b9f289ea7597efebedcb",
+    "hope-hammer-browser-adapter.js": "ca524a5d00bc0647850059c2d6889dd5016c07b66780a1b19238ce101db3e588"
+  },
+  "frameHashes": {
+    "GL2detail-36.5.png": "73b196673c7150da7ed0fea5cccaf96be3ae2285d4cd167da517051e47bf6669",
+    "GL2detail-12.5.png": "abe73f751259e7d4b49995d3a38baed4e2a626e4551e0944b1c9a8c9d8e79298",
+    "GL1-4.0.png": "50a91d93ae6dda278bdfe6c0c7c9530b51b53a3d6be291687dc2454e8d11ad32",
+    "GL1-28.0.png": "b21a9ada1b4b3ea29e24a90ed88297417dacb7bd7f50ba61d2143616f898b3d1",
+    "GL2-42.0.png": "da4f1567a648eacf320cfabd49e4fb067173a1165842fa4999cc2e8a1db9dfd4",
+    "GL2detail-30.5.png": "d3319571cd3fe53a112964bc2d48708774caab4aac05436a2f62d59898119fe4",
+    "GL1-0.0.png": "8334a24bde76ab76ca304763734f4728fa3474da1c4e3a7c09e68b50d9c4d900",
+    "GL2detail-8.5.png": "62aef4a1c71c1a1d181431528640f98af31e6940cdc333d30950a24784f0dc8d",
+    "GL2-38.0.png": "cdae6722de3bc8e613feab6bd2a2e9834e86ac35804bc1f6de6a8eb6fefd3735",
+    "GL2-4.0.png": "727db507f0dd4db45d163c3dd72c9e964081e6fe3f064030f97b5510b1a62b93",
+    "GL2-26.0.png": "56f9d07b32bd10df0e9728e8d119ceb16d5d44083ef2884a3bc844b0737f50c8",
+    "GL2detail-sheet.png": "2f66f4c1793a7f2f70ad6391bc605e3f25d6f6f4832414029f8627ec167c6ae6",
+    "GL1detail-9.5.png": "91c9755b0fe0805cb98ca0321901dc5642a1ebc20d2558bbe016669c9bcb704b",
+    "GL1-32.0.png": "edcde7ea8c57e585d51d455c4e0823fcb31894ea73af06b80347f1f6e325f3cf",
+    "GL1detail-14.0.png": "8f7f76c728d73b54246117c9cc21d204b10db17e72e1ec056086c2bce6d07370",
+    "GL1-16.0.png": "619c6cf219ced14c63c5b18955b7bbde4acc9328bf4838f419419497b3b4876d",
+    "GL2-24.0.png": "545848c861e42bac9aeb24046f36aa921c7c9821fc0246dcaa0bacf2bbafcb65",
+    "GL2-6.0.png": "9f6f05fc387a4f72d2a8f86cded05fb53e1726f06f48db62b84982c1421f1e6c",
+    "GL1-sheet.png": "9082a9fbf54073f5293ad529a18e88297e95d0dfd841a8a7b2a5ecddf951a664",
+    "GL1-12.0.png": "4231caf1b3ea0fc171786980cbca7055bc9f55cd3f6b197ee7fe2b37a98a5d92",
+    "GL1detail-32.5.png": "1fab35b565cde14885ba700826e8493284679966a1c101202e57974e04b14598",
+    "GL2detail-26.5.png": "a6924268813c77e7e99a97edfb365705b60df7acd5956926a099718b715fedf5",
+    "GL1detail-5.5.png": "9136c404a81c30f4abb8c37870f54e2d7c2a81076a8faa47f2bf92f78ffbc362",
+    "GL2-sheet.png": "f34b9f2f3a90683f08a3c3d7244744b8d08b11d22a5e33467f6bcfb8c302fa0f",
+    "GL2-8.0.png": "2606f91b221a4b8000c57741cedb997e100e22d0f69ec1f3c1350cd7f52b877f",
+    "GL1detail-24.5.png": "e2a0edaa09e6efb15a4301255704b8470eac0b376849706a137006a83cdd10fe",
+    "GL2-10.0.png": "a45946e1a4db85df69997838a9353d5eed74e83a3c2ba96c991bef6de1dfbf32",
+    "GL2detail-6.5.png": "654829e6620eababb10dc166116e542494f0714592977bf420f896b0fe11d9fb",
+    "GL2-12.0.png": "3ac015192e1dd0f2d49d859cef65550af7d804a100f83807e7ead25e2d7272e8",
+    "GL1-20.0.png": "9906801314a53e6e456c954a2ac381b0d00b10b297aa2538fd0f9ad98392cd93",
+    "GL2-36.0.png": "aea47f10ec3354a21a4198aa69ed60f497db84a079d1a817cebf3a2379e5dfb2",
+    "GL2detail-38.5.png": "6f4d84f4f3ea047556e664840ca1693bda603f8bf9fd101011924a2299c48542",
+    "GL1detail-26.0.png": "5532210bb4977dc6085e50e53420b051645710a9299703857d8ecf95617b7301",
+    "GL1detail-sheet.png": "4fa23af010a28e07c876c1a674d225ffe516160833a02162131bf2c63b4cfd50",
+    "GL1-8.0.png": "36c74e63b02076731997c3d1ce29af279587d22190b0e2c489194bc075c7e5e6",
+    "GL1-24.0.png": "b5d69fa92f4f97163fcdf664f09e3066fc1694a5b317748d0b807d5f530d54a7",
+    "GL2-16.0.png": "04c5cf3627ce61aad2da06d9038cd9aaa2d7b3c283d5d01162d31134e22165e7",
+    "GL1detail-20.5.png": "9792e31a44d33ecfea41b3c4bcf6744de31c6b2f99a97fcafb737fc5292d9785",
+    "GL2-30.0.png": "085c7a0b1a20cc19f87bb0f313796be8f609de6459bda6be1efd631282cc2bac",
+    "GL2wound-30.5.png": "d3319571cd3fe53a112964bc2d48708774caab4aac05436a2f62d59898119fe4",
+    "GL2wound-29.5.png": "06183afd746463250e69fec77af22a71a42cb1b6c43bf1ac61f4898f8f1c27e2",
+    "GL2wound-12.0.png": "3ac015192e1dd0f2d49d859cef65550af7d804a100f83807e7ead25e2d7272e8",
+    "GL2wound-12.25.png": "26d5bf08fd98a2faaf6e608cfd4f428b3186e7d1e0953ca49ad543d9c71c03fc",
+    "GL2wound-12.5.png": "abe73f751259e7d4b49995d3a38baed4e2a626e4551e0944b1c9a8c9d8e79298",
+    "GL2wound-30.0.png": "085c7a0b1a20cc19f87bb0f313796be8f609de6459bda6be1efd631282cc2bac",
+    "GL2wound-10.5.png": "59a6c8604e13a7dc5604d42bac73a9a39bd079a35fe76b8dfaf235af6a920b09",
+    "GL2wound-29.0.png": "3cb55e10d85b912103b2fd08dc8c22e3f315c7fcbdd34d3b0f273574f190a0fb",
+    "GL2wound-13.0.png": "9e2fc3ae62c8c3e2aabf9d97312b5b72d6ddcb3f85353590163390f7d856b1ba",
+    "GL2wound-11.0.png": "5f7d71aabc28c417a3e5702fac53abd899303608ad095fa4c797d8483658e8bb",
+    "GL2wound-sheet.png": "41dae07f735ab460da5d217772dd360c14442929e3018c0e8775997f36898f2a",
+    "GL2wound-28.5.png": "5534d33c8c1b0d3f0214609c734b2650851bfe341500a577a40b47eb3aca81eb",
+    "GL2wound-11.5.png": "6510a0c1698445b128e0939123266175297f6308bfb13d34dbf60708db2dd77a",
+    "GL2wound-28.0.png": "9e71b4c798d82c8ff97713f8de7f6fa96c7faef96060161e5311081497c31054"
+  },
+  "userConditionClarification": {
+    "statements": [
+      "守勢しかスキル発動",
+      "していません",
+      "防具も護石も装飾品もなしです",
+      "ゲームバージョンは最新です"
+    ],
+    "confirmed": "Only Offensive Guard was activated, per user statement.",
+    "evidenceType": "USER_REPORTED_CONDITION",
+    "notConfirmed": [
+      "Exact numeric game version",
+      "Complete weapon/item/attack-flat identity across videos",
+      "Physical/fire component targeting and flat multiplication order"
+    ],
+    "equipmentDeclaration": {
+      "armor": "none",
+      "talisman": "none",
+      "decorations": "none",
+      "evidenceType": "USER_REPORTED_CONDITION"
+    },
+    "gameVersion": {
+      "description": "撮影時点の最新版",
+      "confirmationDate": "2026-10-30",
+      "numericVersion": null,
+      "evidenceType": "USER_REPORTED_CONDITION"
+    }
+  },
+  "woundNotificationReview": {
+    "extractionExitCode": 0,
+    "log": "extract-gl2-wound.log",
+    "finding": "Absent at 11.0; notification appears with charged hit at 11.5. 12.5 is aftermath of this hit. Separate 29.0/29.5 hit shows 105.7 without notification in inspected 28-30.5 frames.",
+    "limitation": "Absence of notification does not establish absence of wounds or identical hitzone. Component and flat order unresolved."
+  }
+}

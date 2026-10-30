@@ -16,6 +16,7 @@
   if(forceShot>0&&rules.forceAttackOrdinals.includes(s.shotOrdinal))shotElementMultiplier*=valid(rules.forceElement[forceShot],1,2);
   return {shotAttackAdd,shotAffinityAdd,shotElementMultiplier};
  }
+ function physicalHit(attack,mv,hz,crit,modifier){return attack*mv/100*hz/100*crit*modifier;}
  function shot(o,engine){
   if(!engine||typeof engine.get!=='function')throw Error('HBG_NORMAL:TECHNIQUE_DB_REQUIRED');
   const kind=o?.weaponKind||'heavy-bowgun',lbg=kind==='light-bowgun';
@@ -37,8 +38,20 @@
   const weaponPhysicalModifier=lbg?valid(rule.weaponPhysicalModifier,0,2):1;
   const attackAdds=o.hitAttackAdds;if(attackAdds!==undefined&&(!Array.isArray(attackAdds)||attackAdds.length!==ammo.hitCount||attackAdds.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0||v>7)))throw Error('HBG_NORMAL:HIT_ATTACK_INVALID');
   const drawAdds=o.hitAffinityAdds;if(drawAdds!==undefined&&(!Array.isArray(drawAdds)||drawAdds.length!==ammo.hitCount||drawAdds.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0||v>100)))throw Error('HBG_NORMAL:HIT_AFFINITY_INVALID');
-  const trace=Array.from({length:ammo.hitCount},(_,i)=>{const hitAffinity=Math.min(100,effectiveAffinity+(drawAdds?.[i]??0)),criticalExpectation=hitAffinity>=0?1+hitAffinity/100*(criticalMultiplier-1):1+hitAffinity/100*.25;return {hit:i+1,hitAttackAdd:attackAdds?.[i]??0,techniqueId:source.techniqueId,mv,physical:(attack+shotAttackAdd+(attackAdds?.[i]??0))*mv/100*hz/100*range*mode*up*criticalExpectation*weaponPhysicalModifier,element:0,weaponPhysicalModifier,rangePhysicalModifier:range,normalModeModifier:mode,normalUpModifier:up,criticalExpectation,shotOrdinal:s.shotOrdinal??null,shotAttackAdd,shotAffinityAdd,effectiveAffinity:hitAffinity,drawAffinityAdd:drawAdds?.[i]??0,sharpnessApplied:false,weaponElementApplied:false};}),physical=trace.reduce((sum,h)=>sum+h.physical,0);
+  const trace=Array.from({length:ammo.hitCount},(_,i)=>{const hitAffinity=Math.min(100,effectiveAffinity+(drawAdds?.[i]??0)),criticalExpectation=hitAffinity>=0?1+hitAffinity/100*(criticalMultiplier-1):1+hitAffinity/100*.25;return {hit:i+1,hitAttackAdd:attackAdds?.[i]??0,techniqueId:source.techniqueId,mv,physical:physicalHit(attack+shotAttackAdd+(attackAdds?.[i]??0),mv,hz,criticalExpectation,range*mode*up*weaponPhysicalModifier),element:0,weaponPhysicalModifier,rangePhysicalModifier:range,normalModeModifier:mode,normalUpModifier:up,criticalExpectation,shotOrdinal:s.shotOrdinal??null,shotAttackAdd,shotAffinityAdd,effectiveAffinity:hitAffinity,drawAffinityAdd:drawAdds?.[i]??0,sharpnessApplied:false,weaponElementApplied:false};}),physical=trace.reduce((sum,h)=>sum+h.physical,0);
   return {status:'SOURCE_REFERENCE',profileId:prefix+'_NORMAL_AMMO_'+s.ammoLevel+'_THREE_CONTACT_REFERENCE',scope:rule.scope,comparisonPower:physical,physical,element:0,special:0,trace,state:{...s},skills:{normalUp,firstShot,forceShot},shotSkills:{shotAttackAdd,shotAffinityAdd,effectiveAffinity},ammoCapacityVerified:false,weaponApplicability:'UNVERIFIED',rounding:'UNROUNDED_REFERENCE',liveGameVerification:'PENDING',evidenceRefs:[...record.evidenceRefs,...source.evidenceRefs]};
  }
- const api=Object.freeze({shot,shotSkillBonuses});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowgunNormalReference=api;
+ function rapidHit(o,engine){
+  const record=engine.get('light-bowgun','LBG_NORMAL_RAPID_1'),rule=record?.rapidRule,s=o.state;
+  if(rule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isInteger(o.hitIndex)||o.hitIndex<0||o.hitIndex>=rule.hitCount)throw Error('LBG_RAPID:HIT_CONTRACT_INVALID');
+  if(s?.shotMode!=='RAPID'||s.rapidReady!==true||s.range!=='CRITICAL'||s.contactPolicy!=='ALL_FIVE'||s.weaponAmmoEntry?.rapid!==true)throw Error('LBG_RAPID:STATE_INVALID');
+  if(o.rapidUp!==0&&o.rapidUp!==rule.skillLevel)throw Error('LBG_RAPID:SKILL_LEVEL_INVALID');
+  const mv=valid(engine.get('light-bowgun',rule.sourceTechniqueId)?.specialSourceValues?.mvPerHit,0,100),attack=valid(o.attack,0,10000),hz=valid(o.physicalHitzone,0,100),aff=valid(o.affinity,-100,100),critMult=valid(o.criticalMultiplier,1,2),crit=aff>=0?1+aff/100*(critMult-1):1+aff/100*.25,up=o.rapidUp?rule.skillMultiplier:1;
+  const normalUpRules=engine.get('light-bowgun','LBG_NORMAL_REFERENCE_RULES')?.specialSourceValues?.normalUp,normalUpLevel=o.normalUp??0;
+  if(!Number.isInteger(normalUpLevel)||!Object.hasOwn(normalUpRules||{},normalUpLevel))throw Error('LBG_RAPID:NORMAL_UP_LEVEL_INVALID');
+  const normalUp=valid(normalUpRules[normalUpLevel],1,2);
+  const physical=physicalHit(attack,mv,hz,crit,rule.physicalModifier*rule.rangeModifier*up*normalUp);
+  return {comparisonPower:physical,physical,element:0,scope:rule.scope,state:{...s},trace:[{hit:o.hitIndex+1,mv,attack,affinity:aff,criticalExpectation:crit,physical,element:0,rapidModifier:rule.physicalModifier,rapidUp:up,normalUp,rangeModifier:rule.rangeModifier}],liveGameVerification:'PENDING'};
+ }
+ const api=Object.freeze({shot,shotSkillBonuses,rapidHit});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowgunNormalReference=api;
 })(typeof window!=='undefined'?window:globalThis);

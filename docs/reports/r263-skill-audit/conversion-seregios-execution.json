@@ -1,0 +1,126 @@
+{
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/conversion-seregios-proof.cjs after",
+  "before": {
+    "exitCode": 0,
+    "chunk": "d5ae9b",
+    "raw": "conversion-seregios-before.raw.json",
+    "meaning": "expected original conversion refusal asserted"
+  },
+  "after": {
+    "exitCode": 0,
+    "chunk": "515e91",
+    "raw": "conversion-seregios-after.raw.json",
+    "stderr": "conversion-seregios-after.stderr.txt"
+  },
+  "hashes": {
+    "index.html": "e37cceca3385c3c87c8004895228e54e531ac49cfde0aa2122fdeceaded6fe0f",
+    "hope-hammer-browser-adapter.js": "d7b5eb0800b8eb1a7774e9f9b6a771500463d8014462a470c39f400abc136516",
+    "./tools/conversion-seregios-proof.cjs": "64e0ae1572e49db73dc0d83f5385d440b510c4cf515730f6bf65b7c50d79ea06"
+  },
+  "summary": [
+    {
+      "case": "no-series",
+      "attack": {
+        "normal": 200,
+        "maximum": 210
+      },
+      "channels": {
+        "normal": {
+          "total": 1154.01,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        },
+        "maximum": {
+          "total": 1206.5,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        }
+      }
+    },
+    {
+      "case": "both",
+      "attack": {
+        "normal": 200,
+        "maximum": 220
+      },
+      "channels": {
+        "normal": {
+          "total": 1154.01,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        },
+        "maximum": {
+          "total": 1258.98,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        }
+      }
+    },
+    {
+      "case": "no-rush",
+      "attack": {
+        "normal": 200,
+        "maximum": 200
+      },
+      "channels": {
+        "normal": {
+          "total": 1154.01,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        },
+        "maximum": {
+          "total": 1154.01,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        }
+      }
+    },
+    {
+      "case": "dragon",
+      "attack": {
+        "normal": 200,
+        "maximum": 220
+      },
+      "channels": {
+        "normal": {
+          "total": 1144.54,
+          "elements": [
+            500,
+            500,
+            500
+          ]
+        },
+        "maximum": {
+          "total": 1283.6599999999999,
+          "elements": [
+            680,
+            680,
+            680
+          ]
+        }
+      }
+    }
+  ],
+  "negative": "valid GS captured input, rank3 active167 + recomputed unresolved plan -> THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED",
+  "comparison": "normal load matches; saved with/without series retain channels under shared conditions, active input unchanged",
+  "scope": "Synthetic four-slot rankII167 + Adrenaline Rush1; GS base attack200, thunder500/dragon500; no legal equipment/game claim",
+  "unexecuted": "rankI; other Rush levels, weapons, real equipment/game"
+}

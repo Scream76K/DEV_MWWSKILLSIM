@@ -1,0 +1,51 @@
+--- a/hope-hammer-browser-adapter.js
++++ b/hope-hammer-browser-adapter.js
+@@ -366,11 +366,11 @@
+   if(attributeConversionLevel){
+    if(!attributeRule||attributeRule.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isInteger(attributeConversionLevel)||attributeConversionLevel<1||attributeConversionLevel>3)return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_RULE_UNRESOLVED');
+    if(elementType!=='dragon'||isReferenceOnly||isShellingOnly||weapon.kind==='switch-axe'||resolvedTechniqueIds.some(id=>techniques[id]?.specialComponents?.length||root.ChargeBladeEngine?.techniques?.[id]?.phial))return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED');
+-   if((attributeState?.normal||attributeState?.maximum)&&(!Number.isInteger(elementValue+attributeRule.adds[attributeConversionLevel])||root.MHWElementCapRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(root.MHWElementCapRule?.flat)||!Number.isFinite(root.MHWElementCapRule?.multiplier)||gsChargeActive||activeBonusEffects.length||Number(stats.conditionalConditionPlan?.maximum?.element)!==Number(stats.element)))return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_CAP_INTERACTION_UNRESOLVED');
++   if((attributeState?.normal||attributeState?.maximum)&&(!Number.isInteger(elementValue+attributeRule.adds[attributeConversionLevel])||root.MHWElementCapRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(root.MHWElementCapRule?.flat)||!Number.isFinite(root.MHWElementCapRule?.multiplier)||activeBonusEffects.length||Number(stats.conditionalConditionPlan?.maximum?.element)!==Number(stats.element)))return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_CAP_INTERACTION_UNRESOLVED');
+   }
+ 
+   const resistanceConversionLevel=Math.max(...allSkills.filter(x=>x.skillKey==='resistanceConversionThunder').map(x=>x.level),0),resistanceInput=stats.thunderResistanceInput,thunderResistance=resistanceInput?.total,resistanceKinds={"great-sword":5,hammer:5,'hunting-horn':5,'light-bowgun':2,'heavy-bowgun':2},resistanceConversionCoefficient=resistanceKinds[weapon.kind]??4;
+-  let resistanceConversionAdd=0,resistanceConversionCapLimit=null;
++  let resistanceConversionAdd=0;
+   if(resistanceConversionLevel){
+    if(resistanceConversionLevel!==1)return fail('REAL_SLICE:THUNDER_RESISTANCE_CONVERSION_LEVEL_UNSUPPORTED');
+    if(elementType!=='thunder'||isReferenceOnly||isShellingOnly||weapon.kind==='switch-axe'||resolvedTechniqueIds.some(id=>(techniques[id]?.specialComponents?.length||root.ChargeBladeEngine?.techniques?.[id]?.phial)))return fail('REAL_SLICE:THUNDER_CONVERSION_BODY_SCOPE_UNSUPPORTED');
+@@ -378,15 +378,14 @@
+    resistanceConversionAdd=thunderResistance*resistanceConversionCoefficient;
+    // The adopted common engine caps this body element after the conversion flat.
+    const candidate=elementValue+resistanceConversionAdd,capRule=root.MHWElementCapRule;
+-   if(!Number.isInteger(candidate)||capRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(capRule?.flat)||!Number.isFinite(capRule?.multiplier)||activeBonusEffects.length||Number(stats.conditionalConditionPlan?.maximum?.element)!==Number(stats.element)||gsChargeActive)return fail('REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED');
+-   resistanceConversionCapLimit=Math.max(elementRawValue+capRule.flat,elementRawValue*capRule.multiplier);
++   if(!Number.isInteger(candidate)||capRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(capRule?.flat)||!Number.isFinite(capRule?.multiplier)||activeBonusEffects.length||Number(stats.conditionalConditionPlan?.maximum?.element)!==Number(stats.element))return fail('REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED');
+   }
+   if(elementSpecial && (!Number.isFinite(elementRawValue)||elementRawValue<0||!elementRule||stats.element!==elementValue||stats.elementType!==elementType))return fail('REAL_SLICE:CALCULATED_ELEMENT_NOT_PROVEN');
+   if(!elementSpecial && (!([0,null].includes(stats.element))||stats.elementType&&!['none',''].includes(String(stats.elementType))))return fail('REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN');
+   const versions={game:'1.042.00.02',equipment:'mhdb-source-unknown-game-version',technique:'tech-real',effects:'effects-real'};
+   const originalConditionPlan=stats.conditionalConditionPlan||null;
+   const resolvedConditionPlan=(resistanceConversionLevel||attributeConversionLevel)&&originalConditionPlan?{...originalConditionPlan,pending:(originalConditionPlan.pending||[]).filter(x=>!(resistanceConversionLevel&&x==='耐性変換【雷】:CONDITIONAL_DAMAGE_FORMULA_PENDING')&&!(attributeConversionLevel&&x==='属性変換:CONDITIONAL_DAMAGE_FORMULA_PENDING'))}:originalConditionPlan;
+-  let conditionPlan=gsChargeActive&&resolvedConditionPlan?{...originalConditionPlan,pending:(originalConditionPlan.pending||[]).filter(x=>!['チャージマスター:CONDITIONAL_DAMAGE_FORMULA_PENDING','Charge Master:CONDITIONAL_DAMAGE_FORMULA_PENDING'].includes(x))}:resolvedConditionPlan;
++  let conditionPlan=gsChargeActive&&resolvedConditionPlan?{...resolvedConditionPlan,pending:(resolvedConditionPlan.pending||[]).filter(x=>!['チャージマスター:CONDITIONAL_DAMAGE_FORMULA_PENDING','Charge Master:CONDITIONAL_DAMAGE_FORMULA_PENDING'].includes(x))}:resolvedConditionPlan;
+   if(conditionPlan&&(resistanceConversionLevel||attributeConversionLevel)&&conditionPlan.pending.length===0)conditionPlan.status='READY';
+   const explicitAffinityEntries=allSkills.filter(x=>x.skillKey==='explicitAffinity');
+   if(conditionPlan&&explicitAffinityEntries.length){const names=new Set(explicitAffinityEntries.flatMap(x=>Number(x.skillId)===39?['濡れ刃紋','Wet Blade Mark']:['抜刀術【技】','抜刀術[技]','Critical Draw']));const pending=conditionPlan.pending.filter(x=>!names.has(x.split(':')[0]));conditionPlan={...conditionPlan,pending,status:pending.length?conditionPlan.status:'READY'};}
+@@ -630,8 +629,14 @@
+ if(gsChargeActive)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',chargeMasterAdoption:gsCharge};
+ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',artiaAdoption:weapon.artiaCalculationEvidence};
+    for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,armorThunderResistanceInput:equipment.armorThunderResistanceInput};
+-   if(resistanceConversionLevel)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',thunderResistanceConversion:{input:resistanceInput,baseElement:elementValue,effectiveElement:Math.min(elementValue+resistanceConversionAdd,resistanceConversionCapLimit),uncappedElement:elementValue+resistanceConversionAdd,capLimit:resistanceConversionCapLimit,add:resistanceConversionAdd,source:'https://kuroyonhon.com/mhwilds/program/skill.php',eligibilitySource:'https://kuroyonhon.com/mhwilds/memo/31.php',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',verificationStatus:'UNVERIFIED',scope:'THUNDER_WEAPON_BODY_EQUIPMENT_ONLY_NO_FOOD_TEMPORARY_OR_AMMO'}};
+-   if(attributeConversionLevel)for(const [ch,result] of Object.entries(evaluated.channels||{})){result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',referenceOnly:true,referenceScope:attributeRule.scope,attributeConversion:{...attributeRule,active:attributeState?.[ch]??null,baseElement:elementValue,effectiveElement:typeof attributeState?.[ch]==='boolean'?elementValue+(attributeState[ch]?attributeRule.adds[attributeConversionLevel]:0):null,excludedComponents:['FIXED_FOLLOWUP','DRAGON_FOLLOWUP']}};if(result.metrics?.comboTotalDamage)result.metrics.comboTotalDamage.scope='BODY_ONLY_REFERENCE';}
++   // Report executed body-element inputs, including CM, rather than reconstructing a pre-CM value.
++   const conversionElementDiagnostic=result=>{
++    const values=(result.components||[]).filter(c=>c.status==='available'&&Number.isFinite(c.details?.appliedElement)).map(c=>({componentId:c.id,effectiveElement:c.details.appliedElement,uncappedElement:c.details.elementComponents?.uncapped,capLimit:c.details.elementComponents?.capLimit}));
++    const common=key=>result.execution?.status==='complete'&&values.length&&values.every(x=>Number.isFinite(x[key])&&x[key]===values[0][key])?values[0][key]:null;
++    return {effectiveElement:common('effectiveElement'),uncappedElement:common('uncappedElement'),capLimit:common('capLimit'),componentElements:values};
++   };
++   if(resistanceConversionLevel)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',thunderResistanceConversion:{input:resistanceInput,baseElement:elementValue,...conversionElementDiagnostic(result),add:resistanceConversionAdd,source:'https://kuroyonhon.com/mhwilds/program/skill.php',eligibilitySource:'https://kuroyonhon.com/mhwilds/memo/31.php',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',verificationStatus:'UNVERIFIED',scope:'THUNDER_WEAPON_BODY_EQUIPMENT_ONLY_NO_FOOD_TEMPORARY_OR_AMMO'}};
++   if(attributeConversionLevel)for(const [ch,result] of Object.entries(evaluated.channels||{})){result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',referenceOnly:true,referenceScope:attributeRule.scope,attributeConversion:{...attributeRule,active:attributeState?.[ch]??null,baseElement:elementValue,...conversionElementDiagnostic(result),excludedComponents:['FIXED_FOLLOWUP','DRAGON_FOLLOWUP']}};if(result.metrics?.comboTotalDamage)result.metrics.comboTotalDamage.scope='BODY_ONLY_REFERENCE';}
+    return evaluated;}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
+  }
+  // Reuse the adopted whole-route health comparison; never mix component maxima.

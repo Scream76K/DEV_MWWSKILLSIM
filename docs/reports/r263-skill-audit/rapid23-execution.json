@@ -1,0 +1,189 @@
+{
+  "status": "LOCAL_MINIMAL_PASS_REVIEW_PENDING",
+  "approval": "Sentinel_0985d184016c8191984a6856057b3370",
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/rapid23-proof.cjs",
+  "bundleCommand": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/build-himmel-real-browser-bundle.cjs",
+  "bundleExit": 0,
+  "runs": [
+    {
+      "output": "rapid23-before.json",
+      "exitCode": 1,
+      "note": "Expected missing public technique"
+    },
+    {
+      "output": "rapid23-attempt1.json",
+      "exitCode": 1,
+      "note": "Duplicate variable name rapidRule syntax failure; renamed new rapid rule binding"
+    },
+    {
+      "output": "rapid23-attempt2.json",
+      "exitCode": 1,
+      "note": "Renaming changed DB property reference; corrected property"
+    },
+    {
+      "output": "rapid23-attempt3.json",
+      "exitCode": 1,
+      "note": "New record created before expansion; moved after source record expansion"
+    },
+    {
+      "output": "rapid23-attempt4.json",
+      "exitCode": 1,
+      "note": "Product succeeded; harness referenced totals instead of metrics; harness corrected"
+    },
+    {
+      "output": "rapid23-attempt5.json",
+      "exitCode": 0,
+      "note": "Minimal assertions passed; final record metadata then made explicitly rapid-specific"
+    },
+    {
+      "output": "rapid23-after.json",
+      "exitCode": 0,
+      "note": "Final source minimal proof passed"
+    }
+  ],
+  "sourceHashes": {
+    "index.html": "f75fcdc59a5e84ba3efe52fb89b53ebe07d5403d3c89b43c4241ad045410de16",
+    "hope-hammer-browser-adapter.js": "9a7c121af35e161e78ab9d1800a1cc8a8bb26c49b5a23466534053b537188206",
+    "bowgun-normal-reference.js": "8180051f128badeb330cb418e9d18a15de2b333843c7353134fbdbf1f5e866fa",
+    "himmel-real-browser-bundle.js": "0c9473f29e3a3644c10312ad88bf136109fedca1ee8f7680772999327208e8fa",
+    "v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs": "f4fa781da51574b6a27a3449b20ad5183832148e14d6034bb6d59165607d2028",
+    "v10-six-layer-foundation/min8/real-one-hit-pipeline.cjs": "987548102d34c38c7ac65468ea9d991b8fcb5620c6827e17375a3e6e3207d398",
+    "./tools/rapid23-proof.cjs": "f2978f53214a1cdf20b68870f554e1ef52dd37b55972302a4baf19f56c4feac4"
+  },
+  "patchSHA256": "c9aa89c8ce53b31f03ef124712a80c320f01287f6011ad7566015b4224105f85",
+  "results": [
+    {
+      "case": "off",
+      "channels": {
+        "normal": {
+          "metric": {
+            "status": "available",
+            "value": 50.05854
+          },
+          "finalState": {
+            "lightBowgun": {
+              "loadedRounds": 1
+            }
+          }
+        },
+        "maximum": {
+          "metric": {
+            "status": "available",
+            "value": 52.390702
+          },
+          "finalState": {
+            "lightBowgun": {
+              "loadedRounds": 1
+            }
+          }
+        }
+      },
+      "reason": null
+    },
+    {
+      "case": "up",
+      "channels": {
+        "normal": {
+          "metric": {
+            "status": "available",
+            "value": 52.56146700000001
+          },
+          "finalState": {
+            "lightBowgun": {
+              "loadedRounds": 1
+            }
+          }
+        },
+        "maximum": {
+          "metric": {
+            "status": "available",
+            "value": 55.0102371
+          },
+          "finalState": {
+            "lightBowgun": {
+              "loadedRounds": 1
+            }
+          }
+        }
+      },
+      "reason": null
+    },
+    {
+      "case": "missing",
+      "channels": {},
+      "reason": "LBG_RAPID:START_CONDITION_REQUIRED"
+    },
+    {
+      "case": "empty",
+      "channels": {},
+      "reason": "LBG_RAPID:LOADED_ROUNDS_INVALID_OR_INSUFFICIENT"
+    },
+    {
+      "case": "badLevel",
+      "channels": {},
+      "reason": "LBG_RAPID:SKILL_CONTRACT_INVALID"
+    },
+    {
+      "case": "twoSavedComparison",
+      "channels": {},
+      "reason": null
+    },
+    {
+      "case": "injectedMaximumThirdHit",
+      "channels": {
+        "normal": {
+          "metric": {
+            "status": "available",
+            "value": 52.56146700000001
+          },
+          "finalState": {
+            "lightBowgun": {
+              "loadedRounds": 1
+            }
+          }
+        },
+        "maximum": {
+          "metric": {
+            "status": "unavailable",
+            "reason": "EXECUTION_INCOMPLETE"
+          },
+          "finalState": {
+            "lightBowgun": {
+              "loadedRounds": 2
+            }
+          }
+        }
+      },
+      "reason": null
+    },
+    {
+      "case": "nonrapid",
+      "channels": {
+        "normal": {
+          "metric": {
+            "status": "available",
+            "value": 34.325856
+          },
+          "finalState": {}
+        },
+        "maximum": {
+          "metric": {
+            "status": "available",
+            "value": 35.9250528
+          },
+          "finalState": {}
+        }
+      },
+      "reason": null
+    }
+  ],
+  "scope": "Synthetic JSDOM public calcBuild; not legal equipment/game verification",
+  "failureInjection": "Test-only replacement of public Formula object at maximum third Hit; restored, no permanent product injection",
+  "unexecuted": [
+    "real browser",
+    "live game",
+    "equipment legality",
+    "all other rapid ammunition",
+    "beta-wide regression"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/water-conversion-public-proof.cjs",
+  "exitCode": 0,
+  "chunkId": "449186",
+  "hashes": {
+    "index.html": "51ff8683e6205f55e4904668a790195e3a34ab9893f918a6a5b13ec05cd141a9",
+    "hope-hammer-browser-adapter.js": "56ee0db62e9e3aa70bb8d8d08a0e5050db1f81b440ed774ad436210e23be9431",
+    "./tools/water-conversion-public-proof.cjs": "1ad9841464817a7d2de2bf95093c07e2dfa9c03f62024a4c7858f31de10e0662"
+  },
+  "scope": "Synthetic water500 LS/Bow and armor resistance10/200/-30; no legal-equipment or game verification",
+  "approval": "Sentinel_a09cfc211a288191aac6ddbf7ee73dd7",
+  "priorFailures": [
+    {
+      "chunk": "f87e0f",
+      "exitCode": 1,
+      "cause": "water resistance84 producer consumed but applicability entry unresolved",
+      "stderr": "water-conversion-initial.stderr.txt"
+    },
+    {
+      "chunk": "bf2bdc",
+      "exitCode": 1,
+      "cause": "water/thunder combined pending alias; split and remove only validated water pending",
+      "stderr": "water-conversion-alias.stderr.txt"
+    },
+    {
+      "chunk": "d92145",
+      "exitCode": 1,
+      "cause": "harness compared generated savedAt timestamp; use existing comparable snapshot",
+      "stderr": "water-conversion-snapshot.stderr.txt"
+    },
+    {
+      "chunk": "5b4cdf",
+      "exitCode": 1,
+      "cause": "Bow reference effective element not exposed in adapter details; retain actual formula output",
+      "stderr": "water-conversion-bow-diagnostic.stderr.txt"
+    }
+  ],
+  "evidence": {
+    "water-conversion-after.raw.json": "4246e3958c31f13814e2811745e6eb25d49be66b4e1fcd132b418d7f3ff6ab68",
+    "water-conversion-after.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "water-conversion.patch": "c57aa50f2395f9f9654f2f85b26dcbb79c767edbeaed999cf4ec9ef26cdfdf0e"
+  },
+  "retainedOutputCheck": "all applicable component effects contain water flat exactly once; no pipeline rerun",
+  "reviewCorrection": {
+    "priorClaimCorrection": "Original outside case stopped at TECHNIQUE_NOT_FOUND; it did not prove water rule rejection. Original raw preserved.",
+    "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/water-conversion-review-boundaries.cjs",
+    "exitCode": 0,
+    "chunkId": "a7b4f0",
+    "hashes": {
+      "index.html": "51ff8683e6205f55e4904668a790195e3a34ab9893f918a6a5b13ec05cd141a9",
+      "hope-hammer-browser-adapter.js": "56ee0db62e9e3aa70bb8d8d08a0e5050db1f81b440ed774ad436210e23be9431",
+      "./tools/water-conversion-review-boundaries.cjs": "800100f37ca035a53716339f2d6efe9ae8b8250c4b8ecb8851e549b2b7dd0de3"
+    },
+    "outsideReason": "REAL_SLICE:WATER_CONVERSION_SCOPE_UNSUPPORTED",
+    "thunderExpected": {
+      "add": 350,
+      "effectiveElement": 850,
+      "total": 1210.96
+    },
+    "unexecuted": "nonwater and missing-resistance rejection are static-only",
+    "evidence": {
+      "water-conversion-review.raw.json": "4d10681ff4ecb677b1939b0a027c89cc2e24b999ff004dd57b21d83fb18a986e",
+      "water-conversion-review.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

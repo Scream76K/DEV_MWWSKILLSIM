@@ -1,0 +1,11 @@
+# ID7 AED-derived SAED: local review pending
+
+Owner approved 2026-10-30: CB_SAED_AED_DERIVED single event with previousAction=CB_AED. No earlier AED predecessor history inferred. Existing CB_SAED/GUARD preserved. Other/unknown predecessor and repeated sequence not adopted. All body3Hit use existing RapidMorph Lv multiplier once before flat; elements/phials/attack additions unchanged. Provisional, no live-game verification.
+
+Source https://kuroyonhon.com/mhwilds/memo/12.php lists ordinary and RapidMorph-specific AED-derived body16/78/45 identically; memo/26.php defines the separate attack multiplier. Existing index CB reference constructor copies base.hits after exact [[16,1],[78,1],[45,1]] validation, with no RapidMorph multiplication. Shared L3 RapidMorph techniqueIds exclude both SAEDs, so dedicated body multiplier is not duplicated. Engine/DB coefficients/consumption/F01 unchanged.
+
+Replaced single predecessor fields with a two-entry frozen lookup in existing limited adoption record; outer technique admission and inner origin/single-event guard consult it. Existing SAED consumer keeps attack-components validation and applies base*existingMult*RapidMorph+flat. Historical rule name retained for compatibility. No new multiplier source. Metadata separates remaining other/unspecified AED-derived origin from accepted CB_AED.
+
+Public JSDOM calcBuild: synthetic CB103 with Attack5, Agitator1, RapidMorph3. Excluded PunishingDraw stays saved but has zero impact. Two saved on/off builds, normal load and shared previousAction/conditions compare, current state/storage unchanged. Before rejected at outer RAPID_MORPH_TECHNIQUE_SCOPE_UNRESOLVED; after available. Missing/SHIELD_THRUST/GUARD on AED-derived reject via origin guard. Lv1 missing predecessor unchanged from no skill. Existing CB_SAED+GUARD available with body multiplier1.2. Both commands exit0, no failed runs in this batch.
+
+The source/DB motion values are not multiplied copies; live-game applicability/order remains owner-provisional. No Lv2 execution, Mind's Eye combination, repeated-sequence runtime, F01 injection, Safari or full regression. Repeated-sequence guard remains statically count===1. No commit/push/integration. ID7 partial maintained until review; 80complete/2partial/3owner-excluded unchanged.

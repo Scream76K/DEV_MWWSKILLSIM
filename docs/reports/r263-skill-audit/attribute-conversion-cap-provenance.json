@@ -1,0 +1,17 @@
+{
+  "rawFile": "attribute-conversion-cap-after.raw.json",
+  "rawSHA256": "234b53b1bf11ac1e2b9d3c93b6ce1b0daac8aea6dfe0802fa4a323e384277276",
+  "derivedFile": "attribute-conversion-cap-after.json",
+  "transformation": "phase=after; adapterSHA256=raw.hash; result=raw.before.result; input is descriptive contract label",
+  "command": "node tools/attribute-conversion-cap-connection-proof.cjs after",
+  "exitCode": 0,
+  "exitCodeEvidence": "Original exec tool result chunk aba61c: exit_code=0; not a newly executed run",
+  "proofFile": "tools/attribute-conversion-cap-connection-proof.cjs",
+  "proofSHA256": "4047672b0248be9a366cfece1857cd2be549d9e5358bd5d347e5fcfc1fbe8a95",
+  "sourceHashes": {
+    "adapter": "cf495dad5ac30607952f2ea5eedde35da0c614c27d2396199f41dc38eaa98017",
+    "index.html": "b65c0b3d3c1c47da1803974e4399a7d9eb6c2156eb5ba56c6635f8983d35074f"
+  },
+  "saveReloadEvidence": "proof after branch calls applyBuildSnapshot(before.snapshot), calcBuild, assert.deepEqual(channels,before.result.channels) before printing raw output. Original stdout retained unchanged; no post-load object was serialized.",
+  "reexecuted": false
+}

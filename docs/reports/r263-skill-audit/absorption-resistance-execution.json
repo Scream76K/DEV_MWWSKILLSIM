@@ -1,0 +1,53 @@
+{
+  "scope": "Owner-approved133 same absorbed element three hits maximum only; no variable count, monster inference, mixed/random hits or ammo extension",
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/absorption-resistance-proof.cjs <before|after>",
+  "runs": [
+    {
+      "mode": "before",
+      "exitCode": 0,
+      "toolChunk": "aba345",
+      "raw": "absorption-resistance-before.raw.json"
+    },
+    {
+      "mode": "after",
+      "exitCode": 1,
+      "toolChunk": "3329da",
+      "reason": "Harness compared changing savedAt timestamp; product comparisons had passed until final state assertion",
+      "stderr": "absorption-resistance-timestamp-assert.stderr.txt"
+    },
+    {
+      "mode": "after",
+      "exitCode": 0,
+      "toolChunk": "5676a8",
+      "raw": "absorption-resistance-after.raw.json",
+      "stderr": "absorption-resistance-after.stderr.txt"
+    }
+  ],
+  "hashes": {
+    "index.html": "8081801821a485b5468ed36dd33a43c605618c0c6224d511f92d510ad4c22fd3",
+    "hope-hammer-browser-adapter.js": "defcc6096c17841fbf1743bc01748f42776fe1e72976e630fdc658e348ce6a45",
+    "tools/absorption-resistance-proof.cjs": "c5d26767d1f6dfff25d5df02b67b87ede8787c03d87d0ee62318c394493f0295"
+  },
+  "source": "MHDB133 rank description +4/+6/+8; existing STANDARD_ELEMENT_ABSORPTION_SOURCE.maximumHitCount=3; https://kuroyonhon.com/mhwilds/program/skill.php",
+  "approval": "2026-10-29 10:23 JST Sentinel_532b68435ea8819184f8b4e2254e383d",
+  "limits": [
+    "LS water Lv3, Bow water Lv1, GS thunder Lv1 synthetic contract cases; not legal equipment/live game validation",
+    "Lv2 static only; no all-weapon/all-level run",
+    "Unknown selector value follows missing-input branch; unspecified executed",
+    "Previous cumulative smoke predates this product change; no latest-source global PASS"
+  ],
+  "eventAndAdditionalRoutes": {
+    "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/absorption-resistance-event-proof.cjs",
+    "exitCode": 0,
+    "toolChunk": "8d2af8",
+    "raw": "absorption-resistance-event.raw.json",
+    "stderr": "absorption-resistance-event.stderr.txt",
+    "hashes": {
+      "index.html": "8081801821a485b5468ed36dd33a43c605618c0c6224d511f92d510ad4c22fd3",
+      "hope-hammer-browser-adapter.js": "defcc6096c17841fbf1743bc01748f42776fe1e72976e630fdc658e348ce6a45",
+      "./tools/absorption-resistance-event-proof.cjs": "89f890b7f2990ef6630ff0a09220018da3fd5366e7c0144c13285475ae35b023"
+    },
+    "environment": "Isolated JSDOM; actual select change event executes inline onchange -> calcBuild -> public adapter. Not live browser/Safari.",
+    "scope": "Bow water Lv1 and GS thunder Lv1, two contract cases only"
+  }
+}

@@ -1,0 +1,598 @@
+node:assert:152
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+... Skipped lines
+
+  {
+    maximum: {
+      components: [
+        {
+          coefficientUnit: 'REFERENCE',
+...
+            displayHits: [
++             235.5,
++             50.2
+-             247.5,
+-             53.8
+            ],
+            evidenceRefs: [
+              'KAN23_OWNER_TWO_HIT_FIX_22_CONDITIONS'
+            ],
+            gameVersion: null,
+...
+                mv: 80,
++               p: 223.52000000000004,
++               total: 235.52000000000004
+-               p: 235.52000000000004,
+-               total: 247.52000000000004
+              },
+              {
+                artilleryTarget: false,
+                component: 'RAW_AND_FIRE',
+                criticalState: 'NO_CRITICAL',
++               e: 9,
+-               e: 9.72,
+                fireSkillTarget: true,
++               fireValue: 300,
+-               fireValue: 324,
+                mv: 19,
++               p: 41.230000000000004,
++               total: 50.230000000000004
+-               p: 44.08,
+-               total: 53.8
+              }
+            ],
+            scope: 'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',
+            shotOrderAdoption: {
+              approvalRefs: [
+...
+              shotAffinityAdd: 0,
++             shotAttackAdd: 0,
++             shotElementMultiplier: 1
+-             shotAttackAdd: 15,
+-             shotElementMultiplier: 1.1
+            },
++           total: 285.75000000000006,
+-           total: 301.32000000000005,
+            verificationStatus: 'PROVISIONAL'
+          },
+          disposition: 'emitted',
+          effectsApplied: [
+            {
+...
+          techniqueId: 'HBG_WYVERN_AMMO',
++         value: 285.75000000000006
+-         value: 301.32000000000005
+        }
+      ],
+      diagnostics: {
+        armorThunderResistanceInput: {
+          armorBase: 0,
+...
+          status: 'available',
++         value: 285.75000000000006
+-         value: 301.32000000000005
+        }
+      }
+    },
+    normal: {
+      components: [
+...
+            displayHits: [
++             235.5,
++             50.2
+-             247.5,
+-             53.8
+            ],
+            evidenceRefs: [
+              'KAN23_OWNER_TWO_HIT_FIX_22_CONDITIONS'
+            ],
+            gameVersion: null,
+...
+                mv: 80,
++               p: 223.52000000000004,
++               total: 235.52000000000004
+-               p: 235.52000000000004,
+-               total: 247.52000000000004
+              },
+              {
+                artilleryTarget: false,
+                component: 'RAW_AND_FIRE',
+                criticalState: 'NO_CRITICAL',
++               e: 9,
+-               e: 9.72,
+                fireSkillTarget: true,
++               fireValue: 300,
+-               fireValue: 324,
+                mv: 19,
++               p: 41.230000000000004,
++               total: 50.230000000000004
+-               p: 44.08,
+-               total: 53.8
+              }
+            ],
+            scope: 'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',
+            shotOrderAdoption: {
+              approvalRefs: [
+...
+              shotAffinityAdd: 0,
++             shotAttackAdd: 0,
++             shotElementMultiplier: 1
+-             shotAttackAdd: 15,
+-             shotElementMultiplier: 1.1
+            },
++           total: 285.75000000000006,
+-           total: 301.32000000000005,
+            verificationStatus: 'PROVISIONAL'
+          },
+          disposition: 'emitted',
+          effectsApplied: [
+            {
+...
+          techniqueId: 'HBG_WYVERN_AMMO',
++         value: 285.75000000000006
+-         value: 301.32000000000005
+        }
+      ],
+      diagnostics: {
+        armorThunderResistanceInput: {
+          armorBase: 0,
+...
+          status: 'available',
++         value: 285.75000000000006
+-         value: 301.32000000000005
+        }
+      }
+    }
+  }
+
+    at Object.<anonymous> (./tools/wyvern-shot-order-proof.cjs:17:63)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: {
+    normal: {
+      execution: {
+        status: 'complete',
+        expected: [ '0:0' ],
+        executed: [ '0:0' ],
+        reason: null
+      },
+      components: [
+        {
+          id: 'HBG_WYVERN_AMMO:reference:0',
+          eventId: '0:0',
+          techniqueId: 'HBG_WYVERN_AMMO',
+          revision: '2',
+          source: 'KAN23_OWNER_TWO_HIT_FIX_22_CONDITIONS',
+          coefficientUnit: 'REFERENCE',
+          damageUnit: 'damage',
+          status: 'available',
+          value: 285.75000000000006,
+          details: {
+            shotSkills: [Object],
+            shotOrderAdoption: [Object],
+            total: 285.75000000000006,
+            hits: [Array],
+            displayHits: [Array],
+            attackComponents: [Object],
+            verificationStatus: 'PROVISIONAL',
+            adoptionStatus: 'PROVISIONAL',
+            evidenceRefs: [Array],
+            scope: 'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',
+            gameVersion: null
+          },
+          disposition: 'emitted',
+          effectsApplied: [ [Object], [Object], [Object] ]
+        }
+      ],
+      issues: [],
+      finalState: {},
+      effectPlan: {
+        effects: [
+          {
+            id: 'attack-boost-multiply',
+            target: 'physical',
+            stage: 'attack',
+            unit: 'dimensionless',
+            amount: 1.04,
+            operation: 'multiply',
+            order: 10,
+            source: 'index.html:calcAttackSkill',
+            condition: [Object]
+          },
+          {
+            id: 'attack-boost-flat',
+            target: 'physical',
+            stage: 'attack',
+            unit: 'true-attack',
+            amount: 9,
+            operation: 'add',
+            order: 40,
+            source: 'index.html:calcAttackSkill',
+            condition: [Object]
+          },
+          {
+            id: 'affinity-upper-cap',
+            target: 'physical',
+            stage: 'affinity',
+            unit: 'percent',
+            operation: 'cap',
+            amount: 100,
+            order: 100,
+            source: 'index.html:calcMaxAffinity;common critical probability upper bound',
+            condition: [Object]
+          },
+          {
+            id: 'affinity-upper-cap-element',
+            target: 'element',
+            stage: 'affinity',
+            unit: 'percent',
+            operation: 'cap',
+            amount: 100,
+            order: 100,
+            source: 'index.html:calcMaxAffinity;common critical probability upper bound',
+            condition: [Object]
+          }
+        ],
+        unresolved: []
+      },
+      diagnostics: {
+        formalStatus: 'PROVISIONAL',
+        provisionalEffects: [],
+        referenceOnly: true,
+        referenceScope: 'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',
+        liveGameVerification: 'PENDING',
+        armorThunderResistanceInput: {
+          status: 'ARMOR_BASE_ONLY',
+          armorBase: 0,
+          total: null,
+          rows: [ [Object], [Object], [Object], [Object], [Object] ],
+          missing: [],
+          reason: 'SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED'
+        }
+      },
+      metrics: {
+        comboTotalDamage: { status: 'available', value: 285.75000000000006 },
+        comboDuration: { status: 'unavailable', reason: 'DURATION_UNAVAILABLE' },
+        comboDps: { status: 'unavailable', reason: 'DURATION_UNAVAILABLE' }
+      }
+    },
+    maximum: {
+      execution: {
+        status: 'complete',
+        expected: [ '0:0' ],
+        executed: [ '0:0' ],
+        reason: null
+      },
+      components: [
+        {
+          id: 'HBG_WYVERN_AMMO:reference:0',
+          eventId: '0:0',
+          techniqueId: 'HBG_WYVERN_AMMO',
+          revision: '2',
+          source: 'KAN23_OWNER_TWO_HIT_FIX_22_CONDITIONS',
+          coefficientUnit: 'REFERENCE',
+          damageUnit: 'damage',
+          status: 'available',
+          value: 285.75000000000006,
+          details: {
+            shotSkills: [Object],
+            shotOrderAdoption: [Object],
+            total: 285.75000000000006,
+            hits: [Array],
+            displayHits: [Array],
+            attackComponents: [Object],
+            verificationStatus: 'PROVISIONAL',
+            adoptionStatus: 'PROVISIONAL',
+            evidenceRefs: [Array],
+            scope: 'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',
+            gameVersion: null
+          },
+          disposition: 'emitted',
+          effectsApplied: [ [Object], [Object], [Object] ]
+        }
+      ],
+      issues: [],
+      finalState: {},
+      effectPlan: {
+        effects: [
+          {
+            id: 'attack-boost-multiply',
+            target: 'physical',
+            stage: 'attack',
+            unit: 'dimensionless',
+            amount: 1.04,
+            operation: 'multiply',
+            order: 10,
+            source: 'index.html:calcAttackSkill',
+            condition: [Object]
+          },
+          {
+            id: 'attack-boost-flat',
+            target: 'physical',
+            stage: 'attack',
+            unit: 'true-attack',
+            amount: 9,
+            operation: 'add',
+            order: 40,
+            source: 'index.html:calcAttackSkill',
+            condition: [Object]
+          },
+          {
+            id: 'affinity-upper-cap',
+            target: 'physical',
+            stage: 'affinity',
+            unit: 'percent',
+            operation: 'cap',
+            amount: 100,
+            order: 100,
+            source: 'index.html:calcMaxAffinity;common critical probability upper bound',
+            condition: [Object]
+          },
+          {
+            id: 'affinity-upper-cap-element',
+            target: 'element',
+            stage: 'affinity',
+            unit: 'percent',
+            operation: 'cap',
+            amount: 100,
+            order: 100,
+            source: 'index.html:calcMaxAffinity;common critical probability upper bound',
+            condition: [Object]
+          }
+        ],
+        unresolved: []
+      },
+      diagnostics: {
+        formalStatus: 'PROVISIONAL',
+        provisionalEffects: [],
+        referenceOnly: true,
+        referenceScope: 'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',
+        liveGameVerification: 'PENDING',
+        armorThunderResistanceInput: {
+          status: 'ARMOR_BASE_ONLY',
+          armorBase: 0,
+          total: null,
+          rows: [ [Object], [Object], [Object], [Object], [Object] ],
+          missing: [],
+          reason: 'SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED'
+        }
+      },
+      metrics: {
+        comboTotalDamage: { status: 'available', value: 285.75000000000006 },
+        comboDuration: { status: 'unavailable', reason: 'DURATION_UNAVAILABLE' },
+        comboDps: { status: 'unavailable', reason: 'DURATION_UNAVAILABLE' }
+      }
+    }
+  },
+  expected: {
+    normal: {
+      execution: {
+        status: 'complete',
+        expected: [ '0:0' ],
+        executed: [ '0:0' ],
+        reason: null
+      },
+      components: [
+        {
+          id: 'HBG_WYVERN_AMMO:reference:0',
+          eventId: '0:0',
+          techniqueId: 'HBG_WYVERN_AMMO',
+          revision: '2',
+          source: 'KAN23_OWNER_TWO_HIT_FIX_22_CONDITIONS',
+          coefficientUnit: 'REFERENCE',
+          damageUnit: 'damage',
+          status: 'available',
+          value: 301.32000000000005,
+          details: {
+            shotSkills: [Object],
+            shotOrderAdoption: [Object],
+            total: 301.32000000000005,
+            hits: [Array],
+            displayHits: [Array],
+            attackComponents: [Object],
+            verificationStatus: 'PROVISIONAL',
+            adoptionStatus: 'PROVISIONAL',
+            evidenceRefs: [Array],
+            scope: 'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',
+            gameVersion: null
+          },
+          disposition: 'emitted',
+          effectsApplied: [ [Object], [Object], [Object] ]
+        }
+      ],
+      issues: [],
+      finalState: {},
+      effectPlan: {
+        effects: [
+          {
+            id: 'attack-boost-multiply',
+            target: 'physical',
+            stage: 'attack',
+            unit: 'dimensionless',
+            amount: 1.04,
+            operation: 'multiply',
+            order: 10,
+            source: 'index.html:calcAttackSkill',
+            condition: [Object]
+          },
+          {
+            id: 'attack-boost-flat',
+            target: 'physical',
+            stage: 'attack',
+            unit: 'true-attack',
+            amount: 9,
+            operation: 'add',
+            order: 40,
+            source: 'index.html:calcAttackSkill',
+            condition: [Object]
+          },
+          {
+            id: 'affinity-upper-cap',
+            target: 'physical',
+            stage: 'affinity',
+            unit: 'percent',
+            operation: 'cap',
+            amount: 100,
+            order: 100,
+            source: 'index.html:calcMaxAffinity;common critical probability upper bound',
+            condition: [Object]
+          },
+          {
+            id: 'affinity-upper-cap-element',
+            target: 'element',
+            stage: 'affinity',
+            unit: 'percent',
+            operation: 'cap',
+            amount: 100,
+            order: 100,
+            source: 'index.html:calcMaxAffinity;common critical probability upper bound',
+            condition: [Object]
+          }
+        ],
+        unresolved: []
+      },
+      diagnostics: {
+        formalStatus: 'PROVISIONAL',
+        provisionalEffects: [],
+        referenceOnly: true,
+        referenceScope: 'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',
+        liveGameVerification: 'PENDING',
+        armorThunderResistanceInput: {
+          status: 'ARMOR_BASE_ONLY',
+          armorBase: 0,
+          total: null,
+          rows: [ [Object], [Object], [Object], [Object], [Object] ],
+          missing: [],
+          reason: 'SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED'
+        }
+      },
+      metrics: {
+        comboTotalDamage: { status: 'available', value: 301.32000000000005 },
+        comboDuration: { status: 'unavailable', reason: 'DURATION_UNAVAILABLE' },
+        comboDps: { status: 'unavailable', reason: 'DURATION_UNAVAILABLE' }
+      }
+    },
+    maximum: {
+      execution: {
+        status: 'complete',
+        expected: [ '0:0' ],
+        executed: [ '0:0' ],
+        reason: null
+      },
+      components: [
+        {
+          id: 'HBG_WYVERN_AMMO:reference:0',
+          eventId: '0:0',
+          techniqueId: 'HBG_WYVERN_AMMO',
+          revision: '2',
+          source: 'KAN23_OWNER_TWO_HIT_FIX_22_CONDITIONS',
+          coefficientUnit: 'REFERENCE',
+          damageUnit: 'damage',
+          status: 'available',
+          value: 301.32000000000005,
+          details: {
+            shotSkills: [Object],
+            shotOrderAdoption: [Object],
+            total: 301.32000000000005,
+            hits: [Array],
+            displayHits: [Array],
+            attackComponents: [Object],
+            verificationStatus: 'PROVISIONAL',
+            adoptionStatus: 'PROVISIONAL',
+            evidenceRefs: [Array],
+            scope: 'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',
+            gameVersion: null
+          },
+          disposition: 'emitted',
+          effectsApplied: [ [Object], [Object], [Object] ]
+        }
+      ],
+      issues: [],
+      finalState: {},
+      effectPlan: {
+        effects: [
+          {
+            id: 'attack-boost-multiply',
+            target: 'physical',
+            stage: 'attack',
+            unit: 'dimensionless',
+            amount: 1.04,
+            operation: 'multiply',
+            order: 10,
+            source: 'index.html:calcAttackSkill',
+            condition: [Object]
+          },
+          {
+            id: 'attack-boost-flat',
+            target: 'physical',
+            stage: 'attack',
+            unit: 'true-attack',
+            amount: 9,
+            operation: 'add',
+            order: 40,
+            source: 'index.html:calcAttackSkill',
+            condition: [Object]
+          },
+          {
+            id: 'affinity-upper-cap',
+            target: 'physical',
+            stage: 'affinity',
+            unit: 'percent',
+            operation: 'cap',
+            amount: 100,
+            order: 100,
+            source: 'index.html:calcMaxAffinity;common critical probability upper bound',
+            condition: [Object]
+          },
+          {
+            id: 'affinity-upper-cap-element',
+            target: 'element',
+            stage: 'affinity',
+            unit: 'percent',
+            operation: 'cap',
+            amount: 100,
+            order: 100,
+            source: 'index.html:calcMaxAffinity;common critical probability upper bound',
+            condition: [Object]
+          }
+        ],
+        unresolved: []
+      },
+      diagnostics: {
+        formalStatus: 'PROVISIONAL',
+        provisionalEffects: [],
+        referenceOnly: true,
+        referenceScope: 'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',
+        liveGameVerification: 'PENDING',
+        armorThunderResistanceInput: {
+          status: 'ARMOR_BASE_ONLY',
+          armorBase: 0,
+          total: null,
+          rows: [ [Object], [Object], [Object], [Object], [Object] ],
+          missing: [],
+          reason: 'SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED'
+        }
+      },
+      metrics: {
+        comboTotalDamage: { status: 'available', value: 301.32000000000005 },
+        comboDuration: { status: 'unavailable', reason: 'DURATION_UNAVAILABLE' },
+        comboDps: { status: 'unavailable', reason: 'DURATION_UNAVAILABLE' }
+      }
+    }
+  },
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.21.0

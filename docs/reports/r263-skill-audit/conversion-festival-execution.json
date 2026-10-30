@@ -1,0 +1,117 @@
+{
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/conversion-festival-proof.cjs after",
+  "before": {
+    "exitCode": 0,
+    "chunk": "2fb8f8",
+    "raw": "conversion-festival-before.raw.json",
+    "meaning": "expected legacy refusal asserted"
+  },
+  "after": {
+    "exitCode": 0,
+    "chunk": "6137fd",
+    "raw": "conversion-festival-after.raw.json",
+    "stderr": "conversion-festival-after.stderr.txt"
+  },
+  "hashes": {
+    "index.html": "efe15dea1d02c73a9f2d941f48a72f228ca1ec1a5b5aed9f13b56e6349138f62",
+    "hope-hammer-browser-adapter.js": "817d197bc045e614dfaa7e14af73e395220d9e194ecd40e7c06cff7e141125a4",
+    "./tools/conversion-festival-proof.cjs": "04519ab0863985782855d6d70fcd4db347e7cca0f760b66036201f17956d8261"
+  },
+  "summary": [
+    {
+      "case": "none",
+      "channels": {
+        "normal": {
+          "total": 1154.01,
+          "physical": 1049.6599999999999,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        },
+        "maximum": {
+          "total": 1154.01,
+          "physical": 1049.6599999999999,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        }
+      }
+    },
+    {
+      "case": "match",
+      "channels": {
+        "normal": {
+          "total": 1248.49,
+          "physical": 1144.14,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        },
+        "maximum": {
+          "total": 1248.49,
+          "physical": 1144.14,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        }
+      }
+    },
+    {
+      "case": "other",
+      "channels": {
+        "normal": {
+          "total": 1154.01,
+          "physical": 1049.6599999999999,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        },
+        "maximum": {
+          "total": 1154.01,
+          "physical": 1049.6599999999999,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        }
+      }
+    },
+    {
+      "case": "dragon",
+      "channels": {
+        "normal": {
+          "total": 1239.02,
+          "physical": 1144.14,
+          "elements": [
+            500,
+            500,
+            500
+          ]
+        },
+        "maximum": {
+          "total": 1273.1699999999998,
+          "physical": 1144.14,
+          "elements": [
+            680,
+            680,
+            680
+          ]
+        }
+      }
+    }
+  ],
+  "comparison": "ordinary load restores matching festival; comparison uses shared other-festival and returns original other result; active state unchanged",
+  "negative": "unknown active series mixed with valid festival on captured valid GS route -> THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED; group unresolved retained",
+  "scope": "Synthetic four-slot rankII festival34; GS thunder500/dragon500; 161/170/180 static only; not game/legal equipment proof"
+}

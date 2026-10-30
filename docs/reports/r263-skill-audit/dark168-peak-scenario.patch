@@ -1,0 +1,66 @@
+--- before/index.html
++++ after/index.html
+@@ -7771,6 +7771,8 @@
+  {kinds:['dual-blades','light-bowgun','heavy-bowgun','bow'],values:[[0,0,0],[30,40,50],[40,50,60],[50,60,70]]}
+ ]});
+ const STANDARD_DARK_SOURCE=techniqueDbDeepFreeze({url:'https://kuroyonhon.com/mhwilds/program/skill.php',retrievedAt:'2026-10-07',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',supportedKind:'great-sword',level:1,attackMultiplier:1.1,durationSeconds:30,healthCost:20,scope:'PREACTIVATED_MAXIMUM_ONLY_NO_DARK_ARTS'});
++const STANDARD_DARK_PEAK_SCENARIO=techniqueDbDeepFreeze({status:'OWNER_APPROVED_PROVISIONAL',approvalRef:'Sentinel_629633b715308191b9afffefb2d53b56',approvedAt:'2026-10-29T14:58:00+09:00',weaponKind:'great-sword',techniqueIds:GENERIC_STANDARD_PROFILES['great-sword'].techniqueIds,channel:'maximum',startHealth:'BELOW_FULL',healing:'NONE',darkBuff:'PREACTIVATED_THROUGHOUT',verification:'NOT_GAME_VERIFIED',scope:'EXACT_ADOPTED_STANDARD_SEQUENCE_ONLY'});
++window.MHDarkPeakScenario=STANDARD_DARK_PEAK_SCENARIO;
+ const STANDARD_HEROICS_SOURCE=techniqueDbDeepFreeze({url:'https://kuroyonhon.com/mhwilds/program/skill.php',retrievedAt:'2026-10-07',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',attackMultipliers:[1,1,1.05,1.05,1.1,1.3],healthThresholdPercent:35,scope:'LOW_HEALTH_FIXED_STANDARD_MAXIMUM_REFERENCE'});
+ const STANDARD_COALESCENCE_SOURCE=techniqueDbDeepFreeze({url:'https://kuroyonhon.com/mhwilds/program/skill.php',retrievedAt:'2026-10-07',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',durationSeconds:30,groups:[{kinds:['great-sword','hammer','hunting-horn','gunlance','switch-axe','charge-blade','light-bowgun','heavy-bowgun'],multipliers:[1,1.1,1.2,1.3]},{kinds:['long-sword','sword-and-shield','dual-blades','lance','insect-glaive','bow'],multipliers:[1,1.05,1.1,1.15]}],scope:'PREACTIVATED_MAXIMUM_WEAPON_ELEMENT_ONLY_NO_STACKING'});
+ function standardPowerConditionPlan(st,total={},kind=null,cond={}){
+@@ -7801,7 +7803,7 @@
+     else if(kind!==STANDARD_DARK_SOURCE.supportedKind)pending.push('暗黒:DARK_WEAPON_UNRESOLVED');
+     else if(!componentsValid)pending.push('暗黒:DARK_ATTACK_COMPONENTS_UNRESOLVED');
+     else{conditionalMultiplier*=STANDARD_DARK_SOURCE.attackMultiplier;applied.push({skill:'暗黒',level:darkLevel,attackAdd:0,attackMultiplier:STANDARD_DARK_SOURCE.attackMultiplier,condition:'DARK_30_SECOND_BUFF_PREACTIVATED',durationSeconds:STANDARD_DARK_SOURCE.durationSeconds,healthCost:STANDARD_DARK_SOURCE.healthCost,evidenceRef:STANDARD_DARK_SOURCE.url,numericOrigin:STANDARD_DARK_SOURCE.status,scope:STANDARD_DARK_SOURCE.scope});}
+-    if(skillLevel(total,['フルチャージ','Peak Performance'])>0)pending.push('暗黒:DARK_FULL_HEALTH_INTERACTION_PENDING');
++    if(skillLevel(total,['フルチャージ','Peak Performance'])>0)pending.push('暗黒:DARK_STANDARD_SEQUENCE_REQUIRED');
+   }
+   if(guard){
+     const guardingKinds=['great-sword','sword-and-shield','lance','gunlance','charge-blade','heavy-bowgun'];
+@@ -7822,6 +7824,7 @@
+     if(!Number.isInteger(raw)||raw<0){pending.push(rule.skill+':LEVEL_INVALID');continue;}
+     const level=Math.min(raw,rule.values.length-1);
+     const item={skill:rule.skill,level,attackAdd:rule.values[level],condition:rule.condition,exclusiveGroup:rule.exclusiveGroup||null,evidenceRef:'MHDB_JA_SKILL_'+rule.sourceId+'_20261007'};
++    if(darkLevel===STANDARD_DARK_SOURCE.level&&kind===STANDARD_DARK_SOURCE.supportedKind&&rule.sourceId===154){excluded.push({...item,reason:'DARK_BELOW_FULL_NO_HEALING_MAXIMUM',scenario:STANDARD_DARK_PEAK_SCENARIO});continue;}
+     const previous=item.exclusiveGroup?applied.find(x=>x.exclusiveGroup===item.exclusiveGroup):null;
+     if(previous){if(previous.attackAdd>=item.attackAdd){excluded.push(item);continue;}applied.splice(applied.indexOf(previous),1);excluded.push(previous);}
+     applied.push(item);
+@@ -8193,6 +8196,7 @@
+   if(text.includes('不屈:FORTIFY_COUNT_UNRESOLVED'))return '不屈の最大側の条件を未発動・1回・2回から選択してください。';
+   if(text.includes('災禍転福:COALESCENCE_ELEMENT_STACKING_ORDER_PENDING'))return '災禍転福と他の属性倍率・属性加算の計算順序が未確認のため、最大火力指数を保留しています。';
+   if(text.includes('災禍転福:COALESCENCE_'))return '災禍転福の段階・武器種または属性値の内訳が未確定です。';
++  if(text.includes('暗黒:DARK_STANDARD_SEQUENCE_REQUIRED'))return '暗黒とフルチャージの最大側は、溜め斬りⅢ→強溜め斬りⅢ→強薙ぎ払いⅢ、満タン未満開始・回復なしの限定条件です。';
+   if(text.includes('暗黒:DARK_FULL_HEALTH_INTERACTION_PENDING'))return '暗黒の体力消費後に回復した場合のフルチャージ併用計算は未対応です。';
+   if(text.includes('暗黒:DARK_'))return '暗黒の武器種・段階・攻撃力の内訳が未対応または未確定です。';
+   if(text==='COMBO_NOT_SELECTED')return 'コンボが未登録です。⑦ コンボDPSで技を追加してから再比較してください。';
+@@ -8269,7 +8273,7 @@
+     const coalescence=row.power?.conditionPlan?.applied?.find(x=>x.skill==='災禍転福');
+     if(coalescence)h+='<div class="small">災禍転福：通常側は未発動、最大側は状態異常・属性やられ解除後の30秒間の強化が全Hitで続く前提です。武器属性だけの参考計算で、状態異常蓄積はHPダメージに算入しません。攻撃力は増加させません。他の属性強化との計算順序が未確認の場合は最大側を保留します。</div>';
+     const dark=row.power?.conditionPlan?.applied?.find(x=>x.skill==='暗黒');
+-    if(dark)h+='<div class="small">暗黒：通常側は未発動の基準値、最大側は事前発動し、体力消費後の強化が全Hitで続く前提です。攻撃力倍率'+esc(dark.attackMultiplier)+'、効果時間'+esc(dark.durationSeconds)+'秒の資料参考値です。コンボ中の発動時点・時間・実機ダメージは照合していません。フルチャージとダークアーツの併用は保留です。</div>';
++    if(dark)h+='<div class="small">暗黒：通常側は未発動の基準値、最大側は事前発動し、体力消費後の強化が全Hitで続く前提です。攻撃力倍率'+esc(dark.attackMultiplier)+'、効果時間'+esc(dark.durationSeconds)+'秒の資料参考値です。コンボ中の発動時点・時間・実機ダメージは照合していません。フルチャージ併用の最大側は、採用標準3技の順序に限定し、満タン未満で開始・途中回復なし・暗黒継続として全Hit非発動です。満タン開始・途中回復・任意技列は未対応です。ダークアーツ併用は別契約です。</div>';
+     const wave=row.power?.darkArtsWave;
+     if(wave)h+='<div class="small">通常火力指数に本体＋衝撃波'+esc(wave.count)+'回を含みます。龍肉質'+esc(wave.dragonHitzone)+'。固定STANDARDの全Hit命中を仮定した資料ベースの参考値で、実測命中回数ではありません。赤ゲージなしの通常側のみ対応し、最大側・コンボDPSは保留です。</div>';
+     if(health){
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -466,6 +466,10 @@
+   const bowChargeRule=root.TechniqueDBEngine.get('bow','BOW_STATE_MODIFIERS')?.specialSourceValues?.skillRules?.chargeMaster;
+   const bowChargeResolved=weapon.kind==='bow'&&referenceSkills.chargeMaster>0&&bowChargeRule?.component==='ELEMENT_BASE_MULTIPLIER_BEFORE_FLATS'&&allSkills.filter(x=>x.skillKey==='chargeMaster').every(x=>Number(x.skillId)===24&&Number.isInteger(x.level)&&x.level>=1&&x.level<=3&&Object.hasOwn(bowChargeRule.multipliers,x.level))&&resolvedTechniqueIds.every(id=>techniques[id]?.referenceKind==='bow'&&bowChargeRule.techniqueIds.includes(id));
+   let conditionPlan=(gsChargeActive||bowChargeResolved)&&resolvedConditionPlan?{...resolvedConditionPlan,pending:(resolvedConditionPlan.pending||[]).filter(x=>!['チャージマスター:CONDITIONAL_DAMAGE_FORMULA_PENDING','Charge Master:CONDITIONAL_DAMAGE_FORMULA_PENDING'].includes(x))}:resolvedConditionPlan;
++  // Owner-approved 168 scenario, not Dark Arts 172 and not a dynamic HP timing model.
++  const darkPeakScenario=root.MHDarkPeakScenario;
++  const darkPeakScoped=conditionPlan?.excluded?.some(x=>x.reason==='DARK_BELOW_FULL_NO_HEALING_MAXIMUM')&&darkPeakScenario&&weapon.kind===darkPeakScenario.weaponKind&&resolvedTechniqueIds.length===darkPeakScenario.techniqueIds.length&&resolvedTechniqueIds.every((id,i)=>id===darkPeakScenario.techniqueIds[i]);
++  if(darkPeakScoped){const pending=conditionPlan.pending.filter(x=>x!=='暗黒:DARK_STANDARD_SEQUENCE_REQUIRED');conditionPlan={...conditionPlan,pending,status:pending.length?conditionPlan.status:'READY'};}
+   if(conditionPlan&&(resistanceConversionLevel||attributeConversionLevel)&&conditionPlan.pending.length===0)conditionPlan.status='READY';
+   const explicitAffinityEntries=allSkills.filter(x=>x.skillKey==='explicitAffinity');
+   if(conditionPlan&&explicitAffinityEntries.length){const names=new Set(explicitAffinityEntries.flatMap(x=>Number(x.skillId)===39?['濡れ刃紋','Wet Blade Mark']:['抜刀術【技】','抜刀術[技]','Critical Draw']));const pending=conditionPlan.pending.filter(x=>!names.has(x.split(':')[0]));conditionPlan={...conditionPlan,pending,status:pending.length?conditionPlan.status:'READY'};}
+@@ -731,6 +735,7 @@
+    if(waterEntries.length)for(const [ch,result] of Object.entries(evaluated.channels||{})){const parts=(result.components||[]).filter(c=>c.status==='available'&&(Number.isFinite(c.details?.appliedElement)||Number.isFinite(c.details?.effectiveDisplayedElement))).map(c=>({componentId:c.id,effectiveElement:c.details.appliedElement??c.details.effectiveDisplayedElement,elementBasis:c.details.elementComponents??c.details.elementBasis}));result.diagnostics={...result.diagnostics,waterResistanceConversion:{input:waterInput,add:waterConversionAdd,absorptionResistance:absorptionConversionPlan,absorptionAdd:ch==='maximum'?(absorptionConversionPlan?.status==='UNRESOLVED'?null:absorptionMaximumAdd):0,components:parts,effectiveElement:parts.length&&parts.every(x=>x.effectiveElement===parts[0].effectiveElement)?parts[0].effectiveElement:null,source:waterRule.source,adoptionStatus:waterRule.status,verificationStatus:'UNVERIFIED',scope:waterRule.scope}};}
+    if(resistanceConversionLevel)for(const [ch,result] of Object.entries(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',thunderResistanceConversion:{input:resistanceInput,absorptionResistance:absorptionConversionPlan,absorptionAdd:ch==='maximum'?(absorptionConversionPlan?.status==='UNRESOLVED'?null:absorptionMaximumAdd):0,baseElement:elementValue,...conversionElementDiagnostic(result),add:resistanceConversionAdd,source:'https://kuroyonhon.com/mhwilds/program/skill.php',eligibilitySource:'https://kuroyonhon.com/mhwilds/memo/31.php',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',verificationStatus:'UNVERIFIED',scope:'THUNDER_WEAPON_BODY_EQUIPMENT_ONLY_NO_FOOD_TEMPORARY_OR_AMMO'}};
+    if(attributeConversionLevel)for(const [ch,result] of Object.entries(evaluated.channels||{})){result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',referenceOnly:true,referenceScope:attributeRule.scope,attributeConversion:{...attributeRule,active:attributeState?.[ch]??null,baseElement:elementValue,...conversionElementDiagnostic(result),excludedComponents:['FIXED_FOLLOWUP','DRAGON_FOLLOWUP']}};if(result.metrics?.comboTotalDamage)result.metrics.comboTotalDamage.scope='BODY_ONLY_REFERENCE';}
++   if(darkPeakScoped&&evaluated.channels?.maximum)evaluated.channels.maximum.diagnostics={...evaluated.channels.maximum.diagnostics,darkPeakScenario};
+    return evaluated;}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
+  }
+  // Reuse the adopted whole-route health comparison; never mix component maxima.

@@ -1,0 +1,25 @@
+--- before/index.html
++++ after/index.html
+@@ -7036,6 +7036,7 @@
+   // Keep malformed/duplicated activations gated instead of silently discarding them.
+   return guards.length===1?relevant.filter(e=>!guardian(e)):relevant;
+ }
++window.MHWValidatedNonDamageBonusEffects=effects=>{const relevant=hpRelevantBonusEffects(effects);return effects.filter(e=>!relevant.includes(e));};
+ function bonusDamagePendingReason(st={}){
+   if(st.elementKnown===false||st.typeKnown===false||st.elementStatus==='UNKNOWN'||st.element===null)return st.elementReason||'ELEMENT_VALUE_MISSING';
+   if(st?.activeBonusEffects==null)return null;
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -365,7 +365,12 @@
+   const elementEntries=allSkills.filter(x=>x.skillKey===elementType),elementSkillNames={fire:'火属性攻撃強化',water:'水属性攻撃強化',thunder:'雷属性攻撃強化',ice:'氷属性攻撃強化',dragon:'龍属性攻撃強化'},elementSkillName=elementSkillNames[elementType],elementLevel=Math.max(...elementEntries.map(x=>x.level),0),elementRule=root.MHWElementSkillResolver&&elementSpecial?root.MHWElementSkillResolver(skillTotal,elementType):{add:0,mult:1},elementValue=elementSpecial?elementRawValue*(elementRule?.mult??1)+(elementRule?.add??0):0;  const attributeConversionLevel=Math.max(...allSkills.filter(x=>x.skillKey==='attributeConversion').map(x=>x.level),0),attributeRule=root.MHAttributeConversionRule,attributeState=conditions?.attributeConversionState;
+   // Only adopted Guts/Veil/Omega/Black Eclipse or DB-defined series attack flats with a resolved, activation-checked plan may coexist here.
+   const conversionGroupPlan=stats.conditionalConditionPlan?.groupPlan,conversionSelfPlan=stats.conditionalConditionPlan?.selfStatePlan;
++  const validatedNonDamageBonuses=typeof root.MHWValidatedNonDamageBonusEffects==='function'?root.MHWValidatedNonDamageBonusEffects(activeBonusEffects):[];
+   const conversionResistanceBonusesResolved=activeBonusEffects.length>0&&activeBonusEffects.every(e=>{
++   if([4,33].includes(e.bonusSkillId)){
++    const rows=conversionGroupPlan?.nonDamageEffects?.filter(a=>a.bonusSkillId===e.bonusSkillId)||[];
++    return validatedNonDamageBonuses.includes(e)&&activeBonusEffects.filter(a=>a.bonusSkillId===e.bonusSkillId).length===1&&rows.length===1&&['bonusSkillId','name','bonusName','source','rankLevel','required','count','level'].every(k=>rows[0][k]===e[k])&&!(conversionGroupPlan?.applied||[]).some(a=>a.skillId===e.bonusSkillId||a.skill===e.name);
++   }
+    if(e.bonusSkillId===172){
+     const rule=root.MHDarkArtsBodySource,rows=conversionGroupPlan?.applied?.filter(a=>a.skill==='ダークアーツ')||[],a=rows[0];
+     if(!rule||!rule.supportedKinds.includes(weapon.kind)||e.name!=='ダークアーツ'||e.bonusName!=='暗黒騎士の証'||e.source!=='series'||e.rankLevel!==1||e.required!==2||!Number.isInteger(e.count)||e.count<2||e.count>=4||rows.length!==1||!a?.darkArtsActivation)return false;

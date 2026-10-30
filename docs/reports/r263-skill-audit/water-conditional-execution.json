@@ -1,0 +1,95 @@
+{
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/water-conditional-combination-proof.cjs",
+  "exitCode": 0,
+  "chunk": "c79afd",
+  "raw": "water-conditional.raw.json",
+  "stderr": "water-conditional.stderr.txt",
+  "hashes": {
+    "index.html": "51ff8683e6205f55e4904668a790195e3a34ab9893f918a6a5b13ec05cd141a9",
+    "hope-hammer-browser-adapter.js": "64e7a6c9767a51900bb2313f6bfe9349bb395566aa6151df18d3a94bb3bed37f",
+    "himmel-real-browser-bundle.js": "9f3499121bbbf0d17f2eaaea9ed615d73c1929dbaf75988f9f224c6268f13ff1",
+    "./tools/water-conditional-combination-proof.cjs": "6b1b9832fb2931e35776297375ebe7cdbc79b12d9f4e7aed277598e9c6782327"
+  },
+  "summary": {
+    "long-sword": {
+      "physical": {
+        "baselineNormal": 68.23,
+        "baselineMaximum": 68.23,
+        "conditionNormal": 68.23,
+        "conditionMaximum": 71.44,
+        "waterMaximum": 71.44
+      },
+      "cases": [
+        {
+          "waterConversion": false,
+          "channels": {
+            "normal": {
+              "total": 88.03,
+              "element": 660
+            },
+            "maximum": {
+              "total": 95.74000000000001,
+              "element": 810
+            }
+          }
+        },
+        {
+          "waterConversion": true,
+          "channels": {
+            "normal": {
+              "total": 89.23,
+              "element": 700
+            },
+            "maximum": {
+              "total": 96.94,
+              "element": 850
+            }
+          }
+        }
+      ],
+      "negative": "REAL_SLICE:WATER_RESISTANCE_UNRESOLVED:CONTRACT_MISSING_RESISTANCE"
+    },
+    "bow": {
+      "physical": {
+        "baselineNormal": 28.512000000000004,
+        "baselineMaximum": 28.512000000000004,
+        "conditionNormal": 28.512000000000004,
+        "conditionMaximum": 30.412800000000004,
+        "waterMaximum": 30.412800000000004
+      },
+      "cases": [
+        {
+          "waterConversion": false,
+          "channels": {
+            "normal": {
+              "total": 96.012,
+              "element": 750
+            },
+            "maximum": {
+              "total": 110.8278,
+              "element": 893.4999999999999
+            }
+          }
+        },
+        {
+          "waterConversion": true,
+          "channels": {
+            "normal": {
+              "total": 99.612,
+              "element": 790
+            },
+            "maximum": {
+              "total": 114.4278,
+              "element": 933.4999999999999
+            }
+          }
+        }
+      ],
+      "negative": "REAL_SLICE:WATER_RESISTANCE_UNRESOLVED:CONTRACT_MISSING_RESISTANCE"
+    }
+  },
+  "productChanges": false,
+  "scope": "Synthetic LS/Bow water500 with Water Attack3, Coalescence3/Burst1, Bow CM3; not legal-equipment/game verification",
+  "comparison": "Bow saved OFF/ON channels retained; active state unchanged",
+  "notVerified": "legal equipment, live game, other techniques/special components; no whole-skill completion"
+}

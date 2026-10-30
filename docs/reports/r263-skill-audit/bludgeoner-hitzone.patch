@@ -1,0 +1,14 @@
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -607,9 +607,9 @@
+      if(techniques[id].referenceKind||hit.componentSource)continue;
+      const damageType=hit.damageType||STANDARD_NORMAL_HIT_CONTRACT[id]?.damageType;
+      const originalHitzone=(part.originalMultipliers??(part.wounded===true?null:part.multipliers))?.[damageType];
+-     if(!Number.isFinite(originalHitzone))return fail('REAL_SLICE:ORIGINAL_HITZONE_UNRESOLVED');
++     if(Number(entry.skillId)===136&&!Number.isFinite(originalHitzone))return fail('REAL_SLICE:ORIGINAL_HITZONE_UNRESOLVED');
+      const active=Number(entry.skillId)===136?originalHitzone*100<=rule.originalHitzoneMaximum:rule.colorsByLevel[entry.level].includes(maxSharpness);
+-     if(active)contextAttackEffects.push({id:'context-attack:'+entry.skillId+':'+id+':'+hitIndex,target:'physical',stage:'attack',unit:'dimensionless',operation:'multiply',amount:rule.multipliers[entry.level],order:12,componentIds:[id+':physical:'+hitIndex],source:rules.source,status:rules.status,condition:{type:'always'},originalHitzone:{value:originalHitzone*100,damageType,source:'trainingRoomMonster:UNWOUNDED_ORIGINAL'},sharpness:maxSharpness});
++     if(active)contextAttackEffects.push({id:'context-attack:'+entry.skillId+':'+id+':'+hitIndex,target:'physical',stage:'attack',unit:'dimensionless',operation:'multiply',amount:rule.multipliers[entry.level],order:12,componentIds:[id+':physical:'+hitIndex],source:rules.source,status:rules.status,condition:{type:'always'},...(Number(entry.skillId)===136?{originalHitzone:{value:originalHitzone*100,damageType,source:'trainingRoomMonster:UNWOUNDED_ORIGINAL'}}:{}),sharpness:maxSharpness});
+     }
+    }
+   }

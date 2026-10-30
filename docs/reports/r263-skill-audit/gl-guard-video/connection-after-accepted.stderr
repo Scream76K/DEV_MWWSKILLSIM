@@ -1,0 +1,534 @@
+node:assert:152
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+... Skipped lines
+
+  {
+    conditions: {
+      absorbedElement: null,
+      aff: '15',
+      attack: '175',
+...
+      decos: {},
++     savedAt: '2026-10-30T00:45:43.916Z',
+-     savedAt: '2026-10-30T00:45:43.870Z',
+      target: {
+        monsterId: 'training-room',
+        partId: 'training-front'
+      },
+      version: '7.2.2-template-rootfix-r7',
+
+    at Object.<anonymous> (./tools/gl-guard-connection-proof.cjs:25:509)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: {
+    result: {
+      status: 'OK',
+      weaponType: 'gunlance',
+      diagnostics: [
+        {
+          code: 'MHDB_SOURCE',
+          apiId: 350,
+          gameId: 36,
+          sourceEndpoint: 'https://wilds.mhdb.io/en/weapons/350',
+          apiVersion: 'UNKNOWN',
+          retrievedAt: 'UNKNOWN',
+          sourceGameVersion: 'UNKNOWN'
+        }
+      ],
+      versions: {
+        game: '1.042.00.02',
+        equipment: 'mhdb-source-unknown-game-version',
+        technique: 'tech-real',
+        effects: 'effects-real'
+      },
+      conditionKey: '{"conditions":{"absorbedElement":null,"aff":"15","attack":"175","attributeConversionState":{"maximum":null,"normal":null},"blackEclipseState":null,"bowState":{"chargeLevel":3,"coating":null,"range":null,"startShot":null},"cb":"0","chargeBladeState":{"axeBoosted":null,"enhancedPhial":null,"enhancedPhials":null,"normalPhials":null,"phialType":null,"previousAction":null,"shieldBoosted":null},"chargedRounds":1,"combatBuffs":{"charm":null,"meal":null,"otherBuffs":null},"criticalDrawHits":{"maximum":null,"normal":null},"dragonHitzoneSource":{"kind":"UNSET"},"dragonHz":"","drawAttack":false,"dualBladesState":{"demonMode":null},"eCrit":"0","ehz":"30","elem":"210","esharp":"1.15","everlastingStage":null,"festivalId":null,"fireHitzone":20,"fortifyCount":2,"gunlanceState":{"chargedRounds":1,"fireHitzone":20,"loadedRounds":2,"shellingPower":"HIGH","shellingType":"WIDE"},"gutsState":"BEFORE","hbgState":{"ammoLevel":null,"ammoType":"NORMAL","contactCount":null,"contactPolicy":null,"contactTargetPolicy":"CURRENT_TARGET","elementType":null,"fullMagazine":null,"magazineCapacity":null,"normalModeLevel":null,"range":null,"shotOrdinal":null},"hbgWyvernState":{"fireHitzone":null,"mode":null},"huntingHornState":{"echoState":null,"melodyState":null},"hz":"80","insectGlaiveState":{"extractState":null,"kinsectState":null},"lightBowgunState":{"ammoLevel":null,"ammoType":null,"contactCount":null,"contactPolicy":null,"contactTargetPolicy":"CURRENT_TARGET","fullMagazine":null,"loadedRounds":null,"normalModeLevel":null,"range":null,"rapidReady":null,"shotMode":null,"shotOrdinal":null},"loadedRounds":2,"longSwordState":{"spiritGauge":null},"mounted":false,"mv":"100","punishingDrawHits":{"maximum":null,"normal":null},"selfSkillState":null,"sharp":"1.32","shellingPower":"HIGH","shellingType":"WIDE","switchAxeState":{"awakened":null,"mode":null},"uptime":"85","uptimeMode":"1","wetState":{"maximum":null,"normal":null}},"evaluationKind":"combo","plan":"[{\\"id\\":\\"reference:gl_NORMAL\\",\\"revision\\":\\"1\\"}]","target":{"hitZoneKey":"training-front","id":"training-room"}}',
+      comparisonContext: {
+        damage: '{"conditions":{"absorbedElement":null,"aff":"15","attack":"175","attributeConversionState":{"maximum":null,"normal":null},"blackEclipseState":null,"bowState":{"chargeLevel":3,"coating":null,"range":null,"startShot":null},"cb":"0","chargeBladeState":{"axeBoosted":null,"enhancedPhial":null,"enhancedPhials":null,"normalPhials":null,"phialType":null,"previousAction":null,"shieldBoosted":null},"chargedRounds":1,"combatBuffs":{"charm":null,"meal":null,"otherBuffs":null},"criticalDrawHits":{"maximum":null,"normal":null},"dragonHitzoneSource":{"kind":"UNSET"},"dragonHz":"","drawAttack":false,"dualBladesState":{"demonMode":null},"eCrit":"0","ehz":"30","elem":"210","esharp":"1.15","everlastingStage":null,"festivalId":null,"fireHitzone":20,"fortifyCount":2,"gunlanceState":{"chargedRounds":1,"fireHitzone":20,"loadedRounds":2,"shellingPower":"HIGH","shellingType":"WIDE"},"gutsState":"BEFORE","hbgState":{"ammoLevel":null,"ammoType":"NORMAL","contactCount":null,"contactPolicy":null,"contactTargetPolicy":"CURRENT_TARGET","elementType":null,"fullMagazine":null,"magazineCapacity":null,"normalModeLevel":null,"range":null,"shotOrdinal":null},"hbgWyvernState":{"fireHitzone":null,"mode":null},"huntingHornState":{"echoState":null,"melodyState":null},"hz":"80","insectGlaiveState":{"extractState":null,"kinsectState":null},"lightBowgunState":{"ammoLevel":null,"ammoType":null,"contactCount":null,"contactPolicy":null,"contactTargetPolicy":"CURRENT_TARGET","fullMagazine":null,"loadedRounds":null,"normalModeLevel":null,"range":null,"rapidReady":null,"shotMode":null,"shotOrdinal":null},"loadedRounds":2,"longSwordState":{"spiritGauge":null},"mounted":false,"mv":"100","punishingDrawHits":{"maximum":null,"normal":null},"selfSkillState":null,"sharp":"1.32","shellingPower":"HIGH","shellingType":"WIDE","switchAxeState":{"awakened":null,"mode":null},"uptime":"85","uptimeMode":"1","wetState":{"maximum":null,"normal":null}},"evaluationKind":"combo","plan":"[{\\"id\\":\\"reference:gl_NORMAL\\",\\"revision\\":\\"1\\"}]","target":{"hitZoneKey":"training-front","id":"training-room"}}',
+        dps: '{"conditions":{"absorbedElement":null,"aff":"15","attack":"175","attributeConversionState":{"maximum":null,"normal":null},"blackEclipseState":null,"bowState":{"chargeLevel":3,"coating":null,"range":null,"startShot":null},"cb":"0","chargeBladeState":{"axeBoosted":null,"enhancedPhial":null,"enhancedPhials":null,"normalPhials":null,"phialType":null,"previousAction":null,"shieldBoosted":null},"chargedRounds":1,"combatBuffs":{"charm":null,"meal":null,"otherBuffs":null},"criticalDrawHits":{"maximum":null,"normal":null},"dragonHitzoneSource":{"kind":"UNSET"},"dragonHz":"","drawAttack":false,"dualBladesState":{"demonMode":null},"eCrit":"0","ehz":"30","elem":"210","esharp":"1.15","everlastingStage":null,"festivalId":null,"fireHitzone":20,"fortifyCount":2,"gunlanceState":{"chargedRounds":1,"fireHitzone":20,"loadedRounds":2,"shellingPower":"HIGH","shellingType":"WIDE"},"gutsState":"BEFORE","hbgState":{"ammoLevel":null,"ammoType":"NORMAL","contactCount":null,"contactPolicy":null,"contactTargetPolicy":"CURRENT_TARGET","elementType":null,"fullMagazine":null,"magazineCapacity":null,"normalModeLevel":null,"range":null,"shotOrdinal":null},"hbgWyvernState":{"fireHitzone":null,"mode":null},"huntingHornState":{"echoState":null,"melodyState":null},"hz":"80","insectGlaiveState":{"extractState":null,"kinsectState":null},"lightBowgunState":{"ammoLevel":null,"ammoType":null,"contactCount":null,"contactPolicy":null,"contactTargetPolicy":"CURRENT_TARGET","fullMagazine":null,"loadedRounds":null,"normalModeLevel":null,"range":null,"rapidReady":null,"shotMode":null,"shotOrdinal":null},"loadedRounds":2,"longSwordState":{"spiritGauge":null},"mounted":false,"mv":"100","punishingDrawHits":{"maximum":null,"normal":null},"selfSkillState":null,"sharp":"1.32","shellingPower":"HIGH","shellingType":"WIDE","switchAxeState":{"awakened":null,"mode":null},"uptime":"85","uptimeMode":"1","wetState":{"maximum":null,"normal":null}},"evaluationKind":"combo","plan":"[{\\"id\\":\\"reference:gl_NORMAL\\",\\"revision\\":\\"1\\"}]","target":{"hitZoneKey":"training-front","id":"training-room"}}'
+      },
+      channels: {
+        normal: {
+          execution: {
+            status: 'complete',
+            expected: [Array],
+            executed: [Array],
+            reason: null
+          },
+          components: [ [Object] ],
+          issues: [],
+          finalState: { gunlance: [Object] },
+          effectPlan: { effects: [Array], unresolved: [] },
+          diagnostics: {
+            formalStatus: 'UNVERIFIED',
+            provisionalEffects: [],
+            armorThunderResistanceInput: [Object]
+          },
+          metrics: {
+            comboTotalDamage: [Object],
+            comboDuration: [Object],
+            comboDps: [Object]
+          }
+        },
+        maximum: {
+          execution: {
+            status: 'complete',
+            expected: [Array],
+            executed: [Array],
+            reason: null
+          },
+          components: [ [Object] ],
+          issues: [],
+          finalState: { gunlance: [Object] },
+          effectPlan: { effects: [Array], unresolved: [] },
+          diagnostics: {
+            formalStatus: 'UNVERIFIED',
+            provisionalEffects: [],
+            armorThunderResistanceInput: [Object]
+          },
+          metrics: {
+            comboTotalDamage: [Object],
+            comboDuration: [Object],
+            comboDps: [Object]
+          }
+        }
+      }
+    },
+    snapshot: {
+      version: '7.2.2-template-rootfix-r7',
+      combatBuffs: { meal: null, charm: null, otherBuffs: null },
+      weaponId: '350',
+      weaponKind: 'gunlance',
+      armor: { head: '', chest: '', arms: '', waist: '', legs: '' },
+      charmCustom: {
+        skills: [
+          { name: 'Attack Boost', level: 5, type: 'armor' },
+          { name: 'Offensive Guard', level: 3, type: 'armor' },
+          { name: '', level: 1, type: 'armor' }
+        ],
+        slots: [ 0, 0, 0 ],
+        weaponSlots: [],
+        weaponSlot: false
+      },
+      artia: {
+        production: 'element',
+        element: 'fire',
+        parts: [ 'attack', 'attack', 'attack' ],
+        sameElementPartCount: 3,
+        elementParts: 0,
+        restores: [ 'none', 'none', 'none', 'none', 'none' ],
+        seriesSkill: '',
+        groupSkill: ''
+      },
+      decos: {},
+      combo: {
+        moves: [ { techniqueId: 'reference:gl_NORMAL' } ],
+        uptime: 85,
+        uptimeMode: '1',
+        explicitAffinityState: {
+          absorbedElement: null,
+          selfSkillState: null,
+          wetState: { normal: null, maximum: null },
+          criticalDrawHits: { normal: null, maximum: null },
+          punishingDrawHits: { normal: null, maximum: null },
+          festivalId: null
+        },
+        hbgReferenceState: {
+          contactPolicy: null,
+          contactCount: null,
+          contactTargetPolicy: 'CURRENT_TARGET',
+          elementType: null,
+          ammoType: 'NORMAL',
+          ammoLevel: null,
+          range: null,
+          normalModeLevel: null,
+          magazineCapacity: null,
+          shotOrdinal: null,
+          fullMagazine: null
+        },
+        attributeConversionState: { normal: null, maximum: null },
+        blackEclipseState: null,
+        hbgWyvernState: { mode: null, fireHitzone: null },
+        chargeBladeState: {
+          shieldBoosted: null,
+          axeBoosted: null,
+          phialType: null,
+          enhancedPhial: null,
+          previousAction: null,
+          enhancedPhials: null,
+          normalPhials: null
+        },
+        insectGlaiveState: { extractState: null, kinsectState: null },
+        huntingHornState: { echoState: null, melodyState: null },
+        lightBowgunState: {
+          loadedRounds: null,
+          rapidReady: null,
+          shotMode: null,
+          ammoType: null,
+          ammoLevel: null,
+          range: null,
+          normalModeLevel: null,
+          contactPolicy: null,
+          contactCount: null,
+          contactTargetPolicy: 'CURRENT_TARGET',
+          shotOrdinal: null,
+          fullMagazine: null
+        },
+        gunlanceState: {
+          shellingType: 'WIDE',
+          shellingPower: 'HIGH',
+          loadedRounds: 2,
+          chargedRounds: 1,
+          fireHitzone: 20
+        },
+        dualBladesState: { demonMode: null },
+        longSwordState: { spiritGauge: null },
+        switchAxeState: { mode: null, awakened: null }
+      },
+      target: { monsterId: 'training-room', partId: 'training-front' },
+      savedAt: '2026-10-30T00:45:43.916Z'
+    },
+    conditions: {
+      absorbedElement: null,
+      selfSkillState: null,
+      wetState: { normal: null, maximum: null },
+      criticalDrawHits: { normal: null, maximum: null },
+      punishingDrawHits: { normal: null, maximum: null },
+      festivalId: null,
+      blackEclipseState: null,
+      hbgWyvernState: { mode: null, fireHitzone: null },
+      combatBuffs: { meal: null, charm: null, otherBuffs: null },
+      attack: '175',
+      aff: '15',
+      elem: '210',
+      mv: '100',
+      hz: '80',
+      ehz: '30',
+      sharp: '1.32',
+      esharp: '1.15',
+      cb: '0',
+      eCrit: '0',
+      dragonHz: '',
+      dragonHitzoneSource: { kind: 'UNSET' },
+      gutsState: 'BEFORE',
+      fortifyCount: 2,
+      bowState: { chargeLevel: 3, coating: null, range: null, startShot: null },
+      drawAttack: false,
+      mounted: false,
+      everlastingStage: null,
+      hbgState: {
+        contactPolicy: null,
+        contactCount: null,
+        contactTargetPolicy: 'CURRENT_TARGET',
+        elementType: null,
+        ammoType: 'NORMAL',
+        ammoLevel: null,
+        range: null,
+        normalModeLevel: null,
+        magazineCapacity: null,
+        shotOrdinal: null,
+        fullMagazine: null
+      },
+      uptime: '85',
+      uptimeMode: '1',
+      chargeBladeState: {
+        shieldBoosted: null,
+        axeBoosted: null,
+        phialType: null,
+        enhancedPhial: null,
+        previousAction: null,
+        enhancedPhials: null,
+        normalPhials: null
+      },
+      dualBladesState: { demonMode: null },
+      longSwordState: { spiritGauge: null },
+      switchAxeState: { mode: null, awakened: null },
+      insectGlaiveState: { extractState: null, kinsectState: null },
+      huntingHornState: { echoState: null, melodyState: null },
+      attributeConversionState: { normal: null, maximum: null },
+      lightBowgunState: {
+        loadedRounds: null,
+        rapidReady: null,
+        shotMode: null,
+        ammoType: null,
+        ammoLevel: null,
+        range: null,
+        normalModeLevel: null,
+        contactPolicy: null,
+        contactCount: null,
+        contactTargetPolicy: 'CURRENT_TARGET',
+        shotOrdinal: null,
+        fullMagazine: null
+      },
+      gunlanceState: {
+        shellingType: 'WIDE',
+        shellingPower: 'HIGH',
+        loadedRounds: 2,
+        chargedRounds: 1,
+        fireHitzone: 20
+      }
+    }
+  },
+  expected: {
+    result: {
+      status: 'OK',
+      weaponType: 'gunlance',
+      diagnostics: [
+        {
+          code: 'MHDB_SOURCE',
+          apiId: 350,
+          gameId: 36,
+          sourceEndpoint: 'https://wilds.mhdb.io/en/weapons/350',
+          apiVersion: 'UNKNOWN',
+          retrievedAt: 'UNKNOWN',
+          sourceGameVersion: 'UNKNOWN'
+        }
+      ],
+      versions: {
+        game: '1.042.00.02',
+        equipment: 'mhdb-source-unknown-game-version',
+        technique: 'tech-real',
+        effects: 'effects-real'
+      },
+      conditionKey: '{"conditions":{"absorbedElement":null,"aff":"15","attack":"175","attributeConversionState":{"maximum":null,"normal":null},"blackEclipseState":null,"bowState":{"chargeLevel":3,"coating":null,"range":null,"startShot":null},"cb":"0","chargeBladeState":{"axeBoosted":null,"enhancedPhial":null,"enhancedPhials":null,"normalPhials":null,"phialType":null,"previousAction":null,"shieldBoosted":null},"chargedRounds":1,"combatBuffs":{"charm":null,"meal":null,"otherBuffs":null},"criticalDrawHits":{"maximum":null,"normal":null},"dragonHitzoneSource":{"kind":"UNSET"},"dragonHz":"","drawAttack":false,"dualBladesState":{"demonMode":null},"eCrit":"0","ehz":"30","elem":"210","esharp":"1.15","everlastingStage":null,"festivalId":null,"fireHitzone":20,"fortifyCount":2,"gunlanceState":{"chargedRounds":1,"fireHitzone":20,"loadedRounds":2,"shellingPower":"HIGH","shellingType":"WIDE"},"gutsState":"BEFORE","hbgState":{"ammoLevel":null,"ammoType":"NORMAL","contactCount":null,"contactPolicy":null,"contactTargetPolicy":"CURRENT_TARGET","elementType":null,"fullMagazine":null,"magazineCapacity":null,"normalModeLevel":null,"range":null,"shotOrdinal":null},"hbgWyvernState":{"fireHitzone":null,"mode":null},"huntingHornState":{"echoState":null,"melodyState":null},"hz":"80","insectGlaiveState":{"extractState":null,"kinsectState":null},"lightBowgunState":{"ammoLevel":null,"ammoType":null,"contactCount":null,"contactPolicy":null,"contactTargetPolicy":"CURRENT_TARGET","fullMagazine":null,"loadedRounds":null,"normalModeLevel":null,"range":null,"rapidReady":null,"shotMode":null,"shotOrdinal":null},"loadedRounds":2,"longSwordState":{"spiritGauge":null},"mounted":false,"mv":"100","punishingDrawHits":{"maximum":null,"normal":null},"selfSkillState":null,"sharp":"1.32","shellingPower":"HIGH","shellingType":"WIDE","switchAxeState":{"awakened":null,"mode":null},"uptime":"85","uptimeMode":"1","wetState":{"maximum":null,"normal":null}},"evaluationKind":"combo","plan":"[{\\"id\\":\\"reference:gl_NORMAL\\",\\"revision\\":\\"1\\"}]","target":{"hitZoneKey":"training-front","id":"training-room"}}',
+      comparisonContext: {
+        damage: '{"conditions":{"absorbedElement":null,"aff":"15","attack":"175","attributeConversionState":{"maximum":null,"normal":null},"blackEclipseState":null,"bowState":{"chargeLevel":3,"coating":null,"range":null,"startShot":null},"cb":"0","chargeBladeState":{"axeBoosted":null,"enhancedPhial":null,"enhancedPhials":null,"normalPhials":null,"phialType":null,"previousAction":null,"shieldBoosted":null},"chargedRounds":1,"combatBuffs":{"charm":null,"meal":null,"otherBuffs":null},"criticalDrawHits":{"maximum":null,"normal":null},"dragonHitzoneSource":{"kind":"UNSET"},"dragonHz":"","drawAttack":false,"dualBladesState":{"demonMode":null},"eCrit":"0","ehz":"30","elem":"210","esharp":"1.15","everlastingStage":null,"festivalId":null,"fireHitzone":20,"fortifyCount":2,"gunlanceState":{"chargedRounds":1,"fireHitzone":20,"loadedRounds":2,"shellingPower":"HIGH","shellingType":"WIDE"},"gutsState":"BEFORE","hbgState":{"ammoLevel":null,"ammoType":"NORMAL","contactCount":null,"contactPolicy":null,"contactTargetPolicy":"CURRENT_TARGET","elementType":null,"fullMagazine":null,"magazineCapacity":null,"normalModeLevel":null,"range":null,"shotOrdinal":null},"hbgWyvernState":{"fireHitzone":null,"mode":null},"huntingHornState":{"echoState":null,"melodyState":null},"hz":"80","insectGlaiveState":{"extractState":null,"kinsectState":null},"lightBowgunState":{"ammoLevel":null,"ammoType":null,"contactCount":null,"contactPolicy":null,"contactTargetPolicy":"CURRENT_TARGET","fullMagazine":null,"loadedRounds":null,"normalModeLevel":null,"range":null,"rapidReady":null,"shotMode":null,"shotOrdinal":null},"loadedRounds":2,"longSwordState":{"spiritGauge":null},"mounted":false,"mv":"100","punishingDrawHits":{"maximum":null,"normal":null},"selfSkillState":null,"sharp":"1.32","shellingPower":"HIGH","shellingType":"WIDE","switchAxeState":{"awakened":null,"mode":null},"uptime":"85","uptimeMode":"1","wetState":{"maximum":null,"normal":null}},"evaluationKind":"combo","plan":"[{\\"id\\":\\"reference:gl_NORMAL\\",\\"revision\\":\\"1\\"}]","target":{"hitZoneKey":"training-front","id":"training-room"}}',
+        dps: '{"conditions":{"absorbedElement":null,"aff":"15","attack":"175","attributeConversionState":{"maximum":null,"normal":null},"blackEclipseState":null,"bowState":{"chargeLevel":3,"coating":null,"range":null,"startShot":null},"cb":"0","chargeBladeState":{"axeBoosted":null,"enhancedPhial":null,"enhancedPhials":null,"normalPhials":null,"phialType":null,"previousAction":null,"shieldBoosted":null},"chargedRounds":1,"combatBuffs":{"charm":null,"meal":null,"otherBuffs":null},"criticalDrawHits":{"maximum":null,"normal":null},"dragonHitzoneSource":{"kind":"UNSET"},"dragonHz":"","drawAttack":false,"dualBladesState":{"demonMode":null},"eCrit":"0","ehz":"30","elem":"210","esharp":"1.15","everlastingStage":null,"festivalId":null,"fireHitzone":20,"fortifyCount":2,"gunlanceState":{"chargedRounds":1,"fireHitzone":20,"loadedRounds":2,"shellingPower":"HIGH","shellingType":"WIDE"},"gutsState":"BEFORE","hbgState":{"ammoLevel":null,"ammoType":"NORMAL","contactCount":null,"contactPolicy":null,"contactTargetPolicy":"CURRENT_TARGET","elementType":null,"fullMagazine":null,"magazineCapacity":null,"normalModeLevel":null,"range":null,"shotOrdinal":null},"hbgWyvernState":{"fireHitzone":null,"mode":null},"huntingHornState":{"echoState":null,"melodyState":null},"hz":"80","insectGlaiveState":{"extractState":null,"kinsectState":null},"lightBowgunState":{"ammoLevel":null,"ammoType":null,"contactCount":null,"contactPolicy":null,"contactTargetPolicy":"CURRENT_TARGET","fullMagazine":null,"loadedRounds":null,"normalModeLevel":null,"range":null,"rapidReady":null,"shotMode":null,"shotOrdinal":null},"loadedRounds":2,"longSwordState":{"spiritGauge":null},"mounted":false,"mv":"100","punishingDrawHits":{"maximum":null,"normal":null},"selfSkillState":null,"sharp":"1.32","shellingPower":"HIGH","shellingType":"WIDE","switchAxeState":{"awakened":null,"mode":null},"uptime":"85","uptimeMode":"1","wetState":{"maximum":null,"normal":null}},"evaluationKind":"combo","plan":"[{\\"id\\":\\"reference:gl_NORMAL\\",\\"revision\\":\\"1\\"}]","target":{"hitZoneKey":"training-front","id":"training-room"}}'
+      },
+      channels: {
+        normal: {
+          execution: {
+            status: 'complete',
+            expected: [Array],
+            executed: [Array],
+            reason: null
+          },
+          components: [ [Object] ],
+          issues: [],
+          finalState: { gunlance: [Object] },
+          effectPlan: { effects: [Array], unresolved: [] },
+          diagnostics: {
+            formalStatus: 'UNVERIFIED',
+            provisionalEffects: [],
+            armorThunderResistanceInput: [Object]
+          },
+          metrics: {
+            comboTotalDamage: [Object],
+            comboDuration: [Object],
+            comboDps: [Object]
+          }
+        },
+        maximum: {
+          execution: {
+            status: 'complete',
+            expected: [Array],
+            executed: [Array],
+            reason: null
+          },
+          components: [ [Object] ],
+          issues: [],
+          finalState: { gunlance: [Object] },
+          effectPlan: { effects: [Array], unresolved: [] },
+          diagnostics: {
+            formalStatus: 'UNVERIFIED',
+            provisionalEffects: [],
+            armorThunderResistanceInput: [Object]
+          },
+          metrics: {
+            comboTotalDamage: [Object],
+            comboDuration: [Object],
+            comboDps: [Object]
+          }
+        }
+      }
+    },
+    snapshot: {
+      version: '7.2.2-template-rootfix-r7',
+      combatBuffs: { meal: null, charm: null, otherBuffs: null },
+      weaponId: '350',
+      weaponKind: 'gunlance',
+      armor: { head: '', chest: '', arms: '', waist: '', legs: '' },
+      charmCustom: {
+        skills: [
+          { name: 'Attack Boost', level: 5, type: 'armor' },
+          { name: 'Offensive Guard', level: 3, type: 'armor' },
+          { name: '', level: 1, type: 'armor' }
+        ],
+        slots: [ 0, 0, 0 ],
+        weaponSlots: [],
+        weaponSlot: false
+      },
+      artia: {
+        production: 'element',
+        element: 'fire',
+        parts: [ 'attack', 'attack', 'attack' ],
+        sameElementPartCount: 3,
+        elementParts: 0,
+        restores: [ 'none', 'none', 'none', 'none', 'none' ],
+        seriesSkill: '',
+        groupSkill: ''
+      },
+      decos: {},
+      combo: {
+        moves: [ { techniqueId: 'reference:gl_NORMAL' } ],
+        uptime: 85,
+        uptimeMode: '1',
+        explicitAffinityState: {
+          absorbedElement: null,
+          selfSkillState: null,
+          wetState: { normal: null, maximum: null },
+          criticalDrawHits: { normal: null, maximum: null },
+          punishingDrawHits: { normal: null, maximum: null },
+          festivalId: null
+        },
+        hbgReferenceState: {
+          contactPolicy: null,
+          contactCount: null,
+          contactTargetPolicy: 'CURRENT_TARGET',
+          elementType: null,
+          ammoType: 'NORMAL',
+          ammoLevel: null,
+          range: null,
+          normalModeLevel: null,
+          magazineCapacity: null,
+          shotOrdinal: null,
+          fullMagazine: null
+        },
+        attributeConversionState: { normal: null, maximum: null },
+        blackEclipseState: null,
+        hbgWyvernState: { mode: null, fireHitzone: null },
+        chargeBladeState: {
+          shieldBoosted: null,
+          axeBoosted: null,
+          phialType: null,
+          enhancedPhial: null,
+          previousAction: null,
+          enhancedPhials: null,
+          normalPhials: null
+        },
+        insectGlaiveState: { extractState: null, kinsectState: null },
+        huntingHornState: { echoState: null, melodyState: null },
+        lightBowgunState: {
+          loadedRounds: null,
+          rapidReady: null,
+          shotMode: null,
+          ammoType: null,
+          ammoLevel: null,
+          range: null,
+          normalModeLevel: null,
+          contactPolicy: null,
+          contactCount: null,
+          contactTargetPolicy: 'CURRENT_TARGET',
+          shotOrdinal: null,
+          fullMagazine: null
+        },
+        gunlanceState: {
+          shellingType: 'WIDE',
+          shellingPower: 'HIGH',
+          loadedRounds: 2,
+          chargedRounds: 1,
+          fireHitzone: 20
+        },
+        dualBladesState: { demonMode: null },
+        longSwordState: { spiritGauge: null },
+        switchAxeState: { mode: null, awakened: null }
+      },
+      target: { monsterId: 'training-room', partId: 'training-front' },
+      savedAt: '2026-10-30T00:45:43.870Z'
+    },
+    conditions: {
+      absorbedElement: null,
+      selfSkillState: null,
+      wetState: { normal: null, maximum: null },
+      criticalDrawHits: { normal: null, maximum: null },
+      punishingDrawHits: { normal: null, maximum: null },
+      festivalId: null,
+      blackEclipseState: null,
+      hbgWyvernState: { mode: null, fireHitzone: null },
+      combatBuffs: { meal: null, charm: null, otherBuffs: null },
+      attack: '175',
+      aff: '15',
+      elem: '210',
+      mv: '100',
+      hz: '80',
+      ehz: '30',
+      sharp: '1.32',
+      esharp: '1.15',
+      cb: '0',
+      eCrit: '0',
+      dragonHz: '',
+      dragonHitzoneSource: { kind: 'UNSET' },
+      gutsState: 'BEFORE',
+      fortifyCount: 2,
+      bowState: { chargeLevel: 3, coating: null, range: null, startShot: null },
+      drawAttack: false,
+      mounted: false,
+      everlastingStage: null,
+      hbgState: {
+        contactPolicy: null,
+        contactCount: null,
+        contactTargetPolicy: 'CURRENT_TARGET',
+        elementType: null,
+        ammoType: 'NORMAL',
+        ammoLevel: null,
+        range: null,
+        normalModeLevel: null,
+        magazineCapacity: null,
+        shotOrdinal: null,
+        fullMagazine: null
+      },
+      uptime: '85',
+      uptimeMode: '1',
+      chargeBladeState: {
+        shieldBoosted: null,
+        axeBoosted: null,
+        phialType: null,
+        enhancedPhial: null,
+        previousAction: null,
+        enhancedPhials: null,
+        normalPhials: null
+      },
+      dualBladesState: { demonMode: null },
+      longSwordState: { spiritGauge: null },
+      switchAxeState: { mode: null, awakened: null },
+      insectGlaiveState: { extractState: null, kinsectState: null },
+      huntingHornState: { echoState: null, melodyState: null },
+      attributeConversionState: { normal: null, maximum: null },
+      lightBowgunState: {
+        loadedRounds: null,
+        rapidReady: null,
+        shotMode: null,
+        ammoType: null,
+        ammoLevel: null,
+        range: null,
+        normalModeLevel: null,
+        contactPolicy: null,
+        contactCount: null,
+        contactTargetPolicy: 'CURRENT_TARGET',
+        shotOrdinal: null,
+        fullMagazine: null
+      },
+      gunlanceState: {
+        shellingType: 'WIDE',
+        shellingPower: 'HIGH',
+        loadedRounds: 2,
+        chargedRounds: 1,
+        fireHitzone: 20
+      }
+    }
+  },
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

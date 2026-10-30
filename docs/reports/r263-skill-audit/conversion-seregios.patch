@@ -1,0 +1,25 @@
+--- a/index.html
++++ b/index.html
+@@ -7125,7 +7125,7 @@
+       const enabled=festival?cond.festivalId===e.bonusSkillId:skillLevel(total,['巧撃','Adrenaline Rush'])>0;
+       const multiplier=enabled?(festival?1.09:1.05):1;
+       if(festival)attackMultiplier*=multiplier;
+-      applied.push({...(festival?{festivalActivation:{...e},festivalId:cond.festivalId,festivalEnabled:enabled}:{}),skill:e.name,skillId:e.bonusSkillId,parent:e.bonusName,rank:2,attackAdd:0,attackMultiplier:festival?multiplier:1,maximumAttackMultiplier:festival?1:multiplier,bonusSource:true,appliesToNormal:festival,condition:festival?'EXPLICIT_SHARED_FESTIVAL':'ADRENALINE_RUSH_REPEAT_EVADE_PREACTIVATED',numericOrigin:'OWNER_APPROVED_PROVISIONAL',evidenceRef:'https://kuroyonhon.com/mhwilds/program/skill.php',sourceGameVersion:'UNVERIFIED'});continue;
++      applied.push({...(festival?{festivalActivation:{...e},festivalId:cond.festivalId,festivalEnabled:enabled}:{seregiosActivation:{...e},adrenalineRushLevel:skillLevel(total,['巧撃','Adrenaline Rush']),seregiosEnabled:enabled}),skill:e.name,skillId:e.bonusSkillId,parent:e.bonusName,rank:2,attackAdd:0,attackMultiplier:festival?multiplier:1,maximumAttackMultiplier:festival?1:multiplier,bonusSource:true,appliesToNormal:festival,condition:festival?'EXPLICIT_SHARED_FESTIVAL':'ADRENALINE_RUSH_REPEAT_EVADE_PREACTIVATED',numericOrigin:'OWNER_APPROVED_PROVISIONAL',evidenceRef:'https://kuroyonhon.com/mhwilds/program/skill.php',sourceGameVersion:'UNVERIFIED'});continue;
+     }
+     const activationFlat=STANDARD_SERIES_ACTIVATION_FLATS[e?.bonusSkillId];
+     if(activationFlat){
+--- a/hope-hammer-browser-adapter.js
++++ b/hope-hammer-browser-adapter.js
+@@ -372,6 +372,11 @@
+     if(e.source!=='series'||e.rankLevel!==2||e.required!==4||!Number.isInteger(e.count)||e.count<4||rows.length!==1||!a?.festivalActivation)return false;
+     return ['bonusSkillId','name','bonusName','source','rankLevel','required','count'].every(k=>a.festivalActivation[k]===e[k])&&a.skill===e.name&&a.parent===e.bonusName&&a.rank===2&&a.condition==='EXPLICIT_SHARED_FESTIVAL'&&a.appliesToNormal===true&&a.attackAdd===0&&a.maximumAttackMultiplier===1&&[0,34,161,170,180].includes(conditions.festivalId)&&a.festivalId===conditions.festivalId&&a.festivalEnabled===(conditions.festivalId===e.bonusSkillId)&&Number.isFinite(a.attackMultiplier)&&(a.festivalEnabled?a.attackMultiplier>1:a.attackMultiplier===1);
+    }
++   if(e.bonusSkillId===167){
++    const rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===167)||[],a=rows[0],rush=allSkills.filter(x=>Number(x.skillId)===120),level=rush.length?Math.max(...rush.map(x=>x.level)):0;
++    if(e.source!=='series'||e.rankLevel!==2||e.required!==4||!Number.isInteger(e.count)||e.count<4||rows.length!==1||!a?.seregiosActivation||rush.some(x=>!Number.isInteger(x.level)||x.level<1||x.level>5))return false;
++    return ['bonusSkillId','name','bonusName','source','rankLevel','required','count'].every(k=>a.seregiosActivation[k]===e[k])&&a.skill===e.name&&a.parent===e.bonusName&&a.rank===2&&a.condition==='ADRENALINE_RUSH_REPEAT_EVADE_PREACTIVATED'&&a.appliesToNormal===false&&a.attackAdd===0&&a.attackMultiplier===1&&a.adrenalineRushLevel===level&&a.seregiosEnabled===(level>0)&&Number.isFinite(a.maximumAttackMultiplier)&&(level>0?a.maximumAttackMultiplier>1:a.maximumAttackMultiplier===1);
++   }
+    if(e.bonusSkillId===106){
+     const rule=root.MHBlackEclipseRule,rank=e.rankLevel,required=rank===1?2:4,b=stats.conditionalConditionPlan?.blackEclipse;
+     if(!rule||![1,2].includes(rank)||e.bonusName!=='黒蝕竜の力'||e.name!=='黒蝕一体'+(rank===1?'Ⅰ':'Ⅱ')||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4)||!b||b.rank!==rank||!Number.isInteger(b.antivirusLevel)||!Object.hasOwn(rule.antivirusAdds,b.antivirusLevel))return false;

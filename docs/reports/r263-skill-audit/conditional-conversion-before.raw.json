@@ -1,0 +1,849 @@
+{
+  "mode": "before",
+  "cases": [
+    {
+      "label": "thunder-low",
+      "real": {
+        "status": "UNAVAILABLE",
+        "reason": "REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED"
+      },
+      "conditions": {
+        "selfSkillState": null,
+        "wetState": {
+          "normal": null,
+          "maximum": null
+        },
+        "criticalDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "punishingDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "festivalId": null,
+        "blackEclipseState": null,
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "attack": "200",
+        "aff": "0",
+        "elem": "500",
+        "mv": "100",
+        "hz": "80",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "elementType": null,
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": null,
+          "axeBoosted": null,
+          "phialType": null,
+          "enhancedPhial": null,
+          "previousAction": null,
+          "enhancedPhials": null,
+          "normalPhials": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "attributeConversionState": {
+          "normal": false,
+          "maximum": true
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      },
+      "snapshot": {
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "1081",
+        "weaponKind": "great-sword",
+        "armor": {
+          "head": 900001,
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "チャージマスター",
+              "level": 3
+            },
+            {
+              "name": "災禍転福",
+              "level": 1
+            },
+            {
+              "name": "連撃",
+              "level": 1
+            },
+            {
+              "name": "耐性変換【雷】",
+              "level": 1
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "element",
+          "element": "fire",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "elementParts": 0,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "explicitAffinityState": {
+            "selfSkillState": null,
+            "wetState": {
+              "normal": null,
+              "maximum": null
+            },
+            "criticalDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "punishingDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "festivalId": null
+          },
+          "hbgReferenceState": {
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "elementType": null,
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "attributeConversionState": {
+            "normal": false,
+            "maximum": true
+          },
+          "blackEclipseState": null,
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": null,
+            "axeBoosted": null,
+            "phialType": null,
+            "enhancedPhial": null,
+            "previousAction": null,
+            "enhancedPhials": null,
+            "normalPhials": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        }
+      }
+    },
+    {
+      "label": "thunder-cap",
+      "real": {
+        "status": "UNAVAILABLE",
+        "reason": "REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED"
+      },
+      "conditions": {
+        "selfSkillState": null,
+        "wetState": {
+          "normal": null,
+          "maximum": null
+        },
+        "criticalDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "punishingDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "festivalId": null,
+        "blackEclipseState": null,
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "attack": "200",
+        "aff": "0",
+        "elem": "500",
+        "mv": "100",
+        "hz": "80",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "elementType": null,
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": null,
+          "axeBoosted": null,
+          "phialType": null,
+          "enhancedPhial": null,
+          "previousAction": null,
+          "enhancedPhials": null,
+          "normalPhials": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "attributeConversionState": {
+          "normal": false,
+          "maximum": true
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      },
+      "snapshot": {
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "1081",
+        "weaponKind": "great-sword",
+        "armor": {
+          "head": 900002,
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "チャージマスター",
+              "level": 3
+            },
+            {
+              "name": "災禍転福",
+              "level": 1
+            },
+            {
+              "name": "連撃",
+              "level": 1
+            },
+            {
+              "name": "耐性変換【雷】",
+              "level": 1
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "element",
+          "element": "fire",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "elementParts": 0,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "explicitAffinityState": {
+            "selfSkillState": null,
+            "wetState": {
+              "normal": null,
+              "maximum": null
+            },
+            "criticalDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "punishingDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "festivalId": null
+          },
+          "hbgReferenceState": {
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "elementType": null,
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "attributeConversionState": {
+            "normal": false,
+            "maximum": true
+          },
+          "blackEclipseState": null,
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": null,
+            "axeBoosted": null,
+            "phialType": null,
+            "enhancedPhial": null,
+            "previousAction": null,
+            "enhancedPhials": null,
+            "normalPhials": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        }
+      }
+    },
+    {
+      "label": "dragon-cap",
+      "real": {
+        "status": "UNAVAILABLE",
+        "reason": "REAL_SLICE:ATTRIBUTE_CONVERSION_CAP_INTERACTION_UNRESOLVED"
+      },
+      "conditions": {
+        "selfSkillState": null,
+        "wetState": {
+          "normal": null,
+          "maximum": null
+        },
+        "criticalDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "punishingDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "festivalId": null,
+        "blackEclipseState": null,
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "attack": "200",
+        "aff": "0",
+        "elem": "500",
+        "mv": "100",
+        "hz": "80",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "elementType": null,
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": null,
+          "axeBoosted": null,
+          "phialType": null,
+          "enhancedPhial": null,
+          "previousAction": null,
+          "enhancedPhials": null,
+          "normalPhials": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "attributeConversionState": {
+          "normal": false,
+          "maximum": true
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      },
+      "snapshot": {
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "1081",
+        "weaponKind": "great-sword",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "チャージマスター",
+              "level": 3
+            },
+            {
+              "name": "災禍転福",
+              "level": 3
+            },
+            {
+              "name": "連撃",
+              "level": 5
+            },
+            {
+              "name": "属性変換",
+              "level": 3
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "element",
+          "element": "fire",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "elementParts": 0,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "explicitAffinityState": {
+            "selfSkillState": null,
+            "wetState": {
+              "normal": null,
+              "maximum": null
+            },
+            "criticalDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "punishingDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "festivalId": null
+          },
+          "hbgReferenceState": {
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "elementType": null,
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "attributeConversionState": {
+            "normal": false,
+            "maximum": true
+          },
+          "blackEclipseState": null,
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": null,
+            "axeBoosted": null,
+            "phialType": null,
+            "enhancedPhial": null,
+            "previousAction": null,
+            "enhancedPhials": null,
+            "normalPhials": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        }
+      }
+    }
+  ],
+  "scope": "Synthetic armor; adopted GS charged slash; no legal equipment/game claim",
+  "hashes": {
+    "index.html": "51ff8683e6205f55e4904668a790195e3a34ab9893f918a6a5b13ec05cd141a9",
+    "hope-hammer-browser-adapter.js": "d51f0b40bf71d55ad8a1a259d7af6e7cec093b90c106554f7c19f6afca6005f8",
+    "himmel-real-browser-bundle.js": "9f3499121bbbf0d17f2eaaea9ed615d73c1929dbaf75988f9f224c6268f13ff1",
+    "./tools/conditional-conversion-combination-proof.cjs": "08d0f29550403b03b239793ec31fd30b8b958a3f47010bbc687b28d7ec4499e3"
+  }
+}

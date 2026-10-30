@@ -1,0 +1,130 @@
+{
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/conversion-max-flat-proof.cjs after",
+  "before": {
+    "exitCode": 0,
+    "chunk": "7b66ad",
+    "raw": "conversion-max-flat-before.raw.json",
+    "meaning": "expected original conversion refusal asserted"
+  },
+  "after": {
+    "exitCode": 0,
+    "chunk": "1a2b7b",
+    "raw": "conversion-max-flat-after.raw.json",
+    "stderr": "conversion-max-flat-after.stderr.txt"
+  },
+  "hashes": {
+    "index.html": "251519e48b14183056d77d1ba345efa26abb9afcecdaa2055b32c72bc38e3062",
+    "hope-hammer-browser-adapter.js": "c31200300871278523cb3fc602215f13e36481ea755ca253757766548d486f8e",
+    "./tools/conversion-max-flat-proof.cjs": "c69a5485726a8b9f57e8bf489f8aa09ed4a025d5a6817b60c5b98a2941546f8b"
+  },
+  "summary": [
+    {
+      "case": "no-series",
+      "attack": {
+        "normal": 200,
+        "maximum": 210
+      },
+      "channels": {
+        "normal": {
+          "total": 1154.01,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        },
+        "maximum": {
+          "total": 1221.69,
+          "elements": [
+            630,
+            630,
+            630
+          ]
+        }
+      }
+    },
+    {
+      "case": "both",
+      "attack": {
+        "normal": 200,
+        "maximum": 228
+      },
+      "channels": {
+        "normal": {
+          "total": 1154.01,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        },
+        "maximum": {
+          "total": 1316.16,
+          "elements": [
+            630,
+            630,
+            630
+          ]
+        }
+      }
+    },
+    {
+      "case": "no-rush",
+      "attack": {
+        "normal": 200,
+        "maximum": 200
+      },
+      "channels": {
+        "normal": {
+          "total": 1154.01,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        },
+        "maximum": {
+          "total": 1154.01,
+          "elements": [
+            550,
+            550,
+            550
+          ]
+        }
+      }
+    },
+    {
+      "case": "dragon",
+      "attack": {
+        "normal": 200,
+        "maximum": 228
+      },
+      "channels": {
+        "normal": {
+          "total": 1144.54,
+          "elements": [
+            500,
+            500,
+            500
+          ]
+        },
+        "maximum": {
+          "total": 1340.8300000000002,
+          "elements": [
+            760,
+            760,
+            760
+          ]
+        }
+      }
+    }
+  ],
+  "negative": "valid GS input with rank3 active115 and recomputed unresolved plan -> THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED",
+  "comparison": "ordinary load and saved with/without series match originals; active snapshot/conditions unchanged",
+  "staticOnly": [
+    10,
+    155
+  ],
+  "unexecuted": "other Burst Lv/rankI/weapons, real equipment/game",
+  "scope": "Synthetic four-slot rankII115 + Burst1; GS base attack200, thunder500/dragon500; no legal equipment/game claim"
+}

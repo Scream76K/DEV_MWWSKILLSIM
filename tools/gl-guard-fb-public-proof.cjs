@@ -1,0 +1,26 @@
+const fs=require('fs'),assert=require('node:assert/strict'),crypto=require('crypto');
+const {JSDOM,VirtualConsole}=require('jsdom');
+const mode=process.argv[2]||'after';
+const html=require('./dom-test-setup.cjs').readSimulatorHtml();
+const dom=new JSDOM(html,{url:'https://proof.test/',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));w.confirm=()=>true;}}),w=dom.window;
+const weapon=JSON.parse(fs.readFileSync('docs/reports/r252-generic-states/evidence/mhdb-gunlance-hope.api.json'));
+w.eval(`clearWeaponBuckets();DB.weapons=[${JSON.stringify(weapon)}];DB.skills=${fs.readFileSync('docs/reports/r263-skill-audit/mhdb-skills.json','utf8')};DB.weapons[0].skills=[];weaponIndexByKind['gunlance']=DB.weapons;weaponKind.value='gunlance';weapon.innerHTML='<option value="315">Hope</option>';weapon.value='315';App.build.setWeapon(DB.weapons[0]);build.armor={head:null,chest:null,arms:null,waist:null,legs:null};build.decos={};renderComboForWeapon();comboGLType.value='NORMAL';comboGLPower.value='MEDIUM';comboGLLoaded.value='2';comboGLCharged.value='1';comboGLFireHz.value='20';App.combo.syncFromDOM();renderMonsters();monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';`);
+let calls=[];const shell=w.GunlanceShellReference;
+w.GunlanceShellReference={...shell,calculate(o,...rest){try{const r=shell.calculate(o,...rest);calls.push({input:JSON.parse(JSON.stringify(o)),result:JSON.parse(JSON.stringify(r))});return r;}catch(e){calls.push({input:JSON.parse(JSON.stringify(o)),error:String(e)});throw e;}}};
+const take=()=>JSON.parse(w.eval('JSON.stringify({result:calcState.realOneHit,snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot()})'));
+
+const cases=[];
+for(const [label,guard,corn] of [['off',0,0],['on',3,0],['corn',3,1]]){calls=[];w.eval(`App.state.combo.moves=[{techniqueId:'reference:gl_FULL_BURST'}];restoreComboRows();build.charmCustom={skills:[{name:'Attack Boost',level:5},{name:'Artillery',level:3},...(${guard}?[{name:'Offensive Guard',level:${guard}}]:[]),...(${corn}?[{name:'焼き砲モロコシ',level:1}]:[])],slots:[0,0,0],weaponSlots:[]};calcBuild();`);const row={label,...take(),calls:JSON.parse(JSON.stringify(calls))};cases.push(row);
+ if(mode==='before'){if(label==='on')assert.ok(JSON.stringify(row.result).includes('OFFENSIVE_GUARD_ACTION_NOT_ADOPTED'));continue;}
+ if(corn){assert.equal(row.result.channels.normal.metrics.comboTotalDamage.status,'available');assert.equal(row.result.channels.maximum.metrics.comboTotalDamage.status,'unavailable');assert.ok(JSON.stringify(row.result).includes('CORNPOPPER_ACTION_NOT_ADOPTED'));continue;}
+ for(const ch of ['normal','maximum'])assert.equal(row.result.channels[ch].metrics.comboTotalDamage.status,'available');
+ for(const call of row.calls){const r=call.result,a=call.input.normalAttackComponents;assert.ok(a.normalFlat>0);assert.equal(r.resolvedPhysicalAttack,a.weaponBase*a.normalMultiplier*r.artilleryPhysicalMultiplier+a.normalFlat);assert.equal(r.consumedRounds,2);assert.equal(r.remainingRounds,0);assert.equal(r.hits.length,2);}
+ if(guard){const off=cases[0];assert.deepEqual(row.result.channels.normal.metrics,off.result.channels.normal.metrics);assert.ok(Math.abs(row.calls[1].input.normalAttackComponents.normalMultiplier/off.calls[1].input.normalAttackComponents.normalMultiplier-1.15)<1e-9);assert.deepEqual(row.calls[1].result.hits.map(x=>x.e),off.calls[1].result.hits.map(x=>x.e));}
+ w.eval(`buildName.value='fb-${label}';saveNamedBuild();`);
+}
+let comparison,high;
+if(mode!=='before'){
+ w.applyBuildSnapshot(cases[1].snapshot);w.calcBuild();const current=take(),storage=JSON.stringify(w.localStorage);assert.deepEqual(current.result.channels,cases[1].result.channels);w.eval("document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true);runBuildCompare();");comparison=JSON.parse(w.eval('JSON.stringify(lastBuildComparisonRows.map(x=>({name:x.name,result:x.oneHitPipeline})))'));assert.equal(comparison.length,2);for(const r of comparison)assert.deepEqual(r.result.channels,cases[r.name==='fb-on'?1:0].result.channels);assert.deepEqual(take(),current);assert.equal(JSON.stringify(w.localStorage),storage);
+ const highWeapon=JSON.parse(fs.readFileSync('docs/reports/r263-skill-audit/gl-guard-video/mhdb-gunlance-350.json'));w.eval(`DB.weapons=[${JSON.stringify(highWeapon)}];DB.weapons[0].skills=[];weaponIndexByKind['gunlance']=DB.weapons;weapon.innerHTML='<option value="350">High</option>';weapon.value='350';App.build.setWeapon(DB.weapons[0]);comboGLType.value='WIDE';comboGLPower.value='HIGH';calcBuild();`);high=take();assert.ok(JSON.stringify(high.result).includes('HIGH_ACTION_NOT_ADOPTED'));
+}
+console.log(JSON.stringify({mode,cases,comparison,high,scope:'Synthetic MHDB Hope315 MEDIUM NORMAL shell type, Attack5/Artillery3/Guard3; public calcBuild, two saved compare. Corn four-skill negative is contract-only, not legal equipment. HIGH uses MHDB350 metadata.',hashes:Object.fromEntries(['index.html','hope-hammer-browser-adapter.js','gunlance-shell-reference.js',__filename].map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')]))},null,2));w.close();

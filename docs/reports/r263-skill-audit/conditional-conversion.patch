@@ -1,0 +1,20 @@
+--- a/hope-hammer-browser-adapter.js
++++ b/hope-hammer-browser-adapter.js
+@@ -366,7 +366,7 @@
+   if(attributeConversionLevel){
+    if(!attributeRule||attributeRule.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isInteger(attributeConversionLevel)||attributeConversionLevel<1||attributeConversionLevel>3)return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_RULE_UNRESOLVED');
+    if(elementType!=='dragon'||isReferenceOnly||isShellingOnly||weapon.kind==='switch-axe'||resolvedTechniqueIds.some(id=>techniques[id]?.specialComponents?.length||root.ChargeBladeEngine?.techniques?.[id]?.phial))return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED');
+-   if((attributeState?.normal||attributeState?.maximum)&&(!Number.isInteger(elementValue+attributeRule.adds[attributeConversionLevel])||root.MHWElementCapRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(root.MHWElementCapRule?.flat)||!Number.isFinite(root.MHWElementCapRule?.multiplier)||activeBonusEffects.length||Number(stats.conditionalConditionPlan?.maximum?.element)!==Number(stats.element)))return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_CAP_INTERACTION_UNRESOLVED');
++   if((attributeState?.normal||attributeState?.maximum)&&(!Number.isInteger(elementValue+attributeRule.adds[attributeConversionLevel])||root.MHWElementCapRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(root.MHWElementCapRule?.flat)||!Number.isFinite(root.MHWElementCapRule?.multiplier)||activeBonusEffects.length))return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_CAP_INTERACTION_UNRESOLVED');
+   }
+ 
+   const waterEntries=allSkills.filter(x=>Number(x.skillId)===181),waterRule=root.MHWaterConversionRule,waterInput=stats.waterResistanceInput;
+@@ -386,7 +386,7 @@
+    resistanceConversionAdd=thunderResistance*resistanceConversionCoefficient;
+    // The adopted common engine caps this body element after the conversion flat.
+    const candidate=elementValue+resistanceConversionAdd,capRule=root.MHWElementCapRule;
+-   if(!Number.isInteger(candidate)||capRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(capRule?.flat)||!Number.isFinite(capRule?.multiplier)||activeBonusEffects.length||Number(stats.conditionalConditionPlan?.maximum?.element)!==Number(stats.element))return fail('REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED');
++   if(!Number.isInteger(candidate)||capRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(capRule?.flat)||!Number.isFinite(capRule?.multiplier)||activeBonusEffects.length)return fail('REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED');
+   }
+   if(elementSpecial && (!Number.isFinite(elementRawValue)||elementRawValue<0||!elementRule||stats.element!==elementValue||stats.elementType!==elementType))return fail('REAL_SLICE:CALCULATED_ELEMENT_NOT_PROVEN');
+   if(!elementSpecial && (!([0,null].includes(stats.element))||stats.elementType&&!['none',''].includes(String(stats.elementType))))return fail('REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN');

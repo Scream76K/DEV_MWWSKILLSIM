@@ -1,0 +1,26 @@
+{
+  "review": "P2: 168 scenario must not enter 172/Heroics whole-route health comparison",
+  "hashes": {
+    "index.html": "7c4d1c30ed5ffc470bd9f17a87fd706b99efa837244b343dfcb34b36520d6c75",
+    "hope-hammer-browser-adapter.js": "7c7dc4216253244059ed35ff726f2287105ee836c460557cde01ac2465f4f3ee",
+    "./tools/dark168-health-boundary-proof.cjs": "fccfdd1e949f93b7d3dde9c1c4cb514a4c04cf8fed5e6016bae34b01eb22f2da"
+  },
+  "runs": [
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/dark168-health-boundary-proof.cjs before",
+      "stdout": "dark168-health-before.raw.json",
+      "stderr": "dark168-health-before.stderr.txt",
+      "exit": 0,
+      "chunk": "33e640"
+    },
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/dark168-health-boundary-proof.cjs after",
+      "stdout": "dark168-health-after.raw.json",
+      "stderr": "dark168-health-after.stderr.txt",
+      "exit": 0,
+      "chunk": "fcc0e6"
+    }
+  ],
+  "scope": "3 synthetic GS public calcBuild cases only; previous saved comparison proof belongs to previous adapter hash; no saved comparison rerun",
+  "diff": "dark168-health-boundary.patch"
+}

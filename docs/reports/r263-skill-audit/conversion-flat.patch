@@ -1,0 +1,30 @@
+--- a/index.html
++++ b/index.html
+@@ -7079,6 +7079,7 @@
+  25:{parent:'暗器蛸の力',prefix:'蛮勇の食卓',adds:[0,15,30],condition:'FOOD_EFFECT_PREACTIVATED'},
+  70:{parent:'闢獣の力',prefix:'力自慢',adds:[0,10,25],condition:'CLASH_OR_OFFSET_SUCCESS_PREACTIVATED'}
+ });
++window.MHSeriesActivationFlats=STANDARD_SERIES_ACTIVATION_FLATS;
+ const ADOPTED_SELF_STATE_RULE=Object.freeze({source:'https://kuroyonhon.com/mhwilds/program/skill.php',status:'OWNER_APPROVED_PROVISIONAL',oreAdds:[10,15,30],oreCap:90,cooking:{NONE:[0,0],RARE:[10,100],WELL:[10,300],BURNT:[0,300]}});
+ function adoptedSelfStatePlan(st,total,cond){
+  const rule=ADOPTED_SELF_STATE_RULE,active=st.activeBonusEffects||[],out={normal:[],maximum:[],pending:[],ids:[]};
+--- a/hope-hammer-browser-adapter.js
++++ b/hope-hammer-browser-adapter.js
+@@ -363,9 +363,15 @@
+   const skillTotal=Object.fromEntries(Array.isArray(skills)?skills:[]);
+   const elementSpecial=elementSpecials[0], elementType=elementSpecial?.element||'none', elementRawValue=elementSpecial?.damage?.display??0;
+   const elementEntries=allSkills.filter(x=>x.skillKey===elementType),elementSkillNames={fire:'火属性攻撃強化',water:'水属性攻撃強化',thunder:'雷属性攻撃強化',ice:'氷属性攻撃強化',dragon:'龍属性攻撃強化'},elementSkillName=elementSkillNames[elementType],elementLevel=Math.max(...elementEntries.map(x=>x.level),0),elementRule=root.MHWElementSkillResolver&&elementSpecial?root.MHWElementSkillResolver(skillTotal,elementType):{add:0,mult:1},elementValue=elementSpecial?elementRawValue*(elementRule?.mult??1)+(elementRule?.add??0):0;  const attributeConversionLevel=Math.max(...allSkills.filter(x=>x.skillKey==='attributeConversion').map(x=>x.level),0),attributeRule=root.MHAttributeConversionRule,attributeState=conditions?.attributeConversionState;
+-  // Only adopted Guts/Veil/Omega effects with a resolved, activation-checked plan may coexist here.
++  // Only adopted Guts/Veil/Omega or DB-defined series attack flats with a resolved, activation-checked plan may coexist here.
+   const conversionGroupPlan=stats.conditionalConditionPlan?.groupPlan,conversionSelfPlan=stats.conditionalConditionPlan?.selfStatePlan;
+-  const conversionResistanceBonusesResolved=activeBonusEffects.length>0&&activeBonusEffects.every(e=>[131,153,173].includes(e.bonusSkillId)&&conversionGroupPlan?.applied?.some(a=>a.skillId===e.bonusSkillId&&a.skill===e.name))&&Array.isArray(conversionGroupPlan?.unresolvedEffects)&&conversionGroupPlan.unresolvedEffects.length===0&&Array.isArray(conversionSelfPlan?.pending)&&conversionSelfPlan.pending.length===0;
++  const conversionResistanceBonusesResolved=activeBonusEffects.length>0&&activeBonusEffects.every(e=>{
++   if([131,153,173].includes(e.bonusSkillId))return conversionGroupPlan?.applied?.some(a=>a.skillId===e.bonusSkillId&&a.skill===e.name);
++   const rule=root.MHSeriesActivationFlats?.[e.bonusSkillId],rank=e.rankLevel,required=rank===1?2:4;
++   if(!rule||![1,2].includes(rank)||e.bonusName!==rule.parent||e.name!==rule.prefix+(rank===1?'Ⅰ':'Ⅱ')||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4))return false;
++   const applied=conversionGroupPlan?.applied?.filter(a=>a.skillId===e.bonusSkillId)||[];
++   return applied.length===1&&applied[0].skill===e.name&&applied[0].rank===rank&&applied[0].attackAdd===rule.adds[rank]&&applied[0].attackMultiplier===1&&applied[0].appliesToNormal===false&&applied[0].condition===rule.condition&&applied[0].scope==='NORMAL_INACTIVE_MAXIMUM_PREACTIVATED';
++  })&&Array.isArray(conversionGroupPlan?.unresolvedEffects)&&conversionGroupPlan.unresolvedEffects.length===0&&Array.isArray(conversionSelfPlan?.pending)&&conversionSelfPlan.pending.length===0;
+   if(attributeConversionLevel){
+    if(!attributeRule||attributeRule.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isInteger(attributeConversionLevel)||attributeConversionLevel<1||attributeConversionLevel>3)return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_RULE_UNRESOLVED');
+    if(elementType!=='dragon'||isReferenceOnly||isShellingOnly||weapon.kind==='switch-axe'||resolvedTechniqueIds.some(id=>techniques[id]?.specialComponents?.length||root.ChargeBladeEngine?.techniques?.[id]?.phial))return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED');

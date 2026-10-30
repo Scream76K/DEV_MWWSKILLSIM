@@ -1,0 +1,37 @@
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -468,7 +468,7 @@
+   let conditionPlan=(gsChargeActive||bowChargeResolved)&&resolvedConditionPlan?{...resolvedConditionPlan,pending:(resolvedConditionPlan.pending||[]).filter(x=>!['チャージマスター:CONDITIONAL_DAMAGE_FORMULA_PENDING','Charge Master:CONDITIONAL_DAMAGE_FORMULA_PENDING'].includes(x))}:resolvedConditionPlan;
+   // Owner-approved 168 scenario, not Dark Arts 172 and not a dynamic HP timing model.
+   const darkPeakScenario=root.MHDarkPeakScenario;
+-  const darkPeakScoped=conditionPlan?.excluded?.some(x=>x.reason==='DARK_BELOW_FULL_NO_HEALING_MAXIMUM')&&darkPeakScenario&&weapon.kind===darkPeakScenario.weaponKind&&resolvedTechniqueIds.length===darkPeakScenario.techniqueIds.length&&resolvedTechniqueIds.every((id,i)=>id===darkPeakScenario.techniqueIds[i]);
++  const darkPeakScoped=conditionPlan?.excluded?.some(x=>x.reason==='DARK_BELOW_FULL_NO_HEALING_MAXIMUM')&&!healthBranchKinds(conditionPlan).required&&darkPeakScenario&&weapon.kind===darkPeakScenario.weaponKind&&resolvedTechniqueIds.length===darkPeakScenario.techniqueIds.length&&resolvedTechniqueIds.every((id,i)=>id===darkPeakScenario.techniqueIds[i]);
+   if(darkPeakScoped){const pending=conditionPlan.pending.filter(x=>x!=='暗黒:DARK_STANDARD_SEQUENCE_REQUIRED');conditionPlan={...conditionPlan,pending,status:pending.length?conditionPlan.status:'READY'};}
+   if(conditionPlan&&(resistanceConversionLevel||attributeConversionLevel)&&conditionPlan.pending.length===0)conditionPlan.status='READY';
+   const explicitAffinityEntries=allSkills.filter(x=>x.skillKey==='explicitAffinity');
+@@ -738,13 +738,23 @@
+    if(darkPeakScoped&&evaluated.channels?.maximum)evaluated.channels.maximum.diagnostics={...evaluated.channels.maximum.diagnostics,darkPeakScenario};
+    return evaluated;}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
+  }
++ // Shared detection for the existing health comparison and the narrower 168 scenario gate.
++ function healthBranchKinds(plan){
++  const dark=plan?.groupPlan?.applied?.some(x=>x.skill==='ダークアーツ');
++  const heroics=plan?.applied?.some(x=>x.skill==='火事場力'&&x.attackMultiplier>1);
++  return {dark,heroics,required:!!(dark||heroics)};
++ }
+  // Reuse the adopted whole-route health comparison; never mix component maxima.
+  function evaluateCurrent(input={}){
+   const original=evaluateCurrentSingleHealth(input),plan=input.stats?.conditionalConditionPlan;
+-  const dark=plan?.groupPlan?.applied?.some(x=>x.skill==='ダークアーツ');
+-  const heroics=plan?.applied?.some(x=>x.skill==='火事場力'&&x.attackMultiplier>1);
++  const {dark,heroics}=healthBranchKinds(plan);
+   const totals=Object.fromEntries(input.skills||[]),peak=Number(totals['フルチャージ']||totals['Peak Performance']||0);
+   if(!original.channels||(!dark&&!heroics)||!Number.isInteger(peak)||peak<=0)return original;
++  // Do not strip 172/Heroics then reinterpret 168 as a full-health branch.
++  if(plan?.excluded?.some(x=>x.reason==='DARK_BELOW_FULL_NO_HEALING_MAXIMUM')){
++   original.channels.maximum.diagnostics={...original.channels.maximum.diagnostics,healthBranchComparison:{status:'PENDING',reason:'DARK168_HEALTH_COMBINATION_NOT_ADOPTED',branches:[]}};
++   return original;
++  }
+   const run=(state,remove,removeDark)=>{
+    const skills=(input.skills||[]).filter(([name])=>!remove.includes(name));
+    const stats={...input.stats,activeBonusEffects:(input.stats.activeBonusEffects||[]).filter(x=>!removeDark||x.name!=='ダークアーツ')};

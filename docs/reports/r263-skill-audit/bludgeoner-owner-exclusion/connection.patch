@@ -1,0 +1,69 @@
+--- before/index.html
++++ after/index.html
+@@ -2291,7 +2291,7 @@
+   if(typeof MHWElementDisplay!=='undefined')return MHWElementDisplay.render(view,options);
+   return reason?'未算出：'+esc(comparisonReasonText(reason)):esc(Number.isFinite(state.element)?Math.round(state.element):'未算出');
+ }
+-function excludedSkillDamageDisplay(d){return (d?.excludedSkillDamage||[]).map(x=>{const a=x.additionalDamage;return `［${esc(x.skill)}：${x.referenceRank==='upper'?'上位資料・':''}${a?.status==='available'?`追加ダメージ${Number(a.total).toFixed(2)}（固定${Number(a.fixed)}＋火${Number(a.element).toFixed(2)}、火肉質${Number(a.fireHitzone)}%）`:`追加ダメージ不明（${esc(a?.reason||'注釈入力未解決')}）`}。追加ダメージは基準／最大火力に含めず注釈のみ］`;}).join('');}
++function excludedSkillDamageDisplay(d){return (d?.excludedCalculationSkills||[]).map(x=>`［${esc(x.name)}：${esc(x.reason)}］`).join('')+(d?.excludedSkillDamage||[]).map(x=>{const a=x.additionalDamage;return `［${esc(x.skill)}：${x.referenceRank==='upper'?'上位資料・':''}${a?.status==='available'?`追加ダメージ${Number(a.total).toFixed(2)}（固定${Number(a.fixed)}＋火${Number(a.element).toFixed(2)}、火肉質${Number(a.fireHitzone)}%）`:`追加ダメージ不明（${esc(a?.reason||'注釈入力未解決')}）`}。追加ダメージは基準／最大火力に含めず注釈のみ］`;}).join('');}
+ function attributeConversionDisplay(d){const c=d?.attributeConversion;return c?`［属性変換${typeof c.active==='boolean'?(c.active?'発動':'非発動'):'状態未入力'}・龍${c.baseElement}→${c.effectiveElement??'未算出'}・本体限定参考値／固定・龍追撃を含まない］`:'';}
+ function thunderConversionDisplay(d){const c=d?.thunderResistanceConversion;return c?`［耐性変換・雷${Number(c.baseElement)}→${Number(c.effectiveElement)}／装備由来・本体限定・食事/一時効果なし］`:'';}
+ function renderSummary(){
+@@ -4252,7 +4252,7 @@
+  const state=wyvernStoredState(),buffs=combatBuffState(),part=selectedPart();
+  const fireHitzone=part?(typeof part.multipliers?.fire==='number'?part.multipliers.fire*100:null):state.fireHitzone;
+  const total=calcState.total||{},allowed=['弾導強化','Ballistics','攻撃','Attack Boost','砲術','Artillery','火属性攻撃強化','Fire Attack','見切り','Critical Eye','超会心','Critical Boost'];
+- const unreviewedSkills=Object.keys(total).filter(name=>Number(total[name])>0&&!allowed.includes(name));
++ const unreviewedSkills=Object.keys(total).filter(name=>Number(total[name])>0&&!allowed.includes(name)&&!window.MHIsOwnerExcludedCalculationSkill({skillId:DB.skills.find(x=>x.name===name)?.id,name,level:Number(total[name])}));
+  if(isArtia(selectedWeapon())||calcState.stats.activeBonusEffects?.length)throw Error('HBG_WYVERN:UNREVIEWED_WEAPON_OR_BONUS_EFFECT');
+  return window.HBGWyvernReference.calculate({...state,...buffs,fireHitzone,range:$('powerHbgRange')?.value||null,ballisticsLevel:skillLevel(total,['弾導強化','Ballistics']),attackComponents:calcState.stats.attackComponents,artilleryLevel:skillLevel(total,['砲術','Artillery']),fireLevel:skillLevel(total,['火属性攻撃強化','Fire Attack']),unreviewedSkills},window.TechniqueDBEngine);
+ }
+@@ -7066,6 +7066,9 @@
+  182:{name:'解キ放ツ鏡刃ノ破片',maxLevel:1,components:['AREA_EXTRA'],bodyEffect:false}
+ });
+ window.MHSkillExtraDamagePolicies=SKILL_EXTRA_DAMAGE_POLICIES;
++// Current-release owner scope, 2026-10-30. Keep DB coefficients for future weapon/sharpness reevaluation.
++window.MHOwnerCalculationExclusion=Object.freeze({skillId:85,names:Object.freeze(['鈍器使い','Bludgeoner']),reason:'ユーザー指定により今回の火力計算対象外（装備・保存は保持）',status:'OWNER_EXCLUDED_CURRENT_RELEASE'});
++window.MHIsOwnerExcludedCalculationSkill=(entry)=>{const p=window.MHOwnerCalculationExclusion;return Number(entry?.skillId)===p.skillId&&p.names.includes(entry?.name)&&Number.isInteger(entry?.level)&&entry.level>=1&&entry.level<=3;};
+ const CONTEXT_ATTACK_SKILL_RULES=techniqueDbDeepFreeze({source:'https://kuroyonhon.com/mhwilds/program/skill.php',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',mindsEye:{id:136,multipliers:[1,1.1,1.15,1.3],originalHitzoneMaximum:44},bludgeoner:{id:85,multipliers:[1,1.05,1.1,1.1],colorsByLevel:[[],['red','orange','yellow'],['red','orange','yellow'],['red','orange','yellow','green']]}});
+ window.MHContextAttackSkillRules=CONTEXT_ATTACK_SKILL_RULES;
+ window.MHSaedMindsEyeRule=techniqueDbDeepFreeze({skillId:136,techniqueIds:['CB_SAED','CB_SAED_AED_DERIVED'],component:'BODY_PHYSICAL_ONLY',multiplierRule:CONTEXT_ATTACK_SKILL_RULES.mindsEye,source:CONTEXT_ATTACK_SKILL_RULES.source,status:'OWNER_APPROVED_PROVISIONAL',approval:'Sentinel_11c1099a37508191ae33eacd6126c7f0',verification:'NOT_GAME_VERIFIED',order:'BASE_TIMES_EXISTING_MULTIPLIER_TIMES_MINDS_EYE_PLUS_FLATS',excluded:['BODY_ELEMENT','PHIAL']});
+@@ -8268,7 +8271,7 @@
+     const pipelineMaximum=pipeline?.channels?.maximum?.metrics?.firstHitReference??pipeline?.channels?.maximum?.metrics?.comboTotalDamage;
+     if(pipeline?.status==='OK'&&(pipelineNormal?.status==='available'||pipelineMaximum?.status==='available')){
+       if(['FIRST_HIT_ONLY_NOT_WHOLE_SHOT','HBG_EXPLICIT_CONTACT_SEQUENCE','LBG_EXPLICIT_CONTACT_SEQUENCE'].includes(pipeline.channels?.normal?.diagnostics?.referenceScope))lines.push(firstHitReferenceDisplay(pipeline.channels.normal.diagnostics));
+-      if(pipeline.channels?.normal?.diagnostics?.excludedSkillDamage?.length)lines.push(excludedSkillDamageDisplay(pipeline.channels.normal.diagnostics));
++      if(pipeline.channels?.normal?.diagnostics?.excludedSkillDamage?.length||pipeline.channels?.normal?.diagnostics?.excludedCalculationSkills?.length)lines.push(excludedSkillDamageDisplay(pipeline.channels.normal.diagnostics));
+       if(pipeline.channels?.normal?.diagnostics?.thunderResistanceConversion)lines.push(thunderConversionDisplay(pipeline.channels.normal.diagnostics));
+       if(pipeline.channels?.normal?.diagnostics?.attributeConversion)lines.push('通常'+attributeConversionDisplay(pipeline.channels.normal.diagnostics)+'／最大'+attributeConversionDisplay(pipeline.channels.maximum.diagnostics));
+       const channelValue=ch=>{const c=pipeline.channels?.[ch],m=c?.metrics?.firstHitReference??c?.metrics?.comboTotalDamage;return m?.status==='available'?comparisonDisplayNumber(m.value):'未算出（'+comparisonReasonText(c?.execution?.reason||c?.issues?.[0]?.code||m?.reason||'PIPELINE_UNAVAILABLE')+'）';};
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -107,7 +107,7 @@
+    if(s?.contactPolicy!=='EXPLICIT_CONTACTS'||s.contactTargetPolicy!=='CURRENT_TARGET')return s;
+    if(!Number.isInteger(s.contactCount)||s.contactCount<1||s.contactCount>6)throw Error('BOWGUN_ELEMENT:CONTACT_COUNT_REQUIRED_1_TO_6');
+    const p=trainingRoom?.parts?.find(p=>p.id===target?.part),element=String(s.elementType||s.ammoType||'').toLowerCase();
+-   if(target?.monster!=='training-room'||!p||!Number.isFinite(p.multipliers?.pierce)||!Number.isFinite(p.multipliers?.[element]))throw Error('BOWGUN_ELEMENT:CONTACT_TARGET_UNRESOLVED');
++  if(target?.monster!=='training-room'||!p||!Number.isFinite(p.multipliers?.pierce)||!Number.isFinite(p.multipliers?.[element]))throw Error('BOWGUN_ELEMENT:CONTACT_TARGET_UNRESOLVED');
+    return {...s,contacts:Array.from({length:s.contactCount},(_,i)=>({ordinal:i+1,targetId:target.monster,partId:target.part,range:s.range,physicalHitzone:p.multipliers.pierce*100,elementalHitzone:p.multipliers[element]*100}))};
+   };
+   try{if(weapon.kind==='heavy-bowgun')hbgState=resolveContactCount(hbgState);if(weapon.kind==='light-bowgun')lightBowgunState=resolveContactCount(lightBowgunState);}catch(e){return fail(e.message);}
+@@ -127,7 +127,9 @@
+   const activeBonusEffectNames=new Set(activeBonusEffects.map(x=>String(x?.name||'')).filter(Boolean));
+   const canonicalSlugger=rawSkills.find(x=>x.skillKey==='slugger'&&String(x.skillId)==='36'&&Number.isInteger(x.level)&&x.level===1);
+   const buildSkills=Array.isArray(skills)?skills.map(([name,level])=>{const ui=classifySkill({name,level},'index.html:calcBuild');return ui.skillKey==='slugger'&&canonicalSlugger?{...canonicalSlugger,level:ui.level,source:`${canonicalSlugger.source};index.html:calcBuild`}:ui;}):[];
+-  const allSkills=[...rawSkills,...buildSkills.filter(x=>!rawSkills.some(y=>String(y.skillId)===String(x.skillId)&&y.level===x.level))];
++  const equippedSkills=[...rawSkills,...buildSkills.filter(x=>!rawSkills.some(y=>String(y.skillId)===String(x.skillId)&&y.level===x.level))];
++   const excludedCalculationSkills=equippedSkills.filter(x=>root.MHIsOwnerExcludedCalculationSkill?.(x)).map(x=>({skillId:x.skillId,name:x.name,level:x.level,reason:root.MHOwnerCalculationExclusion.reason,status:root.MHOwnerCalculationExclusion.status}));
++  const allSkills=equippedSkills.filter(x=>!root.MHIsOwnerExcludedCalculationSkill?.(x));
+   if(target?.monster!=='training-room'||target?.part!=='training-front')return fail('REAL_SLICE:TRAINING_ROOM_FRONT_REQUIRED');
+   const normalized=normalizeTechniqueIds(Array.isArray(techniqueIds)?techniqueIds:null,{fallback:techniqueId});
+   const resolvedTechniqueIds=normalized.ids;
+@@ -771,6 +773,7 @@
+     }catch(error){note.additionalDamage={status:'unavailable',reason:String(error?.message||error),includedInPower:false};}
+     return note;
+    });
++   if(excludedCalculationSkills.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,excludedCalculationSkills};
+    if(excludedSkillDamage.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,excludedSkillDamage};
+    if(resolvedTechniqueIds.some(id=>['heavy-bowgun-element','light-bowgun-element'].includes(techniques[id]?.referenceKind)))for(const result of Object.values(evaluated.channels||{})){
+     const contactState=weapon.kind==='light-bowgun'?lightBowgunState:hbgState;

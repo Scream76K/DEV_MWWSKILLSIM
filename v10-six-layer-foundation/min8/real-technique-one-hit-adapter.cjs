@@ -51,6 +51,12 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   const wyvern=weaponType==='heavy-bowgun'&&techniqueId==='HBG_WYVERN_AMMO'&&record.referenceKind==='heavy-bowgun-wyvern'&&record.wyvernRules?.adoptionStatus==='PROVISIONAL'&&record.sourceScope==='OWNER_FIXED_TWO_HIT_PROVISIONAL_MODEL'&&record.evidenceRefs?.includes('KAN23_OWNER_TWO_HIT_FIX_22_CONDITIONS')&&record.hits?.length===2;
   if(record.numericStatus&&record.numericStatus!=='SOURCE_CONFIRMED'&&!kan21&&!wyvern)throw Error('REAL_SLICE:REFERENCE_SOURCE_PENDING');
    const source=record.evidenceRefs?.[0];if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
+   if(weaponType==='light-bowgun'&&techniqueId==='LBG_NORMAL_RAPID_1'){
+    const rule=record.rapidRule;if(rule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isInteger(rule.hitCount)||rule.hitCount<1||!Number.isInteger(rule.consumedRounds)||rule.consumedRounds<1)throw Error('LBG_RAPID:RULE_INVALID');
+    const events=Array.from({length:rule.hitCount},(_,i)=>({type:'hit',components:[{id:techniqueId+':reference:'+i,kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:{hitIndex:i,effectTargets:['physical'],effectStages:['attack','affinity'],sourceTechniqueId:techniqueId,sourceRecord:record,referenceKind:record.referenceKind,referenceInput:record.referenceInput,rapidResource:rule.consumedRounds}}]}));
+    events.push({type:'consume',contract:'LBG_RAPID_ROUND',resourcePath:['lightBowgun','loadedRounds'],amount:rule.consumedRounds,source});
+    return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events});
+   }
    return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':reference:0',kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:['physical','element'],effectStages:['attack','affinity','element'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),referenceKind:record.referenceKind,referenceInput:record.referenceInput})}]}]});
   }
   if(!['VERIFIED','PARTIALLY_VERIFIED'].includes(record.verificationStatus))throw Error('REAL_SLICE:VERIFICATION_PENDING');

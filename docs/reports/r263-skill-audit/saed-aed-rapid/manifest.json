@@ -1,0 +1,215 @@
+{
+  "status": "LOCAL_REVIEW_PENDING",
+  "commands": [
+    {
+      "command": "node tools/saed-aed-rapid-proof.cjs before",
+      "stdout": "before.json",
+      "stderr": "before.stderr",
+      "exit": 0
+    },
+    {
+      "command": "node tools/saed-aed-rapid-proof.cjs after",
+      "stdout": "after.json",
+      "stderr": "after.stderr",
+      "exit": 0
+    }
+  ],
+  "sha256": {
+    "index.html": "4fb4b0fe1db7ceb7376f3c8de4e738b380a5af0b0938d118ea726cc314dda94e",
+    "hope-hammer-browser-adapter.js": "fa6fb7b5e4b8902b8399616f1465df77b666fd6da06eced48047e96cc3de800c",
+    "tools/saed-aed-rapid-proof.cjs": "c43df2489ae0dc8a3fa4a34ede2b793b3718bcba688e521acafea7ba8512a143"
+  },
+  "results": [
+    {
+      "label": "off",
+      "reason": null,
+      "values": {
+        "normal": {
+          "total": {
+            "status": "available",
+            "value": 907.4781969000001
+          },
+          "components": {
+            "physicalBody": 255.39819690000007,
+            "elementalBody": 23.4,
+            "axeBoostPhysical": 0,
+            "axeBoostElement": 0,
+            "impactPhial": 0,
+            "elementalPhial": 628.6800000000001
+          },
+          "effectiveAttack": [
+            206.6,
+            206.6,
+            206.6
+          ]
+        },
+        "maximum": {
+          "total": {
+            "status": "available",
+            "value": 914.4516295200001
+          },
+          "components": {
+            "physicalBody": 262.37162952,
+            "elementalBody": 23.4,
+            "axeBoostPhysical": 0,
+            "axeBoostElement": 0,
+            "impactPhial": 0,
+            "elementalPhial": 628.6800000000001
+          },
+          "effectiveAttack": [
+            210.6,
+            210.6,
+            210.6
+          ]
+        }
+      }
+    },
+    {
+      "label": "aed-Lv3",
+      "reason": null,
+      "values": {
+        "normal": {
+          "total": {
+            "status": "available",
+            "value": 956.33268258
+          },
+          "components": {
+            "physicalBody": 304.25268258,
+            "elementalBody": 23.4,
+            "axeBoostPhysical": 0,
+            "axeBoostElement": 0,
+            "impactPhial": 0,
+            "elementalPhial": 628.6800000000001
+          },
+          "effectiveAttack": [
+            246.11999999999998,
+            246.11999999999998,
+            246.11999999999998
+          ]
+        },
+        "maximum": {
+          "total": {
+            "status": "available",
+            "value": 963.6867995040001
+          },
+          "components": {
+            "physicalBody": 311.60679950400004,
+            "elementalBody": 23.4,
+            "axeBoostPhysical": 0,
+            "axeBoostElement": 0,
+            "impactPhial": 0,
+            "elementalPhial": 628.6800000000001
+          },
+          "effectiveAttack": [
+            250.11999999999998,
+            250.11999999999998,
+            250.11999999999998
+          ]
+        }
+      }
+    },
+    {
+      "label": "missing",
+      "reason": "REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED:CB_SAED_AED_DERIVED",
+      "values": {}
+    },
+    {
+      "label": "other-origin",
+      "reason": "REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED:CB_SAED_AED_DERIVED",
+      "values": {}
+    },
+    {
+      "label": "wrong-guard",
+      "reason": "REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED:CB_SAED_AED_DERIVED",
+      "values": {}
+    },
+    {
+      "label": "existing-guard",
+      "reason": null,
+      "values": {
+        "normal": {
+          "total": {
+            "status": "available",
+            "value": 828.5686825800001
+          },
+          "components": {
+            "physicalBody": 304.25268258,
+            "elementalBody": 23.4,
+            "axeBoostPhysical": 0,
+            "axeBoostElement": 0,
+            "impactPhial": 0,
+            "elementalPhial": 500.91600000000005
+          },
+          "effectiveAttack": [
+            246.11999999999998,
+            246.11999999999998,
+            246.11999999999998
+          ]
+        },
+        "maximum": {
+          "total": {
+            "status": "available",
+            "value": 835.9227995040001
+          },
+          "components": {
+            "physicalBody": 311.60679950400004,
+            "elementalBody": 23.4,
+            "axeBoostPhysical": 0,
+            "axeBoostElement": 0,
+            "impactPhial": 0,
+            "elementalPhial": 500.91600000000005
+          },
+          "effectiveAttack": [
+            250.11999999999998,
+            250.11999999999998,
+            250.11999999999998
+          ]
+        }
+      }
+    },
+    {
+      "label": "Lv1-missing",
+      "reason": null,
+      "values": {
+        "normal": {
+          "total": {
+            "status": "available",
+            "value": 907.4781969000001
+          },
+          "components": {
+            "physicalBody": 255.39819690000007,
+            "elementalBody": 23.4,
+            "axeBoostPhysical": 0,
+            "axeBoostElement": 0,
+            "impactPhial": 0,
+            "elementalPhial": 628.6800000000001
+          },
+          "effectiveAttack": [
+            206.6,
+            206.6,
+            206.6
+          ]
+        },
+        "maximum": {
+          "total": {
+            "status": "available",
+            "value": 914.4516295200001
+          },
+          "components": {
+            "physicalBody": 262.37162952,
+            "elementalBody": 23.4,
+            "axeBoostPhysical": 0,
+            "axeBoostElement": 0,
+            "impactPhial": 0,
+            "elementalPhial": 628.6800000000001
+          },
+          "effectiveAttack": [
+            210.6,
+            210.6,
+            210.6
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "task": "ID159 adopted normal/charged shell maximum cooling scenario",
+  "approval": "Sentinel_b427654e40d88191a6ea7d004849a9dd",
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/cornpopper-shell-proof.cjs after",
+  "cwd": "external-evidence/task-20261025/stage2-hit-hitzone",
+  "before": {
+    "exit": 0,
+    "stdout": "cornpopper-before.json",
+    "stderr": "cornpopper-before.stderr",
+    "result": "ID159 fails SKILL_EFFECT_NOT_PROVEN; controls calculate",
+    "hashes": {
+      "index.html": "44039900938d4a5454e85bc4c9e28ee1230ea9276829f6aded48a2ed18faabf1",
+      "hope-hammer-browser-adapter.js": "3139dc96d6fc8ad41932f5e9f87c36cafebfa9ff1c887dfbbfc3e8e2ceaf5013",
+      "gunlance-shell-reference.js": "976a8e7d6bda0ff55e688a265805ab35ddd014a2bd812f90b2599f1758e786c5"
+    }
+  },
+  "attempts": [
+    {
+      "exit": 1,
+      "stderr": "cornpopper-after-attempt1.stderr",
+      "cause": "test strict floating comparison 0.5999999999999999 vs0.6000000000000001; same expected formula, tolerance1e-10"
+    },
+    {
+      "exit": 1,
+      "stderr": "cornpopper-after-attempt2.stderr",
+      "cause": "UI clamps invalid Lv2 to MHDB Lv1; malformed-rank synthetic fixture now reaches adapter rejection"
+    },
+    {
+      "exit": 1,
+      "stderr": "cornpopper-after-attempt3.stderr",
+      "cause": "harness did not sync moves into DOM before snapshot; empty saved moves defaulted to gl_thrust. RestoreComboRows used; product persistence unchanged"
+    },
+    {
+      "exit": 1,
+      "stderr": "cornpopper-debug.stderr",
+      "stdout": "cornpopper-debug.stdout",
+      "cause": "read-only diagnostic confirmation of same fixture problem",
+      "detail": "cornpopper-restore-debug.json"
+    }
+  ],
+  "attemptHashLimit": "Intermediate failed-attempt source hashes were not independently captured; do not attribute final hash to failed runs. Before and successful final source hashes are captured.",
+  "final": {
+    "exit": 0,
+    "stdout": "cornpopper-after.json",
+    "stderr": "cornpopper-after.stderr",
+    "hashes": {
+      "index.html": "297a3bf15d35155b7642de4cd96fcfe6759264fa15c5557984b9e9fb55432a44",
+      "hope-hammer-browser-adapter.js": "79c6827859eac275b971425b400525246710a07673f41d9ab4394c92035a92d0",
+      "gunlance-shell-reference.js": "ff908bb14ba5eef81b123b059eb0ad1860f1158a34363e927ea04e7fb9fbe5ab"
+    },
+    "harnessSHA256": "b1c3c09a6234a244e8704d0aeb57b5961050c4116da2beebfc47092343960c91"
+  },
+  "scope": "JSDOM public calcBuild and single saved build vs current shared conditions; synthetic custom skills; not real equipment legality/live game/whole-beta regression",
+  "unexecuted": [
+    "other shell type/power",
+    "real browser events",
+    "two distinct saved builds",
+    "direct missing attack-decomposition injection (guard read statically)",
+    "unknown technique/wrong weapon guards (static)"
+  ],
+  "notes": "Final repeated run only freezes copied per-case trace arrays so later saved comparison cannot mutate the bad-level log; no additional scenario. β final local-LLM-led execution deferred."
+}

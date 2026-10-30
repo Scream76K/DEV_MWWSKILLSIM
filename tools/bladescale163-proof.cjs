@@ -1,0 +1,26 @@
+const fs=require('fs'),assert=require('node:assert/strict'),crypto=require('crypto');
+const {JSDOM,VirtualConsole}=require('jsdom');
+const mode=process.argv[2]||'after';
+const dom=new JSDOM(require('./dom-test-setup.cjs').readSimulatorHtml(),{url:'https://proof.test/',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));w.confirm=()=>true;}}),w=dom.window;
+const weapon=JSON.parse(fs.readFileSync('docs/reports/r252-generic-states/evidence/mhdb-gunlance-hope.api.json'));
+w.eval(`clearWeaponBuckets();DB.weapons=[${JSON.stringify(weapon)}];DB.skills=${fs.readFileSync('docs/reports/r263-skill-audit/mhdb-skills.json','utf8')};DB.weapons[0].skills=[];weaponIndexByKind['gunlance']=DB.weapons;weaponKind.value='gunlance';weapon.innerHTML='<option value="315">Hope</option>';weapon.value='315';App.build.setWeapon(DB.weapons[0]);build.armor={head:null,chest:null,arms:null,waist:null,legs:null};build.decos={};renderComboForWeapon();comboGLType.value='NORMAL';comboGLPower.value='MEDIUM';comboGLLoaded.value='6';comboGLCharged.value='2';comboGLFireHz.value='20';App.combo.syncFromDOM();renderMonsters();monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';`);
+let calls=[];const shell=w.GunlanceShellReference;
+w.GunlanceShellReference={...shell,calculate(o,...rest){try{const r=shell.calculate(o,...rest);calls.push({input:JSON.parse(JSON.stringify(o)),result:JSON.parse(JSON.stringify(r))});return r;}catch(e){calls.push({input:JSON.parse(JSON.stringify(o)),error:String(e)});throw e;}}};
+const take=()=>JSON.parse(w.eval('JSON.stringify({result:calcState.realOneHit,snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot()})'));
+const cases=[];
+w.eval(`const white=JSON.parse(JSON.stringify(DB.weapons[0]));white.id=990315;white.gameId=990315;white.sharpness.white=20;DB.weapons.push(white);weaponIndexByKind['gunlance']=DB.weapons;weapon.innerHTML+='<option value="990315">White contract</option>';`);
+for(const [label,weaponId,blade,blunt,repeat,element,mixed] of [['green-off',315,0,0,false,false,false],['green-blunt',315,0,3,false,false,false],['green-active',315,1,3,false,false,false],['white-active',990315,1,3,false,false,false],['repeat',315,1,0,true,false,false],['element',315,1,0,false,true,false],['mixed',315,1,0,false,false,true]]){
+ w.eval(`weapon.value='${weaponId}';const wp=DB.weapons.find(x=>x.id===${weaponId});wp.specials=${JSON.stringify(element?[{kind:'element',element:'fire',damage:{raw:10,display:100}}]:[])};App.build.setWeapon(wp);App.state.combo.moves=${JSON.stringify([{techniqueId:'canonical:GL_SLAM'},...(repeat?[{techniqueId:'canonical:GL_SLAM'}]:[]),...(mixed?[{techniqueId:'reference:gl_NORMAL'}]:[])])};restoreComboRows();build.charmCustom={skills:[{name:'攻撃',level:5}${blade?",{name:'刃鱗研装',level:1}":''}${blunt?",{name:'鈍器使い',level:3}":''}],slots:[0,0,0],weaponSlots:[]};calcBuild();`);
+ const row={label,weaponId,blade,blunt,repeat,element,mixed,...take()};cases.push(row);
+ if(mode==='before')continue;
+ assert.equal(row.result.channels.normal.execution.status,'complete',JSON.stringify(row.result));
+ if(repeat||element||mixed){assert.equal(row.result.channels.maximum.metrics.comboTotalDamage.status,'unavailable');assert.ok(JSON.stringify(row.result).includes('BLADESCALE_FIRST_HIT_SCOPE_PENDING'));continue;}
+ assert.equal(row.result.channels.maximum.execution.status,'complete',JSON.stringify(row.result));
+ const p=row.result.channels.maximum.components[0].value;
+ if(label==='green-active'){assert.deepEqual(row.result.channels.normal.metrics,cases[1].result.channels.normal.metrics);assert.ok(Math.abs(p-cases[0].result.channels.maximum.components[0].value*1.4/1.05)<.02);assert.ok(!row.result.channels.maximum.components[0].effectsApplied.some(e=>e.id.startsWith('context-attack:85:')));assert.ok(row.result.channels.normal.components[0].effectsApplied.some(e=>e.id.startsWith('context-attack:85:')));}
+ if(label==='white-active'){assert.equal(p,cases[2].result.channels.maximum.components[0].value);assert.ok(row.result.channels.normal.metrics.comboTotalDamage.value!==p);}
+ if(label==='green-active'||label==='white-active')w.eval(`buildName.value='${label}';saveNamedBuild();`);
+}
+let comparison;
+if(mode==='after'){w.applyBuildSnapshot(cases[3].snapshot);w.calcBuild();const current=take();assert.deepEqual(current.result.channels,cases[3].result.channels);w.eval("document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true);runBuildCompare();");const rows=JSON.parse(w.eval('JSON.stringify(lastBuildComparisonRows.map(x=>({name:x.name,result:x.oneHitPipeline})))'));assert.equal(rows.length,2);for(const r of rows)assert.deepEqual(r.result.channels,cases.find(c=>c.label===r.name).result.channels);assert.deepEqual(take(),current);comparison={rows,normalLoadMatches:true,currentAndSharedConditionsUnchanged:true};}
+console.log(JSON.stringify({mode,cases,comparison,scope:'Synthetic GL315 green/clone white; public JSDOM calcBuild. Not game or equipment legality. Single GL_SLAM body Hit.',hashes:Object.fromEntries(['index.html','hope-hammer-browser-adapter.js',__filename].map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')]))},null,2));w.close();

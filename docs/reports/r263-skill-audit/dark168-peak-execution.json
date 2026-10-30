@@ -1,0 +1,51 @@
+{
+  "scope": "ID168 + ID154 exact adopted GS standard sequence; OWNER_APPROVED_PROVISIONAL; synthetic contract input, JSDOM public calcBuild",
+  "approval": "Sentinel_629633b715308191b9afffefb2d53b56",
+  "head": "9a0b99b43033b08146ce27ea366ecfa664590ce7",
+  "hashes": {
+    "index.html": "7c4d1c30ed5ffc470bd9f17a87fd706b99efa837244b343dfcb34b36520d6c75",
+    "hope-hammer-browser-adapter.js": "602cbb628e22b4e0b8fb8ef1db76eea03a39c66f62a1196cc5de852f36184e37",
+    "./tools/dark168-peak-scenario-proof.cjs": "0e1f007f2604c4dc2d7a6f316c36f7a4286d4e84244ed91fcdcd165cbc762ee2"
+  },
+  "runs": [
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/dark168-peak-scenario-proof.cjs before-fixed",
+      "stdout": "dark168-standard-before.raw.json",
+      "stderr": "dark168-standard-before.stderr.txt",
+      "exit": 0,
+      "toolChunk": "ce3393",
+      "source": "/tmp/dark168-before/index.html and adapter; unchanged other repository modules"
+    },
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/dark168-peak-scenario-proof.cjs after",
+      "stdout": "dark168-standard-after.raw.json",
+      "stderr": "dark168-standard-after.stderr.txt",
+      "exit": 0,
+      "toolChunk": "4d722b",
+      "source": "current repository"
+    }
+  ],
+  "initialAttempts": [
+    {
+      "files": [
+        "dark168-before.raw.json",
+        "dark168-after.stderr.txt"
+      ],
+      "issue": "canonical UI additions for first two moves unavailable; only sweep selected; after assertion exit1; not counted as standard-sequence evidence"
+    },
+    {
+      "files": [
+        "dark168-before-fixed.raw.json",
+        "dark168-after-fixed.stderr.txt"
+      ],
+      "issue": "legacy gs_charge3/gs_strong3 IDs rejected TECHNIQUE_NOT_FOUND; after exit1; not skill guard evidence"
+    }
+  ],
+  "limitations": [
+    "No real equipment legality or live-game validation",
+    "No full-health start, healing, arbitrary order/sequence or HP-event timing adoption",
+    "Other skills, Dark Arts172 and all-weapon regression not executed",
+    "Audit count unchanged pending independent review"
+  ],
+  "diff": "dark168-peak-scenario.patch"
+}

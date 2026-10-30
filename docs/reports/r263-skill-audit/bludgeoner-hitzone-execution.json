@@ -1,0 +1,67 @@
+{
+  "scope": "ID85 adopted canonical body only; original pre-wound hitzone is required only for ID136. No new special-component adoption.",
+  "runs": [
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/bludgeoner-hitzone-boundary-proof.cjs before",
+      "exitCode": 0,
+      "stdout": "bludgeoner-hitzone-before.raw.json",
+      "stderr": "bludgeoner-hitzone-before.stderr.txt"
+    },
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/bludgeoner-hitzone-boundary-proof.cjs after",
+      "exitCode": 0,
+      "stdout": "bludgeoner-hitzone-after.raw.json",
+      "stderr": "bludgeoner-hitzone-after.stderr.txt"
+    }
+  ],
+  "sourceHashes": {
+    "index.html": "7ead32d5d4a1793b0dc4eb07862d8fe1027431e277b3b9f289ea7597efebedcb",
+    "hope-hammer-browser-adapter.js": "ca524a5d00bc0647850059c2d6889dd5016c07b66780a1b19238ce101db3e588",
+    "tools/bludgeoner-hitzone-boundary-proof.cjs": "21e18d765b0e63dc37af40d109327760393f90eaea3c09b8b946ff301d4fc97e"
+  },
+  "beforeAdapterSHA256": "038ce772383cc73d856d50cd94dcb1bec6851aa7321e8787725fb492f4d1f90d",
+  "results": [
+    {
+      "label": "blunt-known",
+      "status": "OK",
+      "channels": {
+        "normal": {
+          "status": "available",
+          "value": 53.61
+        },
+        "maximum": {
+          "status": "available",
+          "value": 53.61
+        }
+      },
+      "reason": null
+    },
+    {
+      "label": "blunt-missing",
+      "status": "OK",
+      "channels": {
+        "normal": {
+          "status": "available",
+          "value": 53.61
+        },
+        "maximum": {
+          "status": "available",
+          "value": 53.61
+        }
+      },
+      "reason": null
+    },
+    {
+      "label": "mind-missing",
+      "status": "UNAVAILABLE",
+      "channels": {},
+      "reason": "REAL_SLICE:ORIGINAL_HITZONE_UNRESOLVED"
+    }
+  ],
+  "limitations": [
+    "Synthetic target injected at adapter boundary during public calcBuild; no game execution or equipment-legality proof",
+    "No save/compare code changes or new save/compare execution",
+    "Special references/CB phials/followup applicability unchanged; ID85 remains partial",
+    "No full regression; existing evidence remains pinned to its original hashes"
+  ]
+}

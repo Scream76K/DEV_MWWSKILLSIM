@@ -1,0 +1,37 @@
+--- a/index.html
++++ b/index.html
+@@ -7085,7 +7085,7 @@
+  const slide=active.filter(e=>e.bonusSkillId===89);
+  const slideValid=slide.length===1&&slide[0].bonusName==='革細工の滑性'&&slide[0].name==='滑走強化'&&slide[0].source==='group'&&slide[0].rankLevel===1&&slide[0].required===3&&Number.isInteger(slide[0].count)&&slide[0].count>=3;
+  const defs=[[89,'革細工の滑性'],[164,'パワーストーン'],[171,'炎の料理人'],[174,'連携プログラム'],[173,'オメガレゾナンス'],[153,'波衣竜の守護']];
+- for(const [id,name] of defs){const level=id===89?(slide.length||skillLevel(total,[name,'滑走強化'])):skillLevel(total,[name]);if(!level)continue;
++ for(const [id,name] of defs){const level=id===89?(slide.length||skillLevel(total,[name,'滑走強化'])):id===153?(active.filter(e=>e.bonusSkillId===153).length||skillLevel(total,[name])):skillLevel(total,[name]);if(!level)continue;
+   if((id===89&&!slideValid)||(![89,173,153].includes(id)&&level!==1)){out.pending.push(name+':ACTIVATION_INVALID');continue;}out.ids.push(id);
+   for(const ch of ['normal','maximum']){const state=cond.selfSkillState?.[ch];let atk=0,aff=0,elem=0,reason=null;
+    if(id===89){if(typeof state?.sliding!=='boolean')reason='SLIDING_STATE_REQUIRED';else aff=state.sliding?30:0;}
+--- a/hope-hammer-browser-adapter.js
++++ b/hope-hammer-browser-adapter.js
+@@ -363,10 +363,13 @@
+   const skillTotal=Object.fromEntries(Array.isArray(skills)?skills:[]);
+   const elementSpecial=elementSpecials[0], elementType=elementSpecial?.element||'none', elementRawValue=elementSpecial?.damage?.display??0;
+   const elementEntries=allSkills.filter(x=>x.skillKey===elementType),elementSkillNames={fire:'火属性攻撃強化',water:'水属性攻撃強化',thunder:'雷属性攻撃強化',ice:'氷属性攻撃強化',dragon:'龍属性攻撃強化'},elementSkillName=elementSkillNames[elementType],elementLevel=Math.max(...elementEntries.map(x=>x.level),0),elementRule=root.MHWElementSkillResolver&&elementSpecial?root.MHWElementSkillResolver(skillTotal,elementType):{add:0,mult:1},elementValue=elementSpecial?elementRawValue*(elementRule?.mult??1)+(elementRule?.add??0):0;  const attributeConversionLevel=Math.max(...allSkills.filter(x=>x.skillKey==='attributeConversion').map(x=>x.level),0),attributeRule=root.MHAttributeConversionRule,attributeState=conditions?.attributeConversionState;
++  // Only adopted Guts/Veil effects with a resolved, activation-checked plan may coexist here.
++  const conversionGroupPlan=stats.conditionalConditionPlan?.groupPlan,conversionSelfPlan=stats.conditionalConditionPlan?.selfStatePlan;
++  const conversionResistanceBonusesResolved=activeBonusEffects.length>0&&activeBonusEffects.every(e=>[131,153].includes(e.bonusSkillId)&&conversionGroupPlan?.applied?.some(a=>a.skillId===e.bonusSkillId&&a.skill===e.name))&&Array.isArray(conversionGroupPlan?.unresolvedEffects)&&conversionGroupPlan.unresolvedEffects.length===0&&Array.isArray(conversionSelfPlan?.pending)&&conversionSelfPlan.pending.length===0;
+   if(attributeConversionLevel){
+    if(!attributeRule||attributeRule.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isInteger(attributeConversionLevel)||attributeConversionLevel<1||attributeConversionLevel>3)return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_RULE_UNRESOLVED');
+    if(elementType!=='dragon'||isReferenceOnly||isShellingOnly||weapon.kind==='switch-axe'||resolvedTechniqueIds.some(id=>techniques[id]?.specialComponents?.length||root.ChargeBladeEngine?.techniques?.[id]?.phial))return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED');
+-   if((attributeState?.normal||attributeState?.maximum)&&(!Number.isInteger(elementValue+attributeRule.adds[attributeConversionLevel])||root.MHWElementCapRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(root.MHWElementCapRule?.flat)||!Number.isFinite(root.MHWElementCapRule?.multiplier)||activeBonusEffects.length))return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_CAP_INTERACTION_UNRESOLVED');
++   if((attributeState?.normal||attributeState?.maximum)&&(!Number.isInteger(elementValue+attributeRule.adds[attributeConversionLevel])||root.MHWElementCapRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(root.MHWElementCapRule?.flat)||!Number.isFinite(root.MHWElementCapRule?.multiplier)||(activeBonusEffects.length&&!conversionResistanceBonusesResolved)))return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_CAP_INTERACTION_UNRESOLVED');
+   }
+ 
+   const waterEntries=allSkills.filter(x=>Number(x.skillId)===181),waterRule=root.MHWaterConversionRule,waterInput=stats.waterResistanceInput;
+@@ -386,7 +389,7 @@
+    resistanceConversionAdd=thunderResistance*resistanceConversionCoefficient;
+    // The adopted common engine caps this body element after the conversion flat.
+    const candidate=elementValue+resistanceConversionAdd,capRule=root.MHWElementCapRule;
+-   if(!Number.isInteger(candidate)||capRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(capRule?.flat)||!Number.isFinite(capRule?.multiplier)||activeBonusEffects.length)return fail('REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED');
++   if(!Number.isInteger(candidate)||capRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(capRule?.flat)||!Number.isFinite(capRule?.multiplier)||(activeBonusEffects.length&&!conversionResistanceBonusesResolved))return fail('REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED');
+   }
+   if(elementSpecial && (!Number.isFinite(elementRawValue)||elementRawValue<0||!elementRule||stats.element!==elementValue||stats.elementType!==elementType))return fail('REAL_SLICE:CALCULATED_ELEMENT_NOT_PROVEN');
+   if(!elementSpecial && (!([0,null].includes(stats.element))||stats.elementType&&!['none',''].includes(String(stats.elementType))))return fail('REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN');

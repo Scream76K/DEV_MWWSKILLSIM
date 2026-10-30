@@ -1,0 +1,11 @@
+--- before/index.html
++++ after/index.html
+@@ -7023,7 +7023,7 @@
+ });
+ function recoveryBonusClassified(e){
+   const rule=e&&Object.prototype.hasOwnProperty.call(RECOVERY_BONUS_HP_POLICIES,e.name)?RECOVERY_BONUS_HP_POLICIES[e.name]:null;
+-  return Boolean(rule&&e.bonusName===rule.parent&&e.source===rule.source&&e.required===rule.required&&e.rankLevel===rule.rankLevel&&e.bonusSkillId===rule.bonusSkillId&&Number.isInteger(e.count)&&e.count>=rule.required);
++  return Boolean(rule&&e.bonusName===rule.parent&&e.source===rule.source&&e.required===rule.required&&e.rankLevel===rule.rankLevel&&e.bonusSkillId===rule.bonusSkillId&&Number.isInteger(e.count)&&e.count>=rule.required&&(rule.rankLevel!==1||e.count<RECOVERY_BONUS_HP_POLICIES['加速再生Ⅱ'].required));
+ }
+ function hpRelevantBonusEffects(effects){
+   const recovery=effects.filter(recoveryBonusClassified);

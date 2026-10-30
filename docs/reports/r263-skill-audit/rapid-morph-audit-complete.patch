@@ -1,0 +1,233 @@
+--- before/index.html
++++ after/index.html
+@@ -5426,7 +5426,7 @@
+  predecessors:Object.freeze({CB_ELEMENT_DISCHARGE_1:['CHARGE','AXE_NEUTRAL'],CB_ELEMENT_DISCHARGE_2:['CB_ELEMENT_DISCHARGE_1'],CB_AED:['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','SHIELD_THRUST','GUARD'],CB_FOLLOWUP_AED:['CB_AED']}),
+  status:'OWNER_APPROVED',verificationStatus:'UNVERIFIED',baseConsumption:1
+ });
+-const RAPID_MORPH_ATTACK_RULE=Object.freeze({skillId:7,multipliers:Object.freeze([1,1,1.1,1.2]),stage:'attack',target:'physical',status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25T23:53:00Z',source:'https://kuroyonhon.com/mhwilds/memo/26.php',sourceVersion:'UNSPECIFIED',liveGameVerification:'PENDING',unconnectedScope:Object.freeze(['SA_AXE_SWEEP_MORPH_ALL_HITS','SA_FOCUS_MORPH_WOUND_TRANSFORM_HITS','CB_CHARGE_DERIVED_ED1','CB_SHIELD_THRUST_OR_GUARD_DERIVED_AED','CB_SAED_OTHER_OR_UNSPECIFIED_PREDECESSOR','CB_SAED_AED_DERIVED_OTHER_OR_UNSPECIFIED_PREDECESSOR','CB_SAED_REPEATED_SEQUENCE','CB_ELEMENT_SPIN_AXE_BOOST','CB_ELIGIBLE_AXE_FOLLOWUP','CORRUPTED_MANTLE_FOLLOWUP']),excludedScope:Object.freeze(['SA_FOLLOWUP_EXPLOSION','CB_PHIAL_EXPLOSION']),techniqueIds:Object.freeze(['CB_SWORD_TO_AXE_MORPH','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'])});
++const RAPID_MORPH_ATTACK_RULE=Object.freeze({skillId:7,multipliers:Object.freeze([1,1,1.1,1.2]),stage:'attack',target:'physical',status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25T23:53:00Z',source:'https://kuroyonhon.com/mhwilds/memo/26.php',sourceVersion:'UNSPECIFIED',liveGameVerification:'PENDING',historicalUnconnectedScope:Object.freeze(['SA_AXE_SWEEP_MORPH_ALL_HITS','SA_FOCUS_MORPH_WOUND_TRANSFORM_HITS','CB_CHARGE_DERIVED_ED1','CB_SHIELD_THRUST_OR_GUARD_DERIVED_AED','CB_SAED_OTHER_OR_UNSPECIFIED_PREDECESSOR','CB_SAED_AED_DERIVED_OTHER_OR_UNSPECIFIED_PREDECESSOR','CB_SAED_REPEATED_SEQUENCE','CB_ELEMENT_SPIN_AXE_BOOST','CB_ELIGIBLE_AXE_FOLLOWUP','CORRUPTED_MANTLE_FOLLOWUP']),unconnectedScope:Object.freeze([]),adoptedScopeNote:'Existing morph/ED1/AED routes and single CB_SAED+GUARD / CB_SAED_AED_DERIVED+CB_AED are connected; invalid or unspecified predecessors remain rejected',unadoptedExtensionScope:Object.freeze(['SA_AXE_SWEEP_MORPH_ALL_HITS','SA_FOCUS_MORPH_WOUND_TRANSFORM_HITS','CB_SAED_OTHER_PREDECESSOR','CB_SAED_AED_DERIVED_OTHER_PREDECESSOR','CB_SAED_REPEATED_SEQUENCE','CB_ELEMENT_SPIN_AXE_BOOST','CB_ELIGIBLE_AXE_FOLLOWUP','CORRUPTED_MANTLE_FOLLOWUP']),excludedScope:Object.freeze(['SA_FOLLOWUP_EXPLOSION','CB_PHIAL_EXPLOSION']),techniqueIds:Object.freeze(['CB_SWORD_TO_AXE_MORPH','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'])});
+ window.MHRapidMorphAttackRule=RAPID_MORPH_ATTACK_RULE;
+ window.MHSaedGuardRapidMorphRule=Object.freeze({predecessors:Object.freeze({CB_SAED:'GUARD',CB_SAED_AED_DERIVED:'CB_AED'}),count:1,component:'BODY_THREE_HITS_PHYSICAL_ONLY',multiplierRule:RAPID_MORPH_ATTACK_RULE,status:'OWNER_APPROVED_PROVISIONAL',approval:'2026-10-30_GUARD_SAED_SINGLE_BODY_AND_AED_DERIVED_SINGLE_BODY',motionSource:'https://kuroyonhon.com/mhwilds/memo/12.php',bodyBasis:'DB_UNSCALED_16_78_45_NO_PRIOR_AED_HISTORY_INFERRED',source:RAPID_MORPH_ATTACK_RULE.source,sourceVersion:'UNSPECIFIED',liveGameVerification:'PENDING',excluded:['BODY_ELEMENT','PHIAL','ATTACK_FLAT','OTHER_PREDECESSOR','REPEATED_SEQUENCE']});
+ function rapidMorphBodyAttack(attack,components,multiplier){
+--- before/skill-matrix.json
++++ after/skill-matrix.json
+@@ -1813,7 +1813,7 @@
+         "id": 15
+       }
+     ],
+-    "classification": "部分接続",
++    "classification": "完全接続",
+     "sourceReferences": [
+       {
+         "path": "index.html",
+@@ -1828,9 +1828,9 @@
+         "meaning": "TEXT_REFERENCE_ONLY_NOT_FORMULA_PROOF"
+       }
+     ],
+-    "unit": null,
+-    "stage": null,
+-    "componentTargets": null,
++    "unit": "dimensionless",
++    "stage": "attack multiply before attack flat",
++    "componentTargets": "adopted morph/discharge body physical only; SA followup and CB phial excluded",
+     "historicalAuditSupplement": {
+       "status": "SUPERSEDED_NOT_CURRENT_CLASSIFICATION",
+       "note": "旧記述を保持。最新判定との矛盾は履歴であり現行判断ではない。",
+@@ -1924,120 +1924,129 @@
+         "executionCoverage": "NOT_EXECUTED_THIS_ROW"
+       }
+     },
+-    "scopeNote": "既存変形/ED/AEDと、明示GUARD→単一CB_SAED本体3Hit物理は接続。SAED他前段・未指定・AED派生・反復列は未採用。ID7全体は部分維持。",
+-    "staticFormulaStatus": "部分接続",
++    "scopeNote": "採用済み変形/ED1/AEDと単一CB_SAED+GUARD、単一CB_SAED_AED_DERIVED+CB_AEDの本体物理へ接続済み。属性/ビン/攻撃flatは倍率対象外。未採用前段・反復列は別の拡張課題。静的採用範囲完全であり実機検証済みではない。",
++    "staticFormulaStatus": "完全接続",
+     "currentEvidenceReports": [
+       "COMMON_FORMULA_CONSUMERS.md",
+       "INTERIM_STATUS.md",
+-      "saed-guard-rapid/REPORT.md"
++      "saed-guard-rapid/REPORT.md",
++      "ADOPTED_CONSUMERS_2_6_7_24.md",
++      "saed-aed-rapid/REPORT.md",
++      "RAPID_MORPH_ADOPTED_SCOPE_COMPLETE.md"
+     ],
+-    "executionCoverage": "NOT_EXECUTED_THIS_ROW",
++    "executionCoverage": "EXISTING_LOCAL_PUBLIC_EVIDENCE_ONLY_NO_RERUN; SAED Lv3/Lv1, normal/maximum, predecessor rejection and saved-two-build comparison; Lv2/live/Safari/full regression unexecuted",
+     "currentImplementationEvidence": {
+-      "producer": "hope-hammer-browser-adapter.js:classifySkill / resolveEffects",
+-      "consumer": "route-specific Formula pending row-by-row validation"
++      "producer": "calcBuild → classifySkill → resolveEffects / MHSaedGuardRapidMorphRule predecessor lookup",
++      "consumer": "event-scoped attack effects / discharge resource effect exclusions / SAED validated bodyAttackBasis before flat",
++      "scope": "ADOPTED_CONSUMERS_2_6_7_24.md; saed-guard-rapid/REPORT.md; saed-aed-rapid/REPORT.md"
+     },
+     "weaponChannels": {
+       "great-sword": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "long-sword": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "sword-and-shield": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "dual-blades": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "hammer": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "hunting-horn": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "lance": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "gunlance": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "switch-axe": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "charge-blade": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "insect-glaive": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "light-bowgun": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "heavy-bowgun": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       },
+       "bow": {
+-        "rowClassification": "部分接続",
++        "rowClassification": "完全接続",
+         "normal": "SEE_CURRENT_ROUTE_SCOPE",
+         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
+         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
+       }
+     },
+     "latestResidualAudit": {
+-      "record": "saed-guard-rapid/REPORT.md",
+-      "status": "LIMITED_IMPLEMENTATION_ACCEPTED_METADATA_RECONCILED",
+-      "remaining": "CB_SAEDの他前段/未指定、CB_SAED_AED_DERIVED、反復列の前段・本体対象契約。既存倍率の再承認は不要。"
++      "record": "RAPID_MORPH_ADOPTED_SCOPE_COMPLETE.md",
++      "status": "INDEPENDENT_REVIEW_ACCEPTED_ADOPTED_SCOPE_COMPLETE",
++      "remaining": "採用範囲の既知断絶なし。未採用前段/反復/追加技の拡張と実機検証は別管理。"
+     },
+     "scopeAudit": {
+-      "adoptedScopeAndCurrentRoute": "既存変形/ED/AEDと、明示GUARD→単一CB_SAED本体3Hit物理は接続。SAED他前段・未指定・AED派生・反復列は未採用。ID7全体は部分維持。",
+-      "wiringStatus": "NO_NEW_CONFIRMED_WIRING_DEFECT; SCOPE_OR_CONTRACT_UNRESOLVED",
+-      "remainingCategory": "SCOPE_OR_INPUT_DECISION",
++      "adoptedScopeAndCurrentRoute": "採用済み変形/ED1/AEDと単一CB_SAED+GUARD、単一CB_SAED_AED_DERIVED+CB_AEDの本体物理へ接続済み。属性/ビン/攻撃flatは倍率対象外。未採用前段・反復列は別の拡張課題。静的採用範囲完全であり実機検証済みではない。",
++      "wiringStatus": "ADOPTED_SCOPE_CONNECTED",
++      "remainingCategory": "UNADOPTED_EXTENSION_AND_LIVE_VERIFICATION",
+       "scopeAuthority": [
+-        "ADOPTED_CONSUMERS_2_6_7_24.md"
++        "COMMON_FORMULA_CONSUMERS.md",
++        "INTERIM_STATUS.md",
++        "saed-guard-rapid/REPORT.md",
++        "ADOPTED_CONSUMERS_2_6_7_24.md",
++        "saed-aed-rapid/REPORT.md",
++        "RAPID_MORPH_ADOPTED_SCOPE_COMPLETE.md"
+       ],
+-      "productGoalRemaining": "CB_SAEDの他前段/未指定、CB_SAED_AED_DERIVED、反復列の前段・本体対象契約。既存倍率の再承認は不要。",
+-      "classificationDecision": "単一GUARD SAED限定実装は独立レビュー受入。全体昇格せず部分維持。",
+-      "liveVerification": "NOT_INFERRED",
+-      "evidenceScope": "saed-guard-rapid/final.jsonはメタデータ更新前index c8d94ca420a63d877dd0bbed59c919fe18ee560e579c9d9c5235ad9cd7d125efでの公開実行。更新後再実行なし。"
++      "productGoalRemaining": "追加変形技・その他前段・反復列・未採用追撃。未指定前段の拒否は入力検証。",
++      "classificationDecision": "親の独立レビュー受入に基づく監査訂正。新実装/範囲縮小なし。",
++      "liveVerification": "OWNER_APPROVED_PROVISIONAL; PENDING",
++      "evidenceScope": "saed-aed-rapid/manifest.jsonの実行hash index4fb4b0fe…/adapterfa6fb7b5…、GUARD旧証拠は元manifestの対象hash。今回メタデータ更新後再実行なし。Lv2/心眼併用/反復実行/F01注入/Safari/実機/全回帰未実施。"
+     },
+     "previousSaedScopeAudit": {
+       "adoptedScopeAndCurrentRoute": "既存変形/ED/AED前段は接続。SAED派生の高速変形対象本体/爆発と前段契約が未確定。",
+@@ -2050,6 +2059,36 @@
+       "classificationDecision": "据置。採用境界の根拠不足を未採用と断定して除外/昇格しない。",
+       "liveVerification": "NOT_INFERRED",
+       "evidenceScope": "既存資料静的整理のみ、新規テストなし。"
++    },
++    "preCompleteRapidMorphAudit": {
++      "classification": "部分接続",
++      "scopeNote": "既存変形/ED/AEDと、明示GUARD→単一CB_SAED本体3Hit物理は接続。SAED他前段・未指定・AED派生・反復列は未採用。ID7全体は部分維持。",
++      "staticFormulaStatus": "部分接続",
++      "executionCoverage": "NOT_EXECUTED_THIS_ROW",
++      "currentImplementationEvidence": {
++        "producer": "hope-hammer-browser-adapter.js:classifySkill / resolveEffects",
++        "consumer": "route-specific Formula pending row-by-row validation"
++      },
++      "latestResidualAudit": {
++        "record": "saed-guard-rapid/REPORT.md",
++        "status": "LIMITED_IMPLEMENTATION_ACCEPTED_METADATA_RECONCILED",
++        "remaining": "CB_SAEDの他前段/未指定、CB_SAED_AED_DERIVED、反復列の前段・本体対象契約。既存倍率の再承認は不要。"
++      },
++      "scopeAudit": {
++        "adoptedScopeAndCurrentRoute": "既存変形/ED/AEDと、明示GUARD→単一CB_SAED本体3Hit物理は接続。SAED他前段・未指定・AED派生・反復列は未採用。ID7全体は部分維持。",
++        "wiringStatus": "NO_NEW_CONFIRMED_WIRING_DEFECT; SCOPE_OR_CONTRACT_UNRESOLVED",
++        "remainingCategory": "SCOPE_OR_INPUT_DECISION",
++        "scopeAuthority": [
++          "ADOPTED_CONSUMERS_2_6_7_24.md"
++        ],
++        "productGoalRemaining": "CB_SAEDの他前段/未指定、CB_SAED_AED_DERIVED、反復列の前段・本体対象契約。既存倍率の再承認は不要。",
++        "classificationDecision": "単一GUARD SAED限定実装は独立レビュー受入。全体昇格せず部分維持。",
++        "liveVerification": "NOT_INFERRED",
++        "evidenceScope": "saed-guard-rapid/final.jsonはメタデータ更新前index c8d94ca420a63d877dd0bbed59c919fe18ee560e579c9d9c5235ad9cd7d125efでの公開実行。更新後再実行なし。"
++      },
++      "unit": null,
++      "stage": null,
++      "componentTargets": null
+     }
+   },
+   {

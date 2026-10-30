@@ -1,0 +1,83 @@
+{
+  "scope": "Owner-approved provisional Wyvern First/Force only; synthetic contract JSDOM public calcBuild, not legal equipment or live game",
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/wyvern-shot-order-proof.cjs after",
+  "finalExitCode": 0,
+  "finalChunk": "8f5e6d",
+  "beforeExitCode": 0,
+  "beforeChunk": "a7c344",
+  "hashes": {
+    "index.html": "449bfbfa60b3e20e5bf37a3c24da23e966c72c94921d5ae7fed567fa74d49835",
+    "hope-hammer-browser-adapter.js": "8acd0c3afa3ae1a04548b8c38910ff027ffcff006333bbfc1db9fed98c5c0f4e",
+    "hbg-wyvern-reference.js": "dcf2d5ece146f13ed0d575a52a7051fdc47dc2675631b576b4462c66fdd5d5eb",
+    "./tools/wyvern-shot-order-proof.cjs": "265cbb17c5d73dca14e083966b4a6fe13f424239ca232966141c8071faa82336"
+  },
+  "beforeEvidence": "wyvern-shot-before.raw.json",
+  "afterEvidence": "wyvern-shot-after.raw.json",
+  "stderr": "wyvern-shot-after.stderr.txt",
+  "attempts": [
+    {
+      "chunk": "9ad434",
+      "exit": 1,
+      "cause": "Harness incorrectly assumed Attack Boost inactive in normal; existing permanent attack multiplier/flat applies to both."
+    },
+    {
+      "chunk": "159aa3",
+      "exit": 1,
+      "cause": "Product guard ID mapping reversed; corrected from MHDB: First140/Force137."
+    },
+    {
+      "chunk": "fae2ae",
+      "exit": 1,
+      "cause": "Fixture used four charm skills; restore legitimately truncates to three. Core skills moved to synthetic weapon, no product save change."
+    },
+    {
+      "chunk": "ab3421",
+      "nodeExit": 1,
+      "shellExit": 0,
+      "cause": "Restore diagnostic; same fixture issue."
+    },
+    {
+      "chunk": "043f61",
+      "exit": 1,
+      "cause": "Negative assertion expected execution incomplete; stateless reference emits unavailable component and total unavailable."
+    },
+    {
+      "chunk": "372c4b",
+      "exit": 1,
+      "cause": "Same incorrect negative execution-status assertion, input capture rechecked."
+    },
+    {
+      "chunk": "372398",
+      "nodeExit": 1,
+      "shellExit": 0,
+      "cause": "Negative diagnostic."
+    },
+    {
+      "chunk": "f4c819",
+      "nodeExit": 1,
+      "shellExit": 0,
+      "cause": "Negative diagnostic confirmed COMPONENT_UNAVAILABLE/SHOT_POSITION_PENDING."
+    }
+  ],
+  "limits": [
+    "Before fixture/harness predates fixture correction; historical source hashes preserved in before output; not same final harness replay.",
+    "No game version verified; six-round Wyvern capacity synthetic.",
+    "Actual browser/UI event not executed; JSDOM values -> public calcBuild/save/compare executed.",
+    "F01 engine untouched; missing shot input yields unavailable component and total, even though stateless execution bookkeeping says complete.",
+    "Other health/conditional element/cap scopes remain guarded."
+  ],
+  "evidenceHashes": {
+    "wyvern-shot-initial-expectation.stderr.txt": "e2c96252be5869f56c8c2270e1396d00033a64f3f45afb113a8e6e418d6cef8c",
+    "wyvern-shot-negative-diagnostic.stderr.txt": "0353bdedb2eadb819ac2da443e7c35230087096a434b9af839ab70809118d85f",
+    "wyvern-shot-restore.stderr.txt": "d118fc7e3510a23438180502ec72f48512415e8583e3f106b8b2ee64c7bcf5c9",
+    "wyvern-shot-after.raw.json": "dc604173c8af81ca78f2b5a9c03944cf7fefc1d683fe30c10f80648fe44eef47",
+    "wyvern-shot-before.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wyvern-shot-id-mapping.stderr.txt": "2ce988c5a761d9c862781455305f93105d35bff72d9c613fdcd2125cb4a6c095",
+    "wyvern-shot-order.patch": "018f99c673e7a957669e1778b93c4e0c6eb460ccd89a2dd56c1cc99a3ee64cd5",
+    "wyvern-shot-negative-fixture.stderr.txt": "46ed892871a9894fd63e462110e3809e744046e0a56fe6cf1e4d125b5eedb5dc",
+    "wyvern-shot-negative-fixture-second.stderr.txt": "dc5e8e7877348275c9da2516608a7af3733f2534db62f10d0553d3a72517d29d",
+    "wyvern-shot-after.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wyvern-shot-restore-diagnostic.stderr.txt": "18947e467cd9f6679e72decebd9913df0f3273e06fa1a644e7f8afa21b001a8e",
+    "wyvern-shot-before.raw.json": "0df618b48df7fd13f0560d3d7b3dc3284ef9357c3ba44acce2378b1ea5bef2e0"
+  }
+}

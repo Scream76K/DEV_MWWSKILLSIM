@@ -1,0 +1,48 @@
+{
+  "commands": [
+    {
+      "command": "node tools/hbg-ballistics-connection-proof.cjs before",
+      "exit": 0,
+      "stdout": "before.json",
+      "note": "initial two-case reproduction harness; Lv3 rejected by BALLISTICS_WYVERN_RANGE_SCOPE_UNRESOLVED"
+    },
+    {
+      "command": "node tools/hbg-ballistics-connection-proof.cjs after",
+      "exit": 0,
+      "stdout": "after.json"
+    },
+    {
+      "command": "node tools/hbg-ballistics-connection-proof.cjs after",
+      "exit": 0,
+      "stdout": "after-final.json",
+      "stderr": "after-final.stderr",
+      "note": "Added shared NEAR comparison to existing cases; final product hashes unchanged"
+    }
+  ],
+  "hashes": {
+    "index.html": "1bde2a2b4b5977f8637cc1a13534d7a19b91e20f836966f261e81642989df9ac",
+    "hope-hammer-browser-adapter.js": "88d5257586d63249061b3c60c6152d984070f595ac29214ff6680bc62200ef0b",
+    "hbg-wyvern-reference.js": "7af11c2d01c1bf287fc35233872f3872dc60c71a42e0d3aae38cb0d07729b407",
+    "./tools/hbg-ballistics-connection-proof.cjs": "c3740df5755439ecf5ac8fabd9b1d59fd30d18bab729e5a6bae822446edc16c7"
+  },
+  "beforeHashes": {
+    "index.html": "3cd44d8fae5ea4411c2869fd2c06acc74f9a8f310a3b813341235de0ea546863",
+    "hope-hammer-browser-adapter.js": "c97418cba1b983ba450f356fa96478c8d2ae0ff0218e0a9e62cc973c1c063597",
+    "hbg-wyvern-reference.js": "dcf2d5ece146f13ed0d575a52a7051fdc47dc2675631b576b4462c66fdd5d5eb"
+  },
+  "glShellHashUnchanged": "3e13e44cc4f6d00f68e7e8582fe0d2a8b661e755e4a640a214c92aee8e2a9015",
+  "scope": "Synthetic raw200 weapon six-capacity, Attack5/Artillery3/Fire3 plus explicit shot skills; JSDOM public calcBuild. Not video absolute reproduction or equipment legality.",
+  "adoption": "OWNER_APPROVED_PROVISIONAL",
+  "liveGame": "Damage increments supported; fire hitzone30 and chronological hit order not established",
+  "limitations": [
+    "No game test, beta regression, F01 injection or legal equipment verification",
+    "Lv3 NEAR/FAR/unknown is unadopted, not silently zero",
+    "Old save missing hbgReferenceState clears range; comparison uses current shared range"
+  ],
+  "changes": [
+    "Reuse existing powerHbgRange blank/CRITICAL/NEAR/FAR input; no new inferred distance",
+    "Forward range and ballisticsLevel to dedicated consumer",
+    "Use sole common skill DB +5 after attack/artillery multipliers before both MVs; leave fire untouched",
+    "Legacy handler shares same bonus consumer; other unreviewed skill guards retained"
+  ]
+}

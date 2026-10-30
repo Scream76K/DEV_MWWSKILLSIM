@@ -1,0 +1,83 @@
+{
+  "status": "PUBLIC_MINIMAL_PASS_REVIEW_PENDING",
+  "sourceHashes": {
+    "index.html": "8635c01088dedfd32a01d5ba7586034c8120acd12625298ffeeda0207a126b3b",
+    "hope-hammer-browser-adapter.js": "41f9bbb26ca14a6742c4ced59124b2f37c9634f5b456465dca860ce56942c327",
+    "bow-reference.js": "313bd5beebd113bb2619f7a9d986b670cbfc8857c8667fbd453232c4eaa55da2"
+  },
+  "baselineHashes": {
+    "index.html": "6024286351293ffebbb85fc77608980784212c15e9229c3380f0e9e8758e8a62",
+    "hope-hammer-browser-adapter.js": "22fd59ad5a6f4ef3a5cbeb0e7ff2711020b915a481a97dbd71a8dbf398091045",
+    "bow-reference.js": "bb4d510c94faf86459f306407a89436ba2a1a69db65db5b44194e37b5eb9035d"
+  },
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/thousand94-proof.cjs",
+  "runs": [
+    {
+      "output": "thousand94-attempt1.json",
+      "exitCode": 1,
+      "reason": "Synthetic charm exceeded existing three-skill save limit; public damage/negative cases passed, restore assertion failed. Fixture moved Agitator to synthetic weapon; product unchanged."
+    },
+    {
+      "output": "thousand94-after.json",
+      "exitCode": 0
+    }
+  ],
+  "harnessSHA256": "ae4315d4d03793de4f7e0e477349649e2a1f4e79aee8f8f5173a789f2eb5717f",
+  "results": [
+    {
+      "case": "off",
+      "totals": {
+        "normal": {
+          "status": "available",
+          "value": 138.8178
+        },
+        "maximum": {
+          "status": "available",
+          "value": 145.28513999999998
+        }
+      }
+    },
+    {
+      "case": "pierce",
+      "totals": {
+        "normal": {
+          "status": "available",
+          "value": 145.75869
+        },
+        "maximum": {
+          "status": "available",
+          "value": 152.549397
+        }
+      }
+    },
+    {
+      "case": "combined",
+      "totals": {
+        "normal": {
+          "status": "available",
+          "value": 174.910428
+        },
+        "maximum": {
+          "status": "available",
+          "value": 183.05927639999996
+        }
+      }
+    },
+    {
+      "case": "invalid",
+      "totals": {}
+    },
+    {
+      "case": "range",
+      "totals": {}
+    }
+  ],
+  "scope": "Synthetic equipment JSDOM public calcBuild; attack5 + weapon Agitator1, base90 affinity10. Not legal equipment or game verification. Invalid Lv fixture temporarily exposes rank2 in DB to reach dedicated guard.",
+  "saveComparison": "two saved builds pierce/combined, explicit shared CRITICAL/NONE, restore invariant",
+  "notExecuted": [
+    "real browser",
+    "live game",
+    "other techniques",
+    "full beta regression"
+  ]
+}

@@ -1,0 +1,11 @@
+# Next smallest candidate: ID85 + adopted GL charged shell
+
+Read-only proposal; no product change or test. 2026-10-30.
+
+Target is reference:gl_CHARGED shell component only, in already adopted shell type/power combinations. Keep ordinary GL body multipliers and original selected sharpness unchanged. Do not include CB phials, SA/CB followups, FULL_BURST or new techniques in this first boundary.
+
+Current adapter resolveComponentIssue (around622) allows ID85/136 shell nonapplication only when shellingAction===NORMAL. Active Bludgeoner + CHARGED returns CONTEXT_ATTACK_COMPONENT_SCOPE_PENDING, even though dedicated shell calculation itself does not consume the ordinary-body context multiplier. Thus the technical difference is a narrow component disposition; no new coefficient or formula is needed. Inactive Bludgeoner already does not block; any proof must use active green Lv3, with ordinary body as positive control.
+
+Existing accepted scope is normal shell only (original GL-bludgeoner patch and current comment). The article https://a-to-monhan.com/2025/03/31/wilds-donkitukai/ (2025-03-31, text read on2026-10-30, summary lines73–75) reports nonapplication to shelling including Wyvern's Fire. It supports a shelling-wide interpretation, but this read did NOT inspect embedded video/images for charged-shell-specific comparisons or establish current numeric game version. Current HM/GL owner videos concern Airborne/Guard, not Bludgeoner. Therefore charged-shell scope is a new limited extension, not retroactive existing approval or direct current-game verification.
+
+Recommended single decision: provisionally adopt Bludgeoner nonapplication for existing CHARGED shell component only, keep body effect active, retain all other special guards. If approved, add the explicit action to the same narrowly validated shell disposition and record provisional/current-game-unverified source. Minimum public contrast: active green Lv3 with GL body + charged shell, off/on; body increases under existing rule, charged shell fire/physical unchanged, total becomes available, loaded-round consumption/input/normal-maximum preserved. No formula numbers duplicated, no test now. If direct gameplay verification is required instead of provisional adoption, missing evidence is one same-condition charged-shell off/on pair with green Lv3 and body positive control.

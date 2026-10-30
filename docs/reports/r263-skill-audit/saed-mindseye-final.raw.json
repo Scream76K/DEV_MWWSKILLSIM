@@ -1,0 +1,4026 @@
+{
+  "mode": "after",
+  "cases": [
+    {
+      "label": "off",
+      "result": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 103,
+            "gameId": 25,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/103",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-15\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-15\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-15\",\"attack\":\"190\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"80\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SAED:reference:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SAED",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CB_R49_SOURCE",
+                "coefficientUnit": "REFERENCE",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 719.506535925,
+                "details": {
+                  "status": "REFERENCE_ONLY",
+                  "verificationStatus": "UNVERIFIED",
+                  "dps": null,
+                  "components": {
+                    "physicalBody": 195.190535925,
+                    "elementalBody": 23.4,
+                    "axeBoostPhysical": 0,
+                    "axeBoostElement": 0,
+                    "impactPhial": 0,
+                    "elementalPhial": 500.91600000000005
+                  },
+                  "trace": {
+                    "bodyHits": [
+                      {
+                        "hitIndex": 0,
+                        "mv": 16,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 0,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 206.6,
+                        "affinity": -15,
+                        "physical": 22.048765200000002,
+                        "element": 7.8
+                      },
+                      {
+                        "hitIndex": 1,
+                        "mv": 78,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 7,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 213.6,
+                        "affinity": -15,
+                        "physical": 111.12961860000001,
+                        "element": 7.8
+                      },
+                      {
+                        "hitIndex": 2,
+                        "mv": 45,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 0,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 206.6,
+                        "affinity": -15,
+                        "physical": 62.012152125000014,
+                        "element": 7.8
+                      }
+                    ],
+                    "elementCriticalMultiplier": 1,
+                    "elementCriticalExpectation": 1,
+                    "eventCount": 5,
+                    "hitCount": 5,
+                    "enhancedPhial": true,
+                    "ammoLoadingLevel": 0,
+                    "enhancedCount": 3,
+                    "normalCount": 2,
+                    "normalPhialDamage": 166.29600000000002,
+                    "enhancedPhialDamage": 334.62,
+                    "shieldPhialMultiplier": 1.3,
+                    "normalCoefficient": 8.2,
+                    "enhancedCoefficient": 11,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/12.php",
+                    "sourceVersion": "AFTER_VER_1_011"
+                  }
+                },
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "attack-boost-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "attack-boost-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 40,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "attack-boost-multiply",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "amount": 1.04,
+                  "operation": "multiply",
+                  "order": 10,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "attack-boost-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 9,
+                  "operation": "add",
+                  "order": 40,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 719.506535925
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SAED:reference:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SAED",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CB_R49_SOURCE",
+                "coefficientUnit": "REFERENCE",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 724.76498874,
+                "details": {
+                  "status": "REFERENCE_ONLY",
+                  "verificationStatus": "UNVERIFIED",
+                  "dps": null,
+                  "components": {
+                    "physicalBody": 200.44898874,
+                    "elementalBody": 23.4,
+                    "axeBoostPhysical": 0,
+                    "axeBoostElement": 0,
+                    "impactPhial": 0,
+                    "elementalPhial": 500.91600000000005
+                  },
+                  "trace": {
+                    "bodyHits": [
+                      {
+                        "hitIndex": 0,
+                        "mv": 16,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 0,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 210.6,
+                        "affinity": -12,
+                        "physical": 22.65078816,
+                        "element": 7.8
+                      },
+                      {
+                        "hitIndex": 1,
+                        "mv": 78,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 7,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 217.6,
+                        "affinity": -12,
+                        "physical": 114.09285888000001,
+                        "element": 7.8
+                      },
+                      {
+                        "hitIndex": 2,
+                        "mv": 45,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 0,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 210.6,
+                        "affinity": -12,
+                        "physical": 63.705341700000005,
+                        "element": 7.8
+                      }
+                    ],
+                    "elementCriticalMultiplier": 1,
+                    "elementCriticalExpectation": 1,
+                    "eventCount": 5,
+                    "hitCount": 5,
+                    "enhancedPhial": true,
+                    "ammoLoadingLevel": 0,
+                    "enhancedCount": 3,
+                    "normalCount": 2,
+                    "normalPhialDamage": 166.29600000000002,
+                    "enhancedPhialDamage": 334.62,
+                    "shieldPhialMultiplier": 1.3,
+                    "normalCoefficient": 8.2,
+                    "enhancedCoefficient": 11,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/12.php",
+                    "sourceVersion": "AFTER_VER_1_011"
+                  }
+                },
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "attack-boost-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "attack-boost-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 40,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "attack-boost-multiply",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "amount": 1.04,
+                  "operation": "multiply",
+                  "order": 10,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "attack-boost-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 9,
+                  "operation": "add",
+                  "order": 40,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-attack-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 4,
+                  "operation": "add",
+                  "order": 50,
+                  "source": "index.html:standardPowerConditionPlan",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 3,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 3,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 724.76498874
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      },
+      "snapshot": {
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "103",
+        "weaponKind": "charge-blade",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "抜刀術【力】",
+              "level": 3
+            },
+            {
+              "name": "挑戦者",
+              "level": 1
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "element",
+          "element": "fire",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "elementParts": 0,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "canonical:CB_SAED"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "explicitAffinityState": {
+            "absorbedElement": null,
+            "selfSkillState": null,
+            "wetState": {
+              "normal": null,
+              "maximum": null
+            },
+            "criticalDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "punishingDrawHits": {
+              "normal": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "maximum": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            "festivalId": null
+          },
+          "hbgReferenceState": {
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "elementType": null,
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "attributeConversionState": {
+            "normal": null,
+            "maximum": null
+          },
+          "blackEclipseState": null,
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": true,
+            "axeBoosted": false,
+            "phialType": "POWER_ELEMENT",
+            "enhancedPhial": true,
+            "previousAction": null,
+            "enhancedPhials": null,
+            "normalPhials": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        }
+      },
+      "conditions": {
+        "absorbedElement": null,
+        "selfSkillState": null,
+        "wetState": {
+          "normal": null,
+          "maximum": null
+        },
+        "criticalDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "punishingDrawHits": {
+          "normal": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          },
+          "maximum": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          }
+        },
+        "festivalId": null,
+        "blackEclipseState": null,
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "attack": "207",
+        "aff": "-12",
+        "elem": "260",
+        "mv": "100",
+        "hz": "60",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "elementType": null,
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": true,
+          "axeBoosted": false,
+          "phialType": "POWER_ELEMENT",
+          "enhancedPhial": true,
+          "previousAction": null,
+          "enhancedPhials": null,
+          "normalPhials": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "attributeConversionState": {
+          "normal": null,
+          "maximum": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      }
+    },
+    {
+      "label": "active",
+      "result": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 103,
+            "gameId": 25,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/103",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"207\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"207\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"207\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SAED:reference:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SAED",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CB_R49_SOURCE",
+                "coefficientUnit": "REFERENCE",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 774.4678323150001,
+                "details": {
+                  "status": "REFERENCE_ONLY",
+                  "verificationStatus": "UNVERIFIED",
+                  "dps": null,
+                  "components": {
+                    "physicalBody": 250.15183231500004,
+                    "elementalBody": 23.4,
+                    "axeBoostPhysical": 0,
+                    "axeBoostElement": 0,
+                    "impactPhial": 0,
+                    "elementalPhial": 500.91600000000005
+                  },
+                  "trace": {
+                    "bodyHits": [
+                      {
+                        "hitIndex": 0,
+                        "mv": 16,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 0,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 265.88,
+                        "affinity": -15,
+                        "physical": 28.375245359999997,
+                        "element": 7.8
+                      },
+                      {
+                        "hitIndex": 1,
+                        "mv": 78,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 7,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 272.88,
+                        "affinity": -15,
+                        "physical": 141.97120938,
+                        "element": 7.8
+                      },
+                      {
+                        "hitIndex": 2,
+                        "mv": 45,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 0,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 265.88,
+                        "affinity": -15,
+                        "physical": 79.80537757500001,
+                        "element": 7.8
+                      }
+                    ],
+                    "bodyAttackBasis": {
+                      "weaponBase": 190,
+                      "normalMultiplier": 1.04,
+                      "normalFlat": 9
+                    },
+                    "bodyAttackMultiplier": 1.3,
+                    "bodyAttackAdoption": {
+                      "skillId": 136,
+                      "techniqueIds": [
+                        "CB_SAED",
+                        "CB_SAED_AED_DERIVED"
+                      ],
+                      "component": "BODY_PHYSICAL_ONLY",
+                      "multiplierRule": {
+                        "id": 136,
+                        "multipliers": [
+                          1,
+                          1.1,
+                          1.15,
+                          1.3
+                        ],
+                        "originalHitzoneMaximum": 44
+                      },
+                      "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                      "status": "OWNER_APPROVED_PROVISIONAL",
+                      "approval": "Sentinel_11c1099a37508191ae33eacd6126c7f0",
+                      "verification": "NOT_GAME_VERIFIED",
+                      "order": "BASE_TIMES_EXISTING_MULTIPLIER_TIMES_MINDS_EYE_PLUS_FLATS",
+                      "excluded": [
+                        "BODY_ELEMENT",
+                        "PHIAL"
+                      ],
+                      "originalSlashHitzone": 44,
+                      "currentSlashHitzone": 60
+                    },
+                    "elementCriticalMultiplier": 1,
+                    "elementCriticalExpectation": 1,
+                    "eventCount": 5,
+                    "hitCount": 5,
+                    "enhancedPhial": true,
+                    "ammoLoadingLevel": 0,
+                    "enhancedCount": 3,
+                    "normalCount": 2,
+                    "normalPhialDamage": 166.29600000000002,
+                    "enhancedPhialDamage": 334.62,
+                    "shieldPhialMultiplier": 1.3,
+                    "normalCoefficient": 8.2,
+                    "enhancedCoefficient": 11,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/12.php",
+                    "sourceVersion": "AFTER_VER_1_011"
+                  }
+                },
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "attack-boost-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "attack-boost-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 40,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "attack-boost-multiply",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "amount": 1.04,
+                  "operation": "multiply",
+                  "order": 10,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "attack-boost-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 9,
+                  "operation": "add",
+                  "order": 40,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 774.4678323150001
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SAED:reference:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SAED",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CB_R49_SOURCE",
+                "coefficientUnit": "REFERENCE",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 780.1545549720001,
+                "details": {
+                  "status": "REFERENCE_ONLY",
+                  "verificationStatus": "UNVERIFIED",
+                  "dps": null,
+                  "components": {
+                    "physicalBody": 255.83855497200005,
+                    "elementalBody": 23.4,
+                    "axeBoostPhysical": 0,
+                    "axeBoostElement": 0,
+                    "impactPhial": 0,
+                    "elementalPhial": 500.91600000000005
+                  },
+                  "trace": {
+                    "bodyHits": [
+                      {
+                        "hitIndex": 0,
+                        "mv": 16,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 0,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 269.88,
+                        "affinity": -12,
+                        "physical": 29.026565568000002,
+                        "element": 7.8
+                      },
+                      {
+                        "hitIndex": 1,
+                        "mv": 78,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 7,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 276.88,
+                        "affinity": -12,
+                        "physical": 145.17477374400002,
+                        "element": 7.8
+                      },
+                      {
+                        "hitIndex": 2,
+                        "mv": 45,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 0,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 269.88,
+                        "affinity": -12,
+                        "physical": 81.63721566000002,
+                        "element": 7.8
+                      }
+                    ],
+                    "bodyAttackBasis": {
+                      "weaponBase": 190,
+                      "normalMultiplier": 1.04,
+                      "normalFlat": 13
+                    },
+                    "bodyAttackMultiplier": 1.3,
+                    "bodyAttackAdoption": {
+                      "skillId": 136,
+                      "techniqueIds": [
+                        "CB_SAED",
+                        "CB_SAED_AED_DERIVED"
+                      ],
+                      "component": "BODY_PHYSICAL_ONLY",
+                      "multiplierRule": {
+                        "id": 136,
+                        "multipliers": [
+                          1,
+                          1.1,
+                          1.15,
+                          1.3
+                        ],
+                        "originalHitzoneMaximum": 44
+                      },
+                      "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                      "status": "OWNER_APPROVED_PROVISIONAL",
+                      "approval": "Sentinel_11c1099a37508191ae33eacd6126c7f0",
+                      "verification": "NOT_GAME_VERIFIED",
+                      "order": "BASE_TIMES_EXISTING_MULTIPLIER_TIMES_MINDS_EYE_PLUS_FLATS",
+                      "excluded": [
+                        "BODY_ELEMENT",
+                        "PHIAL"
+                      ],
+                      "originalSlashHitzone": 44,
+                      "currentSlashHitzone": 60
+                    },
+                    "elementCriticalMultiplier": 1,
+                    "elementCriticalExpectation": 1,
+                    "eventCount": 5,
+                    "hitCount": 5,
+                    "enhancedPhial": true,
+                    "ammoLoadingLevel": 0,
+                    "enhancedCount": 3,
+                    "normalCount": 2,
+                    "normalPhialDamage": 166.29600000000002,
+                    "enhancedPhialDamage": 334.62,
+                    "shieldPhialMultiplier": 1.3,
+                    "normalCoefficient": 8.2,
+                    "enhancedCoefficient": 11,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/12.php",
+                    "sourceVersion": "AFTER_VER_1_011"
+                  }
+                },
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "attack-boost-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "attack-boost-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 40,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "attack-boost-multiply",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "amount": 1.04,
+                  "operation": "multiply",
+                  "order": 10,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "attack-boost-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 9,
+                  "operation": "add",
+                  "order": 40,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-attack-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 4,
+                  "operation": "add",
+                  "order": 50,
+                  "source": "index.html:standardPowerConditionPlan",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 3,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 3,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 780.1545549720001
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      },
+      "snapshot": {
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "103",
+        "weaponKind": "charge-blade",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "抜刀術【力】",
+              "level": 3
+            },
+            {
+              "name": "挑戦者",
+              "level": 1
+            },
+            {
+              "name": "心眼",
+              "level": 3
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "element",
+          "element": "fire",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "elementParts": 0,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "canonical:CB_SAED"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "explicitAffinityState": {
+            "absorbedElement": null,
+            "selfSkillState": null,
+            "wetState": {
+              "normal": null,
+              "maximum": null
+            },
+            "criticalDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "punishingDrawHits": {
+              "normal": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "maximum": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            "festivalId": null
+          },
+          "hbgReferenceState": {
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "elementType": null,
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "attributeConversionState": {
+            "normal": null,
+            "maximum": null
+          },
+          "blackEclipseState": null,
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": true,
+            "axeBoosted": false,
+            "phialType": "POWER_ELEMENT",
+            "enhancedPhial": true,
+            "previousAction": null,
+            "enhancedPhials": null,
+            "normalPhials": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        }
+      },
+      "conditions": {
+        "absorbedElement": null,
+        "selfSkillState": null,
+        "wetState": {
+          "normal": null,
+          "maximum": null
+        },
+        "criticalDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "punishingDrawHits": {
+          "normal": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          },
+          "maximum": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          }
+        },
+        "festivalId": null,
+        "blackEclipseState": null,
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "attack": "207",
+        "aff": "-12",
+        "elem": "260",
+        "mv": "100",
+        "hz": "60",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "elementType": null,
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": true,
+          "axeBoosted": false,
+          "phialType": "POWER_ELEMENT",
+          "enhancedPhial": true,
+          "previousAction": null,
+          "enhancedPhials": null,
+          "normalPhials": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "attributeConversionState": {
+          "normal": null,
+          "maximum": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      }
+    },
+    {
+      "label": "inactive",
+      "result": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 103,
+            "gameId": 25,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/103",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"207\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"207\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"207\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SAED:reference:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SAED",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CB_R49_SOURCE",
+                "coefficientUnit": "REFERENCE",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 719.506535925,
+                "details": {
+                  "status": "REFERENCE_ONLY",
+                  "verificationStatus": "UNVERIFIED",
+                  "dps": null,
+                  "components": {
+                    "physicalBody": 195.190535925,
+                    "elementalBody": 23.4,
+                    "axeBoostPhysical": 0,
+                    "axeBoostElement": 0,
+                    "impactPhial": 0,
+                    "elementalPhial": 500.91600000000005
+                  },
+                  "trace": {
+                    "bodyHits": [
+                      {
+                        "hitIndex": 0,
+                        "mv": 16,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 0,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 206.6,
+                        "affinity": -15,
+                        "physical": 22.048765200000002,
+                        "element": 7.8
+                      },
+                      {
+                        "hitIndex": 1,
+                        "mv": 78,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 7,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 213.6,
+                        "affinity": -15,
+                        "physical": 111.12961860000001,
+                        "element": 7.8
+                      },
+                      {
+                        "hitIndex": 2,
+                        "mv": 45,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 0,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 206.6,
+                        "affinity": -15,
+                        "physical": 62.012152125000014,
+                        "element": 7.8
+                      }
+                    ],
+                    "bodyAttackBasis": {
+                      "weaponBase": 190,
+                      "normalMultiplier": 1.04,
+                      "normalFlat": 9
+                    },
+                    "bodyAttackMultiplier": 1,
+                    "bodyAttackAdoption": {
+                      "skillId": 136,
+                      "techniqueIds": [
+                        "CB_SAED",
+                        "CB_SAED_AED_DERIVED"
+                      ],
+                      "component": "BODY_PHYSICAL_ONLY",
+                      "multiplierRule": {
+                        "id": 136,
+                        "multipliers": [
+                          1,
+                          1.1,
+                          1.15,
+                          1.3
+                        ],
+                        "originalHitzoneMaximum": 44
+                      },
+                      "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                      "status": "OWNER_APPROVED_PROVISIONAL",
+                      "approval": "Sentinel_11c1099a37508191ae33eacd6126c7f0",
+                      "verification": "NOT_GAME_VERIFIED",
+                      "order": "BASE_TIMES_EXISTING_MULTIPLIER_TIMES_MINDS_EYE_PLUS_FLATS",
+                      "excluded": [
+                        "BODY_ELEMENT",
+                        "PHIAL"
+                      ],
+                      "originalSlashHitzone": 45,
+                      "currentSlashHitzone": 60
+                    },
+                    "elementCriticalMultiplier": 1,
+                    "elementCriticalExpectation": 1,
+                    "eventCount": 5,
+                    "hitCount": 5,
+                    "enhancedPhial": true,
+                    "ammoLoadingLevel": 0,
+                    "enhancedCount": 3,
+                    "normalCount": 2,
+                    "normalPhialDamage": 166.29600000000002,
+                    "enhancedPhialDamage": 334.62,
+                    "shieldPhialMultiplier": 1.3,
+                    "normalCoefficient": 8.2,
+                    "enhancedCoefficient": 11,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/12.php",
+                    "sourceVersion": "AFTER_VER_1_011"
+                  }
+                },
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "attack-boost-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "attack-boost-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 40,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "attack-boost-multiply",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "amount": 1.04,
+                  "operation": "multiply",
+                  "order": 10,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "attack-boost-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 9,
+                  "operation": "add",
+                  "order": 40,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 719.506535925
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SAED:reference:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SAED",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CB_R49_SOURCE",
+                "coefficientUnit": "REFERENCE",
+                "damageUnit": "damage",
+                "status": "available",
+                "value": 724.76498874,
+                "details": {
+                  "status": "REFERENCE_ONLY",
+                  "verificationStatus": "UNVERIFIED",
+                  "dps": null,
+                  "components": {
+                    "physicalBody": 200.44898874,
+                    "elementalBody": 23.4,
+                    "axeBoostPhysical": 0,
+                    "axeBoostElement": 0,
+                    "impactPhial": 0,
+                    "elementalPhial": 500.91600000000005
+                  },
+                  "trace": {
+                    "bodyHits": [
+                      {
+                        "hitIndex": 0,
+                        "mv": 16,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 0,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 210.6,
+                        "affinity": -12,
+                        "physical": 22.65078816,
+                        "element": 7.8
+                      },
+                      {
+                        "hitIndex": 1,
+                        "mv": 78,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 7,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 217.6,
+                        "affinity": -12,
+                        "physical": 114.09285888000001,
+                        "element": 7.8
+                      },
+                      {
+                        "hitIndex": 2,
+                        "mv": 45,
+                        "elementModifier": 1,
+                        "hitAttackAdd": 0,
+                        "hitAffinityAdd": 0,
+                        "effectiveAttack": 210.6,
+                        "affinity": -12,
+                        "physical": 63.705341700000005,
+                        "element": 7.8
+                      }
+                    ],
+                    "bodyAttackBasis": {
+                      "weaponBase": 190,
+                      "normalMultiplier": 1.04,
+                      "normalFlat": 13
+                    },
+                    "bodyAttackMultiplier": 1,
+                    "bodyAttackAdoption": {
+                      "skillId": 136,
+                      "techniqueIds": [
+                        "CB_SAED",
+                        "CB_SAED_AED_DERIVED"
+                      ],
+                      "component": "BODY_PHYSICAL_ONLY",
+                      "multiplierRule": {
+                        "id": 136,
+                        "multipliers": [
+                          1,
+                          1.1,
+                          1.15,
+                          1.3
+                        ],
+                        "originalHitzoneMaximum": 44
+                      },
+                      "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                      "status": "OWNER_APPROVED_PROVISIONAL",
+                      "approval": "Sentinel_11c1099a37508191ae33eacd6126c7f0",
+                      "verification": "NOT_GAME_VERIFIED",
+                      "order": "BASE_TIMES_EXISTING_MULTIPLIER_TIMES_MINDS_EYE_PLUS_FLATS",
+                      "excluded": [
+                        "BODY_ELEMENT",
+                        "PHIAL"
+                      ],
+                      "originalSlashHitzone": 45,
+                      "currentSlashHitzone": 60
+                    },
+                    "elementCriticalMultiplier": 1,
+                    "elementCriticalExpectation": 1,
+                    "eventCount": 5,
+                    "hitCount": 5,
+                    "enhancedPhial": true,
+                    "ammoLoadingLevel": 0,
+                    "enhancedCount": 3,
+                    "normalCount": 2,
+                    "normalPhialDamage": 166.29600000000002,
+                    "enhancedPhialDamage": 334.62,
+                    "shieldPhialMultiplier": 1.3,
+                    "normalCoefficient": 8.2,
+                    "enhancedCoefficient": 11,
+                    "source": "https://kuroyonhon.com/mhwilds/memo/12.php",
+                    "sourceVersion": "AFTER_VER_1_011"
+                  }
+                },
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "attack-boost-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "attack-boost-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 40,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "attack-boost-multiply",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "amount": 1.04,
+                  "operation": "multiply",
+                  "order": 10,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "attack-boost-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 9,
+                  "operation": "add",
+                  "order": 40,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-attack-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 4,
+                  "operation": "add",
+                  "order": 50,
+                  "source": "index.html:standardPowerConditionPlan",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 3,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 3,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "available",
+                "value": 724.76498874
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      },
+      "snapshot": {
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "103",
+        "weaponKind": "charge-blade",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "抜刀術【力】",
+              "level": 3
+            },
+            {
+              "name": "挑戦者",
+              "level": 1
+            },
+            {
+              "name": "心眼",
+              "level": 3
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "element",
+          "element": "fire",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "elementParts": 0,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "canonical:CB_SAED"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "explicitAffinityState": {
+            "absorbedElement": null,
+            "selfSkillState": null,
+            "wetState": {
+              "normal": null,
+              "maximum": null
+            },
+            "criticalDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "punishingDrawHits": {
+              "normal": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "maximum": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            "festivalId": null
+          },
+          "hbgReferenceState": {
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "elementType": null,
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "attributeConversionState": {
+            "normal": null,
+            "maximum": null
+          },
+          "blackEclipseState": null,
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": true,
+            "axeBoosted": false,
+            "phialType": "POWER_ELEMENT",
+            "enhancedPhial": true,
+            "previousAction": null,
+            "enhancedPhials": null,
+            "normalPhials": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        }
+      },
+      "conditions": {
+        "absorbedElement": null,
+        "selfSkillState": null,
+        "wetState": {
+          "normal": null,
+          "maximum": null
+        },
+        "criticalDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "punishingDrawHits": {
+          "normal": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          },
+          "maximum": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          }
+        },
+        "festivalId": null,
+        "blackEclipseState": null,
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "attack": "207",
+        "aff": "-12",
+        "elem": "260",
+        "mv": "100",
+        "hz": "60",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "elementType": null,
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": true,
+          "axeBoosted": false,
+          "phialType": "POWER_ELEMENT",
+          "enhancedPhial": true,
+          "previousAction": null,
+          "enhancedPhials": null,
+          "normalPhials": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "attributeConversionState": {
+          "normal": null,
+          "maximum": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      }
+    },
+    {
+      "label": "missing",
+      "result": {
+        "status": "OK",
+        "weaponType": "charge-blade",
+        "diagnostics": [
+          {
+            "code": "MHDB_SOURCE",
+            "apiId": 103,
+            "gameId": 25,
+            "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/103",
+            "apiVersion": "UNKNOWN",
+            "retrievedAt": "UNKNOWN",
+            "sourceGameVersion": "UNKNOWN"
+          }
+        ],
+        "versions": {
+          "game": "1.042.00.02",
+          "equipment": "mhdb-source-unknown-game-version",
+          "technique": "tech-real",
+          "effects": "effects-real"
+        },
+        "conditionKey": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"207\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+        "comparisonContext": {
+          "damage": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"207\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "dps": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"207\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+        },
+        "channels": {
+          "normal": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SAED:reference:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SAED",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CB_R49_SOURCE",
+                "coefficientUnit": "REFERENCE",
+                "damageUnit": "damage",
+                "status": "unavailable",
+                "reason": "CB_SAED:ORIGINAL_HITZONE_UNRESOLVED",
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "attack-boost-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "attack-boost-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 40,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "attack-boost-multiply",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "amount": 1.04,
+                  "operation": "multiply",
+                  "order": 10,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "attack-boost-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 9,
+                  "operation": "add",
+                  "order": 40,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "COMPONENT_UNAVAILABLE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "COMPONENT_UNAVAILABLE"
+              }
+            }
+          },
+          "maximum": {
+            "execution": {
+              "status": "complete",
+              "expected": [
+                "0:0"
+              ],
+              "executed": [
+                "0:0"
+              ],
+              "reason": null
+            },
+            "components": [
+              {
+                "id": "CB_SAED:reference:0",
+                "eventId": "0:0",
+                "techniqueId": "CB_SAED",
+                "revision": "2",
+                "source": "MACARONGAMEMO_CB_R49_SOURCE",
+                "coefficientUnit": "REFERENCE",
+                "damageUnit": "damage",
+                "status": "unavailable",
+                "reason": "CB_SAED:ORIGINAL_HITZONE_UNRESOLVED",
+                "disposition": "emitted",
+                "effectsApplied": [
+                  {
+                    "id": "attack-boost-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "order": 10,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "attack-boost-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 40,
+                    "source": "index.html:calcAttackSkill"
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan"
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity"
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                  }
+                ]
+              }
+            ],
+            "issues": [],
+            "finalState": {},
+            "effectPlan": {
+              "effects": [
+                {
+                  "id": "attack-boost-multiply",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "dimensionless",
+                  "amount": 1.04,
+                  "operation": "multiply",
+                  "order": 10,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "attack-boost-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 9,
+                  "operation": "add",
+                  "order": 40,
+                  "source": "index.html:calcAttackSkill",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-attack-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "amount": 4,
+                  "operation": "add",
+                  "order": 50,
+                  "source": "index.html:standardPowerConditionPlan",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 3,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "conditional-affinity-maximum-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "amount": 3,
+                  "operation": "add",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                },
+                {
+                  "id": "affinity-upper-cap-element",
+                  "target": "element",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "operation": "cap",
+                  "amount": 100,
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                  "condition": {
+                    "type": "always"
+                  }
+                }
+              ],
+              "unresolved": []
+            },
+            "diagnostics": {
+              "formalStatus": "PROVISIONAL",
+              "provisionalEffects": [],
+              "referenceOnly": true,
+              "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+              "sourceStatusPreserved": true,
+              "armorThunderResistanceInput": {
+                "status": "ARMOR_BASE_ONLY",
+                "armorBase": 0,
+                "total": null,
+                "rows": [
+                  {
+                    "slot": "head",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "chest",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "arms",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "waist",
+                    "equipped": false,
+                    "value": 0
+                  },
+                  {
+                    "slot": "legs",
+                    "equipped": false,
+                    "value": 0
+                  }
+                ],
+                "missing": [],
+                "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+              }
+            },
+            "metrics": {
+              "comboTotalDamage": {
+                "status": "unavailable",
+                "reason": "COMPONENT_UNAVAILABLE"
+              },
+              "comboDuration": {
+                "status": "unavailable",
+                "reason": "DURATION_UNAVAILABLE"
+              },
+              "comboDps": {
+                "status": "unavailable",
+                "reason": "COMPONENT_UNAVAILABLE"
+              }
+            }
+          }
+        }
+      },
+      "snapshot": {
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "103",
+        "weaponKind": "charge-blade",
+        "armor": {
+          "head": "",
+          "chest": "",
+          "arms": "",
+          "waist": "",
+          "legs": ""
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "抜刀術【力】",
+              "level": 3
+            },
+            {
+              "name": "挑戦者",
+              "level": 1
+            },
+            {
+              "name": "心眼",
+              "level": 3
+            }
+          ],
+          "slots": [
+            0,
+            0,
+            0
+          ],
+          "weaponSlots": []
+        },
+        "artia": {
+          "production": "element",
+          "element": "fire",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "elementParts": 0,
+          "restores": [
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+          ],
+          "seriesSkill": "",
+          "groupSkill": ""
+        },
+        "decos": {},
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "canonical:CB_SAED"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "explicitAffinityState": {
+            "absorbedElement": null,
+            "selfSkillState": null,
+            "wetState": {
+              "normal": null,
+              "maximum": null
+            },
+            "criticalDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "punishingDrawHits": {
+              "normal": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "maximum": {
+                "CB_SAED": [
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            "festivalId": null
+          },
+          "hbgReferenceState": {
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "elementType": null,
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "attributeConversionState": {
+            "normal": null,
+            "maximum": null
+          },
+          "blackEclipseState": null,
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": true,
+            "axeBoosted": false,
+            "phialType": "POWER_ELEMENT",
+            "enhancedPhial": true,
+            "previousAction": null,
+            "enhancedPhials": null,
+            "normalPhials": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        }
+      },
+      "conditions": {
+        "absorbedElement": null,
+        "selfSkillState": null,
+        "wetState": {
+          "normal": null,
+          "maximum": null
+        },
+        "criticalDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "punishingDrawHits": {
+          "normal": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          },
+          "maximum": {
+            "CB_SAED": [
+              false,
+              true,
+              false
+            ]
+          }
+        },
+        "festivalId": null,
+        "blackEclipseState": null,
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "attack": "207",
+        "aff": "-12",
+        "elem": "260",
+        "mv": "100",
+        "hz": "60",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": null,
+          "range": null,
+          "startShot": null
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "elementType": null,
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": true,
+          "axeBoosted": false,
+          "phialType": "POWER_ELEMENT",
+          "enhancedPhial": true,
+          "previousAction": null,
+          "enhancedPhials": null,
+          "normalPhials": null
+        },
+        "dualBladesState": {
+          "demonMode": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "attributeConversionState": {
+          "normal": null,
+          "maximum": null
+        },
+        "lightBowgunState": {
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      }
+    }
+  ],
+  "comparison": {
+    "rows": [
+      {
+        "name": "mindseye-active",
+        "result": {
+          "status": "OK",
+          "weaponType": "charge-blade",
+          "diagnostics": [
+            {
+              "code": "MHDB_SOURCE",
+              "apiId": 103,
+              "gameId": 25,
+              "sourceEndpoint": "https://wilds.mhdb.io/en/weapons/103",
+              "apiVersion": "UNKNOWN",
+              "retrievedAt": "UNKNOWN",
+              "sourceGameVersion": "UNKNOWN"
+            }
+          ],
+          "versions": {
+            "game": "1.042.00.02",
+            "equipment": "mhdb-source-unknown-game-version",
+            "technique": "tech-real",
+            "effects": "effects-real"
+          },
+          "conditionKey": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"207\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"standardEvaluation\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+          "comparisonContext": {
+            "damage": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"207\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"standardEvaluation\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}",
+            "dps": "{\"conditions\":{\"absorbedElement\":null,\"aff\":\"-12\",\"attack\":\"207\",\"attributeConversionState\":{\"maximum\":null,\"normal\":null},\"axeBoosted\":false,\"blackEclipseState\":null,\"bowState\":{\"chargeLevel\":3,\"coating\":null,\"range\":null,\"startShot\":null},\"cb\":\"0\",\"chargeBladeState\":{\"axeBoosted\":false,\"enhancedPhial\":true,\"enhancedPhials\":null,\"normalPhials\":null,\"phialType\":\"POWER_ELEMENT\",\"previousAction\":null,\"shieldBoosted\":true},\"combatBuffs\":{\"charm\":null,\"meal\":null,\"otherBuffs\":null},\"criticalDrawHits\":{\"maximum\":null,\"normal\":null},\"dragonHitzoneSource\":{\"kind\":\"UNSET\"},\"dragonHz\":\"\",\"drawAttack\":false,\"dualBladesState\":{\"demonMode\":null},\"eCrit\":\"0\",\"ehz\":\"30\",\"elem\":\"260\",\"enhancedPhial\":true,\"esharp\":\"1.15\",\"everlastingStage\":null,\"festivalId\":null,\"fortifyCount\":2,\"gunlanceState\":{\"chargedRounds\":null,\"fireHitzone\":null,\"loadedRounds\":null,\"shellingPower\":null,\"shellingType\":null},\"gutsState\":\"BEFORE\",\"hbgState\":{\"ammoLevel\":null,\"ammoType\":\"NORMAL\",\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"elementType\":null,\"fullMagazine\":null,\"magazineCapacity\":null,\"normalModeLevel\":null,\"range\":null,\"shotOrdinal\":null},\"hbgWyvernState\":{\"fireHitzone\":null,\"mode\":null},\"huntingHornState\":{\"echoState\":null,\"melodyState\":null},\"hz\":\"60\",\"insectGlaiveState\":{\"extractState\":null,\"kinsectState\":null},\"lightBowgunState\":{\"ammoLevel\":null,\"ammoType\":null,\"contactCount\":null,\"contactPolicy\":null,\"contactTargetPolicy\":\"CURRENT_TARGET\",\"fullMagazine\":null,\"normalModeLevel\":null,\"range\":null,\"shotMode\":null,\"shotOrdinal\":null},\"longSwordState\":{\"spiritGauge\":null},\"mounted\":false,\"mv\":\"100\",\"phialType\":\"POWER_ELEMENT\",\"punishingDrawHits\":{\"maximum\":{\"CB_SAED\":[false,true,false]},\"normal\":{\"CB_SAED\":[false,true,false]}},\"selfSkillState\":null,\"sharp\":\"1.32\",\"shieldBoosted\":true,\"standardEvaluation\":false,\"switchAxeState\":{\"awakened\":null,\"mode\":null},\"uptime\":\"85\",\"uptimeMode\":\"1\",\"wetState\":{\"maximum\":null,\"normal\":null}},\"evaluationKind\":\"combo\",\"plan\":\"[{\\\"id\\\":\\\"CB_SAED\\\",\\\"revision\\\":\\\"2\\\"}]\",\"target\":{\"hitZoneKey\":\"training-front\",\"id\":\"training-room\"}}"
+          },
+          "channels": {
+            "normal": {
+              "execution": {
+                "status": "complete",
+                "expected": [
+                  "0:0"
+                ],
+                "executed": [
+                  "0:0"
+                ],
+                "reason": null
+              },
+              "components": [
+                {
+                  "id": "CB_SAED:reference:0",
+                  "eventId": "0:0",
+                  "techniqueId": "CB_SAED",
+                  "revision": "2",
+                  "source": "MACARONGAMEMO_CB_R49_SOURCE",
+                  "coefficientUnit": "REFERENCE",
+                  "damageUnit": "damage",
+                  "status": "available",
+                  "value": 774.4678323150001,
+                  "details": {
+                    "status": "REFERENCE_ONLY",
+                    "verificationStatus": "UNVERIFIED",
+                    "dps": null,
+                    "components": {
+                      "physicalBody": 250.15183231500004,
+                      "elementalBody": 23.4,
+                      "axeBoostPhysical": 0,
+                      "axeBoostElement": 0,
+                      "impactPhial": 0,
+                      "elementalPhial": 500.91600000000005
+                    },
+                    "trace": {
+                      "bodyHits": [
+                        {
+                          "hitIndex": 0,
+                          "mv": 16,
+                          "elementModifier": 1,
+                          "hitAttackAdd": 0,
+                          "hitAffinityAdd": 0,
+                          "effectiveAttack": 265.88,
+                          "affinity": -15,
+                          "physical": 28.375245359999997,
+                          "element": 7.8
+                        },
+                        {
+                          "hitIndex": 1,
+                          "mv": 78,
+                          "elementModifier": 1,
+                          "hitAttackAdd": 7,
+                          "hitAffinityAdd": 0,
+                          "effectiveAttack": 272.88,
+                          "affinity": -15,
+                          "physical": 141.97120938,
+                          "element": 7.8
+                        },
+                        {
+                          "hitIndex": 2,
+                          "mv": 45,
+                          "elementModifier": 1,
+                          "hitAttackAdd": 0,
+                          "hitAffinityAdd": 0,
+                          "effectiveAttack": 265.88,
+                          "affinity": -15,
+                          "physical": 79.80537757500001,
+                          "element": 7.8
+                        }
+                      ],
+                      "bodyAttackBasis": {
+                        "weaponBase": 190,
+                        "normalMultiplier": 1.04,
+                        "normalFlat": 9
+                      },
+                      "bodyAttackMultiplier": 1.3,
+                      "bodyAttackAdoption": {
+                        "skillId": 136,
+                        "techniqueIds": [
+                          "CB_SAED",
+                          "CB_SAED_AED_DERIVED"
+                        ],
+                        "component": "BODY_PHYSICAL_ONLY",
+                        "multiplierRule": {
+                          "id": 136,
+                          "multipliers": [
+                            1,
+                            1.1,
+                            1.15,
+                            1.3
+                          ],
+                          "originalHitzoneMaximum": 44
+                        },
+                        "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                        "status": "OWNER_APPROVED_PROVISIONAL",
+                        "approval": "Sentinel_11c1099a37508191ae33eacd6126c7f0",
+                        "verification": "NOT_GAME_VERIFIED",
+                        "order": "BASE_TIMES_EXISTING_MULTIPLIER_TIMES_MINDS_EYE_PLUS_FLATS",
+                        "excluded": [
+                          "BODY_ELEMENT",
+                          "PHIAL"
+                        ],
+                        "originalSlashHitzone": 44,
+                        "currentSlashHitzone": 60
+                      },
+                      "elementCriticalMultiplier": 1,
+                      "elementCriticalExpectation": 1,
+                      "eventCount": 5,
+                      "hitCount": 5,
+                      "enhancedPhial": true,
+                      "ammoLoadingLevel": 0,
+                      "enhancedCount": 3,
+                      "normalCount": 2,
+                      "normalPhialDamage": 166.29600000000002,
+                      "enhancedPhialDamage": 334.62,
+                      "shieldPhialMultiplier": 1.3,
+                      "normalCoefficient": 8.2,
+                      "enhancedCoefficient": 11,
+                      "source": "https://kuroyonhon.com/mhwilds/memo/12.php",
+                      "sourceVersion": "AFTER_VER_1_011"
+                    }
+                  },
+                  "disposition": "emitted",
+                  "effectsApplied": [
+                    {
+                      "id": "attack-boost-multiply",
+                      "target": "physical",
+                      "stage": "attack",
+                      "unit": "dimensionless",
+                      "order": 10,
+                      "source": "index.html:calcAttackSkill"
+                    },
+                    {
+                      "id": "attack-boost-flat",
+                      "target": "physical",
+                      "stage": "attack",
+                      "unit": "true-attack",
+                      "order": 40,
+                      "source": "index.html:calcAttackSkill"
+                    },
+                    {
+                      "id": "affinity-upper-cap",
+                      "target": "physical",
+                      "stage": "affinity",
+                      "unit": "percent",
+                      "order": 100,
+                      "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                    }
+                  ]
+                }
+              ],
+              "issues": [],
+              "finalState": {},
+              "effectPlan": {
+                "effects": [
+                  {
+                    "id": "attack-boost-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "amount": 1.04,
+                    "operation": "multiply",
+                    "order": 10,
+                    "source": "index.html:calcAttackSkill",
+                    "condition": {
+                      "type": "always"
+                    }
+                  },
+                  {
+                    "id": "attack-boost-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "amount": 9,
+                    "operation": "add",
+                    "order": 40,
+                    "source": "index.html:calcAttackSkill",
+                    "condition": {
+                      "type": "always"
+                    }
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "operation": "cap",
+                    "amount": 100,
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                    "condition": {
+                      "type": "always"
+                    }
+                  },
+                  {
+                    "id": "affinity-upper-cap-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "operation": "cap",
+                    "amount": 100,
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                    "condition": {
+                      "type": "always"
+                    }
+                  }
+                ],
+                "unresolved": []
+              },
+              "diagnostics": {
+                "formalStatus": "PROVISIONAL",
+                "provisionalEffects": [],
+                "referenceOnly": true,
+                "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+                "sourceStatusPreserved": true,
+                "armorThunderResistanceInput": {
+                  "status": "ARMOR_BASE_ONLY",
+                  "armorBase": 0,
+                  "total": null,
+                  "rows": [
+                    {
+                      "slot": "head",
+                      "equipped": false,
+                      "value": 0
+                    },
+                    {
+                      "slot": "chest",
+                      "equipped": false,
+                      "value": 0
+                    },
+                    {
+                      "slot": "arms",
+                      "equipped": false,
+                      "value": 0
+                    },
+                    {
+                      "slot": "waist",
+                      "equipped": false,
+                      "value": 0
+                    },
+                    {
+                      "slot": "legs",
+                      "equipped": false,
+                      "value": 0
+                    }
+                  ],
+                  "missing": [],
+                  "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+                }
+              },
+              "metrics": {
+                "comboTotalDamage": {
+                  "status": "available",
+                  "value": 774.4678323150001
+                },
+                "comboDuration": {
+                  "status": "unavailable",
+                  "reason": "DURATION_UNAVAILABLE"
+                },
+                "comboDps": {
+                  "status": "unavailable",
+                  "reason": "DURATION_UNAVAILABLE"
+                }
+              }
+            },
+            "maximum": {
+              "execution": {
+                "status": "complete",
+                "expected": [
+                  "0:0"
+                ],
+                "executed": [
+                  "0:0"
+                ],
+                "reason": null
+              },
+              "components": [
+                {
+                  "id": "CB_SAED:reference:0",
+                  "eventId": "0:0",
+                  "techniqueId": "CB_SAED",
+                  "revision": "2",
+                  "source": "MACARONGAMEMO_CB_R49_SOURCE",
+                  "coefficientUnit": "REFERENCE",
+                  "damageUnit": "damage",
+                  "status": "available",
+                  "value": 780.1545549720001,
+                  "details": {
+                    "status": "REFERENCE_ONLY",
+                    "verificationStatus": "UNVERIFIED",
+                    "dps": null,
+                    "components": {
+                      "physicalBody": 255.83855497200005,
+                      "elementalBody": 23.4,
+                      "axeBoostPhysical": 0,
+                      "axeBoostElement": 0,
+                      "impactPhial": 0,
+                      "elementalPhial": 500.91600000000005
+                    },
+                    "trace": {
+                      "bodyHits": [
+                        {
+                          "hitIndex": 0,
+                          "mv": 16,
+                          "elementModifier": 1,
+                          "hitAttackAdd": 0,
+                          "hitAffinityAdd": 0,
+                          "effectiveAttack": 269.88,
+                          "affinity": -12,
+                          "physical": 29.026565568000002,
+                          "element": 7.8
+                        },
+                        {
+                          "hitIndex": 1,
+                          "mv": 78,
+                          "elementModifier": 1,
+                          "hitAttackAdd": 7,
+                          "hitAffinityAdd": 0,
+                          "effectiveAttack": 276.88,
+                          "affinity": -12,
+                          "physical": 145.17477374400002,
+                          "element": 7.8
+                        },
+                        {
+                          "hitIndex": 2,
+                          "mv": 45,
+                          "elementModifier": 1,
+                          "hitAttackAdd": 0,
+                          "hitAffinityAdd": 0,
+                          "effectiveAttack": 269.88,
+                          "affinity": -12,
+                          "physical": 81.63721566000002,
+                          "element": 7.8
+                        }
+                      ],
+                      "bodyAttackBasis": {
+                        "weaponBase": 190,
+                        "normalMultiplier": 1.04,
+                        "normalFlat": 13
+                      },
+                      "bodyAttackMultiplier": 1.3,
+                      "bodyAttackAdoption": {
+                        "skillId": 136,
+                        "techniqueIds": [
+                          "CB_SAED",
+                          "CB_SAED_AED_DERIVED"
+                        ],
+                        "component": "BODY_PHYSICAL_ONLY",
+                        "multiplierRule": {
+                          "id": 136,
+                          "multipliers": [
+                            1,
+                            1.1,
+                            1.15,
+                            1.3
+                          ],
+                          "originalHitzoneMaximum": 44
+                        },
+                        "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                        "status": "OWNER_APPROVED_PROVISIONAL",
+                        "approval": "Sentinel_11c1099a37508191ae33eacd6126c7f0",
+                        "verification": "NOT_GAME_VERIFIED",
+                        "order": "BASE_TIMES_EXISTING_MULTIPLIER_TIMES_MINDS_EYE_PLUS_FLATS",
+                        "excluded": [
+                          "BODY_ELEMENT",
+                          "PHIAL"
+                        ],
+                        "originalSlashHitzone": 44,
+                        "currentSlashHitzone": 60
+                      },
+                      "elementCriticalMultiplier": 1,
+                      "elementCriticalExpectation": 1,
+                      "eventCount": 5,
+                      "hitCount": 5,
+                      "enhancedPhial": true,
+                      "ammoLoadingLevel": 0,
+                      "enhancedCount": 3,
+                      "normalCount": 2,
+                      "normalPhialDamage": 166.29600000000002,
+                      "enhancedPhialDamage": 334.62,
+                      "shieldPhialMultiplier": 1.3,
+                      "normalCoefficient": 8.2,
+                      "enhancedCoefficient": 11,
+                      "source": "https://kuroyonhon.com/mhwilds/memo/12.php",
+                      "sourceVersion": "AFTER_VER_1_011"
+                    }
+                  },
+                  "disposition": "emitted",
+                  "effectsApplied": [
+                    {
+                      "id": "attack-boost-multiply",
+                      "target": "physical",
+                      "stage": "attack",
+                      "unit": "dimensionless",
+                      "order": 10,
+                      "source": "index.html:calcAttackSkill"
+                    },
+                    {
+                      "id": "attack-boost-flat",
+                      "target": "physical",
+                      "stage": "attack",
+                      "unit": "true-attack",
+                      "order": 40,
+                      "source": "index.html:calcAttackSkill"
+                    },
+                    {
+                      "id": "conditional-attack-flat",
+                      "target": "physical",
+                      "stage": "attack",
+                      "unit": "true-attack",
+                      "order": 50,
+                      "source": "index.html:standardPowerConditionPlan"
+                    },
+                    {
+                      "id": "conditional-affinity-maximum",
+                      "target": "physical",
+                      "stage": "affinity",
+                      "unit": "percent",
+                      "order": 80,
+                      "source": "index.html:calcMaxAffinity"
+                    },
+                    {
+                      "id": "affinity-upper-cap",
+                      "target": "physical",
+                      "stage": "affinity",
+                      "unit": "percent",
+                      "order": 100,
+                      "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                    }
+                  ]
+                }
+              ],
+              "issues": [],
+              "finalState": {},
+              "effectPlan": {
+                "effects": [
+                  {
+                    "id": "attack-boost-multiply",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "dimensionless",
+                    "amount": 1.04,
+                    "operation": "multiply",
+                    "order": 10,
+                    "source": "index.html:calcAttackSkill",
+                    "condition": {
+                      "type": "always"
+                    }
+                  },
+                  {
+                    "id": "attack-boost-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "amount": 9,
+                    "operation": "add",
+                    "order": 40,
+                    "source": "index.html:calcAttackSkill",
+                    "condition": {
+                      "type": "always"
+                    }
+                  },
+                  {
+                    "id": "conditional-attack-flat",
+                    "target": "physical",
+                    "stage": "attack",
+                    "unit": "true-attack",
+                    "amount": 4,
+                    "operation": "add",
+                    "order": 50,
+                    "source": "index.html:standardPowerConditionPlan",
+                    "condition": {
+                      "type": "always"
+                    }
+                  },
+                  {
+                    "id": "conditional-affinity-maximum",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "amount": 3,
+                    "operation": "add",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity",
+                    "condition": {
+                      "type": "always"
+                    }
+                  },
+                  {
+                    "id": "conditional-affinity-maximum-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "amount": 3,
+                    "operation": "add",
+                    "order": 80,
+                    "source": "index.html:calcMaxAffinity",
+                    "condition": {
+                      "type": "always"
+                    }
+                  },
+                  {
+                    "id": "affinity-upper-cap",
+                    "target": "physical",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "operation": "cap",
+                    "amount": 100,
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                    "condition": {
+                      "type": "always"
+                    }
+                  },
+                  {
+                    "id": "affinity-upper-cap-element",
+                    "target": "element",
+                    "stage": "affinity",
+                    "unit": "percent",
+                    "operation": "cap",
+                    "amount": 100,
+                    "order": 100,
+                    "source": "index.html:calcMaxAffinity;common critical probability upper bound",
+                    "condition": {
+                      "type": "always"
+                    }
+                  }
+                ],
+                "unresolved": []
+              },
+              "diagnostics": {
+                "formalStatus": "PROVISIONAL",
+                "provisionalEffects": [],
+                "referenceOnly": true,
+                "referenceScope": "KAN21_FULL_STOCK_FULL_HIT",
+                "sourceStatusPreserved": true,
+                "armorThunderResistanceInput": {
+                  "status": "ARMOR_BASE_ONLY",
+                  "armorBase": 0,
+                  "total": null,
+                  "rows": [
+                    {
+                      "slot": "head",
+                      "equipped": false,
+                      "value": 0
+                    },
+                    {
+                      "slot": "chest",
+                      "equipped": false,
+                      "value": 0
+                    },
+                    {
+                      "slot": "arms",
+                      "equipped": false,
+                      "value": 0
+                    },
+                    {
+                      "slot": "waist",
+                      "equipped": false,
+                      "value": 0
+                    },
+                    {
+                      "slot": "legs",
+                      "equipped": false,
+                      "value": 0
+                    }
+                  ],
+                  "missing": [],
+                  "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+                }
+              },
+              "metrics": {
+                "comboTotalDamage": {
+                  "status": "available",
+                  "value": 780.1545549720001
+                },
+                "comboDuration": {
+                  "status": "unavailable",
+                  "reason": "DURATION_UNAVAILABLE"
+                },
+                "comboDps": {
+                  "status": "unavailable",
+                  "reason": "DURATION_UNAVAILABLE"
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+    "currentUnchanged": true,
+    "normalLoadMatches": true,
+    "scope": "one saved build vs current shared conditions, not two saved builds"
+  },
+  "scope": "Synthetic CB103 weapon Attack5 and charm Punishing3/Agitator1/MindsEye3; original44/current60 wounded. Public calcBuild JSDOM; not game/equipment validation.",
+  "hashes": {
+    "index.html": "44039900938d4a5454e85bc4c9e28ee1230ea9276829f6aded48a2ed18faabf1",
+    "hope-hammer-browser-adapter.js": "3139dc96d6fc8ad41932f5e9f87c36cafebfa9ff1c887dfbbfc3e8e2ceaf5013",
+    "./tools/saed-mindseye-proof.cjs": "479f4fffea86b20ca36906e5bb396cc79d7b93a2a06feeb5fda2ecaaeead0636"
+  }
+}

@@ -1,0 +1,984 @@
+{
+  "phase": "before",
+  "weaponId": 387,
+  "techniqueIds": [
+    "HAM_SIDE_SWING",
+    "HAM_VERTICAL_II",
+    "HAM_UPPERCUT",
+    "HAM_MIGHTY_CHARGE_UPPERCUT"
+  ],
+  "publicResults": {
+    "without": {
+      "status": "OK",
+      "reason": null,
+      "channels": {
+        "normal": {
+          "execution": {
+            "status": "complete",
+            "expected": [
+              "0:0",
+              "1:0",
+              "2:0",
+              "3:0"
+            ],
+            "executed": [
+              "0:0",
+              "1:0",
+              "2:0",
+              "3:0"
+            ],
+            "reason": null
+          },
+          "total": {
+            "status": "available",
+            "value": 221.51
+          },
+          "components": [
+            {
+              "id": "HAM_SIDE_SWING:physical:0",
+              "eventId": "0:0",
+              "techniqueId": "HAM_SIDE_SWING",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "MV",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 17.39,
+              "disposition": "emitted",
+              "effectsApplied": [
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                }
+              ]
+            },
+            {
+              "id": "HAM_SIDE_SWING:element:0",
+              "eventId": "0:0",
+              "techniqueId": "HAM_SIDE_SWING",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "ELEMENT_MODIFIER",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 0,
+              "disposition": "confirmed_inactive"
+            },
+            {
+              "id": "HAM_VERTICAL_II:physical:0",
+              "eventId": "1:0",
+              "techniqueId": "HAM_VERTICAL_II",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "MV",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 34.02,
+              "disposition": "emitted",
+              "effectsApplied": [
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                }
+              ]
+            },
+            {
+              "id": "HAM_VERTICAL_II:element:0",
+              "eventId": "1:0",
+              "techniqueId": "HAM_VERTICAL_II",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "ELEMENT_MODIFIER",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 0,
+              "disposition": "confirmed_inactive"
+            },
+            {
+              "id": "HAM_UPPERCUT:physical:0",
+              "eventId": "2:0",
+              "techniqueId": "HAM_UPPERCUT",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "MV",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 71.82,
+              "disposition": "emitted",
+              "effectsApplied": [
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                }
+              ]
+            },
+            {
+              "id": "HAM_UPPERCUT:element:0",
+              "eventId": "2:0",
+              "techniqueId": "HAM_UPPERCUT",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "ELEMENT_MODIFIER",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 0,
+              "disposition": "confirmed_inactive"
+            },
+            {
+              "id": "HAM_MIGHTY_CHARGE_UPPERCUT:physical:0",
+              "eventId": "3:0",
+              "techniqueId": "HAM_MIGHTY_CHARGE_UPPERCUT",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "MV",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 98.28,
+              "disposition": "emitted",
+              "effectsApplied": [
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                }
+              ]
+            },
+            {
+              "id": "HAM_MIGHTY_CHARGE_UPPERCUT:element:0",
+              "eventId": "3:0",
+              "techniqueId": "HAM_MIGHTY_CHARGE_UPPERCUT",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "ELEMENT_MODIFIER",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 0,
+              "disposition": "confirmed_inactive"
+            }
+          ],
+          "finalState": {}
+        },
+        "maximum": {
+          "execution": {
+            "status": "complete",
+            "expected": [
+              "0:0",
+              "1:0",
+              "2:0",
+              "3:0"
+            ],
+            "executed": [
+              "0:0",
+              "1:0",
+              "2:0",
+              "3:0"
+            ],
+            "reason": null
+          },
+          "total": {
+            "status": "available",
+            "value": 233.08999999999997
+          },
+          "components": [
+            {
+              "id": "HAM_SIDE_SWING:physical:0",
+              "eventId": "0:0",
+              "techniqueId": "HAM_SIDE_SWING",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "MV",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 18.3,
+              "disposition": "emitted",
+              "effectsApplied": [
+                {
+                  "id": "conditional-attack-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "order": 50,
+                  "source": "index.html:standardPowerConditionPlan"
+                },
+                {
+                  "id": "conditional-affinity-maximum",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity"
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                }
+              ]
+            },
+            {
+              "id": "HAM_SIDE_SWING:element:0",
+              "eventId": "0:0",
+              "techniqueId": "HAM_SIDE_SWING",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "ELEMENT_MODIFIER",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 0,
+              "disposition": "confirmed_inactive"
+            },
+            {
+              "id": "HAM_VERTICAL_II:physical:0",
+              "eventId": "1:0",
+              "techniqueId": "HAM_VERTICAL_II",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "MV",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 35.8,
+              "disposition": "emitted",
+              "effectsApplied": [
+                {
+                  "id": "conditional-attack-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "order": 50,
+                  "source": "index.html:standardPowerConditionPlan"
+                },
+                {
+                  "id": "conditional-affinity-maximum",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity"
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                }
+              ]
+            },
+            {
+              "id": "HAM_VERTICAL_II:element:0",
+              "eventId": "1:0",
+              "techniqueId": "HAM_VERTICAL_II",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "ELEMENT_MODIFIER",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 0,
+              "disposition": "confirmed_inactive"
+            },
+            {
+              "id": "HAM_UPPERCUT:physical:0",
+              "eventId": "2:0",
+              "techniqueId": "HAM_UPPERCUT",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "MV",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 75.57,
+              "disposition": "emitted",
+              "effectsApplied": [
+                {
+                  "id": "conditional-attack-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "order": 50,
+                  "source": "index.html:standardPowerConditionPlan"
+                },
+                {
+                  "id": "conditional-affinity-maximum",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity"
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                }
+              ]
+            },
+            {
+              "id": "HAM_UPPERCUT:element:0",
+              "eventId": "2:0",
+              "techniqueId": "HAM_UPPERCUT",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "ELEMENT_MODIFIER",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 0,
+              "disposition": "confirmed_inactive"
+            },
+            {
+              "id": "HAM_MIGHTY_CHARGE_UPPERCUT:physical:0",
+              "eventId": "3:0",
+              "techniqueId": "HAM_MIGHTY_CHARGE_UPPERCUT",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "MV",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 103.42,
+              "disposition": "emitted",
+              "effectsApplied": [
+                {
+                  "id": "conditional-attack-flat",
+                  "target": "physical",
+                  "stage": "attack",
+                  "unit": "true-attack",
+                  "order": 50,
+                  "source": "index.html:standardPowerConditionPlan"
+                },
+                {
+                  "id": "conditional-affinity-maximum",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 80,
+                  "source": "index.html:calcMaxAffinity"
+                },
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                }
+              ]
+            },
+            {
+              "id": "HAM_MIGHTY_CHARGE_UPPERCUT:element:0",
+              "eventId": "3:0",
+              "techniqueId": "HAM_MIGHTY_CHARGE_UPPERCUT",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "ELEMENT_MODIFIER",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 0,
+              "disposition": "confirmed_inactive"
+            }
+          ],
+          "finalState": {}
+        }
+      }
+    },
+    "withGuard": {
+      "status": "OK",
+      "reason": null,
+      "channels": {
+        "normal": {
+          "execution": {
+            "status": "complete",
+            "expected": [
+              "0:0",
+              "1:0",
+              "2:0",
+              "3:0"
+            ],
+            "executed": [
+              "0:0",
+              "1:0",
+              "2:0",
+              "3:0"
+            ],
+            "reason": null
+          },
+          "total": {
+            "status": "available",
+            "value": 221.51
+          },
+          "components": [
+            {
+              "id": "HAM_SIDE_SWING:physical:0",
+              "eventId": "0:0",
+              "techniqueId": "HAM_SIDE_SWING",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "MV",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 17.39,
+              "disposition": "emitted",
+              "effectsApplied": [
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                }
+              ]
+            },
+            {
+              "id": "HAM_SIDE_SWING:element:0",
+              "eventId": "0:0",
+              "techniqueId": "HAM_SIDE_SWING",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "ELEMENT_MODIFIER",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 0,
+              "disposition": "confirmed_inactive"
+            },
+            {
+              "id": "HAM_VERTICAL_II:physical:0",
+              "eventId": "1:0",
+              "techniqueId": "HAM_VERTICAL_II",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "MV",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 34.02,
+              "disposition": "emitted",
+              "effectsApplied": [
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                }
+              ]
+            },
+            {
+              "id": "HAM_VERTICAL_II:element:0",
+              "eventId": "1:0",
+              "techniqueId": "HAM_VERTICAL_II",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "ELEMENT_MODIFIER",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 0,
+              "disposition": "confirmed_inactive"
+            },
+            {
+              "id": "HAM_UPPERCUT:physical:0",
+              "eventId": "2:0",
+              "techniqueId": "HAM_UPPERCUT",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "MV",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 71.82,
+              "disposition": "emitted",
+              "effectsApplied": [
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                }
+              ]
+            },
+            {
+              "id": "HAM_UPPERCUT:element:0",
+              "eventId": "2:0",
+              "techniqueId": "HAM_UPPERCUT",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "ELEMENT_MODIFIER",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 0,
+              "disposition": "confirmed_inactive"
+            },
+            {
+              "id": "HAM_MIGHTY_CHARGE_UPPERCUT:physical:0",
+              "eventId": "3:0",
+              "techniqueId": "HAM_MIGHTY_CHARGE_UPPERCUT",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "MV",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 98.28,
+              "disposition": "emitted",
+              "effectsApplied": [
+                {
+                  "id": "affinity-upper-cap",
+                  "target": "physical",
+                  "stage": "affinity",
+                  "unit": "percent",
+                  "order": 100,
+                  "source": "index.html:calcMaxAffinity;common critical probability upper bound"
+                }
+              ]
+            },
+            {
+              "id": "HAM_MIGHTY_CHARGE_UPPERCUT:element:0",
+              "eventId": "3:0",
+              "techniqueId": "HAM_MIGHTY_CHARGE_UPPERCUT",
+              "revision": "2",
+              "source": "MACARONGAMEMO_HAMMER_VER1011",
+              "coefficientUnit": "ELEMENT_MODIFIER",
+              "damageUnit": "damage",
+              "status": "available",
+              "value": 0,
+              "disposition": "confirmed_inactive"
+            }
+          ],
+          "finalState": {}
+        },
+        "maximum": {
+          "execution": {
+            "status": "incomplete",
+            "expected": [
+              "0:0",
+              "1:0",
+              "2:0",
+              "3:0"
+            ],
+            "executed": [],
+            "reason": "UNRESOLVED_EFFECTS:攻めの守勢:GUARDING_WEAPON_REQUIRED"
+          },
+          "total": {
+            "status": "unavailable",
+            "reason": "EXECUTION_INCOMPLETE"
+          },
+          "components": [],
+          "finalState": {}
+        }
+      }
+    }
+  },
+  "plans": {
+    "hammer": {
+      "normal": {
+        "attackTrue": 100,
+        "attack": 100,
+        "attackComponents": {
+          "weaponBase": 100,
+          "normalMultiplier": 1,
+          "normalFlat": 0
+        },
+        "element": 0,
+        "elementType": null,
+        "affinity": 0,
+        "activeBonusEffects": []
+      },
+      "maximum": {
+        "attackTrue": 100,
+        "attack": 100,
+        "attackComponents": {
+          "weaponBase": 100,
+          "normalMultiplier": 1,
+          "normalFlat": 0
+        },
+        "element": 0,
+        "elementType": null,
+        "affinity": 0,
+        "activeBonusEffects": []
+      },
+      "applied": [],
+      "excluded": [],
+      "pending": [
+        "攻めの守勢:GUARDING_WEAPON_REQUIRED"
+      ],
+      "groupPlan": {
+        "attackMultiplier": 1,
+        "maximumFlat": 0,
+        "applied": [],
+        "unresolvedEffects": [],
+        "nonDamageEffects": [],
+        "gutsState": "BEFORE",
+        "status": "SOURCE_REFERENCE",
+        "scope": "GENERIC_STANDARD_POWER_ONLY"
+      },
+      "blackEclipse": null,
+      "normalPending": [],
+      "ammoElementCondition": null,
+      "maximumElementComponents": null,
+      "selfStatePlan": {
+        "normal": [],
+        "maximum": [],
+        "pending": [],
+        "ids": []
+      },
+      "status": "PARTIAL",
+      "scope": "ADOPTED_CONDITIONAL_ATTACK_ELEMENT_MAX_AFFINITY",
+      "attackOrder": "WEAPON_BASE_TIMES_MULTIPLIERS_PLUS_FLATS",
+      "attackComponents": {
+        "weaponBase": 100,
+        "normalMultiplier": 1,
+        "normalFlat": 0,
+        "conditionalMultiplier": 1,
+        "groupMultiplier": 1,
+        "conditionalFlat": 0
+      },
+      "evidenceGameVersion": "NOT_VERIFIED"
+    },
+    "hammerAgitator": {
+      "normal": {
+        "attackTrue": 100,
+        "attack": 100,
+        "attackComponents": {
+          "weaponBase": 100,
+          "normalMultiplier": 1,
+          "normalFlat": 0
+        },
+        "element": 0,
+        "elementType": null,
+        "affinity": 0,
+        "activeBonusEffects": []
+      },
+      "maximum": {
+        "attackTrue": 104,
+        "attack": 100,
+        "attackComponents": {
+          "weaponBase": 100,
+          "normalMultiplier": 1,
+          "normalFlat": 0
+        },
+        "element": 0,
+        "elementType": null,
+        "affinity": 0,
+        "activeBonusEffects": []
+      },
+      "applied": [
+        {
+          "skill": "挑戦者",
+          "level": 1,
+          "attackAdd": 4,
+          "condition": "MONSTER_ENRAGED",
+          "exclusiveGroup": null,
+          "evidenceRef": "MHDB_JA_SKILL_144_20261007"
+        }
+      ],
+      "excluded": [],
+      "pending": [
+        "攻めの守勢:GUARDING_WEAPON_REQUIRED"
+      ],
+      "groupPlan": {
+        "attackMultiplier": 1,
+        "maximumFlat": 0,
+        "applied": [],
+        "unresolvedEffects": [],
+        "nonDamageEffects": [],
+        "gutsState": "BEFORE",
+        "status": "SOURCE_REFERENCE",
+        "scope": "GENERIC_STANDARD_POWER_ONLY"
+      },
+      "blackEclipse": null,
+      "normalPending": [],
+      "ammoElementCondition": null,
+      "maximumElementComponents": null,
+      "selfStatePlan": {
+        "normal": [],
+        "maximum": [],
+        "pending": [],
+        "ids": []
+      },
+      "status": "PARTIAL",
+      "scope": "ADOPTED_CONDITIONAL_ATTACK_ELEMENT_MAX_AFFINITY",
+      "attackOrder": "WEAPON_BASE_TIMES_MULTIPLIERS_PLUS_FLATS",
+      "attackComponents": {
+        "weaponBase": 100,
+        "normalMultiplier": 1,
+        "normalFlat": 0,
+        "conditionalMultiplier": 1,
+        "groupMultiplier": 1,
+        "conditionalFlat": 4
+      },
+      "evidenceGameVersion": "NOT_VERIFIED"
+    },
+    "gl": {
+      "normal": {
+        "attackTrue": 100,
+        "attack": 100,
+        "attackComponents": {
+          "weaponBase": 100,
+          "normalMultiplier": 1,
+          "normalFlat": 0
+        },
+        "element": 0,
+        "elementType": null,
+        "affinity": 0,
+        "activeBonusEffects": []
+      },
+      "maximum": {
+        "attackTrue": 114.99999999999999,
+        "attack": 100,
+        "attackComponents": {
+          "weaponBase": 100,
+          "normalMultiplier": 1,
+          "normalFlat": 0
+        },
+        "element": 0,
+        "elementType": null,
+        "affinity": 0,
+        "activeBonusEffects": []
+      },
+      "applied": [
+        {
+          "skill": "攻めの守勢",
+          "level": 3,
+          "attackAdd": 0,
+          "attackMultiplier": 1.15,
+          "condition": "TIMED_GUARD_PREACTIVATED",
+          "exclusiveGroup": null,
+          "evidenceRef": "MHDB_JA_SKILL_66_20261007"
+        }
+      ],
+      "excluded": [],
+      "pending": [],
+      "groupPlan": {
+        "attackMultiplier": 1,
+        "maximumFlat": 0,
+        "applied": [],
+        "unresolvedEffects": [],
+        "nonDamageEffects": [],
+        "gutsState": "BEFORE",
+        "status": "SOURCE_REFERENCE",
+        "scope": "GENERIC_STANDARD_POWER_ONLY"
+      },
+      "blackEclipse": null,
+      "normalPending": [],
+      "ammoElementCondition": null,
+      "maximumElementComponents": null,
+      "selfStatePlan": {
+        "normal": [],
+        "maximum": [],
+        "pending": [],
+        "ids": []
+      },
+      "status": "REFERENCE_ONLY",
+      "scope": "ADOPTED_CONDITIONAL_ATTACK_ELEMENT_MAX_AFFINITY",
+      "attackOrder": "WEAPON_BASE_TIMES_MULTIPLIERS_PLUS_FLATS",
+      "attackComponents": {
+        "weaponBase": 100,
+        "normalMultiplier": 1,
+        "normalFlat": 0,
+        "conditionalMultiplier": 1.15,
+        "groupMultiplier": 1,
+        "conditionalFlat": 0
+      },
+      "evidenceGameVersion": "NOT_VERIFIED"
+    },
+    "unknown": {
+      "normal": {
+        "attackTrue": 100,
+        "attack": 100,
+        "attackComponents": {
+          "weaponBase": 100,
+          "normalMultiplier": 1,
+          "normalFlat": 0
+        },
+        "element": 0,
+        "elementType": null,
+        "affinity": 0,
+        "activeBonusEffects": []
+      },
+      "maximum": {
+        "attackTrue": 100,
+        "attack": 100,
+        "attackComponents": {
+          "weaponBase": 100,
+          "normalMultiplier": 1,
+          "normalFlat": 0
+        },
+        "element": 0,
+        "elementType": null,
+        "affinity": 0,
+        "activeBonusEffects": []
+      },
+      "applied": [],
+      "excluded": [],
+      "pending": [
+        "攻めの守勢:GUARDING_WEAPON_REQUIRED"
+      ],
+      "groupPlan": {
+        "attackMultiplier": 1,
+        "maximumFlat": 0,
+        "applied": [],
+        "unresolvedEffects": [],
+        "nonDamageEffects": [],
+        "gutsState": "BEFORE",
+        "status": "SOURCE_REFERENCE",
+        "scope": "GENERIC_STANDARD_POWER_ONLY"
+      },
+      "blackEclipse": null,
+      "normalPending": [],
+      "ammoElementCondition": null,
+      "maximumElementComponents": null,
+      "selfStatePlan": {
+        "normal": [],
+        "maximum": [],
+        "pending": [],
+        "ids": []
+      },
+      "status": "PARTIAL",
+      "scope": "ADOPTED_CONDITIONAL_ATTACK_ELEMENT_MAX_AFFINITY",
+      "attackOrder": "WEAPON_BASE_TIMES_MULTIPLIERS_PLUS_FLATS",
+      "attackComponents": {
+        "weaponBase": 100,
+        "normalMultiplier": 1,
+        "normalFlat": 0,
+        "conditionalMultiplier": 1,
+        "groupMultiplier": 1,
+        "conditionalFlat": 0
+      },
+      "evidenceGameVersion": "NOT_VERIFIED"
+    },
+    "invalid": {
+      "normal": {
+        "attackTrue": 100,
+        "attack": 100,
+        "attackComponents": {
+          "weaponBase": 100,
+          "normalMultiplier": 1,
+          "normalFlat": 0
+        },
+        "element": 0,
+        "elementType": null,
+        "affinity": 0,
+        "activeBonusEffects": []
+      },
+      "maximum": {
+        "attackTrue": 100,
+        "attack": 100,
+        "attackComponents": {
+          "weaponBase": 100,
+          "normalMultiplier": 1,
+          "normalFlat": 0
+        },
+        "element": 0,
+        "elementType": null,
+        "affinity": 0,
+        "activeBonusEffects": []
+      },
+      "applied": [],
+      "excluded": [],
+      "pending": [
+        "攻めの守勢:LEVEL_INVALID"
+      ],
+      "groupPlan": {
+        "attackMultiplier": 1,
+        "maximumFlat": 0,
+        "applied": [],
+        "unresolvedEffects": [],
+        "nonDamageEffects": [],
+        "gutsState": "BEFORE",
+        "status": "SOURCE_REFERENCE",
+        "scope": "GENERIC_STANDARD_POWER_ONLY"
+      },
+      "blackEclipse": null,
+      "normalPending": [],
+      "ammoElementCondition": null,
+      "maximumElementComponents": null,
+      "selfStatePlan": {
+        "normal": [],
+        "maximum": [],
+        "pending": [],
+        "ids": []
+      },
+      "status": "PARTIAL",
+      "scope": "ADOPTED_CONDITIONAL_ATTACK_ELEMENT_MAX_AFFINITY",
+      "attackOrder": "WEAPON_BASE_TIMES_MULTIPLIERS_PLUS_FLATS",
+      "attackComponents": {
+        "weaponBase": 100,
+        "normalMultiplier": 1,
+        "normalFlat": 0,
+        "conditionalMultiplier": 1,
+        "groupMultiplier": 1,
+        "conditionalFlat": 0
+      },
+      "evidenceGameVersion": "NOT_VERIFIED"
+    },
+    "badComponents": {
+      "normal": {
+        "attackTrue": 100,
+        "attack": 100,
+        "attackComponents": null,
+        "element": 0,
+        "elementType": null,
+        "affinity": 0,
+        "activeBonusEffects": []
+      },
+      "maximum": {
+        "attackTrue": 100,
+        "attack": 100,
+        "attackComponents": null,
+        "element": 0,
+        "elementType": null,
+        "affinity": 0,
+        "activeBonusEffects": []
+      },
+      "applied": [],
+      "excluded": [],
+      "pending": [
+        "攻めの守勢:ATTACK_COMPONENTS_UNRESOLVED"
+      ],
+      "groupPlan": {
+        "attackMultiplier": 1,
+        "maximumFlat": 0,
+        "applied": [],
+        "unresolvedEffects": [],
+        "nonDamageEffects": [],
+        "gutsState": "BEFORE",
+        "status": "SOURCE_REFERENCE",
+        "scope": "GENERIC_STANDARD_POWER_ONLY"
+      },
+      "blackEclipse": null,
+      "normalPending": [],
+      "ammoElementCondition": null,
+      "maximumElementComponents": null,
+      "selfStatePlan": {
+        "normal": [],
+        "maximum": [],
+        "pending": [],
+        "ids": []
+      },
+      "status": "PARTIAL",
+      "scope": "ADOPTED_CONDITIONAL_ATTACK_ELEMENT_MAX_AFFINITY",
+      "attackOrder": "ADD_TO_CALCULATED_TRUE_ATTACK_REFERENCE",
+      "attackComponents": null,
+      "evidenceGameVersion": "NOT_VERIFIED"
+    }
+  }
+}

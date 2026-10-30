@@ -1,0 +1,43 @@
+--- before/index.html
++++ after/index.html
+@@ -5426,9 +5426,9 @@
+  predecessors:Object.freeze({CB_ELEMENT_DISCHARGE_1:['CHARGE','AXE_NEUTRAL'],CB_ELEMENT_DISCHARGE_2:['CB_ELEMENT_DISCHARGE_1'],CB_AED:['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','SHIELD_THRUST','GUARD'],CB_FOLLOWUP_AED:['CB_AED']}),
+  status:'OWNER_APPROVED',verificationStatus:'UNVERIFIED',baseConsumption:1
+ });
+-const RAPID_MORPH_ATTACK_RULE=Object.freeze({skillId:7,multipliers:Object.freeze([1,1,1.1,1.2]),stage:'attack',target:'physical',status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25T23:53:00Z',source:'https://kuroyonhon.com/mhwilds/memo/26.php',sourceVersion:'UNSPECIFIED',liveGameVerification:'PENDING',unconnectedScope:Object.freeze(['SA_AXE_SWEEP_MORPH_ALL_HITS','SA_FOCUS_MORPH_WOUND_TRANSFORM_HITS','CB_CHARGE_DERIVED_ED1','CB_SHIELD_THRUST_OR_GUARD_DERIVED_AED','CB_SAED_OTHER_OR_UNSPECIFIED_PREDECESSOR','CB_SAED_AED_DERIVED_RAPID_MORPH','CB_SAED_REPEATED_SEQUENCE','CB_ELEMENT_SPIN_AXE_BOOST','CB_ELIGIBLE_AXE_FOLLOWUP','CORRUPTED_MANTLE_FOLLOWUP']),excludedScope:Object.freeze(['SA_FOLLOWUP_EXPLOSION','CB_PHIAL_EXPLOSION']),techniqueIds:Object.freeze(['CB_SWORD_TO_AXE_MORPH','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'])});
++const RAPID_MORPH_ATTACK_RULE=Object.freeze({skillId:7,multipliers:Object.freeze([1,1,1.1,1.2]),stage:'attack',target:'physical',status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25T23:53:00Z',source:'https://kuroyonhon.com/mhwilds/memo/26.php',sourceVersion:'UNSPECIFIED',liveGameVerification:'PENDING',unconnectedScope:Object.freeze(['SA_AXE_SWEEP_MORPH_ALL_HITS','SA_FOCUS_MORPH_WOUND_TRANSFORM_HITS','CB_CHARGE_DERIVED_ED1','CB_SHIELD_THRUST_OR_GUARD_DERIVED_AED','CB_SAED_OTHER_OR_UNSPECIFIED_PREDECESSOR','CB_SAED_AED_DERIVED_OTHER_OR_UNSPECIFIED_PREDECESSOR','CB_SAED_REPEATED_SEQUENCE','CB_ELEMENT_SPIN_AXE_BOOST','CB_ELIGIBLE_AXE_FOLLOWUP','CORRUPTED_MANTLE_FOLLOWUP']),excludedScope:Object.freeze(['SA_FOLLOWUP_EXPLOSION','CB_PHIAL_EXPLOSION']),techniqueIds:Object.freeze(['CB_SWORD_TO_AXE_MORPH','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'])});
+ window.MHRapidMorphAttackRule=RAPID_MORPH_ATTACK_RULE;
+-window.MHSaedGuardRapidMorphRule=Object.freeze({techniqueId:'CB_SAED',previousAction:'GUARD',count:1,component:'BODY_THREE_HITS_PHYSICAL_ONLY',multiplierRule:RAPID_MORPH_ATTACK_RULE,status:'OWNER_APPROVED_PROVISIONAL',approval:'2026-10-30_GUARD_SAED_SINGLE_BODY',source:RAPID_MORPH_ATTACK_RULE.source,sourceVersion:'UNSPECIFIED',liveGameVerification:'PENDING',excluded:['BODY_ELEMENT','PHIAL','DRAW_FLAT','AED_DERIVED']});
++window.MHSaedGuardRapidMorphRule=Object.freeze({predecessors:Object.freeze({CB_SAED:'GUARD',CB_SAED_AED_DERIVED:'CB_AED'}),count:1,component:'BODY_THREE_HITS_PHYSICAL_ONLY',multiplierRule:RAPID_MORPH_ATTACK_RULE,status:'OWNER_APPROVED_PROVISIONAL',approval:'2026-10-30_GUARD_SAED_SINGLE_BODY_AND_AED_DERIVED_SINGLE_BODY',motionSource:'https://kuroyonhon.com/mhwilds/memo/12.php',bodyBasis:'DB_UNSCALED_16_78_45_NO_PRIOR_AED_HISTORY_INFERRED',source:RAPID_MORPH_ATTACK_RULE.source,sourceVersion:'UNSPECIFIED',liveGameVerification:'PENDING',excluded:['BODY_ELEMENT','PHIAL','ATTACK_FLAT','OTHER_PREDECESSOR','REPEATED_SEQUENCE']});
+ function rapidMorphBodyAttack(attack,components,multiplier){
+  if(multiplier===1)return attack;
+  if(!components||!['weaponBase','normalMultiplier','normalFlat'].every(k=>Number.isFinite(components[k])))throw Error('RAPID_MORPH:ATTACK_COMPONENTS_REQUIRED');
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -207,7 +207,7 @@
+   const rapidRule=root.MHRapidMorphAttackRule;
+   const rapidMorphEntries=allSkills.filter(x=>x.skillKey==='rapidMorph'),rapidMorphLevel=Math.max(0,...rapidMorphEntries.map(x=>x.level));
+   if(rapidMorphEntries.length&&(!['charge-blade','switch-axe'].includes(weapon.kind)||rapidMorphEntries.some(x=>Number(x.skillId)!==7||!Number.isInteger(x.level)||x.level<1||x.level>3)))return fail('REAL_SLICE:RAPID_MORPH_SCOPE_OR_LEVEL_UNRESOLVED');
+-  if(rapidMorphEntries.length&&(!rapidRule||rapidRule.status!=='OWNER_APPROVED_PROVISIONAL'||resolvedTechniqueIds.some(id=>weapon.kind==='charge-blade'?(!root.ChargeBladeEngine?.techniques?.[id]&&!(id===root.MHSaedGuardRapidMorphRule?.techniqueId&&root.TechniqueDBEngine.get('charge-blade',id)?.phialReference?.status==='PROVISIONALLY_ADOPTED')):!['SA_SWORD_VERTICAL','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'].includes(id))))return fail('REAL_SLICE:RAPID_MORPH_TECHNIQUE_SCOPE_UNRESOLVED');
++  if(rapidMorphEntries.length&&(!rapidRule||rapidRule.status!=='OWNER_APPROVED_PROVISIONAL'||resolvedTechniqueIds.some(id=>weapon.kind==='charge-blade'?(!root.ChargeBladeEngine?.techniques?.[id]&&!(Object.hasOwn(root.MHSaedGuardRapidMorphRule?.predecessors||{},id)&&root.TechniqueDBEngine.get('charge-blade',id)?.phialReference?.status==='PROVISIONALLY_ADOPTED')):!['SA_SWORD_VERTICAL','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'].includes(id))))return fail('REAL_SLICE:RAPID_MORPH_TECHNIQUE_SCOPE_UNRESOLVED');
+   let ed1Rule=root.MHCBED1ResourceRule;
+   const dischargeRules=root.MHCBDischargeResourceRules,resourcePlans={};
+   const ed1Requested=weapon.kind==='charge-blade'&&resolvedTechniqueIds.some(id=>dischargeRules?.predecessors?.[id]);
+@@ -234,7 +234,7 @@
+   }
+   if(weapon.kind==='charge-blade'&&rapidMorphLevel>1){
+    const originPending=resolvedTechniqueIds.find(id=>['CB_SAED','CB_SAED_AED_DERIVED'].includes(id));
+-   if(originPending&&!(resolvedTechniqueIds.length===root.MHSaedGuardRapidMorphRule?.count&&originPending===root.MHSaedGuardRapidMorphRule.techniqueId&&chargeBladeState?.previousAction===root.MHSaedGuardRapidMorphRule.previousAction))return fail('REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED:'+originPending);
++   if(originPending&&!(resolvedTechniqueIds.length===root.MHSaedGuardRapidMorphRule?.count&&Object.hasOwn(root.MHSaedGuardRapidMorphRule.predecessors,originPending)&&chargeBladeState?.previousAction===root.MHSaedGuardRapidMorphRule.predecessors[originPending]))return fail('REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED:'+originPending);
+   }
+   if(weapon.kind==='charge-blade'&&resolvedTechniqueIds.includes('CB_SWORD_TO_AXE_MORPH')){
+    if(typeof chargeBladeState?.axeBoosted!=='boolean'||typeof chargeBladeState?.shieldBoosted!=='boolean')return fail('REAL_SLICE:CB_MORPH_SHIELD_AXE_STATE_REQUIRED');
+@@ -701,7 +701,7 @@
+ }
+ if(rapidMorphLevel>1){
+  const rule=root.MHSaedGuardRapidMorphRule;
+- if(parameters.sourceTechniqueId!==rule?.techniqueId||state.previousAction!==rule.previousAction||resolvedTechniqueIds.length!==rule.count)return {status:'unavailable',reason:'REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED'};
++ if(!Object.hasOwn(rule?.predecessors||{},parameters.sourceTechniqueId)||state.previousAction!==rule.predecessors[parameters.sourceTechniqueId]||resolvedTechniqueIds.length!==rule.count)return {status:'unavailable',reason:'REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED'};
+  bodyMind={...bodyMind,bodyAttackBasis:{...stats.attackComponents},bodyAttackMultiplier:(bodyMind.bodyAttackMultiplier??1)*rule.multiplierRule.multipliers[rapidMorphLevel],bodyAttackAdoption:{...bodyMind.bodyAttackAdoption,rapidMorph:{...rule,level:rapidMorphLevel}}};
+ }
+ r=root.ChargeBladeEngine.resolveTechniqueDamage(parameters.sourceTechniqueId,{...bodyMind,bodyHitAttackAdds:referencePunishingAdds(channel,parameters.sourceTechniqueId),bodyHitAffinityAdds:referenceDrawAdds(channel,parameters.sourceTechniqueId),baseAttack:Number(stats.attack),displayedElement:Number(stats.element||0),physicalHitzone:Number(part?.multipliers?.slash||0)*100,elementalHitzone:Number(build.elementType?part?.multipliers?.[build.elementType]||0:0)*100,sharpnessPhysical:sharp.sharpnessPhysicalMultiplier,sharpnessElement:sharp.sharpnessElementMultiplier,affinity:Number(stats.affinity),criticalMultiplier,negativeCriticalMultiplier:.75,elementCriticalMultiplier:build.equipment.criticalElementMultiplier,elementType:build.elementType||build.equipment?.elementType,elementKnown:true,typeKnown:true},state);}else if(kind==='bow'&&parameters.sourceTechniqueId==='BOW_THOUSAND_DRAGONS'){

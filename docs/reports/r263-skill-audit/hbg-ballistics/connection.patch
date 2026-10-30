@@ -1,0 +1,80 @@
+--- before/index.html
++++ after/index.html
+@@ -4251,10 +4251,10 @@
+ function hbgWyvernComboDamage(move,ctx){
+  const state=wyvernStoredState(),buffs=combatBuffState(),part=selectedPart();
+  const fireHitzone=part?(typeof part.multipliers?.fire==='number'?part.multipliers.fire*100:null):state.fireHitzone;
+- const total=calcState.total||{},allowed=['攻撃','Attack Boost','砲術','Artillery','火属性攻撃強化','Fire Attack','見切り','Critical Eye','超会心','Critical Boost'];
++ const total=calcState.total||{},allowed=['弾導強化','Ballistics','攻撃','Attack Boost','砲術','Artillery','火属性攻撃強化','Fire Attack','見切り','Critical Eye','超会心','Critical Boost'];
+  const unreviewedSkills=Object.keys(total).filter(name=>Number(total[name])>0&&!allowed.includes(name));
+  if(isArtia(selectedWeapon())||calcState.stats.activeBonusEffects?.length)throw Error('HBG_WYVERN:UNREVIEWED_WEAPON_OR_BONUS_EFFECT');
+- return window.HBGWyvernReference.calculate({...state,...buffs,fireHitzone,attackComponents:calcState.stats.attackComponents,artilleryLevel:skillLevel(total,['砲術','Artillery']),fireLevel:skillLevel(total,['火属性攻撃強化','Fire Attack']),unreviewedSkills},window.TechniqueDBEngine);
++ return window.HBGWyvernReference.calculate({...state,...buffs,fireHitzone,range:$('powerHbgRange')?.value||null,ballisticsLevel:skillLevel(total,['弾導強化','Ballistics']),attackComponents:calcState.stats.attackComponents,artilleryLevel:skillLevel(total,['砲術','Artillery']),fireLevel:skillLevel(total,['火属性攻撃強化','Fire Attack']),unreviewedSkills},window.TechniqueDBEngine);
+ }
+ function comboCBStoredState(){
+   const value=id=>$(id)?.value==='1'?true:$(id)?.value==='0'?false:null;
+@@ -5272,7 +5272,7 @@
+   const copy=value=>JSON.parse(JSON.stringify(value));
+   build.charmCustom=copy(x.charmCustom||build.charmCustom);build.artia=copy(x.artia||build.artia);build.decos=copy(x.decos||{});restoreCombatBuffState(x.combatBuffs);
+   if(!preserveCombo){$('wyvernMode').value=x.combo?.hbgWyvernState?.mode||'';$('wyvernFireHz').value=x.combo?.hbgWyvernState?.fireHitzone??'';}
+-  if(!preserveCombo){if(x.combo?.hbgReferenceState)restoreHbgReferenceState(x.combo.hbgReferenceState);else {if($('powerHbgElementType'))$('powerHbgElementType').value='';$('powerHbgContactPolicy').value='';$('powerHbgContactCount').value='';}}
++  if(!preserveCombo){if(x.combo?.hbgReferenceState)restoreHbgReferenceState(x.combo.hbgReferenceState);else {if($('powerHbgRange'))$('powerHbgRange').value='';if($('powerHbgElementType'))$('powerHbgElementType').value='';$('powerHbgContactPolicy').value='';$('powerHbgContactCount').value='';}}
+   if(!preserveCombo)restoreAttributeConversionState(x.combo?.attributeConversionState);
+   if(!preserveCombo)restoreExplicitAffinityState(x.combo?.explicitAffinityState);
+   if(!preserveCombo&&$('powerBlackEclipseState'))$('powerBlackEclipseState').value=x.combo?.blackEclipseState||'';
+@@ -6013,7 +6013,7 @@
+     const old=entries.HBG_WYVERN_AMMO;
+     entries.HBG_WYVERN_AMMO={...old,revision:old.revision+1,baselineGameVersion:null,currentVersionAudit:'PROVISIONAL_OWNER_MEASURED_GAME_VERSION_NUMBER_UNKNOWN',specialSourceValues:null,sourceScope:'OWNER_FIXED_TWO_HIT_PROVISIONAL_MODEL',unresolvedReasons:['GAME_VERSION_NUMBER_UNKNOWN','UNREVIEWED_BUFFS_AND_MODES_OUTSIDE_SCOPE','DISPLAY_ROUNDING_NOT_INTERNAL_VERIFIED'],verificationStatus:'PROVISIONAL',numericStatus:'PROVISIONALLY_ADOPTED',calculationStatus:'EVIDENCE_GATED',calculationScope:'TWO_HIT_PROVISIONAL_ONLY',specialComponents:[],excludedComponents:[],hits:[{mv:80,elementModifier:0,fireAttack:400,artilleryTarget:true,fireSkillTarget:false},{mv:19,elementModifier:0,fireAttack:200,artilleryTarget:false,fireSkillTarget:true}],replacedRecord:old,
+       evidenceRefs:['KAN23_OWNER_TWO_HIT_FIX_22_CONDITIONS'],historyEvidenceRefs:old.evidenceRefs,revisionHistory:[...(old.revisionHistory||[]),{decision:'OWNER_TWO_HIT_FIX',previousStructure:'FIVE_EXPLOSIONS_REJECTED_INSUFFICIENT_EVIDENCE',source:'docs/reports/hbg-wyvern-video/MEASURED_CASES_22.json',gameVersion:null}],
+-      wyvernRules:{shotSkills:TECHNIQUE_DB_R120_HBG_NORMAL.specialSourceValues.shotSkills,shotOrderAdoption:{status:'OWNER_APPROVED_PROVISIONAL',approvalRefs:['Sentinel_08816e42663481919a139f8b55ff86ef','Sentinel_1798a0cd242881918fc08f0003bfbefc'],source:'https://kuroyonhon.com/mhwilds/program/skill.php',gameVersion:null,liveGameVerification:'PENDING',physicalOrder:'BASE_MULTIPLIERS_THEN_ALL_FLATS_THEN_MV',secondFireOrder:'BASE_FIRE_MULTIPLIER_SHOT_MULTIPLIER_THEN_FIRE_FLAT',scope:'EXPLICIT_FIRST_FORCE_SHOT_ONLY'},adoptionStatus:'PROVISIONAL',gameVersion:null,supportedMode:'STANDARD',displayElementDivisor:10,artilleryMultipliers:[1,1.1,1.2,1.3],fireMultipliers:[1,1,1.1,1.2],fireFlats:[0,40,50,60],mealFlats:{NONE:0,AZUZ:5},charmFlats:{NO:0,YES:6},buffEvidence:'docs/reports/hbg-wyvern-video/FOOD_CHARM_CONFIRMATION.md',rounding:'ONE_DECIMAL_HALF_UP_REFERENCE',scope:'NO_UNREVIEWED_SKILLS_OR_OTHER_BUFFS'}};
++      wyvernRules:{ballisticsAdoption:{status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-30',skillId:53,level:3,range:'CRITICAL',coefficientSource:'MHCommonSkillDamageRules.ballistics.criticalRangeAttackAdds',physicalOrder:'BASE_MULTIPLIERS_ARTILLERY_THEN_ALL_FLATS_THEN_MV',fireAffected:false,evidence:'video-review-hbg-hm/READOUT.md',liveGameVerification:'DAMAGE_INCREASE_OBSERVED_ORDER_PROVISIONAL'},shotSkills:TECHNIQUE_DB_R120_HBG_NORMAL.specialSourceValues.shotSkills,shotOrderAdoption:{status:'OWNER_APPROVED_PROVISIONAL',approvalRefs:['Sentinel_08816e42663481919a139f8b55ff86ef','Sentinel_1798a0cd242881918fc08f0003bfbefc'],source:'https://kuroyonhon.com/mhwilds/program/skill.php',gameVersion:null,liveGameVerification:'PENDING',physicalOrder:'BASE_MULTIPLIERS_THEN_ALL_FLATS_THEN_MV',secondFireOrder:'BASE_FIRE_MULTIPLIER_SHOT_MULTIPLIER_THEN_FIRE_FLAT',scope:'EXPLICIT_FIRST_FORCE_SHOT_ONLY'},adoptionStatus:'PROVISIONAL',gameVersion:null,supportedMode:'STANDARD',displayElementDivisor:10,artilleryMultipliers:[1,1.1,1.2,1.3],fireMultipliers:[1,1,1.1,1.2],fireFlats:[0,40,50,60],mealFlats:{NONE:0,AZUZ:5},charmFlats:{NO:0,YES:6},buffEvidence:'docs/reports/hbg-wyvern-video/FOOD_CHARM_CONFIRMATION.md',rounding:'ONE_DECIMAL_HALF_UP_REFERENCE',scope:'NO_UNREVIEWED_SKILLS_OR_OTHER_BUFFS'}};
+   }
+   if(kind==='dual-blades')for(const id of ['DB_DEMON_DANCE_I','DB_DEMON_DANCE_II','DB_DEMON_DANCE_III']){
+     const r=entries[id];entries[id]={...r,hits:r.hits.map(h=>({...h,damageType:'slash',damageTypeSource:'https://kuroyonhon.com/mhwilds/memo/6.php:乱舞Ⅰ～Ⅲ',damageTypeStatus:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED'}))};
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -242,7 +242,7 @@
+   const resolveReferenceState=(referenceKind,id,technique,rawState)=>{
+    const state={...(rawState||{})},sourceState=technique?.specialSourceValues||{};
+    if(referenceKind==='heavy-bowgun-wyvern'){
+-    state.shotOrdinal=hbgState?.shotOrdinal;state.fullMagazine=hbgState?.fullMagazine;state.magazineCapacity=hbgState?.magazineCapacity;
++    state.range=hbgState?.range??null;state.shotOrdinal=hbgState?.shotOrdinal;state.fullMagazine=hbgState?.fullMagazine;state.magazineCapacity=hbgState?.magazineCapacity;
+     if((referenceSkills.firstShot>0||referenceSkills.forceShot>0)&&state.magazineCapacity!==weapon.ammo.find(x=>x.kind==='wyvern')?.capacity)throw Error('HBG_WYVERN:SHOT_CAPACITY_MISMATCH');
+    }else if(['heavy-bowgun-element','light-bowgun-element'].includes(referenceKind)){
+     if(referenceKind==='light-bowgun-element')state.elementType=String(state.ammoType||'').toLowerCase();
+@@ -564,7 +564,7 @@
+   const ballisticsLevel=Math.max(0,...allSkills.filter(x=>x.skillKey==='ballistics').map(x=>x.level));
+   if(!Number.isInteger(ballisticsLevel)||ballisticsLevel>3)return fail('BALLISTICS_LEVEL_INVALID');
+   const criticalRangeAttackAdd=root.MHCommonSkillDamageRules.ballistics.criticalRangeAttackAdds[ballisticsLevel];
+-  if(criticalRangeAttackAdd&&wyvernRequested)return fail('BALLISTICS_WYVERN_RANGE_SCOPE_UNRESOLVED');
++  // Wyvern range and physical-only bonus are validated by its dedicated consumer.
+   const maximumElement=Number(conditionPlan?.maximum?.element);
+   const provenance={sourceUrl:`https://wilds.mhdb.io/en/weapons/${weapon.id}`,sourceGameVersion:'UNKNOWN',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',targetGameVersion:versions.game,retrievedAt,apiVersion:'UNKNOWN'};
+   const normalizedChargeBladeState=chargeBladeState&&typeof chargeBladeState==='object'?{...chargeBladeState,shieldBoostAxeBodyMultiplier:root.ChargeBladeEngine?.shieldBoostAxeBodyMultiplier}:chargeBladeState;
+@@ -660,7 +660,7 @@
+  if(typeof root.HBGWyvernReference?.calculate!=='function')return {status:'unavailable',reason:'HBG_WYVERN:FORMULA_UNAVAILABLE'};
+  const fireHitzone=part?.multipliers?.fire;
+  if(!Number.isFinite(fireHitzone))return {status:'unavailable',reason:'HBG_WYVERN:FIRE_HITZONE_UNRESOLVED'};
+- const result=root.HBGWyvernReference.calculate({...state,...input.skills,fireHitzone:fireHitzone*100,attackComponents:stats.attackComponents,unreviewedSkills:[]},root.TechniqueDBEngine);
++ const result=root.HBGWyvernReference.calculate({...state,...input.skills,fireHitzone:fireHitzone*100,ballisticsLevel,attackComponents:stats.attackComponents,unreviewedSkills:[]},root.TechniqueDBEngine);
+  return {status:'available',value:result.total,details:result};
+ }else if(['heavy-bowgun-element','light-bowgun-element'].includes(kind)){
+  if(state.contacts!==undefined&&state.contactPolicy!=='EXPLICIT_CONTACTS')return {status:'unavailable',reason:'HBG_ELEMENT:EXPLICIT_CONTACT_POLICY_REQUIRED'};
+--- before/hbg-wyvern-reference.js
++++ after/hbg-wyvern-reference.js
+@@ -21,8 +21,13 @@
+  const attack=aggregateAttack(input.attackComponents,[{id:'meal',value:meal,source:rules.buffEvidence,status:'PROVISIONAL'},{id:'powercharm',value:charm,source:rules.buffEvidence,status:'PROVISIONAL'}]);
+  if(typeof root.BowgunNormalReference?.shotSkillBonuses!=='function')throw Error('HBG_WYVERN:SHOT_RESOLVER_UNAVAILABLE');
+  const shotSkills=root.BowgunNormalReference.shotSkillBonuses(input,input,rules.shotSkills);
+- const hits=record.hits.map(h=>{const physical=h.mv/100*(attack.multipliedBase*(h.artilleryTarget?am:1)+attack.skillFlat+attack.externalFlat+shotSkills.shotAttackAdd);const fireValue=h.fireSkillTarget?h.fireAttack*fm*shotSkills.shotElementMultiplier+ff:h.fireAttack;const element=fireValue/rules.displayElementDivisor*input.fireHitzone/100;return {fireValue,mv:h.mv,p:physical,e:element,total:physical+element,component:'RAW_AND_FIRE',criticalState:'NO_CRITICAL',artilleryTarget:h.artilleryTarget,fireSkillTarget:h.fireSkillTarget};});
+- return {shotSkills,shotOrderAdoption:rules.shotOrderAdoption,total:hits.reduce((n,h)=>n+h.total,0),hits,displayHits:hits.map(h=>Math.round((h.total+Number.EPSILON)*10)/10),attackComponents:attack,verificationStatus:'PROVISIONAL',adoptionStatus:'PROVISIONAL',evidenceRefs:record.evidenceRefs,scope:'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',gameVersion:rules.gameVersion};
++ const ballisticsLevel=input.ballisticsLevel??0,ballisticsRule=root.MHCommonSkillDamageRules?.ballistics;
++ if(!Number.isInteger(ballisticsLevel)||ballisticsLevel<0||ballisticsLevel>3)throw Error('HBG_WYVERN:BALLISTICS_LEVEL_INVALID');
++ if(ballisticsLevel===3&&(rules.ballisticsAdoption?.status!=='OWNER_APPROVED_PROVISIONAL'||input.range!=='CRITICAL'))throw Error('HBG_WYVERN:BALLISTICS_EXPLICIT_CRITICAL_RANGE_REQUIRED');
++ const ballisticsAttackAdd=ballisticsLevel===3?ballisticsRule?.criticalRangeAttackAdds?.[ballisticsLevel]:0;
++ if(!finite(ballisticsAttackAdd))throw Error('HBG_WYVERN:BALLISTICS_RULE_UNRESOLVED');
++ const hits=record.hits.map(h=>{const physical=h.mv/100*(attack.multipliedBase*(h.artilleryTarget?am:1)+attack.skillFlat+attack.externalFlat+shotSkills.shotAttackAdd+ballisticsAttackAdd);const fireValue=h.fireSkillTarget?h.fireAttack*fm*shotSkills.shotElementMultiplier+ff:h.fireAttack;const element=fireValue/rules.displayElementDivisor*input.fireHitzone/100;return {fireValue,mv:h.mv,p:physical,e:element,total:physical+element,component:'RAW_AND_FIRE',criticalState:'NO_CRITICAL',artilleryTarget:h.artilleryTarget,fireSkillTarget:h.fireSkillTarget};});
++ return {ballisticsAttackAdd,ballisticsRange:input.range??null,ballisticsAdoption:ballisticsLevel===3?rules.ballisticsAdoption:null,shotSkills,shotOrderAdoption:rules.shotOrderAdoption,total:hits.reduce((n,h)=>n+h.total,0),hits,displayHits:hits.map(h=>Math.round((h.total+Number.EPSILON)*10)/10),attackComponents:attack,verificationStatus:'PROVISIONAL',adoptionStatus:'PROVISIONAL',evidenceRefs:record.evidenceRefs,scope:'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',gameVersion:rules.gameVersion};
+ }
+ root.CombatAttackAggregation=Object.freeze({aggregate:aggregateAttack});root.HBGWyvernReference=Object.freeze({calculate});
+ })(typeof window==='undefined'?globalThis:window);

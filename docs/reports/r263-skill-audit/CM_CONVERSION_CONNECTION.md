@@ -1,0 +1,13 @@
+# GS CM + body conversion
+
+Adopted order: MHGreatSwordChargeMasterDB (owner Sentinel_b67c836659e4819188a37beddccd300a, memo/28.php) supplies GS Lv3 1.25 at element stage order25. Attribute conversion +180 and equipment thunder resistance×5 are existing flat effects order60. ELEMENT_CAP_RULE (owner Sentinel_55d857b4115c81919a1531bd3457ae8c, memo/31.php) caps after both, using original weapon element. No new numeric rule.
+
+Removed only gsChargeActive from the two conversion coexistence guards. CM pending is now removed from resolvedConditionPlan, not originalConditionPlan, so resolved conversion pending is not resurrected. Diagnostics read actual emitted element component inputs; effective/uncapped/cap values are common scalars only when all available elements agree and execution is complete. Missing/incomplete returns null, per-component values retained. No independent damage formula added.
+
+Public calcBuild contract: captured GS1081 structure, inherited165 removed for CM-only baseline, explicit custom skills, synthetic armor resistance70/150. Not legal real build proof. CM3 only gives element625. CM3+thunder conversion gives975 and1375 capped1150. One CM multiply/one conversion flat, physical unchanged. Saved A/B compare reproduces both channels and preserves snapshot/conditions. Dragon contract swaps element type only, CM3 with conversion3 OFF/ON gives625/805. No-cap basis changes or flat multiplication.
+
+Before raw output: both conversion combinations rejected; harness initially discovered fixture inherited165 even in nominal baseline, then isolated baseline explicitly. Final before run exit0 (exec61b705). Final after stdout/stderr/source hashes/exit0 are in cm-conversion-execution.json. Initial after failed only its negative UI-tech test because addCombo did not select an unsupported technique; retained initial files. Negative now uses captured public input at adapter boundary and asserts GS_CHARGE_MASTER_TECHNIQUE_NOT_ADOPTED. It is not reported as UI-to-Formula runtime for that unsupported technique. Product unchanged between those after attempts.
+
+Scope retained: adopted three GS techniques, dragon/thunder body only; group/conditional-element, special, SA and ammo conversion restrictions remain. No all14, new techniques, CI/Safari, commit/push. Classifications remain40 complete/37 partial/8 missing. This closes a coexistence path, not whole IDs24/152/165.
+
+ID8/103: existing read confirms referenceDrawCount fallback1 and explicit rejection for SAED reference. Need exact body-array mapping/contract; no change in this batch. Next-step table should read this entry as superseding the CM/152/165 unexamined item.

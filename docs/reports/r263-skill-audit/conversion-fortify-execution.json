@@ -1,0 +1,51 @@
+{
+  "scope": "ID150 resolved Fortify plan with conversions152/165 only",
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/conversion-fortify-proof.cjs <before|after>",
+  "runs": [
+    {
+      "mode": "before",
+      "exitCode": 0,
+      "toolChunk": "b53561",
+      "raw": "conversion-fortify-before.raw.json"
+    },
+    {
+      "mode": "after",
+      "exitCode": 1,
+      "toolChunk": "834168",
+      "reason": "Harness strict floating-point assertion",
+      "stderr": "conversion-fortify-float-assert.stderr.txt"
+    },
+    {
+      "mode": "after",
+      "exitCode": 1,
+      "toolChunk": "cf2ba4",
+      "reason": "Harness incorrectly expected shared Fortify count to restore from build snapshot",
+      "stderr": "conversion-fortify-shared-condition-assert.stderr.txt"
+    },
+    {
+      "mode": "after",
+      "exitCode": 0,
+      "toolChunk": "a93bc8",
+      "raw": "conversion-fortify-after.raw.json",
+      "stderr": "conversion-fortify-after.stderr.txt"
+    }
+  ],
+  "finalHashes": {
+    "index.html": "2b1c4cf351920e140bd4fcad5c204ce1a50cf7d47b0983becd4fc4c8bd6d9592",
+    "hope-hammer-browser-adapter.js": "2444cb65a894a2dcd0ebce670485505b1f2d06efa204c4bb7bc2fc01dea8c532",
+    "tools/conversion-fortify-proof.cjs": "8d4fc1007c48707b508195559a3ca5b031bf5a72e26e6dd32f6364121f6d57dc"
+  },
+  "limitations": [
+    "Synthetic contract armor; not legal equipment or game validation",
+    "Fortify count shared evaluation condition, not saved build field",
+    "Undefined count defaults to2 in existing producer; not newly introduced or separately executed",
+    "71/149/162 not changed; no all-weapon regression"
+  ],
+  "negative": {
+    "pending": [
+      "耐性変換【雷】:CONDITIONAL_DAMAGE_FORMULA_PENDING",
+      "不屈:FORTIFY_COUNT_UNRESOLVED"
+    ],
+    "reason": "REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED"
+  }
+}

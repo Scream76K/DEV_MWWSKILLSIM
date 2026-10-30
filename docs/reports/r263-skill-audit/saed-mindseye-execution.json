@@ -1,0 +1,54 @@
+{
+  "adoption": "Sentinel_11c1099a37508191ae33eacd6126c7f0",
+  "status": "OWNER_APPROVED_PROVISIONAL",
+  "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+  "liveGameVerification": "NOT_VERIFIED",
+  "hashes": {
+    "index.html": "44039900938d4a5454e85bc4c9e28ee1230ea9276829f6aded48a2ed18faabf1",
+    "hope-hammer-browser-adapter.js": "3139dc96d6fc8ad41932f5e9f87c36cafebfa9ff1c887dfbbfc3e8e2ceaf5013",
+    "./tools/saed-mindseye-proof.cjs": "479f4fffea86b20ca36906e5bb396cc79d7b93a2a06feeb5fda2ecaaeead0636"
+  },
+  "beforeHashes": {
+    "index.html": "7c4d1c30ed5ffc470bd9f17a87fd706b99efa837244b343dfcb34b36520d6c75",
+    "hope-hammer-browser-adapter.js": "7c7dc4216253244059ed35ff726f2287105ee836c460557cde01ac2465f4f3ee",
+    "./tools/saed-mindseye-proof.cjs": "14eaee808841ba97fe7e09cd2470249638672c8039dde6974ace2e0bbc805689"
+  },
+  "runs": [
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/saed-mindseye-proof.cjs before-fixed",
+      "stdout": "saed-mindseye-before-fixed.raw.json",
+      "stderr": "saed-mindseye-before-fixed.stderr.txt",
+      "exit": 0,
+      "chunk": "78dbdb",
+      "source": "pre-edit index/adapter snapshots in /tmp/saed-mindseye-before; unchanged other modules"
+    },
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/saed-mindseye-proof.cjs after",
+      "stdout": "saed-mindseye-final.raw.json",
+      "stderr": "saed-mindseye-final.stderr.txt",
+      "exit": 0,
+      "chunk": "8c9bbc"
+    }
+  ],
+  "retainedFailures": [
+    {
+      "stderr": "saed-mindseye-after.stderr.txt",
+      "exit": 1,
+      "cause": "Fixture Attack skill incorrectly selected ID2 (Spread); corrected using MHDB ID72. Initial before output not valid target proof."
+    },
+    {
+      "stderr": "saed-mindseye-after-fixed.stderr.txt",
+      "exit": 1,
+      "cause": "Save snapshot timestamp differs; switched to existing buildSnapshotComparable. Product and numeric assertions already passed."
+    }
+  ],
+  "diff": "saed-mindseye.patch",
+  "executionScope": "Synthetic CB_SAED + Attack5/Punishing3/Agitator1/MindsEye3; original slash44/45/current60 wounded, missing original; saved1 vs current public comparison",
+  "notExecuted": [
+    "CB_SAED_AED_DERIVED shared route static only",
+    "Other skill levels",
+    "Missing/inconsistent attack decomposition guard static only",
+    "Legal equipment and live game",
+    "all weapon regression"
+  ]
+}

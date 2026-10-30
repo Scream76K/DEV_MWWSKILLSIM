@@ -1,0 +1,20 @@
+--- a/hope-hammer-browser-adapter.js
++++ b/hope-hammer-browser-adapter.js
+@@ -363,10 +363,16 @@
+   const skillTotal=Object.fromEntries(Array.isArray(skills)?skills:[]);
+   const elementSpecial=elementSpecials[0], elementType=elementSpecial?.element||'none', elementRawValue=elementSpecial?.damage?.display??0;
+   const elementEntries=allSkills.filter(x=>x.skillKey===elementType),elementSkillNames={fire:'火属性攻撃強化',water:'水属性攻撃強化',thunder:'雷属性攻撃強化',ice:'氷属性攻撃強化',dragon:'龍属性攻撃強化'},elementSkillName=elementSkillNames[elementType],elementLevel=Math.max(...elementEntries.map(x=>x.level),0),elementRule=root.MHWElementSkillResolver&&elementSpecial?root.MHWElementSkillResolver(skillTotal,elementType):{add:0,mult:1},elementValue=elementSpecial?elementRawValue*(elementRule?.mult??1)+(elementRule?.add??0):0;  const attributeConversionLevel=Math.max(...allSkills.filter(x=>x.skillKey==='attributeConversion').map(x=>x.level),0),attributeRule=root.MHAttributeConversionRule,attributeState=conditions?.attributeConversionState;
+-  // Only adopted Guts/Veil/Omega or DB-defined series attack flats with a resolved, activation-checked plan may coexist here.
++  // Only adopted Guts/Veil/Omega/Black Eclipse or DB-defined series attack flats with a resolved, activation-checked plan may coexist here.
+   const conversionGroupPlan=stats.conditionalConditionPlan?.groupPlan,conversionSelfPlan=stats.conditionalConditionPlan?.selfStatePlan;
+   const conversionResistanceBonusesResolved=activeBonusEffects.length>0&&activeBonusEffects.every(e=>{
+    if([131,153,173].includes(e.bonusSkillId))return conversionGroupPlan?.applied?.some(a=>a.skillId===e.bonusSkillId&&a.skill===e.name);
++   if(e.bonusSkillId===106){
++    const rule=root.MHBlackEclipseRule,rank=e.rankLevel,required=rank===1?2:4,b=stats.conditionalConditionPlan?.blackEclipse;
++    if(!rule||![1,2].includes(rank)||e.bonusName!=='黒蝕竜の力'||e.name!=='黒蝕一体'+(rank===1?'Ⅰ':'Ⅱ')||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4)||!b||b.rank!==rank||!Number.isInteger(b.antivirusLevel)||!Object.hasOwn(rule.antivirusAdds,b.antivirusLevel))return false;
++    const applied=conversionGroupPlan?.applied?.filter(a=>a.skillId===106)||[],known=rule.states.includes(conditions.blackEclipseState),expectedAffinity=rule.overcomeAffinity+rule.antivirusAdds[b.antivirusLevel];
++    return applied.length===1&&applied[0].skill===e.name&&applied[0].rank===rank&&applied[0].attackAdd===rule.attackByRank[rank].OVERCOME&&applied[0].condition==='MAXIMUM_OVERCOME'&&b.maximumState==='OVERCOME'&&b.maximumAttackAdd===rule.attackByRank[rank].OVERCOME&&b.maximumAffinityAdd===expectedAffinity&&(known?b.normalState===conditions.blackEclipseState&&b.normalAttackAdd===rule.attackByRank[rank][b.normalState]&&b.normalAffinityAdd===(b.normalState==='OVERCOME'?expectedAffinity:0):b.normalState===null&&b.normalAttackAdd===null&&b.normalAffinityAdd===null);
++   }
+    const rule=root.MHSeriesActivationFlats?.[e.bonusSkillId],rank=e.rankLevel,required=rank===1?2:4;
+    if(!rule||![1,2].includes(rank)||e.bonusName!==rule.parent||e.name!==rule.prefix+(rank===1?'Ⅰ':'Ⅱ')||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4))return false;
+    const applied=conversionGroupPlan?.applied?.filter(a=>a.skillId===e.bonusSkillId)||[];

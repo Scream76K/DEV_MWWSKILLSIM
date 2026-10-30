@@ -1,0 +1,37 @@
+{
+  "status": "LOCAL_REVIEW_PENDING",
+  "commands": [
+    {
+      "command": "node tools/sa-followup-mind-proof.cjs before",
+      "stdout": "before.json",
+      "stderr": "before.stderr",
+      "exit": 0,
+      "note": "initial fixture prior to training override correction"
+    },
+    {
+      "command": "node tools/sa-followup-mind-proof.cjs after",
+      "stderr": "after-fixture-failure.stderr",
+      "exit": 1,
+      "note": "fixture wound source assertion failed"
+    },
+    {
+      "command": "node tools/sa-followup-mind-proof.cjs before",
+      "stdout": "before-corrected-fixture.json",
+      "stderr": "before-corrected-fixture.stderr",
+      "exit": 0,
+      "note": "saved prechange adapter, current metadata-only index"
+    },
+    {
+      "command": "node tools/sa-followup-mind-proof.cjs after",
+      "stdout": "after.json",
+      "stderr": "after.stderr",
+      "exit": 0
+    }
+  ],
+  "hashes": {
+    "index.html": "91156416806bc0d789095e8a68df2e58cf52212ea3cfef46e5f5eed908f5c010",
+    "hope-hammer-browser-adapter.js": "642a986f49a770a21ba69e1a7650df5d2422047a01a8d55452a5550878c0072e",
+    "./tools/sa-followup-mind-proof.cjs": "6579a440e2a3e52cbd876754e6b1775a4158aca3b95e3ad52982d20afc915134"
+  },
+  "logArithmeticCheck": "passed; no simulator rerun"
+}

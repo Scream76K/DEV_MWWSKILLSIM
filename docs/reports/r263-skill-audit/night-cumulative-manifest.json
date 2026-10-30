@@ -1,0 +1,364 @@
+{
+  "base": "9a0b99b43033b08146ce27ea366ecfa664590ce7",
+  "head": "9a0b99b43033b08146ce27ea366ecfa664590ce7",
+  "newExecution": true,
+  "classificationCounts": {
+    "火力非対象": 88,
+    "完全接続": 40,
+    "部分接続": 37,
+    "固定ダメージ系・注釈のみ": 6,
+    "欠落": 8
+  },
+  "product": {
+    "index.html": "84064a067e153267b14ca27644b60a50145c147805748d45df9c213d2c8911a1",
+    "hope-hammer-browser-adapter.js": "e8c769e807d0751c2729515e5a39e1b79e5e10976c0b524cff0043627c8ba85a",
+    "himmel-real-browser-bundle.js": "9f3499121bbbf0d17f2eaaea9ed615d73c1929dbaf75988f9f224c6268f13ff1"
+  },
+  "cumulativeProductDiff": {
+    "path": "docs/reports/r263-skill-audit/night-cumulative-product.patch",
+    "sha256": "033216a14927130f35906fb81cea513c475653cdc0a67f18f2a69bcd9c0cf6c4"
+  },
+  "evidenceGroups": {
+    "offensive_guard": [
+      {
+        "path": "docs/reports/r263-skill-audit/offensive-guard-public-before.json",
+        "sha256": "70308278fb8fb035171c42b6d5bcdfe17f4bae63d611d2869aae70ad9e4b56d6"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/offensive-guard-public-after.json",
+        "sha256": "5ab21831044439347c222c054f875c9b0a9f69c4608ef45f714af1731cdc6d00"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/offensive-guard-public-manifest.json",
+        "sha256": "6357a6b52e7a1d95999e0ae3b3f9812157dab67f026fc7b07d9ff96b92ea85a1"
+      }
+    ],
+    "normal_ammo": [
+      {
+        "path": "docs/reports/r263-skill-audit/normal-ammo-exclusion-before.json",
+        "sha256": "e80e40316f51f139caa374c8c62294e89619f8ed3643eb9c986003353d312655"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/normal-ammo-exclusion-after.json",
+        "sha256": "9f2b653edb6a3a1b2bb16cc7e2674faf79cd71de48e8153665af3daafbde49cb"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/normal-ammo-exclusion.patch",
+        "sha256": "678baea9e9c8bb74e477083519f7b83a0e1cb67047bd916fa88221fce18a9a34"
+      }
+    ],
+    "attribute_conversion": [
+      {
+        "path": "docs/reports/r263-skill-audit/attribute-conversion-cap-before.json",
+        "sha256": "407623660e1616cf9a47658d7f1c892f8a66ebeaa7148762a38d2b5ad10e1c66"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/attribute-conversion-cap-after.json",
+        "sha256": "f9026040eb0d6bdb838950dd6075dcd17fc7200214298e571f50bee4cd436cc5"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/attribute-conversion-cap-after.raw.json",
+        "sha256": "234b53b1bf11ac1e2b9d3c93b6ce1b0daac8aea6dfe0802fa4a323e384277276"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/attribute-conversion-cap-provenance.json",
+        "sha256": "386f856c65ce1ba448793991ba4dc730282035aae8b447e2375fa7373942dac3"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/attribute-conversion-cap-current.patch",
+        "sha256": "59f0e544ec2c8819bbb28c8e5d19a6ed3b7ae022bcbff8e59eada20c26e9ac24"
+      }
+    ],
+    "thunder_conversion": [
+      {
+        "path": "docs/reports/r263-skill-audit/thunder-conversion-cap-before.raw.json",
+        "sha256": "eb53fb2b6ac935ca2f19e4babdd1aa361c9fa1f8fe93538c1fe8137acd9ddde8"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/thunder-conversion-cap-after.raw.json",
+        "sha256": "f0b2a6081e2ce938e10c3977de94ea8e904239be5caebae508883f08afab3f75"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/thunder-conversion-cap-execution.json",
+        "sha256": "fdc484e186e4b6c32433c46491aa8c149427754d6ccdf685ea1762ee6669798d"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/thunder-conversion-cap.patch",
+        "sha256": "03fc209537d5a655d17c11c6b86cc020479b1c15604bd953bab7ece9312ec858"
+      }
+    ],
+    "cm_conversion": [
+      {
+        "path": "docs/reports/r263-skill-audit/cm-conversion-before.raw.json",
+        "sha256": "6d3acb5bba29935122714d2c6e2c7a682ef97f68d22506f9ebf2a8a3da9c3013"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/cm-conversion-after.raw.json",
+        "sha256": "e25484b8d8446488dff425c4b6c340827fe8dbae5f62d76f65f2b463cfec9dfc"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/cm-conversion-execution.json",
+        "sha256": "8f0d3969aaade75d4b056831b334825b41449b05e3691ccfaeb0f1cfe6bc1432"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/cm-conversion-initial-execution.json",
+        "sha256": "89d9c64f86a93082d63bd29ea263e87b78d9d68d6edd0f1f6136462832850993"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/cm-conversion.patch",
+        "sha256": "aaefdbf5732fdadd64c84b4954f568deadb9e9b83fe67f26ac979496f57f66a0"
+      }
+    ],
+    "saed_draw": [
+      {
+        "path": "docs/reports/r263-skill-audit/saed-draw-before.raw.json",
+        "sha256": "e5c06538d3ee1bf12e19cb1e9b512cae23fda2f613b60ae19c7dbbed56b30821"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/saed-draw-after.raw.json",
+        "sha256": "95187a94e6d574604ccdf5086da1c937b78c3868a847d4558893caad135bf128"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/saed-draw-execution.json",
+        "sha256": "9f593b42d2f0cd9c47aca667553a3bd7e94d7a01bdd48cfad3b0159845284d0d"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/saed-draw-output-check.json",
+        "sha256": "1cff587a6056c674765f1f4f90c0ca0c0ee66cba3a5540ba2f56dc69ae2d1804"
+      },
+      {
+        "path": "docs/reports/r263-skill-audit/saed-draw-body.patch",
+        "sha256": "ea95657d8db57b694f8c974aaeebd8eed65199e5c68b3324922386feb3c48a9d"
+      }
+    ]
+  },
+  "changedAndUntrackedFiles": [
+    {
+      "path": "docs/reports/r263-skill-audit/ADOPTED_CONSUMERS_2_6_7_24.md",
+      "sha256": "a698c6633ef05a8b304a03be463c7d00717cc485ab76541326312d59ccaa1f84"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/AFFINITY_SCOPE_STATIC_RECONCILIATION.md",
+      "sha256": "58bd0f38bb601776a5f31d65477b3d66b40555cec09cf44692cf947322382b67"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/ATTRIBUTE_CONVERSION_CAP_CONNECTION.md",
+      "sha256": "5152b40b3fb83ccb504dc814f51cff2a31c8691e1c10723a2141465acba0c117"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/CM_CONVERSION_CONNECTION.md",
+      "sha256": "adc1060e838bd2d72bdbc024b57c3322d3b4bea0753247362c913dc185cabac1"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/NIGHT_REMAINING_ROUTE_RECONCILIATION.md",
+      "sha256": "1204bede1e7c91c421ade6c3397510a56b021802bb3d8ce01d164a12c42a6336"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/NIGHT_SUMMARY.md",
+      "sha256": "ce5d4e91a53633c9776bde00c52fc07eb23f5a11db6eb8af49ff2b0171f9bc7b"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/NORMAL_AMMO_SKILL_EXCLUSIONS.md",
+      "sha256": "1194413fc4a965cac335af6fec856c71fe7a57b2f114f992a387eaa3f9822cc0"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/SAED_DRAW_BODY_CONNECTION.md",
+      "sha256": "5289109eb2f4346dacafe78861922d1c5b6a197bc4f5a05f344276a924be44cb"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/THUNDER_CONVERSION_CAP_CONNECTION.md",
+      "sha256": "889659cf84099c621f0f652bdc0616da284a9a2926199ed30eca0ace54be63d9"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/attribute-conversion-cap-after.json",
+      "sha256": "f9026040eb0d6bdb838950dd6075dcd17fc7200214298e571f50bee4cd436cc5"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/attribute-conversion-cap-after.raw.json",
+      "sha256": "234b53b1bf11ac1e2b9d3c93b6ce1b0daac8aea6dfe0802fa4a323e384277276"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/attribute-conversion-cap-before.json",
+      "sha256": "407623660e1616cf9a47658d7f1c892f8a66ebeaa7148762a38d2b5ad10e1c66"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/attribute-conversion-cap-current.patch",
+      "sha256": "59f0e544ec2c8819bbb28c8e5d19a6ed3b7ae022bcbff8e59eada20c26e9ac24"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/attribute-conversion-cap-provenance.json",
+      "sha256": "386f856c65ce1ba448793991ba4dc730282035aae8b447e2375fa7373942dac3"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/cm-conversion-after.raw.json",
+      "sha256": "e25484b8d8446488dff425c4b6c340827fe8dbae5f62d76f65f2b463cfec9dfc"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/cm-conversion-after.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/cm-conversion-before.raw.json",
+      "sha256": "6d3acb5bba29935122714d2c6e2c7a682ef97f68d22506f9ebf2a8a3da9c3013"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/cm-conversion-execution.json",
+      "sha256": "8f0d3969aaade75d4b056831b334825b41449b05e3691ccfaeb0f1cfe6bc1432"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/cm-conversion-initial-after.raw.json",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/cm-conversion-initial-after.stderr.txt",
+      "sha256": "e932c948c329d875b23781b631a9727c2bde83baea184505b2f262bdc12a3177"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/cm-conversion-initial-execution.json",
+      "sha256": "89d9c64f86a93082d63bd29ea263e87b78d9d68d6edd0f1f6136462832850993"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/cm-conversion.patch",
+      "sha256": "aaefdbf5732fdadd64c84b4954f568deadb9e9b83fe67f26ac979496f57f66a0"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/night-cumulative-product.patch",
+      "sha256": "033216a14927130f35906fb81cea513c475653cdc0a67f18f2a69bcd9c0cf6c4"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/night-integrated-smoke.raw.json",
+      "sha256": "76f9a20b1d00c32ace43221e7c9a9770806d8c8aa33fa72b5ec396342eba0c16"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/night-integrated-smoke.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/normal-ammo-exclusion-after.json",
+      "sha256": "9f2b653edb6a3a1b2bb16cc7e2674faf79cd71de48e8153665af3daafbde49cb"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/normal-ammo-exclusion-before.json",
+      "sha256": "e80e40316f51f139caa374c8c62294e89619f8ed3643eb9c986003353d312655"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/normal-ammo-exclusion.patch",
+      "sha256": "678baea9e9c8bb74e477083519f7b83a0e1cb67047bd916fa88221fce18a9a34"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/offensive-guard-public-after.json",
+      "sha256": "5ab21831044439347c222c054f875c9b0a9f69c4608ef45f714af1731cdc6d00"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/offensive-guard-public-before.json",
+      "sha256": "70308278fb8fb035171c42b6d5bcdfe17f4bae63d611d2869aae70ad9e4b56d6"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/offensive-guard-public-manifest.json",
+      "sha256": "6357a6b52e7a1d95999e0ae3b3f9812157dab67f026fc7b07d9ff96b92ea85a1"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/saed-draw-after.raw.json",
+      "sha256": "95187a94e6d574604ccdf5086da1c937b78c3868a847d4558893caad135bf128"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/saed-draw-after.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/saed-draw-before.raw.json",
+      "sha256": "e5c06538d3ee1bf12e19cb1e9b512cae23fda2f613b60ae19c7dbbed56b30821"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/saed-draw-body.patch",
+      "sha256": "ea95657d8db57b694f8c974aaeebd8eed65199e5c68b3324922386feb3c48a9d"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/saed-draw-execution.json",
+      "sha256": "9f593b42d2f0cd9c47aca667553a3bd7e94d7a01bdd48cfad3b0159845284d0d"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/saed-draw-output-check.json",
+      "sha256": "1cff587a6056c674765f1f4f90c0ca0c0ee66cba3a5540ba2f56dc69ae2d1804"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/skill-matrix.json",
+      "sha256": "d8fe2e64f8b82018c9245b1beeb667660a695d1171457da4adefab75d9d74bc1"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/thunder-conversion-cap-after.raw.json",
+      "sha256": "f0b2a6081e2ce938e10c3977de94ea8e904239be5caebae508883f08afab3f75"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/thunder-conversion-cap-after.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/thunder-conversion-cap-before.raw.json",
+      "sha256": "eb53fb2b6ac935ca2f19e4babdd1aa361c9fa1f8fe93538c1fe8137acd9ddde8"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/thunder-conversion-cap-execution.json",
+      "sha256": "fdc484e186e4b6c32433c46491aa8c149427754d6ccdf685ea1762ee6669798d"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/thunder-conversion-cap.patch",
+      "sha256": "03fc209537d5a655d17c11c6b86cc020479b1c15604bd953bab7ece9312ec858"
+    },
+    {
+      "path": "hope-hammer-browser-adapter.js",
+      "sha256": "e8c769e807d0751c2729515e5a39e1b79e5e10976c0b524cff0043627c8ba85a"
+    },
+    {
+      "path": "index.html",
+      "sha256": "84064a067e153267b14ca27644b60a50145c147805748d45df9c213d2c8911a1"
+    },
+    {
+      "path": "tools/attribute-conversion-cap-connection-proof.cjs",
+      "sha256": "4047672b0248be9a366cfece1857cd2be549d9e5358bd5d347e5fcfc1fbe8a95"
+    },
+    {
+      "path": "tools/charge-master-conversion-connection-proof.cjs",
+      "sha256": "61822fc2b07b17cbcb05621d1f0a4270375cb1b9c49721e32aa4229694decfa5"
+    },
+    {
+      "path": "tools/night-integrated-smoke.cjs",
+      "sha256": "165bbb285e0e5a2b2c4694a71c7f9eb096b626e9e34f8205849666b9e78c76d1"
+    },
+    {
+      "path": "tools/saed-draw-body-hit-proof.cjs",
+      "sha256": "87c67c0f9e167b09b38adee5380493b55d2fc2c95a33ea78d006431bc6eecf9f"
+    },
+    {
+      "path": "tools/skill-normal-ammo-exclusion-proof.cjs",
+      "sha256": "38563ffc4e21c36a658c061465d23994ddf109a289a28a0ef40c44a9a1920454"
+    },
+    {
+      "path": "tools/skill-offensive-guard-public-proof.cjs",
+      "sha256": "5510be4d8779ac0d4001159fd8bcca0f9d7657ac40dfc8946553823d5247fab7"
+    },
+    {
+      "path": "tools/thunder-conversion-cap-connection-proof.cjs",
+      "sha256": "5cebcb736e9dd81c4bd175af747048d37d526a771eff1f860d13b6c66c15da42"
+    }
+  ],
+  "scope": "Historical executions retain their own hashes. integratedSmoke is the only new final-source execution and covers four representative routes, not all product conditions.",
+  "integratedSmoke": {
+    "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/night-integrated-smoke.cjs > docs/reports/r263-skill-audit/night-integrated-smoke.raw.json 2> docs/reports/r263-skill-audit/night-integrated-smoke.stderr.txt",
+    "cwd": "external-evidence/task-20261025/stage2-hit-hitzone",
+    "exitCode": 0,
+    "toolChunkId": "488fcc",
+    "sourceHashes": {
+      "index.html": "84064a067e153267b14ca27644b60a50145c147805748d45df9c213d2c8911a1",
+      "hope-hammer-browser-adapter.js": "e8c769e807d0751c2729515e5a39e1b79e5e10976c0b524cff0043627c8ba85a",
+      "himmel-real-browser-bundle.js": "9f3499121bbbf0d17f2eaaea9ed615d73c1929dbaf75988f9f224c6268f13ff1",
+      "./tools/night-integrated-smoke.cjs": "165bbb285e0e5a2b2c4694a71c7f9eb096b626e9e34f8205849666b9e78c76d1"
+    },
+    "files": {
+      "tools/night-integrated-smoke.cjs": "165bbb285e0e5a2b2c4694a71c7f9eb096b626e9e34f8205849666b9e78c76d1",
+      "docs/reports/r263-skill-audit/night-integrated-smoke.raw.json": "76f9a20b1d00c32ace43221e7c9a9770806d8c8aa33fa72b5ec396342eba0c16",
+      "docs/reports/r263-skill-audit/night-integrated-smoke.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "scope": "Four representative calcBuild OFF/ON contrasts; saved A/B reused from prior evidence, not rerun; not full regression"
+  }
+}

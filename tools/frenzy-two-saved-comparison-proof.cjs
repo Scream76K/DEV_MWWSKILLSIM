@@ -1,0 +1,28 @@
+const fs=require('fs'),assert=require('node:assert/strict'),cp=require('node:child_process'),crypto=require('node:crypto');
+const {JSDOM,VirtualConsole}=require('jsdom');
+const f=JSON.parse(fs.readFileSync('docs/reports/r257-thunder-conversion/fixture.json'));assert.equal(f.weapon.id,1081);assert.equal(f.decoration.skills[0].skill.id,156);assert.ok(f.weapon.slots[0]>=f.decoration.slot);assert.ok(f.armor.slots[0]>=f.decoration.slot);
+const vc=new VirtualConsole(),errors=[];vc.on('jsdomError',e=>errors.push(e.message));const dom=new JSDOM(require('./dom-test-setup.cjs').readSimulatorHtml(),{url:'https://simulator.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('offline'));w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));w.confirm=()=>true;}}),w=dom.window;
+w.eval(`clearWeaponBuckets();DB.weapons=[${JSON.stringify(f.weapon)}];DB.decorations=[${JSON.stringify(f.decoration)}];DB.skills=${JSON.stringify(f.skills)};DB.armor=[${JSON.stringify(f.armor)}];weaponIndexByKind['great-sword']=DB.weapons;weaponKind.value='great-sword';weapon.innerHTML='<option value="1081">ラギアブレイドⅠ</option>';weapon.value='1081';App.build.setWeapon(DB.weapons[0]);build.armor={head:null,chest:null,arms:null,waist:null,legs:null};build.charmCustom={skills:[],slots:[0,0,0],weaponSlots:[]};renderMonsters();monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';renderComboForWeapon();App.state.combo.moves=[];restoreComboRows();addCombo('canonical:GS_CHARGED_SLASH_3');`);
+
+// Contract armor records, not a claim that these resistance totals occur on a real item.
+w.eval(`DB.skills=${fs.readFileSync('docs/reports/r263-skill-audit/mhdb-skills.json','utf8')};DB.armor=[70,150].map((v,i)=>({...DB.armor[0],id:900001+i,name:'Contract thunder '+v,resistances:{...DB.armor[0].resistances,thunder:v}}));`);
+w.eval(`DB.weapons[0].skills=DB.weapons[0].skills.filter(x=>x.skill.id!==165);build.charmCustom={skills:[{name:'チャージマスター',level:3}],slots:[0,0,0],weaponSlots:[]};`);
+let captured;const adapter=w.MHWRealOneHitBrowserAdapter;w.MHWRealOneHitBrowserAdapter={...adapter,evaluateCurrent(a){captured=a;return adapter.evaluateCurrent(a)}};
+
+const mode=process.argv[2],cases=[];
+w.eval(`DB.weapons[0].skills=[];const baseArmor=DB.armor[0];DB.armor=[];for(const [g,value] of [10,10].entries())for(const [i,kind] of ['head','chest','arms','waist'].entries()){DB.armor.push({...baseArmor,id:980000+g*10+i,kind,skills:[106].map(id=>{const skill=DB.skills.find(x=>x.id===id);return {...skill.ranks[0],skill};}),resistances:{fire:0,water:0,thunder:i===0?value:0,ice:0,dragon:0}});}const dragon=JSON.parse(JSON.stringify(DB.weapons[0]));dragon.id=999002;dragon.gameId=999002;dragon.specials[0].element='dragon';DB.weapons.push(dragon);weapon.innerHTML+='<option value="999002">Dragon contract</option>';`);
+const take=()=>JSON.parse(w.eval('JSON.stringify({real:calcState.realOneHit,stats:calcState.stats,snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot()})'));
+
+
+
+const saved=[];
+for(const [name,black] of [['without-black',false],['with-black',true]]){
+ w.eval(`build.armor=${black?'{head:DB.armor[0],chest:DB.armor[1],arms:DB.armor[2],waist:DB.armor[3],legs:null}':'{head:null,chest:null,arms:null,waist:null,legs:null}'};build.charmCustom.skills=[{name:'無我の境地',level:3}];powerBlackEclipseState.value='BEFORE';calcBuild();buildName.value='${name}';saveNamedBuild();`);saved.push({name,...take()});
+}
+w.eval(`powerBlackEclipseState.value='OVERCOME';calcBuild();`);const current=take(),storedBefore=JSON.parse(w.eval('JSON.stringify(savedBuildMap())'));
+w.eval("document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true);runBuildCompare();");
+const rows=JSON.parse(w.eval('JSON.stringify(lastBuildComparisonRows.map(x=>({name:x.name,real:x.oneHitPipeline})))')),storedAfter=JSON.parse(w.eval('JSON.stringify(savedBuildMap())'));
+assert.equal(rows.length,2);assert.deepEqual(storedAfter,storedBefore);assert.deepEqual(take(),current);
+for(const row of rows){for(const channel of ['normal','maximum']){const c=row.real.channels[channel];assert.equal(c.execution.status,'complete');assert.equal(c.metrics.comboTotalDamage.value,row.name==='with-black'?1293.79:1210.15);const aff=c.effectPlan.effects.filter(e=>e.target==='physical'&&e.stage==='affinity'&&e.operation==='add').reduce((n,e)=>n+e.amount,0);assert.equal(aff,25);}assert.ok(row.real.conditionKey.includes('OVERCOME'));}
+for(const value of Object.values(storedAfter))assert.equal(value.combo.blackEclipseState,'BEFORE');
+console.log(JSON.stringify({saved,rows,current,storedBefore,storedAfter,assertions:{twoDistinctSavedBuilds:true,sharedOvercomeBoth:true,savedBeforeStatesUnchanged:true,activeRestored:true},scope:'Single two-saved-build JSDOM public comparison; synthetic GS/BlackII, no other reruns',hashes:Object.fromEntries(['index.html','hope-hammer-browser-adapter.js',__filename].map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')]))},null,2));w.close();

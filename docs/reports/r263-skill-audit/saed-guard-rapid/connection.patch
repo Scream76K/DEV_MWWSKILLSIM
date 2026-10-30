@@ -1,0 +1,45 @@
+--- before/index.html
++++ after/index.html
+@@ -5428,6 +5428,7 @@
+ });
+ const RAPID_MORPH_ATTACK_RULE=Object.freeze({skillId:7,multipliers:Object.freeze([1,1,1.1,1.2]),stage:'attack',target:'physical',status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25T23:53:00Z',source:'https://kuroyonhon.com/mhwilds/memo/26.php',sourceVersion:'UNSPECIFIED',liveGameVerification:'PENDING',unconnectedScope:Object.freeze(['SA_AXE_SWEEP_MORPH_ALL_HITS','SA_FOCUS_MORPH_WOUND_TRANSFORM_HITS','CB_CHARGE_DERIVED_ED1','CB_SHIELD_THRUST_OR_GUARD_DERIVED_AED','CB_GUARD_DERIVED_SAED','CB_ELEMENT_SPIN_AXE_BOOST','CB_ELIGIBLE_AXE_FOLLOWUP','CORRUPTED_MANTLE_FOLLOWUP']),excludedScope:Object.freeze(['SA_FOLLOWUP_EXPLOSION','CB_PHIAL_EXPLOSION']),techniqueIds:Object.freeze(['CB_SWORD_TO_AXE_MORPH','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'])});
+ window.MHRapidMorphAttackRule=RAPID_MORPH_ATTACK_RULE;
++window.MHSaedGuardRapidMorphRule=Object.freeze({techniqueId:'CB_SAED',previousAction:'GUARD',count:1,component:'BODY_THREE_HITS_PHYSICAL_ONLY',multiplierRule:RAPID_MORPH_ATTACK_RULE,status:'OWNER_APPROVED_PROVISIONAL',approval:'2026-10-30_GUARD_SAED_SINGLE_BODY',source:RAPID_MORPH_ATTACK_RULE.source,sourceVersion:'UNSPECIFIED',liveGameVerification:'PENDING',excluded:['BODY_ELEMENT','PHIAL','DRAW_FLAT','AED_DERIVED']});
+ function rapidMorphBodyAttack(attack,components,multiplier){
+  if(multiplier===1)return attack;
+  if(!components||!['weaponBase','normalMultiplier','normalFlat'].every(k=>Number.isFinite(components[k])))throw Error('RAPID_MORPH:ATTACK_COMPONENTS_REQUIRED');
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -207,7 +207,7 @@
+   const rapidRule=root.MHRapidMorphAttackRule;
+   const rapidMorphEntries=allSkills.filter(x=>x.skillKey==='rapidMorph'),rapidMorphLevel=Math.max(0,...rapidMorphEntries.map(x=>x.level));
+   if(rapidMorphEntries.length&&(!['charge-blade','switch-axe'].includes(weapon.kind)||rapidMorphEntries.some(x=>Number(x.skillId)!==7||!Number.isInteger(x.level)||x.level<1||x.level>3)))return fail('REAL_SLICE:RAPID_MORPH_SCOPE_OR_LEVEL_UNRESOLVED');
+-  if(rapidMorphEntries.length&&(!rapidRule||rapidRule.status!=='OWNER_APPROVED_PROVISIONAL'||resolvedTechniqueIds.some(id=>weapon.kind==='charge-blade'?!root.ChargeBladeEngine?.techniques?.[id]:!['SA_SWORD_VERTICAL','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'].includes(id))))return fail('REAL_SLICE:RAPID_MORPH_TECHNIQUE_SCOPE_UNRESOLVED');
++  if(rapidMorphEntries.length&&(!rapidRule||rapidRule.status!=='OWNER_APPROVED_PROVISIONAL'||resolvedTechniqueIds.some(id=>weapon.kind==='charge-blade'?(!root.ChargeBladeEngine?.techniques?.[id]&&!(id===root.MHSaedGuardRapidMorphRule?.techniqueId&&root.TechniqueDBEngine.get('charge-blade',id)?.phialReference?.status==='PROVISIONALLY_ADOPTED')):!['SA_SWORD_VERTICAL','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'].includes(id))))return fail('REAL_SLICE:RAPID_MORPH_TECHNIQUE_SCOPE_UNRESOLVED');
+   let ed1Rule=root.MHCBED1ResourceRule;
+   const dischargeRules=root.MHCBDischargeResourceRules,resourcePlans={};
+   const ed1Requested=weapon.kind==='charge-blade'&&resolvedTechniqueIds.some(id=>dischargeRules?.predecessors?.[id]);
+@@ -234,7 +234,7 @@
+   }
+   if(weapon.kind==='charge-blade'&&rapidMorphLevel>1){
+    const originPending=resolvedTechniqueIds.find(id=>['CB_SAED','CB_SAED_AED_DERIVED'].includes(id));
+-   if(originPending)return fail('REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED:'+originPending);
++   if(originPending&&!(resolvedTechniqueIds.length===root.MHSaedGuardRapidMorphRule?.count&&originPending===root.MHSaedGuardRapidMorphRule.techniqueId&&chargeBladeState?.previousAction===root.MHSaedGuardRapidMorphRule.previousAction))return fail('REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED:'+originPending);
+   }
+   if(weapon.kind==='charge-blade'&&resolvedTechniqueIds.includes('CB_SWORD_TO_AXE_MORPH')){
+    if(typeof chargeBladeState?.axeBoosted!=='boolean'||typeof chargeBladeState?.shieldBoosted!=='boolean')return fail('REAL_SLICE:CB_MORPH_SHIELD_AXE_STATE_REQUIRED');
+@@ -698,7 +698,13 @@
+  if(!Number.isFinite(original))return {status:'unavailable',reason:'CB_SAED:ORIGINAL_HITZONE_UNRESOLVED'};
+  const basis=stats.attackComponents;if(!basis||!['weaponBase','normalMultiplier','normalFlat'].every(k=>typeof basis[k]==='number'&&Number.isFinite(basis[k]))||Math.abs(basis.weaponBase*basis.normalMultiplier+basis.normalFlat-stats.attack)>1e-7)return {status:'unavailable',reason:'CB_SAED:BODY_ATTACK_COMPONENTS_INCONSISTENT'};
+  bodyMind={bodyAttackBasis:{...basis},bodyAttackMultiplier:original*100<=rule.multiplierRule.originalHitzoneMaximum?rule.multiplierRule.multipliers[mindEntry.level]:1,bodyAttackAdoption:{...rule,originalSlashHitzone:original*100,currentSlashHitzone:part.multipliers.slash*100}};
+-}r=root.ChargeBladeEngine.resolveTechniqueDamage(parameters.sourceTechniqueId,{...bodyMind,bodyHitAttackAdds:referencePunishingAdds(channel,parameters.sourceTechniqueId),bodyHitAffinityAdds:referenceDrawAdds(channel,parameters.sourceTechniqueId),baseAttack:Number(stats.attack),displayedElement:Number(stats.element||0),physicalHitzone:Number(part?.multipliers?.slash||0)*100,elementalHitzone:Number(build.elementType?part?.multipliers?.[build.elementType]||0:0)*100,sharpnessPhysical:sharp.sharpnessPhysicalMultiplier,sharpnessElement:sharp.sharpnessElementMultiplier,affinity:Number(stats.affinity),criticalMultiplier,negativeCriticalMultiplier:.75,elementCriticalMultiplier:build.equipment.criticalElementMultiplier,elementType:build.elementType||build.equipment?.elementType,elementKnown:true,typeKnown:true},state);}else if(kind==='bow'&&parameters.sourceTechniqueId==='BOW_THOUSAND_DRAGONS'){
++}
++if(rapidMorphLevel>1){
++ const rule=root.MHSaedGuardRapidMorphRule;
++ if(parameters.sourceTechniqueId!==rule?.techniqueId||state.previousAction!==rule.previousAction||resolvedTechniqueIds.length!==rule.count)return {status:'unavailable',reason:'REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED'};
++ bodyMind={...bodyMind,bodyAttackBasis:{...stats.attackComponents},bodyAttackMultiplier:(bodyMind.bodyAttackMultiplier??1)*rule.multiplierRule.multipliers[rapidMorphLevel],bodyAttackAdoption:{...bodyMind.bodyAttackAdoption,rapidMorph:{...rule,level:rapidMorphLevel}}};
++}
++r=root.ChargeBladeEngine.resolveTechniqueDamage(parameters.sourceTechniqueId,{...bodyMind,bodyHitAttackAdds:referencePunishingAdds(channel,parameters.sourceTechniqueId),bodyHitAffinityAdds:referenceDrawAdds(channel,parameters.sourceTechniqueId),baseAttack:Number(stats.attack),displayedElement:Number(stats.element||0),physicalHitzone:Number(part?.multipliers?.slash||0)*100,elementalHitzone:Number(build.elementType?part?.multipliers?.[build.elementType]||0:0)*100,sharpnessPhysical:sharp.sharpnessPhysicalMultiplier,sharpnessElement:sharp.sharpnessElementMultiplier,affinity:Number(stats.affinity),criticalMultiplier,negativeCriticalMultiplier:.75,elementCriticalMultiplier:build.equipment.criticalElementMultiplier,elementType:build.elementType||build.equipment?.elementType,elementKnown:true,typeKnown:true},state);}else if(kind==='bow'&&parameters.sourceTechniqueId==='BOW_THOUSAND_DRAGONS'){
+  const result=root.BowReference.thousandDragons({attack:Number(stats.attack),affinity:Number(stats.affinity),criticalMultiplier,element:Number(stats.element),specialAmmoLevel:Math.max(0,...specialAmmoEntries.map(x=>x.level)),pierceUpLevel:Math.max(0,...thousandPierceEntries.map(x=>x.level)),state,physicalHitzone:Number(part?.multipliers?.pierce)*100},root.TechniqueDBEngine);
+  return {status:'available',value:result.total,details:result};
+ }else if(kind==='bow'){if(typeof root.BowReference?.technique!=='function')return {status:'unavailable',reason:'REAL_SLICE:BOW_REFERENCE_UNAVAILABLE'};const hz=part?.multipliers?.pierce,ehz=build.elementType?part?.multipliers?.[build.elementType]:0;if(!Number.isFinite(hz)||Number(build.element||0)>0&&!Number.isFinite(ehz))return {status:'unavailable',reason:'REAL_SLICE:RANGED_HITZONE_UNRESOLVED'};const bowSkills=input.skills||{},fixedIds=root.TechniqueDBEngine.get('bow','BOW_STATE_MODIFIERS')?.specialSourceValues?.skillRules?.bladescaleLoading?.techniqueIds;

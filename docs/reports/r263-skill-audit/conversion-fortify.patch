@@ -1,0 +1,24 @@
+--- before/index.html
++++ after/index.html
+@@ -7072,6 +7072,7 @@
+  '連撃強化Ⅰ':{parent:'兇爪竜の力',source:'series',required:2,rankLevel:1,attackAdd:8,condition:'BURST_PREACTIVATED_FIVE_HITS'},
+  '連撃強化Ⅱ':{parent:'兇爪竜の力',source:'series',required:4,rankLevel:2,attackAdd:18,condition:'BURST_PREACTIVATED_FIVE_HITS'}
+ });
++window.MHFortifySource=STANDARD_FORTIFY_SOURCE;
+ window.MHNamedBonusFlatRules=Object.freeze({group:STANDARD_GROUP_POWER_RULES,series:STANDARD_SERIES_POWER_RULES});
+ const STANDARD_DARK_ARTS_BODY_SOURCE=techniqueDbDeepFreeze({url:'https://kuroyonhon.com/mhwilds/program/skill.php',retrievedAt:'2026-10-07',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',supportedKinds:['great-sword','long-sword','sword-and-shield','dual-blades','hammer','lance','switch-axe'],highMultiplierKinds:['great-sword','hammer','hunting-horn'],highMultiplier:1.2,otherMultiplier:1.14,scope:'GENERIC_BODY_WITH_GS_NORMAL_WAVE_BRIDGE'});
+ const STANDARD_SERIES_ACTIVATION_FLATS=techniqueDbDeepFreeze({
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -383,6 +383,11 @@
+     const enabled=!series||level>0;
+     return a.skill===e.name&&a.parent===e.bonusName&&a.rank===e.rankLevel&&a.attackAdd===(enabled?rule.attackAdd:0)&&a.attackMultiplier===1&&a.appliesToNormal===false&&a.condition===(enabled?rule.condition:'BURST_INACTIVE_OR_UNRESOLVED');
+    }
++   if(e.bonusSkillId===150){
++    const rule=root.MHNamedBonusFlatRules?.group?.[e.name],source=root.MHFortifySource,rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===150)||[],a=rows[0],count=conditions.fortifyCount===undefined?source?.maximumDeathCount:conditions.fortifyCount;
++    if(e.name!=='不屈'||!rule||!source||e.bonusName!==rule.parent||e.source!=='group'||e.rankLevel!==1||e.required!==3||!Number.isInteger(e.count)||e.count<3||rows.length!==1||!Number.isInteger(count)||count<0||count>source.maximumDeathCount||stats.conditionalConditionPlan?.pending?.some(x=>x.startsWith('不屈:')))return false;
++    return a.skill===e.name&&a.parent===e.bonusName&&a.rank===1&&a.attackAdd===0&&a.attackMultiplier===1&&a.appliesToNormal===false&&a.maximumDeathCount===count&&a.maximumAttackMultiplier===source.attackMultipliers[count]&&a.stackingScope==='BASE_TIMES_MULTIPLIERS_THEN_FLATS'&&a.condition===(count===0?'NO_FAINTS':count===1?'FAINTED_ONCE_PREACTIVATED':'FAINTED_TWICE_PREACTIVATED');
++   }
+    if(e.bonusSkillId===106){
+     const rule=root.MHBlackEclipseRule,rank=e.rankLevel,required=rank===1?2:4,b=stats.conditionalConditionPlan?.blackEclipse;
+     if(!rule||![1,2].includes(rank)||e.bonusName!=='黒蝕竜の力'||e.name!=='黒蝕一体'+(rank===1?'Ⅰ':'Ⅱ')||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4)||!b||b.rank!==rank||!Number.isInteger(b.antivirusLevel)||!Object.hasOwn(rule.antivirusAdds,b.antivirusLevel))return false;

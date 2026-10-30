@@ -1,0 +1,34 @@
+const fs=require('fs'),assert=require('node:assert/strict'),crypto=require('crypto');
+const {JSDOM,VirtualConsole}=require('jsdom');
+const mode=process.argv[2],f=JSON.parse(fs.readFileSync('docs/reports/r257-thunder-conversion/fixture.json')),cb=JSON.parse(fs.readFileSync('docs/reports/r253-saed-loading/fixture.json'));
+const d=new JSDOM(require('./dom-test-setup.cjs').readSimulatorHtml(),{url:'https://proof.test/',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){w.fetch=()=>Promise.reject(Error('offline'));w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));w.confirm=()=>true;}}),w=d.window;
+w.eval(`clearWeaponBuckets();DB.weapons=[${JSON.stringify(f.weapon)},${JSON.stringify(cb.weapon)}];DB.skills=${fs.readFileSync('docs/reports/r263-skill-audit/mhdb-skills.json','utf8')};DB.decorations=[];const ar=${JSON.stringify(f.armor)};DB.armor=['head','chest','arms','waist'].map((kind,i)=>{const sk=DB.skills.find(x=>x.id===178);return {...ar,id:989000+i,kind,skills:[{...sk.ranks[0],skill:sk}],resistances:{fire:0,water:0,thunder:0,ice:0,dragon:0}};});for(const x of DB.weapons){x.skills=[];x.specials=[{kind:'element',element:'fire',damage:{raw:30,display:300}}];weaponIndexByKind[x.kind]=[x];}weaponKind.value='great-sword';weapon.innerHTML='<option value="1081">GS contract</option>';weapon.value='1081';App.build.setWeapon(DB.weapons[0]);build.armor={head:null,chest:null,arms:null,waist:null,legs:null};build.decos={};renderMonsters();monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';renderComboForWeapon();App.state.combo.moves=[];restoreComboRows();addCombo('canonical:GS_CHARGED_SLASH_3');`);
+let captured;const adapter=w.MHWRealOneHitBrowserAdapter;w.MHWRealOneHitBrowserAdapter={...adapter,evaluateCurrent(a){captured=a;return adapter.evaluateCurrent(a)}};
+const take=()=>JSON.parse(w.eval('JSON.stringify({result:calcState.realOneHit,stats:calcState.stats,snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot()})'));
+const cases=[];
+for(const [label,pieces,fire,base,kind] of [['off',0,0,300,'great-sword'],['rankI',2,0,300,'great-sword'],['rankII',4,0,300,'great-sword'],['flat',4,3,300,'great-sword'],['cap',4,3,300,'great-sword'],['cb-off',0,0,300,'charge-blade'],['cb-on',4,0,300,'charge-blade']]){
+ w.eval(`weaponKind.value='${kind}';const selected=DB.weapons.find(x=>x.kind==='${kind}');selected.specials[0].damage={raw:${base/10},display:${base}};weapon.innerHTML='<option value="'+selected.id+'">contract</option>';weapon.value=String(selected.id);App.build.setWeapon(selected);build.armor=Object.fromEntries(['head','chest','arms','waist','legs'].map((k,i)=>[k,i<${pieces}?DB.armor[i]:null]));build.charmCustom={skills:${JSON.stringify(fire?[{name:'火属性攻撃強化',level:fire},...(label==='cap'?[{name:'チャージマスター',level:3},{name:'連撃',level:5}]:[])]:[])},slots:[0,0,0],weaponSlots:[]};renderComboForWeapon();App.state.combo.moves=[];restoreComboRows();addCombo('canonical:${kind==='charge-blade'?'CB_SAED':'GS_CHARGED_SLASH_3'}');${kind==='charge-blade'?"comboCBShield.value='1';comboCBAxe.value='0';comboCBPhialType.value='POWER_ELEMENT';comboCBEnhancedPhial.value='1';":''}calcBuild();`);
+ const row={label,pieces,fire,base,kind,...take()};cases.push(row);
+ if(mode==='before')continue;
+ for(const ch of ['normal','maximum'])assert.equal(row.result.channels?.[ch]?.execution.status,'complete',JSON.stringify(row.result));
+ if(kind==='great-sword'){
+  const expected=label==='rankI'?380:label==='rankII'?430:label==='flat'?568:label==='cap'?700:300;
+  const comp=row.result.channels.maximum.components.find(x=>x.id.includes(':element:'));assert.ok(Math.abs(comp.details.appliedElement-expected)<1e-7,JSON.stringify(comp));
+  if(['rankI','rankII'].includes(label)){assert.deepEqual(row.result.channels.normal.metrics,cases[0].result.channels.normal.metrics);assert.equal(row.result.channels.maximum.components[0].value,cases[0].result.channels.maximum.components[0].value);}
+ }
+ if(['rankI','rankII'].includes(label))w.eval(`buildName.value='${label}';saveNamedBuild();`);
+}
+let comparison,negative,excluded;
+if(mode==='after'){
+ const a=cases[5].result.channels,b=cases[6].result.channels;assert.deepEqual(a.normal.metrics,b.normal.metrics);
+ const da=a.maximum.components[0].details,db=b.maximum.components[0].details;
+ assert.equal(db.components.physicalBody,da.components.physicalBody);assert.ok(Math.abs(db.components.elementalBody/da.components.elementalBody-430/300)<1e-9);assert.ok(Math.abs(db.components.elementalPhial/da.components.elementalPhial-430/300)<1e-9);
+ w.applyBuildSnapshot(cases[2].snapshot);w.calcBuild();const current=take();assert.deepEqual(current.result.channels,cases[2].result.channels);w.eval("document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true);runBuildCompare();");const rows=JSON.parse(w.eval('JSON.stringify(lastBuildComparisonRows.map(x=>({name:x.name,result:x.oneHitPipeline})))'));assert.equal(rows.length,2);for(const r of rows)assert.deepEqual(r.result.channels,cases.find(c=>c.label===r.name).result.channels);assert.deepEqual(take(),current);comparison={rows,restoredUnchanged:true};
+ const st={...captured.stats,activeBonusEffects:captured.stats.activeBonusEffects.map(x=>({...x,rankLevel:3}))};st.conditionalConditionPlan=w.MHWStandardPowerConditionPlan(st,Object.fromEntries(captured.skills),'great-sword',captured.conditions);negative=adapter.evaluateCurrent({...captured,stats:st});assert.ok(JSON.stringify(negative).includes('BONUS_DAMAGE_EFFECT_PENDING'));
+}
+if(mode==='after'){
+ const gl=JSON.parse(fs.readFileSync('docs/reports/r252-generic-states/evidence/mhdb-gunlance-hope.api.json'));gl.skills=[];
+ w.eval(`DB.weapons.push(${JSON.stringify(gl)});weaponIndexByKind['gunlance']=[DB.weapons[DB.weapons.length-1]];weaponKind.value='gunlance';weapon.innerHTML='<option value="315">GL</option>';weapon.value='315';App.build.setWeapon(DB.weapons[DB.weapons.length-1]);build.charmCustom.skills=[];renderComboForWeapon();App.state.combo.moves=[];restoreComboRows();addCombo('reference:gl_NORMAL');comboGLType.value='NORMAL';comboGLPower.value='MEDIUM';comboGLLoaded.value='6';comboGLCharged.value='1';comboGLFireHz.value='20';calcBuild();`);
+ excluded=take();assert.equal(excluded.result.channels.normal.execution.status,'complete',JSON.stringify(excluded.result));assert.equal(excluded.result.channels.maximum.metrics.comboTotalDamage.status,'unavailable');assert.ok(JSON.stringify(excluded.result).includes('GOG:DEDICATED_COMPONENT_NOT_ADOPTED'));
+}
+console.log(JSON.stringify({mode,cases,comparison,negative,excluded,scope:'Synthetic GS/CB contract weapons and series armor, JSDOM public calcBuild; not equipment legality/live game',hashes:Object.fromEntries(['index.html','hope-hammer-browser-adapter.js',__filename].map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')]))},null,2));w.close();

@@ -1,0 +1,30 @@
+{
+  "contract": "TARGET_HIT_AND_WYVERN_INPUT.md explicit demonMode/requiresDemonGauge booleans; no new gauge quantity/consumption or completion simulation",
+  "commands": [
+    {
+      "command": "node tools/db-gauge-input-public-proof.cjs before",
+      "exit": 0,
+      "stdout": "before.json",
+      "stderr": "before.stderr"
+    },
+    {
+      "command": "node tools/db-gauge-input-public-proof.cjs after",
+      "exit": 0,
+      "stdout": "after.json",
+      "stderr": "after.stderr"
+    }
+  ],
+  "hashes": {
+    "index.html": "43a99c60da94241748da0a6734e05804bed91d8179abad7ee9e47348df92f8dd",
+    "hope-hammer-browser-adapter.js": "88d5257586d63249061b3c60c6152d984070f595ac29214ff6680bc62200ef0b",
+    "./tools/db-gauge-input-public-proof.cjs": "008f05d74f3d3309579aee7583461603b777e489661c24e9af44667d3e280eaa"
+  },
+  "beforeIndexHash": "baae34d03e436ed5a255e2bf07c953c20074cafbb0b7bf93377be80fe6e499f2",
+  "productChanged": [
+    "index.html"
+  ],
+  "classification": "unchanged 78/7/0/6/88; independent review pending",
+  "executionScope": "JSDOM DOM change -> public calcBuild -> shared Pipeline; explicit boolean only, no adapter injection, no dynamic gauge simulation or game test",
+  "priorChangesPreserved": "incremental patch only adds select and stored/restore/change wiring; HM34/HBG/GL retained",
+  "noCommitPush": true
+}

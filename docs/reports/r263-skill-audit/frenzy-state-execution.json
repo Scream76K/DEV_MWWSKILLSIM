@@ -1,0 +1,80 @@
+{
+  "commands": [
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/frenzy-explicit-state-proof.cjs before",
+      "exit": 0,
+      "chunk": "d9eaf0",
+      "stdout": "frenzy-state-before.raw.json",
+      "stderr": "frenzy-state-before.stderr.txt"
+    },
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/frenzy-explicit-state-proof.cjs after",
+      "exit": 1,
+      "chunk": "f8b6a3",
+      "stderr": "frenzy-state-entry-gap.stderr.txt",
+      "cause": "Existing applicability entry accepted Antivirus only with Black Eclipse; new shared-resolver branch connected with ID/name/Lv validation retained."
+    },
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/frenzy-explicit-state-proof.cjs after",
+      "exit": 0,
+      "chunk": "8fd2dd",
+      "stdout": "frenzy-state-after.raw.json",
+      "stderr": "frenzy-state-after.stderr.txt"
+    },
+    {
+      "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/frenzy-enemy-name-proof.cjs",
+      "exit": 0,
+      "chunk": "d35603",
+      "stdout": "frenzy-name.raw.json",
+      "stderr": "frenzy-name.stderr.txt"
+    }
+  ],
+  "hashes": {
+    "index.html": "f9e83cc1c65964e2251ac2c3d4ba3325f73033275a9f469be76035beeeacee04",
+    "hope-hammer-browser-adapter.js": "fbf930f77bc2badb681694e28e7ed7f81291c1dae93d14b00cc5c87551c20ec0",
+    "./tools/frenzy-explicit-state-proof.cjs": "2463bbcd4118a509e8bec8416cbbcb70f3d80df4bf8d210607e01f679f9543a2"
+  },
+  "enemyProofHashes": {
+    "index.html": "f9e83cc1c65964e2251ac2c3d4ba3325f73033275a9f469be76035beeeacee04",
+    "hope-hammer-browser-adapter.js": "fbf930f77bc2badb681694e28e7ed7f81291c1dae93d14b00cc5c87551c20ec0",
+    "./tools/frenzy-enemy-name-proof.cjs": "5def5d3b3a86d36db4f2f9292510f9b4f9849658e7d7f76295762f750a94d1fe"
+  },
+  "scope": "JSDOM public calcBuild, synthetic GS/Black EclipseII contract; unknown state at captured adapter boundary; no actual game/equipment/browser claims",
+  "limits": [
+    "Lv3 representative only; Lv1/2 coefficient table reused statically",
+    "Black rankII representative; rankI unchanged shared path statically",
+    "Noncritical consumers/stage filters unchanged; not separately executed",
+    "No full regression or F01 retest; engine unchanged"
+  ],
+  "approval": "Sentinel_b8703293b9ec8191b5e788fd1296eff1",
+  "evidenceHashes": {
+    "frenzy-state-before.raw.json": "d98ebca44abf9a4da238b6953bf4190e9fba9640f6fb586a1d33d61e2974d490",
+    "frenzy-state-after.raw.json": "f6110c6b4e3217436726b1f76a13bed796c6f9d35253c20da46d54a3d961d750",
+    "frenzy-name.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frenzy-state-after.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frenzy-state.patch": "a95d83af72b0226fb670ca861aa74c0581dab193b0d6f614836c3e9979dc7055",
+    "frenzy-name.raw.json": "f77f9b1ce36902c95d95d8c2305c3028f9a8e924d55ef492e9a209463a057092",
+    "frenzy-state-before.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frenzy-state-entry-gap.stderr.txt": "154aa69dcbd864fba5771f08a2b25c07a96cfdd8e18a82f695eb05073bf0f858",
+    "frenzy-two-saved.raw.json": "cd37f21e8135b473368a6b671192fd27d65d52a8193022188bcbabeacccfb4aa"
+  },
+  "initialComparisonScope": "One saved build compared under current shared OVERCOME; not two distinct A/B snapshots",
+  "additionalTwoSavedComparison": {
+    "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/frenzy-two-saved-comparison-proof.cjs",
+    "exit": 0,
+    "chunk": "64c408",
+    "stdout": "frenzy-two-saved.raw.json",
+    "stderr": "frenzy-two-saved.stderr.txt",
+    "hashes": {
+      "index.html": "f9e83cc1c65964e2251ac2c3d4ba3325f73033275a9f469be76035beeeacee04",
+      "hope-hammer-browser-adapter.js": "fbf930f77bc2badb681694e28e7ed7f81291c1dae93d14b00cc5c87551c20ec0",
+      "./tools/frenzy-two-saved-comparison-proof.cjs": "8fcc614cbcb76403cb18cf9460f22e028dd9c1bae65ebc81bdc15f5514ef7b84"
+    },
+    "assertions": {
+      "twoDistinctSavedBuilds": true,
+      "sharedOvercomeBoth": true,
+      "savedBeforeStatesUnchanged": true,
+      "activeRestored": true
+    }
+  }
+}

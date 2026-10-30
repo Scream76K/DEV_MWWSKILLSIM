@@ -1,0 +1,13 @@
+--- a/hope-hammer-browser-adapter.js
++++ b/hope-hammer-browser-adapter.js
+@@ -393,7 +393,9 @@
+   const versions={game:'1.042.00.02',equipment:'mhdb-source-unknown-game-version',technique:'tech-real',effects:'effects-real'};
+   const originalConditionPlan=stats.conditionalConditionPlan||null;
+   const resolvedConditionPlan=(waterEntries.length||resistanceConversionLevel||attributeConversionLevel)&&originalConditionPlan?{...originalConditionPlan,pending:(originalConditionPlan.pending||[]).filter(x=>!(waterEntries.length&&x==='耐性変換【水】:CONDITIONAL_DAMAGE_FORMULA_PENDING')&&!(resistanceConversionLevel&&x==='耐性変換【雷】:CONDITIONAL_DAMAGE_FORMULA_PENDING')&&!(attributeConversionLevel&&x==='属性変換:CONDITIONAL_DAMAGE_FORMULA_PENDING'))}:originalConditionPlan;
+-  let conditionPlan=gsChargeActive&&resolvedConditionPlan?{...resolvedConditionPlan,pending:(resolvedConditionPlan.pending||[]).filter(x=>!['チャージマスター:CONDITIONAL_DAMAGE_FORMULA_PENDING','Charge Master:CONDITIONAL_DAMAGE_FORMULA_PENDING'].includes(x))}:resolvedConditionPlan;
++  const bowChargeRule=root.TechniqueDBEngine.get('bow','BOW_STATE_MODIFIERS')?.specialSourceValues?.skillRules?.chargeMaster;
++  const bowChargeResolved=weapon.kind==='bow'&&referenceSkills.chargeMaster>0&&bowChargeRule?.component==='ELEMENT_BASE_MULTIPLIER_BEFORE_FLATS'&&allSkills.filter(x=>x.skillKey==='chargeMaster').every(x=>Number(x.skillId)===24&&Number.isInteger(x.level)&&x.level>=1&&x.level<=3&&Object.hasOwn(bowChargeRule.multipliers,x.level))&&resolvedTechniqueIds.every(id=>techniques[id]?.referenceKind==='bow'&&bowChargeRule.techniqueIds.includes(id));
++  let conditionPlan=(gsChargeActive||bowChargeResolved)&&resolvedConditionPlan?{...resolvedConditionPlan,pending:(resolvedConditionPlan.pending||[]).filter(x=>!['チャージマスター:CONDITIONAL_DAMAGE_FORMULA_PENDING','Charge Master:CONDITIONAL_DAMAGE_FORMULA_PENDING'].includes(x))}:resolvedConditionPlan;
+   if(conditionPlan&&(resistanceConversionLevel||attributeConversionLevel)&&conditionPlan.pending.length===0)conditionPlan.status='READY';
+   const explicitAffinityEntries=allSkills.filter(x=>x.skillKey==='explicitAffinity');
+   if(conditionPlan&&explicitAffinityEntries.length){const names=new Set(explicitAffinityEntries.flatMap(x=>Number(x.skillId)===39?['濡れ刃紋','Wet Blade Mark']:['抜刀術【技】','抜刀術[技]','Critical Draw']));const pending=conditionPlan.pending.filter(x=>!names.has(x.split(':')[0]));conditionPlan={...conditionPlan,pending,status:pending.length?conditionPlan.status:'READY'};}

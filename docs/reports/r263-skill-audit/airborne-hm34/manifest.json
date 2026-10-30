@@ -1,0 +1,50 @@
+{
+  "scope": "ID86 HAM_MIGHTY_CHARGE_UPPERCUT only: explicit empty Hit set. No MV/ID83 change. Classification remains partial pending review; DB public gauge handoff unresolved.",
+  "videoManifest": "external-evidence/task-20261027/video-review-hbg-hm/HM34_manifest.json",
+  "visuallyReadAndHashMatched": [
+    "HM3-detail-0.0.png",
+    "HM4-detail-0.0.png",
+    "HM3-detail-5.5.png",
+    "HM4-detail-6.0.png",
+    "HM3-detail-11.5.png",
+    "HM4-detail-12.0.png",
+    "HM3-detail-17.5.png",
+    "HM34_READOUT.md"
+  ],
+  "commands": [
+    {
+      "command": "node tools/airborne-hm34-public-proof.cjs before",
+      "exit": 0,
+      "stdout": "before.json",
+      "stderr": "before.stderr"
+    },
+    {
+      "command": "node tools/airborne-hm34-public-proof.cjs after",
+      "exit": 1,
+      "stdout": "after.json",
+      "stderr": "after.stderr",
+      "reason": "positive DB expected 8 affected Hits, actual 0: public state lacks requiresDemonGauge"
+    },
+    {
+      "command": "node tools/airborne-hm34-public-proof.cjs after",
+      "exit": 1,
+      "stdout": "diagnostic.json",
+      "stderr": "diagnostic.stderr",
+      "reason": "diagnostic confirms per-component STATE_REQUIREMENT_UNRESOLVED:requiresDemonGauge"
+    },
+    {
+      "command": "node tools/airborne-hm34-public-proof.cjs after",
+      "exit": 0,
+      "stdout": "after-final.json",
+      "stderr": "after-final.stderr",
+      "scope": "hammer public calcBuild + one snapshot restore; DB positive captured public args + explicit existing gauge contract at adapter boundary, not fully public UI"
+    }
+  ],
+  "hashes": {
+    "index.html": "baae34d03e436ed5a255e2bf07c953c20074cafbb0b7bf93377be80fe6e499f2",
+    "hope-hammer-browser-adapter.js": "88d5257586d63249061b3c60c6152d984070f595ac29214ff6680bc62200ef0b",
+    "./tools/airborne-hm34-public-proof.cjs": "38e8d4cff6568112c6dc002062f493ee9806093b7e85b2b2b214eabf6d3718a7"
+  },
+  "beforeIndexHash": "1bde2a2b4b5977f8637cc1a13534d7a19b91e20f836966f261e81642989df9ac",
+  "noCommitPush": true
+}

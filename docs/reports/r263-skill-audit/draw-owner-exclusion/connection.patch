@@ -1,0 +1,24 @@
+--- before/index.html
++++ after/index.html
+@@ -1920,8 +1920,8 @@
+   const rel=validCombatSkillLevel(total,['力の解放','Latent Power'],5); if(rel) v += [0,10,20,30,40,50][Math.min(5,rel)];
+   const op=validCombatSkillLevel(total,['攻勢','Foray'],5); if(op) v += [0,0,5,10,15,20][Math.min(5,op)];
+ 
+-  // 抜刀術【技】はLv1=50 / Lv2=75 / Lv3=100%。最大条件として加算。
+-  const draw=validCombatSkillLevel(total,['抜刀術【技】','抜刀術[技]','Critical Draw'],3); if(draw) v += window.MHWExplicitAffinityRules.draw[Math.min(3,draw)];
++  // 抜刀術【技】の既存係数は保持。現リリースのユーザー指定対象外は表示最大にも加算しない。
++  const draw=validCombatSkillLevel(total,['抜刀術【技】','抜刀術[技]','Critical Draw'],3); if(draw&&!window.MHIsOwnerExcludedCalculationSkill({skillId:103,name:'抜刀術【技】',level:draw})) v += window.MHWExplicitAffinityRules.draw[Math.min(3,draw)];
+ 
+   // 濡れ刃紋：濡れ状態＋泡状態を同時成立させるとLv3で+9%+21%=30%。
+   const wet=validCombatSkillLevel(total,['濡れ刃紋','Wet Blade Mark'],3); if(wet){const i=Math.min(3,wet);v += window.MHWExplicitAffinityRules.wet[i]+window.MHWExplicitAffinityRules.bubble[i];}
+@@ -7068,8 +7068,8 @@
+ });
+ window.MHSkillExtraDamagePolicies=SKILL_EXTRA_DAMAGE_POLICIES;
+ // Current-release owner scope, 2026-10-30. Keep DB coefficients for future weapon/sharpness reevaluation.
+-window.MHOwnerCalculationExclusion=Object.freeze({skillId:85,names:Object.freeze(['鈍器使い','Bludgeoner']),reason:'ユーザー指定により今回の火力計算対象外（装備・保存は保持）',status:'OWNER_EXCLUDED_CURRENT_RELEASE'});
+-window.MHIsOwnerExcludedCalculationSkill=(entry)=>{const p=window.MHOwnerCalculationExclusion;return Number(entry?.skillId)===p.skillId&&p.names.includes(entry?.name)&&Number.isInteger(entry?.level)&&entry.level>=1&&entry.level<=3;};
++window.MHOwnerCalculationExclusion=Object.freeze({skills:Object.freeze([Object.freeze({skillId:85,names:Object.freeze(['鈍器使い','Bludgeoner'])}),Object.freeze({skillId:8,names:Object.freeze(['抜刀術【力】','Punishing Draw'])}),Object.freeze({skillId:103,names:Object.freeze(['抜刀術【技】','抜刀術[技]','Critical Draw'])})]),reason:'ユーザー指定により今回の火力計算対象外（装備・保存は保持）',status:'OWNER_EXCLUDED_CURRENT_RELEASE'});
++window.MHIsOwnerExcludedCalculationSkill=(entry)=>{const p=window.MHOwnerCalculationExclusion;return p.skills.some(x=>Number(entry?.skillId)===x.skillId&&x.names.includes(entry?.name))&&Number.isInteger(entry?.level)&&entry.level>=1&&entry.level<=3;};
+ const CONTEXT_ATTACK_SKILL_RULES=techniqueDbDeepFreeze({source:'https://kuroyonhon.com/mhwilds/program/skill.php',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',mindsEye:{id:136,multipliers:[1,1.1,1.15,1.3],originalHitzoneMaximum:44},bludgeoner:{id:85,multipliers:[1,1.05,1.1,1.1],colorsByLevel:[[],['red','orange','yellow'],['red','orange','yellow'],['red','orange','yellow','green']]}});
+ window.MHContextAttackSkillRules=CONTEXT_ATTACK_SKILL_RULES;
+ window.MHSaedMindsEyeRule=techniqueDbDeepFreeze({skillId:136,techniqueIds:['CB_SAED','CB_SAED_AED_DERIVED'],component:'BODY_PHYSICAL_ONLY',multiplierRule:CONTEXT_ATTACK_SKILL_RULES.mindsEye,source:CONTEXT_ATTACK_SKILL_RULES.source,status:'OWNER_APPROVED_PROVISIONAL',approval:'Sentinel_11c1099a37508191ae33eacd6126c7f0',verification:'NOT_GAME_VERIFIED',order:'BASE_TIMES_EXISTING_MULTIPLIER_TIMES_MINDS_EYE_PLUS_FLATS',excluded:['BODY_ELEMENT','PHIAL']});

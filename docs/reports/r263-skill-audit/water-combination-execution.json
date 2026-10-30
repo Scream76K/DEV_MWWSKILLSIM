@@ -1,0 +1,114 @@
+{
+  "scope": "Bow adopted CM + water enhancement + water conversion; synthetic contract input, not equipment/game validation",
+  "command": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node tools/water-conversion-combination-proof.cjs",
+  "before": {
+    "exitCode": 1,
+    "chunk": "330f7b",
+    "stderr": "water-combination-before.stderr.txt",
+    "reason": "maximum unresolved CM pending despite dedicated Formula"
+  },
+  "after": {
+    "exitCode": 0,
+    "chunk": "6e0a36",
+    "stdout": "water-combination.raw.json",
+    "stderr": "water-combination.stderr.txt",
+    "snapshotRestored": true
+  },
+  "hashes": {
+    "index.html": "51ff8683e6205f55e4904668a790195e3a34ab9893f918a6a5b13ec05cd141a9",
+    "hope-hammer-browser-adapter.js": "d51f0b40bf71d55ad8a1a259d7af6e7cec093b90c106554f7c19f6afca6005f8",
+    "himmel-real-browser-bundle.js": "9f3499121bbbf0d17f2eaaea9ed615d73c1929dbaf75988f9f224c6268f13ff1",
+    "./tools/water-conversion-combination-proof.cjs": "0b884f435dcb61af5f9544a9e95a02c289d620d1f56dcf54b29c4fd99ccd3f31"
+  },
+  "summary": [
+    {
+      "case": "water-only",
+      "normal": {
+        "status": "available",
+        "value": 77.112
+      },
+      "maximum": {
+        "status": "available",
+        "value": 77.112
+      },
+      "element": 540,
+      "basis": {
+        "weaponBase": 500,
+        "normalMultiplier": 1,
+        "normalFlat": 40,
+        "conditionalFlat": 0,
+        "capBase": 500,
+        "capLimit": 1150,
+        "uncapped": 540
+      },
+      "physical": 28.512000000000004
+    },
+    {
+      "case": "boost",
+      "normal": {
+        "status": "available",
+        "value": 91.512
+      },
+      "maximum": {
+        "status": "available",
+        "value": 91.512
+      },
+      "element": 700,
+      "basis": {
+        "weaponBase": 500,
+        "normalMultiplier": 1.2,
+        "normalFlat": 100,
+        "conditionalFlat": 0,
+        "capBase": 500,
+        "capLimit": 1150,
+        "uncapped": 700
+      },
+      "physical": 28.512000000000004
+    },
+    {
+      "case": "combined",
+      "normal": {
+        "status": "available",
+        "value": 99.612
+      },
+      "maximum": {
+        "status": "available",
+        "value": 99.612
+      },
+      "element": 790,
+      "basis": {
+        "weaponBase": 500,
+        "normalMultiplier": 1.2,
+        "normalFlat": 100,
+        "conditionalFlat": 0,
+        "capBase": 500,
+        "capLimit": 1150,
+        "uncapped": 700
+      },
+      "physical": 28.512000000000004
+    },
+    {
+      "case": "capped",
+      "normal": {
+        "status": "available",
+        "value": 132.012
+      },
+      "maximum": {
+        "status": "available",
+        "value": 132.012
+      },
+      "element": 1150,
+      "basis": {
+        "weaponBase": 500,
+        "normalMultiplier": 1.2,
+        "normalFlat": 860,
+        "conditionalFlat": 0,
+        "capBase": 500,
+        "capLimit": 1150,
+        "uncapped": 1460
+      },
+      "physical": 28.512000000000004
+    }
+  ],
+  "notRerun": "Existing saved A/B and draw8/103 proofs; no all-weapon tests"
+}
