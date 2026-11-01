@@ -335,6 +335,19 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
 .element-icon{width:22px;height:22px;flex:0 0 22px}
 .element-label,.element-value{color:inherit}
 </style>
+
+<style id="flamme-ui-responsive-stage1">
+/* Owner-approved layout: phone stacks Build then Support; landscape tablet and desktop keep columns. */
+@media (max-width: 820px) {
+  main.wrap > .grid { display:grid; grid-template-columns:minmax(0,1fr)!important; gap:12px; }
+  main.wrap > .grid > aside, main.wrap > .grid > section {min-width:0;width:100%;}
+  .armor-build-workspace {grid-template-columns:minmax(0,1fr)!important;gap:12px!important;}
+  .armor-workspace-left,.skill-workspace-right {max-height:none!important;overflow:visible!important;overscroll-behavior:auto!important;}
+}
+@media (min-width: 821px) {
+  main.wrap > .grid {grid-template-columns:minmax(260px, 300px) minmax(0,1fr);}
+}
+</style>
 </head><body>
 <div class="notice"><b>v7.2.2-template-rootfix-r7 / OCR統合 r1.1.19 fix12</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">r120 HBG Shot Skill Conditions / Game Ver.1.042.00.02</div>
 <header><div class="wrap"><h1>⚔️ MH Wilds 装備セット＆火力シミュレーター v7.2.1 / OCR統合 r1.1.19 / ビルドテンプレート</h1><div class="muted">①〜⑤ ハンターズノート：装備を作る・記録する　｜　⑥〜⑧ ハンターズサポート：分析・提案・相談</div></div></header>
@@ -9257,4 +9270,16 @@ window.MHWeaponEffectDB=Object.freeze({switchAxe:Object.freeze({powerPhialSword:
 </script>
 <script src="himmel-real-browser-bundle.js"></script>
 <script src="hope-hammer-browser-adapter.js"></script>
+
+<script id="flamme-ui-save-placement-stage1">
+/* Layout-only relocation: preserve existing save inputs, IDs, listeners and storage behavior. */
+document.addEventListener('DOMContentLoaded', function(){
+  const saveButton=document.getElementById('saveBuild');
+  const saveCard=saveButton?.closest('section.card');
+  const buildColumn=document.querySelector('main.wrap > .grid > aside');
+  if(saveCard && buildColumn && !buildColumn.contains(saveCard)){
+    buildColumn.appendChild(saveCard);
+  }
+});
+</script>
 </body></html>
