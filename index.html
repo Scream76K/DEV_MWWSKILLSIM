@@ -349,6 +349,32 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
 }
 </style>
 
+<style id="flamme-ui-workspace-stage4">
+/* Stage 4: allow the build column to actually fit its equipment/skill workspace. */
+@media (min-width:821px) {
+  main.wrap { max-width:1500px; }
+  main.wrap > .grid {
+    grid-template-columns:minmax(0,1.65fr) minmax(300px,1fr)!important;
+    align-items:start;
+  }
+  main.wrap > .grid > aside,main.wrap > .grid > section {min-width:0;}
+  #armorBuildWorkspace {
+    grid-template-columns:minmax(0,1.35fr) minmax(240px,1fr)!important;
+    gap:12px!important;
+  }
+  #armorWorkspaceLeft,#skillWorkspaceRight {min-width:0;max-height:none;overflow:visible;}
+}
+@media (min-width:821px) and (max-width:1120px) {
+  #armorBuildWorkspace {grid-template-columns:minmax(0,1fr)!important;}
+}
+@media(max-width:820px) {
+  #armorBuildWorkspace {grid-template-columns:minmax(0,1fr)!important;}
+  #armorWorkspaceLeft,#skillWorkspaceRight {max-height:none!important;overflow:visible!important;}
+}
+#weaponKindSelectionBlock select {max-width:100%;}
+#skillWorkspaceRight .card,#armorWorkspaceLeft .card {min-width:0;}
+</style>
+
 <style id="flamme-ui-general-cleanup-stage2">
 /* Hide legacy diagnostics and reference tools from the normal UI; retain DOM/state and calculation modules. */
 #techAuditPanel,#hhReferencePanel,#scorchReferencePanel,#darkArtsReferencePanel,
