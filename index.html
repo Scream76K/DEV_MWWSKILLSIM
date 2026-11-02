@@ -8325,7 +8325,7 @@ function comparisonReasonText(reason){
 }
 function comparisonReadinessHtml(rows,baseline){
   const darkArtsNote=rows.some(r=>r.power?.healthBranchComparison||r.power?.conditionPlan?.applied?.some(x=>x.skill==='ダークアーツ'))?'<p class="small">ダークアーツは通常側を未発動として扱い、本体の属性倍率は赤ゲージ状態だけに適用します。フルチャージ併用時は満タン状態と赤ゲージ状態を別々に比較します。大剣の衝撃波は条件が揃った通常側のみ対応し、最大側は保留です。複数属性倍率・連撃等との併用が未確定の場合は最大側を保留します。実機照合済みではありません。</p>':'';
-  let h='<div id="comparisonReadiness" class="compare-note" role="status"><b>比較の計算状況</b><br>火力指数は固定STANDARDで計算します。ヘビィで通常弾を選択した場合は、選択条件の3連射を追加参考計算します。DPSには⑦ コンボDPSのコンボ登録と所要時間が必要です。<br><strong>計算値について：</strong>装備・スキル構成の相対的な火力比較を目的とした参考値です。一部の技・補正には実測資料などから暫定採用したデータを使用しています。ゲーム内の実ダメージと一致しない場合があります。資料の確度が上がり次第、計算データを更新します。';
+  let h='<div id="comparisonReadiness" class="compare-note" role="status"><b>比較の計算状況</b><br>火力指数は固定STANDARDで計算します。ヘビィで通常弾を選択した場合は、選択条件の3連射を追加参考計算します。<br><strong>計算値について：</strong>装備・スキル構成の相対的な火力比較を目的とした参考値です。一部の技・補正には実測資料などから暫定採用したデータを使用しています。ゲーム内の実ダメージと一致しない場合があります。資料の確度が上がり次第、計算データを更新します。';
   for(const row of rows){
     const index=comparisonPowerIndex(row,baseline),lines=[];
     if(!index){let reason=row.power?.reason;if(!reason&&row.kind!==baseline.kind)lines.push('火力指数：同じ武器種のビルドを比較してください。');else if(!reason&&row.power?.normal&&(!Number.isFinite(baseline.power?.normal?.comparisonPower)||baseline.power.normal.comparisonPower<=0))lines.push('火力指数：基準ビルドが未算出・0以下のため指数化できません。');else lines.push('火力指数：'+comparisonReasonText(reason||'STANDARD_PROFILE_PENDING'));}
@@ -8346,20 +8346,19 @@ function comparisonReadinessHtml(rows,baseline){
     }else if(pipeline){
       lines.push('共通Pipeline：未算出（'+comparisonReasonText(pipeline.reason||pipeline.channels?.normal?.execution?.reason||pipeline.channels?.maximum?.execution?.reason||pipelineNormal?.reason||pipelineMaximum?.reason||'PIPELINE_UNAVAILABLE')+'）');
     }
-    if(comparisonDpsValue(row)==null)lines.push('DPS：'+comparisonReasonText(row.dpsReason||(Number.isFinite(row.dps)?'COMBO_DPS_UNVERIFIED':'COMBO_DAMAGE_OR_TIMING_PENDING')));
-    h+='<div style="margin-top:8px"><b>'+esc(row.name)+'</b>：'+(lines.length?lines.map(esc).join('<br>'):'火力指数・最大火力指数・DPSを算出済みです。')+'</div>';
-    if(row.power?.normal?.scope==='EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO')h+='<div class="small">ヘビィ追加参考比較：通常弾Lv'+esc(row.power.hbgState.ammoLevel)+'／全3Hit命中。弾Lv・距離・通常モード補正は比較用の共通条件です。武器の装填可否・実機ダメージ・DPSは未照合です。</div>';
+    h+='<div style="margin-top:8px"><b>'+esc(row.name)+'</b>：'+(lines.length?lines.map(esc).join('<br>'):'通常・最大火力を算出済みです。')+'</div>';
+    if(row.power?.normal?.scope==='EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO')h+='<div class="small">ヘビィ追加参考比較：通常弾Lv'+esc(row.power.hbgState.ammoLevel)+'／全3Hit命中。弾Lv・距離・通常モード補正は比較用の共通条件です。武器の装填可否・実機ダメージは未照合です。</div>';
     const bow=row.power?.bowStatePlan;
     if(bow){
       const coating={NONE:'ビンなし',POWER:'強撃ビン',CLOSE_RANGE:'接撃ビン',PIERCE:'貫通ビン'},range={CRITICAL:'適正距離',NEAR:'近距離',FAR:'遠距離'};
       const reasons={STATE_INPUT_REQUIRED:'比較条件の入力が必要',CHARGE_LEVEL_3_REQUIRED:'STANDARDは溜め3のみ',RANGE_SELECTION_REQUIRED:'距離が未選択',COATING_SELECTION_REQUIRED:'ビンが未選択',CURRENT_VERSION_MOTION_AUDIT:'技データの対象版照合',CURRENT_VERSION_SHOT_MODIFIER_AUDIT:'射撃補正の対象版照合',CURRENT_VERSION_RANGE_AUDIT:'距離補正の対象版照合',COATING_CURRENT_VERSION_AUDIT:'ビン補正の対象版照合',PIERCE_HIT_COUNT_AND_COEFFICIENTS_PENDING:'貫通の命中数・各Hit補正',FORMULA_RESOLVER_NOT_PROMOTED:'専用ダメージ計算の接続',CLOSE_RANGE_OUTSIDE_CRITICAL:'接撃ビンは適正距離を指定してください',TECHNIQUE_DATA_UNVERIFIED:'技データが未確定'};
-      h+='<div class="small">弓の記録条件：溜め3／'+esc(coating[bow.state.coating]||'ビン未選択')+'／'+esc(range[bow.state.range]||'距離未選択')+(bow.blockers.length?'。保留項目：'+esc(bow.blockers.map(x=>reasons[x]||'未確認の補正').join('、')):'。資料ベースの参考計算（実機照合は未完了）')+'。これらの条件はコンボDPSへ未接続です。</div>';
+      h+='<div class="small">弓の記録条件：溜め3／'+esc(coating[bow.state.coating]||'ビン未選択')+'／'+esc(range[bow.state.range]||'距離未選択')+(bow.blockers.length?'。保留項目：'+esc(bow.blockers.map(x=>reasons[x]||'未確認の補正').join('、')):'。資料ベースの参考計算（実機照合は未完了）')+'。</div>';
     }
-    if(row.kind==='bow'&&row.power?.normal?.skills?.forceShot){const force=row.power.normal.forceShot;h+='<div class="small">フォースショット：'+(force.status==='NO_COATING'?'ビンなしのため非適用です。':'通常側は装填後の'+esc(force.startShot)+'発目から固定3射撃。4・6発目だけ攻撃力加算、4発目以降に会心率加算します。')+(row.power.maximum?.forceShot?.status==='EXCLUDED_BLADESCALE_SHOTS'?'最大側の刃鱗増装による追加ビンには非適用です。':'通常・最大は同じ開始位置です。')+'平均の発動率やDPSへは変換しません。</div>';}
+    if(row.kind==='bow'&&row.power?.normal?.skills?.forceShot){const force=row.power.normal.forceShot;h+='<div class="small">フォースショット：'+(force.status==='NO_COATING'?'ビンなしのため非適用です。':'通常側は装填後の'+esc(force.startShot)+'発目から固定3射撃。4・6発目だけ攻撃力加算、4発目以降に会心率加算します。')+(row.power.maximum?.forceShot?.status==='EXCLUDED_BLADESCALE_SHOTS'?'最大側の刃鱗増装による追加ビンには非適用です。':'通常・最大は同じ開始位置です。')+'発動率による平均化は行いません。</div>';}
     if(row.kind==='bow'&&row.power?.normal?.skills?.firstShot)h+='<div class="small">ファーストショット：ボウガン用の効果のため弓には非適用です。通常・最大の火力に加算しません。</div>';
     if(row.power?.normal?.skills?.bladescaleLoading){
       const blade=row.power.maximum?.bladescaleLoading;
-      h+='<div class="small">刃鱗増装：通常側は未発動。'+(blade?.status==='ACTIVE_REFERENCE'?'最大側は接撃の固定3射撃に、発動直後の強化3回分を適用します（物理のみ）。':blade?.status==='INELIGIBLE_COATING'?'選択ビンには非適用です。':'最大側は別の未確定条件により保留です。')+'発動頻度・継続率・DPSは推定しません。</div>';
+      h+='<div class="small">刃鱗増装：通常側は未発動。'+(blade?.status==='ACTIVE_REFERENCE'?'最大側は接撃の固定3射撃に、発動直後の強化3回分を適用します（物理のみ）。':blade?.status==='INELIGIBLE_COATING'?'選択ビンには非適用です。':'最大側は別の未確定条件により保留です。')+'発動頻度・継続率は推定しません。</div>';
     }
     const health=row.power?.healthBranchComparison;
     const heroics=row.power?.conditionPlan?.applied?.find(x=>x.skill==='火事場力')||health?.branches?.flatMap(x=>x.conditionPlan?.applied||[]).find(x=>x.skill==='火事場力');
@@ -8371,7 +8370,7 @@ function comparisonReadinessHtml(rows,baseline){
     const dark=row.power?.conditionPlan?.applied?.find(x=>x.skill==='暗黒');
     if(dark)h+='<div class="small">暗黒：通常側は未発動の基準値、最大側は事前発動し、体力消費後の強化が全Hitで続く前提です。攻撃力倍率'+esc(dark.attackMultiplier)+'、効果時間'+esc(dark.durationSeconds)+'秒の資料参考値です。コンボ中の発動時点・時間・実機ダメージは照合していません。フルチャージ併用の最大側は、採用標準3技の順序に限定し、満タン未満で開始・途中回復なし・暗黒継続として全Hit非発動です。満タン開始・途中回復・任意技列は未対応です。ダークアーツ併用は別契約です。</div>';
     const wave=row.power?.darkArtsWave;
-    if(wave)h+='<div class="small">通常火力指数に本体＋衝撃波'+esc(wave.count)+'回を含みます。龍肉質'+esc(wave.dragonHitzone)+'。固定STANDARDの全Hit命中を仮定した資料ベースの参考値で、実測命中回数ではありません。赤ゲージなしの通常側のみ対応し、最大側・コンボDPSは保留です。</div>';
+    if(wave)h+='<div class="small">通常火力指数に本体＋衝撃波'+esc(wave.count)+'回を含みます。龍肉質'+esc(wave.dragonHitzone)+'。固定STANDARDの全Hit命中を仮定した資料ベースの参考値で、実測命中回数ではありません。赤ゲージなしの通常側のみ対応し、最大側は保留です。</div>';
     if(health){
       const label=state=>({FULL_HEALTH:'満タン',RECOVERABLE_DAMAGE:'赤ゲージ',LOW_HEALTH:'低体力',LOW_HEALTH_WITH_RECOVERABLE_DAMAGE:'低体力＋赤ゲージ'}[state]||'未確認');
       h+='<div class="small">体力状態候補（固定コンボ全体の参考火力）：'+health.branches.map(x=>label(x.state)+' '+(Number.isFinite(x.comparisonPower)?comparisonDisplayNumber(x.comparisonPower):'保留')).map(esc).join(' / ')+'。採用状態：'+esc(health.selectedState?label(health.selectedState):'保留')+'。物理と属性の良い部分だけを別々に組み合わせません。</div>';
@@ -8394,7 +8393,7 @@ function comparisonDpsIndex(row,baseline){
 function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
   if(!rows.length)return '<span class="muted small">比較結果はありません。</span>';
   const max=key=>Math.max(...allRows.map(r=>Number(r[key])||0));
-  const ma=max('attack'),mta=max('attackTrue'),mf=max('affinity'),mmf=max('maxAffinity'),me=max('element'),mx=Math.max(...allRows.map(r=>Number(r.damage)||0)),mp=Math.max(...allRows.map(r=>comparisonDpsValue(r)??0));
+  const ma=max('attack'),mta=max('attackTrue'),mf=max('affinity'),mmf=max('maxAffinity'),me=max('element'),mx=Math.max(...allRows.map(r=>Number(r.damage)||0));
   const cell=(v,b)=>`<td class="${b?'compare-best':''}">${v==null?'—':esc(v)}</td>`;
   const rounded=v=>v==null?'—':Math.round(v),percent=v=>v==null?'—':Math.round(v)+'%';
   const itemWidth=112,buildWidth=120,totalWidth=itemWidth+rows.length*buildWidth;
@@ -8423,11 +8422,6 @@ function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
     h+='<tr data-comparison-metric="pipeline-normal"><th>共通Pipeline通常合計</th>'+rows.map((r,i)=>cell(pipelineNormal[i]==null?'未算出':comparisonDisplayNumber(pipelineNormal[i]),pipelineNormalBest!==null&&pipelineNormal[i]===pipelineNormalBest)).join('')+'</tr>';
     h+='<tr data-comparison-metric="pipeline-maximum"><th>共通Pipeline最大合計</th>'+rows.map((r,i)=>cell(pipelineMaximum[i]==null?'未算出':comparisonDisplayNumber(pipelineMaximum[i]),pipelineMaximumBest!==null&&pipelineMaximum[i]===pipelineMaximumBest)).join('')+'</tr>';
   }
-  h+='<tr data-comparison-metric="dps"><th>DPS</th>'+rows.map(r=>{const value=comparisonDpsValue(r);return cell(value===null?'未算出：'+comparisonReasonText(r.dpsReason||'COMBO_DPS_UNVERIFIED'):comparisonDisplayNumber(value),value!==null&&value===mp);}).join('')+'</tr>';
-  const relative=rows.map(r=>comparisonDpsIndex(r,baseline));
-  h+='<tr data-comparison-metric="dps-index"><th>DPS指数</th>'+rows.map((r,i)=>cell(relative[i]===null?'—':comparisonDisplayNumber(relative[i].index),relative[i]!==null&&r.dps===mp)).join('')+'</tr>';
-  h+='<tr data-comparison-metric="dps-change"><th>基準比増減</th>'+relative.map(x=>cell(x===null?'—':(x.change>0?'+':x.change<0?'−':'')+comparisonDisplayNumber(x.change)+'%',false)).join('')+'</tr>';
-  if(rows.some(r=>r.referenceDpsStatus==='PROVISIONAL_REFERENCE'))h+='<tr data-comparison-metric="reference-dps"><th>コンボDPS（暫定・参考）</th>'+rows.map(r=>cell(!equipmentElementPendingReason(r)&&r.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&r.comboVerification?.referenceDpsStatus==='PROVISIONAL_REFERENCE'&&Number.isFinite(r.referenceDps)&&r.referenceDps>=0?comparisonDisplayNumber(r.referenceDps):'未算出')).join('')+'</tr>';
   if(rows.some(r=>r.referenceCombo?.techniqueCount>0)){
     h+='<tr data-comparison-metric="reference-combo-damage"><th>指定コンボ合計（暫定・参考）</th>'+rows.map(r=>cell(Number.isFinite(r.referenceCombo?.damage)?comparisonDisplayNumber(r.referenceCombo.damage):'未算出')).join('')+'</tr>';
     h+='<tr data-comparison-metric="reference-combo-relative"><th>指定コンボ相対（基準100）</th>'+rows.map(r=>{const v=referenceComboChange(r,baseline);return cell(v?comparisonDisplayNumber(v.index)+'（'+(v.changePercent>=0?'+':'')+v.changePercent.toFixed(1)+'%）':'未算出');}).join('')+'</tr>';
@@ -8451,12 +8445,12 @@ function comparisonCoverageReason(row,baseline,metric){
   if(!Number.isFinite(value)||value<0)return (metric==='maximum'?row.power?.maximumReason:null)||row.power?.reason||'STANDARD_COMPARISON_UNAVAILABLE';
   return null;
 }
-function comparisonCoverageSummary(rows,baseline){
+function comparisonCoverageSummary(rows,baseline,metrics=['normal','maximum','dps']){
   const counts={normal:0,maximum:0,dps:0},pending=[];
   for(const row of rows){
     const relative=comparisonPowerIndex(row,baseline),dps=comparisonDpsIndex(row,baseline);
     const status={normal:relative?.normal!=null,maximum:relative?.maximum!=null,dps:dps!=null};
-    for(const metric of ['normal','maximum','dps']){
+    for(const metric of metrics){
       if(status[metric])counts[metric]++;
       else pending.push({name:row.name,metric,reason:comparisonCoverageReason(row,baseline,metric)||'COMPARISON_UNAVAILABLE'});
     }
@@ -8476,18 +8470,18 @@ let lastBuildComparisonRows=null,lastBuildComparisonBaselineIndex=0,lastBuildCom
 function renderCompareTable(rows,{baselineIndex=0}={}){
   if(!rows.length)return '<span class="muted small">比較結果はありません。</span>';
   const selectedIndex=Number.isInteger(baselineIndex)&&baselineIndex>=0&&baselineIndex<rows.length?baselineIndex:0;
-  const baseline=rows[selectedIndex],ready=Number.isFinite(baseline.dps)&&baseline.dps>0;
+  const baseline=rows[selectedIndex];
   // Group by the fixed table maximum; narrow viewports scroll inside each table.
   const perGroup=Math.max(1,Math.floor((474-2-112)/120));
   const baseDamage=baseline.power?.normal?.comparisonPower;
   let h='<div class="compare-note"><b>基準ダメージ：'+(Number.isFinite(baseDamage)&&baseDamage>0?comparisonDisplayNumber(baseDamage):'—')+'</b>（'+esc(baseline.name)+'・選択した通常側の比較条件、ゲーム表示の丸め前）</div><label for="comparisonBaseline">比較の基準ビルド（通常側の期待ダメージ）</label><select id="comparisonBaseline">'+rows.map((r,i)=>'<option value="'+i+'"'+(i===selectedIndex?' selected':'')+'>'+esc(r.name)+'</option>').join('')+'</select><div class="two" style="margin-top:8px"><button type="button" id="comparisonReportDownload">比較結果をJSON保存</button><button type="button" id="comparisonReportCopy">比較結果をコピー</button></div><div class="comparison-development-tools" hidden><button type="button" id="comparisonComboEvidence">コンボの技別・未検証項目を表示</button><button type="button" id="comparisonEvidenceChecklist">検証作業リストを表示</button><details><summary>実機検証の証拠参照を照合（JSON）</summary><textarea id="comparisonEvidenceInput" rows="4" style="width:100%" placeholder="JSON形式の証拠参照を入力"></textarea><button type="button" id="comparisonEvidenceIntake">証拠参照を照合</button></details><details><summary>実機ダメージ・Hit数・時間の記録を照合（JSON）</summary><textarea id="comparisonMeasurementInput" rows="4" style="width:100%" placeholder="[{&quot;stage&quot;:1,&quot;techniqueId&quot;:&quot;...&quot;,&quot;evidenceRef&quot;:&quot;video-1&quot;,&quot;gameVersion&quot;:&quot;1.042.00.02&quot;,&quot;hitCount&quot;:1,&quot;durationSeconds&quot;:1.2,&quot;damage&quot;:{&quot;physicalBody&quot;:100}}]"></textarea><button type="button" id="comparisonMeasurementReview">実機計測記録を照合</button><button type="button" id="comparisonTechniqueReconcile">Technique DBと計測値を照合（診断）</button><textarea id="comparisonDamageContextInput" rows="4" style="width:100%" placeholder="計算条件JSON：[{stage, techniqueId, evidenceRef, context:{weaponId, weaponAttack, weaponElement, sharpness, affinity, criticalBoostLevel, activeSkills, monsterId, hitZonePhysical, hitZoneElement, targetState, attackConditions, gameVersion}}]"></textarea><button type="button" id="comparisonDamageContextAudit">ダメージ計算条件を監査</button><textarea id="comparisonDamagePredictionInput" rows="4" style="width:100%" placeholder="予測値JSON：[{stage, techniqueId, evidenceRef, contextFingerprint, damage:{physicalBody:100}}]（監査結果のcontextFingerprintを使用）"></textarea><button type="button" id="comparisonDamageDifference">実測と計算値の成分別差異を診断</button><button type="button" id="comparisonTechniqueEngineBridge">Technique DBと計算エンジンの接続状況</button><button type="button" id="comparisonEngineContextHandoff">Technique DBと実機条件の受渡し診断</button><p class="small">斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。</p><button type="button" id="comparisonSharpnessSourceAudit">MHDB斬れ味データ構造を調査</button><button type="button" id="comparisonLiveContextAudit">選択装備と計算条件を照合</button><button type="button" id="comparisonAttackSkillAudit" type="button">攻撃スキル照合</button><button id="comparisonCriticalSkillAudit">会心・超会心・スキル条件を照合</button><button type="button" id="comparisonAttackTargetAudit">攻撃補正・モンスター肉質を照合</button><button type="button" id="comparisonPhysicalFormulaBridge">物理ダメージ参考計算（安全条件のみ）</button></details><button type="button" id="comparisonCaptureAudit">ガンランス自動連携の検証状況</button><button type="button" id="comparisonVerifiedTransfer">検証済みA/Bを自動登録</button><pre id="comparisonCaptureAuditOut" class="small" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></div><pre id="comparisonReportOut" class="small" style="max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere"></pre><div class="compare-results">';
-  const coverage=comparisonCoverageSummary(rows,baseline);
-  h+='<div class="compare-note small" data-comparison-coverage="r248">比較可能：通常 '+coverage.normal+'/'+coverage.total+'件 ／ 最大 '+coverage.maximum+'/'+coverage.total+'件 ／ DPS '+coverage.dps+'/'+coverage.total+'件。算出不能な結果は推測で補完しません。</div>';
+  const coverage=comparisonCoverageSummary(rows,baseline,['normal','maximum']);
+  h+='<div class="compare-note small" data-comparison-coverage="r248">比較可能：通常 '+coverage.normal+'/'+coverage.total+'件 ／ 最大 '+coverage.maximum+'/'+coverage.total+'件。未算出の結果は推測で補完しません。</div>';
   if(coverage.pending.length){
-    h+='<details class="compare-note" data-comparison-pending="r248"><summary>比較保留の原因を確認（'+coverage.pending.length+'項目）</summary><p class="small">同じビルドが通常・最大・DPSの複数項目で表示される場合があります。</p><strong>原因別集計</strong>'+coverage.causes.map(x=>'<p class="small">'+esc(comparisonReasonText(x.reason))+'：'+x.buildCount+'ビルド／'+x.metricCount+'項目（通常'+x.metrics.normal+'・最大'+x.metrics.maximum+'・DPS'+x.metrics.dps+'）</p>').join('')+'<strong>個別の保留内容</strong>'+coverage.pending.map(x=>'<p class="small">'+esc(x.name)+' ／ '+({normal:'通常',maximum:'最大',dps:'DPS'}[x.metric])+'：'+esc(comparisonReasonText(x.reason))+' <code>'+esc(x.reason)+'</code></p>').join('')+'</details>';
+    h+='<details class="compare-note" data-comparison-pending="r248"><summary>比較保留の原因を確認（'+coverage.pending.length+'項目）</summary><p class="small">同じビルドが通常・最大の両方で表示される場合があります。</p><strong>原因別集計</strong>'+coverage.causes.map(x=>'<p class="small">'+esc(comparisonReasonText(x.reason))+'：'+x.buildCount+'ビルド／'+x.metricCount+'項目（通常'+x.metrics.normal+'・最大'+x.metrics.maximum+'）</p>').join('')+'<strong>個別の保留内容</strong>'+coverage.pending.map(x=>'<p class="small">'+esc(x.name)+' ／ '+({normal:'通常',maximum:'最大'}[x.metric])+'：'+esc(comparisonReasonText(x.reason))+' <code>'+esc(x.reason)+'</code></p>').join('')+'</details>';
   }
   if(rows.every(row=>isChargeBladeKind(row.kind))){
-    h+='<div class="compare-note"><b>超高出力属性解放斬り（参考ダメージ）</b> — 火力指数・DPSには加算しません。</div>';
+    h+='<div class="compare-note"><b>超高出力属性解放斬り（参考ダメージ）</b> — 火力指数には加算しません。</div>';
     for(const [mode,label] of [['NORMAL','通常条件'],['MAX','最大条件']]){
       h+='<div class="compare-note small">'+label+'：'+rows.map(row=>{
         const x=row.saedReference?.[mode];
@@ -8500,11 +8494,11 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   if(rows.length>1)h+='<div class="compare-note small">表が画面に収まらない場合は、表の中を横にスワイプして比較できます。</div>';
   for(let i=0;i<rows.length;i+=perGroup)h+=renderCompareTableChunk(rows.slice(i,i+perGroup),rows,baseline);
   h+=rows.filter(r=>r.power?.conditionPlan?.applied.length).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数の適用条件 '+esc(r.power.conditionPlan.applied.map(x=>x.skill+(x.level!=null?' Lv'+x.level:'')+' (攻撃'+(x.maximumAttackMultiplier?'×'+x.maximumAttackMultiplier+'：最大側のみ':x.attackMultiplier&&x.attackMultiplier!==1?'×'+x.attackMultiplier:'+'+x.attackAdd)+(x.elementAdd?' / 属性+'+x.elementAdd:'')+(x.elementMultiplier?' / 属性×'+x.elementMultiplier+'：'+esc(x.elementConditionLabel||'赤ゲージ時')+'・最大側のみ':'')+')').join(' / '))+'。'+(r.power.conditionPlan.excluded.length?'同時成立しないため除外：'+esc(r.power.conditionPlan.excluded.map(x=>x.skill).join(' / '))+'。':'')+'</div>').join('');
-  h+='<div class="compare-note">基準：'+esc(baseline.name)+'。火力指数は各ビルドの非正規化計算値です。基準ダメージは同武器・同STANDARDの基準ビルドの通常期待ダメージです。比較ビルドの通常・最大と基準ビルドの最大は、基準比の行でのみこの通常ダメージからの変化率を表示します。括弧内の物・属は各成分の増減を基準全体のダメージで割った寄与率です。特殊成分があれば別記します。丸め前の寄与率の合計が全体の変化率になります。最大火力指数は対応済みの条件付き攻撃力・攻めの守勢と最大会心率を適用した参考値です。攻撃力の乗算を先に行い、加算はその後に適用します。攻めの守勢・激励は事前に発動した前提です。死中に活は状態異常中、根性【果敢】は選択した消費前／後の条件を適用します。これらのグループ効果と連撃強化はコンボDPSへ未接続です。フルチャージと逆恨みは同時加算しません。ダークアーツ・火事場力とフルチャージの併用時は、満タンと赤ゲージ・低体力のコンボ全体を別々に比較します。それ以外は同時成立する条件内で攻撃加算を選びます。未対応の条件付き補正がある場合は最大側を保留します。連撃は5回攻撃後の強化状態が事前に成立した前提で、初回分を重ねて加算しません。急襲は事前発動した最大側に攻撃倍率を適用します。属性吸収は3回被弾後の強化が成立した最大側で、火・水・雷・氷・龍の属性値を加算します。状態異常の蓄積値はSTANDARDの属性HPダメージに算入しません。連撃強化Ⅰ・Ⅱは連撃を装備した最大側に基礎攻撃力＋8／＋18を加えます。通常側と連撃なしでは加算しません。連撃の数値はGameWith資料の参考値で、実機版との照合は未完了です。グループ／シリーズ効果の計算分類が未完了の装備は、効果を無視せず火力指数・装備由来のコンボDPSを保留します。防御・補助効果だけのものも分類完了までは保留します。全スキル・武器状態の上限対応は未完了です。肉質・斬れ味はStep 5の共通条件、超会心は各ビルドの装備スキルを使用します。所要時間は使用しません。</div>';
+  h+='<div class="compare-note">基準：'+esc(baseline.name)+'。火力指数は各ビルドの非正規化計算値です。基準ダメージは同武器・同STANDARDの基準ビルドの通常期待ダメージです。比較ビルドの通常・最大と基準ビルドの最大は、基準比の行でのみこの通常ダメージからの変化率を表示します。括弧内の物・属は各成分の増減を基準全体のダメージで割った寄与率です。特殊成分があれば別記します。丸め前の寄与率の合計が全体の変化率になります。最大火力指数は対応済みの条件付き攻撃力・攻めの守勢と最大会心率を適用した参考値です。攻撃力の乗算を先に行い、加算はその後に適用します。攻めの守勢・激励は事前に発動した前提です。死中に活は状態異常中、根性【果敢】は選択した消費前／後の条件を適用します。フルチャージと逆恨みは同時加算しません。ダークアーツ・火事場力とフルチャージの併用時は、満タンと赤ゲージ・低体力のコンボ全体を別々に比較します。それ以外は同時成立する条件内で攻撃加算を選びます。未対応の条件付き補正がある場合は最大側を保留します。連撃は5回攻撃後の強化状態が事前に成立した前提で、初回分を重ねて加算しません。急襲は事前発動した最大側に攻撃倍率を適用します。属性吸収は3回被弾後の強化が成立した最大側で、火・水・雷・氷・龍の属性値を加算します。状態異常の蓄積値はSTANDARDの属性HPダメージに算入しません。連撃強化Ⅰ・Ⅱは連撃を装備した最大側に基礎攻撃力＋8／＋18を加えます。通常側と連撃なしでは加算しません。連撃の数値はGameWith資料の参考値で、実機版との照合は未完了です。グループ／シリーズ効果の計算分類が未完了の装備は、効果を無視せず火力指数を保留します。防御・補助効果だけのものも分類完了までは保留します。全スキル・武器状態の上限対応は未完了です。肉質は共通の比較条件、斬れ味は各武器の最大斬れ味、超会心は各ビルドの装備スキルを使用します。所要時間は使用しません。</div>';
   h+=rows.filter(r=>!Number.isFinite(r.power?.normal?.comparisonPower)).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数は保留（'+esc(comparisonReasonText(r.power?.reason||'NORMAL_POWER_UNAVAILABLE'))+'）</div>').join('');
   h+=rows.filter(r=>Number.isFinite(r.power?.normal?.comparisonPower)&&!comparisonPowerChange(r,baseline)?.normal).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数の計算値は表示しています。基準比のみ保留（'+esc(comparisonReasonText(!r.kind||r.kind!==baseline.kind?'SAME_WEAPON_REQUIRED':'BASELINE_NORMAL_POWER_UNAVAILABLE'))+'）</div>').join('');
   h+=rows.filter(r=>r.power?.maximumReason).map(r=>'<div class="compare-note">'+esc(r.name)+'：最大火力は保留（'+esc(comparisonReasonText(r.power.maximumReason))+'）</div>').join('');
-  return h+'</div><div class="compare-note">基準：'+esc(baseline.name)+'。DPSは非正規化の計算値です。DPS指数・増減率は補助情報です。'+(ready?'':'基準DPSが未算出・0以下の場合、指数と増減率は算出しません。')+'太字は各項目で数値が最大のセットです。1ヒット期待値とDPSは現在Step 5の攻撃条件を共通条件として計算します。DPSは最大会心率を使用します。所要時間は参考値のためDPSも参考値です。</div>';
+  return h+'</div><div class="compare-note">太字は各項目で数値が最大のセットです。</div>';
 }
 function renderCachedBuildComparison(){if(lastBuildComparisonRows)$('compareOut').innerHTML=renderCompareTable(lastBuildComparisonRows,{baselineIndex:lastBuildComparisonBaselineIndex});}
 function referenceComboChange(row,baseline){
