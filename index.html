@@ -381,6 +381,13 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
 #hbgElementReferenceDetails,#glGenericPanel,#glCapturePanel,
 #hbgComparisonSettings,#bowComparisonSettings,#comboDpsLegacyCard,
 #powerCoverageDetails {display:none!important;}
+/* Remove empty outer cards rather than leaving blank gaps in Safari. */
+section.wrap:has(> #techAuditPanel),
+section.wrap:has(> #hhReferencePanel),
+section.wrap:has(> #scorchReferencePanel),
+section.wrap:has(> #darkArtsReferencePanel),
+section.card:has(> #hbgElementReferenceDetails),
+section.card:has(> #comboDpsLegacyCard) {display:none!important;}
 /* Hide only auxiliary manual-condition group; retain values for existing calculation contracts. */
 #powerDragonHz:where(input),#powerGutsState,#powerFortifyCount {visibility:inherit;}
 </style>
@@ -9319,14 +9326,16 @@ window.MHWeaponEffectDB=Object.freeze({switchAxe:Object.freeze({powerPhialSword:
 <script id="flamme-ui-weapon-kind-placement-stage3">
 /* Preserve original controls/events. Move only weapon-kind selection across columns on wide screens. */
 (function(){
+  const layoutQuery=window.matchMedia('(min-width: 821px)');
   const reposition=function(){
     const block=document.getElementById('weaponKindSelectionBlock');
-    const target=document.getElementById(window.innerWidth>820?'weaponKindWidePosition':'weaponKindOriginalPosition');
+    const target=document.getElementById(layoutQuery.matches?'weaponKindWidePosition':'weaponKindOriginalPosition');
     if(block&&target&&block.parentNode!==target)target.appendChild(block);
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',reposition);
   else reposition();
-  window.addEventListener('resize',reposition,{passive:true});
+  if(typeof layoutQuery.addEventListener==='function')layoutQuery.addEventListener('change',reposition);
+  else if(typeof layoutQuery.addListener==='function')layoutQuery.addListener(reposition);
 })();
 </script>
 </body></html>
