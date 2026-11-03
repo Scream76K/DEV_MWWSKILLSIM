@@ -44,6 +44,14 @@ try{
   out.counts.byPhial[type]=details;
   out.counts.without152[type]={total:subset.length,complete:subset.filter(c=>['normal','maximum'].every(ch=>c.without152[ch].status==='complete')).length,blocked:subset.filter(c=>['normal','maximum'].some(ch=>c.without152[ch].status!=='complete')).length};
  }
+ const statusCases=out.cases.filter(c=>c.phial==='impact'&&c.specials.length===1&&c.specials[0].kind==='status'&&['poison','paralysis','sleep'].includes(c.specials[0].status));
+ assert.equal(statusCases.length,16,'MHDB snapshot status cohort drift');
+ for(const c of statusCases){
+  assert.equal(c.channels.normal.status,'complete','status physical calculation '+c.id+' '+c.channels.normal.reason);
+  assert.equal(c.without152.maximum.status,'complete','status maximum 152 OFF '+c.id+' '+c.without152.maximum.reason);
+  assert.ok(Number.isFinite(c.channels.normal.value),'finite status direct hit damage '+c.id);
+  assert.ok(Number.isFinite(c.without152.maximum.value),'finite status maximum 152 OFF '+c.id);
+ }
  assert.deepEqual(errors,[],'unexpected JSDOM error');
  out.outcome='CENSUS_COMPLETE_NO_PRODUCTION_CHANGE';
 }catch(e){out.failure=e.stack;process.exitCode=1;}finally{
