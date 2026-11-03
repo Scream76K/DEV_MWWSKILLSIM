@@ -56,8 +56,8 @@ try{
   H_more_normal:['complete',null],
   H_stock_short:['blocked','H:REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT'],
   H_mode_missing:['blocked','H:REAL_SLICE:CB_MIX_EXPLICIT_AXE_START_REQUIRED'],
-  H_axe_off_enhanced_half_normal_half:['blocked','H:REAL_SLICE:CB_ED1_CROSS_TYPE_DAMAGE_ALLOCATION_UNRESOLVED'],
-  H_axe_off_enhanced_two:['complete',null],
+  H_axe_off_enhanced_half_normal_half:['blocked','R:REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT;H:REAL_SLICE:CB_ED1_CROSS_TYPE_DAMAGE_ALLOCATION_UNRESOLVED'],
+  H_axe_off_enhanced_two:['blocked','R:REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT'],
   H_enhanced_half_no_normal:['blocked','H:REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT'],
   H_shield_off_enhanced:['blocked','H:REAL_SLICE:CB_H_EXPLICIT_MODE_SHIELD_SWORD_REQUIRED'],
   H_sword_on_enhanced:['blocked','H:REAL_SLICE:CB_H_EXPLICIT_MODE_SHIELD_SWORD_REQUIRED'],
@@ -69,6 +69,8 @@ try{
   assert.equal(item.channels[ch].reason,reason,item.name+' '+ch);
   assert.equal(Number.isFinite(item.channels[ch].total),status==='complete',item.name+' '+ch+' partial total');
   if(status==='complete')assert.equal(item.channels[ch].total,item.channels[ch].r+item.channels[ch].h,item.name+' '+ch+' raw sum');
+  if(item.name==='H_axe_off_enhanced_two')assert.ok(Number.isFinite(item.channels[ch].h)&&item.channels[ch].r===null,'H complete but R blocked under shared axe OFF');
+  if(item.name==='H_axe_off_enhanced_half_normal_half')assert.equal(item.channels[ch].h,null,'cross-kind H allocation must remain unavailable');
  }
  assert.deepEqual(errors,[]);
  out.outcome='PASS';
