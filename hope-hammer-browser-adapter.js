@@ -590,7 +590,11 @@
   let resistanceConversionAdd=0;
   if(resistanceConversionLevel){
    if(allSkills.filter(x=>x.skillKey==='resistanceConversionThunder').some(x=>Number(x.skillId)!==165||!['耐性変換【雷】','Thunder Resistance Conversion'].includes(x.name)||x.level!==1))return fail('REAL_SLICE:THUNDER_RESISTANCE_CONVERSION_LEVEL_UNSUPPORTED');
-   if(elementType!=='thunder'||!conversionComponentsSupported)return fail('REAL_SLICE:THUNDER_CONVERSION_BODY_SCOPE_UNSUPPORTED');
+   // ISOLATED CANDIDATE, NOT OWNER APPROVED: exact adopted CB R/H routes only.
+   // The existing element-only conversion formula applies once per body-element hit;
+   // IMPACT_PHIAL components remain excluded, as proven by the isolation regression.
+   const cbThunderRHCandidate=weapon.kind==='charge-blade'&&officialPhialType==='IMPACT'&&chargeBladeState?.shieldBoosted===true&&chargeBladeState?.axeBoosted===true&&chargeBladeState?.swordBoosted===false&&['RELEASE_ROUTE','AED_ROUTE'].some(route=>{const ids=root.ChargeBladeEngine?.profiles?.[route]?.techniqueIds;return Array.isArray(ids)&&JSON.stringify(resolvedTechniqueIds)===JSON.stringify(ids);});
+   if(elementType!=='thunder'||(!conversionComponentsSupported&&!cbThunderRHCandidate))return fail('REAL_SLICE:THUNDER_CONVERSION_BODY_SCOPE_UNSUPPORTED');
    if(resistanceInput?.status!=='KNOWN_LIMITED')return fail('REAL_SLICE:THUNDER_RESISTANCE_UNRESOLVED:'+String(resistanceInput?.reason||'missing'));
    resistanceConversionAdd=thunderResistance*resistanceConversionCoefficient;
    // The adopted common engine caps this body element after the conversion flat.
