@@ -44,7 +44,13 @@ try{
  const blocked=out.cases.filter(c=>!success.includes(c));
  out.counts={total:all.length,complete:success.length,blocked:blocked.length,byReason:{}};
  for(const c of blocked){const key=['normal','maximum'].map(ch=>c.channels[ch].reason).join(' | ');out.counts.byReason[key]=(out.counts.byReason[key]||0)+1;}
- assert.ok(success.length>=2,'existing real MHDB103/104 strong-H candidates must remain available');
+ assert.equal(success.length,16,'20-source-weapon candidate complete count drift');
+ assert.equal(blocked.length,4,'candidate remaining pending count drift');
+ assert.deepEqual(blocked.map(x=>x.id),[118,119,120,121],'only sourced airborne-scope weapons remain blocked');
+ for(const c of blocked){
+  for(const ch of ['normal','maximum'])assert.equal(c.channels[ch].reason,'H:REAL_SLICE:AIRBORNE_HIT_SCOPE_PENDING:CB_AXE_TO_SWORD_MORPH',c.id+' '+ch+' must retain unapproved airborne guard');
+ }
+ assert.ok(success.some(x=>x.id===103)&&success.some(x=>x.id===104),'real weapon103/104 strong H available');
  assert.deepEqual(errors,[]);
  out.outcome='POWER_H_PRODUCTION_CANDIDATE_CENSUS_NOT_ADOPTED';
 }catch(e){out.failure=e.stack;process.exitCode=1;}
