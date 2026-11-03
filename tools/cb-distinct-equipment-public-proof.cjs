@@ -37,6 +37,7 @@ try{
  }
  assert.notDeepEqual(out.cases[0].snapshot,out.cases[1].snapshot,'distinct equipment snapshots required');
  assert.notDeepEqual(out.cases[0].armor,out.cases[1].armor,'actual equipped armor must differ');
+ for(const ch of ['normal','maximum']) assert.notEqual(out.cases[0].result.channels[ch].metrics.comboTotalDamage.value,out.cases[1].result.channels[ch].metrics.comboTotalDamage.value,'equipment change must alter '+ch+' actual damage');
  out.savedBefore=read('savedBuildMap()');
  for(const c of out.cases){
   const el=w.document.querySelector('[data-build-load="'+c.name+'"]');assert.ok(el,'load '+c.name);el.click();w.calcBuild();
