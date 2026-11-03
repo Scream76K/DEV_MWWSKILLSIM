@@ -398,6 +398,74 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
  .charm-section-heading::before{flex-basis:24px;width:24px;height:28px;}
 }
 </style>
+<style id="flamme-ui-armor-readability-20261103">
+/* Presentation only: keep equipment controls, saved values and existing handlers intact. */
+#armorWorkspaceLeft, #armorSelectors, #charmEditor {min-width:0;max-width:100%}
+#armorSelectors .equip-inline {
+  min-width:0;
+  padding:9px 10px!important;
+  margin:0!important;
+  border-radius:10px!important;
+}
+#armorSelectors .equip-inline > .equip-title:first-child {
+  min-width:0;
+  font-size:15px!important;
+  line-height:1.4;
+  margin:0 0 6px!important;
+}
+#armorSelectors .equip-inline > select[data-armor] {
+  display:block;
+  width:100%!important;
+  max-width:100%;
+  min-width:0!important;
+  min-height:40px!important;
+  height:auto!important;
+  padding:8px 28px 8px 9px!important;
+  font-size:14px!important;
+  line-height:1.45;
+  font-weight:650!important;
+  text-overflow:ellipsis;
+}
+#armorSelectors .armorSkillPreview {
+  font-size:12px!important;
+  line-height:1.5!important;
+  overflow-wrap:anywhere;
+  margin:5px 0!important;
+}
+#armorSelectors .armorSlotLines {min-width:0}
+#armorSelectors .armorSlotLines > .equip-title {margin:5px 0 3px!important}
+#armorSelectors .slot-line {
+  grid-template-columns:34px minmax(0,1fr)!important;
+  gap:6px!important;
+  min-width:0;
+  padding:4px 5px!important;
+}
+#armorSelectors .slot-line .slot-size {
+  width:34px!important;min-width:34px!important;max-width:34px!important;
+  font-size:12px!important;
+  text-align:center;
+}
+#armorSelectors .slot-line select {
+  width:100%!important;min-width:0!important;max-width:100%;
+  min-height:38px!important;height:auto!important;
+  padding:6px 24px 6px 8px!important;
+  font-size:13px!important;line-height:1.35;
+  text-overflow:ellipsis;
+}
+#charmEditor {overflow-wrap:anywhere}
+#charmEditor select, #charmEditor input:not([type="checkbox"]):not([type="radio"]) {
+  min-width:0;max-width:100%;min-height:38px;
+}
+#armorWorkspaceLeft :is(select,input,button):focus-visible {
+  outline:2px solid #c28b43;outline-offset:2px;
+}
+@media(max-width:430px) {
+  #armorSelectors .equip-inline {padding:7px 7px!important}
+  #armorSelectors .equip-inline > select[data-armor] {font-size:14px!important}
+  #armorSelectors .slot-line {grid-template-columns:30px minmax(0,1fr)!important;gap:4px!important}
+  #armorSelectors .slot-line .slot-size {width:30px!important;min-width:30px!important;max-width:30px!important}
+}
+</style>
 </head><body>
 <div class="notice"><b>v7.2.2-template-rootfix-r7 / OCR統合 r1.1.19 fix12</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">r120 HBG Shot Skill Conditions / Game Ver.1.042.00.02</div>
 <header><div class="wrap"><h1>⚔️ MH Wilds 装備セット＆火力シミュレーター v7.2.1 / OCR統合 r1.1.19 / ビルドテンプレート</h1><div class="muted">①〜⑤ ハンターズノート：装備を作る・記録する　｜　⑥〜⑧ ハンターズサポート：分析・提案・相談</div></div></header>
