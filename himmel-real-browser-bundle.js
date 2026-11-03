@@ -1346,7 +1346,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(resource.requiredMode&&state?.chargeBlade?.mode!==resource.requiredMode)throw Error('REAL_SLICE:CB_H_MODE_MISMATCH');
    if(state?.chargeBlade?.previousAction!==resource.requiredPreviousAction||typeof state?.chargeBlade?.normalPhials!=='number'||!Number.isSafeInteger(state?.chargeBlade?.normalPhials*2))throw Error('REAL_SLICE:CB_ED1_START_STATE_UNRESOLVED');
    const actualKey=(state.chargeBlade.enhancedPhials??0)>0?'enhancedPhials':'normalPhials';
-   if(actualKey!==resource.resourceKey)throw Error('REAL_SLICE:CB_RESOURCE_PRIORITY_MISMATCH');
+   if(resource.consumeNormalPhials>0&&actualKey!==resource.resourceKey)throw Error('REAL_SLICE:CB_RESOURCE_PRIORITY_MISMATCH');
    const stock=state.chargeBlade[resource.resourceKey??'normalPhials'];
    if(typeof stock!=='number'||!Number.isSafeInteger(stock*2)||stock<resource.consumeNormalPhials)throw Error('REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT');
   }
@@ -1521,7 +1521,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(resource.requiredMode&&state?.chargeBlade?.mode!==resource.requiredMode)throw Error('REAL_SLICE:CB_H_MODE_MISMATCH');
    if(state?.chargeBlade?.previousAction!==resource.requiredPreviousAction||typeof state?.chargeBlade?.normalPhials!=='number'||!Number.isSafeInteger(state?.chargeBlade?.normalPhials*2))throw Error('REAL_SLICE:CB_ED1_START_STATE_UNRESOLVED');
    const actualKey=(state.chargeBlade.enhancedPhials??0)>0?'enhancedPhials':'normalPhials';
-   if(actualKey!==resource.resourceKey)throw Error('REAL_SLICE:CB_RESOURCE_PRIORITY_MISMATCH');
+   if(resource.consumeNormalPhials>0&&actualKey!==resource.resourceKey)throw Error('REAL_SLICE:CB_RESOURCE_PRIORITY_MISMATCH');
    const stock=state.chargeBlade[resource.resourceKey??'normalPhials'];
    if(typeof stock!=='number'||!Number.isSafeInteger(stock*2)||stock<resource.consumeNormalPhials)throw Error('REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT');
   }
