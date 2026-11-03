@@ -259,7 +259,9 @@
    if(hRule?.status!=='OWNER_APPROVED_PROVISIONAL'||JSON.stringify(resolvedTechniqueIds)!==JSON.stringify(hRule.techniqueIds))return fail('REAL_SLICE:CB_H_EXACT_SINGLE_ROUTE_REQUIRED');
    if(chargeBladeState?.mode!=='AXE'||chargeBladeState.previousAction!=='AXE_NEUTRAL'||chargeBladeState.shieldBoosted!==true||chargeBladeState.swordBoosted!==false||typeof chargeBladeState.axeBoosted!=='boolean')return fail('REAL_SLICE:CB_H_EXPLICIT_MODE_SHIELD_SWORD_REQUIRED');
    if(officialPhialType!=='IMPACT'||chargeBladeState.phialType!=='IMPACT')return fail('REAL_SLICE:CB_H_IMPACT_ONLY');
-   if(chargeBladeState.enhancedPhial!==false||chargeBladeState.enhancedPhials!==0)return fail('REAL_SLICE:CB_H_NORMAL_PHIAL_ONLY');
+   // H enhanced stock candidate: existing adopted discharge planning selects coefficients by the consumed stock; a zero-consumption shield prefix does not consume a phial.
+   // Legacy absent stock remains governed by the shared explicit ED resource contract below.
+   if(chargeBladeState.enhancedPhials!=null&&(!Number.isSafeInteger(chargeBladeState.enhancedPhials*2)||chargeBladeState.enhancedPhials<0))return fail('REAL_SLICE:CB_H_ENHANCED_STOCK_INVALID');
   }
   const ed1Requested=weapon.kind==='charge-blade'&&resolvedTechniqueIds.some(id=>dischargeRules?.predecessors?.[id]);
   if(ed1Requested){
