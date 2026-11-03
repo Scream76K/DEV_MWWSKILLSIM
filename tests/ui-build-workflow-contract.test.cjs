@@ -16,11 +16,16 @@ test('Build before Support, without duplicated weapon selector', () => {
   assert.ok(main.indexOf('③ 装備登録') < main.indexOf('ここからサポート機能'));
   assert.equal((main.match(/id="weaponKindSelectionBlock"/g) || []).length, 1);
 });
-test('responsive breakpoints retain phone stack and tablet-landscape columns', () => {
+test('responsive breakpoints stack tablet portrait and retain landscape columns', () => {
   const css = extractStyle('flamme-ui-responsive-stage1');
-  assert.ok(css.includes('max-width: 820px'));
+  assert.ok(css.includes('max-width: 980px'));
   assert.ok(css.includes('grid-template-columns:minmax(0,1fr)!important'));
-  assert.ok(css.includes('min-width: 821px'));
+  assert.ok(css.includes('min-width: 981px'));
+  const workspace = extractStyle('flamme-ui-workspace-stage4');
+  assert.ok(workspace.includes('min-width:981px'));
+  assert.ok(workspace.includes('max-width:980px'));
+  assert.ok(workspace.includes('max-width:1120px'));
+  assert.ok(!css.includes('min-width: 821px'));
 });
 test('reference-only HBG form is visually separated, not deleted', () => {
   const css = extractStyle('flamme-ui-developer-panel-separation-20261103');
