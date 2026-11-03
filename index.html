@@ -585,6 +585,67 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
   #savedBuilds .saved-build-item > button {min-width:48px;padding:6px 7px;font-size:12px;}
 }
 </style>
+<style id="flamme-ui-skill-deco-readability-stage7">
+/* Visual-only refinement: calculated skill levels and decoration values are untouched. */
+#skillWorkspaceRight, #skillOutput {min-width:0;max-width:100%;}
+#skillWorkspaceRight #skillOutput .skill-game-grid {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:8px;
+  min-width:0;
+}
+#skillWorkspaceRight #skillOutput .skill-bucket {min-width:0;margin-top:12px;}
+#skillWorkspaceRight #skillOutput .skill-bucket-title {
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+#skillWorkspaceRight #skillOutput .skill-game {
+  box-sizing:border-box;
+  min-width:0;
+  max-width:100%;
+  padding:9px 10px;
+}
+#skillWorkspaceRight #skillOutput .skill-game-name {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;
+  min-width:0;
+  font-size:14px;
+  line-height:1.45;
+}
+#skillWorkspaceRight #skillOutput .skill-game-name > span:first-child {
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+#skillWorkspaceRight #skillOutput .skill-level {
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+#skillWorkspaceRight #skillOutput .skill-blocks {min-width:0;gap:4px;}
+#skillWorkspaceRight #skillOutput .skill-block {flex:0 0 14px;width:14px;height:14px;}
+#armorSelectors .slot-line select.decoSel,
+#charmEditor .charm-deco-row select.decoSel {
+  box-sizing:border-box;
+  min-width:0!important;
+  max-width:100%;
+  width:100%!important;
+  min-height:42px!important;
+  height:auto!important;
+  font-size:14px!important;
+  line-height:1.35;
+  padding:7px 26px 7px 8px!important;
+  text-overflow:ellipsis;
+}
+#armorSelectors .slot-line,
+#charmEditor .charm-deco-row {min-width:0;max-width:100%;}
+@media(max-width:430px) {
+  #skillWorkspaceRight #skillOutput .skill-game {padding:8px;}
+  #skillWorkspaceRight #skillOutput .skill-game-name {font-size:13px;}
+  #armorSelectors .slot-line select.decoSel,
+  #charmEditor .charm-deco-row select.decoSel {font-size:13px!important;}
+}
+</style>
 <style id="flamme-ui-developer-panel-separation-20261103">
 /* Keep verification inputs/handlers in the DOM, but separate them from ordinary user operation.
    Evidence review remains directly accessible at evidence-review.html. */
