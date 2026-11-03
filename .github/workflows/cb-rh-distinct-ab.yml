@@ -8,6 +8,7 @@ on:
       - 'hope-hammer-browser-adapter.js'
       - 'tools/cb-distinct-equipment-public-proof.cjs'
       - 'tools/cb-rh-reason-matrix.cjs'
+      - 'tools/cb-h-enhanced-isolated-probe.cjs'
       - '.github/workflows/cb-rh-distinct-ab.yml'
   workflow_dispatch:
 permissions:
@@ -28,3 +29,5 @@ jobs:
         run: node tools/cb-distinct-equipment-public-proof.cjs
       - name: Classify CB R/H public unresolved reasons
         run: node tools/cb-rh-reason-matrix.cjs
+      - name: Experimental H enhanced phial downstream probe (no product change)
+        run: node tools/cb-h-enhanced-isolated-probe.cjs
