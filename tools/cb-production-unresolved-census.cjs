@@ -21,17 +21,18 @@ try{
  const all=w.eval("DB.weapons.filter(x=>x.kind==='charge-blade').map(x=>({id:x.id,name:x.name,phial:x.phial}))");
  const impact=all.filter(x=>x.phial==='impact'),power=all.filter(x=>x.phial==='element');
  assert.ok(impact.length>=5&&power.length>=5,'actual MHDB must contain both CB phial categories');
- const picked=[...impact.slice(0,40),...power.slice(0,20)];
+ const picked=[...impact,...power];
  for(const entry of picked){
   w.__censusWeaponId=entry.id;
   w.eval("window.__censusWeapon=DB.weapons.find(x=>x.id===window.__censusWeaponId&&x.kind==='charge-blade');if(!window.__censusWeapon)throw Error('MHDB_CB_WEAPON_NOT_FOUND');App.build.setWeapon(window.__censusWeapon);weaponKind.value='charge-blade';weapon.innerHTML='<option value='+window.__censusWeapon.id+'>'+window.__censusWeapon.name+'</option>';weapon.value=String(window.__censusWeapon.id);renderComboForWeapon();App.state.combo.moves=[];restoreComboRows();comboPreset.value='adopted:cb_release_r';comboPreset.dispatchEvent(new Event('change'));restoreComboCBState({mode:'AXE',shieldBoosted:true,axeBoosted:true,swordBoosted:false,phialType:window.__censusWeapon.phial==='element'?'POWER_ELEMENT':'IMPACT',enhancedPhial:false,previousAction:'CHARGE',normalPhials:2,enhancedPhials:0,mixMode:'R_H_INDEPENDENT',mixH:{mode:'AXE',previousAction:'AXE_NEUTRAL',normalPhials:2,enhancedPhials:0}});comboCBMode.value='AXE';comboCBMix.value='R_H_INDEPENDENT';comboCBHMode.value='AXE';comboCBHPreviousAction.value='AXE_NEUTRAL';comboCBHNormalPhials.value='2';comboCBHEnhancedPhials.value='0';monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';powerBlackEclipseState.value='OVERCOME';powerAttributeConversionNormal.value='OFF';powerAttributeConversionMaximum.value='ON';App.combo.syncFromDOM();calcBuild();");
   const r=read('calcState.realOneHit');
+  const directElementNormal=entry.phial==='impact'?read("['R','H'].flatMap(route=>(calcState.realOneHit?.routes?.[route]?.channels?.normal?.components||[]).filter(x=>String(x.id||'').includes(':element:')).map(x=>x.value)).reduce((a,b)=>a+(Number(b)||0),0)"):null;
   const channels=Object.fromEntries(['normal','maximum'].map(ch=>{const c=r?.channels?.[ch];return [ch,{status:c?.execution?.status??'missing',reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason??r?.reason??null,value:c?.metrics?.comboTotalDamage?.value??null}]}));
   const specials=read("window.__censusWeapon.specials.map(x=>({kind:x.kind,element:x.element??null,status:x.status??null,name:x.name??null,damage:x.damage?.display??null}))");
   w.eval("powerAttributeConversionMaximum.value='OFF';App.combo.syncFromDOM();calcBuild();");
   const off=read('calcState.realOneHit');
   const without152=Object.fromEntries(['normal','maximum'].map(ch=>{const c=off?.channels?.[ch];return [ch,{status:c?.execution?.status??'missing',reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason??off?.reason??null,value:c?.metrics?.comboTotalDamage?.value??null}]}));
-  out.cases.push({id:entry.id,name:entry.name,phial:entry.phial,channels,without152,specials});
+  out.cases.push({id:entry.id,name:entry.name,phial:entry.phial,channels,without152,specials,directElementNormal});
  }
  out.counts={totalAvailableInDB:{impact:impact.length,power:power.length},tested:picked.length,byPhial:{},without152:{}};
  for(const type of ['impact','element']){
@@ -45,11 +46,12 @@ try{
   out.counts.without152[type]={total:subset.length,complete:subset.filter(c=>['normal','maximum'].every(ch=>c.without152[ch].status==='complete')).length,blocked:subset.filter(c=>['normal','maximum'].some(ch=>c.without152[ch].status!=='complete')).length};
  }
  const statusCases=out.cases.filter(c=>c.phial==='impact'&&c.specials.length===1&&c.specials[0].kind==='status'&&['poison','paralysis','sleep'].includes(c.specials[0].status));
- assert.equal(statusCases.length,16,'MHDB snapshot status cohort drift');
+ assert.ok(statusCases.length>=16,'MHDB snapshot status cohort unexpected shrink');
  for(const c of statusCases){
   assert.equal(c.channels.normal.status,'complete','status physical calculation '+c.id+' '+c.channels.normal.reason);
   assert.equal(c.without152.maximum.status,'complete','status maximum 152 OFF '+c.id+' '+c.without152.maximum.reason);
   assert.ok(Number.isFinite(c.channels.normal.value),'finite status direct hit damage '+c.id);
+  assert.equal(c.directElementNormal,0,'status buildup must not become direct elemental damage '+c.id);
   assert.ok(Number.isFinite(c.without152.maximum.value),'finite status maximum 152 OFF '+c.id);
  }
  assert.deepEqual(errors,[],'unexpected JSDOM error');
