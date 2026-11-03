@@ -646,6 +646,34 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
   #charmEditor .charm-deco-row select.decoSel {font-size:13px!important;}
 }
 </style>
+<style id="flamme-ui-save-layout-stage8">
+/* Keep the original name field and Save/Clear handlers. Layout only. */
+main.wrap > .grid > aside .save-build-row {min-width:0;}
+main.wrap > .grid > aside .save-build-row > div {min-width:0;}
+main.wrap > .grid > aside #buildName {
+  display:block;
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  min-height:42px;
+}
+main.wrap > .grid > aside .save-build-row > button {min-height:42px;}
+@media (max-width:1120px) {
+  main.wrap > .grid > aside .save-build-row {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    align-items:stretch;
+    gap:8px;
+  }
+  main.wrap > .grid > aside .save-build-row > div {
+    grid-column:1/-1;
+  }
+  main.wrap > .grid > aside .save-build-row > button {
+    min-width:0;
+    width:100%;
+  }
+}
+</style>
 <style id="flamme-ui-developer-panel-separation-20261103">
 /* Keep verification inputs/handlers in the DOM, but separate them from ordinary user operation.
    Evidence review remains directly accessible at evidence-review.html. */
