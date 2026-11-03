@@ -262,7 +262,11 @@
   if(hRequested){
    if(hRule?.status!=='OWNER_APPROVED_PROVISIONAL'||JSON.stringify(resolvedTechniqueIds)!==JSON.stringify(hRule.techniqueIds))return fail('REAL_SLICE:CB_H_EXACT_SINGLE_ROUTE_REQUIRED');
    if(chargeBladeState?.mode!=='AXE'||chargeBladeState.previousAction!=='AXE_NEUTRAL'||chargeBladeState.shieldBoosted!==true||chargeBladeState.swordBoosted!==false||typeof chargeBladeState.axeBoosted!=='boolean')return fail('REAL_SLICE:CB_H_EXPLICIT_MODE_SHIELD_SWORD_REQUIRED');
-   if(officialPhialType!=='IMPACT'||chargeBladeState.phialType!=='IMPACT')return fail('REAL_SLICE:CB_H_IMPACT_ONLY');
+   // CANDIDATE_NOT_ADOPTED: extend exact H route to sourced POWER_ELEMENT phials.
+   // Shield-thrust phial explosion count/consumption remains provisional pending
+   // independent game validation. No unknown/mismatched phial type is accepted.
+   const hPhialPair=(officialPhialType==='IMPACT'&&chargeBladeState.phialType==='IMPACT')||(officialPhialType==='POWER_ELEMENT'&&chargeBladeState.phialType==='POWER_ELEMENT');
+   if(!hPhialPair)return fail('REAL_SLICE:CB_H_IMPACT_ONLY');
    // H enhanced stock candidate: existing adopted discharge planning selects coefficients by the consumed stock; a zero-consumption shield prefix does not consume a phial.
    // Legacy absent stock remains governed by the shared explicit ED resource contract below.
    if(chargeBladeState.enhancedPhials!=null&&(!Number.isSafeInteger(chargeBladeState.enhancedPhials*2)||chargeBladeState.enhancedPhials<0))return fail('REAL_SLICE:CB_H_ENHANCED_STOCK_INVALID');
