@@ -25,7 +25,21 @@ try{
    w.__probeCBId=id;
    w.eval("window.__probeCB=DB.weapons.find(x=>x.id===window.__probeCBId&&x.kind==='charge-blade');if(!window.__probeCB)throw Error('MISSING_WEAPON');App.build.setWeapon(window.__probeCB);weaponKind.value='charge-blade';weapon.innerHTML='<option value='+window.__probeCB.id+'>'+window.__probeCB.name+'</option>';weapon.value=String(window.__probeCB.id);renderComboForWeapon();App.state.combo.moves=[];restoreComboRows();comboPreset.value='adopted:cb_release_r';comboPreset.dispatchEvent(new Event('change'));restoreComboCBState({mode:'AXE',shieldBoosted:true,axeBoosted:true,swordBoosted:false,phialType:'IMPACT',enhancedPhial:false,previousAction:'CHARGE',normalPhials:2,enhancedPhials:0,mixMode:'R_H_INDEPENDENT',mixH:{mode:'AXE',previousAction:'AXE_NEUTRAL',normalPhials:2,enhancedPhials:0}});comboCBMode.value='AXE';comboCBMix.value='R_H_INDEPENDENT';comboCBHMode.value='AXE';comboCBHPreviousAction.value='AXE_NEUTRAL';comboCBHNormalPhials.value='2';comboCBHEnhancedPhials.value='0';monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';powerBlackEclipseState.value='OVERCOME';powerAttributeConversionNormal.value='OFF';powerAttributeConversionMaximum.value='OFF';App.combo.syncFromDOM();calcBuild();");
    const obj=read("({real:calcState.realOneHit,stats:calcState.stats})");
-   result.push({id,name:w.__probeCB?.name,skills:w.__probeCB?.skills?.map(x=>({id:x.skill?.id,name:x.skill?.name,level:x.level})),channels:Object.fromEntries(['normal','maximum'].map(ch=>{const c=obj.real?.channels?.[ch];return [ch,{status:c?.execution?.status,reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason,value:c?.metrics?.comboTotalDamage?.value}]})),conditions:read("({wetNormal:typeof powerWetNormal!=='undefined'?powerWetNormal.value:null,wetMaximum:typeof powerWetMaximum!=='undefined'?powerWetMaximum.value:null})")});
+   const baseline=read('calcState.realOneHit');
+   w.eval("powerWetNormal.value='DRY';powerWetMaximum.value='DRY';App.combo.syncFromDOM();calcBuild()");
+   const dry=read('calcState.realOneHit');
+   w.eval("powerWetNormal.value='WET';powerWetMaximum.value='BOTH';App.combo.syncFromDOM();calcBuild()");
+   const active=read('calcState.realOneHit');
+   const summary=x=>Object.fromEntries(['normal','maximum'].map(ch=>{const c=x?.channels?.[ch];return[ch,{status:c?.execution?.status,reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason,value:c?.metrics?.comboTotalDamage?.value}]}));
+   assert.equal(summary(baseline).normal.status,'blocked','blank normal must stay blocked '+id);
+   for(const [label,x] of [['dry',dry],['active',active]]){
+    for(const ch of ['normal','maximum']){
+     assert.equal(summary(x)[ch].status,'complete',id+' '+label+' '+ch+' '+summary(x)[ch].reason);
+     assert.ok(Number.isFinite(summary(x)[ch].value),id+' '+label+' '+ch+' not numeric');
+     assert.equal(x?.channels?.[ch]?.metrics?.comboTotalDamage?.value,x.routes.R.channels[ch].metrics.comboTotalDamage.value+x.routes.H.channels[ch].metrics.comboTotalDamage.value);
+    }
+   }
+   result.push({id,name:w.__probeCB?.name,blank:summary(baseline),dry:summary(dry),active:summary(active),skills:w.__probeCB?.skills?.map(x=>({id:x.skill?.id,name:x.skill?.name,level:x.level})),channels:Object.fromEntries(['normal','maximum'].map(ch=>{const c=obj.real?.channels?.[ch];return [ch,{status:c?.execution?.status,reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason,value:c?.metrics?.comboTotalDamage?.value}]})),conditions:read("({wetNormal:typeof powerWetNormal!=='undefined'?powerWetNormal.value:null,wetMaximum:typeof powerWetMaximum!=='undefined'?powerWetMaximum.value:null})")});
  }
  assert.deepEqual(errors,[]);
  out.outcome='DIAGNOSTIC_ONLY';
