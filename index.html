@@ -763,6 +763,43 @@ main.wrap > .grid > aside > section.card:has(> #hbgElementReferenceDetails) {
   display:none!important;
 }
 
+
+/* Owner review 2026-11-03: responsive and presentation final pass. */
+@media (min-width:981px) {
+  main.wrap > .grid {grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;align-items:start;}
+  main.wrap {max-width:1500px;}
+}
+@media (min-width:981px) and (max-width:1280px) {
+  #armorBuildWorkspace {grid-template-columns:minmax(0,1fr)!important;}
+}
+@media (min-width:1281px) {
+  #armorBuildWorkspace {grid-template-columns:minmax(0,1fr)!important;}
+}
+/* Keep the editor accessible on phones and portrait tablets, without horizontal body overflow. */
+main.wrap > .grid > aside,main.wrap > .grid > section,
+#armorBuildWorkspace,#armorWorkspaceLeft,#skillWorkspaceRight {min-width:0;}
+#skillWorkspaceRight #skillOutput .skill-game-grid {
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+@media (max-width:560px) {
+  #skillWorkspaceRight #skillOutput .skill-game-grid {grid-template-columns:minmax(0,1fr)!important;}
+  #charmEditor {display:block!important;}
+}
+/* Technical rows and summary-only outputs remain in calculation state, not in the regular UI. */
+#compareOut tr[data-comparison-metric="one-hit-reference"],
+#compareOut tr[data-comparison-metric="pipeline-normal"],
+#compareOut tr[data-comparison-metric="pipeline-maximum"] {display:none!important;}
+#appVersionBadge {display:none!important;}
+#compareOut .compare-table {max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+#compareOut .compare-table table {min-width:100%;table-layout:auto;}
+#compareOut .compare-table th, #compareOut .compare-table td {
+ overflow-wrap:anywhere;word-break:normal;vertical-align:middle;
+}
+#compareOut .compare-table td {font-variant-numeric:tabular-nums;}
+#compareOut .element-display .element-label,#buildSummary .element-display .element-label{display:none!important;}
+#weaponKindSelectionBlock .weapon-kind-icon span {white-space:normal!important;overflow-wrap:anywhere;word-break:keep-all;}
+#weaponKindSelectionBlock .weapon-kind-icon {min-width:0;}
+
 /* UI owner feedback stage 2: remove redundant comparison diagnostics from normal view. */
 #compareOut tr[data-comparison-metric="pipeline-normal"],
 #compareOut tr[data-comparison-metric="pipeline-maximum"],
@@ -2844,7 +2881,7 @@ function renderSummary(){
     <div class="gs-row"><span class="gs-label">攻撃力</span><span class="gs-value">${Math.round(s.attack)}<span class="gs-sub">真 ${Math.round(s.attackTrue)}</span></span></div>
     <div class="gs-row"><span class="gs-label">会心率</span><span class="gs-value">${aff}%</span></div>
     <div class="gs-row"><span class="gs-label">最大会心率</span><span class="gs-value">${maxAff}%</span></div>
-    <div class="gs-row"><span class="gs-label">属性</span><span class="gs-value">${equipmentElementDisplay(s,{detail:true})}</span></div>
+    <div class="gs-row"><span class="gs-label">属性</span><span class="gs-value">${equipmentElementDisplay(s,{detail:false})}</span></div>
     <div class="gs-row"><span class="gs-label">防御力</span><span class="gs-value">${Math.round(s.defense)}</span></div>
     <div class="gs-row gs-one-hit-result"><span class="gs-label">選択技の実計算</span><span class="gs-value"><span class="one-hit-compact">${oneCompactText}</span><details class="one-hit-diagnostics"><summary>詳細・保留理由</summary><div class="one-hit-diagnostic-body">${oneText}</div></details></span></div>
   </div>`;
@@ -8924,7 +8961,7 @@ function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
   h+='<tr><th>真攻撃力</th>'+rows.map(r=>cell(rounded(r.attackTrue),r.attackTrue===mta)).join('')+'</tr>';
   h+='<tr><th>会心率</th>'+rows.map(r=>cell(percent(r.affinity),r.affinity===mf)).join('')+'</tr>';
   h+='<tr><th>最大会心率</th>'+rows.map(r=>cell(percent(r.maxAffinity),r.maxAffinity===mmf)).join('')+'</tr>';
-  h+='<tr><th>属性</th>'+rows.map(r=>{const sameType=allRows.every(x=>!equipmentElementPendingReason(x)&&x.elementType===r.elementType);return '<td class="'+(sameType&&Number.isFinite(r.element)&&r.element===me?'compare-best':'')+'">'+equipmentElementDisplay(r,{detail:true})+'</td>';}).join('')+'</tr>';
+  h+='<tr><th>属性</th>'+rows.map(r=>{const sameType=allRows.every(x=>!equipmentElementPendingReason(x)&&x.elementType===r.elementType);return '<td class="'+(sameType&&Number.isFinite(r.element)&&r.element===me?'compare-best':'')+'">'+equipmentElementDisplay(r,{detail:false})+'</td>';}).join('')+'</tr>';
   // ACCEPTED SPEC: raw calculated power is invariant when the baseline selector changes.
   for(const [key,label,metric] of [['normal','火力指数（計算値）［非正規化］','power-index'],['maximum','最大火力指数（計算値）［非正規化］','max-power-index']]){
     const rawValue=r=>equipmentElementPendingReason(r)?null:r.power?.[key]?.comparisonPower;
@@ -8935,7 +8972,7 @@ function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
   }
   h+='<tr data-comparison-metric="relative-power-100"><th>相対火力（基準100）</th>'+rows.map(r=>{const result=comparisonPowerIndex(r,baseline);return cell(result?comparisonDisplayNumber(result.normal):'—',false);}).join('')+'</tr>';
   h+='<tr data-comparison-metric="relative-max-power-100"><th>最大相対火力（基準100）</th>'+rows.map(r=>{const result=comparisonPowerIndex(r,baseline);return cell(result?.maximum!=null?comparisonDisplayNumber(result.maximum):'—',false);}).join('')+'</tr>';
-  h+='<tr><th>1ヒット期待値</th>'+rows.map(r=>cell(r.damage==null?'—':comparisonDisplayNumber(r.damage),r.damage!=null&&r.damage===mx)).join('')+'</tr>';
+  h+='<tr data-comparison-metric="one-hit-reference"><th>1ヒット期待値</th>'+rows.map(r=>cell(r.damage==null?'—':comparisonDisplayNumber(r.damage),r.damage!=null&&r.damage===mx)).join('')+'</tr>';
   const pipelineMetric=(row,channel)=>{const metric=row.oneHitPipeline?.channels?.[channel]?.metrics?.comboTotalDamage;return metric?.status==='available'&&Number.isFinite(metric.value)?metric.value:null;};
   const pipelineNormal=rows.map(r=>pipelineMetric(r,'normal')),pipelineMaximum=rows.map(r=>pipelineMetric(r,'maximum'));
   const allPipelineNormal=allRows.map(r=>pipelineMetric(r,'normal')).filter(Number.isFinite),allPipelineMaximum=allRows.map(r=>pipelineMetric(r,'maximum')).filter(Number.isFinite);
