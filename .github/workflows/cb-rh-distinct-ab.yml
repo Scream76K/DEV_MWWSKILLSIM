@@ -1,0 +1,23 @@
+name: CB R-H distinct A/B regression
+on:
+  push:
+    branches:
+      - flamme/cb-rh-distinct-ab-regression-20261103
+    paths:
+      - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
+      - 'hope-hammer-browser-adapter.js'
+      - '.github/workflows/cb-rh-distinct-ab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cb-rh-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify R/H independent aggregation boundaries
+        run: node --test tests/flamme-cb-rh-distinct-ab-regression.test.cjs
