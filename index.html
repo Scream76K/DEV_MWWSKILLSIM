@@ -6175,7 +6175,14 @@ function chargeBladeResolveProfileDamage(profileKey,stats={},state={}){
   const p=CHARGE_BLADE_STANDARD_PROFILES[profileKey];if(!p)throw new Error(`CB_FAIL_CLOSED:unknown_profile:${profileKey}`);
   const plan=chargeBladePlanProfileResources(profileKey,state);
   const profileState={...state,profileId:p.id};
-  const techniques=p.techniqueIds.map(id=>chargeBladeResolveTechniqueDamage(id,stats,profileState));
+  const techniques=p.techniqueIds.map((id,index)=>{
+    const step=plan.steps[index];
+    if(step?.techniqueId!==id)throw Error('CB_FAIL_CLOSED:RESOURCE_PLAN_IDENTITY');
+    // Phial coefficients follow the stock selected by the adopted resource contract,
+    // not a single global toggle reused across the entire multi-technique route.
+    const stepState={...profileState,enhancedPhial:step.stockKind==='enhanced'};
+    return chargeBladeResolveTechniqueDamage(id,stats,stepState);
+  });
   const sum=k=>techniques.reduce((a,x)=>{
     if(typeof x[k]!=='number'||!Number.isFinite(x[k]))throw Error('CB_FAIL_CLOSED:PROFILE_COMPONENT:'+String(x.techniqueId??'UNKNOWN')+':'+k);
     return a+x[k];
