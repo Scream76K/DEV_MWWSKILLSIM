@@ -2,7 +2,7 @@ name: CB R-H distinct A/B regression
 on:
   push:
     branches:
-      - flamme/cb-power-h-real-weapon-ab-20261103
+      - flamme/cb-production-unresolved-census-20261103
     paths:
       - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
       - 'hope-hammer-browser-adapter.js'
@@ -13,6 +13,7 @@ on:
       - 'tools/cb-h-power-element-gate-probe.cjs'
       - 'tools/cb-h-power-component-audit.cjs'
       - 'tools/cb-h-power-real-weapons-ab-proof.cjs'
+      - 'tools/cb-production-unresolved-census.cjs'
       - 'tools/cb-h-enhanced-isolated-probe.cjs'
       - 'tools/cb-h-enhanced-distinct-ab-proof.cjs'
       - 'tools/cb-h-different-stock-ab-proof.cjs'
@@ -42,6 +43,8 @@ jobs:
         run: node tools/cb-h-power-component-audit.cjs
       - name: Real power-element CB weapons A/B save compare restore (isolation only)
         run: node tools/cb-h-power-real-weapons-ab-proof.cjs
+      - name: Census actual MHDB CB production unresolved cases
+        run: node tools/cb-production-unresolved-census.cjs
       - name: H enhanced phial candidate full public route proof
         run: node tools/cb-h-enhanced-isolated-probe.cjs
       - name: Public H enhanced distinct-equipment A/B save and restore
