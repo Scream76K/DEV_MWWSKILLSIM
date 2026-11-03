@@ -2,7 +2,7 @@ name: CB R-H distinct A/B regression
 on:
   push:
     branches:
-      - flamme/cb-rh-distinct-ab-regression-20261103
+      - flamme/cb-h-enhanced-provisional-20261103
     paths:
       - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
       - 'hope-hammer-browser-adapter.js'
@@ -31,5 +31,5 @@ jobs:
         run: node tools/cb-distinct-equipment-public-proof.cjs
       - name: Classify CB R/H public unresolved reasons
         run: node tools/cb-rh-reason-matrix.cjs
-      - name: Experimental H enhanced phial downstream probe (no product change)
+      - name: H enhanced phial candidate full public route proof
         run: node tools/cb-h-enhanced-isolated-probe.cjs
