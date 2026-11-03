@@ -31,12 +31,20 @@ try{
   const specials=read("window.__censusWeapon.specials.map(x=>({kind:x.kind,element:x.element??null,status:x.status??null,name:x.name??null,damage:x.damage?.display??null}))");
   w.eval("powerAttributeConversionMaximum.value='OFF';App.combo.syncFromDOM();calcBuild();");
   const off=read('calcState.realOneHit');
+  const componentSummary=(x,ch)=>['R','H'].flatMap(route=>(x?.routes?.[route]?.channels?.[ch]?.components||[]).filter(c=>c.status==='available').map(c=>({route,id:c.id,value:c.value,source:c.source})));
+  if(entry.id===145)out.artia145Diagnostic={
+   on:componentSummary(r,'maximum'),off:componentSummary(off,'maximum'),
+   onStatus:r?.channels?.maximum?.execution,offStatus:off?.channels?.maximum?.execution
+  };
   const without152=Object.fromEntries(['normal','maximum'].map(ch=>{const c=off?.channels?.[ch];return [ch,{status:c?.execution?.status??'missing',reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason??off?.reason??null,value:c?.metrics?.comboTotalDamage?.value??null}]}));
   const nonDragon=!specials.some(x=>x.kind==='element'&&x.element==='dragon');
   if(nonDragon&&entry.phial==='impact'&&['normal','maximum'].every(ch=>without152[ch].status==='complete')){
    for(const ch of ['normal','maximum']){
     assert.equal(channels[ch].status,'complete','non-dragon 152 ON must not block '+entry.id+' '+ch+' '+channels[ch].reason);
-    assert.equal(channels[ch].value,without152[ch].value,'152 dragon-only direct buff must not affect non-dragon '+entry.id+' '+ch);
+    if(channels[ch].value!==without152[ch].value){
+      out.nonDragonMismatches=out.nonDragonMismatches||[];
+      out.nonDragonMismatches.push({id:entry.id,name:entry.name,channel:ch,on:channels[ch].value,off:without152[ch].value});
+    }
    }
   }
   out.cases.push({id:entry.id,name:entry.name,phial:entry.phial,channels,without152,specials,directElementNormal,nonDragon});
@@ -86,8 +94,9 @@ try{
   assert.ok(Number.isFinite(c.without152.maximum.value),'finite status maximum 152 OFF '+c.id);
  }
  assert.deepEqual(errors,[],'unexpected JSDOM error');
+ assert.deepEqual(out.nonDragonMismatches||[],[],'non-dragon 152 still has an unwanted direct-hit effect');
  out.outcome='CENSUS_COMPLETE_NO_PRODUCTION_CHANGE';
 }catch(e){out.failure=e.stack;process.exitCode=1;}finally{
- console.log(JSON.stringify({outcome:out.outcome,counts:out.counts,cases:out.cases,failure:out.failure,errors},null,2));
+ console.log(JSON.stringify({outcome:out.outcome,counts:out.counts,nonDragonMismatches:out.nonDragonMismatches,artia145Diagnostic:out.artia145Diagnostic,cases:out.cases,failure:out.failure,errors},null,2));
  dom.window.close();
 }
