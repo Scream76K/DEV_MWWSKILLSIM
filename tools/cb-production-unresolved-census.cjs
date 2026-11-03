@@ -26,6 +26,8 @@ try{
   w.__censusWeaponId=entry.id;
   w.eval("window.__censusWeapon=DB.weapons.find(x=>x.id===window.__censusWeaponId&&x.kind==='charge-blade');if(!window.__censusWeapon)throw Error('MHDB_CB_WEAPON_NOT_FOUND');App.build.setWeapon(window.__censusWeapon);weaponKind.value='charge-blade';weapon.innerHTML='<option value='+window.__censusWeapon.id+'>'+window.__censusWeapon.name+'</option>';weapon.value=String(window.__censusWeapon.id);renderComboForWeapon();App.state.combo.moves=[];restoreComboRows();comboPreset.value='adopted:cb_release_r';comboPreset.dispatchEvent(new Event('change'));restoreComboCBState({mode:'AXE',shieldBoosted:true,axeBoosted:true,swordBoosted:false,phialType:window.__censusWeapon.phial==='element'?'POWER_ELEMENT':'IMPACT',enhancedPhial:false,previousAction:'CHARGE',normalPhials:2,enhancedPhials:0,mixMode:'R_H_INDEPENDENT',mixH:{mode:'AXE',previousAction:'AXE_NEUTRAL',normalPhials:2,enhancedPhials:0}});comboCBMode.value='AXE';comboCBMix.value='R_H_INDEPENDENT';comboCBHMode.value='AXE';comboCBHPreviousAction.value='AXE_NEUTRAL';comboCBHNormalPhials.value='2';comboCBHEnhancedPhials.value='0';if([145,146,147].includes(window.__censusWeapon.id))build.artia.restores=Array(5).fill('none');if([153,154].includes(window.__censusWeapon.id)){powerWetNormal.value='DRY';powerWetMaximum.value='DRY';}if([1073,1074].includes(window.__censusWeapon.id))build.armor={head:null,chest:null,arms:null,waist:null,legs:null};monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';powerBlackEclipseState.value='OVERCOME';powerAttributeConversionNormal.value='OFF';powerAttributeConversionMaximum.value='ON';App.combo.syncFromDOM();calcBuild();");
   const r=read('calcState.realOneHit');
+  const effectiveElementType=read('calcState.stats.elementType');
+  const selectedArtiaElement=read('build.artia?.element??null');
   const directElementNormal=entry.phial==='impact'?read("['R','H'].flatMap(route=>(calcState.realOneHit?.routes?.[route]?.channels?.normal?.components||[]).filter(x=>String(x.id||'').includes(':element:')).map(x=>x.value)).reduce((a,b)=>a+(Number(b)||0),0)"):null;
   const channels=Object.fromEntries(['normal','maximum'].map(ch=>{const c=r?.channels?.[ch];return [ch,{status:c?.execution?.status??'missing',reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason??r?.reason??null,value:c?.metrics?.comboTotalDamage?.value??null}]}));
   const specials=read("window.__censusWeapon.specials.map(x=>({kind:x.kind,element:x.element??null,status:x.status??null,name:x.name??null,damage:x.damage?.display??null}))");
@@ -37,7 +39,7 @@ try{
    onStatus:r?.channels?.maximum?.execution,offStatus:off?.channels?.maximum?.execution
   };
   const without152=Object.fromEntries(['normal','maximum'].map(ch=>{const c=off?.channels?.[ch];return [ch,{status:c?.execution?.status??'missing',reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason??off?.reason??null,value:c?.metrics?.comboTotalDamage?.value??null}]}));
-  const nonDragon=!specials.some(x=>x.kind==='element'&&x.element==='dragon');
+  const nonDragon=effectiveElementType!=='dragon';
   if(nonDragon&&entry.phial==='impact'&&['normal','maximum'].every(ch=>without152[ch].status==='complete')){
    for(const ch of ['normal','maximum']){
     assert.equal(channels[ch].status,'complete','non-dragon 152 ON must not block '+entry.id+' '+ch+' '+channels[ch].reason);
@@ -47,7 +49,12 @@ try{
     }
    }
   }
-  out.cases.push({id:entry.id,name:entry.name,phial:entry.phial,channels,without152,specials,directElementNormal,nonDragon});
+  if([145,146,147].includes(entry.id)){
+    assert.equal(effectiveElementType,'dragon','Artia selected dragon element required for 152 check '+entry.id);
+    assert.equal(channels.normal.value,without152.normal.value,'152 normal OFF unchanged on selected dragon Artia');
+    assert.ok(channels.maximum.value>without152.maximum.value,'152 ON dragon Artia should increase direct elemental damage');
+  }
+  out.cases.push({id:entry.id,name:entry.name,phial:entry.phial,channels,without152,specials,directElementNormal,nonDragon,effectiveElementType,selectedArtiaElement});
  }
  out.counts={nondragonNoopChecked:out.cases.filter(c=>c.nonDragon&&c.phial==='impact'&&['normal','maximum'].every(ch=>c.without152[ch].status==='complete')).length,totalAvailableInDB:{impact:impact.length,power:power.length},tested:picked.length,byPhial:{},without152:{},artiaTestInput:'EXPLICIT_RESTORE_NONE_ONLY_FOR_MHDB_145_146_147',wetTestInput:'EXPLICIT_DRY_ONLY_FOR_MHDB_153_154',thunderCandidateInput:'EXPLICIT_NO_ARMOR_RESISTANCE_ZERO_FOR_MHDB_1073_1074_NOT_ADOPTED',bladescaleCandidate:'CB_FIRST_PHYSICAL_HIT_PER_INDEPENDENT_ROUTE_NOT_OWNER_APPROVED'};
  for(const type of ['impact','element']){
@@ -97,6 +104,6 @@ try{
  assert.deepEqual(out.nonDragonMismatches||[],[],'non-dragon 152 still has an unwanted direct-hit effect');
  out.outcome='CENSUS_COMPLETE_NO_PRODUCTION_CHANGE';
 }catch(e){out.failure=e.stack;process.exitCode=1;}finally{
- console.log(JSON.stringify({outcome:out.outcome,counts:out.counts,nonDragonMismatches:out.nonDragonMismatches,artia145Diagnostic:out.artia145Diagnostic,cases:out.cases,failure:out.failure,errors},null,2));
+ console.log(JSON.stringify({outcome:out.outcome,counts:out.counts,nonDragonMismatches:out.nonDragonMismatches,cases:out.cases,failure:out.failure,errors},null,2));
  dom.window.close();
 }
