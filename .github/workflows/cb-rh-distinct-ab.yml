@@ -2,7 +2,7 @@ name: CB R-H distinct A/B regression
 on:
   push:
     branches:
-      - flamme/cb-legal-state-census-20261103
+      - flamme/cb-last-four-contract-audit-20261103
     paths:
       - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
       - 'hope-hammer-browser-adapter.js'
@@ -14,6 +14,7 @@ on:
       - 'tools/cb-h-power-component-audit.cjs'
       - 'tools/cb-h-power-real-weapons-ab-proof.cjs'
       - 'tools/cb-production-unresolved-census.cjs'
+      - 'tools/cb-last-four-contract-audit.cjs'
       - 'tools/cb-artia-source-diagnostic.cjs'
       - 'tools/cb-artia-legal-restores-proof.cjs'
       - 'tools/cb-h-enhanced-isolated-probe.cjs'
@@ -47,6 +48,8 @@ jobs:
         run: node tools/cb-h-power-real-weapons-ab-proof.cjs
       - name: Census actual MHDB CB production unresolved cases
         run: node tools/cb-production-unresolved-census.cjs
+      - name: Audit last four CB source contracts and explicit inputs
+        run: node tools/cb-last-four-contract-audit.cjs
       - name: Locate Artia restore blockers in production source
         run: node tools/cb-artia-source-diagnostic.cjs
       - name: Verify legal Artia restore input against inherited invalid choices
