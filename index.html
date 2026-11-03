@@ -809,8 +809,10 @@ main.wrap > .grid > aside,main.wrap > .grid > section,
 #armorSelectors .equip-inline:has(select[data-armor="legs"]) > .equip-title:first-child::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2056%2064%22%3E%3Crect%20x%3D%221.5%22%20y%3D%221.5%22%20width%3D%2253%22%20height%3D%2261%22%20rx%3D%2210%22%20fill%3D%22%2325251f%22%20stroke%3D%22%238f8169%22%20stroke-width%3D%223%22%2F%3E%3Cg%20fill%3D%22%23e5e1d3%22%20stroke%3D%22%23292822%22%20stroke-width%3D%222.2%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M14%209h15l-1%2021-8%2012H9l3-18z%22%2F%3E%3Cpath%20d%3D%22M30%209h15l-1%2018%203%2015H36l-7-12z%22%2F%3E%3Cpath%20d%3D%22M9%2042l12-1%207%2010-3%205H6v-8zM36%2041l11%201%205%208-2%206H31l-2-5z%22%2F%3E%3Cpath%20d%3D%22M15%2020h11M33%2020h10%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")!important;}
 .charm-section-heading::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2056%2064%22%3E%3Crect%20x%3D%221.5%22%20y%3D%221.5%22%20width%3D%2253%22%20height%3D%2261%22%20rx%3D%2210%22%20fill%3D%22%2325251f%22%20stroke%3D%22%238f8169%22%20stroke-width%3D%223%22%2F%3E%3Cg%20fill%3D%22%23e5e1d3%22%20stroke%3D%22%23292822%22%20stroke-width%3D%222.2%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M28%208l14%2019-14%2020-14-20z%22%2F%3E%3Cpath%20d%3D%22M28%2014v27M19%2027h18%22%2F%3E%3Cpath%20d%3D%22M28%2047v9M18%2056h20%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")!important;}
 
+/* Bow comparison settings are functional prerequisites, not diagnostics. Keep controls visible. */
+#bowComparisonSettings {display:block!important;}
+#bowComparisonSettings > summary {cursor:pointer;}
 /* Hide only diagnostic affordances; do not remove evidence ingestion or calculation handlers. */
-#bowComparisonSettings,
 #comparisonComboEvidence,
 #comparisonEvidenceChecklist,
 #compareOut details[data-comparison-pending],
