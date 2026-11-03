@@ -493,7 +493,10 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
 /* Keep verification inputs/handlers in the DOM, but separate them from ordinary user operation.
    Evidence review remains directly accessible at evidence-review.html. */
 #glObservedPanel,
-.developer-only-evidence-link {
+.developer-only-evidence-link,
+/* Reference-only HBG single-hit form belongs to verification, not the Build workflow.
+   Keep the form/handlers mounted for existing automated and reference tests. */
+main.wrap > .grid > aside > section.card:has(> #hbgElementReferenceDetails) {
   display:none!important;
 }
 </style>
