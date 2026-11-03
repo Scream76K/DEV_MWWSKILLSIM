@@ -40,6 +40,20 @@ try{
   const r=read("calcState.realOneHit");
   out.cases.push({name:p.name,realStatus:r?.status,reason:r?.reason,channels:Object.fromEntries(['normal','maximum'].map(ch=>[ch,{execution:r.channels?.[ch]?.execution,metric:r.channels?.[ch]?.metrics?.comboTotalDamage,h:r.routes?.H?.channels?.[ch]?.metrics?.comboTotalDamage,finalH:r.routes?.H?.channels?.[ch]?.finalState?.chargeBlade}]))});
  }
+ const expected={
+  power_normal_two:1940.8619999999992,
+  power_enhanced_half_and_normal_half:1977.365999999999
+ };
+ for(const c of out.cases){
+  for(const ch of ['normal','maximum']){
+   assert.equal(c.channels[ch].execution?.status,'complete',c.name+' '+ch+' '+c.channels[ch].execution?.reason);
+   assert.equal(c.channels[ch].metric?.status,'available',c.name+' '+ch);
+   assert.ok(Math.abs(c.channels[ch].metric.value-expected[c.name])<1e-7,c.name+' '+ch+' mismatched damage');
+   assert.ok(Number.isFinite(c.channels[ch].h?.value),c.name+' '+ch+' H absent');
+   assert.equal(c.channels[ch].finalH?.enhancedPhials,0);
+   assert.equal(c.channels[ch].finalH?.normalPhials,c.name==='power_normal_two'?1:0);
+  }
+ }
  assert.deepEqual(errors,[]);
  out.outcome='PROBE_ONLY_NOT_ADOPTED';
 }catch(e){out.failure=e.stack;process.exitCode=1;}
