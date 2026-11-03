@@ -35,7 +35,7 @@ try{
   assert.equal(obj.channels.maximum.status,'complete','candidate maximum must complete on exact R/H '+id+' '+obj.channels.maximum.reason);
   assert.ok(obj.channels.maximum.reason==null,'candidate maximum has no failure reason');
   assert.ok(Number.isFinite(obj.channels.maximum.total));
-  assert.equal(r.channels?.maximum?.diagnostics?.bladescaleFirstHit?.candidateScope,'CB_RH_FIRST_PHYSICAL_CONTACT_ONLY_OWNER_REVIEW_PENDING');
+  for(const route of ['R','H'])assert.equal(r.routes?.[route]?.channels?.maximum?.diagnostics?.bladescaleFirstHit?.candidateScope,'CB_RH_FIRST_PHYSICAL_CONTACT_ONLY_OWNER_REVIEW_PENDING',route+' expected per-route diagnostic');
   const protectedFirst={R:'CB_ELEMENT_DISCHARGE_1:physical:0',H:'CB_AXE_TO_SWORD_MORPH:physical:0'};
   obj.maximumRouteComponents={};
   for(const route of ['R','H'])obj.maximumRouteComponents[route]=(r?.routes?.[route]?.channels?.maximum?.components||[]).filter(c=>c.status==='available').map(c=>({id:c.id,value:c.value}));
