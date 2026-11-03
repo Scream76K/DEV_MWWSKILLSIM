@@ -5888,7 +5888,14 @@ const CHARGE_BLADE_PROVISIONAL_PHIAL_COUNTS=Object.freeze({
   CB_AED:{status:'PROVISIONAL',count:2,source:'USER_VIDEO_OBSERVATION:1a11b213a0886-master_playlist.mp4:libfile_9ce9aa26c3948191a06286669798f7eb;1a11b4e1a1f6-master_playlist.mp4:libfile_f85e6fff77408191b5cb588997ab70c0'},
   CB_FOLLOWUP_AED:{status:'PROVISIONAL',count:3,source:'USER_VIDEO_OBSERVATION:1a11b213a0886-master_playlist.mp4:libfile_9ce9aa26c3948191a06286669798f7eb;1a11b4e1a1f6-master_playlist.mp4:libfile_f85e6fff77408191b5cb588997ab70c0'}
 });
-function chargeBladePhialCountEvidence(techniqueId){
+function chargeBladePhialCountEvidence(techniqueId,state={}){
+  // H-only approved shield-thrust explosion; never promote general shield thrust.
+  const h=window.MHCBHRouteRule;
+  if(techniqueId==='CB_SHIELD_THRUST'&&state?.profileId==='CB_STANDARD_AED_ROUTE_H'
+    &&state?.shieldBoosted===true&&h?.status==='OWNER_APPROVED_PROVISIONAL'
+    &&h.prefixIds?.includes('CB_SHIELD_THRUST')&&h.shieldPhialCount===1
+    &&typeof h.source==='string'&&h.source.trim())
+    return {count:1,status:'OWNER_APPROVED_PROVISIONAL',source:h.source};
   const e=CHARGE_BLADE_EVIDENCE.phialEvents[techniqueId];
   if(e?.status==='VERIFIED'&&Number.isInteger(e.count)&&e.count>0)
     return {count:e.count,status:'VERIFIED',source:'CHARGE_BLADE_EVIDENCE'};
@@ -5954,7 +5961,7 @@ function chargeBladeTechniqueComponents(techniqueId,state={}){
   const rapidMorphLevel=state.rapidMorphLevel==null?0:Number(state.rapidMorphLevel);
   if(!Number.isInteger(rapidMorphLevel)||rapidMorphLevel<0||rapidMorphLevel>3)throw new Error('CB_FAIL_CLOSED:RAPID_MORPH_LEVEL_INVALID');
   const rapidMorphAttackMultiplier=t.rapidMorphDamageEligible?RAPID_MORPH_ATTACK_RULE.multipliers[rapidMorphLevel]:1;
-  if(axeBoosted&&rapidMorphAttackMultiplier!==1)throw Error('CB_FAIL_CLOSED:RAPID_MORPH_AXE_FOLLOWUP_UNCONNECTED');
+  if(axeBoosted&&t.axeBoostHits&&rapidMorphAttackMultiplier!==1)throw Error('CB_FAIL_CLOSED:RAPID_MORPH_AXE_FOLLOWUP_UNCONNECTED');
   // r23: keep physical/element/axe-boost components independent. Shield-boost body scope is
   // intentionally fail-closed for element and axe-boost until evidence explicitly adopts it.
   const shieldPhysicalBodyMultiplier=shieldBoosted&&t.shieldBoostAxeBody?CHARGE_BLADE_SHIELD_AXE_BODY_MULTIPLIER:1;
@@ -5964,7 +5971,7 @@ function chargeBladeTechniqueComponents(techniqueId,state={}){
   const axeBoostElement=axeBoosted&&t.axeBoostHits?Array.from({length:t.axeBoostHits.count},()=>({source:'AXE_BOOST_ELEMENT',elementModifier:t.axeBoostHits.elementModifier,multiplier:1})) : [];
   let phial=null;
   if(t.phial){
-    const countEvidence=chargeBladePhialCountEvidence(techniqueId);
+    const countEvidence=chargeBladePhialCountEvidence(techniqueId,state);
     if(!countEvidence) phial={status:'FAIL_CLOSED',reason:'PHIAL_EXPLOSION_COUNT_UNVERIFIED',coefficientData:{...t.phial}};
     else phial={status:'READY',count:countEvidence.count,verificationStatus:countEvidence.status,source:countEvidence.source,coefficientData:{...t.phial}};
   }
@@ -6119,8 +6126,12 @@ function chargeBladeTypedComponentComparison(baseline,candidate){
 }
 function chargeBladeResolveProfileDamage(profileKey,stats={},state={}){
   const p=CHARGE_BLADE_STANDARD_PROFILES[profileKey];if(!p)throw new Error(`CB_FAIL_CLOSED:unknown_profile:${profileKey}`);
-  const techniques=p.techniqueIds.map(id=>chargeBladeResolveTechniqueDamage(id,stats,state));
-  const sum=k=>techniques.reduce((a,x)=>a+Number(x[k]||0),0);
+  const profileState={...state,profileId:p.id};
+  const techniques=p.techniqueIds.map(id=>chargeBladeResolveTechniqueDamage(id,stats,profileState));
+  const sum=k=>techniques.reduce((a,x)=>{
+    if(typeof x[k]!=='number'||!Number.isFinite(x[k]))throw Error('CB_FAIL_CLOSED:PROFILE_COMPONENT:'+String(x.techniqueId??'UNKNOWN')+':'+k);
+    return a+x[k];
+  },0);
   return {engineVersion:CHARGE_BLADE_ENGINE_VERSION,profileId:p.id,techniques,physical:sum('physical'),element:sum('element'),special:sum('special'),total:sum('total'),status:'READY'};
 }
 function chargeBladeComparisonResult(buildA={},buildX={},stateA={},stateX={}){
@@ -8178,9 +8189,17 @@ function chargeBladeStatsFromCalcState(st={},cond={}){
   const out={
     baseAttack:Number(st.attackTrue??st.attack),displayedElement:equipmentHpElement(st),
     physicalHitzone:hz,elementalHitzone:ehz,sharpnessPhysical:sharp,sharpnessElement:esharp,
-    affinity:Number(st.affinity),maxAffinity:Number(st.maxAffinity),criticalMultiplier:1.25,negativeCriticalMultiplier:.75
+    affinity:Number(st.affinity),maxAffinity:Number(st.maxAffinity),criticalMultiplier:1.25,negativeCriticalMultiplier:.75,
+    attackComponents:st.attackComponents??null
   };
-  for(const [k,v] of Object.entries(out)) if(!Number.isFinite(v)) throw new Error(`BUILD_COMPARE_FAIL_CLOSED:CB_STAT:${k}`);
+  for(const [k,v] of Object.entries(out)) if(k!=='attackComponents'&&!Number.isFinite(v)) throw new Error(`BUILD_COMPARE_FAIL_CLOSED:CB_STAT:${k}`);
+  if(out.attackComponents!==null){
+    const c=out.attackComponents;
+    if(!['weaponBase','normalMultiplier','normalFlat'].every(k=>typeof c[k]==='number'&&Number.isFinite(c[k])))
+      throw Error('BUILD_COMPARE_FAIL_CLOSED:CB_ATTACK_COMPONENTS_INVALID');
+    if(Math.abs(c.weaponBase*c.normalMultiplier+c.normalFlat-out.baseAttack)>1e-6)
+      throw Error('BUILD_COMPARE_FAIL_CLOSED:CB_ATTACK_COMPONENTS_MISMATCH');
+  }
   return out;
 }
 function resolveSnapshotStatsForComparison(snapshot){
