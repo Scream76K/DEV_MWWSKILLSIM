@@ -6124,14 +6124,15 @@ function chargeBladeResolveProfileDamage(profileKey,stats={},state={}){
   return {engineVersion:CHARGE_BLADE_ENGINE_VERSION,profileId:p.id,techniques,physical:sum('physical'),element:sum('element'),special:sum('special'),total:sum('total'),status:'READY'};
 }
 function chargeBladeComparisonResult(buildA={},buildX={},stateA={},stateX={}){
-  const ar=chargeBladeResolveProfileDamage('RELEASE_ROUTE',buildA,stateA),ah=chargeBladeResolveProfileDamage('AED_ROUTE',buildA,stateA);
-  const xr=chargeBladeResolveProfileDamage('RELEASE_ROUTE',buildX,stateX),xh=chargeBladeResolveProfileDamage('AED_ROUTE',buildX,stateX);
-  if(!(ar.total>0)||!(ah.total>0))throw new Error('CB_FAIL_CLOSED:INVALID_BASELINE_POWER');
-  const durations=chargeBladeVerifiedRouteDurations();
-  const composite=chargeBladeCompositeRatio(xr.total/ar.total,xh.total/ah.total,durations);
-  const componentRatio=(key)=>chargeBladeCompositeRatio(ar[key]>0?xr[key]/ar[key]:1,ah[key]>0?xh[key]/ah[key]:1,durations).ratio;
-  return {baseline:{release:ar,aed:ah},candidate:{release:xr,aed:xh},relativePowerChange:composite.ratio-1,ratio:composite.ratio,weights:composite.weights,
-    componentRelativeChange:{physical:componentRatio('physical')-1,element:componentRatio('element')-1,special:componentRatio('special')-1},status:'READY'};
+  const a=chargeBladeResolveConditionPair({...buildA,maxAffinity:buildA.maxAffinity??buildA.affinity},stateA);
+  const x=chargeBladeResolveConditionPair({...buildX,maxAffinity:buildX.maxAffinity??buildX.affinity},stateX);
+  const baseline=chargeBladeCompositePower(a,'NORMAL'),candidate=chargeBladeCompositePower(x,'NORMAL');
+  if(!(baseline.comparisonPower>0))throw new Error('CB_FAIL_CLOSED:INVALID_BASELINE_POWER');
+  const relative=(key)=>baseline[key]>0?candidate[key]/baseline[key]-1:null;
+  return {baseline:a.NORMAL,candidate:x.NORMAL,relativePowerChange:candidate.comparisonPower/baseline.comparisonPower-1,
+    ratio:candidate.comparisonPower/baseline.comparisonPower,
+    componentRelativeChange:{physical:relative('physical'),element:relative('element'),special:relative('special')},
+    basis:'INDEPENDENT_R_PLUS_H_UNROUNDED',status:'READY'};
 }
 // r25: NORMAL/MAX condition and Build Comparison adapter.
 // This is still isolated from the production comparison UI. It establishes the common
@@ -6152,37 +6153,43 @@ function chargeBladeConditionStats(buildStats={},condition='NORMAL'){
 function chargeBladeResolveConditionPair(buildStats={},state={}){
   const normalStats=chargeBladeConditionStats(buildStats,'NORMAL');
   const maxStats=chargeBladeConditionStats(buildStats,'MAX');
-  const releaseNormal=chargeBladeResolveProfileDamage('RELEASE_ROUTE',normalStats,state);
-  const aedNormal=chargeBladeResolveProfileDamage('AED_ROUTE',normalStats,state);
-  const releaseMax=chargeBladeResolveProfileDamage('RELEASE_ROUTE',maxStats,state);
-  const aedMax=chargeBladeResolveProfileDamage('AED_ROUTE',maxStats,state);
+  if(state?.mixMode&&(!state.mixH||typeof state.mixH!=='object'||Array.isArray(state.mixH)))
+    throw new Error('CB_FAIL_CLOSED:H_INDEPENDENT_START_STATE_REQUIRED');
+  const releaseState={...state},aedState=state?.mixMode?{...state,...state.mixH}:{...state};
+  const releaseNormal=chargeBladeResolveProfileDamage('RELEASE_ROUTE',normalStats,releaseState);
+  const aedNormal=chargeBladeResolveProfileDamage('AED_ROUTE',normalStats,aedState);
+  const releaseMax=chargeBladeResolveProfileDamage('RELEASE_ROUTE',maxStats,releaseState);
+  const aedMax=chargeBladeResolveProfileDamage('AED_ROUTE',maxStats,aedState);
   return {NORMAL:{release:releaseNormal,aed:aedNormal},MAX:{release:releaseMax,aed:aedMax}};
 }
-function chargeBladeCompositePower(pair,condition,durations){
+function chargeBladeCompositePower(pair,condition){
   const x=pair?.[condition];
-  if(!x||!Number.isFinite(x.release?.total)||!Number.isFinite(x.aed?.total)) throw new Error(`CB_FAIL_CLOSED:CONDITION_RESULT:${condition}`);
-  const d=durations||chargeBladeVerifiedRouteDurations();
-  const totalFrames=Number(d.releaseFrames)+Number(d.aedFrames);
-  if(!(totalFrames>0)) throw new Error('CB_FAIL_CLOSED:ROUTE_DURATION_UNVERIFIED');
-  const wR=Number(d.releaseFrames)/totalFrames,wH=Number(d.aedFrames)/totalFrames;
-  const blend=k=>Number(x.release[k]||0)*wR+Number(x.aed[k]||0)*wH;
-  return {comparisonPower:blend('total'),physical:blend('physical'),element:blend('element'),special:blend('special'),weights:{release:wR,aed:wH}};
+  if(!x)throw new Error(`CB_FAIL_CLOSED:CONDITION_RESULT:${condition}`);
+  const keys=['total','physical','element','special'];
+  for(const route of ['release','aed'])for(const key of keys)
+    if(typeof x[route]?.[key]!=='number'||!Number.isFinite(x[route][key]))
+      throw new Error(`CB_FAIL_CLOSED:CONDITION_COMPONENT:${condition}:${route}:${key}`);
+  const sum=key=>x.release[key]+x.aed[key];
+  return {comparisonPower:sum('total'),physical:sum('physical'),element:sum('element'),
+    special:sum('special'),basis:'INDEPENDENT_R_PLUS_H_UNROUNDED',
+    routes:{release:x.release.total,aed:x.aed.total}};
 }
 function chargeBladeBuildComparisonAdapter(buildA={},buildB=null,stateA={},stateB=null){
-  const durations=chargeBladeVerifiedRouteDurations();
   const aPair=chargeBladeResolveConditionPair(buildA,stateA);
-  const aNormal=chargeBladeCompositePower(aPair,'NORMAL',durations),aMax=chargeBladeCompositePower(aPair,'MAX',durations);
-  if(!(aNormal.comparisonPower>0)) throw new Error('CB_FAIL_CLOSED:INVALID_BASELINE_POWER');
+  const aNormal=chargeBladeCompositePower(aPair,'NORMAL'),aMax=chargeBladeCompositePower(aPair,'MAX');
+  if(!(aNormal.comparisonPower>0))throw new Error('CB_FAIL_CLOSED:INVALID_BASELINE_POWER');
   const rel=(x,base)=>base>0?x/base-1:null;
-  const pack=(x)=>({comparisonPower:x.comparisonPower,relativePowerChange:rel(x.comparisonPower,aNormal.comparisonPower),componentRelativeChange:{physical:rel(x.physical,aNormal.physical),element:rel(x.element,aNormal.element),special:rel(x.special,aNormal.special)},components:{physical:x.physical,element:x.element,special:x.special},weights:x.weights});
-  const result={engineVersion:CHARGE_BLADE_ENGINE_VERSION,baseline:'A_NORMAL',A:{NORMAL:{...pack(aNormal),relativePowerChange:0},MAX:pack(aMax)},B:null,status:'READY'};
+  const pack=x=>({comparisonPower:x.comparisonPower,relativePowerChange:rel(x.comparisonPower,aNormal.comparisonPower),
+    componentRelativeChange:{physical:rel(x.physical,aNormal.physical),element:rel(x.element,aNormal.element),special:rel(x.special,aNormal.special)},
+    components:{physical:x.physical,element:x.element,special:x.special},basis:x.basis,routes:x.routes});
+  const result={engineVersion:CHARGE_BLADE_ENGINE_VERSION,baseline:'A_NORMAL',
+    A:{NORMAL:{...pack(aNormal),relativePowerChange:0},MAX:pack(aMax)},B:null,status:'READY'};
   if(buildB){
-    const bPair=chargeBladeResolveConditionPair(buildB,stateB||stateA);
-    result.B={NORMAL:pack(chargeBladeCompositePower(bPair,'NORMAL',durations)),MAX:pack(chargeBladeCompositePower(bPair,'MAX',durations))};
+    const bPair=chargeBladeResolveConditionPair(buildB,stateB??stateA);
+    result.B={NORMAL:pack(chargeBladeCompositePower(bPair,'NORMAL')),MAX:pack(chargeBladeCompositePower(bPair,'MAX'))};
   }
   return result;
 }
-
 // r26: Build Comparison presentation adapter.
 // Pure renderer: it consumes the common comparison result contract and never recalculates damage.
 function comparisonPct(v){
