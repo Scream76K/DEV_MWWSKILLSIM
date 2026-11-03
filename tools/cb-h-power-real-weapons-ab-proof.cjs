@@ -6,9 +6,9 @@ assert.equal(hash(input),'9491bfc1cf357aed4967418949d78c0ddd73407c6461443a7b594a
 for(const [k,n] of Object.entries(pack.counts))assert.equal(pack.data[k].length,n);
 const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const htmlOriginal=require('./dom-test-setup.cjs').readSimulatorHtml();
-const hGate="if(officialPhialType!=='IMPACT'||chargeBladeState.phialType!=='IMPACT')return fail('REAL_SLICE:CB_H_IMPACT_ONLY');";
-assert.equal(htmlOriginal.split(hGate).length,2,'H gate drift');
-const htmlProbe=htmlOriginal.replace(hGate,'/* IN-MEMORY POWER ELEMENT PROBE ONLY; PRODUCT UNCHANGED */');
+// Candidate branch source is tested directly. No test-time gate bypass.
+assert.ok(htmlOriginal.includes('CANDIDATE_NOT_ADOPTED: extend exact H route to sourced POWER_ELEMENT phials.'),'candidate H gate missing');
+const htmlProbe=htmlOriginal;
 const dom=new JSDOM(htmlProbe,{url:'https://stage4.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('NETWORK_DISABLED'));w.confirm=()=>true;w.alert=()=>{throw Error('UNEXPECTED_ALERT_IN_AB_PROOF')};w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}),w=dom.window;
 const read=s=>JSON.parse(w.eval('JSON.stringify('+s+')'));
 const out={environment:'JSDOM, actual exported application MHDB; no synthetic equipment; DOM template load button; not Safari or game',source:{...pack,data:undefined},hashes:Object.fromEntries(['index.html','hope-hammer-browser-adapter.js',input,__filename].map(p=>[p,hash(p)])),cases:[],errors};
@@ -87,5 +87,5 @@ try{
  assert.deepEqual(errors,[]);
  out.outcome='PASS_PROVISIONAL_H_ONLY';
 }catch(e){out.failure=e.stack;process.exitCode=1;}finally{
- console.log(JSON.stringify({outcome:out.outcome,sourceGateRemovedInMemoryOnly:true,builds:out.cases.map(c=>({name:c.name,weaponId:c.weaponId,attack:c.stats?.attackTrue,element:c.stats?.element,normal:c.real?.channels?.normal?.metrics?.comboTotalDamage,maximum:c.real?.channels?.maximum?.metrics?.comboTotalDamage,reason:c.real?.reason})),comparison:out.rows?.map(r=>({name:r.name,normal:r.pipeline?.channels?.normal?.metrics?.comboTotalDamage,maximum:r.pipeline?.channels?.maximum?.metrics?.comboTotalDamage})),failure:out.failure,errors},null,2));dom.window.close();
+ console.log(JSON.stringify({outcome:out.outcome,sourceGateRemovedInMemoryOnly:false,builds:out.cases.map(c=>({name:c.name,weaponId:c.weaponId,attack:c.stats?.attackTrue,element:c.stats?.element,normal:c.real?.channels?.normal?.metrics?.comboTotalDamage,maximum:c.real?.channels?.maximum?.metrics?.comboTotalDamage,reason:c.real?.reason})),comparison:out.rows?.map(r=>({name:r.name,normal:r.pipeline?.channels?.normal?.metrics?.comboTotalDamage,maximum:r.pipeline?.channels?.maximum?.metrics?.comboTotalDamage})),failure:out.failure,errors},null,2));dom.window.close();
 }
