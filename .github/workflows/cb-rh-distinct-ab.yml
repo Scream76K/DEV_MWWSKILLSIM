@@ -2,7 +2,7 @@ name: CB R-H distinct A/B regression
 on:
   push:
     branches:
-      - flamme/cb-last-four-contract-audit-20261103
+      - flamme/cb-thunder-rh-limited-candidate-20261103
     paths:
       - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
       - 'hope-hammer-browser-adapter.js'
@@ -51,7 +51,7 @@ jobs:
         run: node tools/cb-production-unresolved-census.cjs
       - name: Audit last four CB source contracts and explicit inputs
         run: node tools/cb-last-four-contract-audit.cjs
-      - name: Isolated thunder CB mixed component calculation probe
+      - name: Thunder CB exact R/H candidate component regression
         run: node tools/cb-thunder-mixed-isolated-probe.cjs
       - name: Locate Artia restore blockers in production source
         run: node tools/cb-artia-source-diagnostic.cjs
