@@ -1104,7 +1104,7 @@ const finite=x=>typeof x==='number'&&Number.isFinite(x);
 const unavailable=reason=>({status:'unavailable',reason});
 function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone,resolvePartModifier,expectedGameVersion}={}){
  if(typeof calculate!=='function'||typeof resolveSharpness!=='function'||typeof resolveHitzone!=='function'||typeof resolvePartModifier!=='function')throw Error('PHYSICAL_SOURCE_RESOLVERS_REQUIRED');
- return function physical({coefficient,coefficientUnit,parameters,target,stats,build,state}={}){
+ return function physical({coefficient,coefficientUnit,parameters,componentId,techniqueId,target,stats,build,state}={}){
   if(coefficientUnit!=='MV'||!finite(coefficient)||coefficient<0)return unavailable('PHYSICAL_MV_UNRESOLVED');
   if(!finite(stats?.attack)||stats.attack<=0)return unavailable('PHYSICAL_ATTACK_UNRESOLVED');
   if(!finite(stats.element)||stats.element<0)return unavailable('PHYSICAL_ELEMENT_UNRESOLVED');
@@ -1112,7 +1112,7 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
   let sharp,hitzone,part=null;
   try{
-   sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});
+   sharp=resolveSharpness({build,state,parameters,componentId,techniqueId,gameVersion:expectedGameVersion});
    hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});
    if(parameters?.partModifier!==null&&parameters?.partModifier!==undefined)part=resolvePartModifier({parameters,build,state,gameVersion:expectedGameVersion});
   }catch(_){return unavailable('PHYSICAL_CONTEXT_RESOLUTION_FAILED')}
@@ -1168,7 +1168,7 @@ const finite=x=>typeof x==='number'&&Number.isFinite(x);
 const unavailable=reason=>({status:'unavailable',reason});
 function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone,resolvePartModifier,expectedGameVersion}={}){
  if(typeof calculate!=='function'||typeof resolveSharpness!=='function'||typeof resolveHitzone!=='function'||typeof resolvePartModifier!=='function')throw Error('PHYSICAL_SOURCE_RESOLVERS_REQUIRED');
- return function physical({coefficient,coefficientUnit,parameters,target,stats,build,state}={}){
+ return function physical({coefficient,coefficientUnit,parameters,componentId,techniqueId,target,stats,build,state}={}){
   if(coefficientUnit!=='MV'||!finite(coefficient)||coefficient<0)return unavailable('PHYSICAL_MV_UNRESOLVED');
   if(!finite(stats?.attack)||stats.attack<=0)return unavailable('PHYSICAL_ATTACK_UNRESOLVED');
   if(!finite(stats.element)||stats.element<0)return unavailable('PHYSICAL_ELEMENT_UNRESOLVED');
@@ -1176,7 +1176,7 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
   let sharp,hitzone,part=null;
   try{
-   sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});
+   sharp=resolveSharpness({build,state,parameters,componentId,techniqueId,gameVersion:expectedGameVersion});
    hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});
    if(parameters?.partModifier!==null&&parameters?.partModifier!==undefined)part=resolvePartModifier({parameters,build,state,gameVersion:expectedGameVersion});
   }catch(_){return unavailable('PHYSICAL_CONTEXT_RESOLUTION_FAILED')}
