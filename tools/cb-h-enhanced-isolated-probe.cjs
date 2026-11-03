@@ -39,6 +39,22 @@ try{
   const x=read('calcState.realOneHit');
   out.cases.push({name:item.name,normalPhials:item.hNormal,enhancedPhials:item.hEnhanced,status:x?.status,reason:x?.reason,channels:Object.fromEntries(['normal','maximum'].map(ch=>{const y=x?.channels?.[ch];return [ch,{execution:y?.execution,metric:y?.metrics?.comboTotalDamage,reason:y?.execution?.reason??y?.metrics?.comboTotalDamage?.reason??x?.reason,phialComponents:x?.routes?.H?.channels?.[ch]?.components?.filter(z=>/phial/i.test(z.id??z.type??'')).map(z=>({id:z.id,damage:z.damage,value:z.value,consumedPhialKind:z.consumedPhialKind}))??[],finalState:x?.routes?.H?.channels?.[ch]?.finalState?.chargeBlade}]}))});
  }
+ const byName=Object.fromEntries(out.cases.map(c=>[c.name,c]));
+ for(const [name,expectedNormal,expectedMax,remainingNormal,remainingEnhanced] of [
+  ['normal_H_control',3586.013100000001,4357.1291,1,0],
+  ['enhanced_half_H',3618.117900000001,4391.921900000001,0,0],
+  ['enhanced_one_H',3666.275100000001,4444.1111,1,0],
+  ['enhanced_two_H',3666.275100000001,4444.1111,0,1]
+ ]){
+  const c=byName[name];assert.ok(c,name);
+  for(const [ch,value] of [['normal',expectedNormal],['maximum',expectedMax]]){
+   assert.equal(c.channels[ch].execution?.status,'complete',name+' '+ch+' '+c.channels[ch].reason);
+   assert.equal(c.channels[ch].metric?.status,'available',name+' '+ch);
+   assert.ok(Math.abs(c.channels[ch].metric.value-value)<1e-7,name+' '+ch+' numeric drift');
+   assert.equal(c.channels[ch].finalState?.normalPhials,remainingNormal,name+' '+ch+' normal stock');
+   assert.equal(c.channels[ch].finalState?.enhancedPhials,remainingEnhanced,name+' '+ch+' enhanced stock');
+  }
+ }
  assert.deepEqual(errors,[]);
  out.outcome='PROBE_COMPLETED_NOT_ADOPTED';
 }catch(e){out.failure=e.stack;process.exitCode=1;}finally{
