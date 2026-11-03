@@ -29,3 +29,14 @@ test('reference-only HBG form is visually separated, not deleted', () => {
   assert.ok(html.includes('<details id="hbgElementReferenceDetails">'));
   assert.ok(html.includes('<form id="hbgElementReferenceForm">'));
 });
+
+test('A/B comparison occupies the available panel width without page overflow', () => {
+  const css = extractStyle('flamme-ui-comparison-readability-stage5');
+  assert.ok(css.includes('#compareOut .compare-results'));
+  assert.ok(css.includes('max-width:none'));
+  assert.ok(css.includes('#compareOut .compare-table'));
+  assert.ok(css.includes('overflow-x:auto'));
+  assert.ok(css.includes('overscroll-behavior-x:contain'));
+  assert.ok(html.includes('function renderCompareTableChunk('));
+  assert.ok(html.includes('data-comparison-pending'));
+});
