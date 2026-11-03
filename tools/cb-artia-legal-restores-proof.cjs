@@ -32,7 +32,20 @@ try{
   w.eval("build.artia.restores=['atk:I','none','none','none','none'];calcBuild()");
   const attackI=read("calcState.realOneHit");
   const summary=x=>Object.fromEntries(['normal','maximum'].map(ch=>{const c=x?.channels?.[ch];return [ch,{status:c?.execution?.status??'missing',reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason??x?.reason??null,value:c?.metrics?.comboTotalDamage?.value??null}]}));
-  out.cases.push({id,name:read("window.__artiaWeapon.name"),rarity:read("window.__artiaWeapon.rarity"),inherited,stale:summary(stale),none:summary(none),attackI:summary(attackI),emptyState});
+  const named={id,name:read("window.__artiaWeapon.name"),rarity:read("window.__artiaWeapon.rarity"),inherited,stale:summary(stale),none:summary(none),attackI:summary(attackI),emptyState};
+  for(const ch of ['normal','maximum']){
+   assert.equal(named.none[ch].status,'complete',id+' none '+ch);
+   assert.equal(named.attackI[ch].status,'complete',id+' atk:I '+ch);
+   assert.ok(Number.isFinite(named.none[ch].value));
+   assert.ok(Number.isFinite(named.attackI[ch].value));
+   assert.ok(named.attackI[ch].value>named.none[ch].value,'atk:I must increase damage '+id+' '+ch);
+  }
+  // Deliberately invalid choice must remain rejected. The test never infers a substitute.
+  w.eval("build.artia.restores=['atk:III','none','none','none','none'];calcBuild()");
+  const bad=read("calcState.realOneHit");
+  named.explicitInvalid=summary(bad);
+  assert.match(bad?.reason||'',id===147?/ARTIA_R8_RESTORE_UNSUPPORTED:atk:III/:/BASE_ARTIA_RESTORE_UNSUPPORTED:atk:III/);
+  out.cases.push(named);
  }
  assert.equal(out.cases.length,3);
  assert.deepEqual(errors,[]);
