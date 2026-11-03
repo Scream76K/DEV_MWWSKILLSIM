@@ -2,7 +2,7 @@ name: CB R-H distinct A/B regression
 on:
   push:
     branches:
-      - flamme/cb-h-enhanced-stock-ab-20261103
+      - flamme/cb-h-power-element-audit-20261103
     paths:
       - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
       - 'hope-hammer-browser-adapter.js'
@@ -10,6 +10,7 @@ on:
       - 'himmel-real-browser-bundle.js'
       - 'tools/cb-distinct-equipment-public-proof.cjs'
       - 'tools/cb-rh-reason-matrix.cjs'
+      - 'tools/cb-h-power-element-gate-probe.cjs'
       - 'tools/cb-h-enhanced-isolated-probe.cjs'
       - 'tools/cb-h-enhanced-distinct-ab-proof.cjs'
       - 'tools/cb-h-different-stock-ab-proof.cjs'
@@ -33,6 +34,8 @@ jobs:
         run: node tools/cb-distinct-equipment-public-proof.cjs
       - name: Classify CB R/H public unresolved reasons
         run: node tools/cb-rh-reason-matrix.cjs
+      - name: Isolated power element H route gate probe
+        run: node tools/cb-h-power-element-gate-probe.cjs
       - name: H enhanced phial candidate full public route proof
         run: node tools/cb-h-enhanced-isolated-probe.cjs
       - name: Public H enhanced distinct-equipment A/B save and restore
