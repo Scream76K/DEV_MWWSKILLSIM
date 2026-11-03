@@ -598,7 +598,7 @@
    if(!Number.isInteger(candidate)||capRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(capRule?.flat)||!Number.isFinite(capRule?.multiplier)||(activeBonusEffects.length&&!conversionResistanceBonusesResolved))return fail('REAL_SLICE:THUNDER_CONVERSION_CAP_OR_ROUNDING_SCOPE_UNRESOLVED');
   }
   if(elementSpecial && (!Number.isFinite(elementRawValue)||elementRawValue<0||!elementRule||stats.element!==elementValue||stats.elementType!==elementType))return fail('REAL_SLICE:CALCULATED_ELEMENT_NOT_PROVEN');
-  if(!elementSpecial && (!([0,null].includes(stats.element))||stats.elementType&&!['none',''].includes(String(stats.elementType))))return fail('REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN');
+  if(!elementSpecial&&!cbStatusOnly&&(!([0,null].includes(stats.element))||stats.elementType&&!['none',''].includes(String(stats.elementType))))return fail('REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN');
   const absorptionConversionInput=waterEntries.length?waterInput:resistanceConversionLevel?resistanceInput:null;
   const absorptionConversionPlan=absorptionConversionInput?.absorptionPlan||null;
   const absorptionConversionCoefficient=waterEntries.length?waterRule.coefficients[weapon.kind]:resistanceConversionCoefficient;
