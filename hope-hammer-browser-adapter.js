@@ -711,9 +711,20 @@
    }
   }
   const cbMindRuleFor=t=>[root.MHCbMorphMindsEyeRule,root.MHCbEd1MindsEyeRule,root.MHCbEd2MindsEyeRule,root.MHCbFollowupAedMindsEyeRule,root.MHCbAedMindsEyeRule].find(r=>r?.techniqueId===t?.techniqueId);
+  // CB extra-hit Mind's Eye is source-adopted for an isolated move or the
+  // canonical R/H sequence only. Arbitrary mixed/repeated sequences stay gated.
+  const cbMindAdoptedSequence=()=>{
+   if(resolvedTechniqueIds.length===1)return true;
+   const profiles=root.ChargeBladeEngine?.profiles;
+   return ['RELEASE_ROUTE','AED_ROUTE'].some(key=>{
+    const ids=profiles?.[key]?.techniqueIds;
+    return Array.isArray(ids)&&ids.length===resolvedTechniqueIds.length
+      &&ids.every((id,i)=>id===resolvedTechniqueIds[i]);
+   });
+  };
   const cbMindEligible=t=>{
    const cbMindRule=cbMindRuleFor(t);
-   if(cbMindRule?.status!=='OWNER_APPROVED_PROVISIONAL'||weapon.kind!=='charge-blade'||resolvedTechniqueIds.length!==1||t?.techniqueId!==cbMindRule.techniqueId||chargeBladeState?.axeBoosted!==true)return false;
+   if(cbMindRule?.status!=='OWNER_APPROVED_PROVISIONAL'||weapon.kind!=='charge-blade'||!cbMindAdoptedSequence()||t?.techniqueId!==cbMindRule.techniqueId||chargeBladeState?.axeBoosted!==true)return false;
    const extra=root.ChargeBladeEngine?.techniques?.[t.techniqueId]?.axeBoostHits,body=techniqueDb.get('charge-blade',t.techniqueId)?.hits;
    return !!(extra&&body&&t.hits.length===body.length+extra.count&&t.hits.slice(body.length).every(h=>h.componentSource==='index.html:CHARGE_BLADE_TECHNIQUES.'+t.techniqueId+'.axeBoostHits'&&h.mv===extra.mv&&h.elementModifier===extra.elementModifier&&h.shieldBoostAxeBody===false));
   };
