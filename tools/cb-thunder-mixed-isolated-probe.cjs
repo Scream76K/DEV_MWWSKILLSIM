@@ -41,6 +41,30 @@ try{
    out.cases.push(row);
   }
  }
+ for(const id of ids){
+  const baseline=out.cases.find(c=>c.id===id&&c.headArmor===null);
+  const boosted=out.cases.find(c=>c.id===id&&c.headArmor===418);
+  assert.ok(baseline&&boosted,id+' two actual-equipment conditions');
+  assert.equal(baseline.resistance?.total,0,id+' no armor thunder resistance');
+  assert.equal(boosted.resistance?.total,1,id+' real MHDB418 thunder resistance');
+  for(const ch of ['normal','maximum']){
+   const a=baseline.channels[ch],b=boosted.channels[ch];
+   assert.equal(a.status,'complete',id+' '+ch+' baseline');
+   assert.equal(b.status,'complete',id+' '+ch+' boosted');
+   assert.deepEqual(a.physical,b.physical,id+' '+ch+' physical damage unchanged');
+   assert.deepEqual(a.phial,b.phial,id+' '+ch+' impact phial damage unchanged');
+   assert.equal(a.element.length,b.element.length,id+' '+ch+' elemental hit cardinality');
+   assert.ok(a.element.length>0,id+' '+ch+' at least one element hit');
+   const deltas=a.element.map((x,i)=>{
+    assert.equal(x.id,b.element[i].id,id+' '+ch+' same elemental hit');
+    assert.ok(b.element[i].value>=x.value,id+' '+ch+' no negative conversion delta');
+    return b.element[i].value-x.value;
+   });
+   assert.ok(deltas.some(x=>x>0),id+' '+ch+' conversion must change elemental hits');
+   const componentDelta=deltas.reduce((a,b)=>a+b,0);
+   assert.ok(Math.abs((b.total-a.total)-componentDelta)<1e-7,id+' '+ch+' all new damage must come from elemental component');
+  }
+ }
  assert.deepEqual(errors,[]);
  out.outcome='ISOLATED_THUNDER_SCOPE_DIAGNOSTIC_NOT_ADOPTED';
 }catch(e){out.failure=e.stack;process.exitCode=1;}finally{
