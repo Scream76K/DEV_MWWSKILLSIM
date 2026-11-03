@@ -762,6 +762,55 @@ main.wrap > .grid > aside .save-build-row > button {min-height:42px;}
 main.wrap > .grid > aside > section.card:has(> #hbgElementReferenceDetails) {
   display:none!important;
 }
+
+/* UI owner feedback stage 1, 2026-11-03; presentation-only. */
+/* Keep all calculations, inputs and handlers mounted; simplify presentation. */
+@media (min-width: 761px) {
+  .skill-workspace-right .skill-game-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  #charmEditor {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 10px;
+    row-gap: 6px;
+    align-items: start;
+  }
+  #charmEditor > .muted:first-child,
+  #charmEditor > label,
+  #charmEditor > #charmPreset {
+    grid-column: 1 / -1;
+  }
+  #charmEditor > #charmSkills {
+    grid-column: 1;
+    min-width: 0;
+  }
+  #charmEditor > .equip-inline {
+    grid-column: 2;
+    min-width: 0;
+    margin: 0;
+  }
+}
+#scorchReferencePanel { display: none !important; }
+section.wrap:has(> #scorchReferencePanel) { display: none !important; }
+/* Duplicate selector is retained as a live, JS-connected fallback for accessibility. */
+#weaponKindSelectionBlock > label[for="weaponKind"],
+#weaponKindSelectionBlock > select#weaponKind {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+/* Preserve underlying comparison inputs but remove development-only conditions from the regular view. */
+#compareBuilds + .two + .notice {
+  display: none !important;
+}
+#hbgComparisonSettings { display: none !important; }
 </style>
 </head><body>
 <div class="notice"><b>v7.2.2-template-rootfix-r7 / OCR統合 r1.1.19 fix12</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">r120 HBG Shot Skill Conditions / Game Ver.1.042.00.02</div>
