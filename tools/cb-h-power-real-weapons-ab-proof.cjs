@@ -59,7 +59,15 @@ try{
   const loaded=read('({snapshot:buildSnapshot(),real:calcState.realOneHit})');
   assert.deepEqual(loaded.real.channels,c.real.channels,'individual restore '+c.name);
   assert.equal(read('selectedWeapon()?.id'),c.weaponId,'restored weapon identity '+c.name);
-  assert.deepEqual((({savedAt,...rest})=>rest)(loaded.snapshot),(({savedAt,...rest})=>rest)(c.snapshot),'saved snapshot restore '+c.name);
+  // UI reconstruction creates three blank charm input rows and defaults weaponSlot=false.
+  // Compare semantic equipped skills; keep all meaningful skill names/levels under assertion.
+  const semanticSnapshot=snap=>{
+   const {savedAt,...rest}=snap;
+   rest.charmCustom={...rest.charmCustom,weaponSlot:Boolean(rest.charmCustom?.weaponSlot),
+    skills:(rest.charmCustom?.skills||[]).filter(x=>String(x.name||'').trim()!=='')};
+   return rest;
+  };
+  assert.deepEqual(semanticSnapshot(loaded.snapshot),semanticSnapshot(c.snapshot),'saved snapshot semantic restore '+c.name);
  }
  out.before=read('({snapshot:buildSnapshotComparable(buildSnapshot()),real:calcState.realOneHit})');
  w.eval("document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true);runBuildCompare();");
