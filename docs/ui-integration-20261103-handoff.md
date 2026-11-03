@@ -33,3 +33,12 @@
 ## Acceptance/status
 - Branch created. This document records scope; no production UI code migration or runtime verification is claimed.
 - No merge to develop/main and no deployment. Owner UX approval and Serie technical approval remain separate.
+
+## Current follow-up — browser smoke gate prepared (2026-11-03)
+- The historical 820/821px source inventory above describes the older branch only; current integration UI uses <=980px Build/Support stacking and >=981px two-column layout, with internal armor/skill panels stacked through 1120px.
+- Current UI changes include weapon-kind/equipment-icon presentation, equipment/charm/deco readability, A/B table width and internal scroll, saved-build names/form, and separating the HBG reference-only form from the primary workflow. These are presentation changes and do not authorize damage or DB changes.
+- A real-page Playwright smoke test is committed at `tools/ui-responsive-browser.test.cjs` (introduced at `15f8ac7917fa311b0284777cbf01c0623882b445`). It starts a local static server and loads the repository's real `index.html`, checking widths 375/390/768/980/1024/1120/1440 and save controls.
+- Execute on a machine with Node >=24.13: `npm ci`, `npx playwright install chromium`, then `npm run test:browser`. Also run `npm test` for static/source contracts and available regression tests.
+- **Not executed in this ChatGPT environment.** The environment could not clone GitHub and connected-browser access was unavailable. No browser PASS, Safari PASS, A/B storage PASS, GS Artia PASS, or beta approval is asserted.
+- After the layout smoke test: exercise two distinct saved builds (not identical dual-save) across save/reload/cancel; check independently unavailable normal/maximum; then execute the controlled GS Artia fixtures from this handoff with the precise MHDB cache/conditions and inspect any `ARTIA_COMPLETED_VALUES_UNRESOLVED` / `ELEMENT_ARTIA_THREE_PART_BONUS_PENDING` outcome.
+- Do not equate a responsive smoke PASS with functional acceptance. Leave merge/deployment blocked until explicit owner UX and technical review.
