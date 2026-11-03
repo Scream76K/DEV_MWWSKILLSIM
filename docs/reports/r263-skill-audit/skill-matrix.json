@@ -39999,7 +39999,7 @@
         "id": 357
       }
     ],
-    "classification": "部分接続",
+    "classification": "完全接続",
     "sourceReferences": [
       {
         "path": "index.html",
@@ -40008,9 +40008,9 @@
         "meaning": "TEXT_REFERENCE_ONLY_NOT_FORMULA_PROOF"
       }
     ],
-    "unit": "REQUIRES_SOURCE_MODEL",
+    "unit": "DIMENSIONLESS_ATTACK_MULTIPLIER",
     "stage": "ATTACK_MULTIPLY_BEFORE_FLAT",
-    "componentTargets": "see MHDB rank; not assumed all weapons",
+    "componentTargets": "採用済み物理本体と承認済みSA/CB追撃。属性/ビン/承認済み笛特殊非適用。",
     "historicalAuditSupplement": {
       "status": "SUPERSEDED_NOT_CURRENT_CLASSIFICATION",
       "note": "旧記述を保持。最新判定との矛盾は履歴であり現行判断ではない。",
@@ -40118,8 +40118,8 @@
         "executionCoverage": "context-attack-after.json: GS contract"
       }
     },
-    "scopeNote": "通常本体・肉質非依存成分除外に加え、SAED採用2技の本体3Hit物理を暫定接続。その他集約reference/追撃対象は未解決。",
-    "staticFormulaStatus": "部分接続",
+    "scopeNote": "採用範囲の静的接続完了。通常本体、SAED本体、SA覚醒追撃、笛本体/特殊除外、CB追加5経路と非斧強化本体を接続。暫定適用/実機未確認を含み、全体技術Doneではない。",
+    "staticFormulaStatus": "完全接続",
     "currentEvidenceReports": [
       "COMMON_FORMULA_CONSUMERS.md",
       "INTERIM_STATUS.md",
@@ -40127,103 +40127,110 @@
       "SAED_MINDS_EYE_CONNECTION.md",
       "saed-mindseye-execution.json",
       "sa-followup-mind/REPORT.md",
-      "hh-mind/REPORT.md"
+      "hh-mind/REPORT.md",
+      "cb-morph-mind/REPORT.md",
+      "cb-ed1-mind/REPORT.md",
+      "cb-ed2-follow-mind/REPORT.md",
+      "cb-aed-mind/REPORT.md",
+      "cb-body-mind/REPORT.md",
+      "MINDS_EYE_ADOPTED_SCOPE_COMPLETE.md"
     ],
-    "executionCoverage": "saed-mindseye-final.raw.json:CB_SAED合成4条件/保存1件比較。派生静的、実機未確認。",
+    "executionCoverage": "MINDS_EYE_ADOPTED_SCOPE_COMPLETE.mdの対象hash別対応表参照。実行済み代表と静的確認を区別。現行全回帰/Safari/F01注入は未実行。",
     "currentImplementationEvidence": {
-      "producer": "contextAttackEffects / resolveComponentIssue",
-      "consumer": "engine componentIds; unresolved必要成分はF01で総計抑止"
+      "producer": "Technique DB hit.damageType / MHContextAttackSkillRules / scoped SA,SAED,CB rules",
+      "consumer": "contextAttackEffects componentIds → attack multiply before flat; scoped reference consumer; HH specials excluded",
+      "scope": "ADOPTED_SCOPE_STATIC_COMPLETE_INDEPENDENT_REVIEW_ACCEPTED"
     },
     "weaponChannels": {
       "great-sword": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "long-sword": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "sword-and-shield": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "dual-blades": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "hammer": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "hunting-horn": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "lance": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "gunlance": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "switch-axe": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "charge-blade": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "insect-glaive": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "light-bowgun": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "heavy-bowgun": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       },
       "bow": {
-        "rowClassification": "部分接続",
+        "rowClassification": "完全接続",
         "normal": "SEE_CURRENT_ROUTE_SCOPE",
         "maximum": "SEE_CURRENT_ROUTE_SCOPE",
         "execution": "NOT_INFERRED_FROM_ROW_CLASSIFICATION"
       }
     },
     "latestResidualAudit": {
-      "status": "PARTIAL_ADOPTED_CB_AXE_BOOST_COMPONENT_BOUNDARY",
-      "record": "hh-mind/REPORT.md",
-      "remaining": "既採用CB変形/ED/AEDの斧強化追加Hit: componentSourceにより心眼効果生成skip→CONTEXT_ATTACK_COMPONENT_SCOPE_PENDING。適否根拠未確認、今回退行でない。"
+      "status": "KNOWN_ADOPTED_WIRING_GAPS_CLOSED",
+      "record": "MINDS_EYE_ADOPTED_SCOPE_COMPLETE.md",
+      "remaining": "No known adopted-scope wiring gap; provisional game applicability and unadopted extensions remain separate."
     },
     "pass28PreviousAudit": {
       "classification": "部分接続",
@@ -40243,21 +40250,21 @@
       "gapDecisionNote": "入口欠落は確認済み。全件を新仕様判断待ちとは断定しない。PASS5_CRITICAL_ROUTES.mdの原典数値既知/追加資料/指標範囲の区分を参照"
     },
     "scopeAudit": {
-      "adoptedScopeAndCurrentRoute": "通常本体・肉質非依存成分除外に加え、SAED採用2技の本体3Hit物理を暫定接続。その他集約reference/追撃対象は未解決。",
-      "wiringStatus": "NO_NEW_CONFIRMED_WIRING_DEFECT; SCOPE_OR_CONTRACT_UNRESOLVED",
-      "remainingCategory": "SCOPE_EVIDENCE_INSUFFICIENT",
+      "adoptedScopeAndCurrentRoute": "採用範囲の静的接続完了。通常本体、SAED本体、SA覚醒追撃、笛本体/特殊除外、CB追加5経路と非斧強化本体を接続。暫定適用/実機未確認を含み、全体技術Doneではない。",
+      "wiringStatus": "ADOPTED_SCOPE_STATIC_COMPLETE",
+      "remainingCategory": "NO_KNOWN_ADOPTED_WIRING_GAP",
       "scopeAuthority": [
-        "COMPONENT_SKILL_CHECKPOINT.md"
+        "MINDS_EYE_ADOPTED_SCOPE_COMPLETE.md"
       ],
-      "productGoalRemaining": "SAED以外の集約本体・source-marked追撃の対象根拠。鈍器へ今回承認を流用しない。",
-      "classificationDecision": "据置。採用境界の根拠不足を未採用と断定して除外/昇格しない。",
-      "liveVerification": "NOT_INFERRED",
-      "evidenceScope": "既存資料静的整理のみ、新規テストなし。"
+      "productGoalRemaining": "暫定適用の実機確認、未採用技/反復列/単体笛reference総計への拡張。採用範囲を縮小していない。",
+      "classificationDecision": "独立レビュー受入に基づき部分→完全。既存断絶の実装修正後の監査訂正。",
+      "liveVerification": "Video support is limited; not inferred from static completion",
+      "evidenceScope": "MINDS_EYE_ADOPTED_SCOPE_COMPLETE.mdの対象hash別対応表参照。実行済み代表と静的確認を区別。現行全回帰/Safari/F01注入は未実行。"
     },
     "latestSaFollowupAdoption": {
-      "status": "OWNER_APPROVED_PROVISIONAL_LOCAL_REVIEW_PENDING",
+      "status": "OWNER_APPROVED_PROVISIONAL_INDEPENDENT_REVIEW_ACCEPTED",
       "scope": "existing three techniques SA_AMPED_FOLLOWUP physical only; original slash<=44; multiply before flat",
-      "remaining": "HH special components applicability remains unresolved",
+      "remaining": "Known HH/CB adopted wiring gaps subsequently closed; live verification remains limited.",
       "execution": "SA_SWORD_VERTICAL public synthetic input only; other two static; live game unverified",
       "hashes": {
         "index.html": "91156416806bc0d789095e8a68df2e58cf52212ea3cfef46e5f5eed908f5c010",
@@ -40268,12 +40275,66 @@
     "latestHornMindsEyeAdoption": {
       "status": "OWNER_APPROVED_PROVISIONAL_INDEPENDENT_REVIEW_ACCEPTED",
       "scope": "existing hhNormalMelody four special events excluded; body original-hitzone rule retained",
-      "knownAdoptedScopeResidual": "既採用CB変形/ED/AEDの斧強化追加Hit: componentSourceにより心眼効果生成skip→CONTEXT_ATTACK_COMPONENT_SCOPE_PENDING。適否根拠未確認、今回退行でない。",
+      "knownAdoptedScopeResidual": "CB gap subsequently closed; see MINDS_EYE_ADOPTED_SCOPE_COMPLETE.md",
       "unadopted": "standalone sound reference formal total remains excluded",
       "hashes": {
         "index.html": "c7ae95528915ccc764deb81ea70df378a51564f065d45af08aef630b449ef593",
         "hope-hammer-browser-adapter.js": "e784f6072d844ffc0a034c9d87b2d806bfd9427e00ae8c689214574ea6df2c7e",
         "./tools/hh-mind-proof.cjs": "d2e5442c9cc9ac0438245a8d5808eda740f0e14b96ca24e00da0915f1001dc9d"
+      }
+    },
+    "historyBeforeMindsEyeScopeClosure20261031": {
+      "status": "SUPERSEDED_HISTORICAL_NOT_CURRENT",
+      "fields": {
+        "classification": "部分接続",
+        "unit": "REQUIRES_SOURCE_MODEL",
+        "componentTargets": "see MHDB rank; not assumed all weapons",
+        "scopeNote": "通常本体・肉質非依存成分除外に加え、SAED採用2技の本体3Hit物理を暫定接続。その他集約reference/追撃対象は未解決。",
+        "staticFormulaStatus": "部分接続",
+        "executionCoverage": "saed-mindseye-final.raw.json:CB_SAED合成4条件/保存1件比較。派生静的、実機未確認。",
+        "currentImplementationEvidence": {
+          "producer": "contextAttackEffects / resolveComponentIssue",
+          "consumer": "engine componentIds; unresolved必要成分はF01で総計抑止"
+        },
+        "latestResidualAudit": {
+          "status": "PARTIAL_ADOPTED_CB_AXE_BOOST_COMPONENT_BOUNDARY",
+          "record": "hh-mind/REPORT.md",
+          "remaining": "既採用CB変形/ED/AEDの斧強化追加Hit: componentSourceにより心眼効果生成skip→CONTEXT_ATTACK_COMPONENT_SCOPE_PENDING。適否根拠未確認、今回退行でない。"
+        },
+        "scopeAudit": {
+          "adoptedScopeAndCurrentRoute": "通常本体・肉質非依存成分除外に加え、SAED採用2技の本体3Hit物理を暫定接続。その他集約reference/追撃対象は未解決。",
+          "wiringStatus": "NO_NEW_CONFIRMED_WIRING_DEFECT; SCOPE_OR_CONTRACT_UNRESOLVED",
+          "remainingCategory": "SCOPE_EVIDENCE_INSUFFICIENT",
+          "scopeAuthority": [
+            "COMPONENT_SKILL_CHECKPOINT.md"
+          ],
+          "productGoalRemaining": "SAED以外の集約本体・source-marked追撃の対象根拠。鈍器へ今回承認を流用しない。",
+          "classificationDecision": "据置。採用境界の根拠不足を未採用と断定して除外/昇格しない。",
+          "liveVerification": "NOT_INFERRED",
+          "evidenceScope": "既存資料静的整理のみ、新規テストなし。"
+        },
+        "latestSaFollowupAdoption": {
+          "status": "OWNER_APPROVED_PROVISIONAL_LOCAL_REVIEW_PENDING",
+          "scope": "existing three techniques SA_AMPED_FOLLOWUP physical only; original slash<=44; multiply before flat",
+          "remaining": "HH special components applicability remains unresolved",
+          "execution": "SA_SWORD_VERTICAL public synthetic input only; other two static; live game unverified",
+          "hashes": {
+            "index.html": "91156416806bc0d789095e8a68df2e58cf52212ea3cfef46e5f5eed908f5c010",
+            "hope-hammer-browser-adapter.js": "642a986f49a770a21ba69e1a7650df5d2422047a01a8d55452a5550878c0072e",
+            "./tools/sa-followup-mind-proof.cjs": "6579a440e2a3e52cbd876754e6b1775a4158aca3b95e3ad52982d20afc915134"
+          }
+        },
+        "latestHornMindsEyeAdoption": {
+          "status": "OWNER_APPROVED_PROVISIONAL_INDEPENDENT_REVIEW_ACCEPTED",
+          "scope": "existing hhNormalMelody four special events excluded; body original-hitzone rule retained",
+          "knownAdoptedScopeResidual": "既採用CB変形/ED/AEDの斧強化追加Hit: componentSourceにより心眼効果生成skip→CONTEXT_ATTACK_COMPONENT_SCOPE_PENDING。適否根拠未確認、今回退行でない。",
+          "unadopted": "standalone sound reference formal total remains excluded",
+          "hashes": {
+            "index.html": "c7ae95528915ccc764deb81ea70df378a51564f065d45af08aef630b449ef593",
+            "hope-hammer-browser-adapter.js": "e784f6072d844ffc0a034c9d87b2d806bfd9427e00ae8c689214574ea6df2c7e",
+            "./tools/hh-mind-proof.cjs": "d2e5442c9cc9ac0438245a8d5808eda740f0e14b96ca24e00da0915f1001dc9d"
+          }
+        }
       }
     }
   },
@@ -44338,7 +44399,7 @@
         "executionCoverage": "NOT_EXECUTED_THIS_ROW"
       }
     },
-    "scopeNote": "龍属性武器本体の承認済み+80/120/180・明示発動状態、追加ダメージは注釈のみ。倍率→flat→元属性cap、承認済みCM/条件属性/系列計画併用を接続。SA/ビン付きCB/集約reference等の未採用対象は既存guard維持。実機未確認。",
+    "scopeNote": "龍+80/120/180、正規152明示OFFは非龍も効果0で継続。ON対象不適合/未知は当該channel保留。既採用武器属性を使うSA本体/覚醒追撃、CB追加Hit/強属性ビン、HHモデル音波/響玉、代表弓3技への限定接続。倍率→flat一回→既存capと各成分の既存補正を維持。OWNER_APPROVED_PROVISIONAL、GAME_UNVERIFIED。",
     "staticFormulaStatus": "完全接続",
     "currentEvidenceReports": [
       "COMMON_FORMULA_CONSUMERS.md",
@@ -44358,14 +44419,20 @@
       "CONVERSION_NON_DAMAGE_PLAN_CONNECTION.md",
       "conversion-non-damage-execution.json",
       "CONVERSION_SCOPE_CLOSEOUT.md",
-      "recovery-rank-execution.json"
+      "recovery-rank-execution.json",
+      "../stage4-bow-representatives/ATTRIBUTE_CONVERSION_BOW_DECISION.md",
+      "../stage4-bow-representatives/ATTRIBUTE_CONVERSION_COMPONENT_SCOPE.md",
+      "../stage4-bow-representatives/attribute-bow/manifest.json",
+      "conversion-component-scope/REPORT.md",
+      "conversion-component-scope/manifest.json",
+      "../stage4-bow-representatives/CONVERSION_152_165_SCOPE_DECISION.md"
     ],
-    "executionCoverage": "既存局所公開証拠/保存A/Bと最小境界証拠を再利用。個々のhash/実行対象を各manifestに保持。現行全回帰、全武器、実機を意味しない。",
+    "executionCoverage": "今回公開JSDOM合成契約入力: 非龍太刀の明示OFF/ON/未知channel独立、SA剣縦+覚醒追撃（強撃ビン）、CB AED本体/斧強化追加4Hit/強属性ビン、CB SAED、CB保存2件比較・共有条件/保存不変、榴弾混在OFF成立/ON拒否。静的のみ: HHモデル、別SAビン/別派生、専用弾/砲撃の明示OFF。旧実行は各記録hash限定。実機確認/全武器完了とはしない。",
     "currentImplementationEvidence": {
-      "producer": "calcBuild / standardPowerConditionPlan / equipmentThunderResistanceInput / standardGroupPowerPlan",
-      "consumer": "adapter conversionResistanceBonusesResolved + resolveEffects conversion-element-add → engine applyEffects element cap → adopted body Formula",
-      "scope": "龍属性武器本体の承認済み+80/120/180・明示発動状態、追加ダメージは注釈のみ。",
-      "closureBasis": "旧cap拒否、CM/条件属性/系列/健康枝/非火力計画の実接続漏れを修正し既存独立レビュー受入。P3rankI/count境界を本記録で修正。"
+      "producer": "calcBuild → existing attribute/resistance producer → adapter conversionComponentsSupported / per-channel state guard",
+      "consumer": "resolveEffects shared element flat/cap → adopted body/SA followup/CB POWER_ELEMENT/HH model/BowReference",
+      "scope": "龍+80/120/180、正規152明示OFFは非龍も効果0で継続。ON対象不適合/未知は当該channel保留。既採用武器属性を使うSA本体/覚醒追撃、CB追加Hit/強属性ビン、HHモデル音波/響玉、代表弓3技への限定接続。倍率→flat一回→既存capと各成分の既存補正を維持。OWNER_APPROVED_PROVISIONAL、GAME_UNVERIFIED。",
+      "closureBasis": "Independent review 01a1907b-3b53-7317-91cb-e4ddda1d20ea accepted limited component adoption; see executed/staticOnly and original source hashes."
     },
     "weaponChannels": {
       "great-sword": {
@@ -44468,9 +44535,9 @@
       }
     },
     "latestResidualAudit": {
-      "record": "CONVERSION_SCOPE_CLOSEOUT.md",
-      "status": "IMPLEMENTATION_GAPS_CLOSED_ADOPTED_SCOPE_COMPLETE",
-      "remaining": "未採用特殊成分/新技/未定義入力、実機確認。既存数値の再承認不要。"
+      "record": "../stage4-bow-representatives/ATTRIBUTE_CONVERSION_COMPONENT_SCOPE.md",
+      "status": "BOW_LIMITED_ACCEPTED_COMPONENT_SCOPE_RECONCILIATION_REQUIRED",
+      "remaining": "CB変形追加属性/笛特殊イベントの実流入と承認範囲整合。非龍OFF時継続の採否。未採用SA/CBビン等への拡張。分類は採用範囲静的で全武器利用可能ではない。"
     },
     "adoptedScopePreviousAudit": {
       "id": 152,
@@ -44749,6 +44816,107 @@
         "remaining": "現行nonDamageEffects producerの全カテゴリ33/4とapplied非火力rankIを限定接続。全採用範囲の分類判断は別。"
       },
       "executionCoverage": "NOT_EXECUTED_THIS_ROW"
+    },
+    "scopeHistory": [
+      {
+        "reason": "2026-10-31 bow adopted; cross-component documentation clarification",
+        "scopeNote": "龍属性武器本体の承認済み+80/120/180・明示発動状態、追加ダメージは注釈のみ。倍率→flat→元属性cap、承認済みCM/条件属性/系列計画併用を接続。SA/ビン付きCB/集約reference等の未採用対象は既存guard維持。実機未確認。",
+        "latestResidualAudit": {
+          "record": "CONVERSION_SCOPE_CLOSEOUT.md",
+          "status": "IMPLEMENTATION_GAPS_CLOSED_ADOPTED_SCOPE_COMPLETE",
+          "remaining": "未採用特殊成分/新技/未定義入力、実機確認。既存数値の再承認不要。"
+        }
+      },
+      {
+        "status": "SUPERSEDED_SCOPE_BEFORE_COMPONENT_ADOPTION",
+        "scopeNote": "承認済み龍本体+80/120/180・明示channel別発動・元属性cap。追加龍追撃は注釈。龍弓定順3技/NONE/CRITICALを追加承認し実テンプレ公開経路で確認。全武器/全成分利用可ではない。CB変形斧強化追加属性Hitと笛モデル特殊属性へ現実装で流入し、旧特殊除外記述との採用整合は判断待ち。SA/CBビン技/GL砲撃/ボウガンreference拒否、非龍OFF停止は別論点。",
+        "executionCoverage": "既存局所公開証拠/保存A/Bと最小境界証拠を再利用。個々のhash/実行対象を各manifestに保持。現行全回帰、全武器、実機を意味しない。",
+        "implementationEvidence": {
+          "producer": "calcBuild / standardPowerConditionPlan / equipmentThunderResistanceInput / standardGroupPowerPlan",
+          "consumer": "adapter conversionResistanceBonusesResolved + resolveEffects conversion-element-add → engine applyEffects element cap → adopted body Formula",
+          "scope": "龍属性武器本体の承認済み+80/120/180・明示発動状態、追加ダメージは注釈のみ。",
+          "closureBasis": "旧cap拒否、CM/条件属性/系列/健康枝/非火力計画の実接続漏れを修正し既存独立レビュー受入。P3rankI/count境界を本記録で修正。"
+        }
+      }
+    ],
+    "bowExecutionEvidence": {
+      "approval": "Sentinel_9d657feeb0408191b8b7db81aa273379",
+      "environment": "JSDOM exported real DB; no synthetic equipment",
+      "indexSHA256": "7443c5208b0f8102607a0386ceb453eeefb4cb719646e691f20378f14875ebb6",
+      "adapterSHA256": "969abdc0938597cee04932fe41a6f3d358b226427841dc27be70e2f5c0a53c52",
+      "exit": 0,
+      "gameVerified": false,
+      "scope": "KOTATU_BOW_01/SALADA_BOW_05, NONE/CRITICAL exact three-shot, normal OFF/maximum ON, save2/load/shared comparison; missing state and other coating reject"
+    },
+    "componentScopeAcceptance": {
+      "approval": "Sentinel_620e279cceec81918778e2036f65971f",
+      "review": "01a1907b-3b53-7317-91cb-e4ddda1d20ea",
+      "status": "LIMITED_SCOPE_ACCEPTED",
+      "adoptionStatus": "OWNER_APPROVED_PROVISIONAL",
+      "gameVerification": "UNVERIFIED",
+      "executed": [
+        "非龍太刀の明示OFF/ON/未知channel独立",
+        "SA剣縦+覚醒追撃（強撃ビン）",
+        "CB AED本体/斧強化追加4Hit/強属性ビン",
+        "CB SAED",
+        "CB保存2件比較・共有条件/保存不変",
+        "榴弾混在OFF成立/ON拒否"
+      ],
+      "staticOnly": [
+        "HHモデル",
+        "別SAビン/別派生",
+        "専用弾/砲撃の明示OFF"
+      ],
+      "remainingConstraints": [
+        "専用弾・砲撃へのON、榴弾混在ONは未採用",
+        "単体笛reference新総計、未承認技/入力は保留",
+        "全14武器全成分の実行ではない",
+        "実機/Safari/F01注入/全回帰/最終β検証未実施"
+      ],
+      "sourceHashes": {
+        "index.html": "aab29e2b1a83282647628532380710dd602f1fd89d444c998758727a2dc24a6d",
+        "hope-hammer-browser-adapter.js": "1b348b1db8c992548cc7438ad0b1b33d6f7e4391b407dbf030a199da7b9a6820"
+      },
+      "manifest": "conversion-component-scope/manifest.json"
+    },
+    "mixedComponentAcceptance": {
+      "status": "LIMITED_CALCULATION_REVIEW_ACCEPTED_DIAGNOSTIC_SUPPLEMENT",
+      "review": "01a19264-2e0b-715f-b928-bb99cc1a630f",
+      "calculationExecutionHashes": {
+        "index.html": "dfb09464acf6e736379f624c25e24456d245744e285e9f22374d3986579dbffd",
+        "hope-hammer-browser-adapter.js": "4235df86c0abda05e6eb26f8458e03935a2bb72329489deb6bafda543c5063b8"
+      },
+      "finalHashes": {
+        "index.html": "dfb09464acf6e736379f624c25e24456d245744e285e9f22374d3986579dbffd",
+        "hope-hammer-browser-adapter.js": "d6d91a03d340e6d099f2669ead9dc827952a6050786106de9231d9776c3d5f9d"
+      },
+      "postExecutionChange": "additive diagnostics.attributeConversion.mixedComponentAdoption only; legacy scope retained",
+      "excludedEffectComponents": [
+        "SHELL_DEDICATED_FIRE",
+        "IMPACT_PHIAL"
+      ],
+      "totalMeaning": "included only when component independently valid; no effect application",
+      "checks": [
+        "node --check hope-hammer-browser-adapter.js exit0",
+        "git diff --check exit0",
+        "removing the exact inserted diagnostic block reproduces pre-edit source byte-for-byte"
+      ],
+      "newCalculationExecution": false,
+      "evidence": [
+        "mixed152-gl-final.json",
+        "mixed152-cb-final.json"
+      ],
+      "notExecuted": [
+        "game",
+        "Safari",
+        "full regression",
+        "F01 injection",
+        "CB other impact routes"
+      ],
+      "limits": "GL normal/charged and adopted body mix; CB impact AED single; same-content saved pairs",
+      "approval": "Sentinel_0a16b323a9488191bc7a88b798b2204b",
+      "report": "../stage4-bow-representatives/MIXED152_REPORT.md",
+      "classificationChanged": false
     }
   },
   {
@@ -48880,7 +49048,7 @@
         "executionCoverage": "NOT_EXECUTED_THIS_ROW"
       }
     },
-    "scopeNote": "雷属性武器本体の承認済み武器別耐性係数、既知装備耐性/承認済み耐性状態のみ。倍率→flat→元属性cap、承認済みCM/条件属性/系列計画併用を接続。SA/ビン付きCB/集約reference等の未採用対象は既存guard維持。実機未確認。",
+    "scopeNote": "耐性変換【雷】Lv1、既知装備耐性/既採用状態寄与。既存係数大剣/槌/笛5・ボウガン2・他4、係数存在だけで弾適用を許可しない。既採用武器属性を使うSA本体/覚醒追撃、CB追加Hit/強属性ビン、HHモデル音波/響玉、代表弓3技への限定接続。倍率→flat一回→既存capと各成分の既存補正を維持。OWNER_APPROVED_PROVISIONAL、GAME_UNVERIFIED。",
     "staticFormulaStatus": "完全接続",
     "currentEvidenceReports": [
       "COMMON_FORMULA_CONSUMERS.md",
@@ -48901,14 +49069,17 @@
       "CONVERSION_NON_DAMAGE_PLAN_CONNECTION.md",
       "conversion-non-damage-execution.json",
       "CONVERSION_SCOPE_CLOSEOUT.md",
-      "recovery-rank-execution.json"
+      "recovery-rank-execution.json",
+      "conversion-component-scope/REPORT.md",
+      "conversion-component-scope/manifest.json",
+      "../stage4-bow-representatives/CONVERSION_152_165_SCOPE_DECISION.md"
     ],
-    "executionCoverage": "既存局所公開証拠/保存A/Bと最小境界証拠を再利用。個々のhash/実行対象を各manifestに保持。現行全回帰、全武器、実機を意味しない。",
+    "executionCoverage": "今回公開JSDOM合成契約入力: HH演奏/重ねがけ/通常モデルの音波・響玉/固定10非適用、弓代表3技・耐性10/200/負値・cap。静的のみ: SA本体/追撃、CB本体/追加Hit/強属性ビン/SAED、別派生/別SAビン。旧実行は各記録hash限定。実機確認/全武器完了とはしない。",
     "currentImplementationEvidence": {
-      "producer": "calcBuild / standardPowerConditionPlan / equipmentThunderResistanceInput / standardGroupPowerPlan",
-      "consumer": "adapter conversionResistanceBonusesResolved + resolveEffects conversion-element-add → engine applyEffects element cap → adopted body Formula",
-      "scope": "雷属性武器本体の承認済み武器別耐性係数、既知装備耐性/承認済み耐性状態のみ。",
-      "closureBasis": "旧cap拒否、CM/条件属性/系列/健康枝/非火力計画の実接続漏れを修正し既存独立レビュー受入。P3rankI/count境界を本記録で修正。"
+      "producer": "calcBuild → existing attribute/resistance producer → adapter conversionComponentsSupported / per-channel state guard",
+      "consumer": "resolveEffects shared element flat/cap → adopted body/SA followup/CB POWER_ELEMENT/HH model/BowReference",
+      "scope": "耐性変換【雷】Lv1、既知装備耐性/既採用状態寄与。既存係数大剣/槌/笛5・ボウガン2・他4、係数存在だけで弾適用を許可しない。既採用武器属性を使うSA本体/覚醒追撃、CB追加Hit/強属性ビン、HHモデル音波/響玉、代表弓3技への限定接続。倍率→flat一回→既存capと各成分の既存補正を維持。OWNER_APPROVED_PROVISIONAL、GAME_UNVERIFIED。",
+      "closureBasis": "Independent review 01a1907b-3b53-7317-91cb-e4ddda1d20ea accepted limited component adoption; see executed/staticOnly and original source hashes."
     },
     "weaponChannels": {
       "great-sword": {
@@ -49264,6 +49435,46 @@
         "remaining": "現行nonDamageEffects producerの全カテゴリ33/4とapplied非火力rankIを限定接続。全採用範囲の分類判断は別。"
       },
       "executionCoverage": "NOT_EXECUTED_THIS_ROW"
+    },
+    "scopeHistory": [
+      {
+        "status": "SUPERSEDED_SCOPE_BEFORE_COMPONENT_ADOPTION",
+        "scopeNote": "雷属性武器本体の承認済み武器別耐性係数、既知装備耐性/承認済み耐性状態のみ。倍率→flat→元属性cap、承認済みCM/条件属性/系列計画併用を接続。SA/ビン付きCB/集約reference等の未採用対象は既存guard維持。実機未確認。",
+        "executionCoverage": "既存局所公開証拠/保存A/Bと最小境界証拠を再利用。個々のhash/実行対象を各manifestに保持。現行全回帰、全武器、実機を意味しない。",
+        "implementationEvidence": {
+          "producer": "calcBuild / standardPowerConditionPlan / equipmentThunderResistanceInput / standardGroupPowerPlan",
+          "consumer": "adapter conversionResistanceBonusesResolved + resolveEffects conversion-element-add → engine applyEffects element cap → adopted body Formula",
+          "scope": "雷属性武器本体の承認済み武器別耐性係数、既知装備耐性/承認済み耐性状態のみ。",
+          "closureBasis": "旧cap拒否、CM/条件属性/系列/健康枝/非火力計画の実接続漏れを修正し既存独立レビュー受入。P3rankI/count境界を本記録で修正。"
+        }
+      }
+    ],
+    "componentScopeAcceptance": {
+      "approval": "Sentinel_620e279cceec81918778e2036f65971f",
+      "review": "01a1907b-3b53-7317-91cb-e4ddda1d20ea",
+      "status": "LIMITED_SCOPE_ACCEPTED",
+      "adoptionStatus": "OWNER_APPROVED_PROVISIONAL",
+      "gameVerification": "UNVERIFIED",
+      "executed": [
+        "HH演奏/重ねがけ/通常モデルの音波・響玉/固定10非適用",
+        "弓代表3技・耐性10/200/負値・cap"
+      ],
+      "staticOnly": [
+        "SA本体/追撃",
+        "CB本体/追加Hit/強属性ビン/SAED",
+        "別派生/別SAビン"
+      ],
+      "remainingConstraints": [
+        "専用弾・砲撃へのON、榴弾混在ONは未採用",
+        "単体笛reference新総計、未承認技/入力は保留",
+        "全14武器全成分の実行ではない",
+        "実機/Safari/F01注入/全回帰/最終β検証未実施"
+      ],
+      "sourceHashes": {
+        "index.html": "aab29e2b1a83282647628532380710dd602f1fd89d444c998758727a2dc24a6d",
+        "hope-hammer-browser-adapter.js": "1b348b1db8c992548cc7438ad0b1b33d6f7e4391b407dbf030a199da7b9a6820"
+      },
+      "manifest": "conversion-component-scope/manifest.json"
     }
   },
   {
@@ -51884,13 +52095,16 @@
     "classification": "完全接続",
     "sourceReferences": [
       "GOG178_CONNECTION.md",
-      "gog178-execution.json"
+      "gog178-execution.json",
+      "../stage4-bow-representatives/HH_GOG178_REPORT.md",
+      "../stage4-bow-representatives/hh178-acceptance-record.json"
     ],
     "unit": "dimensionless + display-element",
     "stage": "base multiplier → display flat → original-base cap",
     "componentTargets": [
       "five-element weapon body",
-      "adopted CB power-element phial using resolved element"
+      "adopted CB power-element phial using resolved element",
+      "adopted HH model sound/echo weapon-element components (owner-approved provisional; fixed10 excluded)"
     ],
     "gapDecision": "ADOPTED_SCOPE_STATIC_COMPLETE_INDEPENDENT_REVIEW_ACCEPTED",
     "gapDecisionNote": "既存採用範囲の接続に具体的断絶なしとの独立レビューに基づく監査訂正。新実装・新実行・範囲縮小・全体Doneではない。暫定採用と実機未確認は維持。",
@@ -52200,6 +52414,34 @@
       "record": "ADOPTED_VS_PRODUCT_REMAINDERS.md",
       "status": "ADOPTED_SCOPE_STATIC_COMPLETE",
       "remaining": "当初明示した未採用拡張と現行版実機確認。各scopeAudit/採用記録参照。"
+    },
+    "hhScopeAcceptance": {
+      "status": "LIMITED_INDEPENDENT_REVIEW_ACCEPTED",
+      "review": "01a1922c-b03f-7349-b8d2-3f9c8abb374f",
+      "scope": "rank I; adopted HH performance/encore model weapon-element sound/echo components; fixed10 excluded",
+      "evidence": "hh178-final.json",
+      "executionHashes": {
+        "index.html": "228bd0458b7eecc8b20b8904f4674f56371fd933fbedfcfaafffe7373fd77d28",
+        "hope-hammer-browser-adapter.js": "fe41bd3392497640b5002832ef945ee5f1fb472ed1329a997cfac28ee3a2add4",
+        "himmel-real-browser-bundle.js": "3229399281bae19b793b172d07ac3d7ec74041ae433bfc641b968fd325f5a501"
+      },
+      "normal": 879.94272512,
+      "maximum": 1138.99872512,
+      "comparison": "two identical actual-equipment saved builds; shared conditions/content preserved",
+      "syntheticControl": "uncapped comparison changes resolved group-plan GOG multiplier/add only; not real-equipment A/B or game measurement",
+      "unexecuted": [
+        "rankII",
+        "all HH actions",
+        "live game",
+        "Safari",
+        "F01 injection in this batch",
+        "full regression"
+      ],
+      "adoption": "OWNER_APPROVED_PROVISIONAL",
+      "newTestsForAcceptanceRecording": false,
+      "report": "../stage4-bow-representatives/HH_GOG178_REPORT.md",
+      "approval": "Sentinel_58fc28ece07c8191b68e67e75afcd78a",
+      "classificationChanged": false
     }
   },
   {

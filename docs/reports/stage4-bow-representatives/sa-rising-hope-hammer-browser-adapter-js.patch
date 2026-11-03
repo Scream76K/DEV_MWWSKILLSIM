@@ -1,0 +1,23 @@
+--- a/hope-hammer-browser-adapter.js
++++ b/hope-hammer-browser-adapter.js
+@@ -234,7 +234,7 @@
+   const rapidRule=root.MHRapidMorphAttackRule;
+   const rapidMorphEntries=allSkills.filter(x=>x.skillKey==='rapidMorph'),rapidMorphLevel=Math.max(0,...rapidMorphEntries.map(x=>x.level));
+   if(rapidMorphEntries.length&&(!['charge-blade','switch-axe'].includes(weapon.kind)||rapidMorphEntries.some(x=>Number(x.skillId)!==7||!Number.isInteger(x.level)||x.level<1||x.level>3)))return fail('REAL_SLICE:RAPID_MORPH_SCOPE_OR_LEVEL_UNRESOLVED');
+-  if(rapidMorphEntries.length&&(!rapidRule||rapidRule.status!=='OWNER_APPROVED_PROVISIONAL'||resolvedTechniqueIds.some(id=>weapon.kind==='charge-blade'?(!root.ChargeBladeEngine?.techniques?.[id]&&!(Object.hasOwn(root.MHSaedGuardRapidMorphRule?.predecessors||{},id)&&root.TechniqueDBEngine.get('charge-blade',id)?.phialReference?.status==='PROVISIONALLY_ADOPTED')):!['SA_SWORD_VERTICAL','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'].includes(id))))return fail('REAL_SLICE:RAPID_MORPH_TECHNIQUE_SCOPE_UNRESOLVED');
++  if(rapidMorphEntries.length&&(!rapidRule||rapidRule.status!=='OWNER_APPROVED_PROVISIONAL'||resolvedTechniqueIds.some(id=>weapon.kind==='charge-blade'?(!root.ChargeBladeEngine?.techniques?.[id]&&!(Object.hasOwn(root.MHSaedGuardRapidMorphRule?.predecessors||{},id)&&root.TechniqueDBEngine.get('charge-blade',id)?.phialReference?.status==='PROVISIONALLY_ADOPTED')):!['SA_SWORD_VERTICAL','SA_SWORD_RIGHT_RISING','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'].includes(id))))return fail('REAL_SLICE:RAPID_MORPH_TECHNIQUE_SCOPE_UNRESOLVED');
+   let ed1Rule=root.MHCBED1ResourceRule;
+   const dischargeRules=root.MHCBDischargeResourceRules,resourcePlans={};
+   const ed1Requested=weapon.kind==='charge-blade'&&resolvedTechniqueIds.some(id=>dischargeRules?.predecessors?.[id]);
+@@ -379,9 +379,9 @@
+   techniqueId=resolvedTechniqueIds[0];
+   const technique=techniques[techniqueId];
+   if(weapon.kind==='switch-axe'){
+-   if(resolvedTechniqueIds.some(id=>!techniques[id]?.modeContract&&!STANDARD_NORMAL_HIT_CONTRACT[id]?.stateRequirement?.mode))return fail('REAL_SLICE:SA_TECHNIQUE_MODE_UNRESOLVED');
++   if(resolvedTechniqueIds.some(id=>!techniques[id]?.modeContract&&!techniques[id]?.stateRequirement?.mode&&!STANDARD_NORMAL_HIT_CONTRACT[id]?.stateRequirement?.mode))return fail('REAL_SLICE:SA_TECHNIQUE_MODE_UNRESOLVED');
+    if(!switchAxeState||!['SWORD','AXE'].includes(switchAxeState.mode))return fail('REAL_SLICE:STATE_REQUIREMENT_UNRESOLVED:mode');
+-   const startMode=techniques[resolvedTechniqueIds[0]]?.modeContract?.startMode||STANDARD_NORMAL_HIT_CONTRACT[resolvedTechniqueIds[0]]?.stateRequirement?.mode;
++   const startMode=techniques[resolvedTechniqueIds[0]]?.modeContract?.startMode||techniques[resolvedTechniqueIds[0]]?.stateRequirement?.mode||STANDARD_NORMAL_HIT_CONTRACT[resolvedTechniqueIds[0]]?.stateRequirement?.mode;
+    if(startMode!==switchAxeState.mode)return fail('REAL_SLICE:STATE_REQUIREMENT_MISMATCH:mode');
+    if(typeof switchAxeState.awakened!=='boolean')return fail('REAL_SLICE:SA_AWAKENED_STATE_UNRESOLVED');
+    if(!['power','element'].includes(weapon.phial?.kind))return fail('REAL_SLICE:SA_PHIAL_EFFECT_UNRESOLVED:'+String(weapon.phial?.kind||'missing'));

@@ -1,0 +1,61 @@
+--- a/index.html
++++ b/index.html
+@@ -1748,12 +1748,12 @@
+   const normal=['fire','water','thunder','ice','dragon'].includes(type);
+   const base=row.base[normal?'element':type];
+   if(typeof base!=='number')return unknown('ELEMENT_ARTIA_TYPE_SOURCE_PENDING');
+-  if(count===3&&row.threePartBonusEvidence?.status==='USER_REPORTED_LIMITED'&&(type!==row.threePartBonusEvidence.element||(a.production||'element')!==row.threePartBonusEvidence.mutation))return unknown('ELEMENT_ARTIA_THREE_PART_BONUS_SCOPE_PENDING');
++  if(count===3&&row.threePartBonusEvidence?.status==='USER_REPORTED_LIMITED'&&(Number(w.id)!==row.threePartBonusEvidence.weaponId||type!==row.threePartBonusEvidence.element||(a.production||'element')!==row.threePartBonusEvidence.mutation))return unknown('ELEMENT_ARTIA_THREE_PART_BONUS_SCOPE_PENDING');
+   if(count===3&&typeof row.threePartBonus!=='number')return unknown('ELEMENT_ARTIA_THREE_PART_BONUS_PENDING');
+   for(const restore of a.restores||[]){const [kind,level]=String(restore).split(':');if(kind==='elem'&&typeof row.restore?.[level]!=='number')return unknown('ELEMENT_ARTIA_RESTORE_SOURCE_PENDING');}
+   const mutation=row.mutation[a.production||'element'];
+   if(typeof mutation!=='number')return unknown('ELEMENT_ARTIA_MUTATION_UNKNOWN');
+-  return {...MHWElementState.fromValue(base+(count===3?row.threePartBonus:0)+mutation,type),elementEvidence:{sourceUrl:ARTIA_ELEMENT_SOURCE_DB.sourceUrl,targetGameVersion:ARTIA_ELEMENT_SOURCE_DB.targetGameVersion,verificationStatus:ARTIA_ELEMENT_SOURCE_DB.verificationStatus,scope:ARTIA_ELEMENT_SOURCE_DB.scope,sameElementPartCount:count}};
++  return {...MHWElementState.fromValue(base+(count===3?row.threePartBonus:0)+mutation,type),elementEvidence:{sourceUrl:ARTIA_ELEMENT_SOURCE_DB.sourceUrl,targetGameVersion:ARTIA_ELEMENT_SOURCE_DB.targetGameVersion,verificationStatus:ARTIA_ELEMENT_SOURCE_DB.verificationStatus,scope:ARTIA_ELEMENT_SOURCE_DB.scope,sameElementPartCount:count,...(row.threePartBonusEvidence?{threePartBonusEvidence:row.threePartBonusEvidence}:{})}};
+ }
+ function artiaFixedVariantStats(w){
+   if(!isArtia(w)) return null;
+@@ -2089,9 +2089,9 @@
+     stats.conditionalConditionPlan={status:'PARTIAL',maximum:stats,pending:['CONDITION_PLAN_ERROR:'+String(error?.message||error)]};
+   }
+   calcState={total,rawTotal,stats,bonusDisplay:calcState.bonusDisplay||{series:[],group:[]}};
+-  const selectedTechniqueIdRaw=resolveAdoptedSnsPresetId(canonicalWeaponKind(w),$('comboMovePicker')?.value||document.querySelector('.comboRow .cmove')?.value||'');
++  const selectedTechniqueIdRaw=resolveAdoptedLegacyPresetId(canonicalWeaponKind(w),$('comboMovePicker')?.value||document.querySelector('.comboRow .cmove')?.value||'');
+   const selectedTechniqueId=selectedTechniqueIdRaw==='hm_side'?'HAM_SIDE_SWING':selectedTechniqueIdRaw;
+-  const selectedTechniqueIdsRaw=(Array.isArray(App.state.combo?.moves)?App.state.combo.moves:[]).map(x=>resolveAdoptedSnsPresetId(canonicalWeaponKind(w),x?.techniqueId||x?.canonicalTechniqueId||''));
++  const selectedTechniqueIdsRaw=(Array.isArray(App.state.combo?.moves)?App.state.combo.moves:[]).map(x=>resolveAdoptedLegacyPresetId(canonicalWeaponKind(w),x?.techniqueId||x?.canonicalTechniqueId||''));
+   const standardProfile=GENERIC_STANDARD_PROFILES?.[canonicalWeaponKind(w)];
+   const standardTechniqueIds=selectedTechniqueIdsRaw.some(Boolean)?[]:(standardProfile?.status==='ADOPTED'&&Array.isArray(standardProfile.techniqueIds)?standardProfile.techniqueIds:[]);
+   const techniqueInputIds=selectedTechniqueIdsRaw.some(Boolean)?selectedTechniqueIdsRaw:standardTechniqueIds;
+@@ -6855,9 +6855,10 @@
+     }
+   }
+ });
+-// Resolve adopted SNS legacy UI IDs without rewriting saved settings or accepting other legacy moves.
+-function resolveAdoptedSnsPresetId(kind,id){
+-  if(kind!=='sword-and-shield'||!['sns_slash','sns_horizontal'].includes(id))return id;
++// Resolve explicitly adopted SNS/GS preset aliases without rewriting saved settings or accepting other legacy moves.
++function resolveAdoptedLegacyPresetId(kind,id){
++  const adoptedAliases={'sword-and-shield':['sns_slash','sns_horizontal'],'great-sword':['gs_charge3','gs_strong3']};
++  if(!adoptedAliases[kind]?.includes(id))return id;
+   const mapping=legacyCanonicalMapping(kind,id);
+   return mapping?.canonicalTechniqueId&&CANONICAL_COMBO_ADOPTION[kind]?.includes(id)?mapping.canonicalTechniqueId:id;
+ }
+@@ -8164,7 +8165,7 @@
+   const moves=Array.isArray(snapshot?.combo?.moves)?snapshot.combo.moves:[];
+   const selectedKind=canonicalWeaponKind(selectedWeapon());
+   const standardProfile=GENERIC_STANDARD_PROFILES?.[selectedKind];
+-  const rawTechniqueIds=moves.length?moves.map(x=>resolveAdoptedSnsPresetId(selectedKind,x?.techniqueId||x?.canonicalTechniqueId||'')):(standardProfile?.status==='ADOPTED'&&Array.isArray(standardProfile.techniqueIds)?standardProfile.techniqueIds:[]);
++  const rawTechniqueIds=moves.length?moves.map(x=>resolveAdoptedLegacyPresetId(selectedKind,x?.techniqueId||x?.canonicalTechniqueId||'')):(standardProfile?.status==='ADOPTED'&&Array.isArray(standardProfile.techniqueIds)?standardProfile.techniqueIds:[]);
+   if(!rawTechniqueIds.length)return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_NOT_SAVED'};
+   const normalizedTechniqueIds=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(rawTechniqueIds)||{ids:rawTechniqueIds.filter(Boolean),unresolved:[]};
+   const techniqueIds=normalizedTechniqueIds.ids;
+@@ -8174,7 +8175,7 @@
+   if(expectedSnapshot){
+     const expectedTarget=expectedSnapshot.target||{};
+     const expectedMoves=Array.isArray(expectedSnapshot.combo?.moves)?expectedSnapshot.combo.moves:[];
+-    const expectedRawTechniqueIds=expectedMoves.length?expectedMoves.map(x=>resolveAdoptedSnsPresetId(selectedKind,x?.techniqueId||x?.canonicalTechniqueId||'')):(standardProfile?.status==='ADOPTED'&&Array.isArray(standardProfile.techniqueIds)?standardProfile.techniqueIds:[]);
++    const expectedRawTechniqueIds=expectedMoves.length?expectedMoves.map(x=>resolveAdoptedLegacyPresetId(selectedKind,x?.techniqueId||x?.canonicalTechniqueId||'')):(standardProfile?.status==='ADOPTED'&&Array.isArray(standardProfile.techniqueIds)?standardProfile.techniqueIds:[]);
+     const expectedTechniqueIds=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(expectedRawTechniqueIds)?.ids||expectedRawTechniqueIds.filter(Boolean);
+     if(String(target.monsterId)!==String(expectedTarget.monsterId||'')||String(target.partId)!==String(expectedTarget.partId||''))return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TARGET_MISMATCH'};
+     if(JSON.stringify(techniqueIds)!==JSON.stringify(expectedTechniqueIds))return {status:'UNAVAILABLE',reason:'REAL_SLICE:COMPARISON_TECHNIQUE_MISMATCH'};

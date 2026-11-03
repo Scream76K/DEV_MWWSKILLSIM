@@ -1,0 +1,38 @@
+{
+  "status": "BLOCKED_NOT_FIREPOWER_PASS",
+  "command": "node tools/stage4-real-sns-proof.cjs",
+  "runs": [
+    {
+      "file": "sns-public-attempt1.json",
+      "exitCode": 2
+    },
+    {
+      "file": "sns-public-after-kind-fix.json",
+      "exitCode": 2
+    }
+  ],
+  "productHashes": {
+    "index.html": "486c7fc02e367c08a39c512ed4ab2d2b02da58db9bba8dcabd29415afac4962a",
+    "hope-hammer-browser-adapter.js": "1b348b1db8c992548cc7438ad0b1b33d6f7e4391b407dbf030a199da7b9a6820"
+  },
+  "artiaBase": {
+    "value": 320,
+    "base": 260,
+    "sameElementThreeParts": 20,
+    "elementMutation": 40,
+    "elementRestores": 0,
+    "source": "index.html:1720 ARTIA_ELEMENT_SOURCE_DB; retrieved 2026-10-11; game version unspecified"
+  },
+  "preservation": "passed",
+  "limitations": [
+    "Two saved copies of same equipment, not two distinct configurations",
+    "JSDOM only; no Safari/game",
+    "Template arm has four decorations, final unmatched decoration not applied; this is not a valid full template calculation",
+    "Requested four canonical moves reduced to two by public picker; not four-technique verification",
+    "No final beta regression"
+  ],
+  "files": {
+    "sns-public-attempt1.json": "4e61c06d7efa58c0bc8524b40e6d1a1f662c26122dcf72bebd458f34a60b15e9",
+    "sns-public-after-kind-fix.json": "f97d1a12ade64f50bdd011cc091ae94a5929fd22500f8235cb6dba9f4284cb12"
+  }
+}

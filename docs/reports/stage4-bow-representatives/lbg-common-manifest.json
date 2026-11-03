@@ -1,0 +1,38 @@
+{
+  "status": "ACCEPTED_LIMITED_INDEPENDENT_REVIEW",
+  "hashes": {
+    "index.html": "2baf9d4c33f76e3df31383b8937af96e317a7478545ae16acdd98853056688dd",
+    "hope-hammer-browser-adapter.js": "f766fc14682249c0b1ffc7ebdf0736da7c3586f1f644c90734c2f6f8179ca842",
+    "bowgun-normal-reference.js": "7422a0aa9747356c7310969248e96117d2e122278cb30bdb396021c086d8dd75",
+    "himmel-real-browser-bundle.js": "3229399281bae19b793b172d07ac3d7ec74041ae433bfc641b968fd325f5a501",
+    "tools/stage4-lbg-common-proof.cjs": "005527233730342185f42ee2fada0da084670abddea2bddfa73fc304dd8599c0"
+  },
+  "beforeAdapterHash": "068a137b06377a1940c857ede484ca8353edb28846590acc4cae87aeb92a6053",
+  "red": "lbg-rapid3-real-final.json (prior accepted product, public actual build stopped)",
+  "runs": [
+    {
+      "command": "node tools/stage4-lbg-common-proof.cjs",
+      "log": "lbg-common-first-failure.json",
+      "exit": 1,
+      "reason": "generated group skill has null raw skillId; validated activation carries131; mismatch prevented pass, harness dereferenced missing channels"
+    },
+    {
+      "command": "node tools/stage4-lbg-common-proof.cjs",
+      "log": "lbg-common-real-initial-green.json",
+      "exit": 0
+    },
+    {
+      "command": "node tools/stage4-lbg-common-proof.cjs",
+      "log": "lbg-common-after.json",
+      "exit": 0
+    },
+    {
+      "command": "NODE_PATH=/Users/scream/Documents/Codex/2026-10-18/task/himmel-db-route-pqr4v6qt/dependencies/node_modules node tools/rapid23-proof.cjs",
+      "log": "lbg-common-lv1.json",
+      "exit": 0
+    }
+  ],
+  "scope": "actual exported DB + real16-skill template public JSDOM calcBuild; boundary target/rank injections separately marked; no Safari/game/full regression",
+  "independentReview": "01a1919c-08df-72ac-a02f-416b09466cce",
+  "acceptanceOnlyNoNewExecution": true
+}

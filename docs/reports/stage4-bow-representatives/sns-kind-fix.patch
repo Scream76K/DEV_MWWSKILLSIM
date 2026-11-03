@@ -1,0 +1,5 @@
+--- a/index.html
++++ b/index.html
+@@ artiaSourceElement(w,a) @@
+-  const row=ARTIA_ELEMENT_SOURCE_DB.weapons[w.kind],type=String(a.element||'');
++  const row=ARTIA_ELEMENT_SOURCE_DB.weapons[canonicalWeaponKind(w)],type=String(a.element||'');

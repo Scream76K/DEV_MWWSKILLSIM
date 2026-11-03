@@ -1,0 +1,41 @@
+{
+  "base": "7c6a37c44a7f8efbc1548be8018653ee4d1027a6",
+  "branch": "himmel/stage3-mindseye-cb-followup",
+  "hashes": {
+    "index.html": "e93664c7bb5625ad7d77c621b1a66fae8e940b60e0bab387a19cecd8c30fd8d7",
+    "hope-hammer-browser-adapter.js": "e4dc3f1b82067c3ae71dd637e72ffd65105420f521a693e653cf313b0168c58c",
+    "tools/cb-morph-mind-proof.cjs": "da79c66469b568840b5451213955c6ef6eb02aaab4dc1ad7218c5d2ef73b190b"
+  },
+  "command": "NODE_PATH=<existing-jsdom-node_modules> node tools/cb-morph-mind-proof.cjs after",
+  "runs": [
+    {
+      "file": "before.json",
+      "exit": 1,
+      "note": "Public prechange failure ORIGINAL_HITZONE_UNRESOLVED; assertion expected downstream scope-pending, so harness expectation failed. Not a successful test; original evidence retained."
+    },
+    {
+      "file": "after-initial.json",
+      "exit": 0,
+      "note": "Initial local product/hash; before provisional effect provenance adjustment and expanded formula-input assertions."
+    },
+    {
+      "file": "after.json",
+      "exit": 0,
+      "note": "Final product hashes; public JSDOM calcBuild, formula input capture, two saved comparisons; synthetic equipment contract, not game verification."
+    }
+  ],
+  "unexecuted": [
+    "Safari",
+    "live game",
+    "Lv1/Lv2",
+    "F01 injection",
+    "full regression"
+  ],
+  "classification": "81 complete / 1 partial (136) / 3 owner exclusions; unchanged",
+  "remaining": [
+    "CB_ELEMENT_DISCHARGE_1 axe extras",
+    "CB_ELEMENT_DISCHARGE_2 axe extras",
+    "CB_AED axe extras",
+    "CB_FOLLOWUP_AED axe extras"
+  ]
+}

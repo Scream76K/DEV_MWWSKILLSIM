@@ -1,0 +1,11 @@
+--- docs/reports/r263-skill-audit/cb-ed2-follow-mind/before-hope-hammer-browser-adapter.js	2026-10-31 08:44:38
++++ hope-hammer-browser-adapter.js	2026-10-31 08:44:46
+@@ -600,7 +600,7 @@
+     }
+    }
+   }
+-  const cbMindRuleFor=t=>[root.MHCbMorphMindsEyeRule,root.MHCbEd1MindsEyeRule].find(r=>r?.techniqueId===t?.techniqueId);
++  const cbMindRuleFor=t=>[root.MHCbMorphMindsEyeRule,root.MHCbEd1MindsEyeRule,root.MHCbEd2MindsEyeRule,root.MHCbFollowupAedMindsEyeRule].find(r=>r?.techniqueId===t?.techniqueId);
+   const cbMindEligible=t=>{
+    const cbMindRule=cbMindRuleFor(t);
+    if(cbMindRule?.status!=='OWNER_APPROVED_PROVISIONAL'||weapon.kind!=='charge-blade'||resolvedTechniqueIds.length!==1||t?.techniqueId!==cbMindRule.techniqueId||chargeBladeState?.axeBoosted!==true)return false;

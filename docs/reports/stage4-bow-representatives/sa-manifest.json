@@ -1,0 +1,34 @@
+{
+  "status": "ADOPTED_THREE_TECHNIQUES_PASSED; STANDARD_FOUR_BLOCKED",
+  "productChanged": false,
+  "productHashes": {
+    "index.html": "7a2b35a83dc069d6eb911849e194a91afee7fee688992aecad3c6e32cc99bd01",
+    "hope-hammer-browser-adapter.js": "1b348b1db8c992548cc7438ad0b1b33d6f7e4391b407dbf030a199da7b9a6820"
+  },
+  "runs": [
+    {
+      "command": "node tools/stage4-real-sa-proof.cjs",
+      "raw": "sa-public-before.json",
+      "exit": 1,
+      "classification": "PRODUCT_SCOPE_STOP; success assertion intentionally failed"
+    },
+    {
+      "command": "node tools/stage4-real-sa-three-proof.cjs",
+      "raw": "sa-three-public.json",
+      "exit": 0
+    },
+    {
+      "command": "SA_AWAKENED=1 node tools/stage4-real-sa-three-proof.cjs",
+      "raw": "sa-three-awakened-public.json",
+      "exit": 0
+    }
+  ],
+  "evidenceHashes": {
+    "sa-public-before.json": "8ba4e913745067198431a5d08919e8ff062686705da2950047042cda34b6226e",
+    "sa-three-public.json": "32c2be640ebeb72443b740ae2a4b951efc8fe06e853fb4a0c02162290d2ebfca",
+    "sa-three-awakened-public.json": "77c13be61cf00b7e036ef5e68f8203807a9bfa36aca666b967c50ecb9c5fd2f5"
+  },
+  "note": "Each raw log embeds actual executing harness hash; optional awakened flag added between OFF and ON runs; product same throughout",
+  "remaining": "Right-rising not in rapid morph coexistence, mode/body type, conversion and awakened model contracts; no expansion or skill removal",
+  "noCommitPush": true
+}

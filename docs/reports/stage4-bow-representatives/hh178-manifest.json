@@ -1,0 +1,60 @@
+{
+  "status": "IMPLEMENTED_AWAITING_INDEPENDENT_REVIEW",
+  "approval": "Sentinel_58fc28ece07c8191b68e67e75afcd78a",
+  "hashes": {
+    "index.html": "228bd0458b7eecc8b20b8904f4674f56371fd933fbedfcfaafffe7373fd77d28",
+    "hope-hammer-browser-adapter.js": "fe41bd3392497640b5002832ef945ee5f1fb472ed1329a997cfac28ee3a2add4",
+    "himmel-real-browser-bundle.js": "3229399281bae19b793b172d07ac3d7ec74041ae433bfc641b968fd325f5a501",
+    "tools/stage4-hh-gog-proof.cjs": "1af37916607457a612627555eb9e454e1e63633fce5a00413cd0da9a0b63ce8a"
+  },
+  "beforeHashes": {
+    "index.html": "7825083a4d7b84846932865b9459a87cbd89ec37b6e33e013c715a4c47dec4d5",
+    "hope-hammer-browser-adapter.js": "2ed9f6e64e10c3a4cd76161422373f48ec3e932b7bbed3d92a85b1c3accfbd75"
+  },
+  "runs": [
+    {
+      "command": "node tools/stage4-real-hh-proof.cjs",
+      "log": "hh178-before.json",
+      "exit": 2,
+      "meaning": "normal available; maximum GOG dedicated scope blocked"
+    },
+    {
+      "command": "node tools/stage4-hh-gog-proof.cjs",
+      "log": "hh178-after.json",
+      "exit": 0,
+      "meaning": "first GREEN, save/load/compare"
+    },
+    {
+      "command": "node tools/stage4-hh-gog-proof.cjs",
+      "log": "hh178-harness-metadata-failure.json",
+      "exit": 1,
+      "meaning": "harness compared full diagnostics across new adoption metadata; no numeric failure"
+    },
+    {
+      "command": "node tools/stage4-hh-gog-proof.cjs",
+      "log": "hh178-verified.json",
+      "exit": 0,
+      "meaning": "normal components/state/metrics unchanged; 2-melody fixed10; unknown model"
+    },
+    {
+      "command": "node tools/stage4-hh-gog-proof.cjs",
+      "log": "hh178-final.json",
+      "exit": 0,
+      "meaning": "all prior assertions plus uncapped same-gear explicit OFF and synthetic resolved-plan control"
+    }
+  ],
+  "limitations": [
+    "JSDOM; not Safari/game",
+    "saved A/B are identical equipment copies",
+    "2-melody supplemental explicit model, not source-video sequence",
+    "synthetic no-GOG resolved-plan control is not real equipment",
+    "rankII, all HH actions, F01 injection, full regression not rerun",
+    "standalone special references remain outside adopted totals"
+  ],
+  "artifacts": {
+    "hh178-before.json": "61cb8e28a8694617fdee6beceb5d76c3ee2d106d8aad03b041686684a15086f8",
+    "hh178-final.json": "1086f8496b4aeff885f57f2df2bb93778c5a681cc0221bc5c8617e935fca8f3c",
+    "hh178.patch": "2b7b4df19e32b8b46dbc42920d00d738773c2b2a366a3a5d26c0836b844fe060",
+    "hh178-harness-metadata-failure.json": "022a4481ddbd33fdcb3f9934fbf572716846ee2a799744a1e244cdd129e43844"
+  }
+}

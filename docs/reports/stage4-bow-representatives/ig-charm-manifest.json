@@ -1,0 +1,33 @@
+{
+  "reviewStatus": "PENDING",
+  "hashes": {
+    "index.html": "e756941762b4dd2a4a1584b81a53acba0764d7d1b22acf4b23139cf2fbb2931c",
+    "hope-hammer-browser-adapter.js": "d6d91a03d340e6d099f2669ead9dc827952a6050786106de9231d9776c3d5f9d",
+    "tools/stage4-ig-charm-verdict-proof.cjs": "fa7edbebdd5a2d92a7eac1293c93131b45c9adaaf11eddffc12d57d3ce8cde27"
+  },
+  "commands": [
+    {
+      "command": "node tools/stage4-ig-charm-verdict-proof.cjs",
+      "phase": "RED",
+      "exit": 1,
+      "log": "ig-charm-red.json"
+    },
+    {
+      "command": "node tools/stage4-ig-charm-verdict-proof.cjs",
+      "phase": "GREEN",
+      "exit": 0,
+      "log": "ig-charm-green.json"
+    }
+  ],
+  "oldHarnessExpectationOnlyUpdated": [
+    "tools/stage4-ig-hp-forwarding-proof.cjs",
+    "tools/stage4-ig-sweep-airborne-proof.cjs"
+  ],
+  "equipmentLegality": "UNCONFIRMED_NOT_IMPOSSIBLE_NOT_POSSIBLE",
+  "notExecuted": [
+    "Safari",
+    "game",
+    "F01 injection",
+    "full regression"
+  ]
+}

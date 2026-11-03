@@ -1,0 +1,46 @@
+{
+  "base": "7c6a37c44a7f8efbc1548be8018653ee4d1027a6",
+  "branch": "himmel/stage3-mindseye-cb-followup",
+  "hashes": {
+    "index.html": "cf8cbfd233cd98977f8ccf53061aa9c146468b9cdde22068c971616b95f5c9cb",
+    "hope-hammer-browser-adapter.js": "3e1cf9ff3ba3379c4dcf1e8b3d1995c28ce6ad5a350b36cccdce66bbbd91a61b",
+    "tools/cb-ed2-follow-mind-proof.cjs": "57ee0069eb915f4fc31cf6dd30e82e8748124ef28b2190ffddddf9d5cd2abf9a"
+  },
+  "commands": "NODE_PATH=<existing-jsdom-node_modules> node tools/cb-ed2-follow-mind-proof.cjs before|after ed2|follow",
+  "runs": [
+    {
+      "file": "before-ed2.json",
+      "exit": 0,
+      "scope": "Before asserts ORIGINAL_HITZONE_UNRESOLVED; after asserts limited public calculation"
+    },
+    {
+      "file": "before-follow.json",
+      "exit": 0,
+      "scope": "Before asserts ORIGINAL_HITZONE_UNRESOLVED; after asserts limited public calculation"
+    },
+    {
+      "file": "after-ed2.json",
+      "exit": 0,
+      "scope": "Before asserts ORIGINAL_HITZONE_UNRESOLVED; after asserts limited public calculation"
+    },
+    {
+      "file": "after-follow.json",
+      "exit": 0,
+      "scope": "Before asserts ORIGINAL_HITZONE_UNRESOLVED; after asserts limited public calculation"
+    }
+  ],
+  "videoEvidence": {
+    "READOUT.md": "e8579de2ecc26686e2f40e412964055ab90573181120eba457a55112ca309ce6",
+    "manifest.json": "de4d705a68f3b481c4de8b24533eb941eddf5d9641208dfc2d24681ed84361ac"
+  },
+  "unexecuted": [
+    "Safari",
+    "live equipment reproduction",
+    "Lv1/Lv2",
+    "F01 injection",
+    "full regression",
+    "previous morph/ED1 rerun"
+  ],
+  "classification": "81/82 unchanged,136 partial",
+  "remaining": "CB_AED axe extra applicability; no new adoption"
+}

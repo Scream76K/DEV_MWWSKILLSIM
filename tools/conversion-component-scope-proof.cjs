@@ -1,0 +1,46 @@
+const fs=require('fs'),assert=require('node:assert/strict'),crypto=require('crypto');const {JSDOM,VirtualConsole}=require('jsdom');
+const phase=process.argv[2]||'after',cases=[];let error;
+const skills=JSON.parse(fs.readFileSync('docs/reports/r263-skill-audit/mhdb-skills.json')),fixture=JSON.parse(fs.readFileSync('docs/reports/r258-attribute-conversion/fixture.json'));
+function setup(kind,element){const w=new JSDOM(require('./dom-test-setup.cjs').readSimulatorHtml(),{url:'https://conversion-scope.test/',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));w.confirm=()=>true;}}).window;
+let weapon=kind==='charge-blade'?JSON.parse(fs.readFileSync('docs/reports/r253-saed-loading/fixture.json')).weapon:kind==='switch-axe'||kind==='hunting-horn'?JSON.parse(fs.readFileSync('docs/reports/r252-generic-states/evidence/mhdb-'+kind+'-hope.api.json')):kind==='long-sword'?fixture.weapon:{id:999001,gameId:999001,kind:'bow',sharpness:{},damage:{raw:90,display:108},affinity:0,slots:[],coatings:[]};weapon={...weapon,skills:[],specials:[{kind:'element',element,damage:{raw:30,display:300}}]};
+const ids=kind==='charge-blade'?['CB_AED']:kind==='switch-axe'?['SA_SWORD_VERTICAL']:kind==='hunting-horn'?['HH_SELF_IMPROVEMENT_PERFORMANCE','HH_ENCORE_JUST','HH_LEFT_SWING']:kind==='bow'?['BOW_SHOT_3','BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3']:['LS_RED_BLADE_I'];
+w.eval(`clearWeaponBuckets();DB.weapons=${JSON.stringify([weapon])};DB.skills=${JSON.stringify(skills)};DB.armor=${JSON.stringify([{...fixture.armor,id:990001,kind:'head',skills:[],resistances:{fire:0,water:0,thunder:10,ice:0,dragon:0}}])};DB.decorations=[];weaponIndexByKind['${kind}']=DB.weapons;weaponKind.value='${kind}';weapon.innerHTML='<option value="${weapon.id}">contract</option>';weapon.value='${weapon.id}';App.build.setWeapon(DB.weapons[0]);build.armor={head:DB.armor[0],chest:null,arms:null,waist:null,legs:null};build.decos={};build.charmCustom={skills:[],slots:[0,0,0],weaponSlots:[]};renderComboForWeapon();App.state.combo.moves=${JSON.stringify(ids.map(techniqueId=>({techniqueId})))};restoreComboRows();renderMonsters();monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';powerAttributeConversionNormal.value='OFF';powerAttributeConversionMaximum.value='ON';`);
+if(kind==='charge-blade')w.eval("comboCBShield.value='1';comboCBAxe.value='1';comboCBPhialType.value='POWER_ELEMENT';comboCBEnhancedPhial.value='0';comboCBPreviousAction.value='CB_ELEMENT_DISCHARGE_2';comboCBNormalPhials.value='1';comboCBEnhancedPhials.value='0';");
+if(kind==='switch-axe')w.restoreComboSAState({mode:'SWORD',awakened:true});
+if(kind==='hunting-horn')w.restoreHHStoredState({model:'HH_NORMAL_MELODY_PROVISIONAL',melodies:['SELF_IMPROVEMENT','SELF_IMPROVEMENT'],echoBubbles:1,selfImprovementLevel:2,attackMelodyLevel:0});
+if(kind==='bow')w.eval("powerBowCoating.value='NONE';powerBowRange.value='CRITICAL';powerBowStartShot.value='1';");if(kind==='long-sword')w.eval("comboLSSpiritGauge.value='RED';");return w;}
+const take=w=>JSON.parse(w.eval('JSON.stringify({result:calcState.realOneHit,snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot()})'));
+function run(w,label,id){w.eval(`build.charmCustom.skills=${JSON.stringify(id?[{name:skills.find(s=>s.id===id).name,level:id===152?3:1}]:[])};calcBuild();`);const r={label,...take(w)};cases.push(r);return r;}
+const valid=r=>['normal','maximum'].forEach(c=>assert.equal(r.result.channels?.[c]?.execution.status,'complete',JSON.stringify(r.result)));
+try{for(const [kind,id,element] of [['long-sword',152,'water'],['switch-axe',152,'dragon'],['charge-blade',152,'dragon'],['hunting-horn',165,'thunder'],['bow',165,'thunder']]){
+ const w=setup(kind,element),base=run(w,kind+'-base',0);valid(base);const on=run(w,kind+'-'+id,id);
+ if(phase==='before'){cases.push({label:kind+'-before-status',status:on.result.status,reason:on.result.reason});w.close();continue;}
+ if(kind==='long-sword'){assert.equal(on.result.channels.normal.execution.status,'complete');assert.equal(on.result.channels.normal.metrics.comboTotalDamage.value,base.result.channels.normal.metrics.comboTotalDamage.value);assert.notEqual(on.result.channels.maximum.execution.status,'complete');w.eval("powerAttributeConversionMaximum.value='OFF';");valid(run(w,'non-dragon-both-off',id));w.eval("powerAttributeConversionNormal.value='';");const unknown=run(w,'non-dragon-unknown',id);assert.notEqual(unknown.result.channels.normal.execution.status,'complete');assert.equal(unknown.result.channels.maximum.execution.status,'complete');}
+ else{valid(on);if(id===152)assert.equal(on.result.channels.normal.metrics.comboTotalDamage.value,base.result.channels.normal.metrics.comboTotalDamage.value);for(const ch of id===152?['maximum']:['normal','maximum'])assert.ok(on.result.channels[ch].metrics.comboTotalDamage.value>base.result.channels[ch].metrics.comboTotalDamage.value);}
+
+ if(kind!=='long-sword'){
+ for(const ch of ['normal','maximum']){
+ const active=id===165||ch==='maximum',a=base.result.channels[ch].components,b=on.result.channels[ch].components;assert.equal(a.length,b.length);
+ for(let i=0;i<b.length;i++){
+  const c=b[i],es=(c.effectsApplied||[]).filter(e=>['attribute-conversion-element-add','thunder-resistance-conversion-element-add'].includes(e.id));assert.ok(es.length<=1);
+  if(c.coefficientUnit==='MV')assert.equal(c.value,a[i].value);
+  if(c.details?.physical!==undefined)assert.equal(c.details.physical,a[i].details.physical);
+  if(c.details?.appliedElement!==undefined){const expected=active?(kind==='switch-axe'&&c.id.endsWith(':element:1')?285:id===152?480:350):a[i].details.appliedElement;assert.equal(c.details.appliedElement,expected);assert.equal(es.length,active?1:0);}
+  if(kind==='bow')assert.equal(c.details.effectiveDisplayedElement,340);
+  if(kind==='charge-blade'&&c.coefficientUnit==='PHIAL')assert.ok(Math.abs(c.value/a[i].value-(active?480/300:1))<1e-10);
+  if(kind==='hunting-horn'&&c.coefficientUnit==='REFERENCE'){if(c.details.element===0){assert.equal(c.value,a[i].value);assert.equal(es.length,0);}else{assert.ok(Math.abs(c.details.element/a[i].details.element-350/300)<1e-10);assert.equal(es.length,1);}}
+ }
+ assert.deepEqual(on.result.channels[ch].finalState,base.result.channels[ch].finalState);
+ }
+ if(kind==='charge-blade'){
+  w.applyBuildSnapshot(base.snapshot);w.calcBuild();w.eval("buildName.value='conversion-off';saveNamedBuild();");w.applyBuildSnapshot(on.snapshot);w.calcBuild();w.eval("buildName.value='conversion-on';saveNamedBuild();");const current=take(w),storage=JSON.stringify({...w.localStorage});w.eval("document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true);runBuildCompare();");const rows=JSON.parse(w.eval('JSON.stringify(lastBuildComparisonRows.map(x=>({name:x.name,result:x.oneHitPipeline})))'));assert.equal(rows.length,2);for(const row of rows)assert.deepEqual(row.result.channels,(row.name==='conversion-on'?on:base).result.channels);assert.deepEqual(take(w),current);assert.equal(JSON.stringify({...w.localStorage}),storage);cases.push({label:'saved-two-shared-condition-unchanged',rows});
+  w.eval("App.state.combo.moves=[{techniqueId:'CB_SAED'}];restoreComboRows();comboCBNormalPhials.value='5';comboCBPreviousAction.value='GUARD';");const saed=run(w,'saed-conversion',152);valid(saed);for(const ch of ['normal','maximum']){assert.ok(saed.result.channels[ch].components.every(c=>(c.effectsApplied||[]).filter(e=>e.id==='attribute-conversion-element-add').length<=1));}const saedBase=run(w,'saed-base',0);valid(saedBase);assert.equal(saed.result.channels.normal.metrics.comboTotalDamage.value,saedBase.result.channels.normal.metrics.comboTotalDamage.value);assert.ok(saed.result.channels.maximum.metrics.comboTotalDamage.value>saedBase.result.channels.maximum.metrics.comboTotalDamage.value);w.eval("DB.weapons[0].phial='impact';comboCBPhialType.value='IMPACT';App.state.combo.moves=[{techniqueId:'CB_AED'}];restoreComboRows();comboCBPreviousAction.value='CB_ELEMENT_DISCHARGE_2';");const impact=run(w,'impact-not-adopted-on-off-independent',152);assert.equal(impact.result.channels.normal.execution.status,'complete');assert.notEqual(impact.result.channels.maximum.execution.status,'complete');assert.ok(JSON.stringify(impact.result).includes('ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED'));
+ }
+ if(kind==='bow'){
+ w.eval('DB.armor[0].resistances.thunder=200;');const cap=run(w,'bow-thunder-cap',165);valid(cap);for(const ch of ['normal','maximum'])for(const c of cap.result.channels[ch].components){assert.equal(c.details.effectiveDisplayedElement,700);assert.equal(c.details.elementBasis.uncapped,1100);}
+ w.eval('DB.armor[0].resistances.thunder=-1;');const bad=run(w,'negative-thunder',165);assert.ok(JSON.stringify(bad.result).includes('THUNDER_RESISTANCE_UNRESOLVED'));
+ }
+ }
+ w.close();}
+}catch(e){error=e.stack;process.exitCode=1;}
+console.log(JSON.stringify({phase,cases,error,scope:'Offline JSDOM public calcBuild, synthetic contract equipment; not legal builds or game verification',hashes:Object.fromEntries(['index.html','hope-hammer-browser-adapter.js',__filename].map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')]))},null,2));

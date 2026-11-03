@@ -1,0 +1,52 @@
+{
+  "scope": "Owner-approved fixed-state entry disposition repair only",
+  "approval": "Sentinel_dca9784629308191a75344e157512129",
+  "runs": [
+    {
+      "file": "before.json",
+      "command": "NODE_PATH=<existing-jsdom>/node_modules node tools/fixed-scope-entry-proof.cjs before",
+      "exit": 0,
+      "meaning": "Expected rejection assertions passed on pre-change product"
+    },
+    {
+      "file": "after-attempt1.json",
+      "exit": 0,
+      "meaning": "First implementation passed; then tightened level/annotation validation and expanded boundary/storage checks"
+    },
+    {
+      "file": "after.json",
+      "command": "NODE_PATH=<existing-jsdom>/node_modules node tools/fixed-scope-entry-proof.cjs",
+      "exit": 0,
+      "meaning": "Final implementation / final harness"
+    }
+  ],
+  "hashes": {
+    "index.html": "e3bf16fc0888082dd1b89ef208a2fd22cd6275e1102ce08f8615e8f6a2ab2ce5",
+    "hope-hammer-browser-adapter.js": "c4174052d8116dd238e2f55bdfa4cc65a4ff76a1e2b44b4666c2b7c75dc440fd",
+    "tools/fixed-scope-entry-proof.cjs": "dbe969815c90a24f3f10121ee7b1413a270757e68f7ac2867794af4ae69c8e67"
+  },
+  "baselineHashes": {
+    "index.html": "7443c5208b0f8102607a0386ceb453eeefb4cb719646e691f20378f14875ebb6",
+    "hope-hammer-browser-adapter.js": "969abdc0938597cee04932fe41a6f3d358b226427841dc27be70e2f5c0a53c52"
+  },
+  "evidenceHashes": {
+    "before.json": "2dc1f4f1b218ceabfd7691ea33edc663cc1e9b40e08061f3c6608c5c6e3fb274",
+    "after-attempt1.json": "6fbebaefaea119f2e686df7b7b164638744096b7bc0b9f7da97ada52e897914d",
+    "after.json": "337fcc9e8c3a5c7ac2370c25bc5e814c18450f81999075c9fa67eeb3c727dc3e",
+    "product.patch": "825128a28f397c4e0ff1d69c57cd22a1de0a677ea2a6ce159bb8f1ffffd0aeef"
+  },
+  "environment": "Offline JSDOM actual product modules, synthetic equipment with existing MHDB skill/rank records. No browser/Safari/game execution.",
+  "notExecuted": [
+    "all 14 weapons",
+    "full beta regression",
+    "F01 injected failure rerun",
+    "stage4 two real bow builds rerun",
+    "all17 full equipment builds"
+  ],
+  "untouchedScope": [
+    "152/165 special adoption",
+    "numeric coefficients",
+    "game reload/time simulation",
+    "owner excluded 8/85/103"
+  ]
+}

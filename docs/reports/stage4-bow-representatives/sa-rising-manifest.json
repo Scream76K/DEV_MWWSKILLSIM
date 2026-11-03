@@ -1,0 +1,40 @@
+{
+  "status": "FOUR_TECHNIQUE_NON_AWAKENED_ACCEPTANCE_REVIEW_PENDING",
+  "productHashes": {
+    "index.html": "1e2935a0f7a52f8073bcd4564fb9bf50b2cf189d416e0bc75a5f54640cb912e4",
+    "hope-hammer-browser-adapter.js": "ebdd545891bc277d0c3d837cadd169d779e76b61a189b4b3db3e4626647e0b7d"
+  },
+  "runs": [
+    {
+      "command": "node tools/stage4-real-sa-proof.cjs",
+      "raw": "sa-public-before.json",
+      "exit": 1,
+      "role": "RED existing source"
+    },
+    {
+      "command": "node tools/stage4-real-sa-proof.cjs",
+      "raw": "sa-four-rising-after.json",
+      "exit": 0
+    },
+    {
+      "command": "node tools/stage4-sa-rising-boundary-proof.cjs",
+      "raw": "sa-four-rising-boundaries.json",
+      "exit": 0
+    }
+  ],
+  "postRunAssertions": [
+    "5 physical and5elemental body components",
+    "right rising no rapid-morph attack effect",
+    "other three technique values identical to existing three-technique OFF evidence",
+    "save2 current/shared/saved invariant"
+  ],
+  "files": {
+    "sa-public-before.json": "8ba4e913745067198431a5d08919e8ff062686705da2950047042cda34b6226e",
+    "sa-four-rising-after.json": "2d20c1e87acf3cd86031745f3fdfd8782798f0f3d061a1a45f90855bbcb37a9e",
+    "sa-four-rising-boundaries.json": "9b0fb1f4c09ac9dcc4045c6f71cd9bd2200c437dc3056bf17e460b0ce931ec35",
+    "sa-rising-index-html.patch": "75c420f3a7552e318e16c1cb413ab5a750089e466593d54e759789e3e9270611",
+    "sa-rising-hope-hammer-browser-adapter-js.patch": "b2585a5feaed9bd419e37c9c9b5cb353e4e862557ad15d59253c5f790ca86dce"
+  },
+  "adoption": "Sentinel_620e279cceec81918778e2036f65971f broad weapon-attribute SA body contract; no new awakened contact count",
+  "remaining": "four-technique awakened model excludes right rising; direct live verification absent"
+}

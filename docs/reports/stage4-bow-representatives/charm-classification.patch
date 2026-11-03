@@ -1,0 +1,41 @@
+--- before/index.html
++++ after/index.html
+@@ -575,16 +575,33 @@
+   const skills=(c.skills||[]).filter(x=>String(x?.name||'').trim());
+   const pattern=charmSlotPattern(c);
+   if(!skills.length)return {status:'empty',label:'未設定',detail:'護石スキルを設定すると、生成可能性を判定します。'};
++  const invalid=detail=>({status:'invalid',label:'不可能',detail});
++  const unconfirmed=detail=>({status:'unconfirmed',label:'確認不能',detail});
++  // Validate raw input before the rule helper's legacy level normalization.
++  if(skills.length>3)return invalid('護石スキルは3個までです。');
++  if(skills.some(x=>!Number.isInteger(Number(x.level))||Number(x.level)<1))return invalid('スキルLvは1以上の整数で指定してください。');
++  if(skills.some(x=>x.type!=null&&!['weapon','armor'].includes(x.type)))return invalid('護石スキルの入力種別が不正です。');
++  if(pattern.startsWith('不正'))return invalid(`${pattern}。スロットの種類と個数を確認してください。`);
+   const gs=normalizeCharmSkillsForRule(skills);
++  if(new Set(gs.map(x=>x.name)).size!==gs.length)return invalid('同じスキルを1～3個目に重複して付けることはできません。');
++  const unresolved=[];
++  for(const x of gs){
++    const records=(DB.skills||[]).filter(s=>s.name===x.name);
++    if(records.length!==1){unresolved.push(x.name);continue;}
++    const skill=records[0];
++    // Legacy template type defaults to armor even for weapon skills; canonical MHDB kind is authoritative.
++    if(!['weapon','armor'].includes(skill.kind))return invalid(`護石の通常スキル対象外の種別：${x.name}。`);
++    const levels=(skill.ranks||[]).map(r=>Number(r.level)).filter(Number.isInteger);
++    if(!Number.isInteger(Number(skill.id))||!levels.length){unresolved.push(x.name);continue;}
++    if(!levels.includes(x.level))return invalid(`公式スキルの登録Lv範囲外：${x.name} Lv${x.level}。`);
++  }
++  if(unresolved.length)return unconfirmed(`公式スキル情報を一意に照合できません：${unresolved.join('、')}。合法性は未確認です。`);
+   const unknown=gs.filter(x=>!x.groups.length);
+-  if(unknown.length){
+-    return {status:'invalid',label:'不可能',detail:`未登録スキル：${unknown.map(x=>x.name+' Lv'+x.level).join('、')}。護石テーブルのスキルグループを確認してください。`};
+-  }
+-  if(new Set(gs.map(x=>x.name)).size!==gs.length)return {status:'invalid',label:'不可能',detail:'同じスキルを1～3個目に重複して付けることはできません。'};
++  if(unknown.length)return unconfirmed(`護石グループ表に未登録：${unknown.map(x=>x.name+' Lv'+x.level).join('、')}。公式スキルLvとの照合済みですが、護石生成の可否は未確認です。`);
+   // スロット未指定なら、スキル組み合わせ自体の実現可能性を判定する。
+   // これにより「見切りLv3＋巧撃Lv1」のような、スロットをまだ選んでいない段階でも正しく可能判定できる。
+   const skillMatches=charmRuleCandidates(skills,'');
+-  if(!skillMatches.length)return {status:'invalid',label:'不可能',detail:`スキル構成（${gs.map(x=>x.name+' Lv'+x.level).join(' / ')}）に一致する護石生成ルールがありません。`};
++  if(!skillMatches.length)return unconfirmed(`スキル構成（${gs.map(x=>x.name+' Lv'+x.level).join(' / ')}）に一致する登録ルールがなく、護石生成の可否は未確認です。`);
+   if(pattern==='なし'){
+     const rarities=[...new Set(skillMatches.map(x=>x.rarity))].sort((a,b)=>a-b);
+     const slots=[...new Set(skillMatches.flatMap(x=>x.slotPatterns))];

@@ -1,0 +1,766 @@
+[
+  {
+    "kind": "great-sword",
+    "template": "KOTATU_GS_01",
+    "status": "VERIFIED_LIMITED",
+    "scope": "standard 3 / gs-common-formula-manifest.json",
+    "comparison": "identical copies",
+    "slotIssues": [],
+    "charmRuleMatch": true,
+    "profile": "adopted:gs_standard",
+    "techniqueRecords": [
+      {
+        "ui": "gs_charge3",
+        "id": "GS_CHARGED_SLASH_3",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "gs_strong3",
+        "id": "GS_STRONG_CHARGED_SLASH_3",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:GS_STRONG_WIDE_SLASH_3",
+        "id": "GS_STRONG_WIDE_SLASH_3",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      }
+    ],
+    "sourceMainPurposeVerification": "NOT_VERIFIED: adopted reference profile is not a source-video combo verification",
+    "equipmentReferenceVerification": "VERIFIED_LIMITED"
+  },
+  {
+    "kind": "long-sword",
+    "template": "KOTATU_LS_01",
+    "status": "VERIFIED_LIMITED_RED_BLADE_REFERENCE",
+    "scope": "LS_REFERENCE_REPORT.md; actual template red blade I/II/III 7Hits",
+    "comparison": "two identical saves; reload/shared conditions/current state and content unchanged",
+    "slotIssues": [],
+    "charmRuleMatch": true,
+    "profile": "adopted:ls_standard",
+    "techniqueRecords": [
+      {
+        "ui": "canonical:LS_RED_BLADE_I",
+        "id": "LS_RED_BLADE_I",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 2,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:LS_RED_BLADE_II",
+        "id": "LS_RED_BLADE_II",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 2,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:LS_RED_BLADE_III",
+        "id": "LS_RED_BLADE_III",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 3,
+        "unresolved": [],
+        "special": []
+      }
+    ],
+    "sourceMainPurposeVerification": "LIMITED_SOURCE_ALIGNED_RED_BLADE_SEQUENCE; iai/cyclic timing unverified",
+    "equipmentReferenceVerification": "VERIFIED_LIMITED_RED_BLADE_REFERENCE",
+    "executionEvidence": "ls-result.json",
+    "independentReview": "01a191cc-1cde-70ab-95bc-9f8ac3f479e0",
+    "remainingLimits": [
+      "iai not executed",
+      "repeated loops/gauge consumption and recovery not simulated",
+      "live game/Safari/F01 injection/full regression not executed in this batch"
+    ],
+    "executionHashes": {
+      "index.html": "c969458659b37ac35abb82484b4c05c24b69b2d0e64a2bbb9fb50a9b467d0ca0",
+      "hope-hammer-browser-adapter.js": "43c9740a8e0937d06392bcba7106d0a4e22787fe27aa253f87adad9272238295",
+      "bowgun-normal-reference.js": "7422a0aa9747356c7310969248e96117d2e122278cb30bdb396021c086d8dd75",
+      "himmel-real-browser-bundle.js": "3229399281bae19b793b172d07ac3d7ec74041ae433bfc641b968fd325f5a501",
+      "tools/stage4-real-ls-proof.cjs": "cf8c0cf68e9b7b23f65e0c8928a30fc8f3a8c30d50f920fd8fc4b518118ba13d"
+    }
+  },
+  {
+    "kind": "sword-and-shield",
+    "template": "KOTATU_SNS_01",
+    "status": "BLOCKED",
+    "scope": "arm 4 jewels / 3 slots; source pending",
+    "comparison": "identical copies; blocked result",
+    "slotIssues": [
+      "耐衝珠"
+    ],
+    "charmRuleMatch": true,
+    "profile": "adopted:sns_standard",
+    "techniqueRecords": [
+      {
+        "ui": "sns_slash",
+        "id": "SNS_DOWNWARD_SLASH",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:SNS_SIDE_SLASH",
+        "id": "SNS_SIDE_SLASH",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "sns_horizontal",
+        "id": "SNS_HORIZONTAL_SLASH",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:SNS_RETURN_SLASH",
+        "id": "SNS_RETURN_SLASH",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      }
+    ],
+    "sourceMainPurposeVerification": "NOT_VERIFIED: adopted reference profile is not a source-video combo verification",
+    "equipmentReferenceVerification": "BLOCKED"
+  },
+  {
+    "kind": "dual-blades",
+    "template": "KOTATU_DB_01",
+    "status": "VERIFIED_LIMITED",
+    "scope": "27 body Hits / db-manifest.json",
+    "comparison": "identical copies",
+    "slotIssues": [],
+    "charmRuleMatch": true,
+    "profile": "adopted:db_standard",
+    "techniqueRecords": [
+      {
+        "ui": "canonical:DB_DEMON_DANCE_I",
+        "id": "DB_DEMON_DANCE_I",
+        "exists": true,
+        "calculationStatus": "READY_ADOPTED_HP",
+        "verificationStatus": "PARTIALLY_VERIFIED",
+        "hits": 12,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:DB_DEMON_DANCE_II",
+        "id": "DB_DEMON_DANCE_II",
+        "exists": true,
+        "calculationStatus": "READY_ADOPTED_HP",
+        "verificationStatus": "PARTIALLY_VERIFIED",
+        "hits": 4,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:DB_DEMON_DANCE_III",
+        "id": "DB_DEMON_DANCE_III",
+        "exists": true,
+        "calculationStatus": "READY_ADOPTED_HP",
+        "verificationStatus": "PARTIALLY_VERIFIED",
+        "hits": 11,
+        "unresolved": [],
+        "special": []
+      }
+    ],
+    "sourceMainPurposeVerification": "NOT_VERIFIED: adopted reference profile is not a source-video combo verification",
+    "equipmentReferenceVerification": "VERIFIED_LIMITED"
+  },
+  {
+    "kind": "hammer",
+    "template": "KOTATU_HAM_01",
+    "status": "VERIFIED_LIMITED_STANDARD_REFERENCE",
+    "scope": "HAMMER_REFERENCE_REPORT.md; real template standard4/4Hits",
+    "comparison": "two identical saves; shared conditions and contents unchanged",
+    "slotIssues": [],
+    "charmRuleMatch": true,
+    "profile": "adopted:hm_standard",
+    "techniqueRecords": [
+      {
+        "ui": "hm_side",
+        "id": "HAM_SIDE_SWING",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:HAM_VERTICAL_II",
+        "id": "HAM_VERTICAL_II",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "hm_big",
+        "id": "HAM_UPPERCUT",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:HAM_MIGHTY_CHARGE_UPPERCUT",
+        "id": "HAM_MIGHTY_CHARGE_UPPERCUT",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      }
+    ],
+    "sourceMainPurposeVerification": "UNCONFIRMED: template usage empty; adopted standard4 reference only",
+    "equipmentReferenceVerification": "VERIFIED_LIMITED_STANDARD_REFERENCE",
+    "executionEvidence": "hammer-result.json",
+    "independentReview": "01a1920a-803c-743d-b7e4-8235d0283dd2"
+  },
+  {
+    "kind": "hunting-horn",
+    "template": "KOTATU_HH_01",
+    "status": "VERIFIED_LIMITED_HH_MODEL_GOG178",
+    "scope": "HH_GOG178_REPORT.md; adopted performance/encore model, normal879.94272512 maximum1138.99872512",
+    "comparison": "two identical real-equipment saves; load/shared conditions/content unchanged",
+    "slotIssues": [],
+    "charmRuleMatch": true,
+    "profile": "adopted:hh_body_reference",
+    "techniqueRecords": [
+      {
+        "ui": "canonical:HH_LEFT_SWING",
+        "id": "HH_LEFT_SWING",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:HH_FORWARD_ATTACK",
+        "id": "HH_FORWARD_ATTACK",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      }
+    ],
+    "sourceMainPurposeVerification": "PARTIAL_REFERENCE_ONLY: explicit adopted melody model, source sequence/recovery unverified",
+    "equipmentReferenceVerification": "VERIFIED_LIMITED_HH_MODEL_GOG178",
+    "executionEvidence": "hh178-final.json",
+    "uiIndependentReview": "01a1920f-3429-723d-8da1-50149ffb3c10",
+    "uiConnectionStatus": "ACCEPTED_LIMITED",
+    "pendingAdoption": "178 sound/echo component scope; maximum remains blocked",
+    "history": [
+      {
+        "status": "BLOCKED_GOG178_HH_COMPONENT_SCOPE",
+        "scope": "HH_REFERENCE_REPORT.md; actual performance+encore+left normal available; maximum178 unresolved",
+        "evidence": "hh-result.json"
+      }
+    ],
+    "independentReview": "01a1922c-b03f-7349-b8d2-3f9c8abb374f",
+    "executionHashes": {
+      "index.html": "228bd0458b7eecc8b20b8904f4674f56371fd933fbedfcfaafffe7373fd77d28",
+      "hope-hammer-browser-adapter.js": "fe41bd3392497640b5002832ef945ee5f1fb472ed1329a997cfac28ee3a2add4",
+      "himmel-real-browser-bundle.js": "3229399281bae19b793b172d07ac3d7ec74041ae433bfc641b968fd325f5a501",
+      "tools/stage4-hh-gog-proof.cjs": "1af37916607457a612627555eb9e454e1e63633fce5a00413cd0da9a0b63ce8a"
+    },
+    "remainingLimits": [
+      "rankII",
+      "all HH actions",
+      "live game",
+      "Safari",
+      "F01 injection in this batch",
+      "full regression",
+      "provisional adoption",
+      "source video action sequence unconfirmed",
+      "uncapped no-GOG control is resolved-plan injection"
+    ],
+    "acceptanceRecord": "hh178-acceptance-record.json"
+  },
+  {
+    "kind": "lance",
+    "template": "KOTATU_LAN_01",
+    "status": "VERIFIED_LIMITED_STANDARD_THRUST_REFERENCE",
+    "scope": "KOTATU_LAN_01 standard thrust4/6Hits; LANCE_REFERENCE_REPORT.md",
+    "comparison": "two identical copies; load/shared comparison/current state and saves unchanged",
+    "slotIssues": [],
+    "charmRuleMatch": true,
+    "profile": "adopted:lan_standard",
+    "techniqueRecords": [
+      {
+        "ui": "canonical:LAN_MID_THRUST_I",
+        "id": "LAN_MID_THRUST_I",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:LAN_MID_THRUST_II",
+        "id": "LAN_MID_THRUST_II",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:LAN_MID_THRUST_III",
+        "id": "LAN_MID_THRUST_III",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:LAN_TRIPLE_THRUST",
+        "id": "LAN_TRIPLE_THRUST",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 3,
+        "unresolved": [],
+        "special": []
+      }
+    ],
+    "sourceMainPurposeVerification": "NOT_VERIFIED: source charged counter; DB version audit pending",
+    "equipmentReferenceVerification": "VERIFIED_LIMITED_STANDARD_THRUST_REFERENCE",
+    "executionEvidence": "lance-after.json",
+    "independentReview": "01a191c7-41a9-74f2-9739-27f8e5e6c4e2",
+    "executionHashes": {
+      "index.html": "c969458659b37ac35abb82484b4c05c24b69b2d0e64a2bbb9fb50a9b467d0ca0",
+      "hope-hammer-browser-adapter.js": "f766fc14682249c0b1ffc7ebdf0736da7c3586f1f644c90734c2f6f8179ca842",
+      "bowgun-normal-reference.js": "7422a0aa9747356c7310969248e96117d2e122278cb30bdb396021c086d8dd75",
+      "himmel-real-browser-bundle.js": "3229399281bae19b793b172d07ac3d7ec74041ae433bfc641b968fd325f5a501"
+    },
+    "remainingLimits": [
+      "charged-counter main purpose unverified",
+      "live game/Safari/full regression unexecuted",
+      "original LAN execution hash; not rerun after LS adapter change"
+    ],
+    "counterReference": {
+      "status": "ACCEPTED_LIMITED",
+      "report": "LANCE_COUNTER_REPORT.md",
+      "normal": 456.24,
+      "maximum": 705.96,
+      "comparison": "IDENTICAL_EQUIPMENT_TWO_SAVES",
+      "scope": "CHARGE3_STARTUP_COUNTER_SUCCESS_SINGLE_DOUBLE_THRUST",
+      "liveGame": "UNVERIFIED",
+      "review": "01a19349-2d59-7781-a23e-c64ca805f1da",
+      "notVerified": [
+        "live game",
+        "Safari",
+        "F01 injection",
+        "full regression",
+        "repetitions",
+        "DPS"
+      ]
+    }
+  },
+  {
+    "kind": "gunlance",
+    "template": "KOTATU_GL_01",
+    "status": "VERIFIED_LIMITED_MIXED152",
+    "scope": "MIXED152_REPORT.md; actual gear/public normal and maximum; excluded components unchanged",
+    "comparison": "two identical same-technique saves; reload/shared conditions/content invariant",
+    "slotIssues": [],
+    "charmRuleMatch": true,
+    "profile": "adopted:gl_melee",
+    "techniqueRecords": [
+      {
+        "ui": "canonical:GL_SLAM",
+        "id": "GL_SLAM",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "PARTIALLY_VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:GL_SWEEP",
+        "id": "GL_SWEEP",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "PARTIALLY_VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      }
+    ],
+    "sourceMainPurposeVerification": "NOT_VERIFIED: no shell calculation; selected melee reference blocked",
+    "equipmentReferenceVerification": "EQUIPMENT_LOADED_CALCULATION_BLOCKED",
+    "executionEvidence": "mixed152-gl-final.json",
+    "independentReview": "01a19264-2e0b-715f-b928-bb99cc1a630f",
+    "artiaScopeReview": "01a19253-d239-7676-af44-96c79fba078b",
+    "acceptanceRecord": "mixed152-acceptance-record.json",
+    "remainingLimits": [
+      "normal shell in this batch",
+      "Maximum Might Lv2/3",
+      "live game",
+      "Safari",
+      "F01 injection",
+      "full regression",
+      "152 maximum ON remains blocked pending mixed-component adoption"
+    ],
+    "history": [
+      {
+        "status": "PARTIAL_GL_152_ON_BLOCKED_MIGHT_FIX_ACCEPTED",
+        "scope": "GL_MIGHT_REPORT.md; charged MaximumMightLv1 normal113.262225 / explicit152OFF max165.63955875; loaded3→2; 152ON blocked"
+      }
+    ],
+    "executionHashes": {
+      "index.html": "dfb09464acf6e736379f624c25e24456d245744e285e9f22374d3986579dbffd",
+      "hope-hammer-browser-adapter.js": "4235df86c0abda05e6eb26f8458e03935a2bb72329489deb6bafda543c5063b8"
+    },
+    "postExecutionDiagnosticHashes": {
+      "index.html": "dfb09464acf6e736379f624c25e24456d245744e285e9f22374d3986579dbffd",
+      "hope-hammer-browser-adapter.js": "d6d91a03d340e6d099f2669ead9dc827952a6050786106de9231d9776c3d5f9d"
+    }
+  },
+  {
+    "kind": "switch-axe",
+    "template": "KOTATU_SA_01",
+    "status": "VERIFIED_LIMITED_SA_REV2",
+    "scope": "SA revision2 standard4 awakening OFF/ON; SA_MV_REV2_REPORT.md",
+    "comparison": "two identical saved copies; reload/shared conditions/content unchanged, not different equipment builds",
+    "slotIssues": [],
+    "charmRuleMatch": true,
+    "profile": "adopted:sa_standard",
+    "techniqueRecords": [
+      {
+        "ui": "canonical:SA_SWORD_VERTICAL",
+        "id": "SA_SWORD_VERTICAL",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:SA_SWORD_RIGHT_RISING",
+        "id": "SA_SWORD_RIGHT_RISING",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:SA_SWORD_MORPH_DOUBLE",
+        "id": "SA_SWORD_MORPH_DOUBLE",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 2,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:SA_AXE_MORPH_SLASH",
+        "id": "SA_AXE_MORPH_SLASH",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "VERIFIED",
+        "hits": 1,
+        "unresolved": [],
+        "special": []
+      }
+    ],
+    "sourceMainPurposeVerification": "NOT_VERIFIED: adopted reference profile is not a source-video combo verification",
+    "equipmentReferenceVerification": "VERIFIED_LIMITED_SA_REV2",
+    "statusHistory": [
+      {
+        "status": "VERIFIED_LIMITED_REV2_REVIEW_PENDING",
+        "scope": "SA_MV_REV2_REPORT.md; updated5 bodyMV, OFF/ON HP reference; game unverified",
+        "reason": "superseded by independently accepted limited execution; original evidence retained"
+      }
+    ],
+    "independentReview": "01a19195-5828-77ad-93d3-e5bb4356ed1a",
+    "executionEvidence": "sa-mv-final.json",
+    "verificationLimits": "Original execution hashes only; no fresh all-weapon regression. Live game/Safari unverified; identical saves only."
+  },
+  {
+    "kind": "charge-blade",
+    "template": "KOTATU_CB_01",
+    "status": "VERIFIED_LIMITED_MIXED152",
+    "scope": "MIXED152_REPORT.md; actual gear/public normal and maximum; excluded components unchanged",
+    "comparison": "two identical same-technique saves; reload/shared conditions/content invariant",
+    "slotIssues": [],
+    "charmRuleMatch": true,
+    "profile": "adopted:cb_saed",
+    "techniqueRecords": [
+      {
+        "ui": "canonical:CB_SAED",
+        "id": "CB_SAED",
+        "exists": true,
+        "calculationStatus": "EVIDENCE_GATED",
+        "verificationStatus": "UNVERIFIED",
+        "hits": 3,
+        "unresolved": [
+          "SOURCE_TABLE_HISTORY_MOTION_CONFLICT",
+          "PHIAL_EVENT_AND_FORMULA_PENDING",
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+        ],
+        "special": [
+          "PHIAL"
+        ]
+      }
+    ],
+    "sourceMainPurposeVerification": "PARTIAL: single impact AED; no AED-followup loop/stun",
+    "equipmentReferenceVerification": "ACTUAL_EQUIPMENT_LOADED_CHARM_WIDTH_FIX_REVIEW_PENDING",
+    "executionEvidence": "mixed152-cb-final.json",
+    "independentReview": "01a19264-2e0b-715f-b928-bb99cc1a630f",
+    "history": [
+      {
+        "status": "PARTIAL_AED_CONVERSION_ON_BLOCKED",
+        "scope": "CB_REFERENCE_REPORT.md; actual impact AED normal complete; maximum conversion ON blocked, explicit OFF complete"
+      }
+    ],
+    "acceptanceRecord": "mixed152-acceptance-record.json",
+    "executionHashes": {
+      "index.html": "dfb09464acf6e736379f624c25e24456d245744e285e9f22374d3986579dbffd",
+      "hope-hammer-browser-adapter.js": "4235df86c0abda05e6eb26f8458e03935a2bb72329489deb6bafda543c5063b8"
+    },
+    "postExecutionDiagnosticHashes": {
+      "index.html": "dfb09464acf6e736379f624c25e24456d245744e285e9f22374d3986579dbffd",
+      "hope-hammer-browser-adapter.js": "d6d91a03d340e6d099f2669ead9dc827952a6050786106de9231d9776c3d5f9d"
+    }
+  },
+  {
+    "kind": "insect-glaive",
+    "template": "KOTATU_IG_01",
+    "status": "HP_REFERENCE_PASS_EQUIPMENT_UNCONFIRMED",
+    "scope": "KAN22 diagonal and IG_SWEEP HP reference; sweep Airborne nonapplication limited accepted; charm unconfirmed",
+    "comparison": "identical copies; current shared conditions and saved contents preserved",
+    "slotIssues": [],
+    "charmRuleMatch": false,
+    "profile": "adopted:ig_body_reference",
+    "techniqueRecords": [
+      {
+        "ui": "canonical:IG_DIAGONAL_SLASH",
+        "id": "IG_DIAGONAL_SLASH",
+        "exists": true,
+        "calculationStatus": "EVIDENCE_GATED",
+        "verificationStatus": "PARTIALLY_VERIFIED",
+        "hits": 1,
+        "unresolved": [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+        ],
+        "special": []
+      }
+    ],
+    "sourceMainPurposeVerification": "NOT_VERIFIED: adopted reference profile is not a source-video combo verification",
+    "equipmentReferenceVerification": "HP_REFERENCE_PASS_EQUIPMENT_UNCONFIRMED",
+    "review": "ACCEPTED_LIMITED 01a1917f-d989-7219-92af-b5bf3865abd9",
+    "priorScopeBeforeSweepAdoption": "KAN22 diagonal slash HP route / ig-hp-manifest.json; charm unconfirmed; sweep with equipped Airborne blocked",
+    "igSweepAirborneUpdate": {
+      "status": "LIMITED_REVIEW_ACCEPTED_HP_ONLY",
+      "review": "01a192d5-a4b5-70e3-9232-d26eb6b0eb3e",
+      "report": "IG_SWEEP_AIRBORNE_REPORT.md",
+      "normal": 77.73,
+      "maximum": 111.91,
+      "comparison": "synthetic Airborne-removal input control, not alternate equipment; two identical saved copies",
+      "unverified": [
+        "charm legality",
+        "live game",
+        "Safari",
+        "F01 injection",
+        "full regression"
+      ],
+      "newExecutionAtAcceptance": false
+    },
+    "charmVerdictCorrection": {
+      "review": "ACCEPTED_LIMITED 01a192fc-2885-7205-8a8d-ec091a4a9234",
+      "status": "UNCONFIRMED",
+      "report": "IG_CHARM_VERDICT_REPORT.md",
+      "normal": 77.73,
+      "maximum": 111.91,
+      "legalEquipmentConfirmed": false
+    },
+    "charmClassificationFollowup": {
+      "review": "ACCEPTED_LIMITED 01a19301-c4f7-75ca-b809-a3a84b641ed6",
+      "report": "CHARM_CLASSIFICATION_REPORT.md",
+      "equipmentLegality": "UNCONFIRMED",
+      "newRules": false,
+      "kindCorrection": {
+        "review": "ACCEPTED_LIMITED 01a19301-c4f7-75ca-b809-a3a84b641ed6",
+        "finding": "01a192ff-b620-700b-a440-bf75d72b3e34 P2",
+        "evidence": "charm-kind-manifest.json"
+      }
+    }
+  },
+  {
+    "kind": "light-bowgun",
+    "template": "KOTATU_LBG_01",
+    "status": "VERIFIED_LIMITED_EFFECTIVE_LV3_RAPID",
+    "scope": "MHDB1169 base normalLv2+explicit powder→effectiveLv3, unchanged16 skills, one5Hit trigger, capacity6 consume1; LBG_COMMON_EFFECT_REPORT.md",
+    "comparison": "two identical saved copies; reload/shared conditions/content unchanged, not different equipment builds",
+    "slotIssues": [],
+    "charmRuleMatch": true,
+    "profile": "adopted:lbg_normal",
+    "techniqueRecords": [
+      {
+        "ui": "canonical:LBG_NORMAL_AMMO_2",
+        "id": "LBG_NORMAL_AMMO_2",
+        "exists": true,
+        "calculationStatus": "EVIDENCE_GATED",
+        "verificationStatus": "UNVERIFIED",
+        "hits": 0,
+        "unresolved": [
+          "SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING",
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          "WEAPON_AMMO_APPLICABILITY_PENDING"
+        ],
+        "special": [
+          "AMMO_PHYSICAL"
+        ]
+      }
+    ],
+    "sourceMainPurposeVerification": "LIMITED_SOURCE_ALIGNED_NORMAL_RAPID_TRIGGER: no source-video full combat/rotation/time verification",
+    "equipmentReferenceVerification": "VERIFIED_LIMITED_EFFECTIVE_LV3_RAPID",
+    "statusHistory": [
+      {
+        "status": "BLOCKED_RAPID_SKILL_COMBINATION",
+        "scope": "LBG_RAPID3_REPORT.md; effectiveLv3 route implemented, real template coexisting conditional/group effects still gated",
+        "reason": "superseded by independently accepted limited execution; original evidence retained"
+      }
+    ],
+    "independentReview": "01a1919c-08df-72ac-a02f-416b09466cce",
+    "executionEvidence": "lbg-common-after.json",
+    "verificationLimits": "Original execution hashes only; no fresh all-weapon regression. Live game/Safari unverified; identical saves only.",
+    "remainingLimits": [
+      "Guts AFTER not executed",
+      "all skill levels not executed",
+      "WEX and invalid-rank boundaries injected",
+      "Lv1/F01 evidence lbg-common-lv1.json limited synthetic contract"
+    ]
+  },
+  {
+    "kind": "heavy-bowgun",
+    "template": "KOTATU_HBG_01",
+    "status": "VERIFIED_LIMITED_NORMAL_AMMO_REFERENCE",
+    "scope": "KOTATU_HBG_01 Normal Lv3 once / hbg-manifest.json; source spread build rotation untested",
+    "comparison": "identical copies",
+    "slotIssues": [],
+    "charmRuleMatch": true,
+    "profile": "adopted:hbg_normal",
+    "techniqueRecords": [
+      {
+        "ui": "canonical:HBG_NORMAL_AMMO_3",
+        "id": "HBG_NORMAL_AMMO_3",
+        "exists": true,
+        "calculationStatus": "EVIDENCE_GATED",
+        "verificationStatus": "UNVERIFIED",
+        "hits": 0,
+        "unresolved": [
+          "SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING",
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          "WEAPON_AMMO_APPLICABILITY_PENDING"
+        ],
+        "special": [
+          "AMMO_PHYSICAL"
+        ]
+      }
+    ],
+    "sourceMainPurposeVerification": "NOT_VERIFIED: source spread use not tested; Normal Lv3 only",
+    "equipmentReferenceVerification": "VERIFIED_LIMITED_NORMAL_AMMO_REFERENCE"
+  },
+  {
+    "kind": "bow",
+    "template": "KOTATU_BOW_01",
+    "status": "VERIFIED_LIMITED",
+    "scope": "Kotatu + Salada05 / current-accepted-manifest.json",
+    "comparison": "two different equipment builds",
+    "slotIssues": [],
+    "charmRuleMatch": true,
+    "profile": "adopted:bow_reference",
+    "techniqueRecords": [
+      {
+        "ui": "canonical:BOW_SHOT_3",
+        "id": "BOW_SHOT_3",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "PARTIALLY_VERIFIED",
+        "hits": 3,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:BOW_POWER_SHOT_3",
+        "id": "BOW_POWER_SHOT_3",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "PARTIALLY_VERIFIED",
+        "hits": 5,
+        "unresolved": [],
+        "special": []
+      },
+      {
+        "ui": "canonical:BOW_POWER_VOLLEY_3",
+        "id": "BOW_POWER_VOLLEY_3",
+        "exists": true,
+        "calculationStatus": null,
+        "verificationStatus": "PARTIALLY_VERIFIED",
+        "hits": 6,
+        "unresolved": [],
+        "special": []
+      }
+    ],
+    "sourceMainPurposeVerification": "NOT_VERIFIED: adopted reference profile is not a source-video combo verification",
+    "equipmentReferenceVerification": "VERIFIED_LIMITED"
+  }
+]

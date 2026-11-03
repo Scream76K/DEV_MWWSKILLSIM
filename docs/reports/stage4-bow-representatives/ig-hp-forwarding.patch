@@ -1,0 +1,17 @@
+--- /tmp/ig-hp-before-adapter.js	2026-10-31 19:25:03
++++ hope-hammer-browser-adapter.js	2026-10-31 19:25:03
+@@ -335,6 +335,14 @@
+    const normalContract=STANDARD_NORMAL_HIT_CONTRACT[id];
+    if(normalContract&&!technique.referenceKind&&!Array.isArray(technique.specialComponents)){
+     technique={...technique,stateRequirement:technique.stateRequirement&&Object.keys(technique.stateRequirement).length?technique.stateRequirement:(normalContract.stateRequirement||{}),hits:(technique.hits||[]).map(hit=>({...hit,damageType:hit.damageType??normalContract.damageType,partModifier:hit.partModifier??normalContract.partModifier,partModifierSource:hit.partModifierSource??normalContract.source}))};
++   }
++   // KAN-22: source-confirmed ordinary body HP reference, not a durability/official-version promotion.
++   if(weapon.kind==='insect-glaive'&&['IG_DIAGONAL_SLASH','IG_SWEEP'].includes(id)){
++    if(insectGlaiveState?.extractState!=='NO_EXTRACT')return fail('REAL_SLICE:IG_REFERENCE_EXTRACT_STATE_REQUIRED');
++    if(insectGlaiveState?.kinsectState!=='STOWED')return fail('REAL_SLICE:IG_REFERENCE_KINSECT_STOWED_REQUIRED');
++    const raw=techniqueDb.get(techniqueKind,id);
++    if(raw.numericStatus!=='SOURCE_CONFIRMED'||raw.specialComponents?.length||raw.excludedComponents?.length||Object.keys(raw.stateRequirement||{}).length||!raw.hits?.length||raw.hits.some(h=>!Number.isFinite(h.mv)||h.mv<0||!Number.isFinite(h.elementModifier)||h.elementModifier<0||h.damageStatsState!=null))return fail('REAL_SLICE:IG_REFERENCE_BODY_SOURCE_PENDING');
++    technique={...technique,calculationStatus:'READY_HP_REFERENCE',adoption:{status:'EXISTING_ADOPTED_REFERENCE',scope:'KAN22_NO_EXTRACT_STOWED_BODY_HP_ONLY',verificationStatus:raw.verificationStatus,source:'docs/reports/kan-22/REPORT.md',sourceCalculationStatus:raw.calculationStatus,unresolvedReasons:raw.unresolvedReasons||[]},hits:raw.hits.map(h=>({...h,damageType:h.damageType??STANDARD_NORMAL_HIT_CONTRACT.IG_DIAGONAL_SLASH.damageType}))};
+    }
+    if(id==='IG_ENHANCED_DIAGONAL_SLASH')technique={...technique,hpOnlyProvisional:'IG_ENHANCED_DIAGONAL_SLASH_20261025',stateRequirement:{tripleExtract:true}};
+    if(technique.phialReference?.status==='OBSERVED'&&Number.isInteger(technique.phialReference.hitCount)){

@@ -1,0 +1,34 @@
+{
+  "status": "MAPPING_ACCEPTED_BASELINE_BLOCKED",
+  "hashes": {
+    "index.html": "0504129ba914798582aaa867728e5d3bc09cb87742f44c7ed2fa31404d09ebbc",
+    "hope-hammer-browser-adapter.js": "53315bbff3c6d35bc8200565fb8dec16784c36589dbfbce39f0eb065f8b6e4b3",
+    "tools/stage4-hbg-target-element-probe.cjs": "2dc567016e30fa4d24c4cd448069c9e408f6f5055666ac191d945d4eec4374fc",
+    "docs/reports/stage4-bow-representatives/hbg-target-element/public-probe.json": "f948994eeb38c4296505d6606d2aab1b1bc127b78ccc4f360ee675f312a25aa5",
+    "docs/reports/stage4-bow-representatives/hbg-target-element/after.json": "c4ae4f2168bb145ee34d10aac8d6b10826ccde86add325104ac1f21e070970f0"
+  },
+  "beforeAdapterHash": "ca046e092cf88766ea1e1e365c2c76c751d2927f27a0318cdc3fbb0153a78a9d",
+  "runs": [
+    {
+      "log": "public-probe.json",
+      "exit": 0,
+      "meaning": "Harness incorrectly used execution complete; metrics unavailable; NOT calculation success"
+    },
+    {
+      "log": "after.json",
+      "exit": 2,
+      "meaning": "Corrected harness reports both channels blocked by SKILL_INTERACTION_UNSUPPORTED"
+    }
+  ],
+  "notRun": [
+    "save/load/shared A/B for this elemental case",
+    "live game",
+    "Safari",
+    "F01 injection",
+    "full regression",
+    "LBG fire/ice runtime",
+    "ice runtime"
+  ],
+  "equipmentModified": false,
+  "review": "01a1956c-7a04-76b6-ac7e-09422cc1d37a"
+}

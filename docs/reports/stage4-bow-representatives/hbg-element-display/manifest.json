@@ -1,0 +1,29 @@
+{
+  "status": "REVIEW_PENDING",
+  "hashes": {
+    "index.html": "0d90e68062f6a8418fca1873a5da504d95eb2e962c04f2c7df424f9a9db83d61",
+    "hope-hammer-browser-adapter.js": "de179a137a2d44cd969a75a3736f54b643ffa37c52b96d7a5115ab33402216b3",
+    "tools/stage4-hbg-element-display-proof.cjs": "70dc2e1cbfe38ac8457b687bef0cf848d17363ee71e8d55b26f5a7ef43396f71"
+  },
+  "logs": {
+    "red.json": {
+      "exit": 1,
+      "sha256": "5376a8f0eb27fa640aa4f68fd1dcdfd3958dcfebf05c55acd11c042241e01351",
+      "meaning": "Expected failure: old coverage text"
+    },
+    "green.json": {
+      "exit": 0,
+      "sha256": "1c057859b5370d5f257f0fb523cf538cc10e94d303fbe91da5ca74ae5fa513fb"
+    }
+  },
+  "numericalChannelsEqualPreviousAcceptedEvidence": true,
+  "sameContentTwoSaves": true,
+  "notRun": [
+    "different equipment comparison",
+    "Safari",
+    "live game",
+    "F01 injection",
+    "LBG",
+    "full regression"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "status": "INDEPENDENT_REVIEW_ACCEPTED_LIMITED",
+  "productHashes": {
+    "index.html": "e2fec8b7829008288e3006148b0b207bb8268a65a8f2c1cd20faa6fb685e65cb",
+    "hope-hammer-browser-adapter.js": "ebdd545891bc277d0c3d837cadd169d779e76b61a189b4b3db3e4626647e0b7d"
+  },
+  "patch": "gs-common-formula.patch",
+  "command": "node tools/stage4-gs-common-formula-proof.cjs",
+  "runs": [
+    {
+      "file": "gs-common-formula-before.json",
+      "exit": 1,
+      "meaning": "narrow scope rejection"
+    },
+    {
+      "file": "gs-common-formula-attempt.json",
+      "exit": 1,
+      "meaning": "harness two-part input incompatible with existing fixed-three normalization"
+    },
+    {
+      "file": "gs-common-formula-after.json",
+      "exit": 0
+    }
+  ],
+  "evidenceHashes": {
+    "gs-common-formula-before.json": "56b7dbf57d9fe147391ada7ce84650ed7e2eae25ac68a56eb27638772fb618c1",
+    "gs-common-formula-attempt.json": "81ede8b8d21f49c4ecd1a1e9db9e43bbe3e925443731cbe761469d7f33dc9e8f",
+    "gs-common-formula-after.json": "0677c482cf1023442ed2cb6afd08da921ebf54f9309e8868076ce41e08025b66"
+  },
+  "harnessHash": "77956a6e8c93676d5f51dc11c99e2d6998794377fdd3676d11670ad35810c3d1",
+  "gitActions": "none",
+  "review": "01a19122-3baa-73e3-9d19-bd70eb100b6f"
+}

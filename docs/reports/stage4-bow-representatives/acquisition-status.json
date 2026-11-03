@@ -1,0 +1,24 @@
+{
+  "status": "BLOCKED_HTTP_403",
+  "operation": "Python urllib.request.urlopen public MHDB and save JSON to stage4-only directory",
+  "url": "https://wilds.mhdb.io/ja/skills",
+  "approval": "Explicit clarification accepted; execution allowed",
+  "exit": 1,
+  "error": "urllib.error.HTTPError: HTTP Error 403: Forbidden",
+  "executed": [
+    "skills GET returned403"
+  ],
+  "notExecuted": [
+    "armor",
+    "decorations",
+    "weapons",
+    "template public calculation",
+    "save/load/AB"
+  ],
+  "dataFilesWritten": 0,
+  "prior": "sandbox DNS failure; prior escalated attempt auto-review denied before execution; authorized retry now executed and failed HTTP403",
+  "productHashes": {
+    "index.html": "3df80ab8c531680179e9214589ab2df8ee82d19bd18fde0507717273871379d3",
+    "hope-hammer-browser-adapter.js": "908c0aa9d460fcb85278321bcec1ec19e0dc577ab3e718f4c2dccbdc012c131f"
+  }
+}

@@ -1,0 +1,13 @@
+--- before/index.html
++++ after/index.html
+@@ -8970,7 +8970,9 @@
+   }
+   // Template talisman is restored from the template itself. Its name and MHDB rank are NOT required.
+   const cs=t.charm||{};
+-  const srcSkills=Array.isArray(cs.skills)?cs.skills.map(x=>({name:String(x?.name||''),level:Number(x?.level)||1,type:'armor'})).filter(x=>x.name):[];
++  // Resolve width-only template spelling to a unique public MHDB skill; unknown/ambiguous names remain unresolved.
++  const templateCharmSkillName=name=>{const matches=(DB.skills||[]).filter(s=>String(s.name).normalize('NFKC')===String(name).normalize('NFKC'));return matches.length===1?matches[0].name:String(name);};
++  const srcSkills=Array.isArray(cs.skills)?cs.skills.map(x=>({name:templateCharmSkillName(x?.name||''),level:Number(x?.level)||1,type:'armor'})).filter(x=>x.name):[];
+   while(srcSkills.length<3)srcSkills.push({name:'',level:1,type:'armor'});
+   const legacySlotLevels=Array.isArray(cs.slot_levels)?cs.slot_levels.slice(0,3).map(Number):[];
+   const explicitArmor=Array.isArray(cs.armor_slot_levels)?cs.armor_slot_levels.slice(0,2).map(Number):null;

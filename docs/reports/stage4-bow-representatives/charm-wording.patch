@@ -1,0 +1,52 @@
+--- before/index.html
++++ after/index.html
+@@ -575,15 +575,15 @@
+   const skills=(c.skills||[]).filter(x=>String(x?.name||'').trim());
+   const pattern=charmSlotPattern(c);
+   if(!skills.length)return {status:'empty',label:'未設定',detail:'護石スキルを設定すると、生成可能性を判定します。'};
+-  const invalid=detail=>({status:'invalid',label:'不可能',detail});
+-  const unconfirmed=detail=>({status:'unconfirmed',label:'確認不能',detail});
++  const invalid=detail=>({status:'invalid',label:'条件不一致',detail});
++  const unconfirmed=detail=>({status:'unconfirmed',label:'未確認',detail});
+   // Validate raw input before the rule helper's legacy level normalization.
+   if(skills.length>3)return invalid('護石スキルは3個までです。');
+   if(skills.some(x=>!Number.isInteger(Number(x.level))||Number(x.level)<1))return invalid('スキルLvは1以上の整数で指定してください。');
+-  if(skills.some(x=>x.type!=null&&!['weapon','armor'].includes(x.type)))return invalid('護石スキルの入力種別が不正です。');
++  if(skills.some(x=>x.type!=null&&!['weapon','armor'].includes(x.type)))return invalid('護石スキルの入力種別が条件に一致しません。武器スキル・防具スキルの指定を確認してください。');
+   if(pattern.startsWith('不正'))return invalid(`${pattern}。スロットの種類と個数を確認してください。`);
+   const gs=normalizeCharmSkillsForRule(skills);
+-  if(new Set(gs.map(x=>x.name)).size!==gs.length)return invalid('同じスキルを1～3個目に重複して付けることはできません。');
++  if(new Set(gs.map(x=>x.name)).size!==gs.length)return invalid('同じスキルが重複しています。1～3個目のスキル構成を確認してください。');
+   const unresolved=[];
+   for(const x of gs){
+     const records=(DB.skills||[]).filter(s=>s.name===x.name);
+@@ -596,7 +596,7 @@
+     if(!['weapon','armor'].includes(skill.kind))unresolved.push(x.name+'（種別未確認）');
+     const levels=(skill.ranks||[]).map(r=>Number(r.level)).filter(Number.isInteger);
+     if(!Number.isInteger(Number(skill.id))||!levels.length){unresolved.push(x.name);continue;}
+-    if(!levels.includes(x.level))return invalid(`公式スキルの登録Lv範囲外：${x.name} Lv${x.level}。`);
++    if(!levels.includes(x.level))return invalid(`公式スキルの登録Lv範囲を外れています：${x.name} Lv${x.level}。`);
+   }
+   if(unresolved.length)return unconfirmed(`公式スキル情報を一意に照合できません：${unresolved.join('、')}。合法性は未確認です。`);
+   const unknown=gs.filter(x=>!x.groups.length);
+@@ -612,9 +612,9 @@
+   }
+   const matches=charmRuleCandidates(skills,pattern);
+   if(!matches.length){
+-    if(pattern.startsWith('不正'))return {status:'invalid',label:'不可能',detail:`${pattern}。スロットの種類と個数を確認してください。`};
++    if(pattern.startsWith('不正'))return {status:'invalid',label:'条件不一致',detail:`${pattern}。スロットの種類と個数を確認してください。`};
+     // Registered skills and a recognized slot shape do not prove this combination impossible.
+-    return {status:'unconfirmed',label:'確認不能',detail:`スキル構成（${gs.map(x=>x.name+' Lv'+x.level).join(' / ')}）は登録ルールに一致しますが、スロット「${pattern}」との組み合わせは現在の登録ルールでは確認できません。ゲーム内で不可能と確定した判定ではありません。`};
++    return {status:'unconfirmed',label:'未確認',detail:`スキル構成（${gs.map(x=>x.name+' Lv'+x.level).join(' / ')}）は登録ルールに一致しますが、スロット「${pattern}」との組み合わせは現在の登録ルールでは確認できません。この組み合わせの成立は未確認です。`};
+   }
+   const best=matches[0];
+   const assignment=best.assignment.map(x=>`${x.name} Lv${x.level}→G${x.groups.join('/')}`).join(' / ');
+@@ -8493,7 +8493,7 @@
+   const baseDamage=baseline.power?.normal?.comparisonPower;
+   let h='<div class="compare-note"><b>基準ダメージ：'+(Number.isFinite(baseDamage)&&baseDamage>0?comparisonDisplayNumber(baseDamage):'—')+'</b>（'+esc(baseline.name)+'・選択した通常側の比較条件、ゲーム表示の丸め前）</div><label for="comparisonBaseline">比較の基準ビルド（通常側の期待ダメージ）</label><select id="comparisonBaseline">'+rows.map((r,i)=>'<option value="'+i+'"'+(i===selectedIndex?' selected':'')+'>'+esc(r.name)+'</option>').join('')+'</select><div class="two" style="margin-top:8px"><button type="button" id="comparisonReportDownload">比較結果をJSON保存</button><button type="button" id="comparisonReportCopy">比較結果をコピー</button></div><button type="button" id="comparisonComboEvidence">コンボの技別・未検証項目を表示</button><button type="button" id="comparisonEvidenceChecklist">検証作業リストを表示</button><details><summary>実機検証の証拠参照を照合（JSON）</summary><textarea id="comparisonEvidenceInput" rows="4" style="width:100%" placeholder="JSON形式の証拠参照を入力"></textarea><button type="button" id="comparisonEvidenceIntake">証拠参照を照合</button></details><details><summary>実機ダメージ・Hit数・時間の記録を照合（JSON）</summary><textarea id="comparisonMeasurementInput" rows="4" style="width:100%" placeholder="[{&quot;stage&quot;:1,&quot;techniqueId&quot;:&quot;...&quot;,&quot;evidenceRef&quot;:&quot;video-1&quot;,&quot;gameVersion&quot;:&quot;1.042.00.02&quot;,&quot;hitCount&quot;:1,&quot;durationSeconds&quot;:1.2,&quot;damage&quot;:{&quot;physicalBody&quot;:100}}]"></textarea><button type="button" id="comparisonMeasurementReview">実機計測記録を照合</button><button type="button" id="comparisonTechniqueReconcile">Technique DBと計測値を照合（診断）</button><textarea id="comparisonDamageContextInput" rows="4" style="width:100%" placeholder="計算条件JSON：[{stage, techniqueId, evidenceRef, context:{weaponId, weaponAttack, weaponElement, sharpness, affinity, criticalBoostLevel, activeSkills, monsterId, hitZonePhysical, hitZoneElement, targetState, attackConditions, gameVersion}}]"></textarea><button type="button" id="comparisonDamageContextAudit">ダメージ計算条件を監査</button><textarea id="comparisonDamagePredictionInput" rows="4" style="width:100%" placeholder="予測値JSON：[{stage, techniqueId, evidenceRef, contextFingerprint, damage:{physicalBody:100}}]（監査結果のcontextFingerprintを使用）"></textarea><button type="button" id="comparisonDamageDifference">実測と計算値の成分別差異を診断</button><button type="button" id="comparisonTechniqueEngineBridge">Technique DBと計算エンジンの接続状況</button><button type="button" id="comparisonEngineContextHandoff">Technique DBと実機条件の受渡し診断</button><p class="small">斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。</p><button type="button" id="comparisonSharpnessSourceAudit">MHDB斬れ味データ構造を調査</button><button type="button" id="comparisonLiveContextAudit">選択装備と計算条件を照合</button><button type="button" id="comparisonAttackSkillAudit" type="button">攻撃スキル照合</button><button id="comparisonCriticalSkillAudit">会心・超会心・スキル条件を照合</button><button type="button" id="comparisonAttackTargetAudit">攻撃補正・モンスター肉質を照合</button><button type="button" id="comparisonPhysicalFormulaBridge">物理ダメージ参考計算（安全条件のみ）</button></details><button type="button" id="comparisonCaptureAudit">ガンランス自動連携の検証状況</button><button type="button" id="comparisonVerifiedTransfer">検証済みA/Bを自動登録</button><pre id="comparisonCaptureAuditOut" class="small" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre><pre id="comparisonReportOut" class="small" style="max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere"></pre><div class="compare-results">';
+   const coverage=comparisonCoverageSummary(rows,baseline);
+-  h+='<div class="compare-note small" data-comparison-coverage="r248">比較可能：通常 '+coverage.normal+'/'+coverage.total+'件 ／ 最大 '+coverage.maximum+'/'+coverage.total+'件 ／ DPS '+coverage.dps+'/'+coverage.total+'件。算出不能な結果は推測で補完しません。</div>';
++  h+='<div class="compare-note small" data-comparison-coverage="r248">比較可能：通常 '+coverage.normal+'/'+coverage.total+'件 ／ 最大 '+coverage.maximum+'/'+coverage.total+'件 ／ DPS '+coverage.dps+'/'+coverage.total+'件。未算出の結果は推測で補完しません。</div>';
+   if(coverage.pending.length){
+     h+='<details class="compare-note" data-comparison-pending="r248"><summary>比較保留の原因を確認（'+coverage.pending.length+'項目）</summary><p class="small">同じビルドが通常・最大・DPSの複数項目で表示される場合があります。</p><strong>原因別集計</strong>'+coverage.causes.map(x=>'<p class="small">'+esc(comparisonReasonText(x.reason))+'：'+x.buildCount+'ビルド／'+x.metricCount+'項目（通常'+x.metrics.normal+'・最大'+x.metrics.maximum+'・DPS'+x.metrics.dps+'）</p>').join('')+'<strong>個別の保留内容</strong>'+coverage.pending.map(x=>'<p class="small">'+esc(x.name)+' ／ '+({normal:'通常',maximum:'最大',dps:'DPS'}[x.metric])+'：'+esc(comparisonReasonText(x.reason))+' <code>'+esc(x.reason)+'</code></p>').join('')+'</details>';
+   }

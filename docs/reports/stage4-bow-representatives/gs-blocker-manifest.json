@@ -1,0 +1,88 @@
+{
+  "status": "BLOCKED_NOT_FIREPOWER_PASS",
+  "productChanged": false,
+  "command": "node tools/stage4-real-gs-proof.cjs",
+  "attempts": [
+    {
+      "file": "gs-public-attempt1.json",
+      "exitCode": 1,
+      "reason": "Product correctly unavailable at ARTIA_COMPLETED_VALUES_UNRESOLVED; harness complete assertion fails"
+    },
+    {
+      "file": "gs-public-blocked.json",
+      "exitCode": 1,
+      "reason": "Both records saved/reloaded; mixed-weapon comparison intentionally returns early and harness wrongly assumed rows array; no comparison success"
+    }
+  ],
+  "productHashes": {
+    "index.html": "aab29e2b1a83282647628532380710dd602f1fd89d444c998758727a2dc24a6d",
+    "hope-hammer-browser-adapter.js": "1b348b1db8c992548cc7438ad0b1b33d6f7e4391b407dbf030a199da7b9a6820"
+  },
+  "cacheHash": "9491bfc1cf357aed4967418949d78c0ddd73407c6461443a7b594a2b2710c810",
+  "equipmentLoadStatus": "テンプレートを読み込みました。全装備をMHDBへ照合してBuild Stateへ反映しました。",
+  "charm": {
+    "status": "possible",
+    "label": "実現可能",
+    "detail": "一致：R8（栄世）、スロット 武1-防1-防1。判定：攻撃 Lv2→G2/4 / 爆破属性強化 Lv1→G1 / 挑戦者 Lv1→G10。",
+    "matches": [
+      {
+        "rarity": 8,
+        "groups": [
+          2,
+          1,
+          10
+        ],
+        "slotPatterns": [
+          "武1",
+          "武1-防1",
+          "武1-防1-防1"
+        ],
+        "assignment": [
+          {
+            "name": "攻撃",
+            "level": 2,
+            "groups": [
+              2,
+              4
+            ]
+          },
+          {
+            "name": "爆破属性強化",
+            "level": 1,
+            "groups": [
+              1
+            ]
+          },
+          {
+            "name": "挑戦者",
+            "level": 1,
+            "groups": [
+              10
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "loadedSavedRecords": [
+    "KOTATU_BOW_01",
+    "KOTATU_GS_01"
+  ],
+  "blocker": {
+    "weaponID": 1148,
+    "sourceIDs": [
+      1148,
+      1150,
+      1149
+    ],
+    "cacheElement": "all three normalized fixed variants elementKnown=false; specials=[]",
+    "sourceRule": "index.html ARTIA_ELEMENT_SOURCE_DB great-sword.threePartBonus=null",
+    "guard": "artiaSourceElement -> ELEMENT_ARTIA_THREE_PART_BONUS_PENDING -> realPipelineWeapon ARTIA_COMPLETED_VALUES_UNRESOLVED",
+    "notAuthorized": "Do not transfer legacy helper +30 or change selected material count/attribute/equipment to force success"
+  },
+  "notExecuted": [
+    "GS normal/maximum firepower",
+    "same-weapon saved A/B numerical comparison",
+    "game/Safari/full beta"
+  ]
+}

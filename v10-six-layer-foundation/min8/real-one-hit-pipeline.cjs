@@ -102,15 +102,21 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    return {nextState:{...state,lightBowgun:{...state.lightBowgun,loadedRounds:state.lightBowgun.loadedRounds-event.amount}}};
   }
   if(event.type==='consume'&&['GL_NORMAL_ROUNDS','GL_CHARGED_ROUNDS'].includes(event.contract)&&weaponType==='gunlance'){const nextState=JSON.parse(JSON.stringify(state));nextState.gunlance.loadedRounds-=event.amount;return {nextState};}
+  if(event.type==='transition'&&event.contract==='CB_H_PREFIX_RESOURCE'&&weaponType==='charge-blade'&&['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(event.techniqueId)){
+   const expected=event.techniqueId==='CB_AXE_TO_SWORD_MORPH'?event.techniqueId:'SHIELD_THRUST';
+   if(event.nextPreviousAction!==expected||event.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_TRANSITION_INVALID');
+   return {nextState:{...state,chargeBlade:{...state.chargeBlade,mode:event.endMode,previousAction:expected}}};
+  }
   if(event.type!=='hit'&&event.contract==='CB_ED1_NORMAL_RESOURCE'&&weaponType==='charge-blade'&&['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED'].includes(event.techniqueId)){
    const nextState=JSON.parse(JSON.stringify(state));
    if(event.type==='consume'){const key=event.resourcePath?.[1];if(!['normalPhials','enhancedPhials'].includes(key))throw Error('REAL_SLICE:CB_ED1_RESOURCE_KEY_INVALID');nextState.chargeBlade[key]-=event.amount;}
-   else if(event.type==='transition')nextState.chargeBlade.previousAction=event.techniqueId;
+   else if(event.type==='transition'){nextState.chargeBlade.previousAction=event.techniqueId;if(event.endMode)nextState.chargeBlade.mode=event.endMode;}
    else throw Error('REAL_SLICE:UNSUPPORTED_EVENT');
    return {nextState};
   }
   const resource=event.components?.find(c=>c.parameters?.resourceContract)?.parameters.resourceContract;
   if(resource){
+   if(resource.requiredMode&&state?.chargeBlade?.mode!==resource.requiredMode)throw Error('REAL_SLICE:CB_H_MODE_MISMATCH');
    if(state?.chargeBlade?.previousAction!==resource.requiredPreviousAction||typeof state?.chargeBlade?.normalPhials!=='number'||!Number.isSafeInteger(state?.chargeBlade?.normalPhials*2))throw Error('REAL_SLICE:CB_ED1_START_STATE_UNRESOLVED');
    const actualKey=(state.chargeBlade.enhancedPhials??0)>0?'enhancedPhials':'normalPhials';
    if(actualKey!==resource.resourceKey)throw Error('REAL_SLICE:CB_RESOURCE_PRIORITY_MISMATCH');

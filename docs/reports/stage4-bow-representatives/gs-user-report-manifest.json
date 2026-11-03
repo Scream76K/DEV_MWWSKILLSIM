@@ -1,0 +1,48 @@
+{
+  "status": "LIMITED_GS_REPRESENTATIVE_PASS_REVIEW_PENDING",
+  "productHashes": {
+    "index.html": "7c90d2c2c58aacc59d1e278a97c4cf5921f17a326b483662694bb406cdf04b5e",
+    "hope-hammer-browser-adapter.js": "ebdd545891bc277d0c3d837cadd169d779e76b61a189b4b3db3e4626647e0b7d"
+  },
+  "command": "node tools/stage4-real-gs-proof.cjs",
+  "runs": [
+    {
+      "raw": "gs-user-report-attempt.json",
+      "exit": 1,
+      "kind": "HARNESS_WRONG_PUBLIC_IDS; exact three-ID assertion caught one selected move"
+    },
+    {
+      "raw": "gs-preset-before.json",
+      "exit": 1,
+      "kind": "PRODUCT_LEGACY_ID_ROUTING"
+    },
+    {
+      "raw": "gs-user-report-after.json",
+      "exit": 0
+    }
+  ],
+  "dataEvidence": {
+    "messageId": "Sentinel_09514f09aa48819192f431d2dbed484e",
+    "type": "USER_REPORTED_NOT_SCREENSHOT_VERIFIED",
+    "reportedElementBonus": 30,
+    "reportedElement": 480,
+    "gameVersion": null,
+    "fullRestoreListProvided": false,
+    "productionAttackNotCausalForElementBonus": true,
+    "scope": "MHDB1148 GogmaGS dragon attack mutation three matching parts only"
+  },
+  "rawHashes": {
+    "gs-user-report-attempt.json": "6f84bef9490318ae2e5f7dcd9d3ce1d0a69babb7d2b45359bd442b71d2522631",
+    "gs-preset-before.json": "8bedde93934ab9e0800f29f9bb615c9724770c0d0e8c12e6d84477ec608f40dd",
+    "gs-user-report-after.json": "b82575ab43dab36fa9d159f655bb5d41a3e652c21313186c2214e2a9fbbb1a51"
+  },
+  "harnessHash": "e037aff156addfcb269eaa39f6b7cea81de222db956792ace4d8079a2724d1ef",
+  "unexecuted": [
+    "Safari",
+    "game screenshots",
+    "other mutation or weapon application",
+    "full beta regression",
+    "different-equipment saved A/B"
+  ],
+  "noCommitPush": true
+}

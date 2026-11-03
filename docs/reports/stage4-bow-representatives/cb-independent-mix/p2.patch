@@ -1,0 +1,13 @@
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -974,7 +974,9 @@
+   const unavailable=reason=>({status:'UNAVAILABLE',reason,scope:'CB_INDEPENDENT_R_H_SUM'});
+   if(input.weapon?.kind!=='charge-blade'||state.mixMode!=='R_H_INDEPENDENT')return unavailable('REAL_SLICE:CB_MIX_MODE_INVALID');
+   const rIds=profiles?.RELEASE_ROUTE?.techniqueIds,hIds=profiles?.AED_ROUTE?.techniqueIds;
+-  if(!rIds||!hIds||JSON.stringify(normalizeTechniqueIds(input.techniqueIds||[]).ids)!==JSON.stringify(rIds))return unavailable('REAL_SLICE:CB_MIX_R_PROFILE_REQUIRED');
++  const normalized=normalizeTechniqueIds(input.techniqueIds||[]);
++  if(normalized.unresolved.length)return unavailable('REAL_SLICE:TECHNIQUE_ID_UNRESOLVED:'+normalized.unresolved.join(','));
++  if(!rIds||!hIds||JSON.stringify(normalized.ids)!==JSON.stringify(rIds))return unavailable('REAL_SLICE:CB_MIX_R_PROFILE_REQUIRED');
+   const {mixMode,mixH,...shared}=state;
+   const routeStates={R:{...shared},H:{...shared,mode:mixH?.mode??null,previousAction:mixH?.previousAction??null,normalPhials:mixH?.normalPhials??null,enhancedPhials:mixH?.enhancedPhials??null}};
+   const routes={};

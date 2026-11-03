@@ -1,0 +1,9 @@
+# GL/HBG entry follow-up
+
+Independent-review P2: the two special entry gates still bypassed the validated common fixed-scope classifier. Only these predicates were changed to fixedEntrySkill; no Formula, coefficient, resource or activation changes.
+
+Public calcBuild in offline JSDOM: each GL NORMAL (MHDB350 metadata, synthetic skills/armor) and HBG STANDARD wyvern (synthetic contract weapon) baseline, water resistance84 alone, and two-piece 無尽蔵Ⅰ. Before both extras stop (GL UNREVIEWED_MODIFIER / HBG CONDITIONAL_EFFECT_SCOPE_PENDING); after both channels' entire metrics equal baseline. Each route saves two differing records and compares them under shared conditions; current state and complete localStorage stay identical. Invalid ボマーLv4 and unknown ID999991 still stop. These are contract fixtures, not equipment-legality/game/Safari verification.
+
+Static search: confirmedNonDamage now appears only in its definition and fixedEntrySkill. annotationPolicy remains inside that helper (bodyEffect:false required), applicability resolution and annotation rendering, not an old independent entry allowlist. 千々矢/rapid already use fixedEntrySkill/fixedEntryBonus. GL's downstream name filter remains for previously adopted channel attack plans; HBG Formula's empty unreviewed list is downstream of entry validation. 152/162 are not added to fixed exclusions; no conversion scope adoption. No other same old predicate pair remains.
+
+Prior bow/rapid/181 execution evidence after.json is reused at its recorded older adapter hash, not claimed as a new run. This patch changes GL/HBG entry predicates only; index/common classifier/181 producers unchanged. F01 injection, full14weapon regression and final beta tests were not run. No commit/push. See p2-manifest.json for commands, exit0, exact before/after hashes and raw-log hashes. Independent review 01a1904a-832c-720e-bbdf-f8cc743780c0 accepted this limited scope with no new findings. See REPORT.md acceptance follow-up.

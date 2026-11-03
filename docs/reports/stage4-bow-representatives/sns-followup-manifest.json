@@ -1,0 +1,43 @@
+{
+  "scope": "SNS four adopted Hits wiring; representative equipment still BLOCKED by source decoration count",
+  "productHashes": {
+    "index.html": "7a2b35a83dc069d6eb911849e194a91afee7fee688992aecad3c6e32cc99bd01",
+    "hope-hammer-browser-adapter.js": "1b348b1db8c992548cc7438ad0b1b33d6f7e4391b407dbf030a199da7b9a6820"
+  },
+  "command": "node tools/stage4-real-sns-proof.cjs",
+  "runs": [
+    {
+      "file": "sns-public-four-hit-before.json",
+      "exitCode": 2
+    },
+    {
+      "file": "sns-public-four-hit-after.json",
+      "exitCode": 2
+    },
+    {
+      "file": "sns-public-four-hit-resolved.json",
+      "exitCode": 1
+    },
+    {
+      "file": "sns-public-four-hit-final.json",
+      "exitCode": 2
+    }
+  ],
+  "postRunAssertions": "PASS: exact ordered four IDs, one physical and one elemental component per Hit, execution complete normal/maximum, base320, two saved comparisons invariant",
+  "hashes": {
+    "sns-public-four-hit-before.json": "5f2d20a95edbc15e89ef42d051c53289dbfea25f7df01d61c1e68d55323c59a6",
+    "sns-public-four-hit-after.json": "c397c607c9ae40d2d43516be1bb95f97bbf0744ca179a349b1e6bcd4b94e9324",
+    "sns-public-four-hit-resolved.json": "cd7e3b4735dc86b80eb954976bc92da7776e55decc76723f2323b139a899eef8",
+    "sns-public-four-hit-final.json": "cb866c1b2eee81713939e47243f5d4e60b3fabc47cf1ede13f5328fa36406a48",
+    "sns-damage-type.patch": "66db54f656501b23816f47363e95b06495b12b0c0c351b38bab9463c36e27bb0",
+    "sns-legacy-id.patch": "7cb88449904cc5accbe70115cba90a339aad00803fb17a0341f381ef6d72ce33",
+    "sns-save-id.patch": "b22da045e5974ecdfa06e7cac753d8562f5aa4ea4392d693f50652d3baa6a1cf"
+  },
+  "harnessHash": "959ab22d15aa0724085943f7e1e2af74104285d5ca91b0b386d883210259ea7a",
+  "source": {
+    "url": "https://kuroyonhon.com/mhwilds/memo/5.php",
+    "checked": "2026-10-31",
+    "facts": "Four adopted normal SNS sword hits explicitly cutting; MV/element matches existing records; not live verification"
+  },
+  "noCommitPush": true
+}

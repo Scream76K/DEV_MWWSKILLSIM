@@ -1,0 +1,37 @@
+{
+  "base": "7c6a37c44a7f8efbc1548be8018653ee4d1027a6",
+  "branch": "himmel/stage3-mindseye-cb-followup",
+  "hashes": {
+    "index.html": "3df80ab8c531680179e9214589ab2df8ee82d19bd18fde0507717273871379d3",
+    "hope-hammer-browser-adapter.js": "908c0aa9d460fcb85278321bcec1ec19e0dc577ab3e718f4c2dccbdc012c131f",
+    "tools/cb-body-mind-proof.cjs": "7542bb91870101ef243e11336cd0e3abc548495a56bd88fb6e9dcd6586843f96"
+  },
+  "command": "NODE_PATH=<existing-jsdom-node_modules> node tools/cb-body-mind-proof.cjs before|after",
+  "runs": [
+    {
+      "file": "before.json",
+      "exit": 0,
+      "assert": "axe-OFF Mind rejects ORIGINAL_HITZONE_UNRESOLVED"
+    },
+    {
+      "file": "after.json",
+      "exit": 0,
+      "scope": "Public JSDOM calcBuild synthetic CB103/AED, OFF44/45/unknown, ON representative, two saves"
+    }
+  ],
+  "productChange": "Five existing Technique DB records, six body Hits: damageType slash. No numeric change. Adapter byte-identical to previous task.",
+  "staticOnly": [
+    "CB_SWORD_TO_AXE_MORPH axe OFF",
+    "CB_ELEMENT_DISCHARGE_1 axe OFF",
+    "CB_ELEMENT_DISCHARGE_2 axe OFF",
+    "CB_FOLLOWUP_AED axe OFF"
+  ],
+  "unexecuted": [
+    "Safari",
+    "game",
+    "Lv1/Lv2",
+    "F01 injection",
+    "full regression"
+  ],
+  "classification": "81/82 unchanged pending independent review"
+}

@@ -1,0 +1,38 @@
+{
+  "status": "IMPLEMENTED_SCOPE_REVIEW_PENDING_REPRESENTATIVE_BLOCKED",
+  "approval": "Sentinel_5ef7ce4baadc8191bcb191ece3fef5a4",
+  "finalHashes": {
+    "index.html": "6e6a4a8e01cb17c9a401a03081aee986e2af68832e0b262c67f10e4890386cf8",
+    "hope-hammer-browser-adapter.js": "fe41bd3392497640b5002832ef945ee5f1fb472ed1329a997cfac28ee3a2add4"
+  },
+  "executionHashes": {
+    "index.html": "e33569da9f19725161c4bce386de65cb66e71a7113cdbf28e6e072c98887ae58",
+    "hope-hammer-browser-adapter.js": "fe41bd3392497640b5002832ef945ee5f1fb472ed1329a997cfac28ee3a2add4",
+    "docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json": "9491bfc1cf357aed4967418949d78c0ddd73407c6461443a7b594a2b2710c810",
+    "/Users/scream/Documents/Codex/2026-10-25/task/stage3-mindseye-cb-followup/tools/stage4-real-gl-shell-proof.cjs": "b6c4145d76931b665bc07965519f3a6208641f524222a753fb5c0901c721fc8b"
+  },
+  "postExecutionChange": "CB comment only: unique exact NFKC match",
+  "runs": [
+    {
+      "command": "node tools/stage4-real-gl-shell-proof.cjs",
+      "log": "gl-shell-before.json",
+      "exit": 1
+    },
+    {
+      "command": "node tools/stage4-real-gl-shell-proof.cjs",
+      "log": "gl-shell-after.json",
+      "exit": 1
+    },
+    {
+      "command": "node tools/stage4-real-gl-shell-proof.cjs",
+      "log": "gl-shell-final.json",
+      "exit": 2
+    }
+  ],
+  "artifacts": {
+    "gl-shell-before.json": "8dbc6e936aba77a7292c45defc480502aef617d458c79af1e26ad76faaa3bc59",
+    "gl-shell-after.json": "e36ebceafd15c58308b5fcf820f8e5090bda7ac83ba6ffdd9d825f32acccf0e6",
+    "gl-shell-final.json": "c36f8f563b36a0ea69ce0cf5ddab5ad8c5d8d25b25651768c662a718371b9f08",
+    "gl-artia-adoption.patch": "a90c7aea89c4d28cfbf0d4cc3ab8c47f6c80e29a9062d259408a6ea5217f1f24"
+  }
+}

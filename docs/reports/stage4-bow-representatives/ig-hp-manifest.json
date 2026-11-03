@@ -1,0 +1,40 @@
+{
+  "scope": "KAN22 HP route forwarding; equipment charm unconfirmed",
+  "command": "node tools/stage4-ig-hp-forwarding-proof.cjs",
+  "runs": [
+    {
+      "raw": "ig-hp-before.json",
+      "exit": 1,
+      "type": "expected product RED"
+    },
+    {
+      "raw": "ig-hp-attempt.json",
+      "exit": 1,
+      "type": "harness expected COMPLETE but product OK"
+    },
+    {
+      "raw": "ig-hp-sweep-attempt.json",
+      "exit": 1,
+      "type": "additional existing Airborne scope blocker"
+    },
+    {
+      "raw": "ig-hp-after.json",
+      "exit": 0,
+      "type": "limited public GREEN; sweep blocker asserted"
+    }
+  ],
+  "productHashes": {
+    "index.html": "c48f2871bfd2d8300d6a259f7d74b064d8a491a56a2d6a8f044d99d41856a4db",
+    "hope-hammer-browser-adapter.js": "f7c60511ecb4b6c2e74b8ceb5038e206729908c5379eed1e3e659abf6c409ade"
+  },
+  "evidenceHashes": {
+    "docs/reports/stage4-bow-representatives/ig-hp-before.json": "6aaed977ed7611509cfd9390b2923f9ee6379fa0a754790c265cf8d00b76b889",
+    "docs/reports/stage4-bow-representatives/ig-hp-attempt.json": "60d538c5fa3273e488c6737fd1fce47c61479af03f28111f22d92d17a04fca4d",
+    "docs/reports/stage4-bow-representatives/ig-hp-sweep-attempt.json": "fa1e8d9143f3a8aa278974e0495b2a572dbf22cf327a1e1dc118b6e72eec8d19",
+    "docs/reports/stage4-bow-representatives/ig-hp-after.json": "51ca3f6b85ac62fb0f17f1a64a3a34352ff25c1af526a6ff940be46beb986f4e",
+    "docs/reports/stage4-bow-representatives/ig-hp-forwarding.patch": "67606853840f8acf615bf98cdf4e8f2a49635dc0020739e28e2094eb26e48649",
+    "tools/stage4-ig-hp-forwarding-proof.cjs": "652ddd26c6d23a6af29c2026f69142ee8ad8145694487cae6e01692720b9da97"
+  },
+  "review": "ACCEPTED_LIMITED: 01a1917f-d989-7219-92af-b5bf3865abd9",
+  "commitPush": "not performed"
+}

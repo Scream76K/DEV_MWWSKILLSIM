@@ -1,0 +1,27 @@
+{
+  "status": "INDEPENDENT_REVIEW_ACCEPTED_LIMITED",
+  "approval": "Sentinel_577beed7c0e88191bdd2f0f10ae8c231",
+  "productHashes": {
+    "index.html": "c48f2871bfd2d8300d6a259f7d74b064d8a491a56a2d6a8f044d99d41856a4db",
+    "hope-hammer-browser-adapter.js": "ebdd545891bc277d0c3d837cadd169d779e76b61a189b4b3db3e4626647e0b7d"
+  },
+  "command": "node tools/stage4-sa-rising-awakened-proof.cjs",
+  "runs": [
+    {
+      "file": "sa-rising-awakened-before.json",
+      "exit": 1,
+      "reason": "SA_AWAKENED_MODEL_UNSUPPORTED"
+    },
+    {
+      "file": "sa-rising-awakened-after.json",
+      "exit": 0
+    }
+  ],
+  "patch": "sa-rising-awakened.patch",
+  "harnessHash": "43d68ccf28d1b8bfa3124389335cf7ba602c4e3ac7f83cc21a470456e0bdecbf",
+  "rawHashes": {
+    "sa-rising-awakened-before.json": "50df2f08de27c3c2311f9d54060a1052c1feed34d7fdebbfdaaf0dfaaf6667f2",
+    "sa-rising-awakened-after.json": "ae46a894470d9a681b69fea1efc989c573fc4dbeb4ff1702a1f8d3df2fb76d16"
+  },
+  "review": "01a1916f-059c-76f4-bf72-5774a6a32ad6"
+}

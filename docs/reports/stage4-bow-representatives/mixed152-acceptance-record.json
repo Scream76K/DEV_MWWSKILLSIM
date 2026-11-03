@@ -1,0 +1,36 @@
+{
+  "status": "LIMITED_CALCULATION_REVIEW_ACCEPTED_DIAGNOSTIC_SUPPLEMENT",
+  "review": "01a19264-2e0b-715f-b928-bb99cc1a630f",
+  "calculationExecutionHashes": {
+    "index.html": "dfb09464acf6e736379f624c25e24456d245744e285e9f22374d3986579dbffd",
+    "hope-hammer-browser-adapter.js": "4235df86c0abda05e6eb26f8458e03935a2bb72329489deb6bafda543c5063b8"
+  },
+  "finalHashes": {
+    "index.html": "dfb09464acf6e736379f624c25e24456d245744e285e9f22374d3986579dbffd",
+    "hope-hammer-browser-adapter.js": "d6d91a03d340e6d099f2669ead9dc827952a6050786106de9231d9776c3d5f9d"
+  },
+  "postExecutionChange": "additive diagnostics.attributeConversion.mixedComponentAdoption only; legacy scope retained",
+  "excludedEffectComponents": [
+    "SHELL_DEDICATED_FIRE",
+    "IMPACT_PHIAL"
+  ],
+  "totalMeaning": "included only when component independently valid; no effect application",
+  "checks": [
+    "node --check hope-hammer-browser-adapter.js exit0",
+    "git diff --check exit0",
+    "removing the exact inserted diagnostic block reproduces pre-edit source byte-for-byte"
+  ],
+  "newCalculationExecution": false,
+  "evidence": [
+    "mixed152-gl-final.json",
+    "mixed152-cb-final.json"
+  ],
+  "notExecuted": [
+    "game",
+    "Safari",
+    "full regression",
+    "F01 injection",
+    "CB other impact routes"
+  ],
+  "limits": "GL normal/charged and adopted body mix; CB impact AED single; same-content saved pairs"
+}

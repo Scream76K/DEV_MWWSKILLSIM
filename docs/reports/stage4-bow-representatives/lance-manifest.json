@@ -1,0 +1,37 @@
+{
+  "status": "ACCEPTED_LIMITED",
+  "products": {
+    "index.html": "c969458659b37ac35abb82484b4c05c24b69b2d0e64a2bbb9fb50a9b467d0ca0",
+    "hope-hammer-browser-adapter.js": "f766fc14682249c0b1ffc7ebdf0736da7c3586f1f644c90734c2f6f8179ca842",
+    "bowgun-normal-reference.js": "7422a0aa9747356c7310969248e96117d2e122278cb30bdb396021c086d8dd75",
+    "himmel-real-browser-bundle.js": "3229399281bae19b793b172d07ac3d7ec74041ae433bfc641b968fd325f5a501"
+  },
+  "beforeIndex": "2baf9d4c33f76e3df31383b8937af96e317a7478545ae16acdd98853056688dd",
+  "runs": [
+    {
+      "command": "node tools/stage4-real-lance-proof.cjs",
+      "log": "lance-first.json",
+      "exit": 1,
+      "meaning": "calcBuild ran; diagnostic realPipelineWeapon() threw ARTIA_COMPLETED_VALUES_UNRESOLVED before case serialization; not a complete numerical RED log"
+    },
+    {
+      "command": "node tools/stage4-real-lance-proof.cjs",
+      "log": "lance-after.json",
+      "exit": 0
+    },
+    {
+      "command": "node tools/stage4-gs-common-formula-proof.cjs",
+      "log": "lance-common-gs-regression.json",
+      "exit": 0
+    }
+  ],
+  "scope": "JSDOM actual exported DB; template unchanged; adopted standard4/6Hits only; identical saved copies",
+  "notVerified": [
+    "source charged-counter purpose",
+    "live game",
+    "Safari",
+    "all other weapons newly reading shared material bonus",
+    "full beta regression"
+  ],
+  "independentReview": "01a191c7-41a9-74f2-9739-27f8e5e6c4e2"
+}

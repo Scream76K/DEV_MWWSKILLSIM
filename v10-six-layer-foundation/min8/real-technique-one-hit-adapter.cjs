@@ -51,7 +51,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   const wyvern=weaponType==='heavy-bowgun'&&techniqueId==='HBG_WYVERN_AMMO'&&record.referenceKind==='heavy-bowgun-wyvern'&&record.wyvernRules?.adoptionStatus==='PROVISIONAL'&&record.sourceScope==='OWNER_FIXED_TWO_HIT_PROVISIONAL_MODEL'&&record.evidenceRefs?.includes('KAN23_OWNER_TWO_HIT_FIX_22_CONDITIONS')&&record.hits?.length===2;
   if(record.numericStatus&&record.numericStatus!=='SOURCE_CONFIRMED'&&!kan21&&!wyvern)throw Error('REAL_SLICE:REFERENCE_SOURCE_PENDING');
    const source=record.evidenceRefs?.[0];if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
-   if(weaponType==='light-bowgun'&&techniqueId==='LBG_NORMAL_RAPID_1'){
+   if(weaponType==='light-bowgun'&&['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_3'].includes(techniqueId)){
     const rule=record.rapidRule;if(rule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isInteger(rule.hitCount)||rule.hitCount<1||!Number.isInteger(rule.consumedRounds)||rule.consumedRounds<1)throw Error('LBG_RAPID:RULE_INVALID');
     const events=Array.from({length:rule.hitCount},(_,i)=>({type:'hit',components:[{id:techniqueId+':reference:'+i,kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:{hitIndex:i,effectTargets:['physical'],effectStages:['attack','affinity'],sourceTechniqueId:techniqueId,sourceRecord:record,referenceKind:record.referenceKind,referenceInput:record.referenceInput,rapidResource:rule.consumedRounds}}]}));
     events.push({type:'consume',contract:'LBG_RAPID_ROUND',resourcePath:['lightBowgun','loadedRounds'],amount:rule.consumedRounds,source});
@@ -59,7 +59,8 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    }
    return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':reference:0',kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:['physical','element'],effectStages:['attack','affinity','element'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),referenceKind:record.referenceKind,referenceInput:record.referenceInput})}]}]});
   }
-  if(!['VERIFIED','PARTIALLY_VERIFIED'].includes(record.verificationStatus))throw Error('REAL_SLICE:VERIFICATION_PENDING');
+  const cbHPrefix=weaponType==='charge-blade'&&['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)&&record.resourceContract?.id==='CB_H_PREFIX_RESOURCE'&&record.adoption?.approval==='Sentinel_b0338f54b160819183484aed19d41354'&&record.verificationStatus==='OWNER_APPROVED_PROVISIONAL';
+  if(!['VERIFIED','PARTIALLY_VERIFIED'].includes(record.verificationStatus)&&!cbHPrefix)throw Error('REAL_SLICE:VERIFICATION_PENDING');
   if(!Array.isArray(record.evidenceRefs)||record.evidenceRefs.length===0)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
   if(!Array.isArray(record.hits)||record.hits.length<1)throw Error('REAL_SLICE:HITS_REQUIRED');
   if((record.specialComponents?.length||0)>0)throw Error('REAL_SLICE:SPECIAL_ROUTE_PENDING');
@@ -94,15 +95,20 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});
   });
   if(saMode)events.push({type:'transition',contract:'SA_HIT_MODE',requiredMode:saMode.hitModes[saMode.hitModes.length-1],operations:[{op:'set',path:['switchAxe','mode'],value:saMode.endMode}]});
-  if(record.phialReference?.status==='OBSERVED'&&Number.isInteger(record.phialReference.hitCount)&&record.phialReference.hitCount>0){
+  if((record.phialReference?.status==='OBSERVED'||(techniqueId==='CB_SHIELD_THRUST'&&record.resourceContract?.id==='CB_H_PREFIX_RESOURCE'&&record.phialReference?.status==='OWNER_APPROVED_PROVISIONAL'))&&Number.isInteger(record.phialReference.hitCount)&&record.phialReference.hitCount>0){
    const phialTarget=record.phialState?.phialType==='POWER_ELEMENT'?'element':'physical';
    events[0].components.push({id:techniqueId+':phial:0',kind:'phial',unit:'PHIAL',source:record.phialReference.sourceRefs?.[0]??source,coefficient:1,parameters:Object.freeze({hitIndex:0,phialCount:record.phialReference.hitCount,consumption:record.resourceContract?{kind:record.resourceContract.consumedPhialKind,amount:record.resourceContract.consumeNormalPhials,resourceKey:record.resourceContract.resourceKey}:null,phialReference:Object.freeze({...record.phialReference}),phialState:record.phialState?Object.freeze({...record.phialState}):null,excludedEffectIds:record.resourceContract?(record.resourceContract.rapidMorphExcludedEffectIds||[record.resourceContract.rapidMorphEffectId]):[],effectTargets:[phialTarget],effectStages:[phialTarget==='element'?'element':'attack'],sourceTechniqueId:techniqueId})});
   }
   if(record.resourceContract){
    const r=record.resourceContract;
+   if(r.id==='CB_H_PREFIX_RESOURCE'){
+    if(weaponType!=='charge-blade'||!['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)||r.status!=='OWNER_APPROVED_PROVISIONAL'||r.consumeNormalPhials!==0||r.resourceKey!=='normalPhials'||r.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID');
+    events.push({type:'transition',contract:r.id,source:r.source,nextPreviousAction:r.nextPreviousAction,endMode:r.endMode,operations:[{op:'set',path:['chargeBlade','mode'],value:r.endMode},{op:'set',path:['chargeBlade','previousAction'],value:r.nextPreviousAction}]});
+   }else{
    if(weaponType!=='charge-blade'||!['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED'].includes(techniqueId)||r.id!=='CB_ED1_NORMAL_RESOURCE'||r.status!=='OWNER_APPROVED'||![0.5,1].includes(r.consumeNormalPhials)||!['normalPhials','enhancedPhials'].includes(r.resourceKey??'normalPhials'))throw Error('REAL_SLICE:CB_ED1_RESOURCE_CONTRACT_INVALID');
    events.push({type:'consume',contract:r.id,source:r.source,resourcePath:['chargeBlade',r.resourceKey??'normalPhials'],amount:r.consumeNormalPhials});
-   events.push({type:'transition',contract:r.id,source:r.source,operations:[{op:'set',path:['chargeBlade','previousAction'],value:techniqueId}]});
+   events.push({type:'transition',contract:r.id,source:r.source,operations:[{op:'set',path:['chargeBlade','previousAction'],value:techniqueId},...(r.endMode?[{op:'set',path:['chargeBlade','mode'],value:r.endMode}]:[])],endMode:r.endMode??null});
+   }
   }
   return Object.freeze({
     id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',

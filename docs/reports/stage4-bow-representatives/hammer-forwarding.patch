@@ -1,0 +1,39 @@
+--- a/index.html
++++ b/index.html
+@@ -6861,9 +6861,9 @@
+     }
+   }
+ });
+-// Resolve explicitly adopted SNS/GS preset aliases without rewriting saved settings or accepting other legacy moves.
++// Resolve explicitly adopted SNS/GS/Hammer preset aliases without rewriting saved settings or accepting other legacy moves.
+ function resolveAdoptedLegacyPresetId(kind,id){
+-  const adoptedAliases={'sword-and-shield':['sns_slash','sns_horizontal'],'great-sword':['gs_charge3','gs_strong3']};
++  const adoptedAliases={'sword-and-shield':['sns_slash','sns_horizontal'],'great-sword':['gs_charge3','gs_strong3'],hammer:['hm_side','hm_big']};
+   if(!adoptedAliases[kind]?.includes(id))return id;
+   const mapping=legacyCanonicalMapping(kind,id);
+   return mapping?.canonicalTechniqueId&&CANONICAL_COMBO_ADOPTION[kind]?.includes(id)?mapping.canonicalTechniqueId:id;
+--- a/hope-hammer-browser-adapter.js
++++ b/hope-hammer-browser-adapter.js
+@@ -413,10 +413,11 @@
+   const isReferenceOnly=resolvedTechniqueIds.every(id=>['bow','heavy-bowgun','heavy-bowgun-element','light-bowgun-element','light-bowgun','charge-blade-saed','hunting-horn-sound','heavy-bowgun-wyvern'].includes(techniques[id]?.referenceKind));
+   const hasReference=!!hhModel||resolvedTechniqueIds.some(id=>['bow','heavy-bowgun','heavy-bowgun-element','light-bowgun-element','light-bowgun','charge-blade-saed','hunting-horn-sound','heavy-bowgun-wyvern'].includes(techniques[id]?.referenceKind));
+   // Validate every ordinary Hit before resolving its own hitzone. Special components do not enter this path.
+-  const physicalKeys=resolvedTechniqueIds.filter(id=>!techniques[id]?.referenceKind&&!isShellingTechnique(id)).flatMap(id=>(techniques[id]?.hits||[]).map(hit=>{
++  const ordinaryHitDamageType=(id,hit)=>{
+    if(hit.damageType!==undefined&&hit.damageType!==null)return ['blunt','slash','pierce'].includes(hit.damageType)?hit.damageType:null;
+    return STANDARD_NORMAL_HIT_CONTRACT[id]?.damageType??(['hammer','hunting-horn'].includes(weapon.kind)?'blunt':weapon.kind==='charge-blade'?'slash':null);
+-  }));
++  };
++  const physicalKeys=resolvedTechniqueIds.filter(id=>!techniques[id]?.referenceKind&&!isShellingTechnique(id)).flatMap(id=>(techniques[id]?.hits||[]).map(hit=>ordinaryHitDamageType(id,hit)));
+   if(!isShellingOnly&&!isReferenceOnly&&(!physicalKeys.length||physicalKeys.some(x=>!x)))return fail('REAL_SLICE:DAMAGE_TYPE_UNRESOLVED');
+   const physicalKey=isShellingOnly?'blunt':isReferenceOnly?'pierce':physicalKeys[0];
+   if(!isShellingOnly&&!isReferenceOnly&&(!part||physicalKeys.some(key=>!Number.isFinite(part.multipliers?.[key]))))return fail('REAL_SLICE:TRAINING_HITZONE_UNRESOLVED');
+@@ -620,7 +621,7 @@
+      else if(t.referenceKind==='charge-blade-saed')add(0,'slash',true);
+      // Ammo contacts resolve their own target; noncritical special references receive no affinity effect.
+     }else{
+-     for(const [i,h] of (t.hits||[]).entries())add(i,h.damageType||STANDARD_NORMAL_HIT_CONTRACT[id]?.damageType);
++     for(const [i,h] of (t.hits||[]).entries())add(i,ordinaryHitDamageType(id,h));
+      if(t.saAwakened)for(const [i,mode] of (t.modeContract?.hitModes||t.hits.map(()=>t.stateRequirement?.mode)).entries())if(mode==='SWORD')add(t.hits.length+i,t.saAwakened.damageType);
+     }
+    }

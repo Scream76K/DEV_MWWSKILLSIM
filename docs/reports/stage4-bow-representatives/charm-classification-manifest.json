@@ -1,0 +1,32 @@
+{
+  "reviewStatus": "PENDING",
+  "priorAcceptedReview": "01a192fc-2885-7205-8a8d-ec091a4a9234",
+  "hashes": {
+    "index.html": "52b660b51aa00a42f2ac125294703630b22613a7e70d9e2da2e8ef3d05c4f179",
+    "hope-hammer-browser-adapter.js": "d6d91a03d340e6d099f2669ead9dc827952a6050786106de9231d9776c3d5f9d",
+    "tools/stage4-charm-classification-proof.cjs": "40d42ba32e451339c4c2d25c219f4aa9d7eda77b2d9a05b157fa883334cb411a"
+  },
+  "commands": [
+    {
+      "command": "node tools/stage4-charm-classification-proof.cjs",
+      "exit": 1,
+      "phase": "RED",
+      "log": "charm-classification-red.json"
+    },
+    {
+      "command": "node tools/stage4-charm-classification-proof.cjs",
+      "exit": 0,
+      "phase": "GREEN",
+      "log": "charm-classification-green.json"
+    }
+  ],
+  "numericalChanges": false,
+  "legalityRulesAdded": false,
+  "savedEquipmentChanged": false,
+  "limits": [
+    "display diagnosis only",
+    "no pre-normalization import audit",
+    "charm legality unconfirmed",
+    "no game/Safari/F01/full regression"
+  ]
+}

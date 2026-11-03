@@ -1,0 +1,95 @@
+CB1 限定再読追加記録（2026-11-01、旧READOUTを上書きしない追補）
+
+許可: Sentinel_00b88e288b4481918ead788e5f231ca3。現行AGENTSの専門調査書込み禁止に対し、後続ユーザー明示許可は本フォルダPNG/ログだけを対象とする。製品・原本・設定変更は許可対象外。未実行だった抽出の正規再申請1回が許可され、exit0で10PNGを取得。通常権限の過去decode exit2とSwift失敗は履歴保持。権限差が原因と断定せず、今回の実行成功だけ記録。
+
+使用手段: 既存macOS AVFoundationを既存clangで呼ぶ/tmp/cb1-frame-read（前回作成済み）。新規ソフト導入なし。要求/実フレーム時刻は下記。PNGは1920x1080原フレーム、画像加工なし。
+
+読取（ファイル名は要求秒、厳密時刻は末尾）:
+7.7: 剣モード、盾突き表示開始、合計17/1Hit。17.9は突進斬りから残る表示。
+7.9: 盾突き、合計33/2Hit。17.9は残留、新接触部は閃光で読みにくい。
+8.1: 盾突き、合計54/4Hit。17.9残留、15.2可読。別の黄色文字は閃光で限定的。
+8.3: AED開始表示へ移行、合計54/4Hit。17.9残留、5.8/15.2が同時に見える。新AED命中とは扱わない。
+48.3/48.5: 剣モード、斧：変形斬り、合計458/24Hit。22.7/38.2は盾突き前から存在。
+48.7: 盾突き、合計471/25Hit。22.7残留、新接触部は閃光。
+48.9: 盾突き、合計492/27Hit。22.7残留、12.2が見える。
+49.1: 合計492/27Hit、5.9/12.2が重なって見える。
+49.3: AED開始へ移行、合計492/27Hit。5.9/12.2が可読、左の黄色表示は15.9と読めるが明瞭度は低い。各値の物理/爆発帰属は確定しない。
+
+今回埋まった点: 盾突きの前後をより狭く区切れた。前半1→2→4Hit、後半24→25→27Hitで盾突き区間に3Hitのカウンタ増加を直接確認（いずれも後続AEDの新命中前）。これと既存本体2Hitは爆発1回の仮説と整合するが、映像の個別成分同定や他発生源排除を完了した証拠ではない。『爆発1回を実測確定』としてDB登録しない。
+
+HUD: 前半5個の黄色ビン形状、後半5個の赤いビン形状が各サンプルで継続。後半盾アイコン赤、斧アイコンは通常色と青い発光を交互に示す。前半盾/斧もフラッシュで色が変わるため、青発光を独立した強化状態と断定しない。形状5個の維持と、内部小数在庫消費0の証明は異なる。通常/強化在庫内訳や剣強化条件の一般契約は未確定。
+
+H先頭方向: 48.3/48.5の『斧：変形斬り』後に剣モード、48.7盾突き。既存操作資料 https://kuroyonhon.com/mhwilds/memo/12.php の斧変形→盾突きと整合。候補CB_AXE_TO_SWORD_MORPHはこの方向、現HのCB_SWORD_TO_AXE_MORPHは逆。候補IDは既存DBでEVIDENCE_GATEDのため、存在のみを実行採用としない。今回ID変更なし。
+
+残件: 盾条件/ビン種別ごとの爆発数と資源遷移、先頭変形候補の採用・接続契約。0.05/1.5は既存値で再採用不要。TR/THやミックス合成は今回計測していない。再撮影依頼なし。製品実装/計算テスト/commit/pushなし。原本・製品hashは前後一致。
+
+{
+  "frames": [
+    {
+      "requestedSeconds": 7.7,
+      "actualSeconds": 7.691016667,
+      "file": "native-7.7.png",
+      "sha256": "b38db61331d2543c4ebd07ff3f5955047ae5fbcc3956c290dd5ce61a6530f35c"
+    },
+    {
+      "requestedSeconds": 7.9,
+      "actualSeconds": 7.891216667,
+      "file": "native-7.9.png",
+      "sha256": "62339c420b35f559a28b7e80a9faf4df6617e27d784c0fca491d9c9d3870e2b7"
+    },
+    {
+      "requestedSeconds": 8.1,
+      "actualSeconds": 8.091416667,
+      "file": "native-8.1.png",
+      "sha256": "b10a293cc2368a47828fcb8e5d43bf614a2d985aefc7034f6aad54b00f364f88"
+    },
+    {
+      "requestedSeconds": 8.3,
+      "actualSeconds": 8.291616667,
+      "file": "native-8.3.png",
+      "sha256": "0a37cd116bfe51d929a30f626548e7d72d8128da0ca570a675643e2370503ae1"
+    },
+    {
+      "requestedSeconds": 48.3,
+      "actualSeconds": 48.29825,
+      "file": "native-48.3.png",
+      "sha256": "f3591bb1120efe7d96b19d709a8f4f849ca0771f988da3fa5265b45a4cbb2fc5"
+    },
+    {
+      "requestedSeconds": 48.5,
+      "actualSeconds": 48.49845,
+      "file": "native-48.5.png",
+      "sha256": "5ad15671e8a199453f84ff316f610fd297874af66ce21fddc0e14637ee722801"
+    },
+    {
+      "requestedSeconds": 48.7,
+      "actualSeconds": 48.69865,
+      "file": "native-48.7.png",
+      "sha256": "bc8520b8de5f43106476c38a4d0b79d1867ced16c183418062b7a133de5f6a7c"
+    },
+    {
+      "requestedSeconds": 48.9,
+      "actualSeconds": 48.89885,
+      "file": "native-48.9.png",
+      "sha256": "59d3c1b56029d4655da73c8ff30e50de9887c108cd4596966b5cfc40fc4c77ed"
+    },
+    {
+      "requestedSeconds": 49.1,
+      "actualSeconds": 49.09905,
+      "file": "native-49.1.png",
+      "sha256": "927297f58a540fcc95aa9e9ac6a5ed2ae7b9deffe54bc61826a96ec6cdcb0357"
+    },
+    {
+      "requestedSeconds": 49.3,
+      "actualSeconds": 49.29925,
+      "file": "native-49.3.png",
+      "sha256": "d9a12020c31dbcd595e1eb334b714439481736418499dc5540b429fb55fe0b3c"
+    }
+  ],
+  "unchangedHashes": {
+    "original": "6ffd5e69d833249648fea1d81185fd415f7569c7619799d650d83042716dbb74",
+    "index": "7456d5987d499d52907440b888d98c4c853bb74ef28ee86a03c9f910c2ddd05e",
+    "adapter": "d871fd6b24b6cc2e212c0332a89c60931436cd24641b2410702ef8d0b16bf2d2"
+  },
+  "extractExit": 0
+}

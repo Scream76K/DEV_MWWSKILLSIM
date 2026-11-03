@@ -1,0 +1,32 @@
+{
+  "status": "PARTIAL_REVIEW_PENDING",
+  "productHashes": {
+    "index.html": "8525dbc760c28dd7f979ec6dfa8745aa9d6e1eb5e814d1e31573dc08e7fc0c87",
+    "hope-hammer-browser-adapter.js": "fe41bd3392497640b5002832ef945ee5f1fb472ed1329a997cfac28ee3a2add4"
+  },
+  "beforeIndexHash": "228bd0458b7eecc8b20b8904f4674f56371fd933fbedfcfaafffe7373fd77d28",
+  "runs": [
+    {
+      "command": "node tools/stage4-real-cb-proof.cjs",
+      "log": "cb-result.json",
+      "exit": 2
+    },
+    {
+      "command": "node tools/stage4-real-cb-proof.cjs",
+      "log": "cb-after.json",
+      "exit": 2
+    },
+    {
+      "command": "node tools/stage4-real-cb-proof.cjs",
+      "log": "cb-final.json",
+      "exit": 2
+    }
+  ],
+  "harnessHash": "48abd5d910086c17a29355a577b5bedc4b52835453b91dd1378ca735a25d29d1",
+  "logs": {
+    "cb-result.json": "67d5d36963af68aba274849e0e5e3c31e746e6ec33105d3208480f991bc4bfd3",
+    "cb-after.json": "a7cb6df42a20f2236eff0b9fad31f99c18d779e9bc513a25fbe7bbc41606a7b3",
+    "cb-final.json": "a80aa4f68227292618417785dc20c30573e7b2cd2c88109222822dc9cf7a5bd2"
+  },
+  "note": "earlier logs embed earlier harness hashes; no whole-build pass; explicit maximum conversion OFF is separate"
+}

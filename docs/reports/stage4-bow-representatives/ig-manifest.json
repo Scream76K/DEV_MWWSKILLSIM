@@ -1,0 +1,32 @@
+{
+  "status": "BLOCKED_NOT_FIREPOWER_PASS",
+  "command": "node tools/stage4-real-ig-proof.cjs",
+  "runs": [
+    {
+      "log": "ig-public-initial.json",
+      "exit": 1,
+      "category": "HARNESS: techniqueDbHits called on evidence-gated record before capture"
+    },
+    {
+      "log": "ig-public.json",
+      "exit": 1,
+      "category": "PRODUCT: public EVIDENCE_GATED, completion assertion failed"
+    },
+    {
+      "log": "ig-blocked-persistence.json",
+      "exit": 2,
+      "category": "BLOCKED: two saved copies preserved, no numerical result"
+    }
+  ],
+  "sourceHashes": {
+    "index.html": "c48f2871bfd2d8300d6a259f7d74b064d8a491a56a2d6a8f044d99d41856a4db",
+    "hope-hammer-browser-adapter.js": "ebdd545891bc277d0c3d837cadd169d779e76b61a189b4b3db3e4626647e0b7d",
+    "tools/stage4-real-ig-proof.cjs": "68a45fed7c18cf6406edb8ed0586a24c6a5ad9a22a29df9ff5b54eef63090abf"
+  },
+  "rawHashes": {
+    "ig-public-initial.json": "629d64d7ebdb8075474d50859e9ff539dc183d58df35465a5edbaf024a880284",
+    "ig-public.json": "26ca0e430e8542a03e34c0087b1fd22292dd95ad9d2cc982d78c76d840a7e68e",
+    "ig-blocked-persistence.json": "86f0332c3778eb8a23ca1fbc3750b8ddd7f9bf27c26c5700e1848a652d748a54"
+  },
+  "productChanges": false
+}

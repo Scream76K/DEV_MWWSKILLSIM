@@ -1,0 +1,43 @@
+{
+  "branch": "himmel/stage3-mindseye-cb-followup",
+  "base": "7c6a37c44a7f8efbc1548be8018653ee4d1027a6",
+  "hashes": {
+    "index.html": "2fb4965a9a725376b0e7e3e3c188966fd46e54bdd3dbec33ae6b6d45adcd983d",
+    "hope-hammer-browser-adapter.js": "a10bbbcd2abca532fd255dde15e46a33441e277ffed840a6411e73df13e1d4ad",
+    "tools/cb-ed1-mind-proof.cjs": "88926208d23d852dee3ad56b7af8cc8139e71bc5d42946031a94e6c944d8e8f6"
+  },
+  "command": "NODE_PATH=<existing-jsdom-node_modules> node tools/cb-ed1-mind-proof.cjs before|after",
+  "runs": [
+    {
+      "file": "before.json",
+      "exit": 0,
+      "assertion": "ON rejects ORIGINAL_HITZONE_UNRESOLVED"
+    },
+    {
+      "file": "after-harness-index-failure.json",
+      "exit": 1,
+      "cause": "Inherited component index2 points to phial for ED1, not extra physical. Harness changed to exact component ID; product unchanged."
+    },
+    {
+      "file": "after.json",
+      "exit": 0,
+      "scope": "Public calcBuild JSDOM synthetic CB103; two saved builds; not video absolute-value reproduction"
+    }
+  ],
+  "videoEvidence": {
+    "readout": "/Users/scream/Documents/Codex/2026-10-27/task/video-review-cb1/READOUT.md",
+    "readoutSHA256": "06fd9aeb664f58c79cbeb33d4a79b546cf7e1e2c98f93dfc1bfad30c7719783a",
+    "observed": "15.5s ON54.2/12.9 (one9.9);45.25s OFF42.5/10.2;2.5s ON ordinaryED1 supports correspondence",
+    "interpretation": "Applicability supported, exact threshold/coefficient/flat order not isolated"
+  },
+  "classification": "81 complete / 1 partial136 /3 owner excluded, unchanged",
+  "remaining": "ED2/AED/FOLLOWUP_AED axe extra applicability",
+  "unexecuted": [
+    "Lv1/Lv2",
+    "Safari",
+    "live game",
+    "F01 fault injection",
+    "full regression",
+    "morph rerun (existing evidence before ED1 extension retained)"
+  ]
+}

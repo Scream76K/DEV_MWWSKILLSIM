@@ -1,0 +1,1509 @@
+{
+  "environment": "JSDOM, actual exported application MHDB; no synthetic equipment; DOM template load button; not Safari or game",
+  "source": {
+    "format": "mhdb-loaded-public-data-v1",
+    "exportedAt": "2026-10-31T03:46:08.878Z",
+    "acquisitionDate": null,
+    "apiDataVersion": null,
+    "appVersion": "7.2.2-template-rootfix-r7",
+    "referenceGameVersion": "1.042.00.02",
+    "source": "Already-loaded simulator DB at http://127.0.0.1:8765/",
+    "provenanceNote": "In-memory application data; may include application normalization. Not a new API response. Export time is not acquisition time. Reference game version does not establish API data version.",
+    "counts": {
+      "weapons": 1160,
+      "armor": 714,
+      "charms": 64,
+      "decorations": 361,
+      "skills": 179,
+      "sets": 194,
+      "monsters": 34
+    }
+  },
+  "hashes": {
+    "index.html": "e1d2735b6844db6c18499d71713ae72d8c76301b3698020299d49309ebe34633",
+    "hope-hammer-browser-adapter.js": "ebdd545891bc277d0c3d837cadd169d779e76b61a189b4b3db3e4626647e0b7d",
+    "docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json": "9491bfc1cf357aed4967418949d78c0ddd73407c6461443a7b594a2b2710c810",
+    "/Users/scream/Documents/Codex/2026-10-25/task/stage3-mindseye-cb-followup/tools/stage4-real-gs-proof.cjs": "e037aff156addfcb269eaa39f6b7cea81de222db956792ace4d8079a2724d1ef"
+  },
+  "cases": [
+    {
+      "status": "テンプレートを読み込みました。全装備をMHDBへ照合してBuild Stateへ反映しました。",
+      "snapshot": {
+        "version": "7.2.2-template-rootfix-r7",
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "weaponId": "1148",
+        "weaponKind": "great-sword",
+        "armor": {
+          "head": 705,
+          "chest": 706,
+          "arms": 655,
+          "waist": 612,
+          "legs": 709
+        },
+        "charmCustom": {
+          "skills": [
+            {
+              "name": "攻撃",
+              "level": 2,
+              "type": "armor"
+            },
+            {
+              "name": "爆破属性強化",
+              "level": 1,
+              "type": "armor"
+            },
+            {
+              "name": "挑戦者",
+              "level": 1,
+              "type": "armor"
+            }
+          ],
+          "slots": [
+            1,
+            1,
+            0
+          ],
+          "weaponSlots": [
+            1
+          ],
+          "weaponSlot": true,
+          "templateLocked": true
+        },
+        "artia": {
+          "production": "attack",
+          "element": "dragon",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "sameElementPartCount": 3,
+          "elementParts": 0,
+          "restores": [
+            "aff:EX",
+            "atk:III",
+            "sharp:EX",
+            "atk:EX",
+            "aff:III"
+          ],
+          "seriesSkill": "172",
+          "groupSkill": "131"
+        },
+        "decos": {
+          "w0": "115",
+          "w1": "263",
+          "w2": "305",
+          "head0": "323",
+          "head1": "284",
+          "chest0": "288",
+          "chest1": "323",
+          "arms0": "129",
+          "waist0": "323",
+          "waist1": "47",
+          "waist2": "284",
+          "legs0": "62",
+          "legs1": "62",
+          "cw0": "312",
+          "c0": "284"
+        },
+        "combo": {
+          "moves": [
+            {
+              "techniqueId": "gs_charge3"
+            },
+            {
+              "techniqueId": "gs_strong3"
+            },
+            {
+              "techniqueId": "canonical:GS_STRONG_WIDE_SLASH_3"
+            }
+          ],
+          "uptime": 85,
+          "uptimeMode": "1",
+          "explicitAffinityState": {
+            "absorbedElement": null,
+            "selfSkillState": null,
+            "wetState": {
+              "normal": null,
+              "maximum": null
+            },
+            "criticalDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "punishingDrawHits": {
+              "normal": null,
+              "maximum": null
+            },
+            "festivalId": null
+          },
+          "hbgReferenceState": {
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "elementType": null,
+            "ammoType": "NORMAL",
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "magazineCapacity": null,
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "attributeConversionState": {
+            "normal": false,
+            "maximum": true
+          },
+          "blackEclipseState": "OVERCOME",
+          "hbgWyvernState": {
+            "mode": null,
+            "fireHitzone": null
+          },
+          "chargeBladeState": {
+            "shieldBoosted": null,
+            "axeBoosted": null,
+            "phialType": null,
+            "enhancedPhial": null,
+            "previousAction": null,
+            "enhancedPhials": null,
+            "normalPhials": null
+          },
+          "insectGlaiveState": {
+            "extractState": null,
+            "kinsectState": null
+          },
+          "huntingHornState": {
+            "echoState": null,
+            "melodyState": null
+          },
+          "lightBowgunState": {
+            "loadedRounds": null,
+            "rapidReady": null,
+            "shotMode": null,
+            "ammoType": null,
+            "ammoLevel": null,
+            "range": null,
+            "normalModeLevel": null,
+            "contactPolicy": null,
+            "contactCount": null,
+            "contactTargetPolicy": "CURRENT_TARGET",
+            "shotOrdinal": null,
+            "fullMagazine": null
+          },
+          "gunlanceState": {
+            "shellingType": null,
+            "shellingPower": null,
+            "loadedRounds": null,
+            "chargedRounds": null,
+            "fireHitzone": null
+          },
+          "dualBladesState": {
+            "demonMode": null,
+            "requiresDemonGauge": null
+          },
+          "longSwordState": {
+            "spiritGauge": null
+          },
+          "switchAxeState": {
+            "mode": null,
+            "awakened": null
+          }
+        },
+        "target": {
+          "monsterId": "training-room",
+          "partId": "training-front"
+        },
+        "savedAt": "2026-10-31T08:39:08.970Z"
+      },
+      "conditions": {
+        "absorbedElement": null,
+        "selfSkillState": null,
+        "wetState": {
+          "normal": null,
+          "maximum": null
+        },
+        "criticalDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "punishingDrawHits": {
+          "normal": null,
+          "maximum": null
+        },
+        "festivalId": null,
+        "blackEclipseState": "OVERCOME",
+        "hbgWyvernState": {
+          "mode": null,
+          "fireHitzone": null
+        },
+        "combatBuffs": {
+          "meal": null,
+          "charm": null,
+          "otherBuffs": null
+        },
+        "attack": "254",
+        "aff": "100",
+        "elem": "480",
+        "mv": "100",
+        "hz": "80",
+        "ehz": "30",
+        "sharp": "1.32",
+        "esharp": "1.15",
+        "cb": "0",
+        "eCrit": "0",
+        "dragonHz": "",
+        "dragonHitzoneSource": {
+          "kind": "UNSET"
+        },
+        "gutsState": "BEFORE",
+        "fortifyCount": 2,
+        "bowState": {
+          "chargeLevel": 3,
+          "coating": "NONE",
+          "range": "CRITICAL",
+          "startShot": 1
+        },
+        "drawAttack": false,
+        "mounted": false,
+        "everlastingStage": null,
+        "hbgState": {
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "elementType": null,
+          "ammoType": "NORMAL",
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "magazineCapacity": null,
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "uptime": "85",
+        "uptimeMode": "1",
+        "chargeBladeState": {
+          "shieldBoosted": null,
+          "axeBoosted": null,
+          "phialType": null,
+          "enhancedPhial": null,
+          "previousAction": null,
+          "enhancedPhials": null,
+          "normalPhials": null
+        },
+        "dualBladesState": {
+          "demonMode": null,
+          "requiresDemonGauge": null
+        },
+        "longSwordState": {
+          "spiritGauge": null
+        },
+        "switchAxeState": {
+          "mode": null,
+          "awakened": null
+        },
+        "insectGlaiveState": {
+          "extractState": null,
+          "kinsectState": null
+        },
+        "huntingHornState": {
+          "echoState": null,
+          "melodyState": null
+        },
+        "attributeConversionState": {
+          "normal": false,
+          "maximum": true
+        },
+        "lightBowgunState": {
+          "loadedRounds": null,
+          "rapidReady": null,
+          "shotMode": null,
+          "ammoType": null,
+          "ammoLevel": null,
+          "range": null,
+          "normalModeLevel": null,
+          "contactPolicy": null,
+          "contactCount": null,
+          "contactTargetPolicy": "CURRENT_TARGET",
+          "shotOrdinal": null,
+          "fullMagazine": null
+        },
+        "gunlanceState": {
+          "shellingType": null,
+          "shellingPower": null,
+          "loadedRounds": null,
+          "chargedRounds": null,
+          "fireHitzone": null
+        }
+      },
+      "skills": {
+        "弱点特効": 5,
+        "属性やられ耐性": 3,
+        "属性変換": 3,
+        "渾身": 3,
+        "逆恨み": 1,
+        "力の解放": 1,
+        "鎖刃刺撃": 2,
+        "攻撃": 5,
+        "爆破属性強化": 1,
+        "挑戦者": 1,
+        "集中": 3,
+        "匠": 1,
+        "超会心": 4,
+        "逆襲": 3,
+        "気絶耐性": 3,
+        "連撃": 1,
+        "耳栓": 2,
+        "加速再生Ⅰ": 1,
+        "ダークアーツ": 1,
+        "根性【果敢】": 1
+      },
+      "stats": {
+        "attack": 1221.312,
+        "attackTrue": 254.44,
+        "affinity": 8,
+        "element": 480,
+        "elementType": "dragon",
+        "defense": 471,
+        "weaponCoefficient": 4.8,
+        "weaponKind": "great-sword",
+        "attackKnown": true,
+        "affinityKnown": true,
+        "armorThunderResistanceInput": {
+          "status": "ARMOR_BASE_ONLY",
+          "armorBase": -1,
+          "total": null,
+          "rows": [
+            {
+              "slot": "head",
+              "equipped": true,
+              "id": 705,
+              "value": -1,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/705"
+            },
+            {
+              "slot": "chest",
+              "equipped": true,
+              "id": 706,
+              "value": -1,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/706"
+            },
+            {
+              "slot": "arms",
+              "equipped": true,
+              "id": 655,
+              "value": -2,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/655"
+            },
+            {
+              "slot": "waist",
+              "equipped": true,
+              "id": 612,
+              "value": 4,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/612"
+            },
+            {
+              "slot": "legs",
+              "equipped": true,
+              "id": 709,
+              "value": -1,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/709"
+            }
+          ],
+          "missing": [],
+          "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+        },
+        "elementKnown": true,
+        "typeKnown": true,
+        "elementStatus": "KNOWN",
+        "elementReason": null,
+        "thunderResistanceInput": {
+          "status": "UNRESOLVED",
+          "armorBase": -1,
+          "total": null,
+          "rows": [
+            {
+              "slot": "head",
+              "equipped": true,
+              "id": 705,
+              "value": -1,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/705"
+            },
+            {
+              "slot": "chest",
+              "equipped": true,
+              "id": 706,
+              "value": -1,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/706"
+            },
+            {
+              "slot": "arms",
+              "equipped": true,
+              "id": 655,
+              "value": -2,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/655"
+            },
+            {
+              "slot": "waist",
+              "equipped": true,
+              "id": 612,
+              "value": 4,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/612"
+            },
+            {
+              "slot": "legs",
+              "equipped": true,
+              "id": 709,
+              "value": -1,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/709"
+            }
+          ],
+          "missing": [],
+          "reason": "NEGATIVE_OR_FRACTIONAL_THUNDER_RESISTANCE_UNSUPPORTED",
+          "contributions": [
+            {
+              "skillId": 131,
+              "rank": 1,
+              "add": 0,
+              "scope": "ALL_RESISTANCES;THUNDER_INPUT_ONLY",
+              "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+              "status": "OWNER_APPROVED_PROVISIONAL"
+            }
+          ],
+          "scope": "ARMOR_SKILLS_PLUS_EXPLICIT_GUTS_VEIL_NO_FOOD_OR_AMMO",
+          "adoptionStatus": "OWNER_APPROVED_PROVISIONAL",
+          "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+          "verificationStatus": "UNVERIFIED"
+        },
+        "waterResistanceInput": {
+          "status": "KNOWN_LIMITED",
+          "armorBase": 2,
+          "total": 2,
+          "rows": [
+            {
+              "slot": "head",
+              "equipped": true,
+              "id": 705,
+              "value": 0,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/705"
+            },
+            {
+              "slot": "chest",
+              "equipped": true,
+              "id": 706,
+              "value": 0,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/706"
+            },
+            {
+              "slot": "arms",
+              "equipped": true,
+              "id": 655,
+              "value": 0,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/655"
+            },
+            {
+              "slot": "waist",
+              "equipped": true,
+              "id": 612,
+              "value": 2,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/612"
+            },
+            {
+              "slot": "legs",
+              "equipped": true,
+              "id": 709,
+              "value": 0,
+              "sourceUrl": "https://wilds.mhdb.io/ja/armor/709"
+            }
+          ],
+          "missing": [],
+          "reason": null,
+          "contributions": [
+            {
+              "skillId": 131,
+              "rank": 1,
+              "add": 0,
+              "scope": "ALL_RESISTANCES;WATER_INPUT_ONLY",
+              "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+              "status": "OWNER_APPROVED_PROVISIONAL"
+            }
+          ],
+          "scope": "ARMOR_SKILLS_PLUS_EXPLICIT_GUTS_VEIL_NO_FOOD_OR_AMMO",
+          "adoptionStatus": "OWNER_APPROVED_PROVISIONAL",
+          "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+          "verificationStatus": "UNVERIFIED"
+        },
+        "attackComponents": {
+          "weaponBase": 236,
+          "normalMultiplier": 1.04,
+          "normalFlat": 9
+        },
+        "maxAffinity": 100,
+        "rapidMorphLevel": 0,
+        "elementComponents": {
+          "weaponBase": 480,
+          "normalMultiplier": 1,
+          "normalFlat": 0
+        },
+        "activeBonusEffects": [
+          {
+            "name": "加速再生Ⅰ",
+            "level": 1,
+            "source": "series",
+            "displayType": "series",
+            "bonusName": "鎖刃竜の飢餓",
+            "bonusSkillId": 33,
+            "rankLevel": 1,
+            "count": 3,
+            "required": 2
+          },
+          {
+            "name": "ダークアーツ",
+            "level": 1,
+            "source": "series",
+            "displayType": "series",
+            "bonusName": "暗黒騎士の証",
+            "bonusSkillId": 172,
+            "rankLevel": 1,
+            "count": 2,
+            "required": 2
+          },
+          {
+            "name": "根性【果敢】",
+            "level": 1,
+            "source": "group",
+            "displayType": "group",
+            "bonusName": "ヌシの魂",
+            "bonusSkillId": 131,
+            "rankLevel": 1,
+            "count": 4,
+            "required": 3
+          }
+        ],
+        "conditionalConditionPlan": {
+          "normal": {
+            "attack": 1221.312,
+            "attackTrue": 266.712,
+            "affinity": 8,
+            "element": 480,
+            "elementType": "dragon",
+            "defense": 471,
+            "weaponCoefficient": 4.8,
+            "weaponKind": "great-sword",
+            "attackKnown": true,
+            "affinityKnown": true,
+            "armorThunderResistanceInput": {
+              "status": "ARMOR_BASE_ONLY",
+              "armorBase": -1,
+              "total": null,
+              "rows": [
+                {
+                  "slot": "head",
+                  "equipped": true,
+                  "id": 705,
+                  "value": -1,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/705"
+                },
+                {
+                  "slot": "chest",
+                  "equipped": true,
+                  "id": 706,
+                  "value": -1,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/706"
+                },
+                {
+                  "slot": "arms",
+                  "equipped": true,
+                  "id": 655,
+                  "value": -2,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/655"
+                },
+                {
+                  "slot": "waist",
+                  "equipped": true,
+                  "id": 612,
+                  "value": 4,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/612"
+                },
+                {
+                  "slot": "legs",
+                  "equipped": true,
+                  "id": 709,
+                  "value": -1,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/709"
+                }
+              ],
+              "missing": [],
+              "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+            },
+            "elementKnown": true,
+            "typeKnown": true,
+            "elementStatus": "KNOWN",
+            "elementReason": null,
+            "thunderResistanceInput": {
+              "status": "UNRESOLVED",
+              "armorBase": -1,
+              "total": null,
+              "rows": [
+                {
+                  "slot": "head",
+                  "equipped": true,
+                  "id": 705,
+                  "value": -1,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/705"
+                },
+                {
+                  "slot": "chest",
+                  "equipped": true,
+                  "id": 706,
+                  "value": -1,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/706"
+                },
+                {
+                  "slot": "arms",
+                  "equipped": true,
+                  "id": 655,
+                  "value": -2,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/655"
+                },
+                {
+                  "slot": "waist",
+                  "equipped": true,
+                  "id": 612,
+                  "value": 4,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/612"
+                },
+                {
+                  "slot": "legs",
+                  "equipped": true,
+                  "id": 709,
+                  "value": -1,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/709"
+                }
+              ],
+              "missing": [],
+              "reason": "NEGATIVE_OR_FRACTIONAL_THUNDER_RESISTANCE_UNSUPPORTED",
+              "contributions": [
+                {
+                  "skillId": 131,
+                  "rank": 1,
+                  "add": 0,
+                  "scope": "ALL_RESISTANCES;THUNDER_INPUT_ONLY",
+                  "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                }
+              ],
+              "scope": "ARMOR_SKILLS_PLUS_EXPLICIT_GUTS_VEIL_NO_FOOD_OR_AMMO",
+              "adoptionStatus": "OWNER_APPROVED_PROVISIONAL",
+              "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+              "verificationStatus": "UNVERIFIED"
+            },
+            "waterResistanceInput": {
+              "status": "KNOWN_LIMITED",
+              "armorBase": 2,
+              "total": 2,
+              "rows": [
+                {
+                  "slot": "head",
+                  "equipped": true,
+                  "id": 705,
+                  "value": 0,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/705"
+                },
+                {
+                  "slot": "chest",
+                  "equipped": true,
+                  "id": 706,
+                  "value": 0,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/706"
+                },
+                {
+                  "slot": "arms",
+                  "equipped": true,
+                  "id": 655,
+                  "value": 0,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/655"
+                },
+                {
+                  "slot": "waist",
+                  "equipped": true,
+                  "id": 612,
+                  "value": 2,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/612"
+                },
+                {
+                  "slot": "legs",
+                  "equipped": true,
+                  "id": 709,
+                  "value": 0,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/709"
+                }
+              ],
+              "missing": [],
+              "reason": null,
+              "contributions": [
+                {
+                  "skillId": 131,
+                  "rank": 1,
+                  "add": 0,
+                  "scope": "ALL_RESISTANCES;WATER_INPUT_ONLY",
+                  "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                }
+              ],
+              "scope": "ARMOR_SKILLS_PLUS_EXPLICIT_GUTS_VEIL_NO_FOOD_OR_AMMO",
+              "adoptionStatus": "OWNER_APPROVED_PROVISIONAL",
+              "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+              "verificationStatus": "UNVERIFIED"
+            },
+            "attackComponents": {
+              "weaponBase": 236,
+              "normalMultiplier": 1.092,
+              "normalFlat": 9
+            },
+            "maxAffinity": 100,
+            "rapidMorphLevel": 0,
+            "elementComponents": {
+              "weaponBase": 480,
+              "normalMultiplier": 1,
+              "normalFlat": 0
+            },
+            "activeBonusEffects": [
+              {
+                "name": "加速再生Ⅰ",
+                "level": 1,
+                "source": "series",
+                "displayType": "series",
+                "bonusName": "鎖刃竜の飢餓",
+                "bonusSkillId": 33,
+                "rankLevel": 1,
+                "count": 3,
+                "required": 2
+              }
+            ],
+            "resolvedBonusEffects": [
+              {
+                "skill": "根性【果敢】",
+                "skillId": 131,
+                "parent": "ヌシの魂",
+                "rank": 1,
+                "attackAdd": 0,
+                "attackMultiplier": 1.05,
+                "condition": "GUTS_NOT_CONSUMED",
+                "bonusSource": true,
+                "appliesToNormal": true,
+                "evidenceRef": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                "numericOrigin": "SOURCE_CONFIRMED_NOT_LIVE_VERIFIED"
+              }
+            ]
+          },
+          "maximum": {
+            "attack": 1221.312,
+            "attackTrue": 310.712,
+            "affinity": 8,
+            "element": 656,
+            "elementType": "dragon",
+            "defense": 471,
+            "weaponCoefficient": 4.8,
+            "weaponKind": "great-sword",
+            "attackKnown": true,
+            "affinityKnown": true,
+            "armorThunderResistanceInput": {
+              "status": "ARMOR_BASE_ONLY",
+              "armorBase": -1,
+              "total": null,
+              "rows": [
+                {
+                  "slot": "head",
+                  "equipped": true,
+                  "id": 705,
+                  "value": -1,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/705"
+                },
+                {
+                  "slot": "chest",
+                  "equipped": true,
+                  "id": 706,
+                  "value": -1,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/706"
+                },
+                {
+                  "slot": "arms",
+                  "equipped": true,
+                  "id": 655,
+                  "value": -2,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/655"
+                },
+                {
+                  "slot": "waist",
+                  "equipped": true,
+                  "id": 612,
+                  "value": 4,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/612"
+                },
+                {
+                  "slot": "legs",
+                  "equipped": true,
+                  "id": 709,
+                  "value": -1,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/709"
+                }
+              ],
+              "missing": [],
+              "reason": "SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED"
+            },
+            "elementKnown": true,
+            "typeKnown": true,
+            "elementStatus": "KNOWN",
+            "elementReason": null,
+            "thunderResistanceInput": {
+              "status": "UNRESOLVED",
+              "armorBase": -1,
+              "total": null,
+              "rows": [
+                {
+                  "slot": "head",
+                  "equipped": true,
+                  "id": 705,
+                  "value": -1,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/705"
+                },
+                {
+                  "slot": "chest",
+                  "equipped": true,
+                  "id": 706,
+                  "value": -1,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/706"
+                },
+                {
+                  "slot": "arms",
+                  "equipped": true,
+                  "id": 655,
+                  "value": -2,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/655"
+                },
+                {
+                  "slot": "waist",
+                  "equipped": true,
+                  "id": 612,
+                  "value": 4,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/612"
+                },
+                {
+                  "slot": "legs",
+                  "equipped": true,
+                  "id": 709,
+                  "value": -1,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/709"
+                }
+              ],
+              "missing": [],
+              "reason": "NEGATIVE_OR_FRACTIONAL_THUNDER_RESISTANCE_UNSUPPORTED",
+              "contributions": [
+                {
+                  "skillId": 131,
+                  "rank": 1,
+                  "add": 0,
+                  "scope": "ALL_RESISTANCES;THUNDER_INPUT_ONLY",
+                  "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                }
+              ],
+              "scope": "ARMOR_SKILLS_PLUS_EXPLICIT_GUTS_VEIL_NO_FOOD_OR_AMMO",
+              "adoptionStatus": "OWNER_APPROVED_PROVISIONAL",
+              "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+              "verificationStatus": "UNVERIFIED"
+            },
+            "waterResistanceInput": {
+              "status": "KNOWN_LIMITED",
+              "armorBase": 2,
+              "total": 2,
+              "rows": [
+                {
+                  "slot": "head",
+                  "equipped": true,
+                  "id": 705,
+                  "value": 0,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/705"
+                },
+                {
+                  "slot": "chest",
+                  "equipped": true,
+                  "id": 706,
+                  "value": 0,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/706"
+                },
+                {
+                  "slot": "arms",
+                  "equipped": true,
+                  "id": 655,
+                  "value": 0,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/655"
+                },
+                {
+                  "slot": "waist",
+                  "equipped": true,
+                  "id": 612,
+                  "value": 2,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/612"
+                },
+                {
+                  "slot": "legs",
+                  "equipped": true,
+                  "id": 709,
+                  "value": 0,
+                  "sourceUrl": "https://wilds.mhdb.io/ja/armor/709"
+                }
+              ],
+              "missing": [],
+              "reason": null,
+              "contributions": [
+                {
+                  "skillId": 131,
+                  "rank": 1,
+                  "add": 0,
+                  "scope": "ALL_RESISTANCES;WATER_INPUT_ONLY",
+                  "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                  "status": "OWNER_APPROVED_PROVISIONAL"
+                }
+              ],
+              "scope": "ARMOR_SKILLS_PLUS_EXPLICIT_GUTS_VEIL_NO_FOOD_OR_AMMO",
+              "adoptionStatus": "OWNER_APPROVED_PROVISIONAL",
+              "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+              "verificationStatus": "UNVERIFIED"
+            },
+            "attackComponents": {
+              "weaponBase": 236,
+              "normalMultiplier": 1.04,
+              "normalFlat": 9
+            },
+            "maxAffinity": 100,
+            "rapidMorphLevel": 0,
+            "elementComponents": {
+              "weaponBase": 480,
+              "normalMultiplier": 1,
+              "normalFlat": 0
+            },
+            "activeBonusEffects": [
+              {
+                "name": "加速再生Ⅰ",
+                "level": 1,
+                "source": "series",
+                "displayType": "series",
+                "bonusName": "鎖刃竜の飢餓",
+                "bonusSkillId": 33,
+                "rankLevel": 1,
+                "count": 3,
+                "required": 2
+              }
+            ],
+            "resolvedBonusEffects": [
+              {
+                "skill": "ダークアーツ",
+                "darkArtsActivation": {
+                  "name": "ダークアーツ",
+                  "level": 1,
+                  "source": "series",
+                  "displayType": "series",
+                  "bonusName": "暗黒騎士の証",
+                  "bonusSkillId": 172,
+                  "rankLevel": 1,
+                  "count": 2,
+                  "required": 2
+                },
+                "attackAdd": 0,
+                "attackMultiplier": 1,
+                "elementMultiplier": 1.2,
+                "condition": "RECOVERABLE_DAMAGE",
+                "exclusiveGroup": "HEALTH",
+                "bonusSource": true,
+                "appliesToNormal": false,
+                "evidenceRef": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                "numericOrigin": "SOURCE_CONFIRMED_NOT_LIVE_VERIFIED"
+              },
+              {
+                "skill": "根性【果敢】",
+                "skillId": 131,
+                "parent": "ヌシの魂",
+                "rank": 1,
+                "attackAdd": 0,
+                "attackMultiplier": 1.05,
+                "condition": "GUTS_NOT_CONSUMED",
+                "bonusSource": true,
+                "appliesToNormal": true,
+                "evidenceRef": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                "numericOrigin": "SOURCE_CONFIRMED_NOT_LIVE_VERIFIED"
+              }
+            ]
+          },
+          "applied": [
+            {
+              "skill": "挑戦者",
+              "level": 1,
+              "attackAdd": 4,
+              "condition": "MONSTER_ENRAGED",
+              "exclusiveGroup": null,
+              "evidenceRef": "MHDB_JA_SKILL_144_20261007"
+            },
+            {
+              "skill": "逆恨み",
+              "level": 1,
+              "attackAdd": 5,
+              "condition": "RECOVERABLE_DAMAGE",
+              "exclusiveGroup": "HEALTH",
+              "evidenceRef": "MHDB_JA_SKILL_123_20261007"
+            },
+            {
+              "skill": "逆襲",
+              "level": 3,
+              "attackAdd": 25,
+              "condition": "KNOCKBACK_BUFF",
+              "exclusiveGroup": null,
+              "evidenceRef": "MHDB_JA_SKILL_81_20261007"
+            },
+            {
+              "skill": "連撃",
+              "level": 1,
+              "attackAdd": 10,
+              "elementAdd": 80,
+              "condition": "BURST_PREACTIVATED_FIVE_HITS",
+              "exclusiveGroup": null,
+              "evidenceRef": "https://gamewith.jp/mhwilds/486597",
+              "numericOrigin": "SOURCE_CONFIRMED_NOT_GAME_VERIFIED"
+            },
+            {
+              "skill": "ダークアーツ",
+              "darkArtsActivation": {
+                "name": "ダークアーツ",
+                "level": 1,
+                "source": "series",
+                "displayType": "series",
+                "bonusName": "暗黒騎士の証",
+                "bonusSkillId": 172,
+                "rankLevel": 1,
+                "count": 2,
+                "required": 2
+              },
+              "attackAdd": 0,
+              "attackMultiplier": 1,
+              "elementMultiplier": 1.2,
+              "condition": "RECOVERABLE_DAMAGE",
+              "exclusiveGroup": "HEALTH",
+              "bonusSource": true,
+              "appliesToNormal": false,
+              "evidenceRef": "https://kuroyonhon.com/mhwilds/program/skill.php",
+              "numericOrigin": "SOURCE_CONFIRMED_NOT_LIVE_VERIFIED"
+            },
+            {
+              "skill": "根性【果敢】",
+              "skillId": 131,
+              "parent": "ヌシの魂",
+              "rank": 1,
+              "attackAdd": 0,
+              "attackMultiplier": 1.05,
+              "condition": "GUTS_NOT_CONSUMED",
+              "bonusSource": true,
+              "appliesToNormal": true,
+              "evidenceRef": "https://kuroyonhon.com/mhwilds/program/skill.php",
+              "numericOrigin": "SOURCE_CONFIRMED_NOT_LIVE_VERIFIED"
+            }
+          ],
+          "excluded": [],
+          "pending": [
+            "属性変換:CONDITIONAL_DAMAGE_FORMULA_PENDING"
+          ],
+          "groupPlan": {
+            "attackMultiplier": 1.05,
+            "maximumFlat": 0,
+            "applied": [
+              {
+                "skill": "ダークアーツ",
+                "darkArtsActivation": {
+                  "name": "ダークアーツ",
+                  "level": 1,
+                  "source": "series",
+                  "displayType": "series",
+                  "bonusName": "暗黒騎士の証",
+                  "bonusSkillId": 172,
+                  "rankLevel": 1,
+                  "count": 2,
+                  "required": 2
+                },
+                "attackAdd": 0,
+                "attackMultiplier": 1,
+                "elementMultiplier": 1.2,
+                "condition": "RECOVERABLE_DAMAGE",
+                "exclusiveGroup": "HEALTH",
+                "bonusSource": true,
+                "appliesToNormal": false,
+                "evidenceRef": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                "numericOrigin": "SOURCE_CONFIRMED_NOT_LIVE_VERIFIED"
+              },
+              {
+                "skill": "根性【果敢】",
+                "skillId": 131,
+                "parent": "ヌシの魂",
+                "rank": 1,
+                "attackAdd": 0,
+                "attackMultiplier": 1.05,
+                "condition": "GUTS_NOT_CONSUMED",
+                "bonusSource": true,
+                "appliesToNormal": true,
+                "evidenceRef": "https://kuroyonhon.com/mhwilds/program/skill.php",
+                "numericOrigin": "SOURCE_CONFIRMED_NOT_LIVE_VERIFIED"
+              }
+            ],
+            "unresolvedEffects": [],
+            "nonDamageEffects": [
+              {
+                "name": "加速再生Ⅰ",
+                "level": 1,
+                "source": "series",
+                "displayType": "series",
+                "bonusName": "鎖刃竜の飢餓",
+                "bonusSkillId": 33,
+                "rankLevel": 1,
+                "count": 3,
+                "required": 2
+              }
+            ],
+            "gutsState": "BEFORE",
+            "status": "SOURCE_REFERENCE",
+            "scope": "GENERIC_STANDARD_POWER_ONLY"
+          },
+          "blackEclipse": null,
+          "frenzyAffinity": {
+            "active": false,
+            "black": false,
+            "level": 0,
+            "state": "OVERCOME",
+            "normalAdd": 0,
+            "maximumAdd": 0,
+            "source": "https://kuroyonhon.com/mhwilds/program/skill.php",
+            "status": "OWNER_APPROVED_PROVISIONAL",
+            "approvalRef": "Sentinel_b8703293b9ec8191b5e788fd1296eff1"
+          },
+          "normalPending": [],
+          "ammoElementCondition": null,
+          "maximumElementComponents": {
+            "weaponBase": 480,
+            "normalMultiplier": 1.2,
+            "normalFlat": 0,
+            "conditionalFlat": 80
+          },
+          "selfStatePlan": {
+            "normal": [],
+            "maximum": [],
+            "pending": [],
+            "ids": []
+          },
+          "status": "PARTIAL",
+          "scope": "ADOPTED_CONDITIONAL_ATTACK_ELEMENT_MAX_AFFINITY",
+          "attackOrder": "WEAPON_BASE_TIMES_MULTIPLIERS_PLUS_FLATS",
+          "attackComponents": {
+            "weaponBase": 236,
+            "normalMultiplier": 1.04,
+            "normalFlat": 9,
+            "conditionalMultiplier": 1,
+            "groupMultiplier": 1.05,
+            "conditionalFlat": 44
+          },
+          "evidenceGameVersion": "NOT_VERIFIED"
+        }
+      },
+      "result": {
+        "status": "UNAVAILABLE",
+        "reason": "REAL_SLICE:TECHNIQUE_NOT_FOUND:gs_charge3"
+      },
+      "summary": "\n    攻撃力1221真 254\n    会心率8%\n    最大会心率100%\n    属性龍480\n    防御力471\n    選択技の実計算未算出：REAL_SLICE:TECHNIQUE_NOT_FOUND:gs_charge3\n  ",
+      "charm": {
+        "status": "possible",
+        "label": "実現可能",
+        "detail": "一致：R8（栄世）、スロット 武1-防1-防1。判定：攻撃 Lv2→G2/4 / 爆破属性強化 Lv1→G1 / 挑戦者 Lv1→G10。",
+        "matches": [
+          {
+            "rarity": 8,
+            "groups": [
+              2,
+              1,
+              10
+            ],
+            "slotPatterns": [
+              "武1",
+              "武1-防1",
+              "武1-防1-防1"
+            ],
+            "assignment": [
+              {
+                "name": "攻撃",
+                "level": 2,
+                "groups": [
+                  2,
+                  4
+                ]
+              },
+              {
+                "name": "爆破属性強化",
+                "level": 1,
+                "groups": [
+                  1
+                ]
+              },
+              {
+                "name": "挑戦者",
+                "level": 1,
+                "groups": [
+                  10
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "template": {
+        "id": "KOTATU_GS_01",
+        "creator": "こたつ",
+        "build_name": "簡単厳選ver",
+        "source": "https://youtu.be/D_UsyLgoF-Y?si=Y2iKchVdR-SZQLWI",
+        "weapon_type": "great-sword",
+        "weapon_type_id": "great-sword",
+        "weapon": {
+          "name": "忘却のオストランツァ",
+          "decorations": [
+            {
+              "name": "集中・匠珠",
+              "slot": 3
+            },
+            {
+              "name": "攻撃珠III",
+              "slot": 3
+            },
+            {
+              "name": "超心珠III",
+              "slot": 3
+            }
+          ],
+          "skills": [
+            "暗黒騎士の証",
+            "ヌシの魂"
+          ]
+        },
+        "armor": {
+          "head": {
+            "name": "シュバルカヘルムγ",
+            "decorations": [
+              {
+                "name": "逆襲珠",
+                "slot": 2
+              },
+              {
+                "name": "耐絶珠",
+                "slot": 1
+              }
+            ]
+          },
+          "chest": {
+            "name": "シュバルカメイルγ",
+            "decorations": [
+              {
+                "name": "痛撃珠",
+                "slot": 3
+              },
+              {
+                "name": "逆襲珠",
+                "slot": 2
+              }
+            ]
+          },
+          "arms": {
+            "name": "ベイルガントレットα",
+            "decorations": [
+              {
+                "name": "連撃珠",
+                "slot": 3
+              }
+            ]
+          },
+          "waist": {
+            "name": "ラギアコイルβ",
+            "decorations": [
+              {
+                "name": "逆襲珠",
+                "slot": 2
+              },
+              {
+                "name": "渾身珠",
+                "slot": 2
+              },
+              {
+                "name": "耐絶珠",
+                "slot": 1
+              }
+            ]
+          },
+          "legs": {
+            "name": "シュバルカグリーヴγ",
+            "decorations": [
+              {
+                "name": "防音珠",
+                "slot": 2
+              },
+              {
+                "name": "防音珠",
+                "slot": 2
+              }
+            ]
+          }
+        },
+        "charm": {
+          "name": "栄世",
+          "skills": [
+            {
+              "name": "攻撃",
+              "level": 2
+            },
+            {
+              "name": "爆破属性強化",
+              "level": 1
+            },
+            {
+              "name": "挑戦者",
+              "level": 1
+            }
+          ],
+          "decorations": [
+            {
+              "name": "超心珠",
+              "slot": 1
+            },
+            {
+              "name": "耐絶珠",
+              "slot": 1
+            }
+          ],
+          "slot_levels": [
+            1,
+            1,
+            1
+          ],
+          "slot_pattern": "武1-防1-防1",
+          "weapon_slot_levels": [
+            1
+          ],
+          "armor_slot_levels": [
+            1,
+            1
+          ]
+        },
+        "skills": {
+          "攻撃": 2,
+          "爆破属性強化": 1,
+          "挑戦者": 1
+        },
+        "usage": [
+          "タックル",
+          "強溜め斬り",
+          "相殺"
+        ],
+        "expert_rank": "expert",
+        "source_confirmed": true,
+        "weapon_skills": [
+          "暗黒騎士の証",
+          "ヌシの魂"
+        ],
+        "artia": {
+          "production": "attack",
+          "element": "dragon",
+          "parts": [
+            "attack",
+            "attack",
+            "attack"
+          ],
+          "restores": [
+            "aff:EX",
+            "atk:III",
+            "sharp:EX",
+            "atk:EX",
+            "aff:III"
+          ],
+          "weapon_skills": [
+            "暗黒騎士の証",
+            "ヌシの魂"
+          ],
+          "attributeProductionBonus": 30
+        }
+      },
+      "slots": {
+        "head": {
+          "id": 705,
+          "name": "シュバルカヘルムγ",
+          "slots": [
+            2,
+            1,
+            0
+          ]
+        },
+        "chest": {
+          "id": 706,
+          "name": "シュバルカメイルγ",
+          "slots": [
+            3,
+            2,
+            0
+          ]
+        },
+        "arms": {
+          "id": 655,
+          "name": "ベイルガントレットα",
+          "slots": [
+            3,
+            0,
+            0
+          ]
+        },
+        "waist": {
+          "id": 612,
+          "name": "ラギアコイルβ",
+          "slots": [
+            2,
+            2,
+            1
+          ]
+        },
+        "legs": {
+          "id": 709,
+          "name": "シュバルカグリーヴγ",
+          "slots": [
+            3,
+            3,
+            0
+          ]
+        }
+      },
+      "id": "KOTATU_GS_01_A",
+      "templateId": "KOTATU_GS_01"
+    }
+  ],
+  "errors": [],
+  "selected": [
+    {
+      "uiId": "gs_charge3",
+      "id": "GS_CHARGED_SLASH_3",
+      "hits": 1
+    },
+    {
+      "uiId": "gs_strong3",
+      "id": "GS_STRONG_CHARGED_SLASH_3",
+      "hits": 1
+    },
+    {
+      "uiId": "canonical:GS_STRONG_WIDE_SLASH_3",
+      "id": "GS_STRONG_WIDE_SLASH_3",
+      "hits": 1
+    }
+  ],
+  "failure": "AssertionError [ERR_ASSERTION]: {\"status\":\"UNAVAILABLE\",\"reason\":\"REAL_SLICE:TECHNIQUE_NOT_FOUND:gs_charge3\"}\n+ actual - expected\n\n+ undefined\n- 'complete'\n\n    at Object.<anonymous> (/Users/scream/Documents/Codex/2026-10-25/task/stage3-mindseye-cb-followup/tools/stage4-real-gs-proof.cjs:24:114)\n    at Module._compile (node:internal/modules/cjs/loader:1929:14)\n    at Object..js (node:internal/modules/cjs/loader:2060:10)\n    at Module.load (node:internal/modules/cjs/loader:1651:32)\n    at Module._load (node:internal/modules/cjs/loader:1443:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47"
+}

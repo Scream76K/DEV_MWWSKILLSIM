@@ -1,0 +1,39 @@
+--- before/index.html
++++ after/index.html
+@@ -7760,6 +7760,7 @@
+ window.BuildComparisonEngine={version:BUILD_COMPARISON_ENGINE_VERSION,router:buildComparisonRouter,commonResult:comparisonCommonResultShape,genericAdapter:genericStandardComparisonAdapter,genericProfiles:GENERIC_STANDARD_PROFILES,genericProfileDamage,insectGlaiveStatePlan,profileCatalog:GENERIC_STANDARD_PROFILE_CATALOG,profileAvailability:genericStandardProfileAvailability,handlerRegistry:BUILD_COMPARISON_HANDLER_REGISTRY,handlerDescriptor:buildComparisonHandlerDescriptor,capabilityReport:buildComparisonCapabilityReport,gunlanceProfile:GUNLANCE_STANDARD_PROFILE,gunlanceEvidence:GUNLANCE_EVIDENCE,gunlanceBodyComponents,gunlanceTypedComponentIntegrity,gunlanceTypedComponentComparison,gunlanceAdapter:gunlanceStandardComparisonAdapter,huntingHornProfile:HUNTING_HORN_STANDARD_PROFILE,huntingHornEvidence:HUNTING_HORN_EVIDENCE,huntingHornComponentPlan,huntingHornBodyComponents,huntingHornSpecialSourceEstimate,huntingHornAdapter:huntingHornStandardComparisonAdapter,bowgunProfiles:BOWGUN_STANDARD_PROFILES,bowgunAmmoTypes:BOWGUN_AMMO_COMPONENT_TYPES,bowgunEvidence:BOWGUN_AMMO_EVIDENCE,bowgunNumeric:BOWGUN_AMMO_NUMERIC,bowgunComparisonPolicy:BOWGUN_COMPARISON_POLICY,bowgunPierceMaximumProfile,bowgunComponentPlan:bowgunAmmoComponentPlan,bowgunAdapter:bowgunStandardComparisonAdapter,bowProfile:BOW_STANDARD_PROFILE,bowTechniques:BOW_TECHNIQUES,bowEvidence:BOW_EVIDENCE,bowComponentPlan:bowStandardComponentPlan,bowAdapter:bowStandardComparisonAdapter,selfTest:runBuildComparisonBridgeR39SelfTest};
+ 
+ window.MHConversionComponentScope=Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approval:'Sentinel_620e279cceec81918778e2036f65971f',verificationStatus:'GAME_UNVERIFIED',scope:'ADOPTED_WEAPON_ELEMENT_BODY_FOLLOWUP_POWER_ELEMENT_PHIAL_HH_MODEL_BOW_THREE;NO_FIXED_IMPACT_AMMO_SHELL',source:'CONVERSION_152_165_SCOPE_DECISION.md',saTechniques:Object.freeze(['SA_SWORD_VERTICAL','SA_SWORD_RIGHT_RISING','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH']),cbTechniques:Object.freeze(['CB_SWORD_TO_AXE_MORPH','CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED','CB_SAED','CB_SAED_AED_DERIVED']),hhEvents:Object.freeze(['HH_PERFORMANCE_SHOCKWAVE','HH_ECHO_BUBBLE_FOLLOWUP','HH_ECHO_BUBBLE_MELODY_EVENT','HH_MELODY_COMPLETION_FIXED_10'])});
++window.MHAttributeConversionMixedScope=Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approval:'Sentinel_0a16b323a9488191bc7a88b798b2204b',skillId:152,shellActions:Object.freeze(['NORMAL','CHARGED']),impactTechniqueIds:Object.freeze(['CB_AED']),excludedComponents:Object.freeze(['SHELL_DEDICATED_FIRE','IMPACT_PHIAL']),scope:'ADOPTED_WEAPON_ELEMENT_ONLY;EXCLUDED_COMPONENTS_CONTINUE_UNCHANGED',verificationStatus:'GAME_UNVERIFIED'});
+ window.MHAttributeConversionRule=Object.freeze({adds:[0,80,120,180],skillId:152,status:'OWNER_APPROVED_PROVISIONAL',approval:'Sentinel_3253d2e4d5a481919df52ab5db1fd38c',source:'https://kuroyonhon.com/mhwilds/program/skill.php',verificationStatus:'UNVERIFIED',scope:'DRAGON_WEAPON_BODY_ONLY_NO_FIXED_OR_DRAGON_FOLLOWUP',bowScope:Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approval:'Sentinel_9d657feeb0408191b8b7db81aa273379',techniqueIds:Object.freeze(['BOW_SHOT_3','BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3']),coating:'NONE',range:'CRITICAL',verificationStatus:'GAME_UNVERIFIED',scope:'DRAGON_BOW_ADOPTED_THREE_SHOT_NO_COATING_CRITICAL_RANGE_ONLY'})});
+ function attributeConversionState(){const read=id=>$(id)?.value==='ON'?true:$(id)?.value==='OFF'?false:null;return {normal:read('powerAttributeConversionNormal'),maximum:read('powerAttributeConversionMaximum')};}
+ function restoreAttributeConversionState(s){for(const [key,id] of [['normal','powerAttributeConversionNormal'],['maximum','powerAttributeConversionMaximum']])if($(id))$(id).value=s?.[key]===true?'ON':s?.[key]===false?'OFF':'';}
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -524,8 +524,14 @@
+   const attributeBowResolved=weapon.kind==='bow'&&attributeBowScope?.status==='OWNER_APPROVED_PROVISIONAL'&&JSON.stringify(resolvedTechniqueIds)===JSON.stringify(attributeBowScope.techniqueIds)&&resolvedTechniqueIds.every(id=>techniques[id]?.referenceKind==='bow')&&bowState?.coating===attributeBowScope.coating&&bowState?.range===attributeBowScope.range;
+   const conversionScope=root.MHConversionComponentScope;
+   // Gate by the actual adopted record/component contract, not weapon-kind blanket permission.
+-  const conversionComponentsSupported=conversionScope?.status==='OWNER_APPROVED_PROVISIONAL'&&resolvedTechniqueIds.every(id=>{
+-   const t=techniques[id];if(!t||t.shellingAction)return false;
++  const componentsSupported=(allow152Mixed=false)=>conversionScope?.status==='OWNER_APPROVED_PROVISIONAL'&&resolvedTechniqueIds.every(id=>{
++   const t=techniques[id];if(!t)return false;
++   const mixed=root.MHAttributeConversionMixedScope;
++   if(allow152Mixed&&mixed?.skillId===152&&mixed.status==='OWNER_APPROVED_PROVISIONAL'){
++    if(weapon.kind==='gunlance'&&mixed.shellActions.includes(t.shellingAction))return !!t.shellingResource&&t.numericStatus==='SOURCE_CONFIRMED'&&!!t.specialSourceValues?.p0ReferenceRules;
++    if(weapon.kind==='charge-blade'&&mixed.impactTechniqueIds.includes(id)&&officialPhialType==='IMPACT')return t.phialState?.phialType==='IMPACT'&&t.phialReference?.status==='OBSERVED'&&!!resourcePlans[id]&&typeof root.ChargeBladeEngine?.formulas?.IMPACT_PHIAL?.evaluate==='function'&&(t.hits||[]).every(h=>!h.componentSource||h.componentSource==='index.html:CHARGE_BLADE_TECHNIQUES.'+id+'.axeBoostHits');
++   }
++   if(t.shellingAction)return false;
+    if(t.referenceKind==='bow')return attributeBowResolved;
+    if(t.referenceKind==='charge-blade-saed')return conversionScope.cbTechniques.includes(id)&&officialPhialType==='POWER_ELEMENT';
+    if(t.referenceKind)return false;
+@@ -535,7 +541,8 @@
+    if(t.hits?.some(h=>h.componentSource)||cb?.phial)return conversionScope.cbTechniques.includes(id)&&(!cb?.phial||officialPhialType==='POWER_ELEMENT')&&(t.hits||[]).every(h=>!h.componentSource||h.componentSource==='index.html:CHARGE_BLADE_TECHNIQUES.'+id+'.axeBoostHits');
+    return !t.specialComponents?.length;
+   });
+-  const attributeScopeSupported=elementType==='dragon'&&conversionComponentsSupported;
++  const conversionComponentsSupported=componentsSupported();
++  const attributeScopeSupported=elementType==='dragon'&&componentsSupported(true);
+   let attributeScopeIssue=null;
+   if(attributeConversionLevel){
+    if(!attributeRule||attributeRule.status!=='OWNER_APPROVED_PROVISIONAL'||allSkills.filter(x=>x.skillKey==='attributeConversion').some(x=>Number(x.skillId)!==152||!['属性変換','Convert Element'].includes(x.name)||!Number.isInteger(x.level)||x.level<1||x.level>3))return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_RULE_UNRESOLVED');

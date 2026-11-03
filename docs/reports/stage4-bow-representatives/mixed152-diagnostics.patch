@@ -1,0 +1,20 @@
+--- before/hope-hammer-browser-adapter.js
++++ after/hope-hammer-browser-adapter.js
+@@ -920,6 +920,17 @@
+    if(waterEntries.length)for(const [ch,result] of Object.entries(evaluated.channels||{})){const parts=(result.components||[]).filter(c=>c.status==='available'&&(Number.isFinite(c.details?.appliedElement)||Number.isFinite(c.details?.effectiveDisplayedElement))).map(c=>({componentId:c.id,effectiveElement:c.details.appliedElement??c.details.effectiveDisplayedElement,elementBasis:c.details.elementComponents??c.details.elementBasis}));result.diagnostics={...result.diagnostics,waterResistanceConversion:{input:waterInput,add:waterConversionAdd,absorptionResistance:absorptionConversionPlan,absorptionAdd:ch==='maximum'?(absorptionConversionPlan?.status==='UNRESOLVED'?null:absorptionMaximumAdd):0,components:parts,effectiveElement:parts.length&&parts.every(x=>x.effectiveElement===parts[0].effectiveElement)?parts[0].effectiveElement:null,source:waterRule.source,adoptionStatus:waterRule.status,verificationStatus:'UNVERIFIED',scope:waterRule.scope}};}
+    if(resistanceConversionLevel)for(const [ch,result] of Object.entries(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',thunderResistanceConversion:{input:resistanceInput,absorptionResistance:absorptionConversionPlan,absorptionAdd:ch==='maximum'?(absorptionConversionPlan?.status==='UNRESOLVED'?null:absorptionMaximumAdd):0,baseElement:elementValue,...conversionElementDiagnostic(result),add:resistanceConversionAdd,source:'https://kuroyonhon.com/mhwilds/program/skill.php',eligibilitySource:'https://kuroyonhon.com/mhwilds/memo/31.php',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',verificationStatus:'UNVERIFIED',scope:conversionScope.scope,componentAdoption:conversionScope}};
+    if(attributeConversionLevel)for(const [ch,result] of Object.entries(evaluated.channels||{})){result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',referenceOnly:true,referenceScope:conversionScope.scope,attributeConversion:{...attributeRule,componentAdoption:conversionScope,active:attributeState?.[ch]??null,baseElement:elementValue,...conversionElementDiagnostic(result),excludedComponents:['FIXED_FOLLOWUP','DRAGON_FOLLOWUP']}};if(result.metrics?.comboTotalDamage)result.metrics.comboTotalDamage.scope=attributeState?.[ch]===false?'CONVERSION_INACTIVE_REFERENCE':conversionScope.scope;}
++   // Additive diagnostic only: the legacy effect-scope label is not a prohibition on mixed totals.
++   if(attributeConversionLevel&&root.MHAttributeConversionMixedScope){
++    const adoption=root.MHAttributeConversionMixedScope;
++    const excludedEffectComponents=resolvedTechniqueIds.flatMap(id=>{
++     const t=techniques[id];
++     if(weapon.kind==='gunlance'&&adoption.shellActions.includes(t?.shellingAction))return [{techniqueId:id,component:'SHELL_DEDICATED_FIRE',effectDisposition:'NOT_APPLICABLE',totalDisposition:'INCLUDED_WHEN_COMPONENT_VALID'}];
++     if(weapon.kind==='charge-blade'&&officialPhialType==='IMPACT'&&adoption.impactTechniqueIds.includes(id))return [{techniqueId:id,component:'IMPACT_PHIAL',effectDisposition:'NOT_APPLICABLE',totalDisposition:'INCLUDED_WHEN_COMPONENT_VALID'}];
++     return [];
++    });
++    if(excludedEffectComponents.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics.attributeConversion.mixedComponentAdoption={...adoption,legacyEffectScope:conversionScope.scope,scopeInterpretation:'WEAPON_ELEMENT_EFFECT_ONLY;EXCLUDED_EFFECT_COMPONENTS_MAY_REMAIN_IN_VALID_TOTAL',excludedEffectComponents};
++   }
+    if(darkPeakScoped&&evaluated.channels?.maximum)evaluated.channels.maximum.diagnostics={...evaluated.channels.maximum.diagnostics,darkPeakScenario};
+    return evaluated;}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
+  }

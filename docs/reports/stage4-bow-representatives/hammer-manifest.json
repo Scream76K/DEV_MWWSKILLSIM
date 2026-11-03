@@ -1,0 +1,40 @@
+{
+  "status": "REVIEW_PENDING",
+  "hashes": {
+    "index.html": "3d6a8c302df03e5a0cc0cef9f1173bb76750a234742021e5df31c1218677a1f5",
+    "hope-hammer-browser-adapter.js": "2ed9f6e64e10c3a4cd76161422373f48ec3e932b7bbed3d92a85b1c3accfbd75",
+    "bowgun-normal-reference.js": "7422a0aa9747356c7310969248e96117d2e122278cb30bdb396021c086d8dd75",
+    "himmel-real-browser-bundle.js": "3229399281bae19b793b172d07ac3d7ec74041ae433bfc641b968fd325f5a501"
+  },
+  "harnessHash": "c75885383dd2d466181664161c8cc535a3e885904ac55ffabc722fcb56bbe619",
+  "runs": [
+    {
+      "command": "node tools/stage4-real-hammer-proof.cjs",
+      "log": "hammer-before.json",
+      "exit": 1
+    },
+    {
+      "command": "node tools/stage4-real-hammer-proof.cjs",
+      "log": "hammer-wex-failure.json",
+      "exit": 1
+    },
+    {
+      "command": "node tools/stage4-real-hammer-proof.cjs",
+      "log": "hammer-initial-green.json",
+      "exit": 0
+    },
+    {
+      "command": "node tools/stage4-real-hammer-proof.cjs",
+      "log": "hammer-result.json",
+      "exit": 0
+    }
+  ],
+  "scope": "actual exported DB/public JSDOM calcBuild; same equipment2 saves; one explicit target injection boundary",
+  "notExecuted": [
+    "game",
+    "Safari",
+    "other weapons",
+    "F01 injection",
+    "full beta regression"
+  ]
+}

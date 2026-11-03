@@ -1,0 +1,51 @@
+{
+  "approval": "Sentinel_9d657feeb0408191b8b7db81aa273379",
+  "scope": "ID152 dragon bow exact adopted three-shot sequence; NONE coating; CRITICAL range; explicitly selected per-channel activation",
+  "sourceDataSHA256": "9491bfc1cf357aed4967418949d78c0ddd73407c6461443a7b594a2b2710c810",
+  "runs": [
+    {
+      "log": "../public-explicit-state.json",
+      "exit": 0,
+      "meaning": "before: expected Kotatu scope refusal, Salada available"
+    },
+    {
+      "log": "initial-after.json",
+      "exit": 1,
+      "meaning": "Product both available; harness retained pre-change expected refusal assertion, not product failure"
+    },
+    {
+      "log": "after.json",
+      "exit": 0,
+      "command": "node tools/stage4-real-bow-proof.cjs",
+      "meaning": "Both builds, saved2 load/shared comparison unchanged, OFF/ON physics equality, missing maximum state and non-adopted coating rejection"
+    }
+  ],
+  "beforeHashes": {
+    "index.html": "3df80ab8c531680179e9214589ab2df8ee82d19bd18fde0507717273871379d3",
+    "hope-hammer-browser-adapter.js": "908c0aa9d460fcb85278321bcec1ec19e0dc577ab3e718f4c2dccbdc012c131f"
+  },
+  "afterHashes": {
+    "index.html": "7443c5208b0f8102607a0386ceb453eeefb4cb719646e691f20378f14875ebb6",
+    "hope-hammer-browser-adapter.js": "969abdc0938597cee04932fe41a6f3d358b226427841dc27be70e2f5c0a53c52"
+  },
+  "harnessSHA256": "5f5510db5ca32d5508beb52cd37a94a9a213e4527452103a7bc646d7b2a2557d",
+  "logSHA256": "35f6b1a06a4b593fcd4c9dc518d3ac9476aeea5161a0da3c435303c0e50b89e5",
+  "totals": {
+    "KOTATU_BOW_01": {
+      "normal": 663.8690796000001,
+      "maximum": 893.0267754
+    },
+    "SALADA_BOW_05": {
+      "normal": 712.5190541820002,
+      "maximum": 827.7434966820001
+    }
+  },
+  "offMaximum": 822.8267754000001,
+  "limitations": [
+    "JSDOM actual exported DB, not browser/game execution",
+    "Exact three-shot no-coating profile only; no other weapons or special reference expansion",
+    "Cap path and cap basis verified but no new cap-saturating fixture executed",
+    "No beta-wide regression or F01 injection; unchanged guards preserved",
+    "All adoption remains provisional; acquisition date/API data version unknown"
+  ]
+}

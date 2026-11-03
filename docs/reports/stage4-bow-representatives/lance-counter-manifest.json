@@ -1,0 +1,75 @@
+{
+  "status": "INDEPENDENT_REVIEW_ACCEPTED_LIMITED",
+  "branch": "himmel/stage3-mindseye-cb-followup",
+  "productHashes": {
+    "index.html": "f784b7eb0d27cfcf515e90080cf11a4dcc1fec2a5ffcf8f10d5dfecad957b806",
+    "hope-hammer-browser-adapter.js": "d871fd6b24b6cc2e212c0332a89c60931436cd24641b2410702ef8d0b16bf2d2",
+    "tools/stage4-lance-counter-proof.cjs": "7cc8f7b248f0f343599e338b38c90e80f5ef796fd5aef08dc3b009ccc9c51c1b",
+    "tools/stage4-lance-counter-red-proof.cjs": "66bef23e35fa33220787a238a3addf80c41567fb4f224ab3c6952cce5d0ae212"
+  },
+  "commands": [
+    {
+      "command": "node tools/stage4-lance-counter-red-proof.cjs",
+      "exit": 0,
+      "log": "lance-counter-public-red.json",
+      "result": "EXPECTED_RED_FROM_BEFORE_SNAPSHOT"
+    },
+    {
+      "command": "node tools/stage4-lance-counter-proof.cjs",
+      "exit": 0,
+      "log": "lance-counter-green.json"
+    },
+    {
+      "command": "node --check hope-hammer-browser-adapter.js",
+      "exit": 0
+    }
+  ],
+  "preservedImplementationFiles": [
+    "himmel-real-browser-bundle.js",
+    "v10-six-layer-foundation/min8/real-one-hit-pipeline.cjs"
+  ],
+  "logs": {
+    "lance-counter-green-attempt4.json": "439b2b5466235a5caf8dd222b4226c4937c7c0cb3b91d04994ac10a9eaa1d7d7",
+    "lance-counter-green.json": "83adba01277031187718d2c186cd19631d3949d6c7a679e13bb69a05f043acf6",
+    "lance-counter-red.json": "a0012c593051796da8d6d9b224999bd44520344c4e7c18881ab779fd81bbdfd0",
+    "lance-counter-green-attempt2.json": "74098119cb5996a4b5d87ea30af469e193201c34cb9fd33604a24017a27adc09",
+    "lance-counter-green-attempt3.json": "1e6a0b246bb3ae489ab652ba7c5c15a5707d6b150ecdaba419b15f0de0a8f55c",
+    "lance-counter-public-red.json": "6a5febbc5f80d4c6f1864969865f33e5fbb57be3d3a1fe22fbbc634d41e22bfc",
+    "lance-counter-green-attempt1.json": "2463e01470727271097b4fce58bff8b8576de5a6d77689c6725a42832834afe6"
+  },
+  "report": "LANCE_COUNTER_REPORT.md",
+  "patch": "lance-counter.patch",
+  "notRun": [
+    "live game",
+    "Safari",
+    "F01 injection",
+    "full regression"
+  ],
+  "notes": [
+    "post-damage attempt3 rejected due to already-rounded Formula result",
+    "final coefficient-stage implementation occurs before Formula rounding",
+    "same-equipment two saves; not different-build comparison"
+  ],
+  "checks": {
+    "gitDiffCheckExit": 0,
+    "originDevelopComparison": {
+      "command": "git rev-list --left-right --count origin/develop...HEAD",
+      "exit": 128,
+      "reason": "origin/develop ref absent; no fetch/history mutation"
+    },
+    "finalProductHashesMatchGreen": true
+  },
+  "acceptance": {
+    "review": "01a19349-2d59-7781-a23e-c64ca805f1da",
+    "requiredFixes": false,
+    "documentationOnly": true,
+    "testsRerun": false,
+    "productHashesUnchanged": {
+      "index.html": "f784b7eb0d27cfcf515e90080cf11a4dcc1fec2a5ffcf8f10d5dfecad957b806",
+      "hope-hammer-browser-adapter.js": "d871fd6b24b6cc2e212c0332a89c60931436cd24641b2410702ef8d0b16bf2d2"
+    },
+    "redExitZeroMeans": "EXPECTED_STOP_NOT_FIREPOWER_SUCCESS",
+    "withdrawnEvidence": "green-attempt3 post-damage ordering",
+    "comparison": "SAME_EQUIPMENT_TWO_SAVES"
+  }
+}

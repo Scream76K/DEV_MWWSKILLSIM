@@ -1,0 +1,53 @@
+{
+  "status": "IMPLEMENTED_AWAITING_INDEPENDENT_REVIEW",
+  "approval": "Sentinel_0a16b323a9488191bc7a88b798b2204b",
+  "productHashes": {
+    "index.html": "dfb09464acf6e736379f624c25e24456d245744e285e9f22374d3986579dbffd",
+    "hope-hammer-browser-adapter.js": "4235df86c0abda05e6eb26f8458e03935a2bb72329489deb6bafda543c5063b8"
+  },
+  "beforeHashes": {
+    "index.html": "6e6a4a8e01cb17c9a401a03081aee986e2af68832e0b262c67f10e4890386cf8",
+    "hope-hammer-browser-adapter.js": "005708e780854b472e738c100b741723f5ed35c5883d7378558dbe0149e88d5a"
+  },
+  "runs": [
+    {
+      "command": "node tools/stage4-mixed152-gl-proof.cjs",
+      "log": "mixed152-gl-final.json",
+      "exit": 0
+    },
+    {
+      "command": "node tools/stage4-mixed152-cb-proof.cjs",
+      "log": "mixed152-cb-final.json",
+      "exit": 0
+    }
+  ],
+  "historicalRuns": [
+    {
+      "log": "mixed152-gl-initial.json",
+      "exit": 0,
+      "command": "node tools/stage4-real-gl-shell-proof.cjs"
+    },
+    {
+      "log": "mixed152-cb-initial.json",
+      "exit": 1,
+      "command": "node tools/stage4-real-cb-proof.cjs"
+    },
+    {
+      "log": "mixed152-gl-harness-failure.json",
+      "exit": 1,
+      "command": "node tools/stage4-mixed152-gl-proof.cjs"
+    }
+  ],
+  "artifacts": {
+    "mixed152-gl-initial.json": "5dd6a42115ed3db3094f2536af5d1ff4e9758260a34a888609c354b96772ba34",
+    "mixed152-cb-initial.json": "3241b26a529c1cb730335ab39a68d91a35cb425bbaf1bbe6c9297a3082fd12f1",
+    "mixed152-gl-harness-failure.json": "c47ecb8e7fe2568658ca1d2f3f7aac0285f627cccda8af9f09dfa599f7689371",
+    "mixed152-gl-final.json": "708e4483ad626c04df497fb36a3b1e372f1bfc3078cd613083dfc80c5aa17445",
+    "mixed152-cb-final.json": "8ca7e6aabdaf5a2b90d0b9b9d147125a60024861dea083f34a0c65808dcbb528",
+    "mixed152.patch": "63917cbac38dfac7ca64931c38806ea324d123cd29848a1ac7bab1869f8ee779"
+  },
+  "harnessHashes": {
+    "gl": "0145375be633af55f31a9dab0281afa2df8efe6625812d60b1df24a0060f7e90",
+    "cb": "24a2dc12d5763c6b437fc0b39335230c72e106223de5518dac212c22cc22967e"
+  }
+}

@@ -1,0 +1,4 @@
+# HH目標4技の公開接続（新係数/範囲採用なし）
+目標△→△→自分強化→重ね掛けはindex HUNTING_HORN_STANDARD_PROFILEの左ぶん回し/前方攻撃/自分強化演奏/ジャスト重ね掛け4IDに対応。HUNTING_HORN_EVIDENCE.comparisonVariantはUSER_STANDARD_DECISION_2026-10-05/JUST、響玉eventCountは同日のユーザー確認を記録。旧profile全体のEVIDENCE_GATEDや版ラベルは今回昇格させない。
+現在HH_NORMAL_MELODY_MODEL(2026-10-26 OWNER_HH_EVENT_MODEL)が4IDのordinary/performance/encoreと明示旋律・設置済響玉・演奏後バフ更新を採用。adapter検証と既存consumerを再利用する公開プリセットのみ追加。2026-10-30 HH178承認も本モデルを対象としている。
+プリセットは技だけ。音色/旋律在庫/響玉設置/開始バフは生成せず、既存入力を明示する。実テンプレKOTATU_HH_01の確認条件は自己強化旋律1件、設置済み命中響玉1、自己強化開始0。これを唯一の正式固定状態へ勝手に格上げしない。既存モデルの旋律在庫は明示済み前提で、音符を△2回から自動生成するシミュレーションではない。

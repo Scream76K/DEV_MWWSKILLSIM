@@ -1,0 +1,37 @@
+--- a/index.html
++++ b/index.html
+@@ -8460,7 +8460,10 @@
+   }
+   return h+'</tbody></table></div>';
+ }
++function isHbgElementComparisonRow(row){return row?.kind==='heavy-bowgun'&&Object.values(row.oneHitPipeline?.channels||{}).some(c=>c.diagnostics?.referenceScope==='HBG_EXPLICIT_CONTACT_SEQUENCE');}
++function hbgElementComparisonMetric(row,channel){const c=row.oneHitPipeline?.channels?.[channel],m=c?.metrics?.comboTotalDamage;return c?.execution?.status==='complete'&&m?.status==='available'&&Number.isFinite(m.value)?m.value:null;}
+ function comparisonCoverageReason(row,baseline,metric){
++  if(isHbgElementComparisonRow(row)&&isHbgElementComparisonRow(baseline)){const c=row.oneHitPipeline.channels?.[metric];if(metric==='dps')return 'DURATION_UNAVAILABLE';return hbgElementComparisonMetric(row,metric)!==null?null:(c?.components?.find(x=>x.status!=='available')?.reason||c?.execution?.reason||c?.metrics?.comboTotalDamage?.reason||'COMPONENT_UNAVAILABLE');}
+   // r248: evaluate each metric's prerequisites independently. DPS does not
+   // depend on the STANDARD power index; maximum still uses normal baseline.
+   if(!row?.kind||row.kind!==baseline?.kind)return 'SAME_WEAPON_REQUIRED';
+@@ -8480,7 +8483,7 @@
+   const counts={normal:0,maximum:0,dps:0},pending=[];
+   for(const row of rows){
+     const relative=comparisonPowerIndex(row,baseline),dps=comparisonDpsIndex(row,baseline);
+-    const status={normal:relative?.normal!=null,maximum:relative?.maximum!=null,dps:dps!=null};
++    const status=isHbgElementComparisonRow(row)&&isHbgElementComparisonRow(baseline)?{normal:hbgElementComparisonMetric(row,'normal')!==null,maximum:hbgElementComparisonMetric(row,'maximum')!==null,dps:false}:{normal:relative?.normal!=null,maximum:relative?.maximum!=null,dps:dps!=null};
+     for(const metric of ['normal','maximum','dps']){
+       if(status[metric])counts[metric]++;
+       else pending.push({name:row.name,metric,reason:comparisonCoverageReason(row,baseline,metric)||'COMPARISON_UNAVAILABLE'});
+@@ -8499,6 +8502,14 @@
+ 
+ let lastBuildComparisonRows=null,lastBuildComparisonBaselineIndex=0,lastBuildComparisonContext=null;
+ function renderCompareTable(rows,{baselineIndex=0}={}){
++  if(rows.length&&rows.every(isHbgElementComparisonRow)){
++    const coverage=comparisonCoverageSummary(rows,rows[0]);
++    let html='<div class="compare-note"><b>属性弾・明示命中列の実ダメージ（共通Pipeline）</b><p>共通の弾種・Lv・命中数・対象部位・距離・射撃状態で計算。通常と最大は同じ命中列で、スキル条件だけを分けます。刃鱗増装OFFは未発動の計算、ON・未指定は保留。暫定仕様を含み、実機未確認です。旧STANDARD指数・相対基準100・DPSとは別の表示です。</p></div>';
++    html+='<div data-comparison-coverage="element-pipeline">比較可能：通常 '+coverage.normal+'/'+coverage.total+'件 ／ 最大 '+coverage.maximum+'/'+coverage.total+'件。未算出の側は補完しません。</div><div class="compare-table"><table><thead><tr><th>項目</th>'+rows.map(r=>'<th>'+esc(r.name)+'</th>').join('')+'</tr></thead><tbody>';
++    for(const [ch,label] of [['normal','通常'],['maximum','最大']])html+='<tr data-comparison-metric="pipeline-'+ch+'"><th>'+label+' 合計実ダメージ</th>'+rows.map(r=>{const v=hbgElementComparisonMetric(r,ch);return '<td>'+esc(v!==null?comparisonDisplayNumber(v):'未算出：'+comparisonCoverageReason(r,rows[0],ch))+'</td>';}).join('')+'</tr>';
++    return html+'</tbody></table></div><p>丸め前の非正規化計算値。時間・発動率は推定しません。</p><button type="button" id="comparisonReportDownload">比較結果をJSON保存</button><button type="button" id="comparisonReportCopy">比較結果をコピー</button><pre id="comparisonReportOut"></pre>';
++  }
++
+   if(rows.length&&rows.every(r=>r.kind==='charge-blade'&&r.oneHitPipeline?.scope==='CB_INDEPENDENT_R_H_SUM')){
+     const value=(row,ch,route)=>{const p=row.oneHitPipeline,c=route?p.routes?.[route]?.channels?.[ch]:p.channels?.[ch],m=c?.metrics?.comboTotalDamage;return m?.status==='available'&&c?.execution?.status==='complete'?comparisonDisplayNumber(m.value):'未算出：'+(c?.execution?.reason||m?.reason||(route?p.routes?.[route]?.reason:p.reason)||'ROUTE_UNAVAILABLE');};
+     let html='<div class="compare-note"><b>R/H各1回の合計実ダメージ（独立開始）</b><p>各ルートを明示した開始状態から一回ずつ計算し、丸め前の通常同士・最大同士を加算します。時間補正・重み付け・平均化なし。連続実行やDPSではありません。既採用の暫定仕様を含みます。</p></div><div class="compare-table"><table><thead><tr><th>項目</th>'+rows.map(r=>'<th>'+esc(r.name)+'</th>').join('')+'</tr></thead><tbody>';

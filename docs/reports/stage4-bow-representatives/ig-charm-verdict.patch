@@ -1,0 +1,15 @@
+--- before/index.html
++++ after/index.html
+@@ -591,7 +591,11 @@
+     const rarityText=rarities.map(r=>`R${r}${CHARM_RARITY_NAMES[r]?`（${CHARM_RARITY_NAMES[r]}）`:''}`).join(' / '); return {status:'possible',label:'実現可能',detail:`スキル構成は実現可能です。${rarityText}。必要なスロット候補：${slots.join(' / ')}。`,matches:skillMatches};
+   }
+   const matches=charmRuleCandidates(skills,pattern);
+-  if(!matches.length)return {status:'invalid',label:'不可能',detail:`スキル構成（${gs.map(x=>x.name+' Lv'+x.level).join(' / ')}）は実現可能ですが、スロット「${pattern}」との組み合わせは登録ルール上ありません。`};
++  if(!matches.length){
++    if(pattern.startsWith('不正'))return {status:'invalid',label:'不可能',detail:`${pattern}。スロットの種類と個数を確認してください。`};
++    // Registered skills and a recognized slot shape do not prove this combination impossible.
++    return {status:'unconfirmed',label:'確認不能',detail:`スキル構成（${gs.map(x=>x.name+' Lv'+x.level).join(' / ')}）は登録ルールに一致しますが、スロット「${pattern}」との組み合わせは現在の登録ルールでは確認できません。ゲーム内で不可能と確定した判定ではありません。`};
++  }
+   const best=matches[0];
+   const assignment=best.assignment.map(x=>`${x.name} Lv${x.level}→G${x.groups.join('/')}`).join(' / ');
+   const rarityText=[...new Set(matches.map(x=>x.rarity))].sort((a,b)=>a-b).map(r=>`R${r}${CHARM_RARITY_NAMES[r]?`（${CHARM_RARITY_NAMES[r]}）`:''}`).join(' / '); return {status:'possible',label:'実現可能',detail:`一致：${rarityText}、スロット ${pattern}。判定：${assignment}。`,matches};

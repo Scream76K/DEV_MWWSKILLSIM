@@ -1,0 +1,16 @@
+--- a/index.html
++++ b/index.html
+@@ -2088,9 +2088,11 @@
+     stats.conditionalConditionPlan={status:'PARTIAL',maximum:stats,pending:['CONDITION_PLAN_ERROR:'+String(error?.message||error)]};
+   }
+   calcState={total,rawTotal,stats,bonusDisplay:calcState.bonusDisplay||{series:[],group:[]}};
+-  const selectedTechniqueIdRaw=$('comboMovePicker')?.value||document.querySelector('.comboRow .cmove')?.value||'';
++  // The adopted SNS preset retains two legacy UI IDs; resolve only its verified DB mappings.
++  const resolveSnsPresetId=id=>{if(canonicalWeaponKind(w)!=='sword-and-shield'||!['sns_slash','sns_horizontal'].includes(id))return id;const m=legacyCanonicalMapping('sword-and-shield',id);return m?.canonicalTechniqueId&&CANONICAL_COMBO_ADOPTION['sword-and-shield']?.includes(id)?m.canonicalTechniqueId:id;};
++  const selectedTechniqueIdRaw=resolveSnsPresetId($('comboMovePicker')?.value||document.querySelector('.comboRow .cmove')?.value||'');
+   const selectedTechniqueId=selectedTechniqueIdRaw==='hm_side'?'HAM_SIDE_SWING':selectedTechniqueIdRaw;
+-  const selectedTechniqueIdsRaw=(Array.isArray(App.state.combo?.moves)?App.state.combo.moves:[]).map(x=>x?.techniqueId||x?.canonicalTechniqueId||'');
++  const selectedTechniqueIdsRaw=(Array.isArray(App.state.combo?.moves)?App.state.combo.moves:[]).map(x=>resolveSnsPresetId(x?.techniqueId||x?.canonicalTechniqueId||''));
+   const standardProfile=GENERIC_STANDARD_PROFILES?.[canonicalWeaponKind(w)];
+   const standardTechniqueIds=selectedTechniqueIdsRaw.some(Boolean)?[]:(standardProfile?.status==='ADOPTED'&&Array.isArray(standardProfile.techniqueIds)?standardProfile.techniqueIds:[]);
+   const techniqueInputIds=selectedTechniqueIdsRaw.some(Boolean)?selectedTechniqueIdsRaw:standardTechniqueIds;

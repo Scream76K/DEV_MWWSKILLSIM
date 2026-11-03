@@ -1,0 +1,56 @@
+{
+  "environment": "JSDOM, actual exported application MHDB; no synthetic equipment; DOM template load button; not Safari or game",
+  "source": {
+    "format": "mhdb-loaded-public-data-v1",
+    "exportedAt": "2026-10-31T03:46:08.878Z",
+    "acquisitionDate": null,
+    "apiDataVersion": null,
+    "appVersion": "7.2.2-template-rootfix-r7",
+    "referenceGameVersion": "1.042.00.02",
+    "source": "Already-loaded simulator DB at http://127.0.0.1:8765/",
+    "provenanceNote": "In-memory application data; may include application normalization. Not a new API response. Export time is not acquisition time. Reference game version does not establish API data version.",
+    "counts": {
+      "weapons": 1160,
+      "armor": 714,
+      "charms": 64,
+      "decorations": 361,
+      "skills": 179,
+      "sets": 194,
+      "monsters": 34
+    }
+  },
+  "hashes": {
+    "index.html": "1e2935a0f7a52f8073bcd4564fb9bf50b2cf189d416e0bc75a5f54640cb912e4",
+    "hope-hammer-browser-adapter.js": "ebdd545891bc277d0c3d837cadd169d779e76b61a189b4b3db3e4626647e0b7d",
+    "docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json": "9491bfc1cf357aed4967418949d78c0ddd73407c6461443a7b594a2b2710c810",
+    "/Users/scream/Documents/Codex/2026-10-25/task/stage3-mindseye-cb-followup/tools/stage4-sa-rising-boundary-proof.cjs": "379bd8bc5485d34e7bfc985868be9b1ed335333762741fa715c6c6c50dabee64"
+  },
+  "cases": [
+    {
+      "mode": "SWORD",
+      "awakened": "1",
+      "result": {
+        "status": "UNAVAILABLE",
+        "reason": "REAL_SLICE:SA_AWAKENED_MODEL_UNSUPPORTED"
+      }
+    },
+    {
+      "mode": "AXE",
+      "awakened": "0",
+      "result": {
+        "status": "UNAVAILABLE",
+        "reason": "REAL_SLICE:STATE_REQUIREMENT_MISMATCH:mode"
+      }
+    },
+    {
+      "mode": "SWORD",
+      "awakened": "",
+      "result": {
+        "status": "UNAVAILABLE",
+        "reason": "REAL_SLICE:SA_AWAKENED_STATE_UNRESOLVED"
+      }
+    }
+  ],
+  "errors": [],
+  "verdict": "expected guards preserved"
+}

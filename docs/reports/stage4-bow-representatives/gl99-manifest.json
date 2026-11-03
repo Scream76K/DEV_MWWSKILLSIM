@@ -1,0 +1,29 @@
+{
+  "status": "ID99_IMPLEMENTED_REVIEW_PENDING_152_ON_BLOCKED",
+  "productHashes": {
+    "index.html": "6e6a4a8e01cb17c9a401a03081aee986e2af68832e0b262c67f10e4890386cf8",
+    "hope-hammer-browser-adapter.js": "005708e780854b472e738c100b741723f5ed35c5883d7378558dbe0149e88d5a"
+  },
+  "beforeAdapterHash": "fe41bd3392497640b5002832ef945ee5f1fb472ed1329a997cfac28ee3a2add4",
+  "redEvidence": "gl-shell-final.json",
+  "runs": [
+    {
+      "command": "node tools/stage4-real-gl-shell-proof.cjs",
+      "log": "gl99-after.json",
+      "exit": 2
+    },
+    {
+      "command": "node tools/stage4-gl-might-proof.cjs",
+      "log": "gl99-final.json",
+      "exit": 2
+    }
+  ],
+  "assertionFailure": false,
+  "harnessHash": "d2cbdafc8b8849110740ffe3c55d6a55b44d3536e873ec0e2bbfc1667d79eed5",
+  "logs": {
+    "gl99-after.json": "71ab5645b1320499ecb9d315c3e51514fec9e9134046851443fbaf5d180b5987",
+    "gl99-final.json": "a6b57ef4f81e41eec898d470b26246b6485e5ff136bbdf4a0fc5b544ed8c1681",
+    "gl99.patch": "e3a5a0bf6ea925595f412a0c93f17d7808715404bf00dfa976a9ccb83ea4a02c"
+  },
+  "priorScopeReview": "01a19253-d239-7676-af44-96c79fba078b"
+}

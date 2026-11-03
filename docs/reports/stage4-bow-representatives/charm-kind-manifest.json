@@ -1,0 +1,30 @@
+{
+  "reviewFinding": "01a192ff-b620-700b-a440-bf75d72b3e34 P2",
+  "status": "FIXED_REVIEW_PENDING",
+  "hashes": {
+    "index.html": "fb2c6242158682186f76efdf427591638f443a55d513d4f870d78f1cef00b783",
+    "hope-hammer-browser-adapter.js": "d6d91a03d340e6d099f2669ead9dc827952a6050786106de9231d9776c3d5f9d",
+    "tools/stage4-charm-kind-proof.cjs": "954c5ec973b355c640807195f74e1f33cc9f7582e21d58ca2d320f7c80e9e24a"
+  },
+  "command": "node tools/stage4-charm-kind-proof.cjs",
+  "runs": [
+    {
+      "phase": "RED",
+      "exit": 1,
+      "log": "charm-kind-red.json"
+    },
+    {
+      "phase": "GREEN",
+      "exit": 0,
+      "log": "charm-kind-green.json"
+    }
+  ],
+  "kindBoundary": "missing/null/unrecognized -> unconfirmed; set/group -> invalid; known weapon/armor use existing checks; kind unknown does not skip known level violation",
+  "dataInjection": "kind boundaries modify isolated JSDOM MHDB copies only; restored, not game data observations",
+  "notExecuted": [
+    "game",
+    "Safari",
+    "F01 injection",
+    "full regression"
+  ]
+}

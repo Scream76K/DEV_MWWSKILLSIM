@@ -1,0 +1,72 @@
+{
+  "sourceSHA256": "9491bfc1cf357aed4967418949d78c0ddd73407c6461443a7b594a2b2710c810",
+  "sourceBytes": 15340738,
+  "sourceProvenance": "User-exported normalized app DB; acquisitionDate and apiDataVersion unknown. Original Downloads file untouched.",
+  "counts": {
+    "weapons": 1160,
+    "armor": 714,
+    "charms": 64,
+    "decorations": 361,
+    "skills": 179,
+    "sets": 194,
+    "monsters": 34
+  },
+  "runs": [
+    {
+      "command": "node tools/stage4-real-bow-proof.cjs",
+      "log": "public-before.json",
+      "exit": 1,
+      "reason": "Harness used unexposed closure function renderBuildTemplateUI; no template run."
+    },
+    {
+      "command": "node tools/stage4-real-bow-proof.cjs",
+      "log": "public-run.json",
+      "exit": 1,
+      "reason": "Both public runs and save/load/compare completed; final assertion assumed channels on blocked Kotatu and threw TypeError. Raw unavailable result retained."
+    },
+    {
+      "command": "node tools/stage4-real-bow-proof.cjs",
+      "log": "public-explicit-state.json",
+      "exit": 0,
+      "scope": "Correctly asserts Kotatu scope rejection and Salada numeric completion; explicit conversion normal OFF/maximum ON; save2/load/shared comparison unchanged. Not both-build acceptance."
+    }
+  ],
+  "existingOutputChecks": [
+    {
+      "id": "KOTATU_BOW_01",
+      "decorationSlotsAndKinds": "pass",
+      "charm": "possible",
+      "saveLoadAndComparisonResultMatch": "pass",
+      "totals": null,
+      "reason": "REAL_SLICE:ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED"
+    },
+    {
+      "id": "SALADA_BOW_05",
+      "decorationSlotsAndKinds": "pass",
+      "charm": "possible",
+      "saveLoadAndComparisonResultMatch": "pass",
+      "totals": {
+        "normal": 712.5190541820002,
+        "maximum": 827.7434966820001
+      },
+      "reason": null
+    }
+  ],
+  "savedTwoAndCurrentStateUnchanged": true,
+  "productHashes": {
+    "index.html": "3df80ab8c531680179e9214589ab2df8ee82d19bd18fde0507717273871379d3",
+    "hope-hammer-browser-adapter.js": "908c0aa9d460fcb85278321bcec1ec19e0dc577ab3e718f4c2dccbdc012c131f",
+    "docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json": "9491bfc1cf357aed4967418949d78c0ddd73407c6461443a7b594a2b2710c810",
+    "/Users/scream/Documents/Codex/2026-10-25/task/stage3-mindseye-cb-followup/tools/stage4-real-bow-proof.cjs": "1fbf6852665e00f957c7743deb8b2243313fe885ec2ae71fe111c289b3f47040"
+  },
+  "limitations": [
+    "JSDOM only; actual exported equipment records, no synthetic equipment.",
+    "Representative bow profile, not verified source-video combo.",
+    "No coating, critical range, start shot 1, overcome explicitly selected.",
+    "Kotatu attribute-conversion bow scope blocked; activation input remains unspecified and requires explicit scenario once scope is resolved.",
+    "Sara totals rendered; DPS unavailable, duration unspecified.",
+    "No game/Safari/full regression/F01 injection; no product edits."
+  ],
+  "latestHarnessSHA256": "1670e302721e5a5cf349372c0f7dda7382d1a42c4f3aa0777fec7c736292dba6",
+  "latestLogSHA256": "4c64f58675a11fafa04941b1a2da9467221d3d3132642b814ca363ba5aa49824"
+}

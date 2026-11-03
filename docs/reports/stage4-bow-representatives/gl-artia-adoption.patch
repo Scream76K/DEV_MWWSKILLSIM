@@ -1,0 +1,51 @@
+--- before/index.html
++++ after/index.html
+@@ -1738,11 +1738,13 @@
+   return {attack:raw+production,affinity:w.affinity,attackKnown:true,affinityKnown:true,...state,sourceId:w.id,stageEvidence:{...ARTIA_STAGE_ADOPTION,baseAttack:raw,productionAttack:production,mutationIncluded:false,elementStage:'BASE_PLUS_THREE_SAME_ELEMENT_PARTS'}};
+ }
+ function calculatedArtiaStats(w){return isBaseArtia(w)?baseArtiaStats(w):artiaFixedVariantStats(w);}
++const GOGMA_GL_ELEMENT_ADOPTION=Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approval:'Sentinel_5ef7ce4baadc8191bcb191ece3fef5a4',source:'https://kuroyonhon.com/mhwilds/memo/38.php',sourceVersionNote:'ver10.11',targetGameVersion:null,liveGameVerification:'UNVERIFIED',weaponKind:'gunlance',mutation:'element',shellType:'wide',shellPower:'HIGH',scope:'GOGMA_ELEMENT_MUTATION_NORMAL_OR_CHARGED_ONLY'});
++function adoptedGogmaGlElement(w,a){return isGogmaArtia(w)&&canonicalWeaponKind(w)===GOGMA_GL_ELEMENT_ADOPTION.weaponKind&&a?.production===GOGMA_GL_ELEMENT_ADOPTION.mutation&&['fire','water','thunder','ice','dragon'].includes(a.element);}
+ function artiaSourceElement(w,a){
+   const row=ARTIA_ELEMENT_SOURCE_DB.weapons[canonicalWeaponKind(w)],type=String(a.element||'');
+   const unknown=reason=>MHWElementState.unknown(type,reason);
+   if(!row?.base)return unknown('ELEMENT_ARTIA_SOURCE_NOT_APPLICABLE');
+-  if(row.sourceVersionNote)return unknown('ELEMENT_ARTIA_SOURCE_VERSION_PENDING');
++  if(row.sourceVersionNote&&!(adoptedGogmaGlElement(w,a)&&row.sourceVersionNote===GOGMA_GL_ELEMENT_ADOPTION.sourceVersionNote))return unknown('ELEMENT_ARTIA_SOURCE_VERSION_PENDING');
+   const count=a.sameElementPartCount;
+   if(count!==2&&count!==3)return unknown('ELEMENT_ARTIA_PART_COUNT_UNKNOWN');
+   const normal=['fire','water','thunder','ice','dragon'].includes(type);
+@@ -1756,7 +1758,7 @@
+   for(const restore of a.restores||[]){const [kind,level]=String(restore).split(':');if(kind==='elem'&&typeof row.restore?.[level]!=='number')return unknown('ELEMENT_ARTIA_RESTORE_SOURCE_PENDING');}
+   const mutation=row.mutation[a.production||'element'];
+   if(typeof mutation!=='number')return unknown('ELEMENT_ARTIA_MUTATION_UNKNOWN');
+-  return {...MHWElementState.fromValue(base+(count===3?threePartBonus:0)+mutation,type),elementEvidence:{sourceUrl:ARTIA_ELEMENT_SOURCE_DB.sourceUrl,targetGameVersion:ARTIA_ELEMENT_SOURCE_DB.targetGameVersion,verificationStatus:ARTIA_ELEMENT_SOURCE_DB.verificationStatus,scope:ARTIA_ELEMENT_SOURCE_DB.scope,sameElementPartCount:count,threePartBonus:count===3?threePartBonus:0,threePartBonusSource:typeof row.threePartBonus==='number'?ARTIA_ELEMENT_SOURCE_DB.sourceUrl:ARTIA_STAGE_ADOPTION.source,threePartBonusApproval:ARTIA_STAGE_ADOPTION.approvalRef,...(row.threePartBonusEvidence?{threePartBonusEvidence:row.threePartBonusEvidence}:{})}};
++  return {...MHWElementState.fromValue(base+(count===3?threePartBonus:0)+mutation,type),elementEvidence:{...(adoptedGogmaGlElement(w,a)?{scopeAdoption:GOGMA_GL_ELEMENT_ADOPTION}:{}),sourceUrl:ARTIA_ELEMENT_SOURCE_DB.sourceUrl,targetGameVersion:ARTIA_ELEMENT_SOURCE_DB.targetGameVersion,verificationStatus:ARTIA_ELEMENT_SOURCE_DB.verificationStatus,scope:ARTIA_ELEMENT_SOURCE_DB.scope,sameElementPartCount:count,threePartBonus:count===3?threePartBonus:0,threePartBonusSource:typeof row.threePartBonus==='number'?ARTIA_ELEMENT_SOURCE_DB.sourceUrl:ARTIA_STAGE_ADOPTION.source,threePartBonusApproval:ARTIA_STAGE_ADOPTION.approvalRef,...(row.threePartBonusEvidence?{threePartBonusEvidence:row.threePartBonusEvidence}:{})}};
+ }
+ function artiaFixedVariantStats(w){
+   if(!isArtia(w)) return null;
+@@ -1811,7 +1813,14 @@
+         capacityEvidence={source:isGogmaArtia(pipelineWeapon)?GOGMA_SHARP_CAPACITY_RESTORE.source:NORMAL_ARTIA_R8_RESTORE.source,scope:'NORMAL_AMMO_ONLY',bonus:restore.capacity,rows:rows.map(a=>({id:a.id,kind:a.kind,level:a.level,base:a.capacity,restoration:restore.capacity,total:a.capacity+restore.capacity})),pendingAmmoKinds:ammo.filter(a=>a.kind!=='normal').map(a=>a.kind)};
+         ammo=ammo.map(a=>a.kind==='normal'?{...a,capacity:a.capacity+restore.capacity}:a);
+       }
+-      pipelineWeapon={...pipelineWeapon,ammo,damage:{...pipelineWeapon.damage,raw:fixed.attack+restore.attack},affinity:fixed.affinity+restore.affinity,
++      let shellOverride={};
++      if(adoptedGogmaGlElement(pipelineWeapon,build.artia)){
++        const rule=TechniqueDBEngine.get('gunlance','GL_SHELL_NORMAL_MEDIUM')?.specialSourceValues?.p0ReferenceRules;
++        const levels=Object.entries(rule?.mhdbShellLevelToPowerByType?.WIDE||{}).filter(([,power])=>power===GOGMA_GL_ELEMENT_ADOPTION.shellPower);
++        if(levels.length!==1)throw Error('REAL_SLICE:ARTIA_GL_SHELL_MAPPING_UNRESOLVED');
++        shellOverride={shell:GOGMA_GL_ELEMENT_ADOPTION.shellType,shellLevel:Number(levels[0][0]),artiaShellEvidence:{...GOGMA_GL_ELEMENT_ADOPTION,originalShell:pipelineWeapon.shell,originalShellLevel:pipelineWeapon.shellLevel,variantSourceId:fixed.sourceId}};
++      }
++      pipelineWeapon={...pipelineWeapon,...shellOverride,ammo,damage:{...pipelineWeapon.damage,raw:fixed.attack+restore.attack},affinity:fixed.affinity+restore.affinity,
+         specials:element>0?[{kind:['fire','water','ice','thunder','dragon'].includes(type)?'element':'status',element:type,status:type,damage:{display:element,raw:element/10}}]:[],
+         artiaCalculationEvidence:{...fixed.stageEvidence,sharpnessPremise,capacityEvidence,restorationContract:isNormalArtiaRare8(pipelineWeapon)?NORMAL_ARTIA_R8_RESTORE:null,sourceId:fixed.sourceId,elementEvidence:fixed.elementEvidence||null,production:build.artia.production,parts:[...build.artia.parts],sameElementPartCount:3,restores:[...build.artia.restores],stage:'BASE_PLUS_FIXED_PRODUCTION_PLUS_RESTORE_BEFORE_SKILLS'}};
+     }
+@@ -8970,7 +8979,7 @@
+   }
+   // Template talisman is restored from the template itself. Its name and MHDB rank are NOT required.
+   const cs=t.charm||{};
+-  // Resolve width-only template spelling to a unique public MHDB skill; unknown/ambiguous names remain unresolved.
++  // Resolve a unique exact match after NFKC normalization to a public MHDB skill; unknown/ambiguous names remain unresolved.
+   const templateCharmSkillName=name=>{const matches=(DB.skills||[]).filter(s=>String(s.name).normalize('NFKC')===String(name).normalize('NFKC'));return matches.length===1?matches[0].name:String(name);};
+   const srcSkills=Array.isArray(cs.skills)?cs.skills.map(x=>({name:templateCharmSkillName(x?.name||''),level:Number(x?.level)||1,type:'armor'})).filter(x=>x.name):[];
+   while(srcSkills.length<3)srcSkills.push({name:'',level:1,type:'armor'});

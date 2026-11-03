@@ -1,0 +1,33 @@
+{
+  "status": "ACCEPTED_LIMITED_INDEPENDENT_REVIEW",
+  "hashes": {
+    "index.html": "c969458659b37ac35abb82484b4c05c24b69b2d0e64a2bbb9fb50a9b467d0ca0",
+    "hope-hammer-browser-adapter.js": "43c9740a8e0937d06392bcba7106d0a4e22787fe27aa253f87adad9272238295",
+    "bowgun-normal-reference.js": "7422a0aa9747356c7310969248e96117d2e122278cb30bdb396021c086d8dd75",
+    "himmel-real-browser-bundle.js": "3229399281bae19b793b172d07ac3d7ec74041ae433bfc641b968fd325f5a501",
+    "tools/stage4-real-ls-proof.cjs": "cf8c0cf68e9b7b23f65e0c8928a30fc8f3a8c30d50f920fd8fc4b518118ba13d"
+  },
+  "beforeAdapterHash": "f766fc14682249c0b1ffc7ebdf0736da7c3586f1f644c90734c2f6f8179ca842",
+  "runs": [
+    {
+      "command": "node tools/stage4-real-ls-proof.cjs",
+      "log": "ls-before.json",
+      "exit": 1,
+      "reason": "public result REAL_SLICE:DAMAGE_TYPE_UNRESOLVED"
+    },
+    {
+      "command": "node tools/stage4-real-ls-proof.cjs",
+      "log": "ls-initial-green.json",
+      "exit": 0
+    },
+    {
+      "command": "node tools/stage4-real-ls-proof.cjs",
+      "log": "ls-result.json",
+      "exit": 0,
+      "addedBoundary": "missing RED state unavailable; restore identical"
+    }
+  ],
+  "scope": "JSDOM real MHDB template; no equipment replacement; two identical saves; no Safari/game/full regression",
+  "independentReview": "01a191cc-1cde-70ab-95bc-9f8ac3f479e0",
+  "acceptanceOnlyNoNewExecution": true
+}

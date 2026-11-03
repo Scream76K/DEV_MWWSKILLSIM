@@ -1,0 +1,13 @@
+--- a/hope-hammer-browser-adapter.js
++++ b/hope-hammer-browser-adapter.js
+@@ -304,7 +304,9 @@
+     if((referenceSkills.firstShot>0||referenceSkills.forceShot>0)&&state.magazineCapacity!==weapon.ammo.find(x=>x.kind==='wyvern')?.capacity)throw Error('HBG_WYVERN:SHOT_CAPACITY_MISMATCH');
+    }else if(['heavy-bowgun-element','light-bowgun-element'].includes(referenceKind)){
+     if(referenceKind==='light-bowgun-element')state.elementType=String(state.ammoType||'').toLowerCase();
+-    state.weaponAmmoEntry=weapon.ammo?.find(x=>x.kind===state.elementType&&x.level===state.ammoLevel)||null;
++    // MHDB ammo enum differs from the existing elemental hitzone/UI keys.
++    const ammoKind={fire:'flaming',water:'water',thunder:'thunder',ice:'freeze'}[state.elementType];
++    state.weaponAmmoEntry=ammoKind?weapon.ammo?.find(x=>x.kind===ammoKind&&x.level===state.ammoLevel)||null:null;
+     state.magazineCapacity=state.weaponAmmoEntry?.capacity??null;
+    }else if(referenceKind==='light-bowgun'){
+     const level=Number(String(id).match(/^LBG_NORMAL_(?:AMMO|RAPID)_([123])$/)?.[1]||0);

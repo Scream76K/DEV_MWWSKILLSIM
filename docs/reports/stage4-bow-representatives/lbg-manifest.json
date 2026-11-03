@@ -1,0 +1,28 @@
+{
+  "command": "node tools/stage4-real-lbg-proof.cjs",
+  "runs": [
+    {
+      "raw": "lbg-public-initial.json",
+      "exit": 1
+    },
+    {
+      "raw": "lbg-reason-assert-attempt.json",
+      "exit": 1
+    },
+    {
+      "raw": "lbg-blocked-persistence.json",
+      "exit": 2
+    }
+  ],
+  "outcome": "BLOCKED; real equipment and saved unavailable results verified, no firepower success",
+  "productUnchanged": {
+    "index.html": "c48f2871bfd2d8300d6a259f7d74b064d8a491a56a2d6a8f044d99d41856a4db",
+    "hope-hammer-browser-adapter.js": "f7c60511ecb4b6c2e74b8ceb5038e206729908c5379eed1e3e659abf6c409ade"
+  },
+  "hashes": {
+    "docs/reports/stage4-bow-representatives/lbg-public-initial.json": "6ea30fed73e00fc2494afcb29cb368409afc9d59c18df833531f16c93e0a0148",
+    "docs/reports/stage4-bow-representatives/lbg-reason-assert-attempt.json": "665e61355b41ffcd6520d5535d9cf070fa4ee1539d98998948c2e4f55a62a88f",
+    "docs/reports/stage4-bow-representatives/lbg-blocked-persistence.json": "8623e60ebbe7986d5f98b3540264d1bc266433d9bb9a8f30724b368a25d24f7c",
+    "tools/stage4-real-lbg-proof.cjs": "822258bbd151cbe99b77eb4dccc7b7c2fa3aec236a25e17ebe4b784333c20517"
+  }
+}

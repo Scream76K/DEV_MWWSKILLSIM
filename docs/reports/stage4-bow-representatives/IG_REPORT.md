@@ -1,0 +1,13 @@
+# KOTATU_IG_01 — 装備照合と公開停止の分離
+
+製品変更なし。回収実MHDB・既存現製品テンプレをJSDOMの公開読込から使用。装備差替え・珠移動なし。武器は堕在のラクリエリカ、龍・攻撃激化・同属性3素材。既存共通属性式260+20+0=280で既知、個別実測不要。全装備MHDB照合済というロード表示は、護石構成の実現可能性や技成立まで保証しない。
+
+## 別々の阻害
+1. 採用プロファイル候補IG_DIAGONAL_SLASH（エキスNO_EXTRACT/猟虫STOWEDを明示）は現在TechniqueDBでEVIDENCE_GATED。MV18/属性0.8はSOURCE_CONFIRMEDだが、未解決理由OFFICIAL_BASELINE_VERSION_AUDIT_PENDING/PART_MODIFIER_NOT_REPORTED_IN_SOURCEがある。公開calcBuildはREAL_SLICE:EVIDENCE_GATED。表示プリセットが存在することを採用計算完了と誤認しない。先行部位係数の既採用補完契約は今回読んだ資料で確認できず、勝手に1や他技契約を入れない。資料r262-stage2-remainingのIG猟虫未採用とは別の通常本体技レコード境界。
+2. 元v14と現テンプレ双方の秘歴・見切り3/弱点特効1・防2防1は現validateCurrentCharmでinvalid。スキル組合せ自体は可能だが、index447–455の秘歴ルールに防2防1がない。回収MHDBの護石レコード存在と、ランダム護石の合法組合せは別。これは現ルール対テンプレの不一致で、ゲーム内絶対不可能と新断定しない。元テンプレ出典は https://youtu.be/a52yCzHhI7Q?si=SgrM6RjkO41u45fI 。本ターンでは映像の護石画面未確認。
+
+## 証拠
+ig-public-initial.json exit1はハーネスが保留レコードへ通常Hit取得helperを呼んだ失敗。記録方式だけ修正しig-public.jsonで本体の公開停止と護石不一致を取得、完了assertはexit1のまま保持。
+ig-blocked-persistence.json exit2: 同内容2保存を読込、共有比較でも両行の停止理由一致、現在入力/条件/保存内容不変。火力成功に置き換えずBLOCKEDと出力。通常最大数値・実装備成立は未確認。異なる操虫棍テンプレはv14にない。実機/Safari/全回帰/新採用/commitpushなし。
+
+次に必要なのは、既存部位補正未採用がHP計算まで妨げる契約かの原典・採用履歴照合と、元テンプレ護石所有情報対現護石ルールの照合。新規係数や護石差替えを先に採用しない。SNS腕待ち、SA未承認MV更新も維持。

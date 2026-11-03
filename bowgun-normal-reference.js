@@ -42,7 +42,7 @@
   return {status:'SOURCE_REFERENCE',profileId:prefix+'_NORMAL_AMMO_'+s.ammoLevel+'_THREE_CONTACT_REFERENCE',scope:rule.scope,comparisonPower:physical,physical,element:0,special:0,trace,state:{...s},skills:{normalUp,firstShot,forceShot},shotSkills:{shotAttackAdd,shotAffinityAdd,effectiveAffinity},ammoCapacityVerified:false,weaponApplicability:'UNVERIFIED',rounding:'UNROUNDED_REFERENCE',liveGameVerification:'PENDING',evidenceRefs:[...record.evidenceRefs,...source.evidenceRefs]};
  }
  function rapidHit(o,engine){
-  const record=engine.get('light-bowgun','LBG_NORMAL_RAPID_1'),rule=record?.rapidRule,s=o.state;
+  const record=engine.get('light-bowgun',o.techniqueId||'LBG_NORMAL_RAPID_1'),rule=record?.rapidRule,s=o.state;
   if(rule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isInteger(o.hitIndex)||o.hitIndex<0||o.hitIndex>=rule.hitCount)throw Error('LBG_RAPID:HIT_CONTRACT_INVALID');
   if(s?.shotMode!=='RAPID'||s.rapidReady!==true||s.range!=='CRITICAL'||s.contactPolicy!=='ALL_FIVE'||s.weaponAmmoEntry?.rapid!==true)throw Error('LBG_RAPID:STATE_INVALID');
   if(o.rapidUp!==0&&o.rapidUp!==rule.skillLevel)throw Error('LBG_RAPID:SKILL_LEVEL_INVALID');

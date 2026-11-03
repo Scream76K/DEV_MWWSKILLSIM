@@ -1,0 +1,141 @@
+{
+  "status": "PASSED_READBACK_ASSERTIONS",
+  "checks": "real recovered DB deco kind/size for every equipped jewel; post-limit slots from public snapshot; charm possible; common Artia formula; two saved copies unchanged",
+  "rows": [
+    {
+      "ownerSlot": "w0",
+      "decorationId": 305,
+      "name": "超心珠Ⅲ【３】",
+      "kind": "weapon",
+      "required": 3,
+      "available": 3
+    },
+    {
+      "ownerSlot": "w1",
+      "decorationId": 66,
+      "name": "達芸珠【３】",
+      "kind": "weapon",
+      "required": 3,
+      "available": 3
+    },
+    {
+      "ownerSlot": "w2",
+      "decorationId": 237,
+      "name": "雷光・昂揚珠【３】",
+      "kind": "weapon",
+      "required": 3,
+      "available": 3
+    },
+    {
+      "ownerSlot": "head0",
+      "decorationId": 59,
+      "name": "抗狂珠【１】",
+      "kind": "armor",
+      "required": 1,
+      "available": 1
+    },
+    {
+      "ownerSlot": "head1",
+      "decorationId": 59,
+      "name": "抗狂珠【１】",
+      "kind": "armor",
+      "required": 1,
+      "available": 1
+    },
+    {
+      "ownerSlot": "head2",
+      "decorationId": 59,
+      "name": "抗狂珠【１】",
+      "kind": "armor",
+      "required": 1,
+      "available": 1
+    },
+    {
+      "ownerSlot": "chest0",
+      "decorationId": 129,
+      "name": "連撃珠【３】",
+      "kind": "armor",
+      "required": 3,
+      "available": 3
+    },
+    {
+      "ownerSlot": "chest1",
+      "decorationId": 63,
+      "name": "体術珠【１】",
+      "kind": "armor",
+      "required": 1,
+      "available": 1
+    },
+    {
+      "ownerSlot": "arms0",
+      "decorationId": 63,
+      "name": "体術珠【１】",
+      "kind": "armor",
+      "required": 1,
+      "available": 1
+    },
+    {
+      "ownerSlot": "arms1",
+      "decorationId": 63,
+      "name": "体術珠【１】",
+      "kind": "armor",
+      "required": 1,
+      "available": 1
+    },
+    {
+      "ownerSlot": "legs0",
+      "decorationId": 352,
+      "name": "挑戦珠【３】",
+      "kind": "armor",
+      "required": 3,
+      "available": 3
+    },
+    {
+      "ownerSlot": "legs1",
+      "decorationId": 3,
+      "name": "刺撃珠【３】",
+      "kind": "armor",
+      "required": 3,
+      "available": 3
+    },
+    {
+      "ownerSlot": "cw0",
+      "decorationId": 312,
+      "name": "超心珠【１】",
+      "kind": "weapon",
+      "required": 1,
+      "available": 1
+    },
+    {
+      "ownerSlot": "c0",
+      "decorationId": 284,
+      "name": "耐絶珠【１】",
+      "kind": "armor",
+      "required": 1,
+      "available": 1
+    },
+    {
+      "ownerSlot": "c1",
+      "decorationId": 284,
+      "name": "耐絶珠【１】",
+      "kind": "armor",
+      "required": 1,
+      "available": 1
+    }
+  ],
+  "artia": {
+    "base": 250,
+    "matchingParts": 20,
+    "elementMutation": 30,
+    "restoreElement": 0,
+    "weaponElement": 300,
+    "skillAdjustedElement": 420,
+    "rawAttack": 235
+  },
+  "sourceCorrections": [
+    "REGRESSION_GATES.txt:36 legs omit extra Critical jewel",
+    "SOURCE_RULES_R9.md:18 user-confirmed 達芸 typo correction; supersedes old 連芸 label"
+  ],
+  "input": "db-public-initial.json",
+  "inputHash": "38d379b7945559347f73638a482d703239c6a0c32ccd1407bfabc2106023b80b"
+}

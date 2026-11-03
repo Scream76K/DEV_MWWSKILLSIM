@@ -1,0 +1,81 @@
+{
+  "status": "INDEPENDENT_REVIEW_ACCEPTED_LIMITED",
+  "approval": "Sentinel_f79b13690cc88191a9dbb458853805fc",
+  "productHashes": {
+    "index.html": "c88dc198a594b562e19500ab0a900d337eaf869ed5bae2783ee759d329895e0a",
+    "hope-hammer-browser-adapter.js": "ca046e092cf88766ea1e1e365c2c76c751d2927f27a0318cdc3fbb0153a78a9d",
+    "v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs": "2173891f033058ec9482af9b35db64a8dc3d4bfd72578f36fa7f17c628f7b34a",
+    "v10-six-layer-foundation/min8/real-one-hit-pipeline.cjs": "50e97313591f837e4a15e5d739c4713c71d73df10629648a94938d21ed511ebd",
+    "himmel-real-browser-bundle.js": "fb17fd860ba7ddee4d425b6223e31248dbf041b66d0b109762b2e6fde3a440f8"
+  },
+  "changedProducts": [
+    "index.html",
+    "hope-hammer-browser-adapter.js"
+  ],
+  "unchangedProducts": [
+    "v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs",
+    "v10-six-layer-foundation/min8/real-one-hit-pipeline.cjs",
+    "himmel-real-browser-bundle.js"
+  ],
+  "baselineHashes": {
+    "index.before.html": "6d5ef7d8e6e1304846c4ad5b7934d0c0263a20c7c6f5582515643a7ee9ad5e99",
+    "adapter.before.js": "eabe797545f6cda0bec82f003c3e5f552cfd84c0cb4b140fe519e077b64e468f"
+  },
+  "harness": "tools/stage4-cb-mix-public-proof.cjs",
+  "harnessHash": "5187028904fc9bb0bd0601294adc2861d6ea5a212d346f6a22a57d4c6dc9fe95",
+  "runs": {
+    "red.json": 1,
+    "attempt1.json": 0,
+    "attempt2.json": 0,
+    "final.json": 0,
+    "attempt3.json": 0,
+    "p2-red.json": 1,
+    "p2-final.json": 0
+  },
+  "rawLogs": {
+    "p2-final.json": "d74d2f64b8f2f745e69281ae514d1cdc9f1be797714ced34a259fa271b698353",
+    "red.json": "4af570badb7715deb0e46c790c49e5ae285293263357343c2a2342b8f98f2d2a",
+    "attempt1.json": "242301497583c0a87d6c1781dbea5aaaadbedee184a20c7c131586d8fa8e4527",
+    "p2-red.json": "e82eefff3e70c96e61e5f0c68c5baa7e810291c351ab878c34fb901d5769aabb",
+    "attempt3.json": "0d30cb4dd908d54596e9acda9303f0a61b18a10c2998e926b9bcae51a9627809",
+    "attempt2.json": "e0ae81571a26769bc3bf7103242ee505ed3b890c0040484bc0d96dcf96de241c",
+    "final.json": "e83fd515777e03e4ee4b0f03234dfae9c5d37cbcb11f90b9e0160fec7eb94454"
+  },
+  "notes": [
+    "red: missing public mix UI, not calculation success",
+    "attempt1: initial sum/save proof before expanded boundaries and dedicated UI",
+    "attempt2: boundary proof before dedicated comparison table",
+    "final: final products and harness, dedicated table asserted",
+    "attempt3: dedicated UI proof before final CB-only dispatch restriction; final: CB-only restriction included, non-CB dispatch protection statically checked"
+  ],
+  "unexecuted": [
+    "game",
+    "Safari",
+    "full regression",
+    "arbitrary loops",
+    "distinct equipment A/B",
+    "general F01 fault injection"
+  ],
+  "timePolicy": "NO_TIME_NO_WEIGHT_NO_AVERAGE; historical timing assets retained",
+  "preP2ProductHashes": {
+    "index.html": "c88dc198a594b562e19500ab0a900d337eaf869ed5bae2783ee759d329895e0a",
+    "hope-hammer-browser-adapter.js": "616a473cda3d48e5af94d4ca99d0e189b4fb8ab5983726f99ced7046e1422cfa",
+    "v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs": "2173891f033058ec9482af9b35db64a8dc3d4bfd72578f36fa7f17c628f7b34a",
+    "v10-six-layer-foundation/min8/real-one-hit-pipeline.cjs": "50e97313591f837e4a15e5d739c4713c71d73df10629648a94938d21ed511ebd",
+    "himmel-real-browser-bundle.js": "fb17fd860ba7ddee4d425b6223e31248dbf041b66d0b109762b2e6fde3a440f8"
+  },
+  "reviewFollowup": {
+    "review": "01a1955e-4981-747b-84a0-219085826a61",
+    "status": "P2_CLOSED_ACCEPTED_LIMITED",
+    "change": "retain normalization result and reject unresolved IDs before profile match",
+    "boundaryScope": "capture actual public input then vary IDs at adapter; no DOM-invalid-ID claim",
+    "finalEvidence": "p2-final.json"
+  },
+  "independentReview": {
+    "id": "01a19561-14f0-77f8-b067-4f65cc6bdaf8",
+    "result": "限定受入可・必須修正なし",
+    "latestExecutionEvidence": "p2-final.json",
+    "newExecution": false,
+    "scope": "no-time independent R1 + H1 raw sum; same-content 2 saves; not different equipment AB/live/Safari/full regression"
+  }
+}
