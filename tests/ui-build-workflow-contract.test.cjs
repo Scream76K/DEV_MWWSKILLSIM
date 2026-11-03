@@ -40,3 +40,20 @@ test('A/B comparison occupies the available panel width without page overflow', 
   assert.ok(html.includes('function renderCompareTableChunk('));
   assert.ok(html.includes('data-comparison-pending'));
 });
+
+test('charm controls retain accessible widths and the original editor', () => {
+  const css = extractStyle('flamme-ui-edit-controls-stage6');
+  assert.ok(css.includes('#charmEditor .charm-slot-row'));
+  assert.ok(css.includes('#charmEditor .charm-deco-row'));
+  assert.ok(css.includes('min-height:42px'));
+  assert.ok(html.includes('id="charmEditor"'));
+  assert.ok(html.includes('function renderCharmDecos()'));
+});
+test('saved build names occupy the flexible middle column', () => {
+  const css = extractStyle('flamme-ui-edit-controls-stage6');
+  assert.ok(css.includes('#savedBuilds .saved-build-item'));
+  assert.ok(css.includes('grid-template-columns:auto minmax(0,1fr) auto'));
+  assert.ok(css.includes('overflow-wrap:anywhere'));
+  assert.ok(html.includes('data-build-load'));
+  assert.ok(html.includes('data-build-del'));
+});
