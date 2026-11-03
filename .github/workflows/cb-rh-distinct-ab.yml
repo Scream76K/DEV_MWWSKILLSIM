@@ -7,6 +7,7 @@ on:
       - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
       - 'hope-hammer-browser-adapter.js'
       - 'tools/cb-distinct-equipment-public-proof.cjs'
+      - 'tools/cb-rh-reason-matrix.cjs'
       - '.github/workflows/cb-rh-distinct-ab.yml'
   workflow_dispatch:
 permissions:
@@ -25,3 +26,5 @@ jobs:
         run: node --test tests/flamme-cb-rh-distinct-ab-regression.test.cjs
       - name: Public different-equipment CB A/B proof
         run: node tools/cb-distinct-equipment-public-proof.cjs
+      - name: Classify CB R/H public unresolved reasons
+        run: node tools/cb-rh-reason-matrix.cjs
