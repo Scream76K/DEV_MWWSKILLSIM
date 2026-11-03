@@ -745,6 +745,12 @@ main.wrap > .grid > aside .save-build-row > button {min-height:42px;}
   overflow-wrap:anywhere;
   padding:8px 0;
 }
+/* The complete technical rationale stays accessible without occupying the results pane. */
+#compareOut .comparison-explanation{margin-top:10px;max-width:100%;font-size:12px;}
+#compareOut .comparison-explanation > summary{cursor:pointer;font-weight:600;padding:7px 0;}
+#compareOut .comparison-explanation > div{line-height:1.55;overflow-wrap:anywhere;padding:6px 0;}
+/* Verification-only reference calculators are retained, but not exposed in the consumer entry. */
+#techAuditPanel,#hhReferencePanel,#darkArtsReferencePanel{display:none!important;}
 </style>
 <style id="flamme-ui-developer-panel-separation-20261103">
 /* Keep verification inputs/handlers in the DOM, but separate them from ordinary user operation.
@@ -8977,11 +8983,11 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   if(rows.length>1)h+='<div class="compare-note small">表が画面に収まらない場合は、表の中を横にスワイプして比較できます。</div>';
   for(let i=0;i<rows.length;i+=perGroup)h+=renderCompareTableChunk(rows.slice(i,i+perGroup),rows,baseline);
   h+=rows.filter(r=>r.power?.conditionPlan?.applied.length).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数の適用条件 '+esc(r.power.conditionPlan.applied.map(x=>x.skill+(x.level!=null?' Lv'+x.level:'')+' (攻撃'+(x.maximumAttackMultiplier?'×'+x.maximumAttackMultiplier+'：最大側のみ':x.attackMultiplier&&x.attackMultiplier!==1?'×'+x.attackMultiplier:'+'+x.attackAdd)+(x.elementAdd?' / 属性+'+x.elementAdd:'')+(x.elementMultiplier?' / 属性×'+x.elementMultiplier+'：'+esc(x.elementConditionLabel||'赤ゲージ時')+'・最大側のみ':'')+')').join(' / '))+'。'+(r.power.conditionPlan.excluded.length?'同時成立しないため除外：'+esc(r.power.conditionPlan.excluded.map(x=>x.skill).join(' / '))+'。':'')+'</div>').join('');
-  h+='<div class="compare-note">基準：'+esc(baseline.name)+'。火力指数は各ビルドの非正規化計算値です。基準ダメージは同武器・同STANDARDの基準ビルドの通常期待ダメージです。比較ビルドの通常・最大と基準ビルドの最大は、基準比の行でのみこの通常ダメージからの変化率を表示します。括弧内の物・属は各成分の増減を基準全体のダメージで割った寄与率です。特殊成分があれば別記します。丸め前の寄与率の合計が全体の変化率になります。最大火力指数は対応済みの条件付き攻撃力・攻めの守勢と最大会心率を適用した参考値です。攻撃力の乗算を先に行い、加算はその後に適用します。攻めの守勢・激励は事前に発動した前提です。死中に活は状態異常中、根性【果敢】は選択した消費前／後の条件を適用します。これらのグループ効果と連撃強化はコンボDPSへ未接続です。フルチャージと逆恨みは同時加算しません。ダークアーツ・火事場力とフルチャージの併用時は、満タンと赤ゲージ・低体力のコンボ全体を別々に比較します。それ以外は同時成立する条件内で攻撃加算を選びます。未対応の条件付き補正がある場合は最大側を保留します。連撃は5回攻撃後の強化状態が事前に成立した前提で、初回分を重ねて加算しません。急襲は事前発動した最大側に攻撃倍率を適用します。属性吸収は3回被弾後の強化が成立した最大側で、火・水・雷・氷・龍の属性値を加算します。状態異常の蓄積値はSTANDARDの属性HPダメージに算入しません。連撃強化Ⅰ・Ⅱは連撃を装備した最大側に基礎攻撃力＋8／＋18を加えます。通常側と連撃なしでは加算しません。連撃の数値はGameWith資料の参考値で、実機版との照合は未完了です。グループ／シリーズ効果の計算分類が未完了の装備は、効果を無視せず火力指数・装備由来のコンボDPSを保留します。防御・補助効果だけのものも分類完了までは保留します。全スキル・武器状態の上限対応は未完了です。肉質・斬れ味はStep 5の共通条件、超会心は各ビルドの装備スキルを使用します。所要時間は使用しません。</div>';
+  h+='<details class="compare-note comparison-explanation"><summary>火力計算条件の詳細</summary><div>基準：'+esc(baseline.name)+'。火力指数は各ビルドの非正規化計算値です。基準ダメージは同武器・同STANDARDの基準ビルドの通常期待ダメージです。比較ビルドの通常・最大と基準ビルドの最大は、基準比の行でのみこの通常ダメージからの変化率を表示します。括弧内の物・属は各成分の増減を基準全体のダメージで割った寄与率です。特殊成分があれば別記します。丸め前の寄与率の合計が全体の変化率になります。最大火力指数は対応済みの条件付き攻撃力・攻めの守勢と最大会心率を適用した参考値です。攻撃力の乗算を先に行い、加算はその後に適用します。攻めの守勢・激励は事前に発動した前提です。死中に活は状態異常中、根性【果敢】は選択した消費前／後の条件を適用します。これらのグループ効果と連撃強化はコンボDPSへ未接続です。フルチャージと逆恨みは同時加算しません。ダークアーツ・火事場力とフルチャージの併用時は、満タンと赤ゲージ・低体力のコンボ全体を別々に比較します。それ以外は同時成立する条件内で攻撃加算を選びます。未対応の条件付き補正がある場合は最大側を保留します。連撃は5回攻撃後の強化状態が事前に成立した前提で、初回分を重ねて加算しません。急襲は事前発動した最大側に攻撃倍率を適用します。属性吸収は3回被弾後の強化が成立した最大側で、火・水・雷・氷・龍の属性値を加算します。状態異常の蓄積値はSTANDARDの属性HPダメージに算入しません。連撃強化Ⅰ・Ⅱは連撃を装備した最大側に基礎攻撃力＋8／＋18を加えます。通常側と連撃なしでは加算しません。連撃の数値はGameWith資料の参考値で、実機版との照合は未完了です。グループ／シリーズ効果の計算分類が未完了の装備は、効果を無視せず火力指数・装備由来のコンボDPSを保留します。防御・補助効果だけのものも分類完了までは保留します。全スキル・武器状態の上限対応は未完了です。肉質・斬れ味はStep 5の共通条件、超会心は各ビルドの装備スキルを使用します。所要時間は使用しません。</div></details>';
   h+=rows.filter(r=>!Number.isFinite(r.power?.normal?.comparisonPower)).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数は保留（'+esc(comparisonReasonText(r.power?.reason||'NORMAL_POWER_UNAVAILABLE'))+'）</div>').join('');
   h+=rows.filter(r=>Number.isFinite(r.power?.normal?.comparisonPower)&&!comparisonPowerChange(r,baseline)?.normal).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数の計算値は表示しています。基準比のみ保留（'+esc(comparisonReasonText(!r.kind||r.kind!==baseline.kind?'SAME_WEAPON_REQUIRED':'BASELINE_NORMAL_POWER_UNAVAILABLE'))+'）</div>').join('');
   h+=rows.filter(r=>r.power?.maximumReason).map(r=>'<div class="compare-note">'+esc(r.name)+'：最大火力は保留（'+esc(comparisonReasonText(r.power.maximumReason))+'）</div>').join('');
-  return h+'</div><div class="compare-note">基準：'+esc(baseline.name)+'。DPSは非正規化の計算値です。DPS指数・増減率は補助情報です。'+(ready?'':'基準DPSが未算出・0以下の場合、指数と増減率は算出しません。')+'太字は各項目で数値が最大のセットです。1ヒット期待値とDPSは現在Step 5の攻撃条件を共通条件として計算します。DPSは最大会心率を使用します。所要時間は参考値のためDPSも参考値です。</div>';
+  return h+'</div><details class="compare-note comparison-explanation"><summary>参考DPSの補足</summary><div>基準：'+esc(baseline.name)+'。DPSは非正規化の計算値です。DPS指数・増減率は補助情報です。'+(ready?'':'基準DPSが未算出・0以下の場合、指数と増減率は算出しません。')+'太字は各項目で数値が最大のセットです。1ヒット期待値とDPSは現在Step 5の攻撃条件を共通条件として計算します。DPSは最大会心率を使用します。所要時間は参考値のためDPSも参考値です。</div></details>';
 }
 function renderCachedBuildComparison(){if(lastBuildComparisonRows)$('compareOut').innerHTML=renderCompareTable(lastBuildComparisonRows,{baselineIndex:lastBuildComparisonBaselineIndex});}
 function referenceComboChange(row,baseline){
