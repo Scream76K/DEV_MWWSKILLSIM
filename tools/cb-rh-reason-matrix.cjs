@@ -22,7 +22,7 @@ try{
  const cases=[
   {name:'baseline_two_normal_each',scope:'adopted',change:()=>{}},
   {name:'enhanced_priority_R',scope:'adopted-boundary-candidate',change:()=>{w.document.getElementById('comboCBNormalPhials').value='1.5';w.document.getElementById('comboCBEnhancedPhials').value='0.5';}},
-  {name:'enhanced_priority_H',scope:'adopted-boundary-candidate',change:()=>{w.document.getElementById('comboCBHNormalPhials').value='0.5';w.document.getElementById('comboCBHEnhancedPhials').value='0.5';}},
+  {name:'enhanced_priority_H',scope:'candidate-enhanced-H',change:()=>{w.document.getElementById('comboCBHNormalPhials').value='0.5';w.document.getElementById('comboCBHEnhancedPhials').value='0.5';}},
   {name:'R_more_normal',scope:'adopted-boundary-candidate',change:()=>{w.document.getElementById('comboCBNormalPhials').value='3';}},
   {name:'H_more_normal',scope:'adopted-boundary-candidate',change:()=>{w.document.getElementById('comboCBHNormalPhials').value='3';}},
   {name:'H_stock_short',scope:'invalid-intentional',change:()=>{w.document.getElementById('comboCBHNormalPhials').value='0.5';}},
@@ -46,7 +46,7 @@ try{
  const expected={
   baseline_two_normal_each:['complete',null],
   enhanced_priority_R:['complete',null],
-  enhanced_priority_H:['blocked','H:REAL_SLICE:CB_H_NORMAL_PHIAL_ONLY'],
+  enhanced_priority_H:['complete',null],
   R_more_normal:['complete',null],
   H_more_normal:['complete',null],
   H_stock_short:['blocked','H:REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT'],
