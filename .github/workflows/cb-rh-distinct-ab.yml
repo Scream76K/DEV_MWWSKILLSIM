@@ -6,6 +6,7 @@ on:
     paths:
       - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
       - 'hope-hammer-browser-adapter.js'
+      - 'tools/cb-distinct-equipment-public-proof.cjs'
       - '.github/workflows/cb-rh-distinct-ab.yml'
   workflow_dispatch:
 permissions:
@@ -19,5 +20,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - run: npm ci --ignore-scripts
       - name: Verify R/H independent aggregation boundaries
         run: node --test tests/flamme-cb-rh-distinct-ab-regression.test.cjs
+      - name: Public different-equipment CB A/B proof
+        run: node tools/cb-distinct-equipment-public-proof.cjs
