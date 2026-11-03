@@ -2,7 +2,7 @@ name: CB R-H distinct A/B regression
 on:
   push:
     branches:
-      - flamme/cb-h-enhanced-provisional-20261103
+      - flamme/cb-h-enhanced-stock-ab-20261103
     paths:
       - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
       - 'hope-hammer-browser-adapter.js'
@@ -12,6 +12,7 @@ on:
       - 'tools/cb-rh-reason-matrix.cjs'
       - 'tools/cb-h-enhanced-isolated-probe.cjs'
       - 'tools/cb-h-enhanced-distinct-ab-proof.cjs'
+      - 'tools/cb-h-different-stock-ab-proof.cjs'
       - '.github/workflows/cb-rh-distinct-ab.yml'
   workflow_dispatch:
 permissions:
@@ -36,3 +37,5 @@ jobs:
         run: node tools/cb-h-enhanced-isolated-probe.cjs
       - name: Public H enhanced distinct-equipment A/B save and restore
         run: node tools/cb-h-enhanced-distinct-ab-proof.cjs
+      - name: Compare different H stocks under one shared condition
+        run: node tools/cb-h-different-stock-ab-proof.cjs
