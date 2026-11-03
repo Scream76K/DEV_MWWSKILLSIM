@@ -103,7 +103,11 @@
   if(!weapon||!Number.isInteger(weapon.id)||!Number.isInteger(weapon.gameId)||typeof weapon.kind!=='string')return fail('REAL_SLICE:CURRENT_WEAPON_NOT_SUPPORTED');
   if(!Array.isArray(weapon.specials))return fail('REAL_SLICE:WEAPON_SPECIALS_UNKNOWN');
   const elementSpecials=weapon.specials.filter(x=>x?.kind==='element');
-  if(weapon.specials.some(x=>x?.kind!=='element'))return fail('REAL_SLICE:WEAPON_SPECIALS_UNSUPPORTED');
+  // Charge Blade status buildup is not direct hit damage. Support only the
+  // MHDB single-status poison/paralysis/sleep records, without emitting status
+  // damage, procs, or buildup as physical/element/phial components.
+  const cbStatusOnly=weapon.kind==='charge-blade'&&weapon.specials.length===1&&elementSpecials.length===0&&weapon.specials[0]?.kind==='status'&&['poison','paralysis','sleep'].includes(weapon.specials[0]?.status)&&Number.isFinite(weapon.specials[0]?.damage?.display)&&weapon.specials[0].damage.display>=0;
+  if(weapon.specials.some(x=>x?.kind!=='element')&&!cbStatusOnly)return fail('REAL_SLICE:WEAPON_SPECIALS_UNSUPPORTED');
   if(elementSpecials.length>1)return fail('REAL_SLICE:MULTIPLE_ELEMENTS_UNSUPPORTED');
   if(!Array.isArray(weapon.skills))return fail('REAL_SLICE:WEAPON_SKILLS_UNKNOWN');
   // UI count applies to the explicit current target; API per-contact inputs remain supported.
