@@ -715,6 +715,37 @@ main.wrap > .grid > aside .save-build-row > button {min-height:42px;}
   display:none!important;
 }
 </style>
+<style id="flamme-ui-one-hit-diagnostics-stage10">
+/* Owner screenshot: keep raw results prominent, move opaque reason codes behind details. */
+#buildSummary .gs-one-hit-result .gs-value{
+  min-width:0;
+  text-align:left;
+  font-size:14px;
+  font-weight:600;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+#buildSummary .one-hit-compact{display:block;}
+#buildSummary .one-hit-diagnostics{
+  margin-top:6px;
+  font-size:12px;
+  font-weight:400;
+}
+#buildSummary .one-hit-diagnostics > summary{
+  cursor:pointer;
+  color:inherit;
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+#buildSummary .one-hit-diagnostic-body{
+  font-size:12px;
+  font-weight:400;
+  line-height:1.5;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  padding:8px 0;
+}
+</style>
 <style id="flamme-ui-developer-panel-separation-20261103">
 /* Keep verification inputs/handlers in the DOM, but separate them from ordinary user operation.
    Evidence review remains directly accessible at evidence-review.html. */
@@ -2735,13 +2766,25 @@ function renderSummary(){
   const conversionText=thunderConversionDisplay(one.channels?.normal?.diagnostics);
   const finalCBText=finalCB?` / ${one.channels?.normal?.execution?.status==='complete'?'実行後':'中断時'}：通常ビン${esc(finalCB.normalPhials)}本${finalCB.enhancedPhials!=null?'・強化ビン'+esc(finalCB.enhancedPhials)+'本':''}・直前行動${esc(finalCB.previousAction)}`:'';
   const oneText=one.status==='OK'?`${esc(cbIndependentMixDisplay(one))} 技 ${esc(one.conditionKey?.includes('HAM_SIDE_SWING')?'HAM_SIDE_SWING':'選択技')} / 通常 ${channelText('normal')}${attributeConversionDisplay(one.channels?.normal?.diagnostics)}${firstHitReferenceDisplay(one.channels?.normal?.diagnostics)}${igBodyScopeDisplay(one.channels?.normal?.diagnostics)} / 最大 ${channelText('maximum')}${attributeConversionDisplay(one.channels?.maximum?.diagnostics)}${firstHitReferenceDisplay(one.channels?.maximum?.diagnostics)}${igBodyScopeDisplay(one.channels?.maximum?.diagnostics)}${finalCBText}${conversionText}${black?`［黒蝕：基準 ${esc(black.normalState||'状態未入力')}／最大 OVERCOME・暫定採用］`:''}${excludedSkillDamageDisplay(one.channels?.normal?.diagnostics)}`:`未算出：${esc(one.reason||'RESULT_UNAVAILABLE')}`;
+  // User-facing one-hit result: show actual unnormalized values or a pending state;
+  // preserve full diagnostic text in an opt-in detail without changing evaluation.
+  const oneCompactChannel=ch=>{
+    const metrics=one.channels?.[ch]?.metrics;
+    const m=metrics?.firstHitReference??metrics?.comboTotalDamage;
+    return m?.status==='available'&&Number.isFinite(m.value)
+      ? Number(m.value).toFixed(1)
+      : '未算出';
+  };
+  const oneCompactText=one.status==='OK'
+    ? '通常 '+oneCompactChannel('normal')+' ／ 最大 '+oneCompactChannel('maximum')
+    : '未算出（詳細で理由を確認）';
   $('buildSummary').innerHTML=`<div class="game-status" style="grid-column:1/-1">
     <div class="gs-row"><span class="gs-label">攻撃力</span><span class="gs-value">${Math.round(s.attack)}<span class="gs-sub">真 ${Math.round(s.attackTrue)}</span></span></div>
     <div class="gs-row"><span class="gs-label">会心率</span><span class="gs-value">${aff}%</span></div>
     <div class="gs-row"><span class="gs-label">最大会心率</span><span class="gs-value">${maxAff}%</span></div>
     <div class="gs-row"><span class="gs-label">属性</span><span class="gs-value">${equipmentElementDisplay(s,{detail:true})}</span></div>
     <div class="gs-row"><span class="gs-label">防御力</span><span class="gs-value">${Math.round(s.defense)}</span></div>
-    <div class="gs-row"><span class="gs-label">選択技の実計算</span><span class="gs-value">${oneText}</span></div>
+    <div class="gs-row gs-one-hit-result"><span class="gs-label">選択技の実計算</span><span class="gs-value"><span class="one-hit-compact">${oneCompactText}</span><details class="one-hit-diagnostics"><summary>詳細・保留理由</summary><div class="one-hit-diagnostic-body">${oneText}</div></details></span></div>
   </div>`;
   const bonus=calcState.bonusDisplay||{series:[],group:[]};
   const bonusNames=new Set([...bonus.series,...bonus.group].map(x=>x.name));
