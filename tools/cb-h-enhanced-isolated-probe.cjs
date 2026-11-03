@@ -5,11 +5,8 @@ const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex
 assert.equal(hash(input),'9491bfc1cf357aed4967418949d78c0ddd73407c6461443a7b594a2b2710c810');
 for(const [k,n] of Object.entries(pack.counts))assert.equal(pack.data[k].length,n);
 const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
-const originalHtml=require('./dom-test-setup.cjs').readSimulatorHtml();
-const hGuard="if(chargeBladeState.enhancedPhial!==false||chargeBladeState.enhancedPhials!==0)return fail('REAL_SLICE:CB_H_NORMAL_PHIAL_ONLY');";
-assert.equal(originalHtml.split(hGuard).length,2,'expected exactly one H-only gate in test HTML');
-const probeHtml=originalHtml.replace(hGuard,"/* EXPERIMENTAL TEST ONLY: H enhanced-stock gate temporarily bypassed; no product changes */");
-const dom=new JSDOM(probeHtml,{url:'https://stage4.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('NETWORK_DISABLED'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}),w=dom.window;
+const candidateHtml=require('./dom-test-setup.cjs').readSimulatorHtml();
+const dom=new JSDOM(candidateHtml,{url:'https://stage4.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('NETWORK_DISABLED'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}),w=dom.window;
 const read=s=>JSON.parse(w.eval('JSON.stringify('+s+')'));
 const out={environment:'JSDOM, actual exported application MHDB; no synthetic equipment; DOM template load button; not Safari or game',source:{...pack,data:undefined},hashes:Object.fromEntries(['index.html','hope-hammer-browser-adapter.js',input,__filename].map(p=>[p,hash(p)])),cases:[],errors};
 try{
@@ -56,8 +53,8 @@ try{
   }
  }
  assert.deepEqual(errors,[]);
- out.outcome='PROBE_COMPLETED_NOT_ADOPTED';
+ out.outcome='CANDIDATE_TESTED_NOT_MERGED';
 }catch(e){out.failure=e.stack;process.exitCode=1;}finally{
- console.log(JSON.stringify({outcome:out.outcome,sourceGuardRemovedInMemoryOnly:true,sourceUrl:'https://kuroyonhon.com/mhwilds/memo/12.php',cases:out.cases,failure:out.failure,errors},null,2));
+ console.log(JSON.stringify({outcome:out.outcome,sourceGuardRemovedInMemoryOnly:false,sourceUrl:'https://kuroyonhon.com/mhwilds/memo/12.php',cases:out.cases,failure:out.failure,errors},null,2));
  dom.window.close();
 }
