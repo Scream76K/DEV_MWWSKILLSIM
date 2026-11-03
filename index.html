@@ -4515,7 +4515,7 @@ function directCanonicalComboTechnique(kind,id){
   if(['bow','heavy-bowgun','light-bowgun'].includes(kind))return Object.assign(new Technique({id:moveId,name:record?.techniqueName||id,time:0,mvs:[],source:'community'}),meta,{handler:'RangedReferenceHandler'});
   try{
     const hits=readCanonicalComboHits({...meta,id:moveId,custom:false});
-    if(kind==='charge-blade'&&CHARGE_BLADE_TECHNIQUES[id]?.phial)throw new Error(chargeBladePhialCountEvidence(id)===null?'CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED':'CB_COMBO_PHIAL_ROUTE_PENDING');
+    if(kind==='charge-blade'&&CHARGE_BLADE_TECHNIQUES[id]?.phial&&!chargeBladePhialCountEvidence(id))throw new Error('CB_FAIL_CLOSED:PHIAL_EXPLOSION_COUNT_UNVERIFIED');
     return Object.assign(new Technique({id:moveId,name:record.techniqueName,time:0,source:record.verificationStatus==='VERIFIED'?'verified':'community',mvs:hits.map(h=>({mv:h.mv,elementRatio:h.elementModifier}))}),meta);
   }catch(e){return Object.assign(new Technique({id:moveId,name:record?.techniqueName||id,time:0,mvs:[],source:'community'}),meta,{calculationBlocked:true,blockedReason:String(e.message||e)});}
 }
@@ -4765,6 +4765,24 @@ function chargeBladeComboDamage(move,ctx){
     const level=Number(ctx.critBonus);if(!Number.isInteger(level)||level<0||level>5)throw Error('CANONICAL_COMBO_CRIT_LEVEL');
     const result=chargeBladeSaedDamage(move.canonicalTechniqueId,{baseAttack:ctx.attack,attackComponents:calcState.stats.attackComponents,displayedElement:ctx.element,physicalHitzone:ctx.hz,elementalHitzone:ctx.ehz,sharpnessPhysical:ctx.sharp,sharpnessElement:ctx.esharp,affinity:ctx.affinity,criticalMultiplier:1.25+[0,.03,.06,.09,.12,.15][level]},ctx.chargeBladeState||{});
     return {...result,hits:[{p:result.physical,e:result.element,total:result.total,component:'SAED_BODY_AND_FIVE_PHIALS'}],handler:'ChargeBladeHandler'};
+  }
+  // Reuse the existing component resolver for source-backed phial techniques.
+  // It retains phial-count, coefficient, enhancement and finite-value guards.
+  if(move.canonicalKind==='charge-blade'&&CHARGE_BLADE_TECHNIQUES[move.canonicalTechniqueId]?.phial){
+    if(ctx.elementCrit)throw Error('CB_COMBO:ELEMENT_CRITICAL_CONNECTION_PENDING');
+    const level=Number(ctx.critBonus);
+    if(!Number.isInteger(level)||level<0||level>5)throw Error('CANONICAL_COMBO_CRIT_LEVEL');
+    const result=chargeBladeResolveTechniqueDamage(move.canonicalTechniqueId,{
+      baseAttack:ctx.attack,attackComponents:calcState.stats.attackComponents,
+      displayedElement:ctx.element,physicalHitzone:ctx.hz,elementalHitzone:ctx.ehz,
+      sharpnessPhysical:ctx.sharp,sharpnessElement:ctx.esharp,
+      affinity:ctx.affinity,criticalMultiplier:1.25+[0,.03,.06,.09,.12,.15][level],
+      negativeCriticalMultiplier:.75
+    },ctx.chargeBladeState||{});
+    if(![result.physical,result.element,result.special,result.total].every(Number.isFinite))
+      throw Error('CB_COMBO:COMPONENT_NONFINITE');
+    return {...result,hits:[{p:result.physical,e:result.element,special:result.special,total:result.total,
+      component:'BODY_AXE_BOOST_AND_PHIAL'}],handler:'ChargeBladeHandler'};
   }
   if(move.canonicalKind!=='charge-blade'||move.canonicalTechniqueId!=='CB_SWORD_TO_AXE_MORPH')throw new Error('CB_COMBO_PHIAL_ROUTE_PENDING');
   const state=ctx.chargeBladeState;if(!state||typeof state.shieldBoosted!=='boolean'||typeof state.axeBoosted!=='boolean')throw new Error('盾・斧の強化状態を選択してください。');
