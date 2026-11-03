@@ -43,6 +43,23 @@ try{
    for(const ch of ['normal','maximum']) assert.equal(channels[ch].status,'complete',JSON.stringify(channels[ch]));
   }
  }
+ const expected={
+  baseline_two_normal_each:['complete',null],
+  enhanced_priority_R:['complete',null],
+  enhanced_priority_H:['blocked','H:REAL_SLICE:CB_H_NORMAL_PHIAL_ONLY'],
+  R_more_normal:['complete',null],
+  H_more_normal:['complete',null],
+  H_stock_short:['blocked','H:REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT'],
+  H_mode_missing:['blocked','H:REAL_SLICE:CB_MIX_EXPLICIT_AXE_START_REQUIRED'],
+  R_stock_short:['blocked','R:REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT']
+ };
+ for(const item of out.cases)for(const ch of ['normal','maximum']){
+  const [status,reason]=expected[item.name];
+  assert.equal(item.channels[ch].status,status,item.name+' '+ch);
+  assert.equal(item.channels[ch].reason,reason,item.name+' '+ch);
+  assert.equal(Number.isFinite(item.channels[ch].total),status==='complete',item.name+' '+ch+' partial total');
+  if(status==='complete')assert.equal(item.channels[ch].total,item.channels[ch].r+item.channels[ch].h,item.name+' '+ch+' raw sum');
+ }
  assert.deepEqual(errors,[]);
  out.outcome='PASS';
 }catch(e){out.failure=e.stack;process.exitCode=1;}finally{
