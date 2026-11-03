@@ -33,7 +33,7 @@ try{
   }
   assert.equal(obj.channels.normal.status,'complete','normal baseline available '+id);
   assert.equal(obj.channels.maximum.status,'complete','candidate maximum must complete on exact R/H '+id+' '+obj.channels.maximum.reason);
-  assert.equal(obj.channels.maximum.reason,null);
+  assert.ok(obj.channels.maximum.reason==null,'candidate maximum has no failure reason');
   assert.ok(Number.isFinite(obj.channels.maximum.total));
   assert.equal(r.channels?.maximum?.diagnostics?.bladescaleFirstHit?.candidateScope,'CB_RH_FIRST_PHYSICAL_CONTACT_ONLY_OWNER_REVIEW_PENDING');
   const protectedFirst={R:'CB_ELEMENT_DISCHARGE_1:physical:0',H:'CB_AXE_TO_SWORD_MORPH:physical:0'};
