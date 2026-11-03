@@ -15,6 +15,7 @@ on:
       - 'tools/cb-h-power-real-weapons-ab-proof.cjs'
       - 'tools/cb-production-unresolved-census.cjs'
       - 'tools/cb-artia-source-diagnostic.cjs'
+      - 'tools/cb-artia-legal-restores-proof.cjs'
       - 'tools/cb-h-enhanced-isolated-probe.cjs'
       - 'tools/cb-h-enhanced-distinct-ab-proof.cjs'
       - 'tools/cb-h-different-stock-ab-proof.cjs'
@@ -48,6 +49,8 @@ jobs:
         run: node tools/cb-production-unresolved-census.cjs
       - name: Locate Artia restore blockers in production source
         run: node tools/cb-artia-source-diagnostic.cjs
+      - name: Verify legal Artia restore input against inherited invalid choices
+        run: node tools/cb-artia-legal-restores-proof.cjs
       - name: H enhanced phial candidate full public route proof
         run: node tools/cb-h-enhanced-isolated-probe.cjs
       - name: Public H enhanced distinct-equipment A/B save and restore
