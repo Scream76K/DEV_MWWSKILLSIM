@@ -32,9 +32,16 @@ try{
   w.eval("powerAttributeConversionMaximum.value='OFF';App.combo.syncFromDOM();calcBuild();");
   const off=read('calcState.realOneHit');
   const without152=Object.fromEntries(['normal','maximum'].map(ch=>{const c=off?.channels?.[ch];return [ch,{status:c?.execution?.status??'missing',reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason??off?.reason??null,value:c?.metrics?.comboTotalDamage?.value??null}]}));
-  out.cases.push({id:entry.id,name:entry.name,phial:entry.phial,channels,without152,specials,directElementNormal});
+  const nonDragon=!specials.some(x=>x.kind==='element'&&x.element==='dragon');
+  if(nonDragon&&entry.phial==='impact'&&['normal','maximum'].every(ch=>without152[ch].status==='complete')){
+   for(const ch of ['normal','maximum']){
+    assert.equal(channels[ch].status,'complete','non-dragon 152 ON must not block '+entry.id+' '+ch+' '+channels[ch].reason);
+    assert.equal(channels[ch].value,without152[ch].value,'152 dragon-only direct buff must not affect non-dragon '+entry.id+' '+ch);
+   }
+  }
+  out.cases.push({id:entry.id,name:entry.name,phial:entry.phial,channels,without152,specials,directElementNormal,nonDragon});
  }
- out.counts={totalAvailableInDB:{impact:impact.length,power:power.length},tested:picked.length,byPhial:{},without152:{},artiaTestInput:'EXPLICIT_RESTORE_NONE_ONLY_FOR_MHDB_145_146_147',wetTestInput:'EXPLICIT_DRY_ONLY_FOR_MHDB_153_154',thunderCandidateInput:'EXPLICIT_NO_ARMOR_RESISTANCE_ZERO_FOR_MHDB_1073_1074_NOT_ADOPTED',bladescaleCandidate:'CB_FIRST_PHYSICAL_HIT_PER_INDEPENDENT_ROUTE_NOT_OWNER_APPROVED'};
+ out.counts={nondragonNoopChecked:out.cases.filter(c=>c.nonDragon&&c.phial==='impact'&&['normal','maximum'].every(ch=>c.without152[ch].status==='complete')).length,totalAvailableInDB:{impact:impact.length,power:power.length},tested:picked.length,byPhial:{},without152:{},artiaTestInput:'EXPLICIT_RESTORE_NONE_ONLY_FOR_MHDB_145_146_147',wetTestInput:'EXPLICIT_DRY_ONLY_FOR_MHDB_153_154',thunderCandidateInput:'EXPLICIT_NO_ARMOR_RESISTANCE_ZERO_FOR_MHDB_1073_1074_NOT_ADOPTED',bladescaleCandidate:'CB_FIRST_PHYSICAL_HIT_PER_INDEPENDENT_ROUTE_NOT_OWNER_APPROVED'};
  for(const type of ['impact','element']){
   const subset=out.cases.filter(c=>c.phial===type),details={total:subset.length,complete:0,blocked:0,reasons:{}};
   for(const c of subset){
