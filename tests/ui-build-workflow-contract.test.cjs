@@ -57,3 +57,21 @@ test('saved build names occupy the flexible middle column', () => {
   assert.ok(html.includes('data-build-load'));
   assert.ok(html.includes('data-build-del'));
 });
+
+test('skill entries remain readable in narrow build workspace', () => {
+  const css = extractStyle('flamme-ui-skill-deco-readability-stage7');
+  assert.ok(css.includes('#skillWorkspaceRight #skillOutput .skill-game-grid'));
+  assert.ok(css.includes('grid-template-columns:minmax(0,1fr)'));
+  assert.ok(css.includes('#skillWorkspaceRight #skillOutput .skill-level'));
+  assert.ok(css.includes('white-space:nowrap'));
+  assert.ok(html.includes('function renderSkillGameBlock('));
+  assert.ok(html.includes('function renderBonusSkillGameBlock('));
+});
+test('decoration selectors retain their original data bindings', () => {
+  const css = extractStyle('flamme-ui-skill-deco-readability-stage7');
+  assert.ok(css.includes('#armorSelectors .slot-line select.decoSel'));
+  assert.ok(css.includes('#charmEditor .charm-deco-row select.decoSel'));
+  assert.ok(css.includes('min-height:42px!important'));
+  assert.ok(html.includes('function bindInlineDecos('));
+  assert.ok(html.includes('data-deco-kind='));
+});
