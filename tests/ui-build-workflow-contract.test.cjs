@@ -80,3 +80,14 @@ test('decoration selectors retain their original data bindings', () => {
   assert.ok(html.includes('function bindInlineDecos('));
   assert.ok(html.includes('data-deco-kind='));
 });
+
+test('save-build name is full-width at phone and tablet widths', () => {
+  const css = extractStyle('flamme-ui-save-layout-stage8');
+  assert.ok(css.includes('#buildName'));
+  assert.ok(css.includes('min-height:42px'));
+  assert.ok(css.includes('@media (max-width:1120px)'));
+  assert.ok(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'));
+  assert.ok(css.includes('grid-column:1/-1'));
+  assert.ok(html.includes('id="saveBuild"'));
+  assert.ok(html.includes('id="clearBuildName"'));
+});
