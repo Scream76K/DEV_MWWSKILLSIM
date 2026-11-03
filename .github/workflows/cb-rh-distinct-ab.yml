@@ -2,7 +2,7 @@ name: CB R-H distinct A/B regression
 on:
   push:
     branches:
-      - flamme/cb-bladescale-first-hit-candidate-20261104
+      - flamme/cb-power-h-product-candidate-20261104
     paths:
       - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
       - 'hope-hammer-browser-adapter.js'
@@ -14,6 +14,7 @@ on:
       - 'tools/cb-h-power-component-audit.cjs'
       - 'tools/cb-h-power-real-weapons-ab-proof.cjs'
       - 'tools/cb-production-unresolved-census.cjs'
+      - 'tools/cb-power-h-public-census.cjs'
       - 'tools/cb-last-four-contract-audit.cjs'
       - 'tools/cb-thunder-mixed-isolated-probe.cjs'
       - 'tools/cb-bladescale-first-contact-audit.cjs'
@@ -49,6 +50,8 @@ jobs:
         run: node tools/cb-h-power-component-audit.cjs
       - name: Real power-element CB weapons A/B save compare restore (isolation only)
         run: node tools/cb-h-power-real-weapons-ab-proof.cjs
+      - name: Census all 20 actual power-element H weapon candidates
+        run: node tools/cb-power-h-public-census.cjs
       - name: Census actual MHDB CB production unresolved cases
         run: node tools/cb-production-unresolved-census.cjs
       - name: Audit last four CB source contracts and explicit inputs
