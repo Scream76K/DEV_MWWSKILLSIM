@@ -27,6 +27,11 @@ try{
   {name:'H_more_normal',scope:'adopted-boundary-candidate',change:()=>{w.document.getElementById('comboCBHNormalPhials').value='3';}},
   {name:'H_stock_short',scope:'invalid-intentional',change:()=>{w.document.getElementById('comboCBHNormalPhials').value='0.5';}},
   {name:'H_mode_missing',scope:'invalid-intentional',change:()=>{w.document.getElementById('comboCBHMode').value='';}},
+  {name:'H_axe_off_enhanced_half_normal_half',scope:'invalid-cross-type',change:()=>{w.document.getElementById('comboCBAxe').value='0';w.document.getElementById('comboCBHEnhancedPhials').value='0.5';w.document.getElementById('comboCBHNormalPhials').value='0.5';}},
+  {name:'H_axe_off_enhanced_two',scope:'candidate-axe-off',change:()=>{w.document.getElementById('comboCBAxe').value='0';w.document.getElementById('comboCBHEnhancedPhials').value='2';w.document.getElementById('comboCBHNormalPhials').value='0';}},
+  {name:'H_enhanced_half_no_normal',scope:'invalid-insufficient',change:()=>{w.document.getElementById('comboCBHEnhancedPhials').value='0.5';w.document.getElementById('comboCBHNormalPhials').value='0';}},
+  {name:'H_shield_off_enhanced',scope:'invalid-shield',change:()=>{w.document.getElementById('comboCBShield').value='0';w.document.getElementById('comboCBHEnhancedPhials').value='1';}},
+  {name:'H_sword_on_enhanced',scope:'invalid-sword',change:()=>{w.document.getElementById('comboCBSword').value='1';w.document.getElementById('comboCBHEnhancedPhials').value='1';}},
   {name:'R_stock_short',scope:'invalid-intentional',change:()=>{w.document.getElementById('comboCBNormalPhials').value='1.5';}}
  ];
  for(const testCase of cases){
@@ -51,6 +56,11 @@ try{
   H_more_normal:['complete',null],
   H_stock_short:['blocked','H:REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT'],
   H_mode_missing:['blocked','H:REAL_SLICE:CB_MIX_EXPLICIT_AXE_START_REQUIRED'],
+  H_axe_off_enhanced_half_normal_half:['blocked','H:REAL_SLICE:CB_ED1_CROSS_TYPE_DAMAGE_ALLOCATION_UNRESOLVED'],
+  H_axe_off_enhanced_two:['complete',null],
+  H_enhanced_half_no_normal:['blocked','H:REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT'],
+  H_shield_off_enhanced:['blocked','H:REAL_SLICE:CB_H_EXPLICIT_MODE_SHIELD_SWORD_REQUIRED'],
+  H_sword_on_enhanced:['blocked','H:REAL_SLICE:CB_H_EXPLICIT_MODE_SHIELD_SWORD_REQUIRED'],
   R_stock_short:['blocked','R:REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT']
  };
  for(const item of out.cases)for(const ch of ['normal','maximum']){
