@@ -109,7 +109,7 @@ test('consumer UI hides diagnostics without deleting comparison results or calcu
     'tr[data-comparison-metric="relative-max-power-100"]']) {
     assert.ok(css.includes(selector), 'missing consumer UI separation: ' + selector);
   }
-  assert.ok(html.includes('data-comparison-metric="power-index"'));
+  assert.ok(html.includes("['normal','火力指数（計算値）［非正規化］','power-index']"));
   assert.ok(html.includes('data-comparison-metric="max-power-index"'));
   assert.ok(html.includes('function renderCompareTableChunk('));
   assert.ok(html.includes('function renderArtia('));
