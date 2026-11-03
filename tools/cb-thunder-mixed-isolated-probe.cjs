@@ -6,10 +6,8 @@ assert.equal(hash(input),'9491bfc1cf357aed4967418949d78c0ddd73407c6461443a7b594a
 for(const [k,n] of Object.entries(pack.counts))assert.equal(pack.data[k].length,n);
 const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const productionHtml=require('./dom-test-setup.cjs').readSimulatorHtml();
-const exactGate="if(elementType!=='thunder'||!conversionComponentsSupported)return fail('REAL_SLICE:THUNDER_CONVERSION_BODY_SCOPE_UNSUPPORTED');";
-assert.equal(productionHtml.split(exactGate).length,2,'thunder scope gate changed');
-const probeHtml=productionHtml.replace(exactGate,"if(elementType!=='thunder')return fail('REAL_SLICE:THUNDER_CONVERSION_BODY_SCOPE_UNSUPPORTED'); /* ISOLATED_SCOPE_PROBE_ONLY */");
-const dom=new JSDOM(probeHtml,{url:'https://stage4.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('NETWORK_DISABLED'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}),w=dom.window;
+// Run the unchanged feature-branch production HTML; no test-time gate patch.
+const dom=new JSDOM(productionHtml,{url:'https://stage4.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('NETWORK_DISABLED'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}),w=dom.window;
 const read=s=>JSON.parse(w.eval('JSON.stringify('+s+')'));
 const out={environment:'JSDOM, actual exported application MHDB; no synthetic equipment; DOM template load button; not Safari or game',source:{...pack,data:undefined},hashes:Object.fromEntries(['index.html','hope-hammer-browser-adapter.js',input,__filename].map(p=>[p,hash(p)])),cases:[],errors};
 try{
@@ -66,8 +64,8 @@ try{
   }
  }
  assert.deepEqual(errors,[]);
- out.outcome='ISOLATED_THUNDER_SCOPE_DIAGNOSTIC_NOT_ADOPTED';
+ out.outcome='CANDIDATE_THUNDER_SCOPE_TESTED_NOT_MERGED';
 }catch(e){out.failure=e.stack;process.exitCode=1;}finally{
- console.log(JSON.stringify({outcome:out.outcome,sourceScopeBypassInMemoryOnly:true,cases:out.cases,failure:out.failure,errors},null,2));
+ console.log(JSON.stringify({outcome:out.outcome,sourceScopeBypassInMemoryOnly:false,cases:out.cases,failure:out.failure,errors},null,2));
  dom.window.close();
 }
