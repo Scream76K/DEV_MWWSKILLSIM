@@ -2,7 +2,7 @@ name: CB R-H distinct A/B regression
 on:
   push:
     branches:
-      - flamme/cb-thunder-rh-limited-candidate-20261103
+      - flamme/cb-thunder-saved-ab-20261104
     paths:
       - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
       - 'hope-hammer-browser-adapter.js'
@@ -17,6 +17,7 @@ on:
       - 'tools/cb-last-four-contract-audit.cjs'
       - 'tools/cb-thunder-mixed-isolated-probe.cjs'
       - 'tools/cb-bladescale-first-contact-audit.cjs'
+      - 'tools/cb-thunder-real-weapons-saved-ab.cjs'
       - 'tools/cb-artia-source-diagnostic.cjs'
       - 'tools/cb-artia-legal-restores-proof.cjs'
       - 'tools/cb-h-enhanced-isolated-probe.cjs'
@@ -54,6 +55,8 @@ jobs:
         run: node tools/cb-last-four-contract-audit.cjs
       - name: Thunder CB exact R/H candidate component regression
         run: node tools/cb-thunder-mixed-isolated-probe.cjs
+      - name: Thunder CB real equipment saved A/B regression
+        run: node tools/cb-thunder-real-weapons-saved-ab.cjs
       - name: Audit CB bladescale first-contact versus multi-hit R/H scope
         run: node tools/cb-bladescale-first-contact-audit.cjs
       - name: Locate Artia restore blockers in production source
