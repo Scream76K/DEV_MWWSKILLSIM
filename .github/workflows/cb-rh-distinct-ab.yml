@@ -16,6 +16,7 @@ on:
       - 'tools/cb-production-unresolved-census.cjs'
       - 'tools/cb-last-four-contract-audit.cjs'
       - 'tools/cb-thunder-mixed-isolated-probe.cjs'
+      - 'tools/cb-bladescale-first-contact-audit.cjs'
       - 'tools/cb-artia-source-diagnostic.cjs'
       - 'tools/cb-artia-legal-restores-proof.cjs'
       - 'tools/cb-h-enhanced-isolated-probe.cjs'
@@ -53,6 +54,8 @@ jobs:
         run: node tools/cb-last-four-contract-audit.cjs
       - name: Thunder CB exact R/H candidate component regression
         run: node tools/cb-thunder-mixed-isolated-probe.cjs
+      - name: Audit CB bladescale first-contact versus multi-hit R/H scope
+        run: node tools/cb-bladescale-first-contact-audit.cjs
       - name: Locate Artia restore blockers in production source
         run: node tools/cb-artia-source-diagnostic.cjs
       - name: Verify legal Artia restore input against inherited invalid choices
