@@ -6236,18 +6236,27 @@ function chargeBladeResolveProfileDamage(profileKey,stats={},state={}){
   return {engineVersion:CHARGE_BLADE_ENGINE_VERSION,profileId:p.id,techniques,physical:sum('physical'),element:sum('element'),special:sum('special'),total:sum('total'),status:'READY'};
 }
 function chargeBladeComparisonResult(buildA={},buildX={},stateA={},stateX={}){
-  const ar=chargeBladeResolveProfileDamage('RELEASE_ROUTE',buildA,stateA),ah=chargeBladeResolveProfileDamage('AED_ROUTE',buildA,stateA);
-  const xr=chargeBladeResolveProfileDamage('RELEASE_ROUTE',buildX,stateX),xh=chargeBladeResolveProfileDamage('AED_ROUTE',buildX,stateX);
-  if(!(ar.total>0)||!(ah.total>0))throw new Error('CB_FAIL_CLOSED:INVALID_BASELINE_POWER');
-  const durations=chargeBladeVerifiedRouteDurations();
-  const composite=chargeBladeCompositeRatio(xr.total/ar.total,xh.total/ah.total,durations);
-  const componentRatio=(key)=>chargeBladeCompositeRatio(ar[key]>0?xr[key]/ar[key]:1,ah[key]>0?xh[key]/ah[key]:1,durations).ratio;
-  return {baseline:{release:ar,aed:ah},candidate:{release:xr,aed:xh},relativePowerChange:composite.ratio-1,ratio:composite.ratio,weights:composite.weights,
-    componentRelativeChange:{physical:componentRatio('physical')-1,element:componentRatio('element')-1,special:componentRatio('special')-1},status:'READY'};
+  // R and H each start independently. Sum unrounded damage, never time-weight.
+  const routes=(stats,state)=>({
+    release:chargeBladeResolveProfileDamage('RELEASE_ROUTE',stats,state?.release??state),
+    aed:chargeBladeResolveProfileDamage('AED_ROUTE',stats,state?.aed??state)
+  });
+  const a=routes(buildA,stateA),x=routes(buildX,stateX);
+  const sum=(pair,key)=>{
+    const values=[pair.release?.[key],pair.aed?.[key]];
+    if(values.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0))throw new Error('CB_FAIL_CLOSED:INDEPENDENT_ROUTE_VALUE:'+key);
+    return values[0]+values[1];
+  };
+  const base=sum(a,'total'),candidate=sum(x,'total');
+  if(!(base>0))throw new Error('CB_FAIL_CLOSED:INVALID_BASELINE_POWER');
+  const change=key=>{const denom=sum(a,key);return denom>0?sum(x,key)/denom-1:null;};
+  return {baseline:a,candidate:x,baselineComboPower:base,candidateComboPower:candidate,
+    relativePowerChange:candidate/base-1,ratio:candidate/base,
+    componentRelativeChange:{physical:change('physical'),element:change('element'),special:change('special')},
+    aggregation:'INDEPENDENT_R_PLUS_H_UNROUNDED_SUM',status:'READY'};
 }
 // r25: NORMAL/MAX condition and Build Comparison adapter.
-// This is still isolated from the production comparison UI. It establishes the common
-// result contract first, so Charge Blade can be connected without changing Generic Engine.
+// Historical auxiliary adapter; no duration-based weighting in the adopted combo total.
 function chargeBladeConditionStats(buildStats={},condition='NORMAL'){
   const mode=String(condition||'NORMAL').toUpperCase();
   if(mode!=='NORMAL'&&mode!=='MAX') throw new Error(`CB_FAIL_CLOSED:UNKNOWN_CONDITION:${condition}`);
@@ -6262,35 +6271,39 @@ function chargeBladeConditionStats(buildStats={},condition='NORMAL'){
   };
 }
 function chargeBladeResolveConditionPair(buildStats={},state={}){
-  const normalStats=chargeBladeConditionStats(buildStats,'NORMAL');
-  const maxStats=chargeBladeConditionStats(buildStats,'MAX');
-  const releaseNormal=chargeBladeResolveProfileDamage('RELEASE_ROUTE',normalStats,state);
-  const aedNormal=chargeBladeResolveProfileDamage('AED_ROUTE',normalStats,state);
-  const releaseMax=chargeBladeResolveProfileDamage('RELEASE_ROUTE',maxStats,state);
-  const aedMax=chargeBladeResolveProfileDamage('AED_ROUTE',maxStats,state);
-  return {NORMAL:{release:releaseNormal,aed:aedNormal},MAX:{release:releaseMax,aed:aedMax}};
+  const resolve=condition=>{
+    const stats=chargeBladeConditionStats(buildStats,condition);
+    return {
+      release:chargeBladeResolveProfileDamage('RELEASE_ROUTE',stats,state?.release??state),
+      aed:chargeBladeResolveProfileDamage('AED_ROUTE',stats,state?.aed??state)
+    };
+  };
+  return {NORMAL:resolve('NORMAL'),MAX:resolve('MAX')};
 }
-function chargeBladeCompositePower(pair,condition,durations){
+function chargeBladeCompositePower(pair,condition){
   const x=pair?.[condition];
-  if(!x||!Number.isFinite(x.release?.total)||!Number.isFinite(x.aed?.total)) throw new Error(`CB_FAIL_CLOSED:CONDITION_RESULT:${condition}`);
-  const d=durations||chargeBladeVerifiedRouteDurations();
-  const totalFrames=Number(d.releaseFrames)+Number(d.aedFrames);
-  if(!(totalFrames>0)) throw new Error('CB_FAIL_CLOSED:ROUTE_DURATION_UNVERIFIED');
-  const wR=Number(d.releaseFrames)/totalFrames,wH=Number(d.aedFrames)/totalFrames;
-  const blend=k=>Number(x.release[k]||0)*wR+Number(x.aed[k]||0)*wH;
-  return {comparisonPower:blend('total'),physical:blend('physical'),element:blend('element'),special:blend('special'),weights:{release:wR,aed:wH}};
+  if(!x)throw new Error('CB_FAIL_CLOSED:CONDITION_RESULT:'+condition);
+  const add=key=>{
+    const values=[x.release?.[key],x.aed?.[key]];
+    if(values.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0))throw new Error('CB_FAIL_CLOSED:INDEPENDENT_ROUTE_VALUE:'+key);
+    return values[0]+values[1];
+  };
+  return {comparisonPower:add('total'),physical:add('physical'),element:add('element'),special:add('special'),
+    aggregation:'INDEPENDENT_R_PLUS_H_UNROUNDED_SUM'};
 }
 function chargeBladeBuildComparisonAdapter(buildA={},buildB=null,stateA={},stateB=null){
-  const durations=chargeBladeVerifiedRouteDurations();
+  // No duration lookup: route R and route H each contribute one raw total.
   const aPair=chargeBladeResolveConditionPair(buildA,stateA);
-  const aNormal=chargeBladeCompositePower(aPair,'NORMAL',durations),aMax=chargeBladeCompositePower(aPair,'MAX',durations);
-  if(!(aNormal.comparisonPower>0)) throw new Error('CB_FAIL_CLOSED:INVALID_BASELINE_POWER');
-  const rel=(x,base)=>base>0?x/base-1:null;
-  const pack=(x)=>({comparisonPower:x.comparisonPower,relativePowerChange:rel(x.comparisonPower,aNormal.comparisonPower),componentRelativeChange:{physical:rel(x.physical,aNormal.physical),element:rel(x.element,aNormal.element),special:rel(x.special,aNormal.special)},components:{physical:x.physical,element:x.element,special:x.special},weights:x.weights});
+  const aNormal=chargeBladeCompositePower(aPair,'NORMAL'),aMax=chargeBladeCompositePower(aPair,'MAX');
+  if(!(aNormal.comparisonPower>0))throw new Error('CB_FAIL_CLOSED:INVALID_BASELINE_POWER');
+  const rel=(value,base)=>base>0?value/base-1:null;
+  const pack=x=>({comparisonPower:x.comparisonPower,relativePowerChange:rel(x.comparisonPower,aNormal.comparisonPower),
+    componentRelativeChange:{physical:rel(x.physical,aNormal.physical),element:rel(x.element,aNormal.element),special:rel(x.special,aNormal.special)},
+    components:{physical:x.physical,element:x.element,special:x.special},aggregation:x.aggregation});
   const result={engineVersion:CHARGE_BLADE_ENGINE_VERSION,baseline:'A_NORMAL',A:{NORMAL:{...pack(aNormal),relativePowerChange:0},MAX:pack(aMax)},B:null,status:'READY'};
   if(buildB){
-    const bPair=chargeBladeResolveConditionPair(buildB,stateB||stateA);
-    result.B={NORMAL:pack(chargeBladeCompositePower(bPair,'NORMAL',durations)),MAX:pack(chargeBladeCompositePower(bPair,'MAX',durations))};
+    const bPair=chargeBladeResolveConditionPair(buildB,stateB??stateA);
+    result.B={NORMAL:pack(chargeBladeCompositePower(bPair,'NORMAL')),MAX:pack(chargeBladeCompositePower(bPair,'MAX'))};
   }
   return result;
 }
