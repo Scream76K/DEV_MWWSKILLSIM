@@ -91,3 +91,27 @@ test('save-build name is full-width at phone and tablet widths', () => {
   assert.ok(html.includes('id="saveBuild"'));
   assert.ok(html.includes('id="clearBuildName"'));
 });
+
+test('owner review keeps desktop chapters equal and desktop skill blocks in two columns', () => {
+  const css = extractStyle('flamme-ui-owner-review-stage9');
+  assert.ok(css.includes('@media (min-width:1121px)'));
+  assert.ok(css.includes('grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important'));
+  assert.ok(css.includes('#skillWorkspaceRight #skillOutput .skill-game-grid'));
+  assert.ok(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'));
+  assert.ok(html.includes('id="armorBuildWorkspace"'));
+  assert.ok(html.includes('id="skillOutput"'));
+});
+test('consumer UI hides diagnostics without deleting comparison results or calculations', () => {
+  const css = extractStyle('flamme-ui-owner-review-stage9');
+  for (const selector of ['#weaponKindDiag', '#powerCoverageDetails',
+    '#comparisonReadiness', '#comparisonVerifiedTransfer',
+    'tr[data-comparison-metric="relative-power-100"]',
+    'tr[data-comparison-metric="relative-max-power-100"]']) {
+    assert.ok(css.includes(selector), 'missing consumer UI separation: ' + selector);
+  }
+  assert.ok(html.includes('data-comparison-metric="power-index"'));
+  assert.ok(html.includes('data-comparison-metric="max-power-index"'));
+  assert.ok(html.includes('function renderCompareTableChunk('));
+  assert.ok(html.includes('function renderArtia('));
+  assert.ok(!html.includes('防具・護石は④の左ペインで編集します。'));
+});
