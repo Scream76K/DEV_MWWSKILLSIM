@@ -808,6 +808,28 @@ main.wrap > .grid > aside,main.wrap > .grid > section,
 #armorSelectors .equip-inline:has(select[data-armor="waist"]) > .equip-title:first-child::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2056%2064%22%3E%3Crect%20x%3D%221.5%22%20y%3D%221.5%22%20width%3D%2253%22%20height%3D%2261%22%20rx%3D%2210%22%20fill%3D%22%2325251f%22%20stroke%3D%22%238f8169%22%20stroke-width%3D%223%22%2F%3E%3Cg%20fill%3D%22%23e5e1d3%22%20stroke%3D%22%23292822%22%20stroke-width%3D%222.2%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M9%2016h38v13H9z%22%2F%3E%3Cpath%20d%3D%22M14%2029l-4%2022%2013%204%205-16%205%2016%2013-4-4-22%22%2F%3E%3Cpath%20d%3D%22M24%2016v13M32%2016v13M16%2035l-2%2013M40%2035l2%2013%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%2220%22%20width%3D%228%22%20height%3D%226%22%20rx%3D%221%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")!important;}
 #armorSelectors .equip-inline:has(select[data-armor="legs"]) > .equip-title:first-child::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2056%2064%22%3E%3Crect%20x%3D%221.5%22%20y%3D%221.5%22%20width%3D%2253%22%20height%3D%2261%22%20rx%3D%2210%22%20fill%3D%22%2325251f%22%20stroke%3D%22%238f8169%22%20stroke-width%3D%223%22%2F%3E%3Cg%20fill%3D%22%23e5e1d3%22%20stroke%3D%22%23292822%22%20stroke-width%3D%222.2%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M14%209h15l-1%2021-8%2012H9l3-18z%22%2F%3E%3Cpath%20d%3D%22M30%209h15l-1%2018%203%2015H36l-7-12z%22%2F%3E%3Cpath%20d%3D%22M9%2042l12-1%207%2010-3%205H6v-8zM36%2041l11%201%205%208-2%206H31l-2-5z%22%2F%3E%3Cpath%20d%3D%22M15%2020h11M33%2020h10%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")!important;}
 .charm-section-heading::before{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2056%2064%22%3E%3Crect%20x%3D%221.5%22%20y%3D%221.5%22%20width%3D%2253%22%20height%3D%2261%22%20rx%3D%2210%22%20fill%3D%22%2325251f%22%20stroke%3D%22%238f8169%22%20stroke-width%3D%223%22%2F%3E%3Cg%20fill%3D%22%23e5e1d3%22%20stroke%3D%22%23292822%22%20stroke-width%3D%222.2%22%20stroke-linejoin%3D%22round%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M28%208l14%2019-14%2020-14-20z%22%2F%3E%3Cpath%20d%3D%22M28%2014v27M19%2027h18%22%2F%3E%3Cpath%20d%3D%22M28%2047v9M18%2056h20%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")!important;}
+
+/* Hide only diagnostic affordances; do not remove evidence ingestion or calculation handlers. */
+#bowComparisonSettings,
+#comparisonComboEvidence,
+#comparisonEvidenceChecklist,
+#compareOut details[data-comparison-pending],
+#compareOut details[data-comparison-coverage],
+#compareOut details[data-comparison-pending="r248"],
+#compareOut details.comparison-explanation,
+#compareOut [data-comparison-coverage="r248"] {display:none!important;}
+#compareOut details:has(#comparisonEvidenceInput),
+#compareOut details:has(#comparisonMeasurementInput),
+#compareOut details:has(#comparisonCaptureAudit),
+#compareOut details:has(#comparisonVerifiedTransfer) {display:none!important;}
+/* Narrow-screen compare numbers stay legible and scroll only within the table. */
+#compareOut {overflow-wrap:break-word;}
+#compareOut .compare-table th:first-child {min-width:115px;}
+@media (max-width:980px){
+ main.wrap {max-width:100%;}
+ main.wrap > .grid {grid-template-columns:minmax(0,1fr)!important;}
+ main.wrap > .grid > aside,main.wrap > .grid > section {width:100%;}
+}
 /* UI owner feedback stage 2: remove redundant comparison diagnostics from normal view. */
 #compareOut tr[data-comparison-metric="pipeline-normal"],
 #compareOut tr[data-comparison-metric="pipeline-maximum"],
