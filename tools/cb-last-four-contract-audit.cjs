@@ -26,7 +26,19 @@ try{
   w.eval("window.__auditCB=DB.weapons.find(x=>x.id===window.__auditCBId&&x.kind==='charge-blade');if(!window.__auditCB)throw Error('MHDB_CB_AUDIT_WEAPON_MISSING');App.build.setWeapon(window.__auditCB);weaponKind.value='charge-blade';weapon.innerHTML='<option value='+window.__auditCB.id+'>'+window.__auditCB.name+'</option>';weapon.value=String(window.__auditCB.id);renderComboForWeapon();App.state.combo.moves=[];restoreComboRows();comboPreset.value='adopted:cb_release_r';comboPreset.dispatchEvent(new Event('change'));restoreComboCBState({mode:'AXE',shieldBoosted:true,axeBoosted:true,swordBoosted:false,phialType:'IMPACT',enhancedPhial:false,previousAction:'CHARGE',normalPhials:2,enhancedPhials:0,mixMode:'R_H_INDEPENDENT',mixH:{mode:'AXE',previousAction:'AXE_NEUTRAL',normalPhials:2,enhancedPhials:0}});comboCBMode.value='AXE';comboCBMix.value='R_H_INDEPENDENT';comboCBHMode.value='AXE';comboCBHPreviousAction.value='AXE_NEUTRAL';comboCBHNormalPhials.value='2';comboCBHEnhancedPhials.value='0';monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';powerBlackEclipseState.value='OVERCOME';powerAttributeConversionNormal.value='OFF';powerAttributeConversionMaximum.value='OFF';App.combo.syncFromDOM();calcBuild();");
   const actual=read("({real:calcState.realOneHit,stats:calcState.stats,weapon:selectedWeapon()})");
   const summary=r=>Object.fromEntries(['normal','maximum'].map(ch=>{const c=r?.channels?.[ch];return[ch,{status:c?.execution?.status??'missing',reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason??r?.reason??null,value:c?.metrics?.comboTotalDamage?.value??null}]}));
-  out.cases.push({id,name:actual.weapon.name,skills:actual.weapon.skills.map(x=>({id:x.skill?.id,name:x.skill?.name,level:x.level})),specials:actual.weapon.specials,element:actual.stats.element,elementType:actual.stats.elementType,thunderResistanceInput:actual.stats.thunderResistanceInput,real:summary(actual.real),reason:actual.real?.reason,scope:actual.real?.scope,conditional:actual.stats.conditionalConditionPlan?.pending});
+  const entry={id,name:actual.weapon.name,skills:actual.weapon.skills.map(x=>({id:x.skill?.id,name:x.skill?.name,level:x.level})),specials:actual.weapon.specials,element:actual.stats.element,elementType:actual.stats.elementType,thunderResistanceInput:actual.stats.thunderResistanceInput,real:summary(actual.real),reason:actual.real?.reason,scope:actual.real?.scope,conditional:actual.stats.conditionalConditionPlan?.pending};
+  if([1073,1074].includes(id)){
+   w.eval("build.armor={head:null,chest:null,arms:null,waist:null,legs:null};calcBuild()");
+   const noArmor=read("({real:calcState.realOneHit,thunderResistanceInput:calcState.stats.thunderResistanceInput})");
+   entry.noArmor={thunderResistanceInput:noArmor.thunderResistanceInput,real:summary(noArmor.real)};
+   assert.equal(entry.noArmor.thunderResistanceInput?.status,'KNOWN_LIMITED',id+' legal no-armor resistance must resolve');
+   assert.equal(entry.noArmor.thunderResistanceInput?.total,0,id+' zero thunder armor');
+   for(const ch of ['normal','maximum']){
+    assert.equal(entry.noArmor.real[ch].status,'blocked',id+' must not bypass unapproved mixed component scope');
+    assert.match(entry.noArmor.real[ch].reason,/THUNDER_CONVERSION_BODY_SCOPE_UNSUPPORTED/,id+' '+ch);
+   }
+  }
+  out.cases.push(entry);
  }
  assert.deepEqual(errors,[]);
  out.outcome='AUDITED_NO_SCOPE_BYPASS';
