@@ -8613,6 +8613,45 @@ function hbgNormalPowerForStats(st,cond,total={}){
   return {status:maximum?'REFERENCE_ONLY':'MAXIMUM_PENDING',reason:null,profileId:normal.profileId,normal,maximum,maximumReason:conditionPlan.pending.join(' / ')||null,conditionPlan,hbgState:{...cond.hbgState},normalScope:normal.scope,maximumScope:conditionPlan.scope,liveGameVerification:'PENDING'};
  }catch(e){return pending(String(e.message));}
 }
+// Main STANDARD display path: each channel owns its own condition plan and
+// R/H resource snapshots; the old duration-weighted legacy adapter is not used.
+function chargeBladeStandardPowerForStats(st={},cond={},total={}){
+  const pending=reason=>({status:'PENDING',reason,profileId:'CB_STANDARD_R_PLUS_H',
+    normal:null,maximum:null,maximumReason:reason,conditionPlan:null});
+  let state,plan;
+  try{
+    state=chargeBladeStateFromBuildStats(st,cond.chargeBladeState??comboCBStoredState());
+    plan=standardPowerConditionPlan(st,total,'charge-blade',cond);
+  }catch(error){return pending(String(error?.message||error));}
+  const evalChannel=(condition,stats)=>{
+    try{
+      const source=chargeBladeStatsFromCalcState(stats,cond);
+      const base={...state};
+      if(base.mixMode&&(!base.mixH||typeof base.mixH!=='object'||Array.isArray(base.mixH)))
+        throw Error('CB_FAIL_CLOSED:H_INDEPENDENT_START_STATE_REQUIRED');
+      const h=base.mixMode?{...base,...base.mixH}:{...base};
+      const release=chargeBladeResolveProfileDamage('RELEASE_ROUTE',source,base);
+      const aed=chargeBladeResolveProfileDamage('AED_ROUTE',source,h);
+      const values={physical:release.physical+aed.physical,
+        element:release.element+aed.element,special:release.special+aed.special};
+      const comparisonPower=release.total+aed.total;
+      if(![...Object.values(values),comparisonPower].every(Number.isFinite))
+        throw Error('CB_FAIL_CLOSED:STANDARD_NONFINITE:'+condition);
+      return {comparisonPower,...values,profileId:'CB_STANDARD_R_PLUS_H',
+        routes:{release:release.total,aed:aed.total},basis:'INDEPENDENT_R_PLUS_H_UNROUNDED',
+        resourcePlans:{release:release.resourcePlan,aed:aed.resourcePlan},
+        condition,affinity:source.affinity};
+    }catch(error){return {reason:String(error?.message||error)};}
+  };
+  const n=evalChannel('NORMAL',plan.normal);
+  const m=plan.pending.length?{reason:plan.pending.join(' / ')}:evalChannel('MAX',plan.maximum);
+  const normal=n.reason?null:n,maximum=m.reason?null:m;
+  return {status:normal?(maximum?'REFERENCE_ONLY':'MAXIMUM_PENDING'):'PENDING',
+    reason:n.reason||null,profileId:'CB_STANDARD_R_PLUS_H',
+    normal,maximum,maximumReason:m.reason||null,conditionPlan:plan,
+    normalScope:'CB_RH_INDEPENDENT_ADOPTED_COMPONENTS',
+    maximumScope:plan.scope,criticalBoostLevel:Number(cond.cb??0)};
+}
 function standardPowerForStatsSingleHealth(kind,st,cond,total={}){
   const availability=genericStandardProfileAvailability(kind),handler=buildComparisonHandlerDescriptor(kind);
   const scorchPlan=techniqueScorchPlan(String(kind||''),GENERIC_STANDARD_PROFILES[kind]?.techniqueIds||[]);
@@ -8622,6 +8661,7 @@ function standardPowerForStatsSingleHealth(kind,st,cond,total={}){
   try{const bonusPlan=standardGroupPowerPlan(st,cond.gutsState??'BEFORE',total,kind);if(bonusPlan.unresolvedEffects.length)throw Error(bonusPlan.unresolvedEffects.map(x=>x.reason).join(' / '));}catch(e){return {...pending(String(e.message)),activeBonusEffects:JSON.parse(JSON.stringify(st.activeBonusEffects||[]))};}
   if(kind==='bow')return bowPowerForStats(st,cond,total);
   if(kind==='heavy-bowgun'&&cond.hbgState?.ammoLevel!=null)return hbgNormalPowerForStats(st,cond,total);
+  if(kind==='charge-blade')return chargeBladeStandardPowerForStats(st,cond,total);
   if(handler.handler!=='GenericWeaponHandler')return pending(handler.reason||'SPECIAL_STANDARD_COMPONENTS_PENDING');
   if(availability.status!=='READY')return pending(availability.reason||'STANDARD_PROFILE_PENDING');
   if(kind==='great-sword'&&st.activeBonusEffects?.some(x=>x.name==='ダークアーツ')){
