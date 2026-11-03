@@ -36,7 +36,7 @@ try{
   w.__cbBase=baseline;w.eval('restoreComboCBState(window.__cbBase)');
   w.document.getElementById('comboCBHNormalPhials').value=String(p.hNormal);
   w.document.getElementById('comboCBHEnhancedPhials').value=String(p.hEnhanced);
-  w.eval('App.combo.syncFromDOM();calcBuild()');
+  w.document.getElementById('comboCBMode').value='AXE';w.eval('App.combo.syncFromDOM();calcBuild()');
   const r=read("calcState.realOneHit");
   out.cases.push({name:p.name,realStatus:r?.status,reason:r?.reason,channels:Object.fromEntries(['normal','maximum'].map(ch=>[ch,{execution:r.channels?.[ch]?.execution,metric:r.channels?.[ch]?.metrics?.comboTotalDamage,h:r.routes?.H?.channels?.[ch]?.metrics?.comboTotalDamage,finalH:r.routes?.H?.channels?.[ch]?.finalState?.chargeBlade}]))});
  }
