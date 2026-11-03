@@ -37,7 +37,9 @@ test('enhanced stock takes priority and invalid crossover/underflow fails closed
  assert.equal(enhanced.finalState.normalPhials,5);
  assert.throws(()=>plan('RELEASE_ROUTE',{...R,enhancedPhials:0.75}),/EXPLICIT_PHIAL_STOCK_REQUIRED/);
  assert.throws(()=>plan('RELEASE_ROUTE',{...R,normalPhials:1}),/INSUFFICIENT_PHIALS/);
- assert.throws(()=>plan('RELEASE_ROUTE',{...R,enhancedPhials:0.5}),/INSUFFICIENT_PHIALS|CROSS_TYPE_DAMAGE_ALLOCATION_UNRESOLVED/);
+ const split=plan('RELEASE_ROUTE',{...R,enhancedPhials:0.5});
+ assert.equal(split.steps[0].stockKind,'enhanced');
+ assert.equal(split.steps[1].stockKind,'normal');
 });
 test('H adopted start and predecessor constraints cannot be bypassed',()=>{
  assert.throws(()=>plan('AED_ROUTE',{...H,phialType:'POWER_ELEMENT'}),/H_START_CONTRACT_INVALID/);
