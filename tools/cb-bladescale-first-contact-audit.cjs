@@ -32,8 +32,13 @@ try{
    const c=r?.channels?.[channel];obj.channels[channel]={status:c?.execution?.status,reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason,total:c?.metrics?.comboTotalDamage?.value??null};
   }
   assert.equal(obj.channels.normal.status,'complete','normal baseline available '+id);
-  assert.equal(obj.channels.maximum.status,'blocked','maximum unapproved multi-hit must not silently complete '+id);
-  assert.match(obj.channels.maximum.reason,/BLADESCALE_FIRST_HIT_SCOPE_PENDING/);
+  assert.equal(obj.channels.maximum.status,'complete','candidate maximum must complete on exact R/H '+id+' '+obj.channels.maximum.reason);
+  assert.equal(obj.channels.maximum.reason,null);
+  assert.ok(Number.isFinite(obj.channels.maximum.total));
+  assert.equal(r.channels?.maximum?.diagnostics?.bladescaleFirstHit?.candidateScope,'CB_RH_FIRST_PHYSICAL_CONTACT_ONLY_OWNER_REVIEW_PENDING');
+  const protectedFirst={R:'CB_ELEMENT_DISCHARGE_1:physical:0',H:'CB_AXE_TO_SWORD_MORPH:physical:0'};
+  obj.maximumRouteComponents={};
+  for(const route of ['R','H'])obj.maximumRouteComponents[route]=(r?.routes?.[route]?.channels?.maximum?.components||[]).filter(c=>c.status==='available').map(c=>({id:c.id,value:c.value}));
   for(const route of ['R','H']){
    const channel=r?.routes?.[route]?.channels?.normal;
    const components=channel?.components||[];
@@ -42,9 +47,44 @@ try{
    obj.routes[route]={total:channel?.metrics?.comboTotalDamage?.value,physicalHitCount:physical.length,firstPhysicalHit:physical[0]??null,physicalIds:physical.map(c=>c.id),componentCount:components.length};
    assert.ok(physical.length>1,route+' has more than one physical hit: cannot use the one-hit-only rule wholesale');
   }
+  // Counterfactual test-only input removes solely the innate bladescale skill from
+  // the real weapon; this is NOT an additional MHDB weapon or adopted build.
+  const counterfactual={...w.__bladescaleCB,skills:w.__bladescaleCB.skills.filter(x=>x.skill?.id!==163)};
+  assert.equal(counterfactual.skills.length,w.__bladescaleCB.skills.length-1,'one innate skill removed in control');
+  w.__cbBladescaleCounterfactual=counterfactual;
+  w.eval("DB.weapons=DB.weapons.map(x=>x.id===window.__cbBladescaleCounterfactual.id?window.__cbBladescaleCounterfactual:x);rebuildWeaponIndex(DB.weapons);App.build.setWeapon(window.__cbBladescaleCounterfactual);calcBuild();");
+  const control=read('calcState.realOneHit');
+  obj.control={};
+  for(const ch of ['normal','maximum'])assert.equal(control?.channels?.[ch]?.execution?.status,'complete','counterfactual '+id+' '+ch);
+  for(const route of ['R','H']){
+   const actual=r?.routes?.[route]?.channels?.maximum?.components||[];
+   const reference=control?.routes?.[route]?.channels?.maximum?.components||[];
+   assert.equal(actual.length,reference.length,route+' component cardinality');
+   const refMap=new Map(reference.map(c=>[c.id,c]));
+   const protectedId=protectedFirst[route];
+   let firstFound=0,otherDifferences=[];
+   for(const c of actual){
+    const baseline=refMap.get(c.id);
+    assert.ok(baseline,'component id present in control '+c.id);
+    if(c.id===protectedId){
+     assert.equal(c.status,'available',protectedId+' candidate available');
+     assert.equal(baseline.status,'available',protectedId+' control available');
+     assert.ok(c.value>baseline.value,protectedId+' only first hit gets improved sharpness');
+     firstFound++;obj.control[route]={id:c.id,withBlade:c.value,withoutBlade:baseline.value};
+    }else if(c.status==='available'&&baseline.status==='available'&&Math.abs(c.value-baseline.value)>1e-9){
+     otherDifferences.push({id:c.id,actual:c.value,control:baseline.value});
+    }else{
+     assert.equal(c.status,baseline.status,c.id+' disposition unchanged');
+    }
+   }
+   assert.equal(firstFound,1,route+' exactly one first contact');
+   assert.deepEqual(otherDifferences,[],route+' all other physical/element/phial components unchanged');
+  }
+  // Restore MHDB source record, not the counterfactual, before the next weapon.
+  w.eval("DB.weapons=DB.weapons.map(x=>x.id===window.__bladescaleCB.id?window.__bladescaleCB:x);rebuildWeaponIndex(DB.weapons);App.build.setWeapon(window.__bladescaleCB);");
   out.cases.push(obj);
  }
  assert.deepEqual(errors,[]);
- out.outcome='BLADESCALE_FIRST_CONTACT_AUDIT_PASS_NO_ADOPTION';
+ out.outcome='BLADESCALE_CB_FIRST_CONTACT_CANDIDATE_PASS_NOT_OWNER_APPROVED';
 }catch(e){out.failure=e.stack;process.exitCode=1;}
 finally{console.log(JSON.stringify({outcome:out.outcome,cases:out.cases,failure:out.failure,errors},null,2));dom.window.close();}
