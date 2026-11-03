@@ -42,7 +42,7 @@ try{
   const el=w.document.querySelector('[data-build-load="'+c.name+'"]');assert.ok(el,'load '+c.name);el.click();w.calcBuild();
   const loaded=read('({snapshot:buildSnapshot(),result:calcState.realOneHit})');
   assert.deepEqual(loaded.result.channels,c.result.channels,'reload '+c.name);
-  assert.deepEqual(loaded.snapshot,c.snapshot,'snapshot reload '+c.name);
+  assert.deepEqual((({savedAt,...rest})=>rest)(loaded.snapshot),(({savedAt,...rest})=>rest)(c.snapshot),'snapshot reload '+c.name);
  }
  out.before=read('({snapshot:buildSnapshotComparable(buildSnapshot()),result:calcState.realOneHit})');
  w.eval("document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true);runBuildCompare();");
@@ -65,6 +65,6 @@ try{
  out.outcome='PASS';
 }catch(e){out.failure=e.stack;process.exitCode=1;}
 finally{
- console.log(JSON.stringify({outcome:out.outcome,builds:out.cases.map(c=>({name:c.name,armor:c.armor,attack:c.stats?.attackTrue,totals:Object.fromEntries(['normal','maximum'].map(ch=>[ch,c.result?.channels?.[ch]?.metrics?.comboTotalDamage])),reason:c.result?.reason})),comparison:out.rows?.map(r=>({name:r.name,normal:r.pipeline?.channels?.normal?.metrics?.comboTotalDamage,maximum:r.pipeline?.channels?.maximum?.metrics?.comboTotalDamage})),failure:out.failure,errors},null,2));
+ console.log(JSON.stringify({outcome:out.outcome,builds:out.cases.map(c=>({name:c.name,armor:Object.fromEntries(Object.entries(c.armor||{}).map(([k,v])=>[k,v?.id??null])),attack:c.stats?.attackTrue,totals:Object.fromEntries(['normal','maximum'].map(ch=>[ch,c.result?.channels?.[ch]?.metrics?.comboTotalDamage])),reason:c.result?.reason})),comparison:out.rows?.map(r=>({name:r.name,normal:r.pipeline?.channels?.normal?.metrics?.comboTotalDamage,maximum:r.pipeline?.channels?.maximum?.metrics?.comboTotalDamage})),failure:out.failure,errors},null,2));
  dom.window.close();
 }
