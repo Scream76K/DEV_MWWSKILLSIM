@@ -6124,15 +6124,63 @@ function chargeBladeTypedComponentComparison(baseline,candidate){
     componentSumDelta:b.componentSum-a.componentSum,componentSumPercent:a.componentSum>0?(b.componentSum/a.componentSum-1)*100:null,
     scope:'DIAGNOSTIC_ONLY_NOT_STANDARD',dpsReady:false};
 }
+// Keep resource changes local to one R or H evaluation; never mutate a saved build.
+function chargeBladePlanProfileResources(profileKey,state={}){
+  const profile=CHARGE_BLADE_STANDARD_PROFILES[profileKey];
+  if(!profile)throw Error('CB_FAIL_CLOSED:UNKNOWN_RESOURCE_PROFILE:'+profileKey);
+  const rules=window.MHCBDischargeResourceRules,ed1=window.MHCBED1ResourceRule,h=window.MHCBHRouteRule;
+  if(rules?.status!=='OWNER_APPROVED'||ed1?.status!=='OWNER_APPROVED')
+    throw Error('CB_FAIL_CLOSED:RESOURCE_RULE_UNAVAILABLE');
+  let normal=state.normalPhials,enhanced=state.enhancedPhials,previous=state.previousAction;
+  if(![normal,enhanced].every(n=>typeof n==='number'&&Number.isFinite(n)&&n>=0&&Number.isSafeInteger(n*2)))
+    throw Error('CB_FAIL_CLOSED:EXPLICIT_PHIAL_STOCK_REQUIRED');
+  if(typeof state.axeBoosted!=='boolean'||typeof previous!=='string'||!previous)
+    throw Error('CB_FAIL_CLOSED:EXPLICIT_AXE_AND_PREDECESSOR_REQUIRED');
+  if(profileKey==='AED_ROUTE'&&(
+      h?.status!=='OWNER_APPROVED_PROVISIONAL'
+      ||JSON.stringify(profile.techniqueIds)!==JSON.stringify(h.techniqueIds)
+      ||state.mode!=='AXE'||previous!=='AXE_NEUTRAL'||state.shieldBoosted!==true
+      ||state.swordBoosted!==false||state.phialType!=='IMPACT'
+      ||enhanced!==0||state.enhancedPhial!==false))
+    throw Error('CB_FAIL_CLOSED:H_START_CONTRACT_INVALID');
+  const amount=rules.baseConsumption*(state.axeBoosted?ed1.axeBoostedConsumptionMultiplier:1);
+  if(![amount,rules.baseConsumption,ed1.axeBoostedConsumptionMultiplier].every(Number.isFinite)
+      ||amount<=0||!Number.isSafeInteger(amount*2))
+    throw Error('CB_FAIL_CLOSED:RESOURCE_AMOUNT_INVALID');
+  const steps=[];
+  for(const id of profile.techniqueIds){
+    if(profileKey==='AED_ROUTE'&&h.prefixIds?.includes(id)){
+      if(id==='CB_AXE_TO_SWORD_MORPH'&&previous!=='AXE_NEUTRAL')
+        throw Error('CB_FAIL_CLOSED:H_MORPH_PREDECESSOR');
+      if(id==='CB_SHIELD_THRUST'&&previous!=='CB_AXE_TO_SWORD_MORPH')
+        throw Error('CB_FAIL_CLOSED:H_SHIELD_PREDECESSOR');
+      steps.push({techniqueId:id,consume:0,stockKind:null,normalAfter:normal,enhancedAfter:enhanced});
+      previous=id==='CB_SHIELD_THRUST'?'SHIELD_THRUST':id;
+      continue;
+    }
+    if(!rules.predecessors?.[id]?.includes(previous))
+      throw Error('CB_FAIL_CLOSED:RESOURCE_PREDECESSOR:'+id);
+    if(enhanced>0&&enhanced<amount)
+      throw Error('CB_FAIL_CLOSED:CROSS_TYPE_DAMAGE_ALLOCATION_UNRESOLVED:'+id);
+    const kind=enhanced>0?'enhanced':'normal';
+    if((kind==='enhanced'?enhanced:normal)<amount)
+      throw Error('CB_FAIL_CLOSED:INSUFFICIENT_PHIALS:'+id);
+    if(kind==='enhanced')enhanced-=amount;else normal-=amount;
+    steps.push({techniqueId:id,consume:amount,stockKind:kind,normalAfter:normal,enhancedAfter:enhanced});
+    previous=id;
+  }
+  return {steps,finalState:{...state,normalPhials:normal,enhancedPhials:enhanced,previousAction:previous}};
+}
 function chargeBladeResolveProfileDamage(profileKey,stats={},state={}){
   const p=CHARGE_BLADE_STANDARD_PROFILES[profileKey];if(!p)throw new Error(`CB_FAIL_CLOSED:unknown_profile:${profileKey}`);
+  const plan=chargeBladePlanProfileResources(profileKey,state);
   const profileState={...state,profileId:p.id};
   const techniques=p.techniqueIds.map(id=>chargeBladeResolveTechniqueDamage(id,stats,profileState));
   const sum=k=>techniques.reduce((a,x)=>{
     if(typeof x[k]!=='number'||!Number.isFinite(x[k]))throw Error('CB_FAIL_CLOSED:PROFILE_COMPONENT:'+String(x.techniqueId??'UNKNOWN')+':'+k);
     return a+x[k];
   },0);
-  return {engineVersion:CHARGE_BLADE_ENGINE_VERSION,profileId:p.id,techniques,physical:sum('physical'),element:sum('element'),special:sum('special'),total:sum('total'),status:'READY'};
+  return {engineVersion:CHARGE_BLADE_ENGINE_VERSION,profileId:p.id,techniques,resourcePlan:plan.steps,finalResourceState:plan.finalState,physical:sum('physical'),element:sum('element'),special:sum('special'),total:sum('total'),status:'READY'};
 }
 function chargeBladeComparisonResult(buildA={},buildX={},stateA={},stateX={}){
   const a=chargeBladeResolveConditionPair({...buildA,maxAffinity:buildA.maxAffinity??buildA.affinity},stateA);
@@ -8179,6 +8227,11 @@ function chargeBladeStateFromBuildStats(st={},overrides={}){
     axeBoosted:overrides.axeBoosted??true,
     rapidMorphLevel:Number(overrides.rapidMorphLevel??st.rapidMorphLevel??0),
     artilleryMultiplier:Number(overrides.artilleryMultiplier??st.artilleryMultiplier??1),
+    normalPhials:overrides.normalPhials??st.normalPhials??null,
+    enhancedPhials:overrides.enhancedPhials??st.enhancedPhials??null,
+    previousAction:overrides.previousAction??st.previousAction??null,
+    mode:overrides.mode??st.mode??null,
+    swordBoosted:overrides.swordBoosted??st.swordBoosted??null,
     mixMode:overrides.mixMode??st.mixMode??null,
     mixH:overrides.mixH??st.mixH??null
   };
