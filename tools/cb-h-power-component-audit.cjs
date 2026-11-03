@@ -61,7 +61,7 @@ try{
  // target water hitzone 0.3 and the existing sourced phial coefficients. The reference
  // count is an adopted H-candidate input, not independently game-verified here.
  const element=260/10, shield=1.3, waterHZ=0.3;
- const expected={
+ const componentExpected={
   power_normal_two:{
    'CB_SHIELD_THRUST:phial:0':element*1.5*shield*waterHZ,
    'CB_AED:phial:0':element*4.2*shield*waterHZ*2,
@@ -78,8 +78,8 @@ try{
    const rows=item.h[ch];
    assert.equal(rows.length,3,item.name+' '+ch+' component count');
    for(const c of rows){
-    assert.ok(Object.hasOwn(expected[item.name],c.id),'unexpected '+c.id);
-    assert.ok(Math.abs(c.value-expected[item.name][c.id])<1e-9,item.name+' '+ch+' '+c.id+' expected '+expected[item.name][c.id]+' got '+c.value);
+    assert.ok(Object.hasOwn(componentExpected[item.name],c.id),'unexpected '+c.id);
+    assert.ok(Math.abs(c.value-componentExpected[item.name][c.id])<1e-9,item.name+' '+ch+' '+c.id+' expected '+componentExpected[item.name][c.id]+' got '+c.value);
     assert.ok(c.source,'missing provenance '+c.id);
    }
   }
