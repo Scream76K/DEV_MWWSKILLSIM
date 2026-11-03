@@ -34,8 +34,9 @@ try{
    assert.equal(entry.noArmor.thunderResistanceInput?.status,'KNOWN_LIMITED',id+' legal no-armor resistance must resolve');
    assert.equal(entry.noArmor.thunderResistanceInput?.total,0,id+' zero thunder armor');
    for(const ch of ['normal','maximum']){
-    assert.equal(entry.noArmor.real[ch].status,'blocked',id+' must not bypass unapproved mixed component scope');
-    assert.match(entry.noArmor.real[ch].reason,/THUNDER_CONVERSION_BODY_SCOPE_UNSUPPORTED/,id+' '+ch);
+    assert.equal(entry.noArmor.real[ch].status,'complete',id+' narrow candidate must complete only with resolved inputs');
+    assert.equal(entry.noArmor.real[ch].reason,null,id+' '+ch+' no scope or resistance reason');
+    assert.ok(Number.isFinite(entry.noArmor.real[ch].value),id+' '+ch+' finite total');
    }
   }
   out.cases.push(entry);
