@@ -24,7 +24,7 @@ try{
  const picked=[...impact,...power];
  for(const entry of picked){
   w.__censusWeaponId=entry.id;
-  w.eval("window.__censusWeapon=DB.weapons.find(x=>x.id===window.__censusWeaponId&&x.kind==='charge-blade');if(!window.__censusWeapon)throw Error('MHDB_CB_WEAPON_NOT_FOUND');App.build.setWeapon(window.__censusWeapon);weaponKind.value='charge-blade';weapon.innerHTML='<option value='+window.__censusWeapon.id+'>'+window.__censusWeapon.name+'</option>';weapon.value=String(window.__censusWeapon.id);renderComboForWeapon();App.state.combo.moves=[];restoreComboRows();comboPreset.value='adopted:cb_release_r';comboPreset.dispatchEvent(new Event('change'));restoreComboCBState({mode:'AXE',shieldBoosted:true,axeBoosted:true,swordBoosted:false,phialType:window.__censusWeapon.phial==='element'?'POWER_ELEMENT':'IMPACT',enhancedPhial:false,previousAction:'CHARGE',normalPhials:2,enhancedPhials:0,mixMode:'R_H_INDEPENDENT',mixH:{mode:'AXE',previousAction:'AXE_NEUTRAL',normalPhials:2,enhancedPhials:0}});comboCBMode.value='AXE';comboCBMix.value='R_H_INDEPENDENT';comboCBHMode.value='AXE';comboCBHPreviousAction.value='AXE_NEUTRAL';comboCBHNormalPhials.value='2';comboCBHEnhancedPhials.value='0';if([145,146,147].includes(window.__censusWeapon.id))build.artia.restores=Array(5).fill('none');monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';powerBlackEclipseState.value='OVERCOME';powerAttributeConversionNormal.value='OFF';powerAttributeConversionMaximum.value='ON';App.combo.syncFromDOM();calcBuild();");
+  w.eval("window.__censusWeapon=DB.weapons.find(x=>x.id===window.__censusWeaponId&&x.kind==='charge-blade');if(!window.__censusWeapon)throw Error('MHDB_CB_WEAPON_NOT_FOUND');App.build.setWeapon(window.__censusWeapon);weaponKind.value='charge-blade';weapon.innerHTML='<option value='+window.__censusWeapon.id+'>'+window.__censusWeapon.name+'</option>';weapon.value=String(window.__censusWeapon.id);renderComboForWeapon();App.state.combo.moves=[];restoreComboRows();comboPreset.value='adopted:cb_release_r';comboPreset.dispatchEvent(new Event('change'));restoreComboCBState({mode:'AXE',shieldBoosted:true,axeBoosted:true,swordBoosted:false,phialType:window.__censusWeapon.phial==='element'?'POWER_ELEMENT':'IMPACT',enhancedPhial:false,previousAction:'CHARGE',normalPhials:2,enhancedPhials:0,mixMode:'R_H_INDEPENDENT',mixH:{mode:'AXE',previousAction:'AXE_NEUTRAL',normalPhials:2,enhancedPhials:0}});comboCBMode.value='AXE';comboCBMix.value='R_H_INDEPENDENT';comboCBHMode.value='AXE';comboCBHPreviousAction.value='AXE_NEUTRAL';comboCBHNormalPhials.value='2';comboCBHEnhancedPhials.value='0';if([145,146,147].includes(window.__censusWeapon.id))build.artia.restores=Array(5).fill('none');if([153,154].includes(window.__censusWeapon.id)){powerWetNormal.value='DRY';powerWetMaximum.value='DRY';}monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';powerBlackEclipseState.value='OVERCOME';powerAttributeConversionNormal.value='OFF';powerAttributeConversionMaximum.value='ON';App.combo.syncFromDOM();calcBuild();");
   const r=read('calcState.realOneHit');
   const directElementNormal=entry.phial==='impact'?read("['R','H'].flatMap(route=>(calcState.realOneHit?.routes?.[route]?.channels?.normal?.components||[]).filter(x=>String(x.id||'').includes(':element:')).map(x=>x.value)).reduce((a,b)=>a+(Number(b)||0),0)"):null;
   const channels=Object.fromEntries(['normal','maximum'].map(ch=>{const c=r?.channels?.[ch];return [ch,{status:c?.execution?.status??'missing',reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason??r?.reason??null,value:c?.metrics?.comboTotalDamage?.value??null}]}));
@@ -34,7 +34,7 @@ try{
   const without152=Object.fromEntries(['normal','maximum'].map(ch=>{const c=off?.channels?.[ch];return [ch,{status:c?.execution?.status??'missing',reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason??off?.reason??null,value:c?.metrics?.comboTotalDamage?.value??null}]}));
   out.cases.push({id:entry.id,name:entry.name,phial:entry.phial,channels,without152,specials,directElementNormal});
  }
- out.counts={totalAvailableInDB:{impact:impact.length,power:power.length},tested:picked.length,byPhial:{},without152:{},artiaTestInput:'EXPLICIT_RESTORE_NONE_ONLY_FOR_MHDB_145_146_147'};
+ out.counts={totalAvailableInDB:{impact:impact.length,power:power.length},tested:picked.length,byPhial:{},without152:{},artiaTestInput:'EXPLICIT_RESTORE_NONE_ONLY_FOR_MHDB_145_146_147',wetTestInput:'EXPLICIT_DRY_ONLY_FOR_MHDB_153_154'};
  for(const type of ['impact','element']){
   const subset=out.cases.filter(c=>c.phial===type),details={total:subset.length,complete:0,blocked:0,reasons:{}};
   for(const c of subset){
@@ -50,6 +50,12 @@ try{
   assert.ok(c,'Artia CB record '+id);
   assert.equal(c.without152.normal.status,'complete','Artia legal none normal '+id);
   assert.equal(c.without152.maximum.status,'complete','Artia legal none maximum '+id);
+ }
+ for(const id of [153,154]){
+  const c=out.cases.find(x=>x.id===id);
+  assert.ok(c,'Wet Blade CB record '+id);
+  assert.equal(c.without152.normal.status,'complete','Wet Blade explicit DRY normal '+id);
+  assert.equal(c.without152.maximum.status,'complete','Wet Blade explicit DRY maximum '+id);
  }
  const statusCases=out.cases.filter(c=>c.phial==='impact'&&c.specials.length===1&&c.specials[0].kind==='status'&&['poison','paralysis','sleep'].includes(c.specials[0].status));
  assert.ok(statusCases.length>=16,'MHDB snapshot status cohort unexpected shrink');
