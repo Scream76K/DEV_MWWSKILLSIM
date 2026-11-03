@@ -115,3 +115,20 @@ test('consumer UI hides diagnostics without deleting comparison results or calcu
   assert.ok(html.includes('function renderArtia('));
   assert.ok(!html.includes('防具・護石は④の左ペインで編集します。'));
 });
+
+test('owner review: concise one-hit values with opt-in diagnostic text', () => {
+  const css = extractStyle('flamme-ui-one-hit-diagnostics-stage10');
+  assert.ok(css.includes('.one-hit-diagnostic-body'));
+  assert.ok(html.includes("const oneCompactChannel=ch=>"));
+  assert.ok(html.includes('one-hit-compact'));
+  assert.ok(html.includes('one-hit-diagnostics'));
+  assert.ok(html.includes('oneText'));
+});
+test('owner review: comparison explanations collapse without deleting the computation', () => {
+  const css = extractStyle('flamme-ui-one-hit-diagnostics-stage10');
+  assert.ok(css.includes('.comparison-explanation'));
+  assert.ok(html.includes('火力計算条件の詳細'));
+  assert.ok(html.includes('参考DPSの補足'));
+  assert.ok(html.includes('renderCompareTableChunk('));
+  assert.ok(html.includes('data-comparison-metric="power-index"'));
+});
