@@ -9,7 +9,7 @@ const htmlOriginal=require('./dom-test-setup.cjs').readSimulatorHtml();
 const hGate="if(officialPhialType!=='IMPACT'||chargeBladeState.phialType!=='IMPACT')return fail('REAL_SLICE:CB_H_IMPACT_ONLY');";
 assert.equal(htmlOriginal.split(hGate).length,2,'H gate drift');
 const htmlProbe=htmlOriginal.replace(hGate,'/* IN-MEMORY POWER ELEMENT PROBE ONLY; PRODUCT UNCHANGED */');
-const dom=new JSDOM(htmlProbe,{url:'https://stage4.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('NETWORK_DISABLED'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}),w=dom.window;
+const dom=new JSDOM(htmlProbe,{url:'https://stage4.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('NETWORK_DISABLED'));w.confirm=()=>true;w.alert=()=>{throw Error('UNEXPECTED_ALERT_IN_AB_PROOF')};w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}),w=dom.window;
 const read=s=>JSON.parse(w.eval('JSON.stringify('+s+')'));
 const out={environment:'JSDOM, actual exported application MHDB; no synthetic equipment; DOM template load button; not Safari or game',source:{...pack,data:undefined},hashes:Object.fromEntries(['index.html','hope-hammer-browser-adapter.js',input,__filename].map(p=>[p,hash(p)])),cases:[],errors};
 try{
@@ -33,11 +33,12 @@ try{
  assert.equal(source103.phial,'element');
  assert.equal(source104.specials?.[0]?.element,'water');
  const sources=[source103,source104];
+ w.__powerCandidates=sources;
  const names=['CB_POWER_H_WEAPON103','CB_POWER_H_WEAPON104'];
  for(let i=0;i<sources.length;i++){
   const weaponRecord=sources[i];
   w.__powerSelected=weaponRecord;
-  w.eval("DB.weapons=[window.__powerSelected];rebuildWeaponIndex(DB.weapons);App.build.setWeapon(DB.weapons[0]);build.armor={head:null,chest:null,arms:null,waist:null,legs:null};build.charmCustom={skills:[],slots:[0,0,0],weaponSlots:[]};build.decos={};weaponKind.value='charge-blade';weapon.innerHTML='<option value='+window.__powerSelected.id+'>'+window.__powerSelected.name+'</option>';weapon.value=String(window.__powerSelected.id);renderComboForWeapon();restoreComboCBState({shieldBoosted:true,axeBoosted:true,swordBoosted:false,phialType:'POWER_ELEMENT',enhancedPhial:false,previousAction:'CHARGE',normalPhials:2,enhancedPhials:0,mixMode:'R_H_INDEPENDENT',mixH:{mode:'AXE',previousAction:'AXE_NEUTRAL',normalPhials:0.5,enhancedPhials:0.5}});comboCBMode.value='AXE';App.combo.syncFromDOM();calcBuild();");
+  w.eval("DB.weapons=window.__powerCandidates;rebuildWeaponIndex(DB.weapons);App.build.setWeapon(window.__powerSelected);build.armor={head:null,chest:null,arms:null,waist:null,legs:null};build.charmCustom={skills:[],slots:[0,0,0],weaponSlots:[]};build.decos={};weaponKind.value='charge-blade';weapon.innerHTML='<option value='+window.__powerSelected.id+'>'+window.__powerSelected.name+'</option>';weapon.value=String(window.__powerSelected.id);renderComboForWeapon();restoreComboCBState({shieldBoosted:true,axeBoosted:true,swordBoosted:false,phialType:'POWER_ELEMENT',enhancedPhial:false,previousAction:'CHARGE',normalPhials:2,enhancedPhials:0,mixMode:'R_H_INDEPENDENT',mixH:{mode:'AXE',previousAction:'AXE_NEUTRAL',normalPhials:0.5,enhancedPhials:0.5}});comboCBMode.value='AXE';App.combo.syncFromDOM();calcBuild();");
   const result=read("({snapshot:buildSnapshot(),stats:calcState.stats,real:calcState.realOneHit,conditions:compareStep5Snapshot()})");
   result.name=names[i];result.weaponId=weaponRecord.id;out.cases.push(result);
   for(const ch of ['normal','maximum']){
