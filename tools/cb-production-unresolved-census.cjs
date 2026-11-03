@@ -34,7 +34,7 @@ try{
   const without152=Object.fromEntries(['normal','maximum'].map(ch=>{const c=off?.channels?.[ch];return [ch,{status:c?.execution?.status??'missing',reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason??off?.reason??null,value:c?.metrics?.comboTotalDamage?.value??null}]}));
   out.cases.push({id:entry.id,name:entry.name,phial:entry.phial,channels,without152,specials,directElementNormal});
  }
- out.counts={totalAvailableInDB:{impact:impact.length,power:power.length},tested:picked.length,byPhial:{},without152:{},artiaTestInput:'EXPLICIT_RESTORE_NONE_ONLY_FOR_MHDB_145_146_147',wetTestInput:'EXPLICIT_DRY_ONLY_FOR_MHDB_153_154',thunderCandidateInput:'EXPLICIT_NO_ARMOR_RESISTANCE_ZERO_FOR_MHDB_1073_1074_NOT_ADOPTED'};
+ out.counts={totalAvailableInDB:{impact:impact.length,power:power.length},tested:picked.length,byPhial:{},without152:{},artiaTestInput:'EXPLICIT_RESTORE_NONE_ONLY_FOR_MHDB_145_146_147',wetTestInput:'EXPLICIT_DRY_ONLY_FOR_MHDB_153_154',thunderCandidateInput:'EXPLICIT_NO_ARMOR_RESISTANCE_ZERO_FOR_MHDB_1073_1074_NOT_ADOPTED',bladescaleCandidate:'CB_FIRST_PHYSICAL_HIT_PER_INDEPENDENT_ROUTE_NOT_OWNER_APPROVED'};
  for(const type of ['impact','element']){
   const subset=out.cases.filter(c=>c.phial===type),details={total:subset.length,complete:0,blocked:0,reasons:{}};
   for(const c of subset){
@@ -62,6 +62,12 @@ try{
   assert.ok(c,'candidate CB thunder record '+id);
   assert.equal(c.without152.normal.status,'complete','thunder candidate normal '+id);
   assert.equal(c.without152.maximum.status,'complete','thunder candidate maximum '+id);
+ }
+ for(const id of [1071,1072]){
+  const c=out.cases.find(x=>x.id===id);
+  assert.ok(c,'bladescale CB record '+id);
+  assert.equal(c.without152.normal.status,'complete',id+' baseline normal');
+  assert.equal(c.without152.maximum.status,'complete',id+' first-contact candidate maximum');
  }
  const statusCases=out.cases.filter(c=>c.phial==='impact'&&c.specials.length===1&&c.specials[0].kind==='status'&&['poison','paralysis','sleep'].includes(c.specials[0].status));
  assert.ok(statusCases.length>=16,'MHDB snapshot status cohort unexpected shrink');
