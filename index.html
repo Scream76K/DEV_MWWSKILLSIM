@@ -8167,7 +8167,9 @@ function chargeBladeStateFromBuildStats(st={},overrides={}){
     shieldBoosted:overrides.shieldBoosted??true,
     axeBoosted:overrides.axeBoosted??true,
     rapidMorphLevel:Number(overrides.rapidMorphLevel??st.rapidMorphLevel??0),
-    artilleryMultiplier:Number(overrides.artilleryMultiplier??st.artilleryMultiplier??1)
+    artilleryMultiplier:Number(overrides.artilleryMultiplier??st.artilleryMultiplier??1),
+    mixMode:overrides.mixMode??st.mixMode??null,
+    mixH:overrides.mixH??st.mixH??null
   };
 }
 function chargeBladeStatsFromCalcState(st={},cond={}){
