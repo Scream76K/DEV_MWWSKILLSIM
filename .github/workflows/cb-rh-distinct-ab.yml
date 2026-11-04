@@ -11,6 +11,7 @@ on:
       - 'tools/cb-distinct-equipment-public-proof.cjs'
       - 'tools/cb-rh-reason-matrix.cjs'
       - 'tools/cb-h-power-element-gate-probe.cjs'
+      - 'tools/cb-h-owner-approval-failclosed-test.cjs'
       - 'tools/cb-h-power-component-audit.cjs'
       - 'tools/cb-h-power-real-weapons-ab-proof.cjs'
       - 'tools/cb-production-unresolved-census.cjs'
@@ -49,6 +50,8 @@ jobs:
         run: node tools/cb-rh-reason-matrix.cjs
       - name: Isolated power element H route gate probe
         run: node tools/cb-h-power-element-gate-probe.cjs
+      - name: Reject tampered approved power H shield resource contract
+        run: node tools/cb-h-owner-approval-failclosed-test.cjs
       - name: Audit power-element H phial components
         run: node tools/cb-h-power-component-audit.cjs
       - name: Real power-element CB weapons A/B save compare restore (isolation only)
