@@ -51,7 +51,7 @@ try{
     assert.equal(a.maximum.status,'complete','dragon weapon conversion supported');
     assert.ok(a.maximum.total>z.maximum.total,'active dragon conversion should add elemental damage');
   }else{
-    assert.equal(a.maximum.status,'incomplete','non dragon active scope remains blocked');
+    assert.equal(a.maximum.status,'blocked','non dragon active scope remains blocked');
     assert.match(String(a.maximum.reason),/ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED/,'non dragon pending scope reason');
   }
   setState(input.id,true);
