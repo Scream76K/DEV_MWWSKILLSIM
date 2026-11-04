@@ -31,3 +31,20 @@
 - Safari、全装備・全スキル・全状態の評価、main/UI統合、β公開。
 
 `81/81` は限定条件の候補CI成立であり、これらの正式完了を意味しない。
+
+## 2026-11-04 ユーザーによる仕様確定（後続決定）
+
+**今回の明示承認により、強属性ビンHの正規4技列に限り、盾突きのビン爆発を1Hit、盾突き自体のビン消費を0として正式採用する。**
+
+- 採用区分: `OWNER_APPROVED` / `OWNER_SPEC_CONFIRMED_GAME_MEASUREMENT_NOT_CLAIMED`
+- 採用技: `CB_SHIELD_THRUST`（強属性ビン `POWER_ELEMENT`、盾強化ON、剣強化OFF、斧モードから正規Hへ）
+- 爆発Hit数: **1**
+- 盾突きのビン消費: **0**
+- 承認日: 2026-11-04
+- 実計算係数は既存Technique DBおよび出典を維持し、当該承認で変更しない
+- 通常の変形斬り、後続の高出力・追撃高出力、他の技列、他の武器種、強属性以外にはこの新しい区分を流用しない
+- ゲーム内で直接計測されたと記録しない。**ユーザーによる仕様承認と実測確認は別**
+- 今回の実装は `hope-hammer-browser-adapter.js` 上で、正規H、POWER_ELEMENT一致、`prefixConsumption===0`、盾突きTechnique DB `phialReference.hitCount===1` のチェックを設け、盾突きイベント単位の資源契約に `ownerDecision` を付ける。値の乖離は `CB_POWER_H_SHIELD_OWNER_CONTRACT_MISMATCH` で計算停止
+- 既存榴弾H／前段変形斬りの承認区分は変更せず、`MHCBHRouteRule` の全体ステータスも広げない
+
+**この決定によって解消したのは、強属性H盾突き1Hit・消費0の「オーナー承認待ち」です。** 全装備・全スキル網羅、他のH強化状態、Safari、β統合、ゲーム内数値精度は独立した未完了項目として保持する。
