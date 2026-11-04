@@ -2,7 +2,7 @@ name: CB R-H distinct A/B regression
 on:
   push:
     branches:
-      - flamme/cb-152-effective-element-boundary-20261104
+      - flamme/cb-152-negative-state-guards-20261104
     paths:
       - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
       - 'hope-hammer-browser-adapter.js'
@@ -15,6 +15,7 @@ on:
       - 'tools/cb-h-power-real-weapons-ab-proof.cjs'
       - 'tools/cb-production-unresolved-census.cjs'
       - 'tools/cb-152-dragon-vs-nondragon-saved-ab.cjs'
+      - 'tools/cb-152-negative-state-guards.cjs'
       - 'tools/cb-power-h-public-census.cjs'
       - 'tools/cb-h-airborne-ground-nonapp-proof.cjs'
       - 'tools/cb-last-four-contract-audit.cjs'
@@ -60,6 +61,8 @@ jobs:
         run: node tools/cb-production-unresolved-census.cjs
       - name: CB attribute conversion 152 dragon vs non-dragon saved A/B
         run: node tools/cb-152-dragon-vs-nondragon-saved-ab.cjs
+      - name: CB 152 unknown activation and alternate state negative guards
+        run: node tools/cb-152-negative-state-guards.cjs
       - name: Audit last four CB source contracts and explicit inputs
         run: node tools/cb-last-four-contract-audit.cjs
       - name: Thunder CB exact R/H candidate component regression
