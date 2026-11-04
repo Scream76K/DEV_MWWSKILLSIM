@@ -88,3 +88,9 @@ This branch does not modify the public `hope-hammer-browser-adapter.js` gate. PO
 - The original provisional record with `ownerDecision:null` continues to produce its original event, while mismatched approval metadata fails with `REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID`.
 - Added test #16 for all three adapter copies. GitHub-sourced callbacks were executed in a V8 JavaScript isolate with shims: 16/16 passed. This is NOT native node --test or GitHub Actions CI.
 - Existing public `CB_H_IMPACT_ONLY` and unapproved candidate skill gates remain unchanged. No UI/MHDB/save behavior changes and no merge authorization.
+
+## CI evidence capture checkpoint — 2026-11-04
+- CI workflow now executes the native Node TAP test runner with `set -o pipefail` and `tee cb-approved-shield-test.tap`. A failing test remains a failing job despite the tee pipeline.
+- `actions/upload-artifact@v4` runs with `if: always()` and captures the TAP log when available, including failures. This is a CI observability improvement; the workflow was not reported as executed by the available GitHub connector.
+- Feature SHA at the CI change: `99cc58d08897c0cbc718d17bda08713d9ee9c9c0`. No shared adapter, UI, public calculation or MHDB source changed in this commit.
+- Native CI success and artifact upload are **not yet verified**. Draft/HOLD_MERGE remains.
