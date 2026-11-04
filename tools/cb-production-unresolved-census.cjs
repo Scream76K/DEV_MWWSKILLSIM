@@ -32,7 +32,8 @@ try{
   w.eval("powerAttributeConversionMaximum.value='OFF';App.combo.syncFromDOM();calcBuild();");
   const off=read('calcState.realOneHit');
   const without152=Object.fromEntries(['normal','maximum'].map(ch=>{const c=off?.channels?.[ch];return [ch,{status:c?.execution?.status??'missing',reason:c?.execution?.reason??c?.metrics?.comboTotalDamage?.reason??off?.reason??null,value:c?.metrics?.comboTotalDamage?.value??null}]}));
-  out.cases.push({id:entry.id,name:entry.name,phial:entry.phial,channels,without152,specials,directElementNormal});
+  const effective=read("({elementType:calcState.stats?.elementType??null,element:calcState.stats?.element??null,artiaElement:build.artia?.element??null})");
+  out.cases.push({id:entry.id,name:entry.name,phial:entry.phial,channels,without152,specials,directElementNormal,effective});
  }
  out.counts={totalAvailableInDB:{impact:impact.length,power:power.length},tested:picked.length,byPhial:{},without152:{},artiaTestInput:'EXPLICIT_RESTORE_NONE_ONLY_FOR_MHDB_145_146_147',wetTestInput:'EXPLICIT_DRY_ONLY_FOR_MHDB_153_154',thunderCandidateInput:'EXPLICIT_NO_ARMOR_RESISTANCE_ZERO_FOR_MHDB_1073_1074_NOT_ADOPTED',bladescaleCandidate:'CB_FIRST_PHYSICAL_HIT_PER_INDEPENDENT_ROUTE_NOT_OWNER_APPROVED'};
  for(const type of ['impact','element']){
@@ -86,10 +87,18 @@ try{
  assert.equal(impactOnBlocked.length,0);
  const nonDragonImpact=impactOnComplete.filter(c=>!isDragon(c));
  assert.equal(nonDragonImpact.length,52,'all non-dragon source weapons in candidate');
- for(const c of nonDragonImpact){
+ const artiaAssigned=nonDragonImpact.filter(c=>[145,146,147].includes(c.id));
+ const notArtia=nonDragonImpact.filter(c=>![145,146,147].includes(c.id));
+ assert.equal(artiaAssigned.length,3,'three Artia source records with equipment-assigned attribute');
+ assert.equal(notArtia.length,49,'non dragon excluding Artia assigned attribute');
+ for(const c of notArtia){
   assert.equal(c.without152.maximum.status,'complete','152 OFF complete '+c.id);
   assert.ok(Number.isFinite(c.channels.maximum.value)&&Number.isFinite(c.without152.maximum.value),'non-dragon numeric '+c.id);
-  assert.ok(Math.abs(c.channels.maximum.value-c.without152.maximum.value)<1e-7,'non-dragon body flat must be exactly zero '+c.id);
+  assert.ok(Math.abs(c.channels.maximum.value-c.without152.maximum.value)<1e-7,'no dragon-flat when build effective element not dragon '+c.id);
+ }
+ for(const c of artiaAssigned){
+  assert.equal(c.without152.maximum.status,'complete','Artia OFF complete '+c.id);
+  assert.ok(c.channels.maximum.value>c.without152.maximum.value,'Artia equipment-assigned dragon attribute must retain 152 flat '+c.id);
  }
  const dragonImpact=impactOnComplete.filter(isDragon);
  assert.equal(dragonImpact.length,9);
