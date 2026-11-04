@@ -53,7 +53,8 @@ try{
     element:hComponents[ch].filter(c=>String(c.id||'').startsWith('CB_SHIELD_THRUST:element:')).length,
     phial:hComponents[ch].filter(c=>String(c.id||'').startsWith('CB_SHIELD_THRUST:phial:')).length
   }]));
-  out.componentAudit.push({name:p.name,h:hDetail,shieldHitCounts});
+  const hResourceContracts=Object.fromEntries(['normal','maximum'].map(ch=>[ch,r.routes?.H?.channels?.[ch]?.diagnostics?.resourceContracts]));
+  out.componentAudit.push({name:p.name,h:hDetail,shieldHitCounts,hResourceContracts});
   out.cases.push({name:p.name,realStatus:r?.status,reason:r?.reason,channels:Object.fromEntries(['normal','maximum'].map(ch=>[ch,{execution:r.channels?.[ch]?.execution,metric:r.channels?.[ch]?.metrics?.comboTotalDamage,h:r.routes?.H?.channels?.[ch]?.metrics?.comboTotalDamage,finalH:r.routes?.H?.channels?.[ch]?.finalState?.chargeBlade}]))});
  }
  const expected={
@@ -92,6 +93,29 @@ try{
    // Candidate contract only: the source confirms the shield-boosted phial event
    // and 1.5 coefficient; the exact one-explosion H composition still needs
    // independent in-game confirmation and OWNER acceptance.
+   const eventResources=item.hResourceContracts[ch];
+   assert.ok(eventResources,'per-event H resource plan required '+item.name+' '+ch);
+   const prefix=['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'];
+   const discharge=['CB_AED','CB_FOLLOWUP_AED'];
+   assert.deepEqual(Object.keys(eventResources),[...prefix,...discharge],'exact ordered four H event resources '+item.name+' '+ch);
+   for(const id of prefix){
+    const plan=eventResources[id];
+    assert.equal(plan.techniqueId,id,'prefix event identity '+id);
+    assert.equal(plan.id,'CB_H_PREFIX_RESOURCE','prefix contract kind '+id);
+    assert.equal(plan.consumeNormalPhials,0,'zero-cost H prefix '+id);
+    assert.equal(plan.resourceKey,'normalPhials','zero-cost prefix resource label '+id);
+    assert.equal(plan.status,'OWNER_APPROVED_PROVISIONAL','source-approved provisional prefix '+id);
+    assert.ok(plan.source,'H prefix provenance '+id);
+   }
+   for(const id of discharge){
+    const plan=eventResources[id];
+    assert.equal(plan.techniqueId,id,'discharge event identity '+id);
+    assert.equal(plan.consumeNormalPhials,0.5,'axe-boosted H half-phial cost '+id);
+    assert.ok(['normalPhials','enhancedPhials'].includes(plan.resourceKey),'H discharge stock kind '+id);
+    assert.ok(plan.source,'discharge source '+id);
+   }
+   assert.equal(eventResources.CB_AED.resourceKey,item.name==='power_normal_two'?'normalPhials':'enhancedPhials','enhanced priority first on AED');
+   assert.equal(eventResources.CB_FOLLOWUP_AED.resourceKey,'normalPhials','followup uses remaining normal stock');
    assert.equal(item.shieldHitCounts[ch].physical,2,'shield thrust two body hits '+item.name+' '+ch);
    assert.equal(item.shieldHitCounts[ch].element,2,'shield thrust two elemental body hits '+item.name+' '+ch);
    assert.equal(item.shieldHitCounts[ch].phial,1,'shield thrust candidate one phial explosion '+item.name+' '+ch);
