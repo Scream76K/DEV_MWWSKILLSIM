@@ -50,6 +50,20 @@ try{
   if(input.id===131){
     assert.equal(a.maximum.status,'complete','dragon weapon conversion supported');
     assert.ok(a.maximum.total>z.maximum.total,'active dragon conversion should add elemental damage');
+    for(const ch of ['normal','maximum']){
+      const active=['R','H'].flatMap(route=>on.real?.routes?.[route]?.channels?.[ch]?.components||[]);
+      const baseline=['R','H'].flatMap(route=>off.real?.routes?.[route]?.channels?.[ch]?.components||[]);
+      assert.equal(active.length,baseline.length,'dragon R/H component count '+ch);
+      let changedElement=0;
+      active.forEach((c,i)=>{
+       const ref=baseline[i];assert.equal(c.id,ref.id,'dragon component identity '+ch);
+       if(ch==='maximum'&&String(c.id).includes(':element:')){
+        if(c.value>ref.value+1e-9)changedElement++;
+        assert.ok(c.value>=ref.value-1e-9,'dragon conversion does not decrease element '+c.id);
+       }else assert.equal(c.value,ref.value,'dragon conversion leaves other components unchanged '+c.id+' '+ch);
+      });
+      if(ch==='maximum')assert.ok(changedElement>0,'152 active modifies at least one dragon element hit');
+    }
   }else{
     assert.equal(a.maximum.status,'complete','non dragon max ON continues without extra dragon attribute');
     assert.equal(a.maximum.total,z.maximum.total,'non dragon active 152 must not add dragon weapon flat');
@@ -59,6 +73,8 @@ try{
       assert.deepEqual(actual.map(c=>({id:c.id,status:c.status,value:c.value})),
        reference.map(c=>({id:c.id,status:c.status,value:c.value})),
        'all non-dragon R/H components must be identical with 152 max ON/OFF '+ch);
+      assert.ok(actual.every(c=>!(c.effectsApplied||[]).some(e=>String(e.id||'')==='attribute-conversion-element-add')),
+       'non-dragon must not emit weapon attribute conversion flat '+ch);
     }
   }
   setState(input.id,true);
