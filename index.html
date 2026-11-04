@@ -811,6 +811,16 @@ main.wrap > .grid > aside > section.card:has(> #hbgElementReferenceDetails) {
   display:none!important;
 }
 </style>
+<style id="flamme-ui-consumer-reference-isolation-20261104">
+/* 2026-11-03 owner review: keep reference forms mounted for diagnostic tests
+   but remove their out-of-workflow cards and surrounding margins from consumer UI. */
+body > section.wrap:has(> details#techAuditPanel),
+body > section.wrap:has(> details#hhReferencePanel),
+body > section.wrap:has(> details#scorchReferencePanel),
+body > section.wrap:has(> details#darkArtsReferencePanel) {
+  display:none!important;
+}
+</style>
 <script src="./ui/unresolved-damage-presentation.browser.js"></script>
 </head><body>
 <div class="notice" id="developmentPreviewNotice"><b>開発プレビュー</b>：武器種・技・スキル・条件によって火力が未算出になる場合があります。通常・最大の実計算値と保留理由を確認してください。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">開発プレビュー / 基準ゲーム Ver.1.042.00.02</div>
