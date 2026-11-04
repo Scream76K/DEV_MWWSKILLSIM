@@ -71,6 +71,20 @@ try{
  assert.equal(out.counts.attributeConversion152.maximumBlockedWithOn.impact,46,'remaining max-ON scope count drift');
  assert.equal(out.counts.attributeConversion152.maximumCompleteWithOn.element,20,'power H channels unchanged where 152 absent');
  assert.equal(out.counts.attributeConversion152.maximumBlockedWithOn.element,0);
+ // This is a weapon-element classification, not a claim that every complete
+ // non-dragon weapon has an equipped/active ID152 effect. Preserve that
+ // distinction in public progress metrics.
+ const impactOnComplete=out.cases.filter(c=>c.phial==='impact'&&c.channels.maximum.status==='complete');
+ const impactOnBlocked=out.cases.filter(c=>c.phial==='impact'&&c.channels.maximum.status!=='complete');
+ const isDragon=c=>c.specials.some(x=>x.kind==='element'&&x.element==='dragon');
+ out.counts.attributeConversion152.impactOnCompleteByBaseElement={
+   dragon:impactOnComplete.filter(isDragon).length,
+   nonDragon:impactOnComplete.filter(c=>!isDragon(c)).length
+ };
+ assert.equal(out.counts.attributeConversion152.impactOnCompleteByBaseElement.dragon,9,'source MHDB dragon subset of complete 152-ON results');
+ assert.equal(out.counts.attributeConversion152.impactOnCompleteByBaseElement.nonDragon,6,'do not mislabel six other complete builds as proven 152 bonuses');
+ assert.equal(impactOnBlocked.length,46);
+ assert.ok(impactOnBlocked.every(c=>!isDragon(c)),'unapproved 152 ON scope must not swallow sourced dragon weapon');
  const impactScopeReasons=Object.keys(out.counts.attributeConversion152.maximumReasonCounts.impact);
  assert.equal(impactScopeReasons.length,1,'one documented unresolved maximum scope family');
  assert.match(impactScopeReasons[0],/ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED/);
