@@ -67,8 +67,8 @@ try{
   }
  }
  assert.equal(out.counts.attributeConversion152.normalStable,81,'all normal channels remain stable');
- assert.equal(out.counts.attributeConversion152.maximumCompleteWithOn.impact,15,'approved dragon impact subset drift');
- assert.equal(out.counts.attributeConversion152.maximumBlockedWithOn.impact,46,'remaining max-ON scope count drift');
+ assert.equal(out.counts.attributeConversion152.maximumCompleteWithOn.impact,61,'candidate all impact 152 maximum present with no non-dragon flat');
+ assert.equal(out.counts.attributeConversion152.maximumBlockedWithOn.impact,0,'candidate non-dragon 152 no-flat should not be blocked');
  assert.equal(out.counts.attributeConversion152.maximumCompleteWithOn.element,20,'power H channels unchanged where 152 absent');
  assert.equal(out.counts.attributeConversion152.maximumBlockedWithOn.element,0);
  // This is a weapon-element classification, not a claim that every complete
@@ -82,12 +82,11 @@ try{
    nonDragon:impactOnComplete.filter(c=>!isDragon(c)).length
  };
  assert.equal(out.counts.attributeConversion152.impactOnCompleteByBaseElement.dragon,9,'source MHDB dragon subset of complete 152-ON results');
- assert.equal(out.counts.attributeConversion152.impactOnCompleteByBaseElement.nonDragon,6,'do not mislabel six other complete builds as proven 152 bonuses');
- assert.equal(impactOnBlocked.length,46);
+ assert.equal(out.counts.attributeConversion152.impactOnCompleteByBaseElement.nonDragon,52,'all non-dragon impact complete without attribute-flat');
+ assert.equal(impactOnBlocked.length,0);
  assert.ok(impactOnBlocked.every(c=>!isDragon(c)),'unapproved 152 ON scope must not swallow sourced dragon weapon');
  const impactScopeReasons=Object.keys(out.counts.attributeConversion152.maximumReasonCounts.impact);
- assert.equal(impactScopeReasons.length,1,'one documented unresolved maximum scope family');
- assert.match(impactScopeReasons[0],/ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED/);
+ assert.equal(impactScopeReasons.length,0,'candidate no-flat path should not leave pending body scope');
  for(const id of [145,146,147]){
   const c=out.cases.find(x=>x.id===id);
   assert.ok(c,'Artia CB record '+id);
