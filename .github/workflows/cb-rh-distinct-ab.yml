@@ -5,6 +5,7 @@ on:
       - flamme/cb-h-resource-event-guard-20261104
     paths:
       - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
+      - 'tests/flamme-cb-shared-integration-audit.test.cjs'
       - 'hope-hammer-browser-adapter.js'
       - 'v10-six-layer-foundation/min8/real-one-hit-pipeline.cjs'
       - 'himmel-real-browser-bundle.js'
@@ -44,6 +45,8 @@ jobs:
       - run: npm ci --ignore-scripts
       - name: Verify R/H independent aggregation boundaries
         run: node --test tests/flamme-cb-rh-distinct-ab-regression.test.cjs
+      - name: Audit six shared engine files and non-CB physical formula
+        run: node --test tests/flamme-cb-shared-integration-audit.test.cjs
       - name: Public different-equipment CB A/B proof
         run: node tools/cb-distinct-equipment-public-proof.cjs
       - name: Classify CB R/H public unresolved reasons
