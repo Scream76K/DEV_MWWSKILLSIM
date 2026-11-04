@@ -44,11 +44,12 @@ try{
  const blocked=out.cases.filter(c=>!success.includes(c));
  out.counts={total:all.length,complete:success.length,blocked:blocked.length,byReason:{}};
  for(const c of blocked){const key=['normal','maximum'].map(ch=>c.channels[ch].reason).join(' | ');out.counts.byReason[key]=(out.counts.byReason[key]||0)+1;}
- assert.equal(success.length,16,'20-source-weapon candidate complete count drift');
- assert.equal(blocked.length,4,'candidate remaining pending count drift');
- assert.deepEqual(blocked.map(x=>x.id),[118,119,120,121],'only sourced airborne-scope weapons remain blocked');
- for(const c of blocked){
-  for(const ch of ['normal','maximum'])assert.equal(c.channels[ch].reason,'H:REAL_SLICE:AIRBORNE_HIT_SCOPE_PENDING:CB_AXE_TO_SWORD_MORPH',c.id+' '+ch+' must retain unapproved airborne guard');
+ assert.equal(success.length,20,'20-source-weapon candidate complete count drift');
+ assert.equal(blocked.length,0,'all MHDB power CB H candidates must complete under chosen exact conditions');
+ for(const id of [118,119,120,121]){
+  const row=out.cases.find(c=>c.id===id);
+  assert.ok(row,'actual measured-airborne source weapon '+id);
+  for(const ch of ['normal','maximum'])assert.equal(row.channels[ch].status,'complete','candidate H ground nonapp '+id+' '+ch);
  }
  assert.ok(success.some(x=>x.id===103)&&success.some(x=>x.id===104),'real weapon103/104 strong H available');
  assert.deepEqual(errors,[]);
