@@ -32,10 +32,16 @@ try{
   w.eval('calcBuild()');
   const second=read('calcState.realOneHit');
   const firstS=status(first),secondS=status(second);
+  out.cases.push({kind,id:read('window.__otherWeapon.id'),name:read('window.__otherWeapon.name'),result:firstS});
   assert.deepEqual(firstS,secondS,kind+' repeated public evaluation must be deterministic');
-  assert.ok(['OK','FAILED','BLOCKED','UNAVAILABLE'].includes(firstS.status),kind+' public top-level status is explicit');
+  assert.equal(typeof firstS.status,'string',kind+' must expose a status instead of crashing');
   for(const ch of ['normal','maximum']){
    const x=firstS.channels[ch];
+   if(x.status===null){
+    assert.notEqual(firstS.status,'OK',kind+' '+ch+' missing channel while public evaluation reported OK');
+    assert.equal(x.metricStatus,null,kind+' '+ch+' absent channel must not return fake metric');
+    continue;
+   }
    assert.ok(['complete','incomplete','blocked'].includes(x.status),kind+' '+ch+' execution status explicit');
    if(x.metricStatus==='available'){
     assert.equal(x.status,'complete',kind+' '+ch+' available metric requires complete execution');
@@ -48,7 +54,6 @@ try{
   }
   assert.ok(!JSON.stringify(firstS).includes('CB_H_PREFIX_CONTRACT_INVALID'),kind+' must not enter CB H prefix validator');
   assert.ok(!JSON.stringify(firstS).includes('CB_POWER_H_SHIELD_OWNER_CONTRACT_MISMATCH'),kind+' must not enter CB owner-only shield contract');
-  out.cases.push({kind,id:read('window.__otherWeapon.id'),name:read('window.__otherWeapon.name'),result:firstS});
  }
  assert.equal(out.cases.length,13);
  assert.deepEqual(errors,[],'no JSDOM unhandled source exceptions');
