@@ -47,6 +47,7 @@ async function main() {
           viewportWidth:window.innerWidth,
           title:document.title,
           preview:document.querySelector('#developmentPreviewNotice')?.textContent?.trim()||null,
+          hiddenReferencePanels:['techAuditPanel','hhReferencePanel','scorchReferencePanel','darkArtsReferencePanel'].map(id=>{const panel=document.getElementById(id);return {id,exists:Boolean(panel),hidden:Boolean(panel)&&getComputedStyle(panel.closest('section.wrap')).display==='none'};}),
           iconStyles:(()=>{
             const el=document.querySelector('#armorSelectors .equip-inline > .equip-title:first-child');
             if(!el)return null;
@@ -60,7 +61,8 @@ async function main() {
       const arrangementOk=metrics.found && metrics.horizontal===horizontalExpected;
       const ratioOk=!horizontalExpected || (Number.isFinite(metrics.ratio)&&Math.abs(metrics.ratio-1)<=0.07);
       const overflowOk=metrics.found && metrics.documentWidth<=width+3;
-      const verdict={width,arrangementOk,ratioOk,overflowOk,metrics,errors};
+      const referencesHidden=metrics.found && metrics.hiddenReferencePanels?.every(p=>p.exists&&p.hidden);
+      const verdict={width,arrangementOk,ratioOk,overflowOk,referencesHidden,metrics,errors};
       results.push(verdict);
       await page.close();
     }
@@ -68,6 +70,6 @@ async function main() {
   const output={scope:'PR3_STATIC_LAYOUT_CHROMIUM_NOT_SAFARI',time:new Date().toISOString(),results};
   fs.writeFileSync(path.join(OUTPUT,'result.json'),JSON.stringify(output,null,2)+'\n');
   for(const r of results)console.log([r.width,r.arrangementOk?'layout:OK':'layout:FAIL',r.ratioOk?'ratio:OK':'ratio:FAIL',r.overflowOk?'overflow:OK':'overflow:FAIL','build/support ratio='+Number(r.metrics.ratio).toFixed(3)].join(' '));
-  if(results.some(r=>!r.arrangementOk||!r.ratioOk||!r.overflowOk))process.exitCode=1;
+  if(results.some(r=>!r.arrangementOk||!r.ratioOk||!r.overflowOk||!r.referencesHidden))process.exitCode=1;
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});
