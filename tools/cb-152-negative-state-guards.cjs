@@ -60,6 +60,21 @@ try{
   if(t.name==='unknown-max-activation')assert.match(summary.maximum.reason,/ATTRIBUTE_CONVERSION_STATE_REQUIRED/,'unknown activation must remain rejected');
   out.cases.push(row);
  }
+ // A real power-element Charge Blade must not accidentally enter the
+ // impact-phial-only non-dragon no-flat candidate. Keep the same equipped
+ // Skill 152 source from the loaded template and the same public R/H route.
+ w.__cb152PowerWeaponId=103;
+ w.eval("window.__cb152PowerWeapon=DB.weapons.find(x=>x.id===window.__cb152PowerWeaponId&&x.kind==='charge-blade'&&x.phial==='element');if(!window.__cb152PowerWeapon)throw Error('MHDB_103_POWER_CB_MISSING');App.build.setWeapon(window.__cb152PowerWeapon);weaponKind.value='charge-blade';weapon.innerHTML='<option value=103>POWER_ELEMENT_CB103</option>';weapon.value='103';renderComboForWeapon();restoreComboCBState({...window.__cb152ScopeState,axeBoosted:true,shieldBoosted:true,phialType:'POWER_ELEMENT',normalPhials:2,enhancedPhials:0,mixH:{mode:'AXE',previousAction:'AXE_NEUTRAL',normalPhials:2,enhancedPhials:0}});comboCBMode.value='AXE';comboCBMix.value='R_H_INDEPENDENT';comboCBHMode.value='AXE';comboCBHPreviousAction.value='AXE_NEUTRAL';comboCBHNormalPhials.value='2';comboCBHEnhancedPhials.value='0';powerAttributeConversionNormal.value='OFF';powerAttributeConversionMaximum.value='ON';App.combo.syncFromDOM();calcBuild();");
+ const powerOn=read("calcState.realOneHit"),powerOnSummary=summarize(powerOn);
+ assert.equal(powerOnSummary.normal.status,'complete','power-element CB normal independent of maximum 152');
+ assert.equal(powerOnSummary.maximum.status,'blocked','power-element must not enter impact-only no-flat 152 scope');
+ assert.match(powerOnSummary.maximum.reason,/ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED/,'power-element max ON remains explicit pending');
+ w.eval("powerAttributeConversionMaximum.value='OFF';App.combo.syncFromDOM();calcBuild();");
+ const powerOff=read("calcState.realOneHit"),powerOffSummary=summarize(powerOff);
+ assert.equal(powerOffSummary.normal.status,'complete','power-element CB normal with 152 max OFF');
+ assert.equal(powerOffSummary.maximum.status,'complete','power-element CB H remains available with max 152 OFF');
+ assert.equal(powerOnSummary.normal.value,powerOffSummary.normal.value,'maximum 152 must not mutate normal power-element damage');
+ out.cases.push({name:'real-power-element-103',maximum152On:powerOnSummary,maximum152Off:powerOffSummary});
  assert.deepEqual(errors,[]);
  out.outcome='CB_152_CANDIDATE_NEGATIVE_STATE_GUARDS_PASS';
 }catch(e){out.failure=e.stack;process.exitCode=1;}finally{
