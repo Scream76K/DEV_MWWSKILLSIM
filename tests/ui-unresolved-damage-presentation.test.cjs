@@ -150,3 +150,18 @@ test('rendered summary preserves independent normal and maximum when overall sta
   assert.ok(display({status:'UNAVAILABLE',reason:'COMPONENT_UNAVAILABLE'},esc,window)
     .includes('計算に必要なダメージ成分が揃っていません。'));
 });
+
+test('diagnostic reference panels retain DOM IDs but do not occupy consumer space', () => {
+  const fs=require('node:fs'),path=require('node:path');
+  const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+  const marker='<style id="flamme-ui-consumer-reference-isolation-20261104">';
+  assert.equal(html.split(marker).length,2);
+  const from=html.indexOf(marker);
+  const css=html.slice(from+marker.length,html.indexOf('</style>',from));
+  for(const id of ['techAuditPanel','hhReferencePanel','scorchReferencePanel','darkArtsReferencePanel']){
+    assert.ok(html.includes('id="'+id+'"'),'missing mounted reference: '+id);
+    assert.ok(css.includes('body > section.wrap:has(> details#'+id+')'), 'unhidden reference wrapper: '+id);
+  }
+  assert.ok(css.includes('display:none!important'));
+  assert.ok(html.includes('<main class="wrap">'));
+});
