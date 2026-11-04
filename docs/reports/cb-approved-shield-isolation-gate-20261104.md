@@ -49,3 +49,10 @@ The published sources were loaded and exercised in a standalone JavaScript isola
 - These inputs are synthetic contract fixtures, **not** real MHDB, in-game measurements, a public `calcBuild()` test, or a Safari proof. Node test and CI job results remain unconfirmed. Work remains unmerged.
 
 No expansion of the POWER_ELEMENT H public route or provisional skill scopes was performed.
+
+## Independent callback execution (2026-11-04, latest isolation branch)
+The 12 authored test callbacks from `tests/flamme-cb-approved-shield-isolation.test.cjs` were loaded from GitHub and invoked in a JavaScript isolate with lightweight shims for Node `node:test`, `node:assert/strict`, `node:fs`, `node:path`, and `node:vm`. All **12/12 callbacks passed** in this isolated execution, including the newest check that the legacy provisional morph/prefix contract is not silently promoted by the approved shield scope.
+
+This evidence **is not** native `node --test`, GitHub Actions SUCCESS, an installed browser, real MHDB, or an official public `calcBuild()` run. No CI workflow run was returned by the connector's commit-workflow lookup; that lookup is limited to PR-triggered runs and cannot by itself prove that a push-triggered workflow never ran. The correct CI status is **NOT VERIFIED** rather than FAILED or PASSED.
+
+This branch does not modify the public `hope-hammer-browser-adapter.js` gate. POWER_ELEMENT H still remains blocked there. PR #2 remains Draft and held for independent public integration review.
