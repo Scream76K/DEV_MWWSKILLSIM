@@ -103,7 +103,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(record.resourceContract){
    const r=record.resourceContract;
    if(r.id==='CB_H_PREFIX_RESOURCE'){
-    const ownerApprovedShield=r.status==='OWNER_APPROVED'&&techniqueId==='CB_SHIELD_THRUST'&&validateApprovedPowerHShield({weaponType,phialType:record.phialState?.phialType,routeScope:r.ownerDecision?.scope,techniqueId,resourceContractId:r.id,phialExplosionHits:record.phialReference?.hitCount,consumedPhials:r.consumeNormalPhials,ownerDecision:r.ownerDecision}).ok;
+    const ownerApprovedShield=r.status==='OWNER_APPROVED'&&techniqueId==='CB_SHIELD_THRUST'&&validateApprovedPowerHShield({weaponType,phialType:record.phialState?.phialType,routeScope:r.ownerDecision?.scope,techniqueId,resourceContractId:r.id,phialReferenceStatus:record.phialReference?.status,phialExplosionHits:record.phialReference?.hitCount,consumedPhials:r.consumeNormalPhials,ownerDecision:r.ownerDecision}).ok;
      if(weaponType!=='charge-blade'||!['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)||!(r.status==='OWNER_APPROVED_PROVISIONAL'||ownerApprovedShield)||r.consumeNormalPhials!==0||r.resourceKey!=='normalPhials'||r.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID');
     events.push({type:'transition',contract:r.id,source:r.source,nextPreviousAction:r.nextPreviousAction,endMode:r.endMode,operations:[{op:'set',path:['chargeBlade','mode'],value:r.endMode},{op:'set',path:['chargeBlade','previousAction'],value:r.nextPreviousAction}]});
    }else{
