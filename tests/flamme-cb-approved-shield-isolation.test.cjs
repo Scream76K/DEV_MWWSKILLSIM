@@ -94,3 +94,60 @@ test('shared adapter and both browser aliases validate approved shield without e
   assert.ok(!product.includes('validateApprovedPowerHShield({weaponType'),
     'do not accidentally enable unreviewed POWER_ELEMENT H at product calcBuild entrypoint');
 });
+
+const {adaptOrdinaryPhysicalHit} =
+  require('../v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs');
+
+const shieldRecord = () => ({
+  techniqueId:'CB_SHIELD_THRUST',
+  weaponType:'charge-blade',
+  revision:1,
+  verificationStatus:'OWNER_APPROVED_PROVISIONAL',
+  adoption:{approval:'Sentinel_b0338f54b160819183484aed19d41354'},
+  evidenceRefs:['test:owner-approved-shield-contract'],
+  hits:[{mv:12,elementModifier:0,partModifier:1,damageType:'blunt'}],
+  phialReference:{status:'OWNER_APPROVED_PROVISIONAL',hitCount:1,
+    sourceRefs:['test:owner-approved-phial-hit']},
+  phialState:{phialType:'POWER_ELEMENT'},
+  resourceContract:{
+    id:'CB_H_PREFIX_RESOURCE',status:'OWNER_APPROVED',
+    ownerDecision:{...APPROVED_SHIELD},consumeNormalPhials:0,
+    resourceKey:'normalPhials',endMode:'SWORD',
+    nextPreviousAction:'SHIELD_THRUST',source:'test:owner'
+  }
+});
+const adaptShield = record => adaptOrdinaryPhysicalHit({
+  weaponType:'charge-blade',techniqueId:'CB_SHIELD_THRUST',
+  record,dbVersion:'test-isolated',elementContext:{
+    displayElement:0,effectsResolved:true,activeElementEffects:[]
+  }
+});
+
+test('shared adapter emits one real phial hit and a transition for exact shield', () => {
+  const result=adaptShield(shieldRecord());
+  assert.equal(result.events.length,2);
+  assert.equal(result.events[0].type,'hit');
+  const phials=result.events[0].components.filter(c=>c.kind==='phial');
+  assert.equal(phials.length,1);
+  assert.equal(phials[0].parameters.phialCount,1);
+  assert.equal(phials[0].parameters.consumption.amount,0);
+  assert.equal(result.events[1].type,'transition');
+  assert.equal(result.events.some(e=>e.type==='consume'),false);
+});
+
+test('shared adapter rejects tampered approved-shield scope, count, cost and source', () => {
+  const altered=[
+    r=>{r.resourceContract.consumeNormalPhials=1;},
+    r=>{r.phialReference.hitCount=2;},
+    r=>{r.phialReference.status='UNKNOWN';},
+    r=>{r.resourceContract.ownerDecision.scope='CB_H_ALL';},
+    r=>{r.resourceContract.ownerDecision.status='OWNER_APPROVED_PROVISIONAL';},
+    r=>{r.phialState.phialType='IMPACT';}
+  ];
+  for(const mutate of altered){
+    const record=shieldRecord();
+    mutate(record);
+    assert.throws(()=>adaptShield(record),
+      /REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID/);
+  }
+});
