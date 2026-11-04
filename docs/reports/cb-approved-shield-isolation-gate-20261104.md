@@ -29,3 +29,13 @@ This branch adds a pure contract validator (fail closed), seven isolated tests (
 
 ## Approval
 **PREPARATION ONLY / HOLD_MERGE.** CI status of this feature branch was not confirmed by the linked GitHub workflow-run lookup; tests are authored but must not be called PASS without execution evidence. PR #1 and PR #2 remain Draft. This document does not authorize merging or beta publication.
+
+## Shared-adapter contract wiring — update 2026-11-04
+- Implemented a narrow owner-approved branch in `v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs` and **both** embedded copies in `himmel-real-browser-bundle.js`. The branch checks exact technique ID, charge-blade type, POWER_ELEMENT phial type, H route decision metadata, explosion hit count = 1, zero consumed phials and explicit phial-reference source status (`OWNER_APPROVED_PROVISIONAL` or `OBSERVED`). Failed checks still return the existing `CB_H_PREFIX_CONTRACT_INVALID` at the shared adapter boundary.
+- No changes to `hope-hammer-browser-adapter.js`; its existing `CB_H_IMPACT_ONLY` guard remains. Thus **POWER_ELEMENT H is still unavailable at the public product entrance**, and no damage values are newly certified. This stage only prepares the scoped shared adapter gate.
+- Preserves provisional H prefix behavior for pre-existing input records and rejects attempts to promote other H techniques to the approved shield scope.
+- Dedicated tests now contain 8 cases including the source-status negative guard, source/bundle dual-alias parity and a retained original product-entry gate assertion.
+- **Execution evidence pending:** no completed GitHub Actions run was surfaced by the available workflow-run lookup. These checks are authored and source-inspected but not reported as runtime PASS. Safari, A/B and 13-weapon public regression must be rerun before acceptance.
+- The previously written “four new files only / no product source change” statement describes the earlier preparatory checkpoint; it is superseded by this update. Current diff includes the shared adapter and browser bundle.
+
+**Decision remains HOLD_MERGE** for PR #2 and PR #1. No approval of skills 86/152/163/165 or general POWER_ELEMENT H route.
