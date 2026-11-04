@@ -76,3 +76,9 @@ This branch does not modify the public `hope-hammer-browser-adapter.js` gate. PO
 - Explicitly checked the test output contains one phial component and no `consume` event. The input is an isolated, synthetic contract fixture; not live game evidence or MHDB public calculation.
 - Local container Node.js v22 is installed but repository clone was blocked by unavailable github.com DNS; no native node:test execution could be verified. GitHub Actions conclusion is also not verified.
 - No change to public `calcBuild()` gate, other H states, UI or approved skill scope. Both PRs remain Draft / HOLD_MERGE.
+
+## 2026-11-04 browser-source parity correction
+- Reordered the shield-validator import and finite helper in both browser adapter aliases to match the Node source. No calculation expression changed.
+- Verified byte-for-byte identity of both aliases for each of the two source modules (four embedded module bodies).
+- Added permanent test #15 for exact source parity; its isolated callback passed. Prior 14-case results are historical; full native 15-test runner and GitHub Actions results remain UNVERIFIED.
+- Public calcBuild POWER_ELEMENT H still blocked, both PRs remain Draft/HOLD_MERGE.
