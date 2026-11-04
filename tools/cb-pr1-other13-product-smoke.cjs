@@ -17,6 +17,9 @@ try{
 
  // Product-entry smoke for other 13 kinds: real MHDB weapons and the actual
  // exported HTML; no synthetic weapons or test-time formula/status bypass.
+ const baseline=JSON.parse(fs.readFileSync('docs/reports/cb-pr1-other13-ui-baseline-20261104.json','utf8'));
+ assert.equal(baseline.provenance.baselineSha,'3096b71293f22ff1835214fc941a6431cdacf8a0','fixed public UI baseline ref');
+ assert.equal(Object.keys(baseline.records).length,13,'all non-CB kind baselines must be present');
  const kinds=['great-sword','long-sword','sword-and-shield','dual-blades','hammer','hunting-horn','lance','gunlance','switch-axe','insect-glaive','light-bowgun','heavy-bowgun','bow'];
  const status=x=>({status:x?.status??'missing',reason:x?.reason??null,channels:Object.fromEntries(['normal','maximum'].map(ch=>[ch,{
    status:x?.channels?.[ch]?.execution?.status??null,
@@ -51,6 +54,23 @@ try{
     assert.equal(x.value,null,kind+' '+ch+' no fabricated partial damage');
     assert.ok(x.metricReason||x.executionReason||firstS.reason,kind+' '+ch+' unavailable metric needs a reason');
    }
+  }
+  const expected=baseline.records[kind];
+  assert.ok(expected,'no verified baseline source for '+kind);
+  assert.equal(read('window.__otherWeapon.id'),expected.weaponId,kind+' must use exact same MHDB weapon as UI baseline');
+  for(const ch of ['normal','maximum']){
+   const now=firstS.channels[ch],before=expected.channels[ch];
+   if(before.metricStatus==='available'){
+    assert.equal(now.metricStatus,'available',kind+' '+ch+' baseline numeric result must not regress');
+    assert.equal(now.value,before.value,kind+' '+ch+' unrounded public damage must match UI baseline');
+   }else if(now.metricStatus==='unavailable'){
+    assert.equal(now.metricReason,before.metricReason,kind+' '+ch+' existing unresolved reason must not mutate silently');
+    assert.equal(now.executionReason,before.executionReason,kind+' '+ch+' existing execution blocker must stay grounded');
+   }else if(now.metricStatus===null){
+    assert.equal(before.metricStatus,null,kind+' '+ch+' new missing channel would be a regression');
+    assert.equal(firstS.status,expected.sourceStatus,kind+' '+ch+' top-level unavailable status drift');
+    assert.equal(firstS.reason,expected.sourceReason,kind+' '+ch+' top-level unavailable reason drift');
+   }else assert.equal(now.metricStatus,'available',kind+' '+ch+' any improvement must publish finite damage');
   }
   assert.ok(!JSON.stringify(firstS).includes('CB_H_PREFIX_CONTRACT_INVALID'),kind+' must not enter CB H prefix validator');
   assert.ok(!JSON.stringify(firstS).includes('CB_POWER_H_SHIELD_OWNER_CONTRACT_MISMATCH'),kind+' must not enter CB owner-only shield contract');
