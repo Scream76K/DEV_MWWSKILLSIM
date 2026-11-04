@@ -20,7 +20,9 @@ try{
  const kinds=['great-sword','long-sword','sword-and-shield','dual-blades','hammer','hunting-horn','lance','gunlance','switch-axe','insect-glaive','light-bowgun','heavy-bowgun','bow'];
  const status=x=>({status:x?.status??'missing',reason:x?.reason??null,channels:Object.fromEntries(['normal','maximum'].map(ch=>[ch,{
    status:x?.channels?.[ch]?.execution?.status??null,
-   reason:x?.channels?.[ch]?.execution?.reason??x?.channels?.[ch]?.metrics?.comboTotalDamage?.reason??null,
+   metricStatus:x?.channels?.[ch]?.metrics?.comboTotalDamage?.status??null,
+   executionReason:x?.channels?.[ch]?.execution?.reason??null,
+   metricReason:x?.channels?.[ch]?.metrics?.comboTotalDamage?.reason??null,
    value:x?.channels?.[ch]?.metrics?.comboTotalDamage?.value??null
  }]))});
  for(const kind of kinds){
@@ -34,8 +36,15 @@ try{
   assert.ok(['OK','FAILED','BLOCKED','UNAVAILABLE'].includes(firstS.status),kind+' public top-level status is explicit');
   for(const ch of ['normal','maximum']){
    const x=firstS.channels[ch];
-   if(x.status==='complete')assert.ok(Number.isFinite(x.value)&&x.value>=0,kind+' '+ch+' complete damage must be finite');
-   else assert.ok(x.reason||firstS.reason,kind+' '+ch+' unavailable damage must carry a reason');
+   assert.ok(['complete','incomplete','blocked'].includes(x.status),kind+' '+ch+' execution status explicit');
+   if(x.metricStatus==='available'){
+    assert.equal(x.status,'complete',kind+' '+ch+' available metric requires complete execution');
+    assert.ok(Number.isFinite(x.value)&&x.value>=0,kind+' '+ch+' metric must be finite');
+   }else{
+    assert.equal(x.metricStatus,'unavailable',kind+' '+ch+' unavailable metric must not masquerade as result');
+    assert.equal(x.value,null,kind+' '+ch+' no fabricated partial damage');
+    assert.ok(x.metricReason||x.executionReason||firstS.reason,kind+' '+ch+' unavailable metric needs a reason');
+   }
   }
   assert.ok(!JSON.stringify(firstS).includes('CB_H_PREFIX_CONTRACT_INVALID'),kind+' must not enter CB H prefix validator');
   assert.ok(!JSON.stringify(firstS).includes('CB_POWER_H_SHIELD_OWNER_CONTRACT_MISMATCH'),kind+' must not enter CB owner-only shield contract');
