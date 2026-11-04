@@ -1,0 +1,93 @@
+name: CB R-H distinct A/B regression
+on:
+  push:
+    branches:
+      - flamme/cb-h-resource-event-guard-20261104
+    paths:
+      - 'tests/flamme-cb-rh-distinct-ab-regression.test.cjs'
+      - 'tests/flamme-cb-shared-integration-audit.test.cjs'
+      - 'tools/cb-pr1-other13-product-smoke.cjs'
+      - 'docs/reports/cb-pr1-other13-ui-baseline-20261104.json'
+      - 'hope-hammer-browser-adapter.js'
+      - 'v10-six-layer-foundation/min8/real-one-hit-pipeline.cjs'
+      - 'himmel-real-browser-bundle.js'
+      - 'tools/cb-distinct-equipment-public-proof.cjs'
+      - 'tools/cb-rh-reason-matrix.cjs'
+      - 'tools/cb-h-power-element-gate-probe.cjs'
+      - 'tools/cb-h-owner-approval-failclosed-test.cjs'
+      - 'tools/cb-h-power-component-audit.cjs'
+      - 'tools/cb-h-power-real-weapons-ab-proof.cjs'
+      - 'tools/cb-production-unresolved-census.cjs'
+      - 'tools/cb-152-dragon-vs-nondragon-saved-ab.cjs'
+      - 'tools/cb-152-negative-state-guards.cjs'
+      - 'tools/cb-power-h-public-census.cjs'
+      - 'tools/cb-h-airborne-ground-nonapp-proof.cjs'
+      - 'tools/cb-last-four-contract-audit.cjs'
+      - 'tools/cb-thunder-mixed-isolated-probe.cjs'
+      - 'tools/cb-bladescale-first-contact-audit.cjs'
+      - 'tools/cb-thunder-real-weapons-saved-ab.cjs'
+      - 'tools/cb-artia-source-diagnostic.cjs'
+      - 'tools/cb-artia-legal-restores-proof.cjs'
+      - 'tools/cb-h-enhanced-isolated-probe.cjs'
+      - 'tools/cb-h-enhanced-distinct-ab-proof.cjs'
+      - 'tools/cb-h-different-stock-ab-proof.cjs'
+      - '.github/workflows/cb-rh-distinct-ab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cb-rh-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts
+      - name: Verify R/H independent aggregation boundaries
+        run: node --test tests/flamme-cb-rh-distinct-ab-regression.test.cjs
+      - name: Audit six shared engine files and non-CB physical formula
+        run: node --test tests/flamme-cb-shared-integration-audit.test.cjs
+      - name: Verify other 13 weapon kinds against original UI baseline
+        run: node tools/cb-pr1-other13-product-smoke.cjs
+      - name: Public different-equipment CB A/B proof
+        run: node tools/cb-distinct-equipment-public-proof.cjs
+      - name: Classify CB R/H public unresolved reasons
+        run: node tools/cb-rh-reason-matrix.cjs
+      - name: Isolated power element H route gate probe
+        run: node tools/cb-h-power-element-gate-probe.cjs
+      - name: Reject tampered approved power H shield resource contract
+        run: node tools/cb-h-owner-approval-failclosed-test.cjs
+      - name: Audit power-element H phial components
+        run: node tools/cb-h-power-component-audit.cjs
+      - name: Real power-element CB weapons A/B save compare restore (isolation only)
+        run: node tools/cb-h-power-real-weapons-ab-proof.cjs
+      - name: Census all 20 actual power-element H weapon candidates
+        run: node tools/cb-power-h-public-census.cjs
+      - name: Confirm sourced ground H Airborne nonapplication for four CB weapons
+        run: node tools/cb-h-airborne-ground-nonapp-proof.cjs
+      - name: Census actual MHDB CB production unresolved cases
+        run: node tools/cb-production-unresolved-census.cjs
+      - name: CB attribute conversion 152 dragon vs non-dragon saved A/B
+        run: node tools/cb-152-dragon-vs-nondragon-saved-ab.cjs
+      - name: CB 152 unknown activation and alternate state negative guards
+        run: node tools/cb-152-negative-state-guards.cjs
+      - name: Audit last four CB source contracts and explicit inputs
+        run: node tools/cb-last-four-contract-audit.cjs
+      - name: Thunder CB exact R/H candidate component regression
+        run: node tools/cb-thunder-mixed-isolated-probe.cjs
+      - name: Thunder CB real equipment saved A/B regression
+        run: node tools/cb-thunder-real-weapons-saved-ab.cjs
+      - name: Audit CB bladescale first-contact versus multi-hit R/H scope
+        run: node tools/cb-bladescale-first-contact-audit.cjs
+      - name: Locate Artia restore blockers in production source
+        run: node tools/cb-artia-source-diagnostic.cjs
+      - name: Verify legal Artia restore input against inherited invalid choices
+        run: node tools/cb-artia-legal-restores-proof.cjs
+      - name: H enhanced phial candidate full public route proof
+        run: node tools/cb-h-enhanced-isolated-probe.cjs
+      - name: Public H enhanced distinct-equipment A/B save and restore
+        run: node tools/cb-h-enhanced-distinct-ab-proof.cjs
+      - name: Compare different H stocks under one shared condition
+        run: node tools/cb-h-different-stock-ab-proof.cjs

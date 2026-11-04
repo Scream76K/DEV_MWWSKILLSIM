@@ -279,7 +279,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
        if(unresolved.includes(c.id)){components.push({...meta,...bad(typeof reasons[c.id]==='string'?reasons[c.id]:'UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
        const applied=applyEffects(c,effects,state,build,req.target,ev,req.conditions||{}),f=formulae[c.kind];
-       const response=typeof f==='function'?f({kind:c.kind,channel:ch,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:{...copy(applied.stats),...(applied.attackComponents?{attackComponents:copy(applied.attackComponents)}:{}),...(applied.elementComponents?{elementComponents:copy(applied.elementComponents)}:{})},build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
+       const response=typeof f==='function'?f({kind:c.kind,channel:ch,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),techniqueId:ev.techniqueId,componentId:c.id,target:copy(req.target),state:copy(state),stats:{...copy(applied.stats),...(applied.attackComponents?{attackComponents:copy(applied.attackComponents)}:{}),...(applied.elementComponents?{elementComponents:copy(applied.elementComponents)}:{})},build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
        if(result!==null){for(const post of applied.post){result=post.operation==='add'?result+post.amount:post.operation==='multiply'?result*post.amount:Math.min(result,post.amount);ensure(num(result),'POST_DAMAGE_NON_FINITE')}}
@@ -547,7 +547,7 @@ function createPipeline({versions,openDataSnapshot,initialState,handlers={},form
        if(inactive.includes(c.id)){components.push({...meta,...good(0),disposition:'confirmed_inactive'});continue}
        if(unresolved.includes(c.id)){components.push({...meta,...bad(typeof reasons[c.id]==='string'?reasons[c.id]:'UNRESOLVED_DISPOSITION'),disposition:'unresolved'});continue}
        const applied=applyEffects(c,effects,state,build,req.target,ev,req.conditions||{}),f=formulae[c.kind];
-       const response=typeof f==='function'?f({kind:c.kind,channel:ch,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),target:copy(req.target),state:copy(state),stats:{...copy(applied.stats),...(applied.attackComponents?{attackComponents:copy(applied.attackComponents)}:{}),...(applied.elementComponents?{elementComponents:copy(applied.elementComponents)}:{})},build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
+       const response=typeof f==='function'?f({kind:c.kind,channel:ch,coefficient:applied.coefficient,coefficientUnit:c.unit,parameters:copy(c.parameters||{}),techniqueId:ev.techniqueId,componentId:c.id,target:copy(req.target),state:copy(state),stats:{...copy(applied.stats),...(applied.attackComponents?{attackComponents:copy(applied.attackComponents)}:{}),...(applied.elementComponents?{elementComponents:copy(applied.elementComponents)}:{})},build:copy(build)}):bad('FORMULA_NOT_IMPLEMENTED');
        ensure(response?.status==='unavailable'||response?.status==='available'&&num(response.value),'FORMULA_RESULT_INVALID');
        let result=response.status==='available'?response.value:null;
        if(result!==null){for(const post of applied.post){result=post.operation==='add'?result+post.amount:post.operation==='multiply'?result*post.amount:Math.min(result,post.amount);ensure(num(result),'POST_DAMAGE_NON_FINITE')}}
@@ -953,7 +953,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(record.resourceContract){
    const r=record.resourceContract;
    if(r.id==='CB_H_PREFIX_RESOURCE'){
-    if(weaponType!=='charge-blade'||!['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)||r.status!=='OWNER_APPROVED_PROVISIONAL'||r.consumeNormalPhials!==0||r.resourceKey!=='normalPhials'||r.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID');
+    if(weaponType!=='charge-blade'||!['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)||!(r.status==='OWNER_APPROVED_PROVISIONAL'||(techniqueId==='CB_SHIELD_THRUST'&&r.status==='OWNER_APPROVED'&&r.ownerDecision?.scope==='CB_H_EXACT_ROUTE_POWER_ELEMENT_SHIELD_THRUST'&&r.ownerDecision?.status==='OWNER_APPROVED'&&r.ownerDecision?.phialExplosionHits===1&&r.ownerDecision?.consumedPhials===0&&r.ownerDecision?.verificationStatus==='OWNER_SPEC_CONFIRMED_GAME_MEASUREMENT_NOT_CLAIMED'))||r.consumeNormalPhials!==0||r.resourceKey!=='normalPhials'||r.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID');
     events.push({type:'transition',contract:r.id,source:r.source,nextPreviousAction:r.nextPreviousAction,endMode:r.endMode,operations:[{op:'set',path:['chargeBlade','mode'],value:r.endMode},{op:'set',path:['chargeBlade','previousAction'],value:r.nextPreviousAction}]});
    }else{
    if(weaponType!=='charge-blade'||!['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED'].includes(techniqueId)||r.id!=='CB_ED1_NORMAL_RESOURCE'||r.status!=='OWNER_APPROVED'||![0.5,1].includes(r.consumeNormalPhials)||!['normalPhials','enhancedPhials'].includes(r.resourceKey??'normalPhials'))throw Error('REAL_SLICE:CB_ED1_RESOURCE_CONTRACT_INVALID');
@@ -1077,7 +1077,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(record.resourceContract){
    const r=record.resourceContract;
    if(r.id==='CB_H_PREFIX_RESOURCE'){
-    if(weaponType!=='charge-blade'||!['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)||r.status!=='OWNER_APPROVED_PROVISIONAL'||r.consumeNormalPhials!==0||r.resourceKey!=='normalPhials'||r.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID');
+    if(weaponType!=='charge-blade'||!['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)||!(r.status==='OWNER_APPROVED_PROVISIONAL'||(techniqueId==='CB_SHIELD_THRUST'&&r.status==='OWNER_APPROVED'&&r.ownerDecision?.scope==='CB_H_EXACT_ROUTE_POWER_ELEMENT_SHIELD_THRUST'&&r.ownerDecision?.status==='OWNER_APPROVED'&&r.ownerDecision?.phialExplosionHits===1&&r.ownerDecision?.consumedPhials===0&&r.ownerDecision?.verificationStatus==='OWNER_SPEC_CONFIRMED_GAME_MEASUREMENT_NOT_CLAIMED'))||r.consumeNormalPhials!==0||r.resourceKey!=='normalPhials'||r.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID');
     events.push({type:'transition',contract:r.id,source:r.source,nextPreviousAction:r.nextPreviousAction,endMode:r.endMode,operations:[{op:'set',path:['chargeBlade','mode'],value:r.endMode},{op:'set',path:['chargeBlade','previousAction'],value:r.nextPreviousAction}]});
    }else{
    if(weaponType!=='charge-blade'||!['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED'].includes(techniqueId)||r.id!=='CB_ED1_NORMAL_RESOURCE'||r.status!=='OWNER_APPROVED'||![0.5,1].includes(r.consumeNormalPhials)||!['normalPhials','enhancedPhials'].includes(r.resourceKey??'normalPhials'))throw Error('REAL_SLICE:CB_ED1_RESOURCE_CONTRACT_INVALID');
@@ -1104,7 +1104,7 @@ const finite=x=>typeof x==='number'&&Number.isFinite(x);
 const unavailable=reason=>({status:'unavailable',reason});
 function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone,resolvePartModifier,expectedGameVersion}={}){
  if(typeof calculate!=='function'||typeof resolveSharpness!=='function'||typeof resolveHitzone!=='function'||typeof resolvePartModifier!=='function')throw Error('PHYSICAL_SOURCE_RESOLVERS_REQUIRED');
- return function physical({coefficient,coefficientUnit,parameters,target,stats,build,state}={}){
+ return function physical({coefficient,coefficientUnit,parameters,componentId,techniqueId,target,stats,build,state}={}){
   if(coefficientUnit!=='MV'||!finite(coefficient)||coefficient<0)return unavailable('PHYSICAL_MV_UNRESOLVED');
   if(!finite(stats?.attack)||stats.attack<=0)return unavailable('PHYSICAL_ATTACK_UNRESOLVED');
   if(!finite(stats.element)||stats.element<0)return unavailable('PHYSICAL_ELEMENT_UNRESOLVED');
@@ -1112,7 +1112,7 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
   let sharp,hitzone,part=null;
   try{
-   sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});
+   sharp=resolveSharpness({build,state,parameters,componentId,techniqueId,gameVersion:expectedGameVersion});
    hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});
    if(parameters?.partModifier!==null&&parameters?.partModifier!==undefined)part=resolvePartModifier({parameters,build,state,gameVersion:expectedGameVersion});
   }catch(_){return unavailable('PHYSICAL_CONTEXT_RESOLUTION_FAILED')}
@@ -1168,7 +1168,7 @@ const finite=x=>typeof x==='number'&&Number.isFinite(x);
 const unavailable=reason=>({status:'unavailable',reason});
 function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone,resolvePartModifier,expectedGameVersion}={}){
  if(typeof calculate!=='function'||typeof resolveSharpness!=='function'||typeof resolveHitzone!=='function'||typeof resolvePartModifier!=='function')throw Error('PHYSICAL_SOURCE_RESOLVERS_REQUIRED');
- return function physical({coefficient,coefficientUnit,parameters,target,stats,build,state}={}){
+ return function physical({coefficient,coefficientUnit,parameters,componentId,techniqueId,target,stats,build,state}={}){
   if(coefficientUnit!=='MV'||!finite(coefficient)||coefficient<0)return unavailable('PHYSICAL_MV_UNRESOLVED');
   if(!finite(stats?.attack)||stats.attack<=0)return unavailable('PHYSICAL_ATTACK_UNRESOLVED');
   if(!finite(stats.element)||stats.element<0)return unavailable('PHYSICAL_ELEMENT_UNRESOLVED');
@@ -1176,7 +1176,7 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
   let sharp,hitzone,part=null;
   try{
-   sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});
+   sharp=resolveSharpness({build,state,parameters,componentId,techniqueId,gameVersion:expectedGameVersion});
    hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});
    if(parameters?.partModifier!==null&&parameters?.partModifier!==undefined)part=resolvePartModifier({parameters,build,state,gameVersion:expectedGameVersion});
   }catch(_){return unavailable('PHYSICAL_CONTEXT_RESOLUTION_FAILED')}
@@ -1346,7 +1346,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(resource.requiredMode&&state?.chargeBlade?.mode!==resource.requiredMode)throw Error('REAL_SLICE:CB_H_MODE_MISMATCH');
    if(state?.chargeBlade?.previousAction!==resource.requiredPreviousAction||typeof state?.chargeBlade?.normalPhials!=='number'||!Number.isSafeInteger(state?.chargeBlade?.normalPhials*2))throw Error('REAL_SLICE:CB_ED1_START_STATE_UNRESOLVED');
    const actualKey=(state.chargeBlade.enhancedPhials??0)>0?'enhancedPhials':'normalPhials';
-   if(actualKey!==resource.resourceKey)throw Error('REAL_SLICE:CB_RESOURCE_PRIORITY_MISMATCH');
+   if(resource.consumeNormalPhials>0&&actualKey!==resource.resourceKey)throw Error('REAL_SLICE:CB_RESOURCE_PRIORITY_MISMATCH');
    const stock=state.chargeBlade[resource.resourceKey??'normalPhials'];
    if(typeof stock!=='number'||!Number.isSafeInteger(stock*2)||stock<resource.consumeNormalPhials)throw Error('REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT');
   }
@@ -1521,7 +1521,7 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(resource.requiredMode&&state?.chargeBlade?.mode!==resource.requiredMode)throw Error('REAL_SLICE:CB_H_MODE_MISMATCH');
    if(state?.chargeBlade?.previousAction!==resource.requiredPreviousAction||typeof state?.chargeBlade?.normalPhials!=='number'||!Number.isSafeInteger(state?.chargeBlade?.normalPhials*2))throw Error('REAL_SLICE:CB_ED1_START_STATE_UNRESOLVED');
    const actualKey=(state.chargeBlade.enhancedPhials??0)>0?'enhancedPhials':'normalPhials';
-   if(actualKey!==resource.resourceKey)throw Error('REAL_SLICE:CB_RESOURCE_PRIORITY_MISMATCH');
+   if(resource.consumeNormalPhials>0&&actualKey!==resource.resourceKey)throw Error('REAL_SLICE:CB_RESOURCE_PRIORITY_MISMATCH');
    const stock=state.chargeBlade[resource.resourceKey??'normalPhials'];
    if(typeof stock!=='number'||!Number.isSafeInteger(stock*2)||stock<resource.consumeNormalPhials)throw Error('REAL_SLICE:CB_ED1_PHIAL_STOCK_INSUFFICIENT');
   }

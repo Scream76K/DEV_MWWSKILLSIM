@@ -102,7 +102,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(record.resourceContract){
    const r=record.resourceContract;
    if(r.id==='CB_H_PREFIX_RESOURCE'){
-    if(weaponType!=='charge-blade'||!['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)||r.status!=='OWNER_APPROVED_PROVISIONAL'||r.consumeNormalPhials!==0||r.resourceKey!=='normalPhials'||r.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID');
+    if(weaponType!=='charge-blade'||!['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)||!(r.status==='OWNER_APPROVED_PROVISIONAL'||(techniqueId==='CB_SHIELD_THRUST'&&r.status==='OWNER_APPROVED'&&r.ownerDecision?.scope==='CB_H_EXACT_ROUTE_POWER_ELEMENT_SHIELD_THRUST'&&r.ownerDecision?.status==='OWNER_APPROVED'&&r.ownerDecision?.phialExplosionHits===1&&r.ownerDecision?.consumedPhials===0&&r.ownerDecision?.verificationStatus==='OWNER_SPEC_CONFIRMED_GAME_MEASUREMENT_NOT_CLAIMED'))||r.consumeNormalPhials!==0||r.resourceKey!=='normalPhials'||r.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID');
     events.push({type:'transition',contract:r.id,source:r.source,nextPreviousAction:r.nextPreviousAction,endMode:r.endMode,operations:[{op:'set',path:['chargeBlade','mode'],value:r.endMode},{op:'set',path:['chargeBlade','previousAction'],value:r.nextPreviousAction}]});
    }else{
    if(weaponType!=='charge-blade'||!['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED'].includes(techniqueId)||r.id!=='CB_ED1_NORMAL_RESOURCE'||r.status!=='OWNER_APPROVED'||![0.5,1].includes(r.consumeNormalPhials)||!['normalPhials','enhancedPhials'].includes(r.resourceKey??'normalPhials'))throw Error('REAL_SLICE:CB_ED1_RESOURCE_CONTRACT_INVALID');
