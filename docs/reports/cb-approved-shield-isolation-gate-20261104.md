@@ -62,3 +62,10 @@ This branch does not modify the public `hope-hammer-browser-adapter.js` gate. PO
 - `workflow_dispatch` has also been declared, but GitHub normally requires the workflow file to exist on the repository default branch before its manual Run workflow control is available. The default/UI branch is deliberately unchanged, so **manual dispatch availability is not confirmed**.
 - GitHub connected commit-workflow lookup returned no matching PR-triggered runs for this head; combined commit statuses were empty for the prior head. These observations do **not** establish that the push workflow failed or never ran. A job URL/conclusion from GitHub Actions is still required for a formal PASS.
 - No production logic or UI source was modified in this CI-only checkpoint; PR #2 remains Draft and unmerged. The previously recorded 12/12 isolated callback result remains distinct from native `node --test`.
+
+## Cross-runtime negative parity (2026-11-04)
+- Added the thirteenth persistent test: shared Node adapter and both embedded browser aliases must reject eight tampered owner-approved shield inputs (wrong weapon, technique, phial kind, Hit count, missing source status, consumed count, decision scope, decision approval state).
+- A test-only escaped-newline error in the first parity probe was identified and corrected in `4ee4a974fba3760dfe5bc59cc68d964c44f84da3`; no product file was modified in that correction.
+- After the correction, **13/13 test callbacks passed** under an emulated Node test/assert/fs/vm API with GitHub-sourced adapter and bundle code. This is not native Node.js `node --test` nor an official GitHub Actions run.
+- The GitHub connector did not expose a successful workflow run. An attempt to inspect browser tabs required an originating connected extension context, while the execution container could not resolve github.com for cloning, so no verified native or Actions PASS can be claimed.
+- The product/public `hope-hammer-browser-adapter.js` remains unchanged and still blocks POWER_ELEMENT H; no wider skill or H route approval and no beta sign-off.
