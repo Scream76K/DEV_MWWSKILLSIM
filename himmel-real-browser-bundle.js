@@ -848,10 +848,95 @@ function createImmutableProvider({capture,resolveBuild,resolveEffects}){
 module.exports={createImmutableProvider};
 
 });
+define("/cb-approved-shield-contract.cjs",function(module,exports,require){
+'use strict';
+
+// Owner-approved specification only. This module does not approve the broader
+// POWER_ELEMENT H route or change any product calculation on its own.
+const APPROVED_SHIELD = Object.freeze({
+  status: 'OWNER_APPROVED',
+  decisionDate: '2026-11-04',
+  scope: 'CB_H_EXACT_ROUTE_POWER_ELEMENT_SHIELD_THRUST',
+  techniqueId: 'CB_SHIELD_THRUST',
+  phialExplosionHits: 1,
+  consumedPhials: 0,
+  verificationStatus: 'OWNER_SPEC_CONFIRMED_GAME_MEASUREMENT_NOT_CLAIMED'
+});
+
+const MISMATCH = 'CB_POWER_H_SHIELD_OWNER_CONTRACT_MISMATCH';
+
+/**
+ * Fail-closed narrow approval check. Only call when the exact H shield event
+ * is reached; callers must independently validate the rest of the H route.
+ * No conversion of unknown values to zero, and no provisional -> approved
+ * promotion for any other event.
+ */
+function validateApprovedPowerHShield(input) {
+  if (!input || typeof input !== 'object') return {ok:false, reason:MISMATCH};
+  const decision = input.ownerDecision;
+  const valid = input.weaponType === 'charge-blade' &&
+    input.phialType === 'POWER_ELEMENT' &&
+    input.routeScope === APPROVED_SHIELD.scope &&
+    input.techniqueId === APPROVED_SHIELD.techniqueId &&
+    input.resourceContractId === 'CB_H_PREFIX_RESOURCE' &&
+    ['OBSERVED','OWNER_APPROVED_PROVISIONAL'].includes(input.phialReferenceStatus) &&
+    input.phialExplosionHits === APPROVED_SHIELD.phialExplosionHits &&
+    input.consumedPhials === APPROVED_SHIELD.consumedPhials &&
+    decision && typeof decision === 'object' &&
+    Object.keys(APPROVED_SHIELD).every(k => decision[k] === APPROVED_SHIELD[k]);
+  return valid ? {ok:true, reason:null} : {ok:false, reason:MISMATCH};
+}
+
+module.exports = {APPROVED_SHIELD, MISMATCH, validateApprovedPowerHShield};
+
+});
+define("./cb-approved-shield-contract.cjs",function(module,exports,require){
+'use strict';
+
+// Owner-approved specification only. This module does not approve the broader
+// POWER_ELEMENT H route or change any product calculation on its own.
+const APPROVED_SHIELD = Object.freeze({
+  status: 'OWNER_APPROVED',
+  decisionDate: '2026-11-04',
+  scope: 'CB_H_EXACT_ROUTE_POWER_ELEMENT_SHIELD_THRUST',
+  techniqueId: 'CB_SHIELD_THRUST',
+  phialExplosionHits: 1,
+  consumedPhials: 0,
+  verificationStatus: 'OWNER_SPEC_CONFIRMED_GAME_MEASUREMENT_NOT_CLAIMED'
+});
+
+const MISMATCH = 'CB_POWER_H_SHIELD_OWNER_CONTRACT_MISMATCH';
+
+/**
+ * Fail-closed narrow approval check. Only call when the exact H shield event
+ * is reached; callers must independently validate the rest of the H route.
+ * No conversion of unknown values to zero, and no provisional -> approved
+ * promotion for any other event.
+ */
+function validateApprovedPowerHShield(input) {
+  if (!input || typeof input !== 'object') return {ok:false, reason:MISMATCH};
+  const decision = input.ownerDecision;
+  const valid = input.weaponType === 'charge-blade' &&
+    input.phialType === 'POWER_ELEMENT' &&
+    input.routeScope === APPROVED_SHIELD.scope &&
+    input.techniqueId === APPROVED_SHIELD.techniqueId &&
+    input.resourceContractId === 'CB_H_PREFIX_RESOURCE' &&
+    ['OBSERVED','OWNER_APPROVED_PROVISIONAL'].includes(input.phialReferenceStatus) &&
+    input.phialExplosionHits === APPROVED_SHIELD.phialExplosionHits &&
+    input.consumedPhials === APPROVED_SHIELD.consumedPhials &&
+    decision && typeof decision === 'object' &&
+    Object.keys(APPROVED_SHIELD).every(k => decision[k] === APPROVED_SHIELD[k]);
+  return valid ? {ok:true, reason:null} : {ok:false, reason:MISMATCH};
+}
+
+module.exports = {APPROVED_SHIELD, MISMATCH, validateApprovedPowerHShield};
+
+});
 define("/real-technique-one-hit-adapter.cjs",function(module,exports,require){
 'use strict';
 // Narrow real-Technique-DB bridge candidate; intentionally NOT wired to production.
 // Source of all normative values: caller's existing Technique DB record.
+const {validateApprovedPowerHShield}=require('./cb-approved-shield-contract.cjs');
 const finite=x=>typeof x==='number'&&Number.isFinite(x);
 function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,elementContext,allowUnresolvedElement=false}={}){
   if(!weaponType||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
@@ -953,7 +1038,8 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(record.resourceContract){
    const r=record.resourceContract;
    if(r.id==='CB_H_PREFIX_RESOURCE'){
-    if(weaponType!=='charge-blade'||!['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)||r.status!=='OWNER_APPROVED_PROVISIONAL'||r.consumeNormalPhials!==0||r.resourceKey!=='normalPhials'||r.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID');
+    const ownerApprovedShield=r.status==='OWNER_APPROVED'&&techniqueId==='CB_SHIELD_THRUST'&&validateApprovedPowerHShield({weaponType,phialType:record.phialState?.phialType,routeScope:r.ownerDecision?.scope,techniqueId,resourceContractId:r.id,phialReferenceStatus:record.phialReference?.status,phialExplosionHits:record.phialReference?.hitCount,consumedPhials:r.consumeNormalPhials,ownerDecision:r.ownerDecision}).ok;
+     if(weaponType!=='charge-blade'||!['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)||!(r.status==='OWNER_APPROVED_PROVISIONAL'&&r.ownerDecision==null||ownerApprovedShield)||r.consumeNormalPhials!==0||r.resourceKey!=='normalPhials'||r.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID');
     events.push({type:'transition',contract:r.id,source:r.source,nextPreviousAction:r.nextPreviousAction,endMode:r.endMode,operations:[{op:'set',path:['chargeBlade','mode'],value:r.endMode},{op:'set',path:['chargeBlade','previousAction'],value:r.nextPreviousAction}]});
    }else{
    if(weaponType!=='charge-blade'||!['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED'].includes(techniqueId)||r.id!=='CB_ED1_NORMAL_RESOURCE'||r.status!=='OWNER_APPROVED'||![0.5,1].includes(r.consumeNormalPhials)||!['normalPhials','enhancedPhials'].includes(r.resourceKey??'normalPhials'))throw Error('REAL_SLICE:CB_ED1_RESOURCE_CONTRACT_INVALID');
@@ -976,6 +1062,7 @@ define("./real-technique-one-hit-adapter.cjs",function(module,exports,require){
 'use strict';
 // Narrow real-Technique-DB bridge candidate; intentionally NOT wired to production.
 // Source of all normative values: caller's existing Technique DB record.
+const {validateApprovedPowerHShield}=require('./cb-approved-shield-contract.cjs');
 const finite=x=>typeof x==='number'&&Number.isFinite(x);
 function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,elementContext,allowUnresolvedElement=false}={}){
   if(!weaponType||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
@@ -1077,7 +1164,8 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(record.resourceContract){
    const r=record.resourceContract;
    if(r.id==='CB_H_PREFIX_RESOURCE'){
-    if(weaponType!=='charge-blade'||!['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)||r.status!=='OWNER_APPROVED_PROVISIONAL'||r.consumeNormalPhials!==0||r.resourceKey!=='normalPhials'||r.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID');
+    const ownerApprovedShield=r.status==='OWNER_APPROVED'&&techniqueId==='CB_SHIELD_THRUST'&&validateApprovedPowerHShield({weaponType,phialType:record.phialState?.phialType,routeScope:r.ownerDecision?.scope,techniqueId,resourceContractId:r.id,phialReferenceStatus:record.phialReference?.status,phialExplosionHits:record.phialReference?.hitCount,consumedPhials:r.consumeNormalPhials,ownerDecision:r.ownerDecision}).ok;
+     if(weaponType!=='charge-blade'||!['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)||!(r.status==='OWNER_APPROVED_PROVISIONAL'&&r.ownerDecision==null||ownerApprovedShield)||r.consumeNormalPhials!==0||r.resourceKey!=='normalPhials'||r.endMode!=='SWORD')throw Error('REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID');
     events.push({type:'transition',contract:r.id,source:r.source,nextPreviousAction:r.nextPreviousAction,endMode:r.endMode,operations:[{op:'set',path:['chargeBlade','mode'],value:r.endMode},{op:'set',path:['chargeBlade','previousAction'],value:r.nextPreviousAction}]});
    }else{
    if(weaponType!=='charge-blade'||!['CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED'].includes(techniqueId)||r.id!=='CB_ED1_NORMAL_RESOURCE'||r.status!=='OWNER_APPROVED'||![0.5,1].includes(r.consumeNormalPhials)||!['normalPhials','enhancedPhials'].includes(r.resourceKey??'normalPhials'))throw Error('REAL_SLICE:CB_ED1_RESOURCE_CONTRACT_INVALID');
