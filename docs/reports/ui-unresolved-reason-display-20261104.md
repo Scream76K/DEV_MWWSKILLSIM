@@ -24,3 +24,9 @@
 - 新規表示モジュールとテストのみ実装。GitHubの元UI `index.html` は変更していない。
 - 7件のテストコールバックは独立JavaScript実行で通過。ネイティブNodeおよび実ブラウザ実行は未確認。
 - 完了/β承認とはしない。PRのレビュー・別途UI接続後に判定する。
+
+## 実Node.js検証（2026-11-04）
+- GitHubのソースとローカル実行対象をGit blob SHAで照合：`ui/unresolved-damage-presentation.cjs` = `bcb2b46b12fdea2dfca4cfe5806fc223a5287e4b`、`tests/ui-unresolved-damage-presentation.test.cjs` = `f6b654182b33b79ba18e58716c5ad8ce1ba8df73`。両者完全一致。
+- Node.js v22.16.0の正式`node --test tests/ui-unresolved-damage-presentation.test.cjs`：**7 PASS / 0 FAIL**。
+- これは新規表示モジュールの単体検証であり、既存`index.html`描画、Safari、保存A/B、実MHDBの統合検証ではない。
+- UI本体は未変更、Draft・レビュー保留を維持。
