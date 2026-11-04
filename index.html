@@ -2835,7 +2835,8 @@ function renderSummary(){
     const reason=channel?.execution?.reason||channel?.issues?.[0]?.reason||m?.reason||one.reason||null;
     return '未算出（'+oneUnresolvedSummary(reason)+'）';
   };
-  const oneCompactText=one.status==='OK'
+  const hasChannelResults=Boolean(one.channels?.normal||one.channels?.maximum);
+  const oneCompactText=hasChannelResults
     ? '通常 '+oneCompactChannel('normal')+' ／ 最大 '+oneCompactChannel('maximum')
     : '未算出（'+oneUnresolvedSummary(one.reason)+'）';
   $('buildSummary').innerHTML=`<div class="game-status" style="grid-column:1/-1">
