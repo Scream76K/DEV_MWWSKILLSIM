@@ -26,6 +26,13 @@ try{
  assert.equal(sourceFixture.weapon.id,103);
  w.__cbPowerWeapon=sourceFixture.weapon;
  w.eval("DB.weapons=[window.__cbPowerWeapon];rebuildWeaponIndex(DB.weapons);App.build.setWeapon(DB.weapons[0]);build.armor={head:null,chest:null,arms:null,waist:null,legs:null};build.charmCustom={skills:[],slots:[0,0,0],weaponSlots:[]};build.decos={};weaponKind.value='charge-blade';weapon.innerHTML='<option value=103>CB103</option>';weapon.value='103';renderComboForWeapon();restoreComboCBState({shieldBoosted:true,axeBoosted:true,swordBoosted:false,phialType:'POWER_ELEMENT',enhancedPhial:false,previousAction:'CHARGE',normalPhials:2,enhancedPhials:0,mixMode:'R_H_INDEPENDENT',mixH:{mode:'AXE',previousAction:'AXE_NEUTRAL',normalPhials:2,enhancedPhials:0}});App.combo.syncFromDOM();calcBuild();");
+ const prefixRule=read("window.MHCBHRouteRule");
+ assert.equal(prefixRule.status,'OWNER_APPROVED_PROVISIONAL','existing H route remains provisional');
+ assert.equal(prefixRule.prefixConsumption,0,'shield/morph prefix consumes no stock in current candidate');
+ assert.deepEqual(prefixRule.prefixIds,['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'],'exact zero-cost H prefix IDs');
+ const shieldRecord=read("window.TechniqueDBEngine.get('charge-blade','CB_SHIELD_THRUST')");
+ assert.ok(shieldRecord,'sourced shield thrust technique must exist');
+ assert.ok(Array.isArray(shieldRecord.evidenceRefs)&&shieldRecord.evidenceRefs.length>0,'shield thrust evidence refs');
  const baseline=read('comboCBStoredState()');
 
  const probes=[
@@ -40,7 +47,13 @@ try{
   const r=read("calcState.realOneHit");
   const hDetail=Object.fromEntries(['normal','maximum'].map(ch=>[ch,(r.routes?.H?.channels?.[ch]?.components||[]).filter(c=>String(c.id||'').includes(':phial:')).map(c=>({id:c.id,kind:c.kind,value:c.value,unit:c.unit,source:c.source,parameters:c.parameters,formula:c.formula,trace:c.trace}))]));
   out.componentAudit=out.componentAudit||[];
-  out.componentAudit.push({name:p.name,h:hDetail});
+  const hComponents=Object.fromEntries(['normal','maximum'].map(ch=>[ch,(r.routes?.H?.channels?.[ch]?.components||[])]));
+  const shieldHitCounts=Object.fromEntries(['normal','maximum'].map(ch=>[ch,{
+    physical:hComponents[ch].filter(c=>String(c.id||'').startsWith('CB_SHIELD_THRUST:physical:')).length,
+    element:hComponents[ch].filter(c=>String(c.id||'').startsWith('CB_SHIELD_THRUST:element:')).length,
+    phial:hComponents[ch].filter(c=>String(c.id||'').startsWith('CB_SHIELD_THRUST:phial:')).length
+  }]));
+  out.componentAudit.push({name:p.name,h:hDetail,shieldHitCounts});
   out.cases.push({name:p.name,realStatus:r?.status,reason:r?.reason,channels:Object.fromEntries(['normal','maximum'].map(ch=>[ch,{execution:r.channels?.[ch]?.execution,metric:r.channels?.[ch]?.metrics?.comboTotalDamage,h:r.routes?.H?.channels?.[ch]?.metrics?.comboTotalDamage,finalH:r.routes?.H?.channels?.[ch]?.finalState?.chargeBlade}]))});
  }
  const expected={
@@ -76,6 +89,12 @@ try{
  for(const item of out.componentAudit){
   for(const ch of ['normal','maximum']){
    const rows=item.h[ch];
+   // Candidate contract only: the source confirms the shield-boosted phial event
+   // and 1.5 coefficient; the exact one-explosion H composition still needs
+   // independent in-game confirmation and OWNER acceptance.
+   assert.equal(item.shieldHitCounts[ch].physical,2,'shield thrust two body hits '+item.name+' '+ch);
+   assert.equal(item.shieldHitCounts[ch].element,2,'shield thrust two elemental body hits '+item.name+' '+ch);
+   assert.equal(item.shieldHitCounts[ch].phial,1,'shield thrust candidate one phial explosion '+item.name+' '+ch);
    assert.equal(rows.length,3,item.name+' '+ch+' component count');
    for(const c of rows){
     assert.ok(Object.hasOwn(componentExpected[item.name],c.id),'unexpected '+c.id);
@@ -87,4 +106,4 @@ try{
  assert.deepEqual(errors,[]);
  out.outcome='PROBE_ONLY_NOT_ADOPTED';
 }catch(e){out.failure=e.stack;process.exitCode=1;}
-finally{console.log(JSON.stringify({outcome:out.outcome,cases:out.cases,componentAudit:out.componentAudit,failure:out.failure,errors},null,2));dom.window.close();}
+finally{console.log(JSON.stringify({outcome:out.outcome,shieldPrefix:{prefixConsumption:out.prefixConsumption??null},cases:out.cases,componentAudit:out.componentAudit,failure:out.failure,errors},null,2));dom.window.close();}
