@@ -201,3 +201,45 @@ test('legacy provisional H prefix remains provisional and morph cannot borrow ap
     }
   }),/REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID/);
 });
+
+test('both browser aliases and Node adapter reject the same approval-boundary mutations', () => {
+  const fs=require('node:fs');
+  const path=require('node:path');
+  const vm=require('node:vm');
+  const bundle=fs.readFileSync(path.join(__dirname,'..','himmel-real-browser-bundle.js'),'utf8');
+  const marker="root.HimmelRealOneHitPipeline=requireModule('/real-one-hit-pipeline.cjs').createRealOneHitPipeline;";
+  assert.equal(bundle.split(marker).length,2,'browser entry marker must occur exactly once');
+  const browser={};
+  vm.runInNewContext(bundle.replace(marker,'root.__testRequireModule=requireModule;\\n'+marker),
+    {window:browser,structuredClone},{timeout:5000});
+  const adapters=[
+    ['node',adaptOrdinaryPhysicalHit],
+    ['/alias',browser.__testRequireModule('/real-technique-one-hit-adapter.cjs').adaptOrdinaryPhysicalHit],
+    ['./alias',browser.__testRequireModule('./real-technique-one-hit-adapter.cjs').adaptOrdinaryPhysicalHit]
+  ];
+  const cases=[
+    ['wrong-weapon',r=>{r.weaponType='great-sword';}],
+    ['wrong-technique',r=>{r.techniqueId='CB_AXE_TO_SWORD_MORPH';}],
+    ['wrong-phial',r=>{r.phialState.phialType='IMPACT';}],
+    ['wrong-hit-count',r=>{r.phialReference.hitCount=2;}],
+    ['missing-source-status',r=>{delete r.phialReference.status;}],
+    ['cost-one',r=>{r.resourceContract.consumeNormalPhials=1;}],
+    ['wrong-decision-scope',r=>{r.resourceContract.ownerDecision.scope='CB_H_ALL';}],
+    ['provisional-decision',r=>{r.resourceContract.ownerDecision.status='OWNER_APPROVED_PROVISIONAL';}]
+  ];
+  for(const [alias,adapt] of adapters){
+    for(const [caseName,mutate] of cases){
+      const record=shieldRecord();mutate(record);
+      // Wrong weapon/technique is rejected at DB identity; all other mutations
+      // are rejected by the scoped H prefix contract. No fabricated value.
+      assert.throws(()=>adapt({
+        weaponType:'charge-blade',techniqueId:'CB_SHIELD_THRUST',record,
+        dbVersion:'test-negative-parity',elementContext:{
+          displayElement:0,effectsResolved:true,activeElementEffects:[]
+        }
+      }),caseName==='wrong-weapon'||caseName==='wrong-technique'
+        ?/REAL_SLICE:DB_IDENTITY_MISMATCH/
+        :/REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID/,alias+':'+caseName);
+    }
+  }
+});
