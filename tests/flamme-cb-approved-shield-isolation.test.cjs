@@ -243,3 +243,33 @@ test('both browser aliases and Node adapter reject the same approval-boundary mu
     }
   }
 });
+
+test('shared and both browser aliases emit identical approved shield event payloads', () => {
+  const fs=require('node:fs');
+  const path=require('node:path');
+  const vm=require('node:vm');
+  const bundle=fs.readFileSync(path.join(__dirname,'..','himmel-real-browser-bundle.js'),'utf8');
+  const marker="root.HimmelRealOneHitPipeline=requireModule('/real-one-hit-pipeline.cjs').createRealOneHitPipeline;";
+  assert.equal(bundle.split(marker).length,2);
+  const browser={};
+  vm.runInNewContext(bundle.replace(marker,'root.__testRequireModule=requireModule;\n'+marker),
+    {window:browser,structuredClone},{timeout:5000});
+  const fnList=[
+    adaptOrdinaryPhysicalHit,
+    browser.__testRequireModule('/real-technique-one-hit-adapter.cjs').adaptOrdinaryPhysicalHit,
+    browser.__testRequireModule('./real-technique-one-hit-adapter.cjs').adaptOrdinaryPhysicalHit
+  ];
+  const outputs=fnList.map(fn=>{
+    const result=fn({
+      weaponType:'charge-blade',techniqueId:'CB_SHIELD_THRUST',
+      record:shieldRecord(),dbVersion:'test-payload-parity',
+      elementContext:{displayElement:0,effectsResolved:true,activeElementEffects:[]}
+    });
+    return JSON.parse(JSON.stringify(result.events));
+  });
+  assert.deepEqual(outputs[1],outputs[0],'absolute bundle alias must match Node');
+  assert.deepEqual(outputs[2],outputs[0],'relative bundle alias must match Node');
+  const hit=outputs[0].find(e=>e.type==='hit');
+  assert.equal(hit.components.filter(c=>c.kind==='phial').length,1);
+  assert.equal(outputs[0].filter(e=>e.type==='consume').length,0);
+});
