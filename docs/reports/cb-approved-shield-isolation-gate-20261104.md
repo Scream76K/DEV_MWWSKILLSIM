@@ -82,3 +82,9 @@ This branch does not modify the public `hope-hammer-browser-adapter.js` gate. PO
 - Verified byte-for-byte identity of both aliases for each of the two source modules (four embedded module bodies).
 - Added permanent test #15 for exact source parity; its isolated callback passed. Prior 14-case results are historical; full native 15-test runner and GitHub Actions results remain UNVERIFIED.
 - Public calcBuild POWER_ELEMENT H still blocked, both PRs remain Draft/HOLD_MERGE.
+
+## 2026-11-04 provisional owner-metadata isolation
+- Updated the shared Technique adapter and two browser aliases to reject a `CB_H_PREFIX_RESOURCE` marked `OWNER_APPROVED_PROVISIONAL` when `ownerDecision` is non-null. This prevents a provisional H prefix from carrying owner-approved shield metadata without the exact approved-state validation.
+- The original provisional record with `ownerDecision:null` continues to produce its original event, while mismatched approval metadata fails with `REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID`.
+- Added test #16 for all three adapter copies. GitHub-sourced callbacks were executed in a V8 JavaScript isolate with shims: 16/16 passed. This is NOT native node --test or GitHub Actions CI.
+- Existing public `CB_H_IMPACT_ONLY` and unapproved candidate skill gates remain unchanged. No UI/MHDB/save behavior changes and no merge authorization.
