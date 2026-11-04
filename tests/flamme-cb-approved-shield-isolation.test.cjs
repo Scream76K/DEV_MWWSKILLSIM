@@ -210,7 +210,7 @@ test('both browser aliases and Node adapter reject the same approval-boundary mu
   const marker="root.HimmelRealOneHitPipeline=requireModule('/real-one-hit-pipeline.cjs').createRealOneHitPipeline;";
   assert.equal(bundle.split(marker).length,2,'browser entry marker must occur exactly once');
   const browser={};
-  vm.runInNewContext(bundle.replace(marker,'root.__testRequireModule=requireModule;\\n'+marker),
+  vm.runInNewContext(bundle.replace(marker,'root.__testRequireModule=requireModule;\n'+marker),
     {window:browser,structuredClone},{timeout:5000});
   const adapters=[
     ['node',adaptOrdinaryPhysicalHit],
