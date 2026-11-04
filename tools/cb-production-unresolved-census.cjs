@@ -45,6 +45,35 @@ try{
   out.counts.byPhial[type]=details;
   out.counts.without152[type]={total:subset.length,complete:subset.filter(c=>['normal','maximum'].every(ch=>c.without152[ch].status==='complete')).length,blocked:subset.filter(c=>['normal','maximum'].some(ch=>c.without152[ch].status!=='complete')).length};
  }
+ // Attribute Conversion 152 is OFF in normal on both passes; maximum differs
+ // only by the explicit ON/OFF switch. Preserve channel isolation and the
+ // unapproved scope gates instead of permitting non-dragon or special phials.
+ out.counts.attributeConversion152={
+  normalStable:0,
+  maximumCompleteWithOn:{impact:0,power:0},
+  maximumBlockedWithOn:{impact:0,power:0},
+  maximumReasonCounts:{impact:{},power:{}}
+ };
+ for(const c of out.cases){
+  const a=c.channels.normal,b=c.without152.normal;
+  assert.deepEqual(a,b,'skill152 maximum switch must not change normal '+c.id);
+  out.counts.attributeConversion152.normalStable++;
+  if(c.channels.maximum.status==='complete')out.counts.attributeConversion152.maximumCompleteWithOn[c.phial]++;
+  else{
+   out.counts.attributeConversion152.maximumBlockedWithOn[c.phial]++;
+   const key=c.channels.maximum.reason??'UNKNOWN';
+   const counts=out.counts.attributeConversion152.maximumReasonCounts[c.phial];
+   counts[key]=(counts[key]??0)+1;
+  }
+ }
+ assert.equal(out.counts.attributeConversion152.normalStable,81,'all normal channels remain stable');
+ assert.equal(out.counts.attributeConversion152.maximumCompleteWithOn.impact,15,'approved dragon impact subset drift');
+ assert.equal(out.counts.attributeConversion152.maximumBlockedWithOn.impact,46,'remaining max-ON scope count drift');
+ assert.equal(out.counts.attributeConversion152.maximumCompleteWithOn.element,20,'power H channels unchanged where 152 absent');
+ assert.equal(out.counts.attributeConversion152.maximumBlockedWithOn.element,0);
+ const impactScopeReasons=Object.keys(out.counts.attributeConversion152.maximumReasonCounts.impact);
+ assert.equal(impactScopeReasons.length,1,'one documented unresolved maximum scope family');
+ assert.match(impactScopeReasons[0],/ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED/);
  for(const id of [145,146,147]){
   const c=out.cases.find(x=>x.id===id);
   assert.ok(c,'Artia CB record '+id);
