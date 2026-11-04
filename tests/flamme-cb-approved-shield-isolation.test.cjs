@@ -151,3 +151,35 @@ test('shared adapter rejects tampered approved-shield scope, count, cost and sou
       /REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID/);
   }
 });
+
+test('both browser bundle aliases emit the same exact approved shield event', () => {
+  const fs=require('node:fs');
+  const path=require('node:path');
+  const vm=require('node:vm');
+  const bundle=fs.readFileSync(path.join(__dirname,'..','himmel-real-browser-bundle.js'),'utf8');
+  const marker="root.HimmelRealOneHitPipeline=requireModule('/real-one-hit-pipeline.cjs').createRealOneHitPipeline;";
+  assert.ok(bundle.includes(marker));
+  const probe=bundle.replace(marker,'root.__testRequireModule=requireModule;\n'+marker);
+  const browser={};
+  vm.runInNewContext(probe,{window:browser,structuredClone},
+    {timeout:5000});
+  const paths=['/real-technique-one-hit-adapter.cjs','./real-technique-one-hit-adapter.cjs'];
+  for(const alias of paths){
+    const fn=browser.__testRequireModule(alias).adaptOrdinaryPhysicalHit;
+    const adapt=record=>fn({
+      weaponType:'charge-blade',techniqueId:'CB_SHIELD_THRUST',
+      record,dbVersion:'test-bundle',elementContext:{
+        displayElement:0,effectsResolved:true,activeElementEffects:[]
+      }
+    });
+    const result=adapt(shieldRecord());
+    assert.deepEqual(Array.from(result.events,e=>e.type),['hit','transition'],alias);
+    const phials=result.events[0].components.filter(c=>c.kind==='phial');
+    assert.equal(phials.length,1,alias);
+    assert.equal(phials[0].parameters.phialCount,1,alias);
+    assert.equal(phials[0].parameters.consumption.amount,0,alias);
+    assert.throws(()=>adapt({...shieldRecord(),resourceContract:{
+      ...shieldRecord().resourceContract,consumeNormalPhials:1
+    }}),/REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID/,alias);
+  }
+});
