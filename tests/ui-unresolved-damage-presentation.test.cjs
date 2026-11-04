@@ -83,3 +83,28 @@ test('index.html loads browser presentation before the build-summary rendering c
   assert.ok(html.includes("const oneText=one.status==='OK'?"));
   assert.ok(html.includes('<details class="one-hit-diagnostics">'));
 });
+
+test('preview labels avoid obsolete release/DPS completion claims', () => {
+  const fs=require('node:fs'),path=require('node:path');
+  const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+  assert.ok(html.includes('id="developmentPreviewNotice"'));
+  assert.ok(html.includes('開発プレビュー / 基準ゲーム Ver.1.042.00.02'));
+  assert.ok(!html.includes('r120 HBG Shot Skill Conditions'));
+  assert.ok(!html.includes('全14武器種のコンボDPSエンジンを搭載したテストリリース'));
+});
+test('armor icon legibility adjusts size only and retains all six original SVG categories', () => {
+  const fs=require('node:fs'),path=require('node:path');
+  const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+  const styleId='<style id="flamme-ui-armor-icon-visibility-20261104">';
+  assert.equal(html.split(styleId).length,2);
+  const css=html.slice(html.indexOf(styleId)+styleId.length,html.indexOf('</style>',html.indexOf(styleId)));
+  assert.ok(css.includes('width:40px!important'));
+  assert.ok(css.includes('height:46px!important'));
+  assert.ok(css.includes('max-width:430px'));
+  assert.ok(css.includes('width:34px!important'));
+  for(const category of ['head','chest','arms','waist','legs'])
+    assert.ok(html.includes('select[data-armor="'+category+'"]'));
+  assert.ok(html.includes('.charm-section-heading::before'));
+  assert.ok(html.includes('<style id="flamme-ui-equipment-icons-20261103">'),
+    'retain the original embedded icons');
+});
