@@ -56,3 +56,9 @@ The 12 authored test callbacks from `tests/flamme-cb-approved-shield-isolation.t
 This evidence **is not** native `node --test`, GitHub Actions SUCCESS, an installed browser, real MHDB, or an official public `calcBuild()` run. No CI workflow run was returned by the connector's commit-workflow lookup; that lookup is limited to PR-triggered runs and cannot by itself prove that a push-triggered workflow never ran. The correct CI status is **NOT VERIFIED** rather than FAILED or PASSED.
 
 This branch does not modify the public `hope-hammer-browser-adapter.js` gate. POWER_ELEMENT H still remains blocked there. PR #2 remains Draft and held for independent public integration review.
+
+## CI verification gate (2026-11-04)
+- Workflow `.github/workflows/cb-approved-shield-isolation.yml` now listens for push on the isolated branch and relevant PR file changes (contract, test, shared adapter, browser bundle and workflow itself), checks JavaScript syntax for all 4 files, then runs native `node --test`.
+- `workflow_dispatch` has also been declared, but GitHub normally requires the workflow file to exist on the repository default branch before its manual Run workflow control is available. The default/UI branch is deliberately unchanged, so **manual dispatch availability is not confirmed**.
+- GitHub connected commit-workflow lookup returned no matching PR-triggered runs for this head; combined commit statuses were empty for the prior head. These observations do **not** establish that the push workflow failed or never ran. A job URL/conclusion from GitHub Actions is still required for a formal PASS.
+- No production logic or UI source was modified in this CI-only checkpoint; PR #2 remains Draft and unmerged. The previously recorded 12/12 isolated callback result remains distinct from native `node --test`.
