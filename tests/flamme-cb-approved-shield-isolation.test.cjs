@@ -295,3 +295,34 @@ test('embedded browser contract and adapter sources are byte-identical to Node s
     }
   }
 });
+
+test('provisional prefix rejects attached owner approval metadata in Node and both bundle aliases', () => {
+  const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+  const bundle=fs.readFileSync(path.join(__dirname,'..','himmel-real-browser-bundle.js'),'utf8');
+  const marker="root.HimmelRealOneHitPipeline=requireModule('/real-one-hit-pipeline.cjs').createRealOneHitPipeline;";
+  assert.equal(bundle.split(marker).length,2);
+  const browser={};
+  vm.runInNewContext(bundle.replace(marker,'root.__testRequireModule=requireModule;\n'+marker),
+    {window:browser,structuredClone},{timeout:5000});
+  const adapters=[
+    adaptOrdinaryPhysicalHit,
+    browser.__testRequireModule('/real-technique-one-hit-adapter.cjs').adaptOrdinaryPhysicalHit,
+    browser.__testRequireModule('./real-technique-one-hit-adapter.cjs').adaptOrdinaryPhysicalHit
+  ];
+  for(const adapt of adapters){
+    const base=shieldRecord();
+    base.resourceContract.status='OWNER_APPROVED_PROVISIONAL';
+    base.resourceContract.ownerDecision=null;
+    const input=record=>({
+      weaponType:'charge-blade',techniqueId:'CB_SHIELD_THRUST',
+      dbVersion:'test-provisional-boundary',record,
+      elementContext:{displayElement:0,effectsResolved:true,activeElementEffects:[]}
+    });
+    const valid=adapt(input(base));
+    assert.equal(valid.events.filter(e=>e.type==='hit').length,1);
+    const tainted=shieldRecord();
+    tainted.resourceContract.status='OWNER_APPROVED_PROVISIONAL';
+    tainted.resourceContract.ownerDecision={...APPROVED_SHIELD};
+    assert.throws(()=>adapt(input(tainted)),/REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID/);
+  }
+});
