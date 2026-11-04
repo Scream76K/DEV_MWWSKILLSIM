@@ -1,0 +1,20 @@
+name: CB approved shield isolation
+on:
+  push:
+    branches:
+      - flamme/cb-approved-shield-isolation-20261104
+  pull_request:
+    paths:
+      - 'v10-six-layer-foundation/min8/cb-approved-shield-contract.cjs'
+      - 'tests/flamme-cb-approved-shield-isolation.test.cjs'
+      - '.github/workflows/cb-approved-shield-isolation.yml'
+jobs:
+  isolated-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify exact owner-approved shield scope and fail-closed guards
+        run: node --test tests/flamme-cb-approved-shield-isolation.test.cjs
