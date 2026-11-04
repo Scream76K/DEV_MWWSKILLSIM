@@ -722,7 +722,23 @@
   if(airborneEntries.length){
    const rule=root.MHAirborneHitRule;
    if(!rule||airborneEntries.some(x=>x.name!==rule.name||x.level!==rule.level))return fail('REAL_SLICE:AIRBORNE_SKILL_CONTRACT_INVALID');
+   // CANDIDATE_NOT_ADOPTED: source-limited nonapplication to these exact
+   // ground-level Charge Blade H moves. Never infer from another weapon or
+   // include jumping morph/slash variants. Source evidence: a-to 2025-04-16
+   // test table (axe morph 114/114, shield thrust 35/35, AED and followup
+   // equal with/without Airborne) and kuroyonhon wilds memo/27.
+   const cbHGroundNonappIds=['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST','CB_AED','CB_FOLLOWUP_AED'];
+   const cbHGroundNonapp=hRequested&&hRule?.status==='OWNER_APPROVED_PROVISIONAL'&&
+    officialPhialType==='POWER_ELEMENT'&&chargeBladeState?.phialType==='POWER_ELEMENT'&&
+    JSON.stringify(resolvedTechniqueIds)===JSON.stringify(hRule.techniqueIds)&&
+    hRule.techniqueIds.length===cbHGroundNonappIds.length&&
+    cbHGroundNonappIds.every(id=>hRule.techniqueIds.includes(id));
    for(const id of resolvedTechniqueIds){
+    if(cbHGroundNonapp&&cbHGroundNonappIds.includes(id)){
+     // Do not erase an existing positive adopted mapping if it ever appears.
+     if(Object.hasOwn(rule.hitIndices,id)&&rule.hitIndices[id].length)return fail('REAL_SLICE:CB_H_AIRBORNE_POSITIVE_SCOPE_CONFLICT:'+id);
+     continue;
+    }
     if(!Object.hasOwn(rule.hitIndices,id))return fail('REAL_SLICE:AIRBORNE_HIT_SCOPE_PENDING:'+id);
     for(const i of rule.hitIndices[id]){
      if(!techniques[id]?.hits?.[i])return fail('REAL_SLICE:AIRBORNE_HIT_MAPPING_INVALID:'+id);
