@@ -1,0 +1,70 @@
+# UI未算出理由の日本語表示 — 独立実装・接続条件（2026-11-04）
+
+## ベースと目的
+- UI基点: `3096b71293f22ff1835214fc941a6431cdacf8a0`
+- 対象: 2026-11-03オーナー実機UI指摘、KAN-18 / KAN-26 / KAN-63
+- 開発中の正本UIや火力計算に影響させず、未算出の内部識別子を利用者向けの短い日本語に変換する**表示専用**モジュールを追加する。
+
+## 実装
+- `ui/unresolved-damage-presentation.cjs` は結果の `status` / `reason` を読み、`summary` と `technicalReason` を返す。
+- 未算出は未算出のまま保持。0を代入せず、`value` を新たに構築しない。
+- `REAL_SLICE:` 等の技術識別子は通常表示の要約には埋め込まない。原文は開発者詳細へ残す。
+- 不明コードの推測翻訳は行わず、一般的な「保留中」表示と技術詳細を分ける。
+- 正常値（`status:'available'`）には未算出警告を追加しない。
+
+## UI接続条件（まだ未実装）
+- 実計算とA/B比較の結果オブジェクトを変更せず、**描画直前だけ**要約モデルを参照する。
+- `<details>` 等の開閉式の開発者詳細に `technicalReason` を表示し、通常画面へは `summary` だけ表示する。
+- 通常/最大を独立処理する。片側だけ未算出ならもう一方を隠さない。
+- A/B保存、ロード、比較表、診断JSONへの原データを改変しない。
+- PC 50:50、横タブレット2カラム、スマホ縦積みを保つ。
+- テスト幅：375/390/768/1024/1440px。Safari実機で未算出/計算済み/片側だけ保留を確認する。
+
+## 現状判定
+- 新規表示モジュールとテストのみ実装。GitHubの元UI `index.html` は変更していない。
+- 7件のテストコールバックは独立JavaScript実行で通過。ネイティブNodeおよび実ブラウザ実行は未確認。
+- 完了/β承認とはしない。PRのレビュー・別途UI接続後に判定する。
+
+## 実Node.js検証（2026-11-04）
+- GitHubのソースとローカル実行対象をGit blob SHAで照合：`ui/unresolved-damage-presentation.cjs` = `bcb2b46b12fdea2dfca4cfe5806fc223a5287e4b`、`tests/ui-unresolved-damage-presentation.test.cjs` = `f6b654182b33b79ba18e58716c5ad8ce1ba8df73`。両者完全一致。
+- Node.js v22.16.0の正式`node --test tests/ui-unresolved-damage-presentation.test.cjs`：**7 PASS / 0 FAIL**。
+- これは新規表示モジュールの単体検証であり、既存`index.html`描画、Safari、保存A/B、実MHDBの統合検証ではない。
+- UI本体は未変更、Draft・レビュー保留を維持。
+
+## 製品描画への接続（2026-11-04）
+- `index.html` の `</head>` 直前で `ui/unresolved-damage-presentation.browser.js` を読み込むよう変更。
+- `renderSummary()` の選択技・実計算表示で、通常と最大を別々に判定し、`unavailable` の場合は理由を短い日本語で表示する。`available` の有限値は従来通り小数1桁。技術識別子は既存 `<details class="one-hit-diagnostics">` 内に保持。
+- 本体差分：`index.html` 11行追加・5行削除。火力式・コンボ・装備/護石・DB・保存処理の計算コードは変更なし。
+- ブラウザ用のモジュールを追加。Node用の表示モデルと同じ理由マッピングを使い、グローバル `window.MHWUnresolvedDamagePresentation` として参照。読み込み失敗時にも暫定の「火力は現在未算出です。」を表示する。
+- 回帰テストを9件に拡張。ソースとHTML接続を読み込み、隔離されたJavaScriptテストコールバックとして **9/9合格**。これは正式なブラウザ表示やSafariでの表示検証、CI合格ではない。
+- `3096b71` からの差分は5ファイル（index.html、ブラウザモジュール、Nodeモジュール、テスト、報告書）。UI専用PR #3はDraft・未統合を維持。
+- 残ゲート：実ブラウザで通常のみ未算出・最大のみ未算出・双方未算出・双方算出を確認。保存A/Bとスマホ/横タブレット/PCレイアウトを確認後に受入判断。
+
+## 装備アイコンの視認性・旧版バナー整理（2026-11-04）
+- 11/03のPC装備アイコン指摘を踏まえ、従来の部位別埋込みSVG（頭/胴/腕/腰/脚/護石）および `data-armor` のDOM/装備IDは保持したまま、CSSでアイコンを40×46px、430px以下では34×40pxに拡大し、ドロップシャドウとタイトルの余白を追加。
+- アイコン自体の形・イラストは今回変更しない。オーナー参照画像と同一という主張はしない。実画面を見て次段で審査する。
+- 旧 `r120 HBG Shot Skill Conditions`、`v7.2.2...`、旧「全14武器種のコンボDPSエンジン搭載」案内を、実対応範囲を過大主張しない「開発プレビュー／基準ゲームVer.1.042.00.02」表示へ整理。HTML title/h1も旧バージョン表示を外した。既存の `appVersionBadge` IDは保持。
+- 独立JavaScript検証で、未算出表示と今回のバナー/アイコンCSS検査を含む11件コールバックが11/11通過。ブラウザ/Safari描画・操作・画面幅の実測検証はまだ未実施。
+- PR #3はDraft、計算/保存処理やPR #1/#2への変更なし。
+
+## 1024px横タブレット・通常/最大独立表示の修正（2026-11-04）
+- 現行CSSの981〜1120pxではStage4のビルド/サポート1.65:1が残り、1121px以上でだけ50:50だった。Stage9より後のスタイル `flamme-ui-landscape-balanced-chapters-20261104` によって981〜1120pxを50:50へ補正。<=980px縦積み、>=1121pxの既存50:50を維持。
+- 横幅が狭いビルド章内部の装備/スキルは1列を維持し、装備とサポートの最上位2カラムと混同しない。計算・保存・選択バインディングは無変更。
+- `renderSummary()`の`one.status==='OK'`一括判定を、通常/最大のchannelがある場合は各チャネルの計算済み値・保留理由を別々に出す判定へ変更。全体保留中でも一方がavailableなら小数1桁の実値を隠さない。両側の原データは変更しない。
+- 既存HTMLの実表示コード断片を実行するテストを含む **13件の独立JavaScriptテストコールバックが13/13成功**。Safari実機・Chromium上の完成UI表示・GitHub Actions合格は未確認。
+- この更新はDraft PR #3のみ。基準UI 3096b71、チャアクPR #1/#2には変更なし。
+
+## PR #3 実ブラウザ検証の追加（2026-11-04）
+- `tools/ui-pr3-layout-smoke.cjs` を追加。Playwright + Chromiumでリポジトリの本物の`index.html`をローカルファイルとして開き、375/390/768/1024/1440pxの表示を測定する。上位のビルド/サポートの縦横配置、横画面での左右比率、文書横はみ出しを検査する。
+- `.github/workflows/ui-pr3-layout-smoke.yml` を追加し、Node 24で既存表示テスト、Chromiumインストール、レイアウト計測、スクリーンショットとJSON結果のartifact保存を構成した。
+- スモークスクリプトは構文の独立確認ができた。ただしGitHub Actionsによる実実行およびスクリーンショット生成結果は**未確認**。この時点で画面レイアウトが実ブラウザで合格したとは判定しない。
+- Chromiumの測定はSafari実機での視認性・操作性の受入を代替しない。Safari最終受入・保存A/B操作は別ゲートとして維持する。
+- 本変更は自動検証コードとCIのみ。既存の計算/保存/DBコードは変更しない。
+
+## Chromium CI + screenshot review (2026-11-04)
+- Actual GitHub Actions `41827105661` on SHA `f1648210` completed **SUCCESS**. The targeted UI Node tests, Chromium installation, viewport assertions and artifact upload jobs all completed successfully.
+- Artifact `ui-pr3-layout-evidence` contained five full-page PNG screenshots and `result.json`. The JSON shows correct top-level stacking at 375/390/768 and 50:50 columns at 1024/1440; page scroll width equalled viewport width in all five cases, with no recorded page JavaScript errors. This is real Chromium evidence, **not Safari**.
+- Screenshot review showed four unused diagnostic cards sitting above the main Build/Support chapters; the 1440px Build start was roughly y=421px. Added consumer-only CSS to hide their section wrappers (techAuditPanel/hhReferencePanel/scorchReferencePanel/darkArtsReferencePanel), keeping their DOM and handlers mounted. Earlier Chromium run `41827730221` on the CSS change completed SUCCESS. Its screenshot moved the 1440px Build start to about y=202px (219px less vertical space); 375px moved from ~521px to ~303px (218px less). This is a *layout observation*, not a claim about Safari.
+- Added browser-asserted presence+hidden status of all four reference panels and Node contract test. Latest screenshot/CI at the updated head should be checked separately before merge.
+- Screenshot review also identified a long, outdated DPS/weapon support paragraph at the start of the A/B comparison section. Replaced that **static text** with concise guidance on same-weapon normal/maximum values, pending reasons and re-saving edited builds, preserving the comparison DOM and calculation code. Added a focused UI regression test.
+- Important: Screenshot JSON's optional iconStyles property was null before DB load, so the armor icon appearance has **not** yet been verified through this automated screenshot test. Owner artwork acceptance remains separate.

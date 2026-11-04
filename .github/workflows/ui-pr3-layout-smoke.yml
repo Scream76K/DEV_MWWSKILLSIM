@@ -1,0 +1,35 @@
+name: PR3 UI viewport layout smoke
+on:
+  push:
+    branches:
+      - flamme/ui-unresolved-reason-display-20261104
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'ui/**'
+      - 'tests/ui-unresolved-damage-presentation.test.cjs'
+      - 'tools/ui-pr3-layout-smoke.cjs'
+      - '.github/workflows/ui-pr3-layout-smoke.yml'
+jobs:
+  layout-chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts
+      - name: Run UI text and rendering contract tests
+        run: node --test tests/ui-unresolved-damage-presentation.test.cjs
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Capture and assert 375/390/768/1024/1440 viewport layout
+        run: node tools/ui-pr3-layout-smoke.cjs
+      - name: Retain layout screenshots and measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-pr3-layout-evidence
+          path: artifacts/ui-pr3-layout/
+          if-no-files-found: warn
