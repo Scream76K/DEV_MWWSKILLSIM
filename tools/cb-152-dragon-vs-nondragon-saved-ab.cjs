@@ -51,8 +51,15 @@ try{
     assert.equal(a.maximum.status,'complete','dragon weapon conversion supported');
     assert.ok(a.maximum.total>z.maximum.total,'active dragon conversion should add elemental damage');
   }else{
-    assert.equal(a.maximum.status,'blocked','non dragon active scope remains blocked');
-    assert.match(String(a.maximum.reason),/ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED/,'non dragon pending scope reason');
+    assert.equal(a.maximum.status,'complete','non dragon max ON continues without extra dragon attribute');
+    assert.equal(a.maximum.total,z.maximum.total,'non dragon active 152 must not add dragon weapon flat');
+    for(const ch of ['normal','maximum']){
+      const actual=['R','H'].flatMap(route=>on.real?.routes?.[route]?.channels?.[ch]?.components||[]);
+      const reference=['R','H'].flatMap(route=>off.real?.routes?.[route]?.channels?.[ch]?.components||[]);
+      assert.deepEqual(actual.map(c=>({id:c.id,status:c.status,value:c.value})),
+       reference.map(c=>({id:c.id,status:c.status,value:c.value})),
+       'all non-dragon R/H components must be identical with 152 max ON/OFF '+ch);
+    }
   }
   setState(input.id,true);
   w.document.getElementById('buildName').value=input.name;
