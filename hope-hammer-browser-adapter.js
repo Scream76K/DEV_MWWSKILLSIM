@@ -258,15 +258,33 @@
   let ed1Rule=root.MHCBED1ResourceRule;
   const dischargeRules=root.MHCBDischargeResourceRules,resourcePlans={};
   const hRule=root.MHCBHRouteRule;
+  // Owner decision 2026-11-04: this precise POWER_ELEMENT H shield-thrust
+  // composition is accepted as product specification, NOT as in-game measurement.
+  // Do not silently transfer this approval to any unrelated combo or weapon type.
+  const cbPowerHShieldOwnerDecision=Object.freeze({
+   status:'OWNER_APPROVED',
+   decisionDate:'2026-11-04',
+   scope:'CB_H_EXACT_ROUTE_POWER_ELEMENT_SHIELD_THRUST',
+   techniqueId:'CB_SHIELD_THRUST',
+   phialExplosionHits:1,
+   consumedPhials:0,
+   verificationStatus:'OWNER_SPEC_CONFIRMED_GAME_MEASUREMENT_NOT_CLAIMED'
+  });
   const hRequested=weapon.kind==='charge-blade'&&resolvedTechniqueIds.some(id=>hRule?.prefixIds.includes(id));
   if(hRequested){
    if(hRule?.status!=='OWNER_APPROVED_PROVISIONAL'||JSON.stringify(resolvedTechniqueIds)!==JSON.stringify(hRule.techniqueIds))return fail('REAL_SLICE:CB_H_EXACT_SINGLE_ROUTE_REQUIRED');
    if(chargeBladeState?.mode!=='AXE'||chargeBladeState.previousAction!=='AXE_NEUTRAL'||chargeBladeState.shieldBoosted!==true||chargeBladeState.swordBoosted!==false||typeof chargeBladeState.axeBoosted!=='boolean')return fail('REAL_SLICE:CB_H_EXPLICIT_MODE_SHIELD_SWORD_REQUIRED');
-   // CANDIDATE_NOT_ADOPTED: extend exact H route to sourced POWER_ELEMENT phials.
-   // Shield-thrust phial explosion count/consumption remains provisional pending
-   // independent game validation. No unknown/mismatched phial type is accepted.
+   // POWER_ELEMENT H shield-thrust's one phial explosion and zero phial cost
+   // are OWNER_APPROVED specification. Other H route expansions retain review
+   // boundaries; game measurements remain separate from owner decisions.
    const hPhialPair=(officialPhialType==='IMPACT'&&chargeBladeState.phialType==='IMPACT')||(officialPhialType==='POWER_ELEMENT'&&chargeBladeState.phialType==='POWER_ELEMENT');
    if(!hPhialPair)return fail('REAL_SLICE:CB_H_IMPACT_ONLY');
+   if(officialPhialType==='POWER_ELEMENT'){
+    const shieldTechnique=root.TechniqueDBEngine?.get('charge-blade','CB_SHIELD_THRUST');
+    if(cbPowerHShieldOwnerDecision.status!=='OWNER_APPROVED'||hRule.prefixConsumption!==cbPowerHShieldOwnerDecision.consumedPhials||
+       shieldTechnique?.phialReference?.hitCount!==cbPowerHShieldOwnerDecision.phialExplosionHits)
+     return fail('REAL_SLICE:CB_POWER_H_SHIELD_OWNER_CONTRACT_MISMATCH');
+   }
    // H enhanced stock candidate: existing adopted discharge planning selects coefficients by the consumed stock; a zero-consumption shield prefix does not consume a phial.
    // Legacy absent stock remains governed by the shared explicit ED resource contract below.
    if(chargeBladeState.enhancedPhials!=null&&(!Number.isSafeInteger(chargeBladeState.enhancedPhials*2)||chargeBladeState.enhancedPhials<0))return fail('REAL_SLICE:CB_H_ENHANCED_STOCK_INVALID');
@@ -286,7 +304,7 @@
    for(const id of resolvedTechniqueIds){
     if(hRequested&&hRule.prefixIds.includes(id)){
      const morph=id==='CB_AXE_TO_SWORD_MORPH';
-     resourcePlans[id]={id:'CB_H_PREFIX_RESOURCE',status:'OWNER_APPROVED_PROVISIONAL',techniqueId:id,consumeNormalPhials:hRule.prefixConsumption,resourceKey:'normalPhials',consumedPhialKind:'NORMAL',requiredPreviousAction:previous,requiredMode:morph?'AXE':'SWORD',endMode:'SWORD',nextPreviousAction:morph?id:'SHIELD_THRUST',source:hRule.source,rapidMorphExcludedEffectIds:[]};
+     resourcePlans[id]={id:'CB_H_PREFIX_RESOURCE',status:hRequested&&officialPhialType==='POWER_ELEMENT'&&id==='CB_SHIELD_THRUST'?'OWNER_APPROVED':'OWNER_APPROVED_PROVISIONAL',ownerDecision:hRequested&&officialPhialType==='POWER_ELEMENT'&&id==='CB_SHIELD_THRUST'?cbPowerHShieldOwnerDecision:null,techniqueId:id,consumeNormalPhials:hRule.prefixConsumption,resourceKey:'normalPhials',consumedPhialKind:'NORMAL',requiredPreviousAction:previous,requiredMode:morph?'AXE':'SWORD',endMode:'SWORD',nextPreviousAction:morph?id:'SHIELD_THRUST',source:hRule.source,rapidMorphExcludedEffectIds:[]};
      previous=resourcePlans[id].nextPreviousAction;continue;
     }
     if(!dischargeRules.predecessors[id].includes(previous))return fail('REAL_SLICE:CB_DISCHARGE_PREDECESSOR_UNRESOLVED:'+id);
