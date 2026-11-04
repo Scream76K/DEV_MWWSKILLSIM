@@ -125,3 +125,28 @@ test('landscape tablet balances Build and Support at 981–1120 without changing
   assert.ok(html.includes('@media (max-width: 980px)'));
   assert.ok(html.includes('@media (min-width:1121px)'));
 });
+
+test('rendered summary preserves independent normal and maximum when overall status is pending', () => {
+  const fs=require('node:fs'),path=require('node:path');
+  const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+  const start=html.indexOf('  const oneUnresolvedSummary=(reason)=>');
+  const end=html.indexOf("  $('buildSummary').innerHTML=",start);
+  assert.ok(start>0&&end>start,'missing real summary rendering block');
+  const source=html.slice(start,end);
+  const display=new Function('one','esc','window',source+'\nreturn oneCompactText;');
+  const esc=s=>String(s).replaceAll('<','&lt;');
+  const window={MHWUnresolvedDamagePresentation:{makeUnresolvedDamagePresentation:present}};
+  const available=value=>({metrics:{comboTotalDamage:{status:'available',value}}});
+  const blocked=reason=>({metrics:{comboTotalDamage:{status:'unavailable',reason}}});
+  assert.equal(display({status:'UNAVAILABLE',channels:{
+    normal:available(123.46),maximum:blocked('COMPONENT_UNAVAILABLE')
+  }},esc,window),'通常 123.5 ／ 最大 未算出（計算に必要なダメージ成分が揃っていません。）');
+  assert.equal(display({status:'UNAVAILABLE',channels:{
+    normal:blocked('BLACK_ECLIPSE_NORMAL_STATE_REQUIRED'),maximum:available(456.74)
+  }},esc,window),'通常 未算出（必要な発動状態が確認できないため、火力は保留中です。） ／ 最大 456.7');
+  assert.equal(display({status:'OK',channels:{
+    normal:available(100),maximum:available(200.06)
+  }},esc,window),'通常 100.0 ／ 最大 200.1');
+  assert.ok(display({status:'UNAVAILABLE',reason:'COMPONENT_UNAVAILABLE'},esc,window)
+    .includes('計算に必要なダメージ成分が揃っていません。'));
+});
