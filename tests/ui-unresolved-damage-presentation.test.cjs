@@ -108,3 +108,20 @@ test('armor icon legibility adjusts size only and retains all six original SVG c
   assert.ok(html.includes('<style id="flamme-ui-equipment-icons-20261103">'),
     'retain the original embedded icons');
 });
+
+test('landscape tablet balances Build and Support at 981–1120 without changing phone stacking', () => {
+  const fs=require('node:fs'),path=require('node:path');
+  const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+  const start='<style id="flamme-ui-landscape-balanced-chapters-20261104">';
+  assert.equal(html.split(start).length,2,'layout override must be unique');
+  const from=html.indexOf(start);
+  const css=html.slice(from+start.length,html.indexOf('</style>',from));
+  assert.ok(css.includes('@media (min-width:981px) and (max-width:1120px)'));
+  assert.ok(css.includes('grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important'));
+  assert.ok(css.includes('#armorBuildWorkspace'));
+  assert.ok(css.includes('grid-template-columns:minmax(0,1fr)!important'));
+  assert.ok(html.indexOf(start)>html.indexOf('<style id="flamme-ui-workspace-stage4">'));
+  assert.ok(html.indexOf(start)>html.indexOf('<style id="flamme-ui-owner-review-stage9">'));
+  assert.ok(html.includes('@media (max-width: 980px)'));
+  assert.ok(html.includes('@media (min-width:1121px)'));
+});
