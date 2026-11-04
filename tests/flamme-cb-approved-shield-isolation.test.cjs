@@ -273,3 +273,25 @@ test('shared and both browser aliases emit identical approved shield event paylo
   assert.equal(hit.components.filter(c=>c.kind==='phial').length,1);
   assert.equal(outputs[0].filter(e=>e.type==='consume').length,0);
 });
+
+test('embedded browser contract and adapter sources are byte-identical to Node source', () => {
+  const fs=require('node:fs');
+  const path=require('node:path');
+  const root=path.join(__dirname,'..');
+  const bundle=fs.readFileSync(path.join(root,'himmel-real-browser-bundle.js'),'utf8');
+  const pairs=[
+    ['cb-approved-shield-contract.cjs','v10-six-layer-foundation/min8/cb-approved-shield-contract.cjs'],
+    ['real-technique-one-hit-adapter.cjs','v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs']
+  ];
+  for(const [moduleName,sourcePath] of pairs){
+    const source=fs.readFileSync(path.join(root,sourcePath),'utf8');
+    for(const id of ['/'+moduleName,'./'+moduleName]){
+      const marker='define("'+id+'",function(module,exports,require){\n';
+      assert.equal(bundle.split(marker).length,2,'missing or duplicated bundle module: '+id);
+      const from=bundle.indexOf(marker)+marker.length;
+      const end=bundle.indexOf('\n});\ndefine(',from);
+      assert.ok(end>from,'missing module boundary: '+id);
+      assert.equal(bundle.slice(from,end),source,'embedded source drift: '+id);
+    }
+  }
+});
