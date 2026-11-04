@@ -49,3 +49,37 @@ test('does not mutate source result and makes frozen output', () => {
   assert.equal(original.reason,'COMPONENT_UNAVAILABLE');
   assert.equal(result.summary,'計算に必要なダメージ成分が揃っていません。');
 });
+
+test('browser module mirrors Node presentation and exposes a single safe global', () => {
+  const fs=require('node:fs');
+  const path=require('node:path');
+  const vm=require('node:vm');
+  const browserSource=fs.readFileSync(path.join(__dirname,'..','ui/unresolved-damage-presentation.browser.js'),'utf8');
+  const browser={};
+  vm.runInNewContext(browserSource,{window:browser},{timeout:5000});
+  const browserPresent=browser.MHWUnresolvedDamagePresentation?.makeUnresolvedDamagePresentation;
+  assert.equal(typeof browserPresent,'function');
+  for(const input of [
+    {status:'unavailable',reason:'REAL_SLICE:TECHNIQUE_NOT_FOUND:bow_shot'},
+    {status:'unavailable',reason:'COMPONENT_UNAVAILABLE'},
+    {status:'unavailable',reason:'BLACK_ECLIPSE_NORMAL_STATE_REQUIRED'},
+    {status:'unavailable',reason:'UNKNOWN_REASON'},
+    {status:'unavailable',reason:null},
+    {status:'available',value:525.4}
+  ]){
+    assert.deepEqual(JSON.parse(JSON.stringify(browserPresent(input))),
+      JSON.parse(JSON.stringify(present(input))));
+  }
+});
+test('index.html loads browser presentation before the build-summary rendering code', () => {
+  const fs=require('node:fs'),path=require('node:path');
+  const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+  const script='<script src="./ui/unresolved-damage-presentation.browser.js"></script>';
+  assert.equal(html.split(script).length,2);
+  assert.ok(html.indexOf(script)<html.indexOf('function renderSummary()'));
+  assert.ok(html.includes('const oneUnresolvedSummary=(reason)=>'));
+  assert.ok(html.includes('window.MHWUnresolvedDamagePresentation?.makeUnresolvedDamagePresentation'));
+  assert.ok(html.includes("return '未算出（'+oneUnresolvedSummary(reason)+'）'"));
+  assert.ok(html.includes("const oneText=one.status==='OK'?"));
+  assert.ok(html.includes('<details class="one-hit-diagnostics">'));
+});
