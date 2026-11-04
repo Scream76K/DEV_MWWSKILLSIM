@@ -28,6 +28,7 @@ function validateApprovedPowerHShield(input) {
     input.routeScope === APPROVED_SHIELD.scope &&
     input.techniqueId === APPROVED_SHIELD.techniqueId &&
     input.resourceContractId === 'CB_H_PREFIX_RESOURCE' &&
+    ['OBSERVED','OWNER_APPROVED_PROVISIONAL'].includes(input.phialReferenceStatus) &&
     input.phialExplosionHits === APPROVED_SHIELD.phialExplosionHits &&
     input.consumedPhials === APPROVED_SHIELD.consumedPhials &&
     decision && typeof decision === 'object' &&
