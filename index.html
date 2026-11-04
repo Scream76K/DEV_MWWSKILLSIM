@@ -742,6 +742,27 @@ main.wrap > .grid > aside .save-build-row > button {min-height:42px;}
   display:none!important;
 }
 </style>
+<style id="flamme-ui-landscape-balanced-chapters-20261104">
+/* KAN-18/KAN-63: landscape tablet and desktop use equal Build/Support chapters.
+   Keep the established stacked mobile layout <=980px and untouched data bindings. */
+@media (min-width:981px) and (max-width:1120px) {
+  main.wrap > .grid {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    align-items:start;
+  }
+  main.wrap > .grid > aside,
+  main.wrap > .grid > section {
+    min-width:0;
+    max-width:100%;
+  }
+  /* Each narrow chapter retains one usable equipment/skill edit column. */
+  #armorBuildWorkspace {
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+}
+</style>
+
 <style id="flamme-ui-one-hit-diagnostics-stage10">
 /* Owner screenshot: keep raw results prominent, move opaque reason codes behind details. */
 #buildSummary .gs-one-hit-result .gs-value{
