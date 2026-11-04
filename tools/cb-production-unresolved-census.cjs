@@ -50,9 +50,9 @@ try{
  // unapproved scope gates instead of permitting non-dragon or special phials.
  out.counts.attributeConversion152={
   normalStable:0,
-  maximumCompleteWithOn:{impact:0,power:0},
-  maximumBlockedWithOn:{impact:0,power:0},
-  maximumReasonCounts:{impact:{},power:{}}
+  maximumCompleteWithOn:{impact:0,element:0},
+  maximumBlockedWithOn:{impact:0,element:0},
+  maximumReasonCounts:{impact:{},element:{}}
  };
  for(const c of out.cases){
   const a=c.channels.normal,b=c.without152.normal;
