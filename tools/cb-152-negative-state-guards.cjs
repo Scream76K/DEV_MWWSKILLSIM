@@ -49,6 +49,13 @@ try{
   if(t.name!=='no-shield-boost')assert.equal(summary.normal.status,'complete','normal channel independent '+t.name+' '+summary.normal.reason);
   assert.equal(summary.maximum.status,t.expected,'maximum boundary '+t.name+' '+summary.maximum.reason);
   if(t.expected==='blocked')assert.ok(summary.maximum.reason&&summary.maximum.reason.length>0,'explicit reason on rejected candidate '+t.name);
+  if(t.name==='adopted-baseline'){
+   for(const route of ['R','H']){
+    const result=r.routes?.[route]?.channels?.maximum;
+    assert.equal(result?.diagnostics?.referenceScope,'CB_RH_NON_DRAGON_FLAT_NOT_APPLICABLE_FOLLOWUP_EXCLUDED','explicit non-dragon scope '+route);
+    assert.equal(result?.metrics?.comboTotalDamage?.scope,'CB_RH_NON_DRAGON_FLAT_NOT_APPLICABLE_FOLLOWUP_EXCLUDED','explicit non-dragon metric scope '+route);
+   }
+  }
   if(t.name==='no-axe-boost')assert.match(summary.maximum.reason,/ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED/,'non-adopted CB state must not widen 152 flat scope');
   if(t.name==='unknown-max-activation')assert.match(summary.maximum.reason,/ATTRIBUTE_CONVERSION_STATE_REQUIRED/,'unknown activation must remain rejected');
   out.cases.push(row);
