@@ -61,3 +61,22 @@ test('approval object is immutable and not an in-game measurement claim', () => 
   assert.equal(APPROVED_SHIELD.verificationStatus,
     'OWNER_SPEC_CONFIRMED_GAME_MEASUREMENT_NOT_CLAIMED');
 });
+
+test('pre-integration product entrypoint still blocks unreviewed POWER_ELEMENT H', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const source = fs.readFileSync(path.join(__dirname,'..','hope-hammer-browser-adapter.js'),'utf8');
+  assert.ok(source.includes("if(officialPhialType!=='IMPACT'||chargeBladeState.phialType!=='IMPACT')return fail('REAL_SLICE:CB_H_IMPACT_ONLY')"));
+  assert.ok(!source.includes('CB_POWER_H_SHIELD_OWNER_CONTRACT_MISMATCH'),
+    'this isolation branch must not secretly contain PR #1 production wiring');
+});
+
+test('product bundle and shared pipeline remain untouched by isolated contract', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname,'..');
+  const product = fs.readFileSync(path.join(root,'hope-hammer-browser-adapter.js'),'utf8');
+  const bundle = fs.readFileSync(path.join(root,'himmel-real-browser-bundle.js'),'utf8');
+  assert.ok(product.includes('CB_H_IMPACT_ONLY'));
+  assert.ok(!bundle.includes('CB_POWER_H_SHIELD_OWNER_CONTRACT_MISMATCH'));
+});
