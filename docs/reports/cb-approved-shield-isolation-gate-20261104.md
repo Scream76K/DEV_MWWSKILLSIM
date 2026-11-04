@@ -69,3 +69,10 @@ This branch does not modify the public `hope-hammer-browser-adapter.js` gate. PO
 - After the correction, **13/13 test callbacks passed** under an emulated Node test/assert/fs/vm API with GitHub-sourced adapter and bundle code. This is not native Node.js `node --test` nor an official GitHub Actions run.
 - The GitHub connector did not expose a successful workflow run. An attempt to inspect browser tabs required an originating connected extension context, while the execution container could not resolve github.com for cloning, so no verified native or Actions PASS can be claimed.
 - The product/public `hope-hammer-browser-adapter.js` remains unchanged and still blocks POWER_ELEMENT H; no wider skill or H route approval and no beta sign-off.
+
+## Complete event-payload parity (2026-11-04)
+- Added a fourteenth persistent test which compares JSON-normalized **complete event payloads**, not just event names, from the Node shared adapter and both browser-bundle adapter aliases for the exact approved POWER_ELEMENT shield.
+- Source retrieved directly from GitHub was executed in a JavaScript isolate using shims for Node test/assert/fs/vm; **14/14 test callbacks passed** including the new full-payload comparison.
+- Explicitly checked the test output contains one phial component and no `consume` event. The input is an isolated, synthetic contract fixture; not live game evidence or MHDB public calculation.
+- Local container Node.js v22 is installed but repository clone was blocked by unavailable github.com DNS; no native node:test execution could be verified. GitHub Actions conclusion is also not verified.
+- No change to public `calcBuild()` gate, other H states, UI or approved skill scope. Both PRs remain Draft / HOLD_MERGE.
