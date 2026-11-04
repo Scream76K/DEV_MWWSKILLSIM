@@ -62,7 +62,7 @@ test('approval object is immutable and not an in-game measurement claim', () => 
     'OWNER_SPEC_CONFIRMED_GAME_MEASUREMENT_NOT_CLAIMED');
 });
 
-test('pre-integration product entrypoint still blocks unreviewed POWER_ELEMENT H', () => {
+test('public build entrypoint remains fail closed for POWER_ELEMENT H route', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const source = fs.readFileSync(path.join(__dirname,'..','hope-hammer-browser-adapter.js'),'utf8');
@@ -71,12 +71,19 @@ test('pre-integration product entrypoint still blocks unreviewed POWER_ELEMENT H
     'this isolation branch must not secretly contain PR #1 production wiring');
 });
 
-test('product bundle and shared pipeline remain untouched by isolated contract', () => {
+test('shared adapter and both browser aliases validate approved shield without enabling full H', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const root = path.join(__dirname,'..');
   const product = fs.readFileSync(path.join(root,'hope-hammer-browser-adapter.js'),'utf8');
   const bundle = fs.readFileSync(path.join(root,'himmel-real-browser-bundle.js'),'utf8');
   assert.ok(product.includes('CB_H_IMPACT_ONLY'));
-  assert.ok(!bundle.includes('CB_POWER_H_SHIELD_OWNER_CONTRACT_MISMATCH'));
+  const shared = fs.readFileSync(path.join(root,'v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs'),'utf8');
+  assert.ok(shared.includes('validateApprovedPowerHShield({weaponType'));
+  assert.equal((bundle.match(/validateApprovedPowerHShield\(\{weaponType/g)||[]).length,2);
+  assert.equal((bundle.match(/define\("[./]+cb-approved-shield-contract\.cjs"/g)||[]).length,2);
+  assert.equal((bundle.match(/require\('\.\/cb-approved-shield-contract\.cjs'\)/g)||[]).length,2);
+  assert.equal((bundle.match(/r\.status==='OWNER_APPROVED'&&techniqueId==='CB_SHIELD_THRUST'/g)||[]).length,2);
+  assert.ok(!product.includes('validateApprovedPowerHShield({weaponType'),
+    'do not accidentally enable unreviewed POWER_ELEMENT H at product calcBuild entrypoint');
 });
