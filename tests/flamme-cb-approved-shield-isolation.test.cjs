@@ -10,6 +10,7 @@ const exact = () => ({
   routeScope: APPROVED_SHIELD.scope,
   techniqueId: 'CB_SHIELD_THRUST',
   resourceContractId: 'CB_H_PREFIX_RESOURCE',
+  phialReferenceStatus: 'OWNER_APPROVED_PROVISIONAL',
   phialExplosionHits: 1,
   consumedPhials: 0,
   ownerDecision: {...APPROVED_SHIELD}
@@ -27,6 +28,12 @@ test('incorrect scope, phial type, weapon type, and technique fail closed', () =
   ]) {
     assert.deepEqual(validateApprovedPowerHShield({...exact(), [key]:value}),
       {ok:false, reason:MISMATCH}, key);
+  }
+});
+
+test('missing phial source status fails closed', () => {
+  for (const phialReferenceStatus of [undefined,null,'UNKNOWN','GAME_MEASURED']) {
+    assert.equal(validateApprovedPowerHShield({...exact(),phialReferenceStatus}).ok,false);
   }
 });
 
