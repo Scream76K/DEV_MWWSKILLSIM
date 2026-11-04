@@ -165,3 +165,13 @@ test('diagnostic reference panels retain DOM IDs but do not occupy consumer spac
   assert.ok(css.includes('display:none!important'));
   assert.ok(html.includes('<main class="wrap">'));
 });
+
+test('comparison guidance is concise and does not promise DPS or all-weapons readiness', () => {
+  const fs=require('node:fs'),path=require('node:path');
+  const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+  assert.ok(html.includes('同じ武器種・共通条件で通常／最大の火力計算値を比較します。'));
+  assert.ok(html.includes('未算出の項目は理由を表示します。'));
+  assert.ok(!html.includes('全14武器種のコンボDPSエンジンを搭載'));
+  assert.ok(!html.includes('武器種間の比較は検証済みDPSのみ対応予定です。'));
+  assert.ok(html.includes('id="compareBuilds"'),'comparison entry remains present');
+});
