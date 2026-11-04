@@ -26,4 +26,14 @@ jobs:
           node --check himmel-real-browser-bundle.js
           node --check tests/flamme-cb-approved-shield-isolation.test.cjs
       - name: Verify exact owner-approved shield scope and fail-closed guards
-        run: node --test tests/flamme-cb-approved-shield-isolation.test.cjs
+        shell: bash
+        run: |
+          set -o pipefail
+          node --test --test-reporter=tap tests/flamme-cb-approved-shield-isolation.test.cjs | tee cb-approved-shield-test.tap
+      - name: Preserve test evidence even when tests fail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cb-approved-shield-test-evidence
+          path: cb-approved-shield-test.tap
+          if-no-files-found: warn
