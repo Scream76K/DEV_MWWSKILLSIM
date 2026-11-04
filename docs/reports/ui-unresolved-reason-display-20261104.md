@@ -30,3 +30,12 @@
 - Node.js v22.16.0の正式`node --test tests/ui-unresolved-damage-presentation.test.cjs`：**7 PASS / 0 FAIL**。
 - これは新規表示モジュールの単体検証であり、既存`index.html`描画、Safari、保存A/B、実MHDBの統合検証ではない。
 - UI本体は未変更、Draft・レビュー保留を維持。
+
+## 製品描画への接続（2026-11-04）
+- `index.html` の `</head>` 直前で `ui/unresolved-damage-presentation.browser.js` を読み込むよう変更。
+- `renderSummary()` の選択技・実計算表示で、通常と最大を別々に判定し、`unavailable` の場合は理由を短い日本語で表示する。`available` の有限値は従来通り小数1桁。技術識別子は既存 `<details class="one-hit-diagnostics">` 内に保持。
+- 本体差分：`index.html` 11行追加・5行削除。火力式・コンボ・装備/護石・DB・保存処理の計算コードは変更なし。
+- ブラウザ用のモジュールを追加。Node用の表示モデルと同じ理由マッピングを使い、グローバル `window.MHWUnresolvedDamagePresentation` として参照。読み込み失敗時にも暫定の「火力は現在未算出です。」を表示する。
+- 回帰テストを9件に拡張。ソースとHTML接続を読み込み、隔離されたJavaScriptテストコールバックとして **9/9合格**。これは正式なブラウザ表示やSafariでの表示検証、CI合格ではない。
+- `3096b71` からの差分は5ファイル（index.html、ブラウザモジュール、Nodeモジュール、テスト、報告書）。UI専用PR #3はDraft・未統合を維持。
+- 残ゲート：実ブラウザで通常のみ未算出・最大のみ未算出・双方未算出・双方算出を確認。保存A/Bとスマホ/横タブレット/PCレイアウトを確認後に受入判断。
