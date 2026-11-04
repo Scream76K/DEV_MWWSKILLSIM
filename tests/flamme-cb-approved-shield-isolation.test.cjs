@@ -183,3 +183,21 @@ test('both browser bundle aliases emit the same exact approved shield event', ()
     }}),/REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID/,alias);
   }
 });
+
+test('legacy provisional H prefix remains provisional and morph cannot borrow approval', () => {
+  const provisional=shieldRecord();
+  provisional.resourceContract.status='OWNER_APPROVED_PROVISIONAL';
+  provisional.resourceContract.ownerDecision=null;
+  const result=adaptShield(provisional);
+  assert.equal(result.events[0].components.filter(c=>c.kind==='phial').length,1);
+  assert.equal(provisional.resourceContract.status,'OWNER_APPROVED_PROVISIONAL');
+  const wrong=shieldRecord();
+  wrong.techniqueId='CB_AXE_TO_SWORD_MORPH';
+  wrong.resourceContract.ownerDecision={...APPROVED_SHIELD,techniqueId:'CB_AXE_TO_SWORD_MORPH'};
+  assert.throws(()=>adaptOrdinaryPhysicalHit({
+    weaponType:'charge-blade',techniqueId:'CB_AXE_TO_SWORD_MORPH',
+    record:wrong,dbVersion:'test-isolated',elementContext:{
+      displayElement:0,effectsResolved:true,activeElementEffects:[]
+    }
+  }),/REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID/);
+});
