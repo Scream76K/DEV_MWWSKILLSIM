@@ -1,0 +1,23 @@
+name: CB PR1 other 13 weapons baseline audit
+on:
+  push:
+    branches:
+      - flamme/cb-pr1-other13-ui-baseline-20261104
+    paths:
+      - 'tools/cb-pr1-other13-product-smoke.cjs'
+      - '.github/workflows/cb-pr1-other13-ui-baseline.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  other-13-ui-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts
+      - name: Test same 13 real MHDB weapons on original UI baseline
+        run: node tools/cb-pr1-other13-product-smoke.cjs
