@@ -60,3 +60,11 @@
 - スモークスクリプトは構文の独立確認ができた。ただしGitHub Actionsによる実実行およびスクリーンショット生成結果は**未確認**。この時点で画面レイアウトが実ブラウザで合格したとは判定しない。
 - Chromiumの測定はSafari実機での視認性・操作性の受入を代替しない。Safari最終受入・保存A/B操作は別ゲートとして維持する。
 - 本変更は自動検証コードとCIのみ。既存の計算/保存/DBコードは変更しない。
+
+## Chromium CI + screenshot review (2026-11-04)
+- Actual GitHub Actions `41827105661` on SHA `f1648210` completed **SUCCESS**. The targeted UI Node tests, Chromium installation, viewport assertions and artifact upload jobs all completed successfully.
+- Artifact `ui-pr3-layout-evidence` contained five full-page PNG screenshots and `result.json`. The JSON shows correct top-level stacking at 375/390/768 and 50:50 columns at 1024/1440; page scroll width equalled viewport width in all five cases, with no recorded page JavaScript errors. This is real Chromium evidence, **not Safari**.
+- Screenshot review showed four unused diagnostic cards sitting above the main Build/Support chapters; the 1440px Build start was roughly y=421px. Added consumer-only CSS to hide their section wrappers (techAuditPanel/hhReferencePanel/scorchReferencePanel/darkArtsReferencePanel), keeping their DOM and handlers mounted. Earlier Chromium run `41827730221` on the CSS change completed SUCCESS. Its screenshot moved the 1440px Build start to about y=202px (219px less vertical space); 375px moved from ~521px to ~303px (218px less). This is a *layout observation*, not a claim about Safari.
+- Added browser-asserted presence+hidden status of all four reference panels and Node contract test. Latest screenshot/CI at the updated head should be checked separately before merge.
+- Screenshot review also identified a long, outdated DPS/weapon support paragraph at the start of the A/B comparison section. Replaced that **static text** with concise guidance on same-weapon normal/maximum values, pending reasons and re-saving edited builds, preserving the comparison DOM and calculation code. Added a focused UI regression test.
+- Important: Screenshot JSON's optional iconStyles property was null before DB load, so the armor icon appearance has **not** yet been verified through this automated screenshot test. Owner artwork acceptance remains separate.
