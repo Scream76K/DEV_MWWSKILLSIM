@@ -39,3 +39,13 @@ This branch adds a pure contract validator (fail closed), seven isolated tests (
 - The previously written “four new files only / no product source change” statement describes the earlier preparatory checkpoint; it is superseded by this update. Current diff includes the shared adapter and browser bundle.
 
 **Decision remains HOLD_MERGE** for PR #2 and PR #1. No approval of skills 86/152/163/165 or general POWER_ELEMENT H route.
+
+## Runtime smoke evidence (2026-11-04)
+The published sources were loaded and exercised in a standalone JavaScript isolate (not Safari and not GitHub Actions):
+- Shared Node adapter `adaptOrdinaryPhysicalHit`: an exact synthetic owner-approved POWER_ELEMENT shield record emitted one hit event (one physical and one phial component) plus one transition; no consume event.
+- Mutating consumed phials from 0 to 1, explosion hits from 1 to 2, or the owner approval scope returned `REAL_SLICE:CB_H_PREFIX_CONTRACT_INVALID`.
+- Both browser-bundle module IDs `/real-technique-one-hit-adapter.cjs` and `./real-technique-one-hit-adapter.cjs` loaded and emitted the same types and phial component under identical synthetic inputs.
+- Permanent test `tests/flamme-cb-approved-shield-isolation.test.cjs` now contains 11 cases, including Node adapter execution and browser module execution via a read-only test probe.
+- These inputs are synthetic contract fixtures, **not** real MHDB, in-game measurements, a public `calcBuild()` test, or a Safari proof. Node test and CI job results remain unconfirmed. Work remains unmerged.
+
+No expansion of the POWER_ELEMENT H public route or provisional skill scopes was performed.
