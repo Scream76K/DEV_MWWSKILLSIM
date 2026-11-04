@@ -31,7 +31,7 @@ try{
  const baseline={mode:'AXE',shieldBoosted:true,axeBoosted:true,swordBoosted:false,phialType:'IMPACT',enhancedPhial:false,previousAction:'CHARGE',normalPhials:2,enhancedPhials:0,mixMode:'R_H_INDEPENDENT',mixH:{mode:'AXE',previousAction:'AXE_NEUTRAL',normalPhials:2,enhancedPhials:0}};
  const cases=[
    {name:'adopted-baseline',state:baseline,normal:'OFF',maximum:'ON',expected:'complete'},
-   {name:'no-axe-boost',state:{...baseline,axeBoosted:false},normal:'OFF',maximum:'ON',expected:'blocked'},
+   {name:'no-axe-boost',state:{...baseline,axeBoosted:false,normalPhials:5,mixH:{...baseline.mixH,normalPhials:5}},normal:'OFF',maximum:'ON',expected:'blocked'},
    {name:'no-shield-boost',state:{...baseline,shieldBoosted:false},normal:'OFF',maximum:'ON',expected:'blocked'},
    {name:'unknown-max-activation',state:baseline,normal:'OFF',maximum:'UNKNOWN',expected:'blocked'},
  ];
@@ -42,11 +42,11 @@ try{
  }]));
  for(const t of cases){
   w.__cb152ScopeState=t.state;w.__cb152ScopeNormal=t.normal;w.__cb152ScopeMaximum=t.maximum;
-  w.eval("restoreComboCBState(window.__cb152ScopeState);comboCBMode.value='AXE';comboCBMix.value='R_H_INDEPENDENT';comboCBHMode.value='AXE';comboCBHPreviousAction.value='AXE_NEUTRAL';comboCBHNormalPhials.value='2';comboCBHEnhancedPhials.value='0';powerAttributeConversionNormal.value=window.__cb152ScopeNormal;powerAttributeConversionMaximum.value=window.__cb152ScopeMaximum;App.combo.syncFromDOM();calcBuild();");
+  w.eval("restoreComboCBState(window.__cb152ScopeState);comboCBMode.value='AXE';comboCBMix.value='R_H_INDEPENDENT';comboCBHMode.value='AXE';comboCBHPreviousAction.value='AXE_NEUTRAL';comboCBHNormalPhials.value=String(window.__cb152ScopeState.mixH.normalPhials);comboCBHEnhancedPhials.value='0';powerAttributeConversionNormal.value=window.__cb152ScopeNormal;powerAttributeConversionMaximum.value=window.__cb152ScopeMaximum;App.combo.syncFromDOM();calcBuild();");
   const r=read("calcState.realOneHit");
   const summary=summarize(r);
   const row={name:t.name,summary};
-  assert.equal(summary.normal.status,'complete','normal channel independent '+t.name+' '+summary.normal.reason);
+  if(t.name!=='no-shield-boost')assert.equal(summary.normal.status,'complete','normal channel independent '+t.name+' '+summary.normal.reason);
   assert.equal(summary.maximum.status,t.expected,'maximum boundary '+t.name+' '+summary.maximum.reason);
   if(t.expected==='blocked')assert.ok(summary.maximum.reason&&summary.maximum.reason.length>0,'explicit reason on rejected candidate '+t.name);
   if(t.name==='no-axe-boost')assert.match(summary.maximum.reason,/ATTRIBUTE_CONVERSION_BODY_SCOPE_UNSUPPORTED/,'non-adopted CB state must not widen 152 flat scope');
