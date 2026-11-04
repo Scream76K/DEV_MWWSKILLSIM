@@ -7,7 +7,7 @@ for(const [k,n] of Object.entries(pack.counts))assert.equal(pack.data[k].length,
 const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const htmlOriginal=require('./dom-test-setup.cjs').readSimulatorHtml();
 // Candidate branch source is tested directly. No test-time gate bypass.
-assert.ok(htmlOriginal.includes('CANDIDATE_NOT_ADOPTED: extend exact H route to sourced POWER_ELEMENT phials.'),'candidate H gate missing');
+assert.ok(htmlOriginal.includes('CB_H_EXACT_ROUTE_POWER_ELEMENT_SHIELD_THRUST')&&htmlOriginal.includes('OWNER_SPEC_CONFIRMED_GAME_MEASUREMENT_NOT_CLAIMED'),'owner-approved exact strong H shield contract missing');
 const htmlProbe=htmlOriginal;
 const dom=new JSDOM(htmlProbe,{url:'https://stage4.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('NETWORK_DISABLED'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}),w=dom.window;
 const read=s=>JSON.parse(w.eval('JSON.stringify('+s+')'));
