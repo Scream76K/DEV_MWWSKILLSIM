@@ -763,6 +763,7 @@ main.wrap > .grid > aside > section.card:has(> #hbgElementReferenceDetails) {
   display:none!important;
 }
 </style>
+<script src="./ui/unresolved-damage-presentation.browser.js"></script>
 </head><body>
 <div class="notice"><b>v7.2.2-template-rootfix-r7 / OCR統合 r1.1.19 fix12</b>：全14武器種のコンボDPSエンジンを搭載したテストリリースです。技データは一部コミュニティ/検証値を含む参考値です。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">r120 HBG Shot Skill Conditions / Game Ver.1.042.00.02</div>
 <header><div class="wrap"><h1>⚔️ MH Wilds 装備セット＆火力シミュレーター v7.2.1 / OCR統合 r1.1.19 / ビルドテンプレート</h1><div class="muted">①〜⑤ ハンターズノート：装備を作る・記録する　｜　⑥〜⑧ ハンターズサポート：分析・提案・相談</div></div></header>
@@ -2774,16 +2775,21 @@ function renderSummary(){
   const oneText=one.status==='OK'?`${esc(cbIndependentMixDisplay(one))} 技 ${esc(one.conditionKey?.includes('HAM_SIDE_SWING')?'HAM_SIDE_SWING':'選択技')} / 通常 ${channelText('normal')}${attributeConversionDisplay(one.channels?.normal?.diagnostics)}${firstHitReferenceDisplay(one.channels?.normal?.diagnostics)}${igBodyScopeDisplay(one.channels?.normal?.diagnostics)} / 最大 ${channelText('maximum')}${attributeConversionDisplay(one.channels?.maximum?.diagnostics)}${firstHitReferenceDisplay(one.channels?.maximum?.diagnostics)}${igBodyScopeDisplay(one.channels?.maximum?.diagnostics)}${finalCBText}${conversionText}${black?`［黒蝕：基準 ${esc(black.normalState||'状態未入力')}／最大 OVERCOME・暫定採用］`:''}${excludedSkillDamageDisplay(one.channels?.normal?.diagnostics)}`:`未算出：${esc(one.reason||'RESULT_UNAVAILABLE')}`;
   // User-facing one-hit result: show actual unnormalized values or a pending state;
   // preserve full diagnostic text in an opt-in detail without changing evaluation.
+  const oneUnresolvedSummary=(reason)=>{
+    const model=window.MHWUnresolvedDamagePresentation?.makeUnresolvedDamagePresentation({status:'unavailable',reason});
+    return model?.summary?esc(model.summary):'火力は現在未算出です。';
+  };
   const oneCompactChannel=ch=>{
-    const metrics=one.channels?.[ch]?.metrics;
+    const channel=one.channels?.[ch];
+    const metrics=channel?.metrics;
     const m=metrics?.firstHitReference??metrics?.comboTotalDamage;
-    return m?.status==='available'&&Number.isFinite(m.value)
-      ? Number(m.value).toFixed(1)
-      : '未算出';
+    if(m?.status==='available'&&Number.isFinite(m.value))return Number(m.value).toFixed(1);
+    const reason=channel?.execution?.reason||channel?.issues?.[0]?.reason||m?.reason||one.reason||null;
+    return '未算出（'+oneUnresolvedSummary(reason)+'）';
   };
   const oneCompactText=one.status==='OK'
     ? '通常 '+oneCompactChannel('normal')+' ／ 最大 '+oneCompactChannel('maximum')
-    : '未算出（詳細で理由を確認）';
+    : '未算出（'+oneUnresolvedSummary(one.reason)+'）';
   $('buildSummary').innerHTML=`<div class="game-status" style="grid-column:1/-1">
     <div class="gs-row"><span class="gs-label">攻撃力</span><span class="gs-value">${Math.round(s.attack)}<span class="gs-sub">真 ${Math.round(s.attackTrue)}</span></span></div>
     <div class="gs-row"><span class="gs-label">会心率</span><span class="gs-value">${aff}%</span></div>
