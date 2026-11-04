@@ -936,8 +936,8 @@ define("/real-technique-one-hit-adapter.cjs",function(module,exports,require){
 'use strict';
 // Narrow real-Technique-DB bridge candidate; intentionally NOT wired to production.
 // Source of all normative values: caller's existing Technique DB record.
-const finite=x=>typeof x==='number'&&Number.isFinite(x);
 const {validateApprovedPowerHShield}=require('./cb-approved-shield-contract.cjs');
+const finite=x=>typeof x==='number'&&Number.isFinite(x);
 function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,elementContext,allowUnresolvedElement=false}={}){
   if(!weaponType||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
   if(!record||record.techniqueId!==techniqueId||(record.weaponType!==undefined&&record.weaponType!==weaponType))throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
@@ -1062,8 +1062,8 @@ define("./real-technique-one-hit-adapter.cjs",function(module,exports,require){
 'use strict';
 // Narrow real-Technique-DB bridge candidate; intentionally NOT wired to production.
 // Source of all normative values: caller's existing Technique DB record.
-const finite=x=>typeof x==='number'&&Number.isFinite(x);
 const {validateApprovedPowerHShield}=require('./cb-approved-shield-contract.cjs');
+const finite=x=>typeof x==='number'&&Number.isFinite(x);
 function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,elementContext,allowUnresolvedElement=false}={}){
   if(!weaponType||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
   if(!record||record.techniqueId!==techniqueId||(record.weaponType!==undefined&&record.weaponType!==weaponType))throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
