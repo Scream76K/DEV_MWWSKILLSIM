@@ -84,6 +84,17 @@ try{
  assert.equal(out.counts.attributeConversion152.impactOnCompleteByBaseElement.dragon,9,'source MHDB dragon subset of complete 152-ON results');
  assert.equal(out.counts.attributeConversion152.impactOnCompleteByBaseElement.nonDragon,52,'all non-dragon impact complete without attribute-flat');
  assert.equal(impactOnBlocked.length,0);
+ const nonDragonImpact=impactOnComplete.filter(c=>!isDragon(c));
+ assert.equal(nonDragonImpact.length,52,'all non-dragon source weapons in candidate');
+ for(const c of nonDragonImpact){
+  assert.equal(c.without152.maximum.status,'complete','152 OFF complete '+c.id);
+  assert.ok(Number.isFinite(c.channels.maximum.value)&&Number.isFinite(c.without152.maximum.value),'non-dragon numeric '+c.id);
+  assert.ok(Math.abs(c.channels.maximum.value-c.without152.maximum.value)<1e-7,'non-dragon body flat must be exactly zero '+c.id);
+ }
+ const dragonImpact=impactOnComplete.filter(isDragon);
+ assert.equal(dragonImpact.length,9);
+ assert.ok(dragonImpact.some(c=>c.channels.maximum.value>c.without152.maximum.value+1e-7),'some active dragon 152 must increase elemental damage');
+ for(const c of dragonImpact)assert.ok(c.channels.maximum.value>=c.without152.maximum.value-1e-7,'dragon 152 must never decrease damage '+c.id);
  assert.ok(impactOnBlocked.every(c=>!isDragon(c)),'unapproved 152 ON scope must not swallow sourced dragon weapon');
  const impactScopeReasons=Object.keys(out.counts.attributeConversion152.maximumReasonCounts.impact);
  assert.equal(impactScopeReasons.length,0,'candidate no-flat path should not leave pending body scope');
