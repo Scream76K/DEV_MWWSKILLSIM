@@ -3,10 +3,13 @@ on:
   push:
     branches:
       - flamme/cb-approved-shield-isolation-20261104
+  workflow_dispatch:
   pull_request:
     paths:
       - 'v10-six-layer-foundation/min8/cb-approved-shield-contract.cjs'
       - 'tests/flamme-cb-approved-shield-isolation.test.cjs'
+      - 'v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs'
+      - 'himmel-real-browser-bundle.js'
       - '.github/workflows/cb-approved-shield-isolation.yml'
 jobs:
   isolated-contract:
@@ -16,5 +19,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Syntax-check isolated contract and shared adapter
+        run: |
+          node --check v10-six-layer-foundation/min8/cb-approved-shield-contract.cjs
+          node --check v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs
+          node --check himmel-real-browser-bundle.js
+          node --check tests/flamme-cb-approved-shield-isolation.test.cjs
       - name: Verify exact owner-approved shield scope and fail-closed guards
         run: node --test tests/flamme-cb-approved-shield-isolation.test.cjs
