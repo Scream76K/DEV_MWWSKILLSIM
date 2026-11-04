@@ -104,7 +104,14 @@ try{
     assert.equal(plan.id,'CB_H_PREFIX_RESOURCE','prefix contract kind '+id);
     assert.equal(plan.consumeNormalPhials,0,'zero-cost H prefix '+id);
     assert.equal(plan.resourceKey,'normalPhials','zero-cost prefix resource label '+id);
-    assert.equal(plan.status,'OWNER_APPROVED_PROVISIONAL','source-approved provisional prefix '+id);
+    assert.equal(plan.status,id==='CB_SHIELD_THRUST'?'OWNER_APPROVED':'OWNER_APPROVED_PROVISIONAL','specific shield-thrust owner decision '+id);
+    if(id==='CB_SHIELD_THRUST'){
+     assert.equal(plan.ownerDecision?.status,'OWNER_APPROVED','owner-confirmed strong H shield 1Hit and 0 cost');
+     assert.equal(plan.ownerDecision?.phialExplosionHits,1);
+     assert.equal(plan.ownerDecision?.consumedPhials,0);
+     assert.equal(plan.ownerDecision?.decisionDate,'2026-11-04');
+     assert.equal(plan.ownerDecision?.verificationStatus,'OWNER_SPEC_CONFIRMED_GAME_MEASUREMENT_NOT_CLAIMED');
+    }
     assert.ok(plan.source,'H prefix provenance '+id);
    }
    for(const id of discharge){
