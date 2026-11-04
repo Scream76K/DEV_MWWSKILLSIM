@@ -86,18 +86,18 @@ try{
  assert.equal(out.counts.attributeConversion152.impactOnCompleteByBaseElement.nonDragon,52,'all non-dragon impact complete without attribute-flat');
  assert.equal(impactOnBlocked.length,0);
  const nonDragonImpact=impactOnComplete.filter(c=>!isDragon(c));
- assert.equal(nonDragonImpact.length,52,'all non-dragon source weapons in candidate');
+ assert.equal(nonDragonImpact.length,52,'source non-dragon includes four effective dragon cases');
  const effectiveDragon=impactOnComplete.filter(c=>c.effective.elementType==='dragon');
  const effectiveNonDragon=impactOnComplete.filter(c=>c.effective.elementType!=='dragon');
  out.counts.attributeConversion152.impactOnCompleteByEffectiveElement={
   dragon:effectiveDragon.length,nonDragon:effectiveNonDragon.length
  };
- assert.equal(effectiveDragon.length,12,'real equipment effective dragon count must include three Artia records');
- assert.equal(effectiveNonDragon.length,49,'real equipment non-dragon count');
+ assert.equal(effectiveDragon.length,13,'actual effective dragon includes MHDB1142 besides three ordinary Artia records');
+ assert.equal(effectiveNonDragon.length,48,'actual effective non-dragon source records');
  const artiaAssigned=nonDragonImpact.filter(c=>c.effective.elementType==='dragon');
  const notArtia=nonDragonImpact.filter(c=>c.effective.elementType!=='dragon');
- assert.deepEqual(artiaAssigned.map(c=>c.id),[145,146,147],'exact Artia source records with effective dragon element');
- assert.equal(notArtia.length,49,'no special source records may slip through effective-element test');
+ assert.deepEqual(artiaAssigned.map(c=>c.id),[145,146,147,1142],'four source-non-dragon records with real effective dragon element');
+ assert.equal(notArtia.length,48,'all effective non-dragon records');
  assert.ok(effectiveDragon.every(c=>Number.isFinite(c.effective.element)&&c.effective.element>0),'effective dragon display element must be sourced');
  for(const c of notArtia){
   assert.equal(c.without152.maximum.status,'complete','152 OFF complete '+c.id);
@@ -105,9 +105,14 @@ try{
   assert.ok(Math.abs(c.channels.maximum.value-c.without152.maximum.value)<1e-7,'no dragon-flat when build effective element not dragon '+c.id);
  }
  for(const c of artiaAssigned){
-  assert.equal(c.without152.maximum.status,'complete','Artia OFF complete '+c.id);
-  assert.ok(c.channels.maximum.value>c.without152.maximum.value,'Artia equipment-assigned dragon attribute must retain 152 flat '+c.id);
+  assert.equal(c.without152.maximum.status,'complete','effective Artia/derived dragon OFF complete '+c.id);
+  assert.ok(c.channels.maximum.value>=c.without152.maximum.value-1e-7,'effective dragon may not lose damage '+c.id);
+  if([145,146,147].includes(c.id))assert.ok(c.channels.maximum.value>c.without152.maximum.value,'equipped 152 Artia example must retain dragon flat '+c.id);
  }
+ const otherEffectiveDragon=artiaAssigned.find(c=>c.id===1142);
+ assert.ok(otherEffectiveDragon,'MHDB1142 effective dragon must remain visible');
+ assert.ok(Math.abs(otherEffectiveDragon.channels.maximum.value-otherEffectiveDragon.without152.maximum.value)<1e-7,
+  'MHDB1142 demonstrates effective dragon alone does not prove an active 152 gain');
  for(const c of effectiveDragon){
   assert.equal(c.channels.maximum.status,'complete','effective dragon candidate maximum '+c.id);
   assert.equal(c.without152.maximum.status,'complete','effective dragon maximum OFF '+c.id);
