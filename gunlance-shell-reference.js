@@ -1,6 +1,13 @@
 (function(root){
  'use strict';
  const finite=(x,min,max)=>typeof x==='number'&&Number.isFinite(x)&&x>=min&&x<=max;
+ // Completed Artia metadata can name a sourced power tier without inventing
+ // an MHDB numeric level for mutation-specific records.
+ function resolveWeaponPower(weapon,rules){
+  const e=weapon?.artiaShellEvidence;
+  if(e?.status==='SOURCE_CONFIRMED_PROVISIONAL'&&e.source==='https://kuroyonhon.com/mhwilds/memo/38.php'&&e.scope==='GOGMA_ELEMENT_VALUE_AND_MUTATION_SHELL_METADATA'&&e.shellType===weapon.shell&&e.shellByMutation?.[e.mutation]===weapon.shell&&e.shellPower==='HIGH')return e.shellPower;
+  return rules?.mhdbShellLevelToPowerByType?.[String(weapon?.shell).toUpperCase()]?.[weapon?.shellLevel]??rules?.mhdbShellLevelToPower?.[weapon?.shellLevel];
+ }
  function consumedRounds(action,s){
   if(action==='NORMAL')return 1;
   if(action==='CHARGED'){if(!Number.isInteger(s.chargedRounds)||s.chargedRounds<1||s.chargedRounds>s.loadedRounds)throw Error('GL_SHELL:CHARGED_ROUNDS_PENDING');return s.chargedRounds;}
@@ -59,5 +66,30 @@
   const r=generic({status:'ADOPTED',hits:Array.from({length:count},()=>({...hit}))},{baseAttack:resolvedPhysicalAttack,displayedElement:value.parenthesizedValue+fireAdd+cornFireAdd,elementType:'fire',elementKnown:true,typeKnown:true,physicalHitzone:100,elementalHitzone:s.fireHitzone,sharpnessPhysical:1,sharpnessElement:1,affinity:0,maxAffinity:0});
   return {...r,cornpopperPhysicalMultiplier:cornMultiplier,cornpopperFireDisplayAdd:cornFireAdd,cornpopperScenario:cornLevel?{active:cornActive,normalState:corn.normalState,maximumState:corn.maximumState,adoptionStatus:corn.adoptionStatus,sourceVersion:corn.sourceVersion,liveGameVerification:corn.liveGameVerification,scopeWarning:corn.scopeWarning}:null,resolvedPhysicalAttack,artilleryPhysicalMultiplier:artilleryMultiplier,artilleryFireDisplayAdd:fireAdd,artilleryFireUnit:level>0?artillery.fireUnit:null,artilleryActionAdoption:level>0?(artillery.actionExtensionAdoption||artillery.attackOrderAdoption):null,attackOrder:level>0?artillery.attackOrder:null,attackOrderAdoption:level>0?artillery.attackOrderAdoption:null,total:r.comparisonPower,hits:r.trace.map(h=>({p:h.physical,e:h.element,total:h.physical+h.element,component:'SHELL_RAW_AND_FIRE'})),consumedRounds:count,remainingRounds:s.loadedRounds-count,sourceTechniqueId:id,action:o.action,weaponApplicability:'UNVERIFIED',verificationStatus:'UNVERIFIED',adoptionStatus:rules.adoptionStatus,evidenceRefs:[...source.evidenceRefs,rules.evidenceRef,...(level>0?[artillery.evidenceRef]:[]),...(loadLevel>0?[loadRule.evidenceRef]:[]),...(cornLevel?[corn.evidenceRef]:[])],loadShellsLevel:loadLevel,capacity,artilleryLevel:level,state:{...s},scope:'EXPLICIT_COMMON_SHELL_REFERENCE'};
  }
- const api=Object.freeze({calculate,consumedRounds});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.GunlanceShellReference=api;
+ // Exact owner target: fixed shell/fire components only. Cutting hits stay in
+ // the common physical/element engine, including affinity and weapon element.
+ function calculateTargetComponent(o,engine,generic){
+  const m=o.parameters?.glTarget?.model,kind=o.parameters?.glTarget?.component;
+  const rules=engine?.get('gunlance','GL_SHELL_NORMAL_MEDIUM')?.specialSourceValues?.p0ReferenceRules;
+  if(!m||m.rules?.status!=='OWNER_APPROVED_PROVISIONAL'||!rules||!['FULL_BURST','FINAL_EXPLOSION'].includes(kind))throw Error('GL_TARGET:COMPONENT_CONTRACT_INVALID');
+  const s=m.input.shellingState,shellRecord=engine.get('gunlance','GL_SHELL_'+s.shellingType+'_'+s.shellingPower),shell=shellRecord?.specialSourceValues;
+  if(shellRecord?.numericStatus!=='SOURCE_CONFIRMED'||rules.artilleryReference?.attackOrderAdoption!=='OWNER_APPROVED_PROVISIONAL'||rules.artilleryReference.attackOrder!=='BASE_MULTIPLIERS_ARTILLERY_THEN_FLAT')throw Error('GL_TARGET:ADOPTED_SHELL_RULES_REQUIRED');
+  if(!shell||!finite(s.fireHitzone,0,100))throw Error('GL_TARGET:SHELL_OR_FIRE_TARGET_PENDING');
+  if(o.cornpopperActive)throw Error('GL_TARGET:CORNPOPPER_COMPONENT_SCOPE_PENDING');
+  if(o.unreviewedSkills?.length)throw Error('GL_TARGET:UNREVIEWED_MODIFIER:'+o.unreviewedSkills.join('/'));
+  const artillery=m.input.artilleryLevel,a=o.stats?.attackComponents;
+  if(!Number.isInteger(artillery)||artillery<0||artillery>3||!a||!['weaponBase','normalMultiplier','normalFlat'].every(k=>finite(a[k],0,10000)))throw Error('GL_TARGET:ATTACK_COMPONENTS_PENDING');
+  const physicalAttack=a.weaponBase*a.normalMultiplier*rules.artilleryReference.physicalMultipliers[artillery]+a.normalFlat;
+  const fireAdd=rules.artilleryReference.fireDisplayAdds[artillery];
+  const count=kind==='FULL_BURST'?o.state?.gunlance?.loadedRounds:1;
+  if(!Number.isInteger(count)||count<1||count>m.capacity)throw Error('GL_TARGET:ROUNDS_EXHAUSTED');
+  const multiplier=kind==='FULL_BURST'?m.rules.stakeFullBurstMultiplier[s.shellingType]:m.action.explosionMultiplier;
+  const mv=kind==='FULL_BURST'?shell.unparenthesizedValue:m.row.explosionMv;
+  const fire=kind==='FULL_BURST'?shell.parenthesizedValue:m.row.explosionFire*m.action.explosionMultiplier;
+  if(![physicalAttack,mv,multiplier,fire,fireAdd].every(Number.isFinite))throw Error('GL_TARGET:SOURCE_VALUE_PENDING');
+  const r=generic({status:'ADOPTED',hits:Array.from({length:count},()=>({mv,elementModifier:rules.fireElementModifier,physicalAttackModifier:{multiplier,adoptionStatus:'ADOPTED',evidenceRef:m.rules.source}}))},{baseAttack:physicalAttack,displayedElement:fire+fireAdd,elementType:'fire',elementKnown:true,typeKnown:true,physicalHitzone:100,elementalHitzone:s.fireHitzone,sharpnessPhysical:1,sharpnessElement:1,affinity:0,maxAffinity:0});
+  if(!Number.isFinite(r.comparisonPower))throw Error('GL_TARGET:RESULT_UNAVAILABLE');
+  return {total:r.comparisonPower,component:kind,count,physical:r.trace.reduce((n,h)=>n+h.physical,0),element:r.trace.reduce((n,h)=>n+h.element,0),trace:r.trace,attackComponents:a,physicalAttack,artilleryLevel:artillery,fireAdd,baseFire:fire,physicalMultiplier:multiplier,source:m.rules.source,status:'PROVISIONAL',scope:m.rules.scope};
+ }
+ const api=Object.freeze({calculate,consumedRounds,calculateTargetComponent,resolveWeaponPower});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.GunlanceShellReference=api;
 })(typeof window!=='undefined'?window:globalThis);

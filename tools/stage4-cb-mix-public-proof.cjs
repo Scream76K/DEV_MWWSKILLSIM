@@ -68,7 +68,7 @@ try{
  for(const [name,extra] of [['malformed','canonical:'],['unknown','CB_UNKNOWN_TECHNIQUE'],['valid',null]]){
   w.__cbExtraId=extra;const result=read("window.__cbOriginalAdapter.evaluateCurrent({...window.__cbActualInput,techniqueIds:[...window.__cbActualInput.techniqueIds,...(window.__cbExtraId?[window.__cbExtraId]:[])]})");out.idBoundaries.push({name,kind:'adapter input boundary injection after public input capture; not DOM selection',result});
   if(extra){assert.equal(result.status,'UNAVAILABLE',name);assert.equal(result.channels,undefined);if(name==='malformed')assert.ok(result.reason.startsWith('REAL_SLICE:TECHNIQUE_ID_UNRESOLVED:'));}
-  else assert.deepEqual(result,out.shared.result);
+  else {const {evaluationPlan,...engineResult}=out.shared.result;assert.equal(evaluationPlan.selection,'EXPLICIT');assert.deepEqual(result,engineResult);}
  }
  w.eval('restoreComboCBState({});');out.oldSave=read('comboCBStoredState()');assert.equal(out.oldSave.mixMode,null);assert.equal(out.oldSave.mixH.mode,null);assert.equal(out.oldSave.mixH.normalPhials,null);
  assert.deepEqual(errors,[]);

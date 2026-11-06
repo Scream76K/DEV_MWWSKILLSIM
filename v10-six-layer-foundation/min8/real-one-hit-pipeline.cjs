@@ -86,6 +86,18 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   return null;
  };
  const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type==='transition'&&event.contract?.startsWith('GL_TARGET_')&&weaponType==='gunlance'){
+   const gl=state?.gunlance;if(!gl||!['GL_WYRMSTAKE_FULL_BURST','GL_MULTI_WYRMSTAKE_FULL_BURST'].includes(event.techniqueId))throw Error('GL_TARGET:STATE_INVALID');
+   const next={...gl};
+   if(event.contract==='GL_TARGET_BEGIN'){
+    if(event.reload!== (event.techniqueId==='GL_MULTI_WYRMSTAKE_FULL_BURST')||!Number.isInteger(event.capacity)||event.capacity<1)throw Error('GL_TARGET:RELOAD_CONTRACT_INVALID');
+    if(event.reload){next.loadedRounds=event.capacity;next.stakeLoaded=true;}
+    if(next.stakeLoaded!==true||!Number.isInteger(next.loadedRounds)||next.loadedRounds<1||next.loadedRounds>event.capacity)throw Error('GL_TARGET:RESOURCE_INSUFFICIENT');
+   }else if(event.contract==='GL_TARGET_SHELLS_SPENT'){next.loadedRounds=0;}
+   else if(event.contract==='GL_TARGET_STAKE_SPENT'){if(next.stakeLoaded!==true)throw Error('GL_TARGET:STAKE_EXHAUSTED');next.stakeLoaded=false;}
+   else throw Error('GL_TARGET:TRANSITION_UNKNOWN');
+   return {nextState:{...state,gunlance:next}};
+  }
   if(event.type==='transition'&&event.contract==='HH_MELODY_ESTABLISHED'&&weaponType==='hunting-horn'){
    const op=event.operations?.[0],key=op?.path?.[1],level=state?.huntingHorn?.[key];
    if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||!['selfImprovementLevel','attackMelodyLevel'].includes(key)||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn',key]))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');

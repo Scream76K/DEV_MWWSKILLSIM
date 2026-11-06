@@ -2,6 +2,12 @@
  'use strict';
  const spreadSkill=root.MHWSpreadShotSkill||(typeof module!=='undefined'&&module.exports?require('./spread-shot-skill.js'):null);
  const valid=(n,min,max)=>{if(typeof n!=='number'||!Number.isFinite(n)||n<min||n>max)throw Error('BOW_REFERENCE:INVALID_INPUT');return n;};
+ function hitsForState(engine,id,state){
+  if(state?.coating!=='PIERCE')return engine.hits('bow',id);
+  const rule=engine.get('bow','BOW_STATE_MODIFIERS')?.specialSourceValues.pierce,t=rule?.techniques?.[id];
+  if(rule?.status!=='SOURCE_CONFIRMED'||rule.hitCountPolicy!=='MAXIMUM_PER_ARROW_ALL_HITS'||rule.practicalHitCountPolicy!=='PRACTICAL_THREE_HITS_PER_ARROW'||rule.practicalTicksPerArrow!==3||rule.rangeCorrectionOwnedByState!==true||!t||!Number.isInteger(t.arrowCount)||t.arrowCount<1||!Number.isInteger(t.maxTicks)||t.maxTicks<rule.practicalTicksPerArrow||!Array.isArray(t.elementModifiers)||t.elementModifiers.length!==t.maxTicks||!Array.isArray(rule.physicalTickMultipliers)||rule.physicalTickMultipliers.length<t.maxTicks)throw Error('BOW_REFERENCE:PIERCE_SOURCE_UNAVAILABLE');
+  return Array.from({length:t.arrowCount},(_,arrowIndex)=>Array.from({length:rule.practicalTicksPerArrow},(_,i)=>({mv:valid(t.baseMv,0,10000)*valid(rule.physicalTickMultipliers[i],0,2),elementModifier:valid(t.elementModifiers[i],0,10),component:'ARROW',arrowIndex:arrowIndex+1,pierceTick:i+1,techniqueId:id}))).flat();
+ }
  function calculate(o,engine,techniqueIds){
   if(!o||!engine||typeof engine.get!=='function'||typeof engine.hits!=='function'||!Array.isArray(techniqueIds)||techniqueIds.length<1)throw Error('BOW_REFERENCE:TECHNIQUE_DB_REQUIRED');
   const rule=engine.get('bow','BOW_STATE_MODIFIERS')?.specialSourceValues;
@@ -28,8 +34,8 @@
   if(!Number.isInteger(forceLevel)||forceLevel<0||!forceRule||!Object.hasOwn(forceRule.attackAdds,forceLevel)||!Object.hasOwn(forceRule.affinityAdds,forceLevel))throw Error('BOW_REFERENCE:SKILL_LEVEL_INVALID:forceShot');
   const forceEligible=forceRule.coatings.includes(state.coating),forceActive=!!forceLevel&&forceEligible&&!bladeActive;
   if(forceActive&&(!Number.isInteger(state.startShot)||state.startShot<1||state.startShot+techniqueIds.length-1>forceRule.magazineShots))throw Error('BOW_REFERENCE:FORCE_SHOT_STATE_UNRESOLVED');
-  if(forceActive&&(techniqueIds.length!==forceRule.techniqueIds.length||techniqueIds.some((id,i)=>id!==forceRule.techniqueIds[i])))throw Error('BOW_REFERENCE:FORCE_SHOT_ROUTE_UNRESOLVED');
-  const forceShot={level:forceLevel,status:!forceLevel?'INACTIVE':!forceEligible?'NO_COATING':bladeActive?'EXCLUDED_BLADESCALE_SHOTS':'ACTIVE_REFERENCE',startShot:forceActive?state.startShot:null,stages:[],scope:'EXPLICIT_FIXED_THREE_SHOT_WINDOW_NOT_UPTIME_OR_DPS'};
+  if(forceActive&&!(techniqueIds.length===1&&state.startShot===1&&forceRule.techniqueIds.includes(techniqueIds[0]))&&(techniqueIds.length!==forceRule.techniqueIds.length||techniqueIds.some((id,i)=>id!==forceRule.techniqueIds[i])))throw Error('BOW_REFERENCE:FORCE_SHOT_ROUTE_UNRESOLVED');
+  const forceShot={level:forceLevel,status:!forceLevel?'INACTIVE':!forceEligible?'NO_COATING':bladeActive?'EXCLUDED_BLADESCALE_SHOTS':'ACTIVE_REFERENCE',startShot:forceActive?state.startShot:null,stages:[],scope:techniqueIds.length===1?'ADOPTED_SINGLE_FIRST_SHOT_NOT_UPTIME_OR_DPS':'EXPLICIT_FIXED_THREE_SHOT_WINDOW_NOT_UPTIME_OR_DPS'};
   let effectiveElement=element;
   if(skills.chargeMaster&&element>0){
    const b=o.elementBasis;
@@ -40,7 +46,7 @@
   for(const [stageIndex,id] of techniqueIds.entries()){
    const r=engine.get('bow',id);
    if(r?.sourceFormula?.scope!=='FIXED_BOW_STANDARD_SOURCE_REFERENCE'||r.sourceFormula.physicalShotCorrectionOwnedByStateRecord!==true)throw Error('BOW_REFERENCE:TECHNIQUE_SOURCE_UNVERIFIED');
-   const hits=engine.hits('bow',id);if(!hits.length)throw Error('BOW_REFERENCE:HITS_UNAVAILABLE');
+   const hits=hitsForState(engine,id,state);if(!hits.length)throw Error('BOW_REFERENCE:HITS_UNAVAILABLE');
    if(bladeActive){const cost=bladeRule.shotCosts[id];if(!Number.isInteger(cost)||cost<1||remainingShots<cost)throw Error('BOW_REFERENCE:BLADESCALE_ROUTE_UNRESOLVED');remainingShots-=cost;bladescaleLoading.stages.push({techniqueId:id,shotCost:cost,remainingShots});}
    const ordinal=forceActive?state.startShot+stageIndex:null,forceAttackAdd=forceActive&&forceRule.attackOrdinals.includes(ordinal)?valid(forceRule.attackAdds[forceLevel],0,100):0,forceAffinityAdd=forceActive&&ordinal>=forceRule.affinityFrom?valid(forceRule.affinityAdds[forceLevel],0,100):0;
    const shotAffinity=Math.min(100,affinity+forceAffinityAdd),shotAttack=attack+forceAttackAdd;
@@ -71,5 +77,5 @@
   const trace=record.hits.map((h,hitIndex)=>({hitIndex,mv:h.mv,attack,affinity,criticalExpectation:expectation,physical:attack*valid(h.mv,0,10000)/100*hz/100*expectation*r.shotPhysical*r.rangePhysical*r.coatingPhysical*r.specialAmmoMultipliers[level]*pierceMultiplier,element:0}));
   return {total:trace.reduce((n,h)=>n+h.physical,0),trace,shotCount:1,hitCount:record.hits.length,physicalShotMultiplier:r.shotPhysical,rangeMultiplier:r.rangePhysical,specialAmmoMultiplier:r.specialAmmoMultipliers[level],pierceUpMultiplier:pierceMultiplier,scope:r.scope,adoption:r,chargeLevelApplied:false,partDamageCalculated:false,liveGameVerification:'PENDING'};
  }
- const api=Object.freeze({standard,technique,thousandDragons});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowReference=api;
+ const api=Object.freeze({standard,technique,thousandDragons,hitsForState});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowReference=api;
 })(typeof window!=='undefined'?window:globalThis);

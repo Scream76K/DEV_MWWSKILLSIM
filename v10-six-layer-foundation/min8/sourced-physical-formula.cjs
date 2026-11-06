@@ -13,7 +13,7 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
   let sharp,hitzone,part=null;
   try{
-   sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});
+   sharp=resolveSharpness({build,state,parameters,gameVersion:expectedGameVersion});
    hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});
    if(parameters?.partModifier!==null&&parameters?.partModifier!==undefined)part=resolvePartModifier({parameters,build,state,gameVersion:expectedGameVersion});
   }catch(_){return unavailable('PHYSICAL_CONTEXT_RESOLUTION_FAILED')}
@@ -35,15 +35,16 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   return {status:'available',value:result.p};
  }
 }
-function createSourcedElementalFormula({calculate,resolveElementSharpness,resolveHitzone,expectedGameVersion}={}){
+function createSourcedElementalFormula({calculate,resolveElementSharpness,resolveHitzone,resolveElementApplicability,expectedGameVersion}={}){
  if(typeof calculate!=='function'||typeof resolveElementSharpness!=='function'||typeof resolveHitzone!=='function')throw Error('ELEMENT_SOURCE_RESOLVERS_REQUIRED');
  return function elemental({coefficient,coefficientUnit,target,parameters,stats,build,state}={}){
   if(coefficientUnit!=='ELEMENT_MODIFIER'||!finite(coefficient)||coefficient<0)return unavailable('ELEMENT_MODIFIER_UNRESOLVED');
   if(!finite(stats?.element)||stats.element<0)return unavailable('ELEMENT_VALUE_UNRESOLVED');
   if(!finite(stats?.affinity))return unavailable('ELEMENT_AFFINITY_UNRESOLVED');
   if(!expectedGameVersion)return unavailable('ELEMENT_VERSION_UNRESOLVED');
+  if(resolveElementApplicability){let applicability;try{applicability=resolveElementApplicability({build,state,parameters});}catch(_){return unavailable('ELEMENT_APPLICABILITY_UNRESOLVED');}if(typeof applicability?.applies!=='boolean'||typeof applicability.evidenceRef!=='string'||!applicability.evidenceRef)return unavailable('ELEMENT_APPLICABILITY_UNRESOLVED');if(!applicability.applies)return {status:'available',value:0,details:{appliedElement:0,applicability}};}
   let sharp,hitzone;
-  try{sharp=resolveElementSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});}
+  try{sharp=resolveElementSharpness({build,state,parameters,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});}
   catch(_){return unavailable('ELEMENT_CONTEXT_RESOLUTION_FAILED')}
   const valid=x=>x&&x.gameVersion===expectedGameVersion&&typeof x.evidenceRef==='string'&&x.evidenceRef.length>0&&finite(x.value);
   if(!valid(sharp)||sharp.value<=0)return unavailable('ELEMENT_SHARPNESS_UNRESOLVED');

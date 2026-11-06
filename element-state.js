@@ -6,7 +6,7 @@ function numeric(value){
   if(value===null||value===undefined||typeof value==='boolean'||(typeof value!=='number'&&typeof value!=='string')||typeof value==='string'&&!value.trim())return null;
   const n=Number(value);return Number.isFinite(n)&&n>=0?n:null;
 }
-function type(value){const t=typeof value==='string'?value.trim().toLowerCase():'';return ELEMENT_TYPES.has(t)||STATUS_TYPES.has(t)||t==='none'?t:'';}
+function type(value){const raw=typeof value==='string'?value.trim().toLowerCase():'';const t=raw==='blastblight'?'blast':raw;return ELEMENT_TYPES.has(t)||STATUS_TYPES.has(t)||t==='none'?t:'';}
 function unknown(elementType='',reason='ELEMENT_VALUE_MISSING'){
   const t=type(elementType);return {element:null,elementType:t,elementKnown:false,typeKnown:!!t,elementStatus:'UNKNOWN',elementReason:reason};
 }
@@ -43,6 +43,15 @@ function fromRecord(record,options={}){
   if(!options.artia&&!selected&&specials&&specials.length===0&&(!elements||elements.length===0))return fromValue(0,'none');
   return unknown(selected,selected&&candidates.length?'ELEMENT_SELECTED_TYPE_NOT_RECORDED':'ELEMENT_VALUE_MISSING');
 }
+// Calculation basis only: source weapon.specials and stored equipment remain unchanged.
+function fromWeaponDamage(record,options={}){
+  if(record?.kind!=='switch-axe'||record?.phial?.kind!=='dragon')return fromRecord(record,options);
+  if(!Array.isArray(record.specials)||record.specials.length||(Object.prototype.hasOwnProperty.call(record,'elements')&&(!Array.isArray(record.elements)||record.elements.length)))return unknown('dragon','SA_DRAGON_PHIAL_ELEMENT_SOURCE_CONFLICT');
+  const display=numeric(record.phial.damage?.display),raw=numeric(record.phial.damage?.raw);
+  if(display===null||display<=0)return unknown('dragon','SA_DRAGON_PHIAL_DISPLAY_MISSING');
+  if(record.phial.damage?.raw!=null&&(raw===null||Math.abs(raw*10-display)>1e-8))return unknown('dragon','SA_DRAGON_PHIAL_UNIT_CONFLICT');
+  return {...fromValue(display,'dragon'),elementBasisScope:'SA_SWORD_PHIAL_ONLY'};
+}
 function pendingReason(state={}){
   if(state.elementKnown===false||state.elementStatus==='UNKNOWN')return state.elementReason||'ELEMENT_VALUE_MISSING';
   if(state.typeKnown===false)return state.elementReason||'ELEMENT_TYPE_UNKNOWN';
@@ -58,7 +67,7 @@ function applySkill(state,skill={mult:1,add:0}){
   return fromValue(state.element*mult+add,state.elementType);
 }
 function hpElement(state){return pendingReason(state)?null:STATUS_TYPES.has(state.elementType)?0:state.element;}
-const api=Object.freeze({fromValue,fromRecord,applySkill,pendingReason,hpElement,unknown});
+const api=Object.freeze({fromValue,fromRecord,fromWeaponDamage,applySkill,pendingReason,hpElement,unknown});
 if(typeof module==='object'&&module.exports)module.exports=api;
 root.MHWElementState=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

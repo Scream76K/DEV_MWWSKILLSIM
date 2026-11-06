@@ -857,6 +857,21 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!weaponType||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
   if(!record||record.techniqueId!==techniqueId||(record.weaponType!==undefined&&record.weaponType!==weaponType))throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
   if(!Number.isInteger(record.revision)||record.revision<1)throw Error('REAL_SLICE:REVISION_REQUIRED');
+  if(record.glModel){
+   const m=record.glModel;
+   if(weaponType!=='gunlance'||m.rules?.id!=='GL_OWNER_STAKE_TARGET'||m.rules.status!=='OWNER_APPROVED_PROVISIONAL'||!m.rules.actions?.[techniqueId])throw Error('GL_TARGET:MODEL_INVALID');
+   const ordinary=adaptOrdinaryPhysicalHit({weaponType,techniqueId,record:{...record,glModel:null},dbVersion,elementContext,allowUnresolvedElement});
+   const hits=ordinary.events,events=[];
+   events.push({type:'transition',contract:'GL_TARGET_BEGIN',reload:m.action.reload,capacity:m.capacity,source:m.rules.source,operations:[{op:'set',path:['gunlance','loadedRounds'],value:m.action.reload?m.capacity:m.input.shellingState.loadedRounds},{op:'set',path:['gunlance','stakeLoaded'],value:true}]});
+   events.push(hits[0]);
+   const add=(component,index)=>events.push({type:'hit',components:[{id:techniqueId+':shelling:'+index,kind:'shelling',unit:'SHELLING',source:m.rules.source,coefficient:1,parameters:{hitIndex:index,effectTargets:['physical'],effectStages:['attack'],glTarget:{component,model:m},sourceTechniqueId:techniqueId}}]});
+   add('FULL_BURST',0);
+   events.push({type:'transition',contract:'GL_TARGET_SHELLS_SPENT',source:m.rules.source,operations:[{op:'set',path:['gunlance','loadedRounds'],value:0}]});
+   events.push(...hits.slice(1));
+   add('FINAL_EXPLOSION',1);
+   events.push({type:'transition',contract:'GL_TARGET_STAKE_SPENT',source:m.rules.source,operations:[{op:'set',path:['gunlance','stakeLoaded'],value:false}]});
+   return Object.freeze({...ordinary,events});
+  }
   if(record.hhModel){
    const m=record.hhModel;
    if(weaponType!=='hunting-horn'||m.id!=='HH_NORMAL_MELODY_PROVISIONAL'||m.status!=='OWNER_APPROVED_PROVISIONAL'||!m.techniques?.[techniqueId])throw Error('REAL_SLICE:HH_MODEL_INVALID');
@@ -929,7 +944,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    // Preserve the sourced part-durability modifier for provenance. The
    // canonical HP formula validates it but does not apply it to HP damage.
-   const stateMetadata={excludedEffectIds:record.saAwakened?[record.saAwakened.elementEffectId]:[],saHitMode:saMode?.hitModes[index]??null,resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):record.adoption||null};
+   const stateMetadata={glComponent:hit.glComponent||null,glSharpnessOverride:hit.glComponent==='STAKE_BURST'&&record.glComponentContract?.status==='OWNER_APPROVED_PROVISIONAL'?{value:record.glComponentContract.noSharpnessMultiplier,source:record.glComponentContract.source}:null,excludedEffectIds:record.saAwakened?[record.saAwakened.elementEffectId]:[],saHitMode:saMode?.hitModes[index]??null,resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):record.adoption||null};
    const partModifierKnown=finite(hit.partModifier);
    const hitSource=hit.componentSource??source;
    if(typeof hitSource!=='string'||!hitSource)throw Error('REAL_SLICE:HIT_SOURCE_REQUIRED:'+index);
@@ -981,6 +996,21 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   if(!weaponType||!techniqueId||!dbVersion)throw Error('REAL_SLICE:IDENTITY_REQUIRED');
   if(!record||record.techniqueId!==techniqueId||(record.weaponType!==undefined&&record.weaponType!==weaponType))throw Error('REAL_SLICE:DB_IDENTITY_MISMATCH');
   if(!Number.isInteger(record.revision)||record.revision<1)throw Error('REAL_SLICE:REVISION_REQUIRED');
+  if(record.glModel){
+   const m=record.glModel;
+   if(weaponType!=='gunlance'||m.rules?.id!=='GL_OWNER_STAKE_TARGET'||m.rules.status!=='OWNER_APPROVED_PROVISIONAL'||!m.rules.actions?.[techniqueId])throw Error('GL_TARGET:MODEL_INVALID');
+   const ordinary=adaptOrdinaryPhysicalHit({weaponType,techniqueId,record:{...record,glModel:null},dbVersion,elementContext,allowUnresolvedElement});
+   const hits=ordinary.events,events=[];
+   events.push({type:'transition',contract:'GL_TARGET_BEGIN',reload:m.action.reload,capacity:m.capacity,source:m.rules.source,operations:[{op:'set',path:['gunlance','loadedRounds'],value:m.action.reload?m.capacity:m.input.shellingState.loadedRounds},{op:'set',path:['gunlance','stakeLoaded'],value:true}]});
+   events.push(hits[0]);
+   const add=(component,index)=>events.push({type:'hit',components:[{id:techniqueId+':shelling:'+index,kind:'shelling',unit:'SHELLING',source:m.rules.source,coefficient:1,parameters:{hitIndex:index,effectTargets:['physical'],effectStages:['attack'],glTarget:{component,model:m},sourceTechniqueId:techniqueId}}]});
+   add('FULL_BURST',0);
+   events.push({type:'transition',contract:'GL_TARGET_SHELLS_SPENT',source:m.rules.source,operations:[{op:'set',path:['gunlance','loadedRounds'],value:0}]});
+   events.push(...hits.slice(1));
+   add('FINAL_EXPLOSION',1);
+   events.push({type:'transition',contract:'GL_TARGET_STAKE_SPENT',source:m.rules.source,operations:[{op:'set',path:['gunlance','stakeLoaded'],value:false}]});
+   return Object.freeze({...ordinary,events});
+  }
   if(record.hhModel){
    const m=record.hhModel;
    if(weaponType!=='hunting-horn'||m.id!=='HH_NORMAL_MELODY_PROVISIONAL'||m.status!=='OWNER_APPROVED_PROVISIONAL'||!m.techniques?.[techniqueId])throw Error('REAL_SLICE:HH_MODEL_INVALID');
@@ -1053,7 +1083,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    if(hit.elementModifier!==0&&!elementResolved&&!allowUnresolvedElement)throw Error('REAL_SLICE:ELEMENT_COMPONENT_PENDING:'+index);
    // Preserve the sourced part-durability modifier for provenance. The
    // canonical HP formula validates it but does not apply it to HP damage.
-   const stateMetadata={excludedEffectIds:record.saAwakened?[record.saAwakened.elementEffectId]:[],saHitMode:saMode?.hitModes[index]??null,resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):record.adoption||null};
+   const stateMetadata={glComponent:hit.glComponent||null,glSharpnessOverride:hit.glComponent==='STAKE_BURST'&&record.glComponentContract?.status==='OWNER_APPROVED_PROVISIONAL'?{value:record.glComponentContract.noSharpnessMultiplier,source:record.glComponentContract.source}:null,excludedEffectIds:record.saAwakened?[record.saAwakened.elementEffectId]:[],saHitMode:saMode?.hitModes[index]??null,resourceContract:record.resourceContract||null,stateRequirement:record.stateRequirement&&Object.keys(record.stateRequirement).length?Object.freeze({...record.stateRequirement}):null,damageStateTransition:record.damageStateTransition?Object.freeze({...record.damageStateTransition}):null,damageStatsState:hit.damageStatsState??record.damageStateTransition?.damageStatsState??(provisionalHpOnly?'TRIPLE_EXTRACT':null),adoption:provisionalHpOnly?Object.freeze({status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25',scope:'HP_DAMAGE_ONLY',sourceGameVersion:record.baselineGameVersion??null,officialVersionAudit:record.currentVersionAudit??'PENDING',unresolvedReasons:Array.isArray(record.unresolvedReasons)?[...record.unresolvedReasons]:[]}):record.adoption||null};
    const partModifierKnown=finite(hit.partModifier);
    const hitSource=hit.componentSource??source;
    if(typeof hitSource!=='string'||!hitSource)throw Error('REAL_SLICE:HIT_SOURCE_REQUIRED:'+index);
@@ -1112,7 +1142,7 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
   let sharp,hitzone,part=null;
   try{
-   sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});
+   sharp=resolveSharpness({build,state,parameters,gameVersion:expectedGameVersion});
    hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});
    if(parameters?.partModifier!==null&&parameters?.partModifier!==undefined)part=resolvePartModifier({parameters,build,state,gameVersion:expectedGameVersion});
   }catch(_){return unavailable('PHYSICAL_CONTEXT_RESOLUTION_FAILED')}
@@ -1134,15 +1164,16 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   return {status:'available',value:result.p};
  }
 }
-function createSourcedElementalFormula({calculate,resolveElementSharpness,resolveHitzone,expectedGameVersion}={}){
+function createSourcedElementalFormula({calculate,resolveElementSharpness,resolveHitzone,resolveElementApplicability,expectedGameVersion}={}){
  if(typeof calculate!=='function'||typeof resolveElementSharpness!=='function'||typeof resolveHitzone!=='function')throw Error('ELEMENT_SOURCE_RESOLVERS_REQUIRED');
  return function elemental({coefficient,coefficientUnit,target,parameters,stats,build,state}={}){
   if(coefficientUnit!=='ELEMENT_MODIFIER'||!finite(coefficient)||coefficient<0)return unavailable('ELEMENT_MODIFIER_UNRESOLVED');
   if(!finite(stats?.element)||stats.element<0)return unavailable('ELEMENT_VALUE_UNRESOLVED');
   if(!finite(stats?.affinity))return unavailable('ELEMENT_AFFINITY_UNRESOLVED');
   if(!expectedGameVersion)return unavailable('ELEMENT_VERSION_UNRESOLVED');
+  if(resolveElementApplicability){let applicability;try{applicability=resolveElementApplicability({build,state,parameters});}catch(_){return unavailable('ELEMENT_APPLICABILITY_UNRESOLVED');}if(typeof applicability?.applies!=='boolean'||typeof applicability.evidenceRef!=='string'||!applicability.evidenceRef)return unavailable('ELEMENT_APPLICABILITY_UNRESOLVED');if(!applicability.applies)return {status:'available',value:0,details:{appliedElement:0,applicability}};}
   let sharp,hitzone;
-  try{sharp=resolveElementSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});}
+  try{sharp=resolveElementSharpness({build,state,parameters,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});}
   catch(_){return unavailable('ELEMENT_CONTEXT_RESOLUTION_FAILED')}
   const valid=x=>x&&x.gameVersion===expectedGameVersion&&typeof x.evidenceRef==='string'&&x.evidenceRef.length>0&&finite(x.value);
   if(!valid(sharp)||sharp.value<=0)return unavailable('ELEMENT_SHARPNESS_UNRESOLVED');
@@ -1176,7 +1207,7 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   if(!expectedGameVersion||typeof expectedGameVersion!=='string')return unavailable('PHYSICAL_VERSION_UNRESOLVED');
   let sharp,hitzone,part=null;
   try{
-   sharp=resolveSharpness({build,state,gameVersion:expectedGameVersion});
+   sharp=resolveSharpness({build,state,parameters,gameVersion:expectedGameVersion});
    hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});
    if(parameters?.partModifier!==null&&parameters?.partModifier!==undefined)part=resolvePartModifier({parameters,build,state,gameVersion:expectedGameVersion});
   }catch(_){return unavailable('PHYSICAL_CONTEXT_RESOLUTION_FAILED')}
@@ -1198,15 +1229,16 @@ function createSourcedPhysicalFormula({calculate,resolveSharpness,resolveHitzone
   return {status:'available',value:result.p};
  }
 }
-function createSourcedElementalFormula({calculate,resolveElementSharpness,resolveHitzone,expectedGameVersion}={}){
+function createSourcedElementalFormula({calculate,resolveElementSharpness,resolveHitzone,resolveElementApplicability,expectedGameVersion}={}){
  if(typeof calculate!=='function'||typeof resolveElementSharpness!=='function'||typeof resolveHitzone!=='function')throw Error('ELEMENT_SOURCE_RESOLVERS_REQUIRED');
  return function elemental({coefficient,coefficientUnit,target,parameters,stats,build,state}={}){
   if(coefficientUnit!=='ELEMENT_MODIFIER'||!finite(coefficient)||coefficient<0)return unavailable('ELEMENT_MODIFIER_UNRESOLVED');
   if(!finite(stats?.element)||stats.element<0)return unavailable('ELEMENT_VALUE_UNRESOLVED');
   if(!finite(stats?.affinity))return unavailable('ELEMENT_AFFINITY_UNRESOLVED');
   if(!expectedGameVersion)return unavailable('ELEMENT_VERSION_UNRESOLVED');
+  if(resolveElementApplicability){let applicability;try{applicability=resolveElementApplicability({build,state,parameters});}catch(_){return unavailable('ELEMENT_APPLICABILITY_UNRESOLVED');}if(typeof applicability?.applies!=='boolean'||typeof applicability.evidenceRef!=='string'||!applicability.evidenceRef)return unavailable('ELEMENT_APPLICABILITY_UNRESOLVED');if(!applicability.applies)return {status:'available',value:0,details:{appliedElement:0,applicability}};}
   let sharp,hitzone;
-  try{sharp=resolveElementSharpness({build,state,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});}
+  try{sharp=resolveElementSharpness({build,state,parameters,gameVersion:expectedGameVersion});hitzone=resolveHitzone({target,state,parameters,gameVersion:expectedGameVersion});}
   catch(_){return unavailable('ELEMENT_CONTEXT_RESOLUTION_FAILED')}
   const valid=x=>x&&x.gameVersion===expectedGameVersion&&typeof x.evidenceRef==='string'&&x.evidenceRef.length>0&&finite(x.value);
   if(!valid(sharp)||sharp.value<=0)return unavailable('ELEMENT_SHARPNESS_UNRESOLVED');
@@ -1313,6 +1345,18 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   return null;
  };
  const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type==='transition'&&event.contract?.startsWith('GL_TARGET_')&&weaponType==='gunlance'){
+   const gl=state?.gunlance;if(!gl||!['GL_WYRMSTAKE_FULL_BURST','GL_MULTI_WYRMSTAKE_FULL_BURST'].includes(event.techniqueId))throw Error('GL_TARGET:STATE_INVALID');
+   const next={...gl};
+   if(event.contract==='GL_TARGET_BEGIN'){
+    if(event.reload!== (event.techniqueId==='GL_MULTI_WYRMSTAKE_FULL_BURST')||!Number.isInteger(event.capacity)||event.capacity<1)throw Error('GL_TARGET:RELOAD_CONTRACT_INVALID');
+    if(event.reload){next.loadedRounds=event.capacity;next.stakeLoaded=true;}
+    if(next.stakeLoaded!==true||!Number.isInteger(next.loadedRounds)||next.loadedRounds<1||next.loadedRounds>event.capacity)throw Error('GL_TARGET:RESOURCE_INSUFFICIENT');
+   }else if(event.contract==='GL_TARGET_SHELLS_SPENT'){next.loadedRounds=0;}
+   else if(event.contract==='GL_TARGET_STAKE_SPENT'){if(next.stakeLoaded!==true)throw Error('GL_TARGET:STAKE_EXHAUSTED');next.stakeLoaded=false;}
+   else throw Error('GL_TARGET:TRANSITION_UNKNOWN');
+   return {nextState:{...state,gunlance:next}};
+  }
   if(event.type==='transition'&&event.contract==='HH_MELODY_ESTABLISHED'&&weaponType==='hunting-horn'){
    const op=event.operations?.[0],key=op?.path?.[1],level=state?.huntingHorn?.[key];
    if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||!['selfImprovementLevel','attackMelodyLevel'].includes(key)||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn',key]))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');
@@ -1488,6 +1532,18 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
   return null;
  };
  const handlers={[weaponType]:({event,state,build,effects,conditions})=>{
+  if(event.type==='transition'&&event.contract?.startsWith('GL_TARGET_')&&weaponType==='gunlance'){
+   const gl=state?.gunlance;if(!gl||!['GL_WYRMSTAKE_FULL_BURST','GL_MULTI_WYRMSTAKE_FULL_BURST'].includes(event.techniqueId))throw Error('GL_TARGET:STATE_INVALID');
+   const next={...gl};
+   if(event.contract==='GL_TARGET_BEGIN'){
+    if(event.reload!== (event.techniqueId==='GL_MULTI_WYRMSTAKE_FULL_BURST')||!Number.isInteger(event.capacity)||event.capacity<1)throw Error('GL_TARGET:RELOAD_CONTRACT_INVALID');
+    if(event.reload){next.loadedRounds=event.capacity;next.stakeLoaded=true;}
+    if(next.stakeLoaded!==true||!Number.isInteger(next.loadedRounds)||next.loadedRounds<1||next.loadedRounds>event.capacity)throw Error('GL_TARGET:RESOURCE_INSUFFICIENT');
+   }else if(event.contract==='GL_TARGET_SHELLS_SPENT'){next.loadedRounds=0;}
+   else if(event.contract==='GL_TARGET_STAKE_SPENT'){if(next.stakeLoaded!==true)throw Error('GL_TARGET:STAKE_EXHAUSTED');next.stakeLoaded=false;}
+   else throw Error('GL_TARGET:TRANSITION_UNKNOWN');
+   return {nextState:{...state,gunlance:next}};
+  }
   if(event.type==='transition'&&event.contract==='HH_MELODY_ESTABLISHED'&&weaponType==='hunting-horn'){
    const op=event.operations?.[0],key=op?.path?.[1],level=state?.huntingHorn?.[key];
    if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||!['selfImprovementLevel','attackMelodyLevel'].includes(key)||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn',key]))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');

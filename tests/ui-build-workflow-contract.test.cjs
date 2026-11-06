@@ -110,7 +110,7 @@ test('consumer UI hides diagnostics without deleting comparison results or calcu
     assert.ok(css.includes(selector), 'missing consumer UI separation: ' + selector);
   }
   assert.ok(html.includes("['normal','火力指数（計算値）［非正規化］','power-index']"));
-  assert.ok(html.includes('data-comparison-metric="max-power-index"'));
+  assert.ok(html.includes("['maximum','最大火力指数（計算値）［非正規化］','max-power-index']"));
   assert.ok(html.includes('function renderCompareTableChunk('));
   assert.ok(html.includes('function renderArtia('));
   assert.ok(!html.includes('防具・護石は④の左ペインで編集します。'));
@@ -130,5 +130,5 @@ test('owner review: comparison explanations collapse without deleting the comput
   assert.ok(html.includes('火力計算条件の詳細'));
   assert.ok(html.includes('参考DPSの補足'));
   assert.ok(html.includes('renderCompareTableChunk('));
-  assert.ok(html.includes('data-comparison-metric="power-index"'));
+  assert.ok(html.includes("['normal','火力指数（計算値）［非正規化］','power-index']"));
 });
