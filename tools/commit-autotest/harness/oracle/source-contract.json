@@ -1,0 +1,33 @@
+{
+  "scope": "Independent arithmetic oracle for unrounded expected HP damage of the fixed GS236/238 fixture, not game observation or full-build approval",
+  "checkedOn": "2026-11-07",
+  "formula": "A * MV / 100 * S * HZ / 100 * ((1-p) + p*C)",
+  "targetPhysicalHitzone": 80,
+  "targetSource": "Explicit condition of the recorded training-front fixture. Actual in-game target hitzone was not independently validated in this task.",
+  "sharpnessPhysical": {"green": "1.05"},
+  "criticalMultiplierWithoutCriticalBoost": "1.25",
+  "criticalEyeLevel1AffinityPercent": 4,
+  "motionValues": [
+    {"techniqueId": "GS_CHARGED_SLASH_3", "name": "溜め斬りⅢ", "motionValue": 176, "sourceVersion": "1.040.00"},
+    {"techniqueId": "GS_STRONG_CHARGED_SLASH_3", "name": "強溜め斬りⅢ", "motionValue": 187, "sourceVersion": "1.040.00"},
+    {"techniqueId": "GS_STRONG_WIDE_SLASH_3", "name": "強薙ぎ払いⅢ", "motionValue": 134, "sourceVersion": "1.021.00"}
+  ],
+  "sources": [
+    {"url": "https://macarongamemo.com/entry/mhwilds-great_sword-motion", "locator": "Rows for the three named moves; Ver.1.021.00 and Ver.1.040.00 change history", "facts": "Motion values 176, 187, 134. One listed HP contact per selected move."},
+    {"url": "https://macarongamemo.com/entry/mhwilds-damage_calculation", "locator": "近接ダメージ; 斬れ味補正; 会心補正", "facts": "Physical damage formula, green physical factor 1.05, Critical Boost Lv0 critical factor 1.25. Also describes component rounding to one decimal, which this unrounded oracle intentionally does not adopt."},
+    {"url": "https://kuroyonhon.com/mhwilds/program/skill.php", "locator": "見切りLV1", "facts": "Affinity +4 percentage points."},
+    {"url": "https://kuroyonhon.com/mhwilds/buki/taiken.php", "locator": "ホープブレイドⅠ / ホープブレイドⅢ", "facts": "Display attack 432 / 624; base affinity 0%; weapon III has Speed Sharpening Lv1 and Critical Eye Lv1. Raw attack and explicit sharpness segments are taken from the fixed MHDB input, not inferred from simulator output."},
+    {"url": "https://kuroyonhon.com/mhwilds/memo/22.php", "locator": "小数点を表示する場合", "facts": "Game displayed physical and elemental damage are rounded separately to one decimal. This is not proof that the present fixed fixture was measured in game."}
+  ],
+  "boundaries": [
+    "Equipment values and skill membership are a shared fixed input, not an independent live validation of MHDB provenance or game version.",
+    "No product module, product formula, canonical technique database, or observed damage value is used to calculate expected numbers.",
+    "Expected numbers are computed before the observation file is read.",
+    "All three contacts use the weapon maximum green sharpness; depletion is outside this fixture.",
+    "Affinity expectation is linear probability weighting, not a promise of a particular critical/noncritical game roll.",
+    "Normal and maximum channels are compared to the same oracle because the only relevant attack skill is unconditional Critical Eye Lv1.",
+    "The fixture has no element and no equipment granting the recorded unrelated state toggles; no extra damage contribution is inferred from those toggles.",
+    "No DPS is derived because no verified duration is supplied.",
+    "Rounded display, actual health decrement, actual target hitzone, current game version, and complete legal equipment builds remain unverified."
+  ]
+}

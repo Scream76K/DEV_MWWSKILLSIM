@@ -1,0 +1,22 @@
+'use strict';
+const assert=require('node:assert/strict'),{compareSkill}=require('./skill-contrast.cjs');
+const job={skillId:72,level:1,kind:'great-sword',equipmentRoute:'SYNTHETIC_SINGLE_SKILL_CUSTOM_CHARM'},base={stats:{attackTrue:90,affinity:0,maxAffinity:0,element:0,elementType:'none'},channels:{normal:{value:100,status:'available',executionStatus:'complete'},maximum:{value:100,status:'available',executionStatus:'complete'}}};
+const candidate={...base,channels:structuredClone(base.channels)},opts={sameContext:true,inputGrantObserved:true};
+const tests=[];function check(name,got,want){assert.equal(got,want,name);tests.push({name,observed:got,expected:want});}
+check('Required attack change omitted flags review',compareSkill(job,base,candidate,opts).decision,'REVIEW_REQUIRED_EXPECTED_CHANGE_MISSING');
+candidate.channels.normal.value=110;candidate.channels.maximum.value=110;
+check('Increase is observed, not accuracy pass',compareSkill(job,base,candidate,opts).decision,'CHANGE_OBSERVED_ACCURACY_UNVERIFIED');
+const unchanged=structuredClone(base);
+check('No fire element is not a defect',compareSkill({...job,skillId:50},base,unchanged,opts).decision,'NOT_EXERCISED_BY_THIS_FIXTURE');
+check('Zero affinity does not exercise critical boost',compareSkill({...job,skillId:22},base,unchanged,opts).decision,'NOT_EXERCISED_BY_THIS_FIXTURE');
+check('Unknown trigger is reviewed, not called a defect',compareSkill({...job,skillId:99},base,unchanged,opts).decision,'REVIEW_CONDITIONS_UNRESOLVED');
+check('Changed armor is not an isolated comparison',compareSkill({...job,equipmentRoute:'REAL_DATABASE_ARMOR_PIECES'},base,unchanged,opts).decision,'MATCHED_CONTROL_UNAVAILABLE');
+check('Changed unrelated context is not accepted',compareSkill(job,base,unchanged,{...opts,sameContext:false}).decision,'MATCHED_CONTROL_UNAVAILABLE');
+const missing=structuredClone(base);missing.channels.maximum.value=null;missing.channels.maximum.status='unavailable';
+check('Uncalculated channel remains uncalculated',compareSkill(job,base,missing,opts).decision,'NOT_COMPARABLE_UNCALCULATED');
+check('Unobserved input remains unresolved',compareSkill(job,base,candidate,{...opts,inputGrantObserved:false}).decision,'INPUT_SKILL_NOT_ESTABLISHED');
+const positiveCrit=structuredClone(base);positiveCrit.stats.affinity=4;positiveCrit.stats.maxAffinity=4;
+check('Critical Boost with positive GS affinity requires change',compareSkill({...job,skillId:22},positiveCrit,positiveCrit,opts).decision,'REVIEW_REQUIRED_EXPECTED_CHANGE_MISSING');
+check('Handicraft can legitimately change a multiplier',compareSkill({...job,skillId:119},base,candidate,opts).decision,'CHANGE_OBSERVED_ACCURACY_UNVERIFIED');
+check('GL shell element is not inferred from no weapon element',compareSkill({...job,skillId:50,kind:'gunlance'},base,unchanged,opts).decision,'REVIEW_CONDITIONS_UNRESOLVED');
+console.log(JSON.stringify({status:'PASS',scope:'PURE_CLASSIFIER_CONTROLS_NOT_PRODUCT_MUTATIONS',tests}));
