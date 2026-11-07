@@ -1,6 +1,6 @@
 # 勇者一行 共通開発ルール
 
-作業場所はこのAGENTS.mdを置いたリポジトリ/worktreeのルート。開発の正本はGitHub origin/develop。作業開始時に最新リモートHEADを確認し、承認された作業ブランチまたは隔離されたdetached worktreeで作業する。既存の別worktreeへ無断で変更を加えない。起動時に pwd、git branch --show-current、git status、git worktree list を確認する。main/developなら編集を開始しない。初回組織構築の委任は読み取り専用。r250第3段階はユーザーの後続指示により、ヒンメルが根拠付き最小製品修正・旧テスト整合を担当。専門担当は明示された調査・独立レビューのみ。
+作業場所はこのAGENTS.mdを置いたリポジトリ/worktreeのルート。開発の正本はGitHub origin/mainline（origin/developは旧比較用として保持）。作業開始時に最新リモートHEADを確認し、承認された作業ブランチまたは隔離されたdetached worktreeで作業する。既存の別worktreeへ無断で変更を加えない。起動時に pwd、git branch --show-current、git status、git worktree list を確認する。main/mainline/developなら編集を開始しない。初回組織構築の委任は読み取り専用。r250第3段階はユーザーの後続指示により、ヒンメルが根拠付き最小製品修正・旧テスト整合を担当。専門担当は明示された調査・独立レビューのみ。
 
 指揮系統：ユーザーが最終意思決定。ChatGPTは仕様・技術方針の整理とレビュー。himmel（ヒンメル）がタスク管理・委任・実装統合。専門担当は frieren、stark、heiter、fern、eisen、sein、serie（ゼーリエ：技術方針・品質ゲート判断支援）。第3段階ではこの8名とし、番号CALC/UI/DATA/QA/ARCH/OCRは責務の識別にのみ使用する。
 
@@ -10,8 +10,8 @@
 - source_confirmed（出典で確認）とverified（明示した対象版/条件で検証）を区別。資料の存在だけで検証済みへ昇格しない。
 - 非正規化 powerIndex/maxPowerIndex と基準100 relativePowerIndex/relativeMaximumPowerIndex を区別。
 - 仕様変更はプロダクトオーナー（ユーザー）の承認が必要。ChatGPTや担当者の提案は承認ではない。
-- main/developへの直接変更は禁止。今回はcommit/push/PR/merge/rebase/reset/clean/公開を禁止。履歴操作、worktree移動/作成は別タスクで安全確認と許可を行う。同じブランチの強制重複checkoutは禁止。
-- origin/developとの差は毎回確認する。固定の先行コミット数を仮定せず、内容一致と履歴統合を区別する。勝手に履歴操作しない。
+- main/mainline/developへの直接変更は禁止。r250当時の作業ではcommit/push/PR/merge/rebase/reset/clean/公開を禁止していた。現在の作業可否は最新のユーザー指示に従う。履歴操作、worktree移動/作成は別タスクで安全確認と許可を行う。同じブランチの強制重複checkoutは禁止。
+- origin/mainline（正本）およびorigin/develop（旧比較用）との差は毎回確認する。固定の先行コミット数を仮定せず、内容一致と履歴統合を区別する。勝手に履歴操作しない。
 - 既存Git専用143ファイルは削除禁止。第2段階で旧OCR11テストの根拠付き更新を行い、原本をdocs/reports/r250-stage2/evidence/before-worktree.tar.gzへ保存。残る132ファイルは内容ハッシュ一致を維持。README/spec/assets/db_icons/data/OCR・旧evidence配置を削除しない。
 - index.htmlの編集者は同時に1人。初期運用ではヒンメルのみ編集可能。担当者は関数/領域と変更案を提出し、FILE_OWNERSHIP.mdの台帳で承認後に統合する。
 - 各変更には影響に対応する回帰検証を付ける。文書・設定変更は構文、参照、名称、保全ハッシュを検証。製品変更には不具合の最小再現、修正前失敗、修正後成功、必要な関連スイートを用意。
