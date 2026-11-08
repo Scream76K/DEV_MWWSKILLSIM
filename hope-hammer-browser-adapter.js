@@ -706,6 +706,24 @@
    else if((attributeState?.normal===true||attributeState?.maximum===true)&&(!Number.isInteger(elementValue+attributeRule.adds[attributeConversionLevel])||root.MHWElementCapRule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isFinite(root.MHWElementCapRule?.flat)||!Number.isFinite(root.MHWElementCapRule?.multiplier)||(activeBonusEffects.length&&!conversionResistanceBonusesResolved)))attributeScopeIssue='REAL_SLICE:ATTRIBUTE_CONVERSION_CAP_INTERACTION_UNRESOLVED';
   }
 
+  // R * c is exactly zero only inside the sourced coefficient domain. This
+  // deliberately covers isolated, empty-equipment ordinary body/Bow fixtures,
+  // not general wrong-element nonapplication or unknown-water coefficients.
+  const zeroConversionKinds=['great-sword','long-sword','sword-shield','dual-blades','hammer','lance','bow'];
+  const emptyResistance=x=>x?.status==='KNOWN_LIMITED'&&x.armorBase===0&&x.total===0&&x.reason===null&&x.absorptionPlan==null&&Array.isArray(x.missing)&&x.missing.length===0&&Array.isArray(x.contributions)&&x.contributions.length===0&&Array.isArray(x.rows)&&x.rows.length===5&&['head','chest','arms','waist','legs'].every(slot=>x.rows.filter(r=>r.slot===slot&&r.equipped===false&&r.value===0&&r.id==null).length===1);
+  const zeroBodyState=x=>x?.element===0&&x.elementType==='none'&&x.elementKnown===true&&x.typeKnown===true&&x.elementStatus==='CONFIRMED_NONE'&&x.elementComponents?.weaponBase===0&&Number.isFinite(x.elementComponents.normalMultiplier)&&x.elementComponents.normalMultiplier>0&&x.elementComponents.normalFlat===0&&Array.isArray(x.activeBonusEffects)&&x.activeBonusEffects.length===0;
+  const isolatedZeroConversion=(skillId,names,field)=>{
+   const canonical=e=>Number(e.skillId)===skillId&&names.includes(e.name)&&e.level===1;
+   const plan=stats.conditionalConditionPlan,cap=root.MHWElementCapRule;
+   const noAppliedEffects=rows=>Array.isArray(rows)&&rows.length===0;
+   return conditions.standardEvaluation===true&&zeroConversionKinds.includes(weapon.kind)&&weapon.specials.length===0&&weapon.phial==null&&rawSkills.length<=1&&buildSkills.length===1&&[...rawSkills,...buildSkills].every(canonical)&&
+    [stats,plan?.normal,plan?.maximum].every(x=>zeroBodyState(x)&&emptyResistance(x?.[field]))&&plan?.maximumElementComponents?.weaponBase===0&&plan.maximumElementComponents.normalFlat===0&&plan.maximumElementComponents.conditionalFlat===0&&Number.isFinite(plan.maximumElementComponents.normalMultiplier)&&plan.maximumElementComponents.normalMultiplier>0&&
+    noAppliedEffects(plan.applied)&&noAppliedEffects(plan.groupPlan?.applied)&&noAppliedEffects(plan.selfStatePlan?.normal)&&noAppliedEffects(plan.selfStatePlan?.maximum)&&[conditions,stats,plan.normal,plan.maximum,bowState,dualBladesState,longSwordState,lanceState].every(x=>x?.damageStatsState==null&&x?.stateStatsByState==null)&&conditions.combatBuffs&&['meal','charm','otherBuffs'].every(k=>conditions.combatBuffs[k]===null)&&
+    cap?.status==='OWNER_APPROVED_PROVISIONAL'&&Number.isFinite(cap.flat)&&Number.isFinite(cap.multiplier)&&conversionComponentsSupported&&resolvedTechniqueIds.every(id=>{const t=techniques[id];return t?.techniqueId===id&&t.damageStatsState==null&&t.damageStateTransition==null&&t.hpOnlyProvisional==null&&!t.phialReference&&!t.saAwakened&&!t.hhModel&&(!t.referenceKind||(weapon.kind==='bow'&&t.referenceKind==='bow'))&&(t.specialComponents===undefined||(Array.isArray(t.specialComponents)&&t.specialComponents.length===0))&&(weapon.kind==='bow'||(Array.isArray(t.hits)&&t.hits.length>0))&&(t.hits||[]).every(h=>h.damageStatsState==null&&!h.componentSource&&Number.isFinite(h.mv)&&h.mv>=0&&Number.isFinite(h.elementModifier)&&h.elementModifier>=0);});
+  };
+  const waterZeroNoop=['long-sword','bow'].includes(weapon.kind)&&root.MHWaterConversionRule?.skillId===181&&root.MHWaterConversionRule.status==='OWNER_APPROVED_PROVISIONAL'&&root.MHWaterConversionRule.coefficients?.[weapon.kind]===4&&isolatedZeroConversion(181,['耐性変換【水】'],'waterResistanceInput');
+  const thunderZeroNoop=isolatedZeroConversion(165,['耐性変換【雷】','Thunder Resistance Conversion'],'thunderResistanceInput');
+  const zeroConversionDiagnostic={reason:'ISOLATED_EMPTY_EQUIPMENT_ZERO_ADD',scope:'KNOWN_COEFFICIENT_ZERO_RESISTANCE_NORMAL_AND_MAXIMUM_NO_PRODUCERS',verificationStatus:'NOT_GAME_VERIFIED'};
   const waterEntries=allSkills.filter(x=>Number(x.skillId)===181),waterRule=root.MHWaterConversionRule,waterInput=stats.waterResistanceInput;
   const standardConversion=conditions.standardEvaluation===true;
   let conversionMaximumIssue=null;
@@ -713,7 +731,7 @@
   if(waterEntries.length){
    if(!waterRule||waterEntries.some(x=>x.name!==waterRule.name||x.level!==waterRule.level))return fail('REAL_SLICE:WATER_CONVERSION_LEVEL_INVALID');
    const issue=(()=>{
-   if(!Object.hasOwn(waterRule.coefficients,weapon.kind)||elementType!==waterRule.elementType||resolvedTechniqueIds.some(id=>weapon.kind==='bow'?techniques[id]?.referenceKind!=='bow':!!techniques[id]?.referenceKind||techniques[id]?.hits?.some(h=>h.componentSource)))return ('REAL_SLICE:WATER_CONVERSION_SCOPE_UNSUPPORTED');
+   if(!Object.hasOwn(waterRule.coefficients,weapon.kind)||(!waterZeroNoop&&elementType!==waterRule.elementType)||resolvedTechniqueIds.some(id=>weapon.kind==='bow'?techniques[id]?.referenceKind!=='bow':!!techniques[id]?.referenceKind||techniques[id]?.hits?.some(h=>h.componentSource)))return ('REAL_SLICE:WATER_CONVERSION_SCOPE_UNSUPPORTED');
    if(waterInput?.status!=='KNOWN_LIMITED'||!Number.isInteger(waterInput.total)||waterInput.total<0)return ('REAL_SLICE:WATER_RESISTANCE_UNRESOLVED:'+String(waterInput?.reason||'missing'));
    waterConversionAdd=waterInput.total*waterRule.coefficients[weapon.kind];
    })();
@@ -725,7 +743,7 @@
   if(resistanceConversionLevel){
    if(allSkills.filter(x=>x.skillKey==='resistanceConversionThunder').some(x=>Number(x.skillId)!==165||!['耐性変換【雷】','Thunder Resistance Conversion'].includes(x.name)||x.level!==1))return fail('REAL_SLICE:THUNDER_RESISTANCE_CONVERSION_LEVEL_UNSUPPORTED');
    const issue=(()=>{
-   if(!thunderAmmoScope&&(elementType!=='thunder'||!conversionComponentsSupported))return ('REAL_SLICE:THUNDER_CONVERSION_BODY_SCOPE_UNSUPPORTED');
+   if(!thunderAmmoScope&&((!thunderZeroNoop&&elementType!=='thunder')||!conversionComponentsSupported))return ('REAL_SLICE:THUNDER_CONVERSION_BODY_SCOPE_UNSUPPORTED');
    if(resistanceInput?.status!=='KNOWN_LIMITED'||!Number.isInteger(thunderResistance)||thunderResistance<0)return ('REAL_SLICE:THUNDER_RESISTANCE_UNRESOLVED:'+String(resistanceInput?.reason||'missing'));
    resistanceConversionAdd=thunderAmmoScope?0:thunderResistance*resistanceConversionCoefficient;
    // The adopted common engine caps this body element after the conversion flat.
@@ -852,7 +870,28 @@
   const maximumElement=Number(conditionPlan?.maximum?.element);
   const provenance={sourceUrl:`https://wilds.mhdb.io/en/weapons/${weapon.id}`,sourceGameVersion:'UNKNOWN',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',targetGameVersion:versions.game,retrievedAt,apiVersion:'UNKNOWN'};
   const normalizedChargeBladeState=chargeBladeState&&typeof chargeBladeState==='object'?{...chargeBladeState,shieldBoostAxeBodyMultiplier:root.ChargeBladeEngine?.shieldBoostAxeBodyMultiplier}:chargeBladeState;
-  if(allSkills.some(x=>Number(x.skillId)===129)&&resolvedTechniqueIds.some(id=>!ADOPTED_NO_WOUND_EVENT_IDS.has(id)))return fail('REAL_SLICE:PARTBREAKER_WOUND_EVENT_SCOPE_PENDING');
+  // MHDB 129 separates part durability from focused wound-destruction HP.
+  // These six reconciled ordinary body records are not focus/wound events.
+  // Do not promote their IDs globally: generated, special or alternate-state
+  // variants still need their own adoption. Existing no-wound routes stay intact.
+  const partbreakerBodyIds={
+   'sword-shield':['SNS_DOWNWARD_SLASH','SNS_HORIZONTAL_SLASH','SNS_RETURN_SLASH'],
+   hammer:['HAM_MIGHTY_CHARGE_UPPERCUT'],
+   'switch-axe':['SA_SWORD_RIGHT_RISING','SA_SWORD_LEFT_RISING']
+  };
+  const partbreakerIdentity=x=>Number(x.skillId)===129||x.name==='破壊王';
+  const partbreakerEntries=allSkills.filter(partbreakerIdentity);
+  const partbreakerNoAlternateState=x=>x?.damageStatsState==null&&x?.stateStatsByState==null;
+  const partbreakerBodyResolved=!!partbreakerBodyIds[weapon.kind]&&partbreakerEntries.length>0&&
+   partbreakerEntries.every(x=>Number(x.skillId)===129&&x.name==='破壊王'&&Number.isInteger(x.level)&&x.level>=1&&x.level<=3)&&new Set(partbreakerEntries.map(x=>x.level)).size===1&&rawSkills.filter(partbreakerIdentity).length<=1&&buildSkills.filter(partbreakerIdentity).length<=1&&
+   !hasShelling&&!hasReference&&!hhModel&&[conditions,conditions.switchAxeState,switchAxeState].every(partbreakerNoAlternateState)&&conditions.mounted!==true&&conditions.dismountAttack!==true&&conditions.sneakAttack!==true&&
+   (weapon.kind!=='switch-axe'||switchAxeState?.awakened===false)&&
+   resolvedTechniqueIds.every(id=>{
+    const t=techniques[id];
+    return (ADOPTED_NO_WOUND_EVENT_IDS.has(id)||partbreakerBodyIds[weapon.kind].includes(id))&&t?.techniqueId===id&&t.weaponType===techniqueKind&&partbreakerNoAlternateState(t)&&t.damageStateTransition==null&&t.hpOnlyProvisional==null&&!t.referenceKind&&!t.phialReference&&!t.saAwakened&&!t.hhModel&&
+     (t.specialComponents===undefined||(Array.isArray(t.specialComponents)&&t.specialComponents.length===0))&&Array.isArray(t.hits)&&t.hits.length>0&&t.hits.every(h=>partbreakerNoAlternateState(h)&&!h.componentSource&&(h.component===undefined||h.component==='BODY')&&Number.isFinite(h.mv)&&h.mv>=0&&Number.isFinite(h.elementModifier)&&h.elementModifier>=0);
+   });
+  if(allSkills.some(x=>Number(x.skillId)===129)&&resolvedTechniqueIds.some(id=>!ADOPTED_NO_WOUND_EVENT_IDS.has(id))&&!partbreakerBodyResolved)return fail('REAL_SLICE:PARTBREAKER_WOUND_EVENT_SCOPE_PENDING');
   if(cornpopperEntries.length){
    const knownBody=['GL_SLAM','GL_SWEEP'];
    if(resolvedTechniqueIds.some(id=>!knownBody.includes(id)&&!['reference:gl_NORMAL','reference:gl_CHARGED','reference:gl_FULL_BURST'].includes(id)))return fail('GL_SHELL:CORNPOPPER_TECHNIQUE_NOT_ADOPTED');
@@ -1163,8 +1202,8 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
     const common=key=>result.execution?.status==='complete'&&values.length&&values.every(x=>Number.isFinite(x[key])&&x[key]===values[0][key])?values[0][key]:null;
     return {effectiveElement:common('effectiveElement'),uncappedElement:common('uncappedElement'),capLimit:common('capLimit'),componentElements:values};
    };
-   if(waterEntries.length)for(const [ch,result] of Object.entries(evaluated.channels||{})){const parts=(result.components||[]).filter(c=>c.status==='available'&&(Number.isFinite(c.details?.appliedElement)||Number.isFinite(c.details?.effectiveDisplayedElement))).map(c=>({componentId:c.id,effectiveElement:c.details.appliedElement??c.details.effectiveDisplayedElement,elementBasis:c.details.elementComponents??c.details.elementBasis}));result.diagnostics={...result.diagnostics,waterResistanceConversion:{input:waterInput,add:standardConversion&&ch==='normal'?0:waterConversionAdd,absorptionResistance:absorptionConversionPlan,absorptionAdd:ch==='maximum'?(absorptionConversionPlan?.status==='UNRESOLVED'?null:absorptionMaximumAdd):0,components:parts,effectiveElement:parts.length&&parts.every(x=>x.effectiveElement===parts[0].effectiveElement)?parts[0].effectiveElement:null,source:waterRule.source,adoptionStatus:waterRule.status,verificationStatus:'UNVERIFIED',scope:waterRule.scope}};}
-   if(resistanceConversionLevel)for(const [ch,result] of Object.entries(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',thunderResistanceConversion:{mixedComponentAdoption:weapon.kind==='charge-blade'&&officialPhialType==='IMPACT'?root.MHThunderConversionCbMixedScope:null,input:resistanceInput,absorptionResistance:absorptionConversionPlan,absorptionAdd:ch==='maximum'?(absorptionConversionPlan?.status==='UNRESOLVED'?null:absorptionMaximumAdd):0,baseElement:elementValue,...conversionElementDiagnostic(result),add:standardConversion&&ch==='normal'?0:resistanceConversionAdd,source:'https://kuroyonhon.com/mhwilds/program/skill.php',eligibilitySource:'https://kuroyonhon.com/mhwilds/memo/31.php',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',verificationStatus:'UNVERIFIED',scope:conversionScope.scope,componentAdoption:conversionScope}};
+   if(waterEntries.length)for(const [ch,result] of Object.entries(evaluated.channels||{})){const parts=(result.components||[]).filter(c=>c.status==='available'&&(Number.isFinite(c.details?.appliedElement)||Number.isFinite(c.details?.effectiveDisplayedElement))).map(c=>({componentId:c.id,effectiveElement:c.details.appliedElement??c.details.effectiveDisplayedElement,elementBasis:c.details.elementComponents??c.details.elementBasis}));result.diagnostics={...result.diagnostics,waterResistanceConversion:{...(waterZeroNoop?{zeroResistanceNoop:zeroConversionDiagnostic}:{}),input:waterInput,add:standardConversion&&ch==='normal'?0:waterConversionAdd,absorptionResistance:absorptionConversionPlan,absorptionAdd:ch==='maximum'?(absorptionConversionPlan?.status==='UNRESOLVED'?null:absorptionMaximumAdd):0,components:parts,effectiveElement:parts.length&&parts.every(x=>x.effectiveElement===parts[0].effectiveElement)?parts[0].effectiveElement:null,source:waterRule.source,adoptionStatus:waterRule.status,verificationStatus:'UNVERIFIED',scope:waterRule.scope}};}
+   if(resistanceConversionLevel)for(const [ch,result] of Object.entries(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',thunderResistanceConversion:{...(thunderZeroNoop?{zeroResistanceNoop:zeroConversionDiagnostic}:{}),mixedComponentAdoption:weapon.kind==='charge-blade'&&officialPhialType==='IMPACT'?root.MHThunderConversionCbMixedScope:null,input:resistanceInput,absorptionResistance:absorptionConversionPlan,absorptionAdd:ch==='maximum'?(absorptionConversionPlan?.status==='UNRESOLVED'?null:absorptionMaximumAdd):0,baseElement:elementValue,...conversionElementDiagnostic(result),add:standardConversion&&ch==='normal'?0:resistanceConversionAdd,source:'https://kuroyonhon.com/mhwilds/program/skill.php',eligibilitySource:'https://kuroyonhon.com/mhwilds/memo/31.php',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',verificationStatus:'UNVERIFIED',scope:conversionScope.scope,componentAdoption:conversionScope}};
    if(attributeConversionLevel)for(const [ch,result] of Object.entries(evaluated.channels||{})){result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',referenceOnly:true,referenceScope:conversionScope.scope,attributeConversion:{...attributeRule,componentAdoption:conversionScope,active:attributeState?.[ch]??null,baseElement:elementValue,...conversionElementDiagnostic(result),excludedComponents:['FIXED_FOLLOWUP','DRAGON_FOLLOWUP']}};if(result.metrics?.comboTotalDamage)result.metrics.comboTotalDamage.scope=attributeState?.[ch]===false?'CONVERSION_INACTIVE_REFERENCE':conversionScope.scope;}
    // Additive diagnostic only: the legacy effect-scope label is not a prohibition on mixed totals.
    if(attributeConversionLevel&&root.MHAttributeConversionMixedScope){

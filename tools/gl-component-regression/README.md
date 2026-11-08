@@ -1,3 +1,31 @@
+# Isolated zero conversion and ordinary-body Partbreaker extension (2026-11-08)
+
+Product base: 398ac0149f86bf83bf102931d62f1bbb7868fc47. This extends only isolated zero-resistance conversion on known-coefficient ordinary body/Bow routes, and Partbreaker on six ordinary-body records across Sword & Shield, Hammer and Switch Axe. Thunder covers seven bounded weapon kinds; water remains restricted to Long Sword and Bow. Co-skills, equipped armor, resistance producers, unsupported coefficients, alternate states and generated/focus/wound routes do not inherit the isolated zero branch. No new gameplay coefficient is adopted. Numeric game accuracy and real-browser behavior remain unverified.
+
+## Current checks
+
+From repository root, Node 24:
+
+    node --test tests/gl-shell-affinity-scope.test.cjs tests/gl-shell-defensive-scope.test.cjs tests/gl-shell-state-affinity-scope.test.cjs tests/gl-shell-bonus-scope.test.cjs tests/charge-master-noelement-scope.test.cjs tests/conversion-zero-scope.test.cjs tests/partbreaker-body-scope.test.cjs tools/gl-component-regression/failure-injection.test.cjs
+
+The two new fixture-free files execute extracted production predicates against 305 conversion and 67 Partbreaker assertions. They are not substitutes for the full adapter. CI retains the unsuppressed product suite. The prior suite has 880 tests, 757 passing and 123 failing; these two test files add two entries, not a claim of all-green CI.
+
+Prepare with the pinned snapshot and references documented below, then run:
+
+    node tools/gl-component-regression/prepare.cjs --repo /path/to/repo --commit FULL_TARGET_SHA --snapshot /path/to/pinned/snapshot --references /path/to/pinned/results --output /path/to/new/prepared-run
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node /path/to/new/prepared-run/scope.cjs
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node /path/to/new/prepared-run/regression.cjs
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node /path/to/new/prepared-run/combined.cjs
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node --test /path/to/new/prepared-run/failure-injection.test.cjs /path/to/new/prepared-run/portability.test.cjs /path/to/new/prepared-run/preflight-integrity.test.cjs /path/to/new/prepared-run/input-integrity.test.cjs /path/to/new/prepared-run/combined-integrity.test.cjs /path/to/new/prepared-run/scope-integrity.test.cjs
+
+The new scope driver runs 266 conversion cases, 107 Partbreaker cases and 27 coexistence cases. Conversion includes all nine isolated gains plus malformed-input, producer and matching-element controls. Partbreaker derives the six original armor selections from the existing pinned DB/plan and verifies real bonuses; it also tests identity, ranks, alternate states, wound/focus/generated records and retained pending guards. The 27 coexistence cases require the exact conversion blocker, no isolated-zero annotation, and equality to a test-only control with only the zero-conversion predicate disabled. Removing the co-skill restores the isolated result. The control is evaluated in memory from the exact hash-bound adapter; it is never written to production.
+
+No selected private case JSON, saved results or new private identifiers/hashes are shipped. Resistance and armor selections are derived at run time. The historical GL/CM baseline is retained; the new tests additionally use the exact public398 adapter, verified from Git by fixed public hash. Existing private fixture and reference contracts are unchanged. All new modules are hash-bound and checked before loading fixtures. The scope driver invalidates its summary before verification, uses a fresh directory/run ID, requires successful child exits and exact case counts, and revalidates inputs afterward. Its tamper tests include simultaneous adapter/generated-manifest edits and stale PASS invalidation.
+
+Portable checks establish this bounded behavior, not a full 2,562-case scan. Publication still requires independent tree review, then a final-product-SHA-bound independent 44-runtime-file dependency review and a fresh unchanged fixed-runner scan. Record product SHA, fixed runner SHA and private-data SHA separately. Do not edit the fixed runner or its historical expected findings to make a new candidate appear green. Mainline and saved application builds are unchanged.
+
+The historical sections below retain earlier scopes and counts. Current commands include the new scope driver as well as the earlier GL and CM drivers.
+
 # Bounded Charge Master and GL bonus extension (2026-11-08)
 
 Base product: 5b2c4d4dac550f7675d119db5a0b0abaaf5b764c. The product adapter adds only two reviewed boundaries: Charge Master is non-applicable to proven zero-element/status ordinary body routes for Long Sword, Sword & Shield, Dual Blades and Lance; validated Sliding Power and Guardian Veil activations do not modify fixed shell damage. Identity, activation, state, conversion and unsupported-route gates remain fail-closed. This is not general skill adoption or verified game accuracy.
