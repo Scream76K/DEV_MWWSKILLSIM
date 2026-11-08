@@ -1,3 +1,17 @@
+# Conditional-affinity shell boundary extension (2026-11-08)
+
+Base product: a8c2f4f301559c0736f52eb9a3999a1261c0f0d3. Only exact MHDB Antivirus18 and Wet Blade Mark39 entries are separated from non-critical shell raw/fire modifiers. Existing state-aware cutting resolvers, coefficients and missing-state gates are unchanged. This is not general skill adoption or verified game accuracy.
+
+Current integration suite:71 cases, comprising the earlier41,27 state-boundary cases and3 explicit normal-shell controls. Original GL group:28 available and5 still blocked. Six newly available original cases preserve cutting/element outputs against pinned a8c2f4f references. All41 reference files now come from the completed a8c2f4f component regression. The input fixture snapshot remains the separately pinned historical snapshot described below; do not substitute a newer product snapshot for that fixture input.
+
+The state cases cover all three ranks, dry/wet/bubble/both, before/infected/overcome, missing/unknown/partial/invalid state and combined effects. They override only the captured adapter call in the test harness, not saved user settings or source DB. Normal-shell tests supply six rounds explicitly for the fixed weapon315; no implicit ammunition is invented by production. State-boundary conditions are not a claim that current public UI exposes those direct adapter inputs.
+
+Expected wet affinity additions come from MHDB39 ranks:3/6/9 wet and7/14/21 bubble. Antivirus additions3/6/10 come from MHDB18; the existing provisional overcome15 and BEFORE/INFECTED/OVERCOME mapping are documented in docs/reports/r263-skill-audit/FRENZY_EXPLICIT_STATE_CONNECTION.md at the base product. Test arithmetic uses the adopted unmodified25% base crit premium and the no-skill matched cutting total. These hand-stated expectations are never consumed by production. Shell damage must be invariant; malformed states must retain their exact execution blocker in both channels.
+
+Fixture-free CI adds120 actual-predicate assertions in tests/gl-shell-state-affinity-scope.test.cjs. All existing fresh-output, process-exit, runtime hash and coordinated adapter/manifest tamper protections remain. Use runner8c2d4c3b2756f9ded881b957c1fb8282b24ca933 and private a9b58416d6cff3441ea1ad7774670f6080d11921 separately; full scan requires a reviewed final-product-SHA dependency contract.
+
+Historical sections below describe prior candidate scopes/counts. Current71-case assertions and pinned contract are authoritative for this candidate.
+
 # Defensive-only extension (2026-11-08)
 
 Base product: e9661d502acc04849d0d4f647ac7083ea79cdc5b. Exact MHDB Defense118 ranks1–7 and Thunder Resistance156 ranks1–3 are excluded from fixed shell raw/fire modifiers only with canonical identities and no resistance conversion. MHDB descriptions at https://wilds.mhdb.io/ja/skills/118 and https://wilds.mhdb.io/ja/skills/156 define defense/resistance effects. No coefficients or body calculations change. Conversion combinations remain fail-closed.

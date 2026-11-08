@@ -14,14 +14,24 @@ try{
  require('./verify-inputs.cjs').verifyPreparedInputs(work,contract);
  const {runFreshCase}=require('./run-fresh-case.cjs');
  const plan=require('./work/harness/gl-affinity-plan.cjs').makeGlAffinityPlan(read(work+'/input/normalized-data.json'),read(work+'/harness/skill-sources/classification.candidate.json'),read(work+'/harness/skill-sources/raw-skills.json'));
+ assert.equal(plan.originalSourceCaseCount,33);assert.equal(plan.additionalCaseCount,38);assert.equal(plan.cases.filter(x=>x.key.startsWith('original:')).length,plan.originalSourceCaseCount);assert.equal(plan.cases.length-plan.originalSourceCaseCount,plan.additionalCaseCount);
  fs.mkdirSync(path.join(__dirname,'runs'),{recursive:true});
  const outputDir=fs.mkdtempSync(path.join(__dirname,'runs',runId+'-'));summary.outputDir=outputDir;
 for(const job of plan.cases){
  const filename='gl-affinity-'+job.key.replaceAll(':','-')+'.json';
  const {report:r,processExitCode,outputFile}=runFreshCase({harness:work+'/harness/gl-affinity.cjs',key:job.key,runId,outputDir});
- const remaining=job.blockedModifiers.filter(x=>!['弱点特効','力の解放','防御','雷耐性'].includes(x));
+ const remaining=job.blockedModifiers.filter(x=>!['弱点特効','力の解放','防御','雷耐性','無我の境地','濡れ刃紋'].includes(x));
  for(const ch of ['normal','maximum']){
   const p=r.componentComparison[ch];
+  if(job.sourceType==='STATE_BOUNDARY'){
+   if(job.expectedError){assert.equal(p.after.total.status,'unavailable');assert.equal(p.after.execution.reason,job.expectedError);}
+   else{
+    assert.equal(p.after.total.status,'available');assert.ok(p.after.shelling.count>0&&p.before.shelling.count>0);assert.ok(Number.isFinite(p.after.shelling.sum)&&Number.isFinite(p.before.shelling.sum));assert.equal(p.after.shelling.available,p.after.shelling.count);assert.equal(p.after.shelling.sum,p.before.shelling.sum);assert.equal(p.after.element.sum,p.before.element.sum);
+    if(job.route==='EXPLICIT_NORMAL_SHELL')assert.equal(p.after.cutting.count,0);
+    else{assert.ok(p.after.cutting.count>0&&p.before.cutting.count>0);assert.ok(Number.isFinite(p.after.cutting.sum)&&Number.isFinite(p.before.cutting.sum));assert.equal(p.after.cutting.available,p.after.cutting.count);assert.ok(Math.abs(p.after.cutting.sum-p.before.cutting.sum*(1+0.25*job.expectedAffinity[ch==='normal'?0:1]/100))<1e-9,job.key+' '+ch+' independent affinity expectation');}
+   }
+   continue;
+  }
   if(job.sourceType==='DEFENSIVE_CONVERSION_NEGATIVE'){
    assert.equal(p.after.total.status,'unavailable');
    if(job.conversionId===165){if(ch==='normal')assert.ok(p.blockedModifiers.includes(job.defensiveId===118?'防御':'雷耐性'));else assert.match(JSON.stringify(p.after.execution),/THUNDER_CONVERSION_BODY_SCOPE_UNSUPPORTED/);}
@@ -44,7 +54,7 @@ for(const job of plan.cases){
  console.log('PASS '+job.key+' residual='+remaining.join('/'));
 }
 summary.counts={passed:summary.cases.length,originalResolved:summary.cases.filter(c=>c.key.startsWith('original:')&&!c.remainingBlockers.length).length,originalStillBlocked:summary.cases.filter(c=>c.key.startsWith('original:')&&c.remainingBlockers.length).length};
-assert.equal(summary.cases.length,41);assert.equal(summary.counts.originalResolved,22);assert.equal(summary.counts.originalStillBlocked,11);
+assert.equal(summary.cases.length,71);assert.equal(summary.counts.originalResolved,28);assert.equal(summary.counts.originalStillBlocked,5);
 summary.status='PASS';fs.writeFileSync(__dirname+'/regression-summary.json',JSON.stringify(summary,null,2));console.log(JSON.stringify(summary.counts));
 
 }catch(error){summary.status='FAIL';summary.error=error.stack;fs.writeFileSync(__dirname+'/regression-summary.json',JSON.stringify(summary,null,2));throw error;}
