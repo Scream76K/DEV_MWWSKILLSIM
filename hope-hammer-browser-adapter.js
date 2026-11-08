@@ -214,10 +214,20 @@
   const guardEntries=allSkills.filter(x=>Number(x.skillId)===66||['Offensive Guard','\u653b\u3081\u306e\u5b88\u52e2'].includes(x.name));
   if(weapon.kind==='gunlance'&&guardEntries.some(x=>(x.skillId!=null&&Number(x.skillId)!==66)||!['Offensive Guard','\u653b\u3081\u306e\u5b88\u52e2'].includes(x.name)||!Number.isInteger(x.level)||x.level<1||x.level>3))return fail('GL_SHELL:OFFENSIVE_GUARD_LEVEL_INVALID');
   // Pure affinity is already resolved by the common channel plan; shell Formula fixes affinity to zero.
-  // Keep this exception ID99-only: other conditional-affinity inputs retain their own scope gates.
+  // Preserve the existing ID99 exception separately from the validated MHDB 57/142 candidate below.
   const shellMightEntries=allSkills.filter(x=>Number(x.skillId)===99||['渾身','Maximum Might'].includes(x.name));
   const shellMightResolved=x=>shellMightEntries.length===1&&x===shellMightEntries[0]&&Number(x.skillId)===99&&CONDITIONAL_AFFINITY_SKILLS[x.name]?.id===99&&x.skillKey==='conditionalAffinity'&&Number.isInteger(x.level)&&x.level>=1&&x.level<=CONDITIONAL_AFFINITY_SKILLS[x.name].max&&Number.isFinite(stats.affinity)&&Number.isFinite(stats.maxAffinity);
-  const shellingInput={shellingState:gunlanceState,loadShellsLevel:loadShellEntries.length?Math.max(...loadShellEntries.map(x=>x.level)):0,artilleryLevel:artilleryEntries.length?Math.max(...artilleryEntries.map(x=>x.level)):0,normalAttackComponents:stats.attackComponents?{weaponBase:Number(stats.attackComponents.weaponBase),normalMultiplier:1,normalFlat:0}:null,unreviewedSkills:allSkills.filter(x=>!shellMightResolved(x)&&![85,136].includes(Number(x.skillId))&&!(cornpopperEntries.length&&Number(x.skillId)===159)&&!(bladescaleEntries.length&&Number(x.skillId)===163)&&!fixedEntrySkill(x)&&!['selfState','handicraft','ballistics','attack','affinity','criticalBoost','conditionalAttack','shelling','slugger','fire','water','thunder','ice','dragon','normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].includes(x.skillKey)).map(x=>x.name)};
+  // Component-scoped candidate: MHDB 57 is affinity only; 142 adds affinity
+  // and stamina economy. Neither changes fixed shell raw/fire coefficients.
+  // Cutting retains the existing per-hit WEX and normal/maximum condition plans.
+  const shellAffinityOnlyResolved=x=>{
+   const rule=CONDITIONAL_AFFINITY_SKILLS[x.name],id=Number(x.skillId);
+   return [57,142].includes(id)&&rule?.id===id&&x.skillKey==='conditionalAffinity'&&
+    Number.isInteger(x.level)&&x.level>=1&&x.level<=rule.max&&
+    allSkills.filter(y=>Number(y.skillId)===id||CONDITIONAL_AFFINITY_SKILLS[y.name]?.id===id).length===1&&
+    Number.isFinite(stats.affinity)&&Number.isFinite(stats.maxAffinity);
+  };
+  const shellingInput={shellingState:gunlanceState,loadShellsLevel:loadShellEntries.length?Math.max(...loadShellEntries.map(x=>x.level)):0,artilleryLevel:artilleryEntries.length?Math.max(...artilleryEntries.map(x=>x.level)):0,normalAttackComponents:stats.attackComponents?{weaponBase:Number(stats.attackComponents.weaponBase),normalMultiplier:1,normalFlat:0}:null,unreviewedSkills:allSkills.filter(x=>!shellMightResolved(x)&&!shellAffinityOnlyResolved(x)&&![85,136].includes(Number(x.skillId))&&!(cornpopperEntries.length&&Number(x.skillId)===159)&&!(bladescaleEntries.length&&Number(x.skillId)===163)&&!fixedEntrySkill(x)&&!['selfState','handicraft','ballistics','attack','affinity','criticalBoost','conditionalAttack','shelling','slugger','fire','water','thunder','ice','dragon','normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].includes(x.skillKey)).map(x=>x.name)};
   const rapidRequested=weapon.kind==='light-bowgun'&&resolvedTechniqueIds.some(id=>['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_3'].includes(id)),rapidShotRule=rapidRequested?techniqueDb.get('light-bowgun',resolvedTechniqueIds.find(id=>['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_3'].includes(id)))?.rapidRule:null;
   const rapidEntries=allSkills.filter(x=>Number(x.skillId)===23||x.name==='速射強化');
   if(rapidRequested){
