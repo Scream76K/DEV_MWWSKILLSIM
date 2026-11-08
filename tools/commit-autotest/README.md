@@ -12,7 +12,7 @@ Linux、Git、Node 24.15以降の24系で、このディレクトリから実行
 npm test
 ```
 
-同梱の7テストファイルから23テストを実行します。Git objectからの取得、未保存変更の非干渉、改ざん拒否、依存契約、script表記、集計・比較の負例を確認します。一時Git repositoryには小さな合成データだけを使い、終了時に削除します。製品コード・MHDB・ネットワークは使いません。これらの成功は、実GitHub commitの製品E2E成功ではありません。
+同梱の8テストファイルから47テストを実行します。Git objectからの取得、未保存変更の非干渉、改ざん拒否、依存契約、script表記、集計・比較の負例を確認します。一時Git repositoryには小さな合成データだけを使い、終了時に削除します。製品コード・MHDB・ネットワークは使いません。これらの成功は、実GitHub commitの製品E2E成功ではありません。
 
 当初のソース候補ではv12.1のテスト入力を合成化しました。今回、末尾の共通適用条件・fixture契約も追加しています。commit-snapshot.test.cjsとgs250-oracle.test.cjsを調整し、test-support/synthetic-tool.cjsを追加しました。実DBに依存する7テストファイルは今回の最小候補から除外しています。除外名と原版hashはsource-manifest.jsonに記録しています。
 
@@ -60,6 +60,14 @@ mainlineは製品基準のまま保ち、最新の正本を基点に専用作業
 
 `harness/fixture-applicability.cjs`は武器・属性・技・成分・発動条件の根拠を別々に記録します。出典付きの明示的対象外、製品の未採用範囲、fixtureの前提不足を混同しません。未確認の技や成分を数値変化だけで適用済みにはしません。耐性変換のfixtureは元DBの可視・正属性値の行を決定的に選び、副スキルを保持し、一致する行がなければ停止します。既存scanの除外や結果ステータスは変更しません。
 
-公開ソースのみのCIは `npm test` で7ファイル・23テストを実行します。非公開固定データの復元後に限り `node --test harness/fixture-applicability-data.cjs` で別の2テストを実行できます。後者はDBを必要とする計画整合検査であり、CIでスキップした成功として数えません。入力がない場合は失敗します。実製品の再実行は従来の隔離ランナーを使用してください。
+公開ソースのみのCIは `npm test` で8ファイル・47テストを実行します。非公開固定データの復元後に限り `node --test harness/fixture-applicability-data.cjs` で別の2テストを実行できます。後者はDBを必要とする計画整合検査であり、CIでスキップした成功として数えません。入力がない場合は失敗します。実製品の再実行は従来の隔離ランナーを使用してください。
 
 この変更は共通のテスト機構の整備です。旧130未算出の解消、他スキル族への条件実装、ゲーム内発動や数値正当性の検証を意味しません。元の199明示除外を維持し、耐性変換の26属性不足と重複する12水属性・武器範囲未採用を区別するための追加情報です。
+
+## Current GL guard diagnosis
+
+The current shell-component reasons may change after a product guard is resolved. `gl-guard-diagnosis.cjs` classifies only a bound current scan whose normal and maximum channels both report unavailable SHELLING components with the same nonempty, unique `GL_TARGET:UNREVIEWED_MODIFIER:` names. Every name must match an observed positive skill grant; bonus identity is recorded separately to distinguish target and coactivated modifiers. Additional unknown guards, malformed names, missing grants, contradictory bonus identity/levels, duplicate component IDs within a channel and inconsistent channels remain unresolved.
+
+The diagnosis records current run ID, product SHA, component IDs and literal reasons. It does not reuse historical modifier lists, approve modifier effects, change product behavior, or prove activation/numerical correctness. Current evidence and historical fixture equality are separate fields. Historical GL classification cannot override a failed current guard check. Existing independently matched non-GL diagnoses, including conversion scope with an additional GL guard, retain their previous policy.
+
+The fixture-free `npm test` suite now has 47 tests (24 GL parser/control tests plus the prior 23). The private historical evidence is still required to execute the complete diagnostic report, as before. Run diagnostics against a copy of a completed current `skill-scan.json` in a new output directory, with `TEST_TOOL_ROOT` pointing to its parent. Never replace the scan with historical data or overwrite an earlier report to make it look current.
