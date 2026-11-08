@@ -1,3 +1,39 @@
+# Bounded SA and CB Charge Master extension (2026-11-08)
+
+Public product base: 3c9e89be0e498e657071618e03c4dff63b49fa26. The exact reviewed adapter adds two independently bounded zero-element/status Charge Master no-op routes. No new damage coefficient is introduced.
+
+- Switch Axe: only the exact non-awakened power-phial mode-only body sequence. Unknown element, status/element/exhaust phials, awakened attacks, alternate state stats and unreviewed/generated components remain gated. The existing physical power-phial producer is unchanged.
+- Charge Blade: only the adopted impact-phial R/H release routes, with separate initial resources, validated body/axe-followup/phial producers and zero element in both channels. Charged sword, POWER_ELEMENT, unverified resources, producer changes and malformed records remain gated.
+- The current source memo's ED2 description differs from the adopted provisional body values, counts and resources. This extension preserves the existing producer; it does not adopt the memo's numbers or establish gameplay accuracy, equipment legality, rounding, time or DPS.
+
+The shared conditional expression is explicitly composed in SA/CB order. Both reviewed predicate bodies and the SA applicability annotation are unchanged. Existing body-only and all prior component guards are retained. The legacy extracted body predicate still passes all 92 assertions.
+
+## Fixture-free checks
+
+The dedicated workflow retains all previous tests and adds tests/charge-master-sa-cb-scope.test.cjs: two test entries with 152 SA and 281 CB synthetic assertions. These execute extracted production predicates. CB canonical, engine and resource providers, and the SA power-phial producer, are explicit doubles. These tests cover routing boundaries, not the real producers or game arithmetic. Separate full-adapter tests below execute real producers.
+
+    node --test tests/charge-master-sa-cb-scope.test.cjs tests/charge-master-noelement-scope.test.cjs
+
+The paired offline product suites remain red: base 885 tests / 762 pass / 123 fail; candidate 887 / 764 / 123. All 123 failure names are unchanged. The product CI job remains unsuppressed. Its locked dependency installation is retained; test execution uses npm --offline --no-update-notifier --no-audit test. Local verification never installs or updates dependencies.
+
+## Portable full-adapter regression
+
+Use the same pinned historical snapshot and references documented below. No DB, saved builds, selected private case JSON, raw results, new private IDs or new private hashes are included. All selections, including preservation cases, are derived at run time from the existing pinned plan. The new public baseline is separately hash-bound; previous baselines and fixture/reference hashes are unchanged.
+
+    node tools/gl-component-regression/prepare.cjs --repo /path/to/repo --commit FULL_TARGET_SHA --snapshot /path/to/pinned/snapshot --references /path/to/pinned/references --output /path/to/new/prepared-run
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node /path/to/new/prepared-run/sa-cb.cjs
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node --test /path/to/new/prepared-run/sa-cb-integrity.test.cjs /path/to/new/prepared-run/sa-cb-freshness.test.cjs
+
+The new driver retains SA 113, CB 342, prior scopes 95 and all 2,357 previously calculated/retained-pending target cases. Intentional cross-weapon controls compare against the exact candidate with only the other predicate disabled in memory. This is a test-only control, not a production change or independent damage oracle. The earlier 96-case CM driver retains every entry. Its two intentional SA/CB gains prove the historical maximum channel was pending and compare both current channels against a fresh no-skill control. Other comparisons are unchanged. No test is silently dropped.
+
+Run every earlier regression, combined, scope and bounded driver and their integrity tests as documented below. The new driver invalidates its summary before dependency reads, requires a fresh run ID/output directory, successful child exits, exact report counts and matching adapter hashes, and rechecks all inputs at completion. Every new child also invalidates its report before verifier/dependency/fixture reads. Abrupt termination leaves a fresh RUNNING report, never a stale PASS. Forty new integrity/freshness entries cover altered modules/baseline/fixtures, coordinated adapter/manifest tampering, missing data, malformed dependencies, process failure, SIGKILL and stale/incomplete/wrong-count reports.
+
+The local runtime/test-support trees are partial checkouts, not full checkout validation. All required runtime objects and tracked test files are verified. Absent unrelated tree entries remain untouched in the Git tree.
+
+Publication must pass an independent package/tree review. A final remote-product-SHA-bound 44-runtime-input contract must then pass independent review before a fresh unchanged fixed-runner scan. Compare all 2,562 records against the public base and reviewed local combined scan. Expected outcome: exactly six gains, 2,303 calculated, 60 pending, 199 non-target, with all other entire records unchanged. The four known GS failures and historical CM fixture diagnostics remain findings (exit 2), not all-green results. Product, runner and private-data identities remain separate. Mainline, source DB, saved builds and fixed runner are unchanged.
+
+Historical sections below retain prior scopes and counts; this section describes the current package.
+
 # Bounded Pierce, Airborne and GL Thunder extension (2026-11-08)
 
 Public product base: abe5963fe445fe16a81675b8db97adfddec3cb90. This package preserves the exact independently reviewed adapter for three narrow changes:

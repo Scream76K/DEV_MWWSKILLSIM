@@ -21,15 +21,16 @@ const runtimeMaterial=contract.runtimeFiles.map(e=>{const bytes=fs.readFileSync(
 const baselineAdapter=git('show',contract.publicBaselineAdapter.commit+':hope-hammer-browser-adapter.js');assert.equal(hash(baselineAdapter),contract.publicBaselineAdapter.sha256,'Public baseline adapter mismatch');
 const scopeBaselineAdapter=git('show',contract.scopeBaselineAdapter.commit+':hope-hammer-browser-adapter.js');assert.equal(hash(scopeBaselineAdapter),contract.scopeBaselineAdapter.sha256,'Scope baseline adapter mismatch');
 const boundedBaselineAdapter=git('show',contract.boundedBaselineAdapter.commit+':hope-hammer-browser-adapter.js');assert.equal(hash(boundedBaselineAdapter),contract.boundedBaselineAdapter.sha256,'Bounded baseline adapter mismatch');
+const saCbBaselineAdapter=git('show',contract.saCbBaselineAdapter.commit+':hope-hammer-browser-adapter.js');assert.equal(hash(saCbBaselineAdapter),contract.saCbBaselineAdapter.sha256,'SA/CB baseline adapter mismatch');
 fs.mkdirSync(destination,{recursive:true});fs.mkdirSync(path.join(destination,'reference-pinned'));
 const write=(relative,bytes)=>{const file=path.join(destination,relative);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,bytes,{flag:'wx'});};
 // Copy only declared, verified bytes. Unlisted modules/fixtures never enter the runtime.
-write('baseline-adapter.js',baselineAdapter);write('scope-baseline-adapter.js',scopeBaselineAdapter);write('bounded-baseline-adapter.js',boundedBaselineAdapter);
+write('baseline-adapter.js',baselineAdapter);write('scope-baseline-adapter.js',scopeBaselineAdapter);write('bounded-baseline-adapter.js',boundedBaselineAdapter);write('sa-cb-baseline-adapter.js',saCbBaselineAdapter);
 for(const e of material)write('work/input/'+e.path,e.bytes);
 for(const e of harnessMaterial)write('work/harness/'+e.path,e.bytes);
 for(const e of runtimeMaterial)write(e.destination,e.bytes);
 for(const e of contract.referenceFiles)fs.copyFileSync(path.join(refs,e.path),path.join(destination,'reference-pinned',e.path));
-for(const f of ['failure-injection.test.cjs','portability.test.cjs','preflight-integrity.test.cjs','input-integrity.test.cjs','combined-integrity.test.cjs','scope-integrity.test.cjs','bounded-integrity.test.cjs','fixtures-contract.json'])fs.copyFileSync(path.join(__dirname,f),path.join(destination,f));
+for(const f of ['failure-injection.test.cjs','portability.test.cjs','preflight-integrity.test.cjs','input-integrity.test.cjs','combined-integrity.test.cjs','scope-integrity.test.cjs','bounded-integrity.test.cjs','sa-cb-integrity.test.cjs','sa-cb-freshness.test.cjs','fixtures-contract.json'])fs.copyFileSync(path.join(__dirname,f),path.join(destination,f));
 write('work/harness/expected-inputs.json',JSON.stringify(material.map(({bytes,...e})=>e),null,2)+'\n');
 fs.writeFileSync(path.join(destination,'preparation.json'),JSON.stringify({sourceCommit:o['--commit'],productBaseline:contract.productBaseline,privateDataCommit:contract.privateDataCommit,sourceKind:'EXACT_GIT_OBJECTS_WITH_PINNED_FIXTURES',files:material.map(({bytes,...e})=>e)},null,2)+'\n');
 console.log(JSON.stringify({status:'PREPARED_NOT_EXECUTED',sourceCommit:o['--commit'],output:destination}));

@@ -189,7 +189,7 @@
       "sha256": "843849ff1014002be9ffb74e43ae5b60bd2c3974dbdfdf5b1a6940d9dea95888"
     }
   ],
-  "candidateAdapterSha256": "ea1b7f51a3e041594afbab4a26570f9384417836a0786fdb2d6173735bc2d971",
+  "candidateAdapterSha256": "9456ad4f1d4e35e3220a1e3c9461eea65c9ce5f383cb178d246e94b3afb1b0f5",
   "referenceFiles": [
     {
       "path": "gl-affinity-original-10-1-gunlance.json",
@@ -412,7 +412,7 @@
     {
       "source": "charge-master.cjs",
       "destination": "charge-master.cjs",
-      "sha256": "b4e7789669680c2f91d6904d20a9cada3f9aa66f3ef3fe56b5dec8aa7a098bb8"
+      "sha256": "89e90d25ebd7d586b383eddbfbbf5dd3c3243e5593e8eaff55e3c1b5edb8554a"
     },
     {
       "source": "bonus-runtime.cjs",
@@ -432,7 +432,7 @@
     {
       "source": "verify-combined.cjs",
       "destination": "verify-combined.cjs",
-      "sha256": "dbee306ca5868684094a56d1cf6b651fbca5dfa0812215bf1609e0dd46422426"
+      "sha256": "f8e6ed5fc90f1e42fddb07bb96637e9c6caa285ca4aeeeb48cd8d1eb40f04c78"
     },
     {
       "source": "combined.cjs",
@@ -518,6 +518,36 @@
       "source": "bounded.cjs",
       "destination": "bounded.cjs",
       "sha256": "04419e194f00e688c199cdfd757a4a9898ad313b9dd9af3e8cd3d5cc3def5b43"
+    },
+    {
+      "source": "sa-cb-plan.cjs",
+      "destination": "sa-cb-plan.cjs",
+      "sha256": "82ff695218749fcc8993635b8ae219de825978f3a4af2c0e9909a29c3ae5a04f"
+    },
+    {
+      "source": "sa-regression.cjs",
+      "destination": "sa-regression.cjs",
+      "sha256": "2ef3c0341818541f275628bf123231049baf15c998dc0efaa4399629afda76f0"
+    },
+    {
+      "source": "cb-regression.cjs",
+      "destination": "cb-regression.cjs",
+      "sha256": "aae3470f732150b2f6d874d680cc01cff7fdfcc123b36d0283c44d9009d16535"
+    },
+    {
+      "source": "sa-prior-scope-regression.cjs",
+      "destination": "sa-prior-scope-regression.cjs",
+      "sha256": "43ee78c22284d2124fcab1640a824278665b16d6874f4951e13f876e1ca35f18"
+    },
+    {
+      "source": "sa-full-preservation.cjs",
+      "destination": "sa-full-preservation.cjs",
+      "sha256": "d28d8a22fc06c430fff2bacf83453a2540beefe632a4faf241167764600efe64"
+    },
+    {
+      "source": "sa-cb.cjs",
+      "destination": "sa-cb.cjs",
+      "sha256": "9040f4a1e0887660b6a4d1fecf55b569ec842b64bb9df382da41a13f66982af9"
     }
   ],
   "publicBaselineAdapter": {
@@ -531,5 +561,9 @@
   "boundedBaselineAdapter": {
     "commit": "abe5963fe445fe16a81675b8db97adfddec3cb90",
     "sha256": "436d4cd955895ecb8936faf8d7a95bab7d09686b45f61dc2d2119dc3ce0b0422"
+  },
+  "saCbBaselineAdapter": {
+    "commit": "3c9e89be0e498e657071618e03c4dff63b49fa26",
+    "sha256": "ea1b7f51a3e041594afbab4a26570f9384417836a0786fdb2d6173735bc2d971"
   }
 }

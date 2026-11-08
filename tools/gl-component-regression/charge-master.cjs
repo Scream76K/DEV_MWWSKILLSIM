@@ -81,7 +81,7 @@ function record(key,fn){try{const detail=fn();report.cases.push({key,status:'PAS
  const cases=require('./charge-plan.cjs').makeChargePlan(JSON.parse(dbBytes),require('./work/harness/skill-sources/classification.candidate.json'),raw).cases;
  for(const previous of cases.filter(x=>x.caseType!=='ORIGINAL_UNRESOLVED_CHARGE_MASTER'||['hunting-horn','gunlance','switch-axe','charge-blade'].includes(x.kind)&&x.level===1)){
   const c=await setup(previous.kind,previous.weapon.id),baseline=c.calc(),active=c.calc([{name:'チャージマスター',level:1,type:'weapon'}]);
-  record('unchanged:'+previous.key,()=>{for(const ch of ['normal','maximum']){const old=clean(c.frozenAdapter.evaluateCurrent(c.input())).channels[ch],actual=active.channels[ch];assert.deepEqual(actual.metrics.comboTotalDamage,old.metrics.comboTotalDamage);assert.deepEqual(actual.execution,old.execution);assert.deepEqual(actual.components,old.components);}return {reason:active.channels.maximum.execution.reason??null};});
+  record('unchanged:'+previous.key,()=>{for(const ch of ['normal','maximum']){const prior=clean(c.frozenAdapter.evaluateCurrent(c.input())).channels[ch],intentional=['switch-axe','charge-blade'].includes(previous.kind),old=intentional?baseline.channels[ch]:prior,actual=active.channels[ch];if(intentional){if(ch==='maximum')assert.notEqual(prior.metrics.comboTotalDamage.status,'available');assert.equal(actual.metrics.comboTotalDamage.status,'available');}assert.deepEqual(actual.metrics.comboTotalDamage,old.metrics.comboTotalDamage);assert.deepEqual(actual.execution,old.execution);assert.deepEqual(actual.components,old.components);}return {reason:active.channels.maximum.execution.reason??null};});
   c.close();
  }
 

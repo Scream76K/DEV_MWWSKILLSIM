@@ -8,6 +8,7 @@ function verifyCombined(){
  assert.equal(hash(fs.readFileSync(path.join(__dirname,'baseline-adapter.js'))),contract.publicBaselineAdapter.sha256,'Public baseline adapter mismatch');
  assert.equal(hash(fs.readFileSync(path.join(__dirname,'scope-baseline-adapter.js'))),contract.scopeBaselineAdapter.sha256,'Scope baseline adapter mismatch');
  assert.equal(hash(fs.readFileSync(path.join(__dirname,'bounded-baseline-adapter.js'))),contract.boundedBaselineAdapter.sha256,'Bounded baseline adapter mismatch');
+ assert.equal(hash(fs.readFileSync(path.join(__dirname,'sa-cb-baseline-adapter.js'))),contract.saCbBaselineAdapter.sha256,'SA/CB baseline adapter mismatch');
  require('./verify-inputs.cjs').verifyPreparedInputs(path.join(__dirname,'work'),contract);
 }
 module.exports={verifyCombined};
