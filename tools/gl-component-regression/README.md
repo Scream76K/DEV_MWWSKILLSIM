@@ -1,3 +1,13 @@
+# Defensive-only extension (2026-11-08)
+
+Base product: e9661d502acc04849d0d4f647ac7083ea79cdc5b. Exact MHDB Defense118 ranks1–7 and Thunder Resistance156 ranks1–3 are excluded from fixed shell raw/fire modifiers only with canonical identities and no resistance conversion. MHDB descriptions at https://wilds.mhdb.io/ja/skills/118 and https://wilds.mhdb.io/ja/skills/156 define defense/resistance effects. No coefficients or body calculations change. Conversion combinations remain fail-closed.
+
+Current regression runs41 cases: original33 + existing4 controls + four conversion negatives. Expected22 original available and11 blocked; seven newly available cases must match no-skill damage in both channels for all components. The four conversion negatives check channel unavailability and retained component/scope guards, not wrapper status. tests/gl-shell-defensive-scope.test.cjs adds210 predicate boundary assertions.
+
+Keep runner8c2d4c3b2756f9ded881b957c1fb8282b24ca933 and private data a9b58416d6cff3441ea1ad7774670f6080d11921 separate from product SHA. Full scan requires a reviewed product-SHA-bound dependency contract. No game accuracy claim or mainline adoption.
+
+The fixture preparation, fresh-output and dependency-integrity requirements below remain unchanged. Historical15/18 and37 counts below describe the earlier affinity-only candidate, not current expected counts.
+
 # GL affinity component regression
 
 Product base: `6c3185201139ed7ec2251373a364c5cf966b4390` (mainline). This change only separates validated Weakness Exploit (57) and Latent Power (142) from fixed gunlance shell raw/fire modifiers. Cutting still uses the existing per-hit conditions; the ID99 rule and all other gates remain intact. It is an isolated branch for review, not a mainline release or verified game-accuracy claim.

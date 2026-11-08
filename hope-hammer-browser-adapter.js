@@ -227,7 +227,16 @@
     allSkills.filter(y=>Number(y.skillId)===id||CONDITIONAL_AFFINITY_SKILLS[y.name]?.id===id).length===1&&
     Number.isFinite(stats.affinity)&&Number.isFinite(stats.maxAffinity);
   };
-  const shellingInput={shellingState:gunlanceState,loadShellsLevel:loadShellEntries.length?Math.max(...loadShellEntries.map(x=>x.level)):0,artilleryLevel:artilleryEntries.length?Math.max(...artilleryEntries.map(x=>x.level)):0,normalAttackComponents:stats.attackComponents?{weaponBase:Number(stats.attackComponents.weaponBase),normalMultiplier:1,normalFlat:0}:null,unreviewedSkills:allSkills.filter(x=>!shellMightResolved(x)&&!shellAffinityOnlyResolved(x)&&![85,136].includes(Number(x.skillId))&&!(cornpopperEntries.length&&Number(x.skillId)===159)&&!(bladescaleEntries.length&&Number(x.skillId)===163)&&!fixedEntrySkill(x)&&!['selfState','handicraft','ballistics','attack','affinity','criticalBoost','conditionalAttack','shelling','slugger','fire','water','thunder','ice','dragon','normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].includes(x.skillKey)).map(x=>x.name)};
+  // MHDB 118/156 ranks change hunter defense/resistance, not shell raw/fire.
+  // Keep conversion combinations fail-closed; their component adoption is separate.
+  const shellDefensiveOnlyResolved=x=>{
+   const id=Number(x.skillId),rule={118:{name:'防御',key:'unknown',max:7},156:{name:'雷耐性',key:'thunderResistance',max:3}}[id];
+   if(!rule||x.name!==rule.name||x.skillKey!==rule.key||!Number.isInteger(x.level)||x.level<1||x.level>rule.max)return false;
+   if(allSkills.filter(y=>Number(y.skillId)===id||y.name===rule.name).length!==1)return false;
+   if(allSkills.some(y=>[165,181].includes(Number(y.skillId))||['resistanceConversionThunder','resistanceConversionWater'].includes(y.skillKey)||['耐性変換【雷】','Thunder Resistance Conversion','耐性変換【水】','Water Resistance Conversion'].includes(y.name)))return false;
+   return Number.isFinite(stats.defense);
+  };
+  const shellingInput={shellingState:gunlanceState,loadShellsLevel:loadShellEntries.length?Math.max(...loadShellEntries.map(x=>x.level)):0,artilleryLevel:artilleryEntries.length?Math.max(...artilleryEntries.map(x=>x.level)):0,normalAttackComponents:stats.attackComponents?{weaponBase:Number(stats.attackComponents.weaponBase),normalMultiplier:1,normalFlat:0}:null,unreviewedSkills:allSkills.filter(x=>!shellMightResolved(x)&&!shellAffinityOnlyResolved(x)&&!shellDefensiveOnlyResolved(x)&&![85,136].includes(Number(x.skillId))&&!(cornpopperEntries.length&&Number(x.skillId)===159)&&!(bladescaleEntries.length&&Number(x.skillId)===163)&&!fixedEntrySkill(x)&&!['selfState','handicraft','ballistics','attack','affinity','criticalBoost','conditionalAttack','shelling','slugger','fire','water','thunder','ice','dragon','normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].includes(x.skillKey)).map(x=>x.name)};
   const rapidRequested=weapon.kind==='light-bowgun'&&resolvedTechniqueIds.some(id=>['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_3'].includes(id)),rapidShotRule=rapidRequested?techniqueDb.get('light-bowgun',resolvedTechniqueIds.find(id=>['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_3'].includes(id)))?.rapidRule:null;
   const rapidEntries=allSkills.filter(x=>Number(x.skillId)===23||x.name==='速射強化');
   if(rapidRequested){
