@@ -189,7 +189,7 @@
       "sha256": "843849ff1014002be9ffb74e43ae5b60bd2c3974dbdfdf5b1a6940d9dea95888"
     }
   ],
-  "candidateAdapterSha256": "fa0d61f0d0a9c46e3c9cfde5dd700a09845fbfdeee8a363a558f73d35ef31894",
+  "candidateAdapterSha256": "0ebeacd1bfb1572abb351577591387ac20f74f4e2fdf954f4324dec9ca1c306c",
   "referenceFiles": [
     {
       "path": "gl-affinity-original-10-1-gunlance.json",
@@ -392,7 +392,7 @@
     {
       "source": "regression.cjs",
       "destination": "regression.cjs",
-      "sha256": "6d0d6ff877bcf04374da47c0656741c67fe3c27fc506920d423e08401067d1d5"
+      "sha256": "f70bac19b8cc18e9775d79d9af74d3f6d482ef3edd6920e04f2ad348ef07d7ab"
     },
     {
       "source": "run-fresh-case.cjs",
@@ -403,6 +403,45 @@
       "source": "verify-inputs.cjs",
       "destination": "verify-inputs.cjs",
       "sha256": "1e7f24b0d50620d3e36112bde7493f9345a3dcbe2f07091805d8175e86c6114f"
+    },
+    {
+      "source": "charge-plan.cjs",
+      "destination": "charge-plan.cjs",
+      "sha256": "6f99ba3c9aebdde75d36e7233e63975f4eed8a507714477f5df8b7748fad0178"
+    },
+    {
+      "source": "charge-master.cjs",
+      "destination": "charge-master.cjs",
+      "sha256": "b4e7789669680c2f91d6904d20a9cada3f9aa66f3ef3fe56b5dec8aa7a098bb8"
+    },
+    {
+      "source": "bonus-runtime.cjs",
+      "destination": "bonus-runtime.cjs",
+      "sha256": "93214cb27a0014045eb54fe6dab79610777d9f1fc76383da8e5937e6d5662b49"
+    },
+    {
+      "source": "gl-bonus-full.test.cjs",
+      "destination": "gl-bonus-full.test.cjs",
+      "sha256": "7a900015bb021a1dba2a2ac3a381e80d91711ef72b11384692ec7a3c2bf7fdfa"
+    },
+    {
+      "source": "gl-bonus-predicate.test.cjs",
+      "destination": "gl-bonus-predicate.test.cjs",
+      "sha256": "e4eedd6adcf026987240845a055948f37b7182513f4f4b93aa8ac555ebb0486d"
+    },
+    {
+      "source": "verify-combined.cjs",
+      "destination": "verify-combined.cjs",
+      "sha256": "290c1aa98c7ba48a0a43388a5846b94bef4d4fc1cbf24cd5b9322213c089e8f1"
+    },
+    {
+      "source": "combined.cjs",
+      "destination": "combined.cjs",
+      "sha256": "10e45d00ada172e5a85429391793eb841eaccb3e7e9800c16137266fe10f2d37"
     }
-  ]
+  ],
+  "publicBaselineAdapter": {
+    "commit": "5b2c4d4dac550f7675d119db5a0b0abaaf5b764c",
+    "sha256": "fa0d61f0d0a9c46e3c9cfde5dd700a09845fbfdeee8a363a558f73d35ef31894"
+  }
 }

@@ -1,3 +1,34 @@
+# Bounded Charge Master and GL bonus extension (2026-11-08)
+
+Base product: 5b2c4d4dac550f7675d119db5a0b0abaaf5b764c. The product adapter adds only two reviewed boundaries: Charge Master is non-applicable to proven zero-element/status ordinary body routes for Long Sword, Sword & Shield, Dual Blades and Lance; validated Sliding Power and Guardian Veil activations do not modify fixed shell damage. Identity, activation, state, conversion and unsupported-route gates remain fail-closed. This is not general skill adoption or verified game accuracy.
+
+Current GL integration expectations are 71 cases, with 31 original cases available and 2 still blocked. The only three newly available originals are skill 89 rank 1, skill 153 rank 2 and skill 155 rank 1. The last is a coactivated Veil I boundary, not adoption of skill 155. The original pinned fixture and 41 historical reference hashes are unchanged. The runtime hash contract binds every new integration module and the exact candidate adapter, independently of the generated input manifest.
+
+## Fixture-free checks and CI
+
+From the repository root, Node 24:
+
+    node --test tests/gl-shell-affinity-scope.test.cjs tests/gl-shell-defensive-scope.test.cjs tests/gl-shell-state-affinity-scope.test.cjs tests/gl-shell-bonus-scope.test.cjs tests/charge-master-noelement-scope.test.cjs tools/gl-component-regression/failure-injection.test.cjs
+
+The new synthetic unit inputs exercise 92 actual Charge Master predicate assertions and 106 actual bonus predicate assertions. The bonus unit test uses a stub only for the self-state producer: it is not full-adapter or formula verification. Separate integration below executes the real producer, DB and adapter. CI needs no private fixtures. The product-suite job runs npm test after npm ci --ignore-scripts; existing failures are not suppressed. Previous product-suite comparison was 755 pass / 123 fail, not green. The two new predicate files add two test entries.
+
+## Reproduce the fixture integration
+
+Use the same prepare command and pinned historical snapshot/references described below. Preparation also reads the baseline public adapter directly from the exact base Git commit and verifies its fixed public hash. No new private data hashes or reference-result bytes are added. New tests derive equipment selections from the existing pinned plan instead of embedding private selections.
+
+    node tools/gl-component-regression/prepare.cjs --repo /path/to/repo --commit FULL_TARGET_SHA --snapshot /path/to/pinned/snapshot --references /path/to/pinned/results --output /path/to/new/prepared-run
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node /path/to/new/prepared-run/regression.cjs
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node /path/to/new/prepared-run/combined.cjs
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node --test /path/to/new/prepared-run/failure-injection.test.cjs /path/to/new/prepared-run/portability.test.cjs /path/to/new/prepared-run/preflight-integrity.test.cjs /path/to/new/prepared-run/input-integrity.test.cjs /path/to/new/prepared-run/combined-integrity.test.cjs
+
+The first driver runs the 71 GL cases with fresh process output, run IDs and completion checks. The second runs all 96 Charge Master cases and 86 full-adapter GL negative scenarios, three newly available originals, a sliding-body arithmetic control and direct-predicate conversion/alias checks. Charge Master unchanged-route controls are now freshly evaluated against the hash-bound public baseline adapter, not copied from private historical result JSON. Both normal and maximum channels are checked. Fresh paired comparisons show preservation, not independently measured game accuracy.
+
+combined-summary.json is invalidated before any contract or fixture is loaded. Each run uses a fresh output directory; a zero child exit is required, and the 96-case report must carry the current run ID. New and previous tamper tests reject changed adapters plus regenerated manifests, missing fixtures/references, altered runtime modules and altered public baseline bytes. Never treat an old PASS or a fixture-free CI result as a full scan.
+
+Full-scan reporting must separately identify product commit, fixed runner 8c2d4c3b2756f9ded881b957c1fb8282b24ca933 and private input a9b58416d6cff3441ea1ad7774670f6080d11921. A final-product-SHA-bound, independently reviewed 44-file dependency contract and a fresh scan are still required. Nothing here changes mainline, saved application builds, pinned inputs or old result files.
+
+Historical sections below retain prior scopes and counts for provenance. The current 71-case / 96-case instructions above and fixed contract are authoritative for this candidate.
+
 # Conditional-affinity shell boundary extension (2026-11-08)
 
 Base product: a8c2f4f301559c0736f52eb9a3999a1261c0f0d3. Only exact MHDB Antivirus18 and Wet Blade Mark39 entries are separated from non-critical shell raw/fire modifiers. Existing state-aware cutting resolvers, coefficients and missing-state gates are unchanged. This is not general skill adoption or verified game accuracy.
