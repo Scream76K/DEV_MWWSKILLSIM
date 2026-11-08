@@ -24,10 +24,10 @@
     },
     {
       "path": "README.md",
-      "bytes": 5713,
-      "sha256": "95559d73b149cac5937cdf74041bea36811c407dded82c56bd0c9330c946e5a2",
+      "bytes": 6808,
+      "sha256": "627b38ba5fbb3df0c50fb0b2e2c1790cfec0fba7ecf0d157c820adf59fef0bc4",
       "upstreamSha256": "6f1b436fc1238d07ff8364d64a6d71549cbda8b7eea007c591094cc30efe33c2",
-      "source": "v12.1 test adapted to invented fixture"
+      "source": "source-only packaging; dependency setup corrected to suppress unused npm bin links"
     },
     {
       "path": "contracts/baseline.json",
@@ -729,7 +729,7 @@
       "files": 1800,
       "bytes": 20799555,
       "neededFor": "product modes using jsdom",
-      "recovery": "npm ci --prefix dependencies --omit=dev --ignore-scripts --no-audit --no-fund; lock pinned; fresh registry install not tested here; Linux Node 24.15+ in 24.x."
+      "recovery": "npm --prefix dependencies ci --omit=dev --ignore-scripts --no-audit --no-fund --no-bin-links; lock pinned; unused CLI links must not be created because snapshot guard rejects symlinks; rerun ci only in this dedicated dependency directory, then prepare a new snapshot. Fresh registry install of 36 production packages and prepare-only verified on Linux x64 / Node 24.22.1 on 2026-11-08 for source commit 5692cd3c3ae1a5a743d56b8c91995742cc1b729e; not full product correctness verification. Linux Node 24.15+ in 24.x."
     },
     {
       "path": "verification/",

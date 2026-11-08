@@ -24,11 +24,15 @@ source-manifest.jsonに必要ファイルのbytes、SHA256、用途、復元条�
 - normalized-data.json、raw-skills.json、classification.candidate.jsonは欠落しています。現在のAPIを再取得しても同じbytesになる保証はありません。固定captureの保管先・利用条件・対象ゲーム版を確認し、hash一致する入力を用意する必要があります。分類を自動承認しません。
 - extracted-converter.jsは製品からの重複コピーなので除外しています。converter-provenance.jsonの完全commit・行範囲を改行を保って連結し、最終SHA256一致を確認して復元します。固定ローカル基準bytesからの12範囲・最終hash再現は確認済みですが、GitHubからの独立取得を通した再生成は未実施です。
 - 過去診断データと固定oracle生成物も除外しています。現ランナーはこれらを要求します。derive_expected.pyはGS250の算術用の中間出力だけを作り、既存expected-values.jsonのラッパー・全oracle・過去診断を再現する完全buildではありません。全不足物の復元または別途レビューした除去・再生成手順が必要です。
-- 依存パッケージは固定package-lock.jsonから、Linux上で下記のように取得する設計です。今回はレジストリからの再取得を実施していません。依存の一部がNode 24.15以上を要求するため、元ランナーの24.13下限だけを頼りにしないでください。devDependencyのPlaywrightはこのハーネスでは使用しません。
+- 依存パッケージは固定package-lock.jsonから、Linux上で下記のように取得する設計です。2026-11-08に固定ソースcommit 5692cd3c3ae1a5a743d56b8c91995742cc1b729eを対象に、Linux x64 / Node 24.22.1で36個の本番依存のレジストリ再取得と下記コマンドによる準備成功を確認しました。依存の一部がNode 24.15以上を要求するため、元ランナーの24.13下限だけを頼りにしないでください。devDependencyのPlaywrightはこのハーネスでは使用しません。
 
 ```sh
-npm --prefix dependencies ci --omit=dev --ignore-scripts --no-audit --no-fund
+npm --prefix dependencies ci --omit=dev --ignore-scripts --no-audit --no-fund --no-bin-links
 ```
+
+`--no-bin-links`は必須です。通常の`npm ci`が作る`node_modules/.bin/specificity`等のsymlinkは、通常ファイルだけを受け付けるsnapshot guardで拒否されます。このハーネスは依存をNodeから読み込み、これらのCLIリンクは使用しません。依存の版・lockfile・symlink拒否ガードは変更せず、不要なリンクの生成だけを抑止します。
+
+既に通常のコマンドでインストールした場合も、このツール専用の`dependencies`に対して上記コマンドを再実行してください。`npm ci`はその配下の`node_modules`を作り直します。ほかのcheckoutや保存データでは実行しないでください。依存を再インストールした後は既存snapshotを使い回さず、新しい出力ディレクトリで準備からやり直します。準備成功は製品E2E成功を意味しません。
 
 DB等の利用・再配布条件は未確認です。GitHubへの同梱や新しいライセンス付与はしていません。source-manifest.jsonのhashは内容識別であり、ライセンス・ゲーム版・数値正当性の証明ではありません。
 
