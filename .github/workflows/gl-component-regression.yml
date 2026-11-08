@@ -12,6 +12,9 @@ on:
       - 'tests/charge-master-noelement-scope.test.cjs'
       - 'tests/conversion-zero-scope.test.cjs'
       - 'tests/partbreaker-body-scope.test.cjs'
+      - 'tests/pierce-nonapplication-scope.test.cjs'
+      - 'tests/airborne-body-scope.test.cjs'
+      - 'tests/gl-shell-thunder-scope.test.cjs'
       - 'tools/gl-component-regression/**'
       - '.github/workflows/gl-component-regression.yml'
 permissions:
@@ -25,7 +28,7 @@ jobs:
         with:
           node-version: '24'
       - name: Validate candidate component guards and runner failure handling
-        run: node --test tests/gl-shell-affinity-scope.test.cjs tests/gl-shell-defensive-scope.test.cjs tests/gl-shell-state-affinity-scope.test.cjs tests/gl-shell-bonus-scope.test.cjs tests/charge-master-noelement-scope.test.cjs tests/conversion-zero-scope.test.cjs tests/partbreaker-body-scope.test.cjs tools/gl-component-regression/failure-injection.test.cjs
+        run: node --test tests/gl-shell-affinity-scope.test.cjs tests/gl-shell-defensive-scope.test.cjs tests/gl-shell-state-affinity-scope.test.cjs tests/gl-shell-bonus-scope.test.cjs tests/charge-master-noelement-scope.test.cjs tests/conversion-zero-scope.test.cjs tests/partbreaker-body-scope.test.cjs tests/pierce-nonapplication-scope.test.cjs tests/airborne-body-scope.test.cjs tests/gl-shell-thunder-scope.test.cjs tools/gl-component-regression/failure-injection.test.cjs
   product-test-suite:
     runs-on: ubuntu-latest
     steps:

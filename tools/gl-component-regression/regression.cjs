@@ -20,7 +20,7 @@ try{
 for(const job of plan.cases){
  const filename='gl-affinity-'+job.key.replaceAll(':','-')+'.json';
  const {report:r,processExitCode,outputFile}=runFreshCase({harness:work+'/harness/gl-affinity.cjs',key:job.key,runId,outputDir});
- const remaining=job.blockedModifiers.filter(x=>!['弱点特効','力の解放','防御','雷耐性','無我の境地','濡れ刃紋','滑走強化','守護のヴェールⅠ','守護のヴェールⅡ'].includes(x));
+ const remaining=job.blockedModifiers.filter(x=>!['弱点特効','力の解放','防御','雷耐性','無我の境地','濡れ刃紋','滑走強化','守護のヴェールⅠ','守護のヴェールⅡ','蒼雷一閃Ⅰ','蒼雷一閃Ⅱ'].includes(x));
  for(const ch of ['normal','maximum']){
   const p=r.componentComparison[ch];
   if(job.sourceType==='STATE_BOUNDARY'){
@@ -54,7 +54,7 @@ for(const job of plan.cases){
  console.log('PASS '+job.key+' residual='+remaining.join('/'));
 }
 summary.counts={passed:summary.cases.length,originalResolved:summary.cases.filter(c=>c.key.startsWith('original:')&&!c.remainingBlockers.length).length,originalStillBlocked:summary.cases.filter(c=>c.key.startsWith('original:')&&c.remainingBlockers.length).length};
-assert.equal(summary.cases.length,71);assert.equal(summary.counts.originalResolved,31);assert.equal(summary.counts.originalStillBlocked,2);
+assert.equal(summary.cases.length,71);assert.equal(summary.counts.originalResolved,33);assert.equal(summary.counts.originalStillBlocked,0);
 summary.status='PASS';fs.writeFileSync(__dirname+'/regression-summary.json',JSON.stringify(summary,null,2));console.log(JSON.stringify(summary.counts));
 
 }catch(error){summary.status='FAIL';summary.error=error.stack;fs.writeFileSync(__dirname+'/regression-summary.json',JSON.stringify(summary,null,2));throw error;}

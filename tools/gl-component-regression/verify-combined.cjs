@@ -7,6 +7,7 @@ function verifyCombined(){
  for(const e of contract.referenceFiles)assert.equal(hash(fs.readFileSync(path.join(__dirname,'reference-pinned',e.path))),e.sha256,'Pinned reference mismatch: '+e.path);
  assert.equal(hash(fs.readFileSync(path.join(__dirname,'baseline-adapter.js'))),contract.publicBaselineAdapter.sha256,'Public baseline adapter mismatch');
  assert.equal(hash(fs.readFileSync(path.join(__dirname,'scope-baseline-adapter.js'))),contract.scopeBaselineAdapter.sha256,'Scope baseline adapter mismatch');
+ assert.equal(hash(fs.readFileSync(path.join(__dirname,'bounded-baseline-adapter.js'))),contract.boundedBaselineAdapter.sha256,'Bounded baseline adapter mismatch');
  require('./verify-inputs.cjs').verifyPreparedInputs(path.join(__dirname,'work'),contract);
 }
 module.exports={verifyCombined};

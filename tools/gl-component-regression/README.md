@@ -1,3 +1,42 @@
+# Bounded Pierce, Airborne and GL Thunder extension (2026-11-08)
+
+Public product base: abe5963fe445fe16a81675b8db97adfddec3cb90. This package preserves the exact independently reviewed adapter for three narrow changes:
+
+- Pierce Up is non-applicable only to the exact ordinary Bow sequence and the adopted elemental first-contact bowgun references. Actual Pierce/Dragon Piercer targets, alternate states, unknown records and malformed grants remain gated. The existing positive Thousand Dragons path is unchanged.
+- Airborne is non-applicable to three named ordinary Sword & Shield slash records only after validating the full selected body route. Jump, mounted, generated, wound/focus, reference and alternate-state records remain outside this extension. Existing positive Airborne mappings are unchanged.
+- GL Thunder bonus 162 no longer blocks fixed shell raw/fire when its identity, rank, policy, real armor count, conditional plan and affinity provenance all validate. The existing body result, including its +15 maximum-affinity contribution, is retained. The bounded path excludes Artia weapon-bonus counting. It is not support for every possible GL build.
+
+No new damage coefficient or event is introduced. Skill-generated FIXED/THUNDER additions remain excluded under the existing annotation-only policy. Existing UI wording can conflate policy-excluded extras with unresolved calculations; the UI is unchanged. Formal UNVERIFIED status, unavailable timing and game DPS, and the need for actual-game measurement remain. A calculated fixed-hit indicator is not verified gameplay accuracy.
+
+## Fixture-free checks and CI
+
+From the repository root with Node 24:
+
+    node --test tests/gl-shell-affinity-scope.test.cjs tests/gl-shell-defensive-scope.test.cjs tests/gl-shell-state-affinity-scope.test.cjs tests/gl-shell-bonus-scope.test.cjs tests/charge-master-noelement-scope.test.cjs tests/conversion-zero-scope.test.cjs tests/partbreaker-body-scope.test.cjs tests/pierce-nonapplication-scope.test.cjs tests/airborne-body-scope.test.cjs tests/gl-shell-thunder-scope.test.cjs tools/gl-component-regression/failure-injection.test.cjs
+
+The three new files add three node:test entries and 557 synthetic assertions: Pierce 226, Airborne 171 and GL Thunder 160. They exercise extracted production predicates against synthetic inputs. They do not load private fixtures and do not substitute for full-adapter integration or game measurements. The GL synthetic test uses explicit doubles for the armor DB, bonus readers, Artia detector, affinity producer and shell calculators. These verify boundary routing, not those producers or shell arithmetic. Full-adapter tests below separately use the real producers.
+
+The dedicated workflow retains every previous component test and the unsuppressed repository product suite. The public base has 882 tests: 759 pass and 123 fail. With three new passing entries, this candidate has 885 tests: 762 pass and the same 123 fail. The added predicate entries are reported separately; existing failures are not hidden or rewritten.
+
+## Portable full-adapter reproduction
+
+Use the same pinned snapshot and references described in the historical sections. New selections are derived at runtime from the existing pinned DB and published plan. No selected private case JSON, saved results, new private identifiers or new private hashes are published. The public base adapter is separately hash-bound without replacing either older public control.
+
+    node tools/gl-component-regression/prepare.cjs --repo /path/to/repo --commit FULL_TARGET_SHA --snapshot /path/to/pinned/snapshot --references /path/to/pinned/results --output /path/to/new/prepared-run
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node /path/to/new/prepared-run/bounded.cjs
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node /path/to/new/prepared-run/regression.cjs
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node /path/to/new/prepared-run/combined.cjs
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node /path/to/new/prepared-run/scope.cjs
+    NODE_PATH=/path/to/fixed/dependencies/node_modules node --test /path/to/new/prepared-run/failure-injection.test.cjs /path/to/new/prepared-run/portability.test.cjs /path/to/new/prepared-run/preflight-integrity.test.cjs /path/to/new/prepared-run/input-integrity.test.cjs /path/to/new/prepared-run/combined-integrity.test.cjs /path/to/new/prepared-run/scope-integrity.test.cjs /path/to/new/prepared-run/bounded-integrity.test.cjs
+
+The bounded driver runs 210 Pierce cases, 135 Airborne cases and 68 coexistence cases. It also runs eight GL integration test entries, including 143 malformed activations and a fresh comparison of all 71 GL cases. Exactly two original GL records change from unavailable to available; all other GL channels remain equal to the public base. The earlier 71-case driver remains, with 33 original records available and zero blocked. Earlier CM, bonus, conversion and Partbreaker tests are retained.
+
+Coexistence controls use the exact candidate with only the other nonapplication predicate disabled in memory. They are test-only controls, not separate production adapters. The real candidate remains hash-bound. Ordinary skill controls and retained pending/unsupported routes are checked in both channels. GL tests use actual calcBuild/condition producers and explicit shell state; predicate-only checks document their synthetic dependencies separately.
+
+The bounded driver invalidates its summary before any dependency is loaded, creates a fresh UUID and output directory, requires zero child exits and exact case counts, then rechecks all inputs. New integrity tests cover every new runtime module and public baseline, missing fixtures/references, and simultaneous adapter/generated-manifest edits. No stale success may serve as current evidence.
+
+A full 2,562-record scan requires a separate independent review of the final product commit's 44-runtime-file contract and a fresh unchanged fixed-runner execution. Keep product SHA, runner SHA and private-data SHA separate. Do not edit the runner, historical expected findings, mainline or saved application builds. Historical sections below retain prior scopes and counts; this section describes the current package.
+
 # Isolated zero conversion and ordinary-body Partbreaker extension (2026-11-08)
 
 Product base: 398ac0149f86bf83bf102931d62f1bbb7868fc47. This extends only isolated zero-resistance conversion on known-coefficient ordinary body/Bow routes, and Partbreaker on six ordinary-body records across Sword & Shield, Hammer and Switch Axe. Thunder covers seven bounded weapon kinds; water remains restricted to Long Sword and Bow. Co-skills, equipped armor, resistance producers, unsupported coefficients, alternate states and generated/focus/wound routes do not inherit the isolated zero branch. No new gameplay coefficient is adopted. Numeric game accuracy and real-browser behavior remain unverified.

@@ -189,7 +189,7 @@
       "sha256": "843849ff1014002be9ffb74e43ae5b60bd2c3974dbdfdf5b1a6940d9dea95888"
     }
   ],
-  "candidateAdapterSha256": "436d4cd955895ecb8936faf8d7a95bab7d09686b45f61dc2d2119dc3ce0b0422",
+  "candidateAdapterSha256": "ea1b7f51a3e041594afbab4a26570f9384417836a0786fdb2d6173735bc2d971",
   "referenceFiles": [
     {
       "path": "gl-affinity-original-10-1-gunlance.json",
@@ -392,7 +392,7 @@
     {
       "source": "regression.cjs",
       "destination": "regression.cjs",
-      "sha256": "f70bac19b8cc18e9775d79d9af74d3f6d482ef3edd6920e04f2ad348ef07d7ab"
+      "sha256": "62834f7dce5613ee2cde4b6e5b5181d737cccbde20fbb1e84876cd070abfe238"
     },
     {
       "source": "run-fresh-case.cjs",
@@ -432,7 +432,7 @@
     {
       "source": "verify-combined.cjs",
       "destination": "verify-combined.cjs",
-      "sha256": "1bbf4719cafcbbf2d91dff8514b3e53bedbf193d38c4c17bcc6aa71a35368065"
+      "sha256": "dbee306ca5868684094a56d1cf6b651fbca5dfa0812215bf1609e0dd46422426"
     },
     {
       "source": "combined.cjs",
@@ -473,6 +473,51 @@
       "source": "scope.cjs",
       "destination": "scope.cjs",
       "sha256": "23966cf37b0ff1fca41ddf8ab00624d3634ccc93981aaca3ed56e0d16e98a570"
+    },
+    {
+      "source": "bounded-plan.cjs",
+      "destination": "bounded-plan.cjs",
+      "sha256": "a8fc4b51a4ed590f35e83782623380f78569aa1c72b980a1a28650c3e7bc0727"
+    },
+    {
+      "source": "pierce.cjs",
+      "destination": "pierce.cjs",
+      "sha256": "5d63ad95a5c4493f6fb0236738c5ffbd981d62bd4e93fe41b59d5ca24fac8681"
+    },
+    {
+      "source": "airborne.cjs",
+      "destination": "airborne.cjs",
+      "sha256": "c714cbc5c7b00f17f047c5db1c812af04750b87de924ffbe5c91cc07c0f6b760"
+    },
+    {
+      "source": "bounded-coexistence.cjs",
+      "destination": "bounded-coexistence.cjs",
+      "sha256": "268def10f6996cd5b47937b83cabdef124b6436aa53bacef64cfe1a6a9777b67"
+    },
+    {
+      "source": "thunder-runtime.cjs",
+      "destination": "thunder-runtime.cjs",
+      "sha256": "bb463bc7a38d375cc9d6ecd632e969f6b7386b7da658f981bd7f705e91942855"
+    },
+    {
+      "source": "gl-thunder-full.test.cjs",
+      "destination": "gl-thunder-full.test.cjs",
+      "sha256": "ea59fa3f1b34081301a10e78f197240892495fa62562c845a3c13d5e3afbbebd"
+    },
+    {
+      "source": "gl-thunder-predicate.test.cjs",
+      "destination": "gl-thunder-predicate.test.cjs",
+      "sha256": "9d71b60e53e948a87a9d77e8a46f5a1e3727c035ca08c5fdadba207a72588c41"
+    },
+    {
+      "source": "regression-71.test.cjs",
+      "destination": "regression-71.test.cjs",
+      "sha256": "e2240f4d145f697c1588d628b21a99aa1e936e5d46b62e9aec2508257c9621d1"
+    },
+    {
+      "source": "bounded.cjs",
+      "destination": "bounded.cjs",
+      "sha256": "04419e194f00e688c199cdfd757a4a9898ad313b9dd9af3e8cd3d5cc3def5b43"
     }
   ],
   "publicBaselineAdapter": {
@@ -482,5 +527,9 @@
   "scopeBaselineAdapter": {
     "commit": "398ac0149f86bf83bf102931d62f1bbb7868fc47",
     "sha256": "0ebeacd1bfb1572abb351577591387ac20f74f4e2fdf954f4324dec9ca1c306c"
+  },
+  "boundedBaselineAdapter": {
+    "commit": "abe5963fe445fe16a81675b8db97adfddec3cb90",
+    "sha256": "436d4cd955895ecb8936faf8d7a95bab7d09686b45f61dc2d2119dc3ce0b0422"
   }
 }
