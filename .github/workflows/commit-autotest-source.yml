@@ -53,12 +53,6 @@ jobs:
             'This does not execute product E2E or validate DB/game accuracy.' \
             >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Run six source test files
+      - name: Run source-only unit tests
         run: |
-          node --test \
-            harness/batch-summary.test.cjs \
-            harness/commit-snapshot.test.cjs \
-            harness/current-evidence.test.cjs \
-            harness/gs250-oracle.test.cjs \
-            harness/script-coverage.test.cjs \
-            harness/skill-contrast.test.cjs
+          npm test

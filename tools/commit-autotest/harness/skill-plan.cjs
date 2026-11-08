@@ -1,5 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict');
+const {assessFixture}=require('./fixture-applicability.cjs');
 const kinds=['great-sword','long-sword','sword-shield','dual-blades','hammer','hunting-horn','lance','gunlance','switch-axe','charge-blade','insect-glaive','light-bowgun','heavy-bowgun','bow'];
 // Only explicit weapon names in the supplied original skill description narrow this list.
 // This is not a game-condition oracle or an inference from missing output changes.
@@ -23,7 +24,8 @@ function makePlan(classification,raw,database){
    for(const kind of kinds){
     const allowed=explicitKinds[c.id];
     const applies=allowed?!allowed.includes(kind)?'NON_TARGET_WEAPON_BY_EXPLICIT_SOURCE':'WEAPON_KIND_ALLOWED_TRIGGER_UNVERIFIED':'WEAPON_AND_TRIGGER_APPLICABILITY_UNVERIFIED';
-    jobs.push({key:c.id+':'+rank.level+':'+kind,skillId:c.id,name:c.name,skillKind:c.kind,rankId:rank.id,level:rank.level,kind,requiredPieces:rank.setPiecesRequired,applicability:applies,applicabilityReason:allowed?'Original description explicitly names weapon types; relevant move/ammo/state still must be established.':'No exhaustive weapon/state applicability rule was independently established. Numeric output must not imply effect activation.',equipmentRoute:['set','group'].includes(c.kind)?'REAL_DATABASE_ARMOR_PIECES':'SYNTHETIC_SINGLE_SKILL_CUSTOM_CHARM',equipmentLegality:'UNVERIFIED_NOT_A_COMPLETE_LEGAL_BUILD'});
+    const fixtureApplicability=assessFixture({nonTarget:applies==='NON_TARGET_WEAPON_BY_EXPLICIT_SOURCE'?{source:'MHDB raw-skills.json:'+original.id,reason:original.description}:null});
+    jobs.push({fixtureApplicability,key:c.id+':'+rank.level+':'+kind,skillId:c.id,name:c.name,skillKind:c.kind,rankId:rank.id,level:rank.level,kind,requiredPieces:rank.setPiecesRequired,applicability:applies,applicabilityReason:allowed?'Original description explicitly names weapon types; relevant move/ammo/state still must be established.':'No exhaustive weapon/state applicability rule was independently established. Numeric output must not imply effect activation.',equipmentRoute:['set','group'].includes(c.kind)?'REAL_DATABASE_ARMOR_PIECES':'SYNTHETIC_SINGLE_SKILL_CUSTOM_CHARM',equipmentLegality:'UNVERIFIED_NOT_A_COMPLETE_LEGAL_BUILD'});
    }
   }
  }

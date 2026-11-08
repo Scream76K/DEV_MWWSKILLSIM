@@ -1,5 +1,6 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),{isDeepStrictEqual}=require('node:util');
+const {assessFixture}=require('./fixture-applicability.cjs');
 const prior=require('./diagnostic-sources/v7-uncalculated-classification.json');
 const base='https://github.com/Scream76K/DEV_MWWSKILLSIM/blob/5f1f733fc00c770073704c699ea7c2641a8bc9fb/';
 const rules={
@@ -25,7 +26,8 @@ function annotate(c){
  const family=original.primaryRootCauseFamily,rule=rules[family];
  const waterOutside=c.skillId===181&&!['long-sword','bow'].includes(c.kind);
  const missingElement=[165,181].includes(c.skillId)&&c.stats.elementType!==(c.skillId===165?'thunder':'water');
- return {status:'CAUSE_AND_CONDITIONS_CLASSIFIED_NOT_A_PROVEN_BUG',defectProven:false,skillEffectValidated:false,reasons:actualReasons,primaryCause:family,additionalCauses:original.additionalRootCauseFamilies,observedAttribution:original.observedAttribution,attributionLabel:original.attributionLabel,reason:rule.reason,requiredConditions:rule.conditions,source:base+rule.source,sourceRunId:prior.sourceRunId,fixtureEvidenceMatched:true,matchingElementMissing:missingElement,waterWeaponOutsideCurrentAdoption:waterOutside,applicabilityStatus:waterOutside?'OUTSIDE_CURRENT_ADOPTED_SCOPE_GAME_APPLICABILITY_UNVERIFIED':missingElement?'SELECTED_FIXTURE_MISSING_ELEMENT_PREREQUISITE':'IMPLEMENTATION_SCOPE_OR_STATE_UNRESOLVED',gunlanceBlockedModifiers:original.gunlanceBlockedModifiers,otherBlockersMayBeHidden:true};
+ const fixtureApplicability=assessFixture({dimensions:missingElement?{element:{status:'MISSING',value:c.stats.elementType,source:'matched scan '+c.key}}:{},productSupport:waterOutside?{status:'UNSUPPORTED',source:base+'index.html#L7918'}:{}});
+ return {fixtureApplicability,status:'CAUSE_AND_CONDITIONS_CLASSIFIED_NOT_A_PROVEN_BUG',defectProven:false,skillEffectValidated:false,reasons:actualReasons,primaryCause:family,additionalCauses:original.additionalRootCauseFamilies,observedAttribution:original.observedAttribution,attributionLabel:original.attributionLabel,reason:rule.reason,requiredConditions:rule.conditions,source:base+rule.source,sourceRunId:prior.sourceRunId,fixtureEvidenceMatched:true,matchingElementMissing:missingElement,waterWeaponOutsideCurrentAdoption:waterOutside,applicabilityStatus:waterOutside?'OUTSIDE_CURRENT_ADOPTED_SCOPE_GAME_APPLICABILITY_UNVERIFIED':missingElement?'SELECTED_FIXTURE_MISSING_ELEMENT_PREREQUISITE':'IMPLEMENTATION_SCOPE_OR_STATE_UNRESOLVED',gunlanceBlockedModifiers:original.gunlanceBlockedModifiers,otherBlockersMayBeHidden:true};
 }
 function makeReport(scan){
  const cases=scan.cases.filter(c=>c.status==='PRODUCT_UNAVAILABLE_OR_INCOMPLETE').map(c=>({key:c.key,skillId:c.skillId,name:c.name,level:c.level,kind:c.kind,originalStatus:c.status,observedStats:c.stats,diagnosis:annotate(c)}));
