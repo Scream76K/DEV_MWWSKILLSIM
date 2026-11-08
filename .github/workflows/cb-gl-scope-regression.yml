@@ -1,0 +1,25 @@
+name: CB ordinary H and GL noncharged boundaries
+on:
+  push:
+    branches: ['work/gl-component-affinity-*']
+  pull_request:
+    paths:
+      - 'hope-hammer-browser-adapter.js'
+      - 'tests/cb-h-ordinary-scope.test.cjs'
+      - 'tests/charge-master-gl-noncharged-scope.test.cjs'
+      - 'tools/cb-gl-scope-regression/**'
+      - '.github/workflows/cb-gl-scope-regression.yml'
+permissions:
+  contents: read
+jobs:
+  synthetic-boundaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify fixture-free boundaries with exact input hashes
+        run: node tools/cb-gl-scope-regression/run.cjs
+      - name: Verify freshness and failure handling
+        run: node --test tools/cb-gl-scope-regression/freshness.test.cjs
