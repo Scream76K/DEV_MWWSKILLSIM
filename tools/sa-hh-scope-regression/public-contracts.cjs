@@ -1,0 +1,53 @@
+'use strict';
+// Fixture-free tests: read only the public adapter and index.html. No MHDB,
+// selected equipment, browser captures, private reports, or damage oracle input.
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict'),crypto=require('node:crypto');
+const root=path.resolve(process.env.PRODUCT_ROOT||process.env.SA_HH_PRODUCT_ROOT||path.join(__dirname,'../..'));
+const adapter=fs.readFileSync(process.env.SA_HH_ADAPTER_FILE||path.join(root,'hope-hammer-browser-adapter.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const sha=s=>crypto.createHash('sha256').update(s).digest('hex');
+const clone=x=>structuredClone(x),plain=x=>JSON.parse(JSON.stringify(x));
+function freeze(x){if(x&&typeof x==='object'){Object.values(x).forEach(freeze);Object.freeze(x);}return x;}
+function line(text,marker){const rows=text.split('\n').filter(x=>x.trimStart().startsWith(marker));assert.equal(rows.length,1,'unique public production line: '+marker);return rows[0].trim();}
+function section(text,start,end){const a=text.indexOf(start),b=text.indexOf(end,a+start.length);assert.ok(a>=0&&b>a,'public production boundaries '+start+' / '+end);assert.equal(text.indexOf(start,a+start.length),-1,'unique start '+start);return text.slice(a,b);}
+// Execute the unmodified public Technique DB construction, not adapter validation
+// fingerprints. The two prefixed declarations are its public CB dependencies.
+const sourceProgram=[line(html,'const CHARGE_BLADE_SHIELD_AXE_BODY_MULTIPLIER='),line(html,'window.MHCBHRouteRule='),section(html,'const TECHNIQUE_DB_SPEC=','function techniqueDbGet('),line(html,'function techniqueDbGet('),section(html,'const HH_NORMAL_MELODY_MODEL=','window.TechniqueDBEngine='),line(html,'window.MHWeaponEffectDB='),'({get:techniqueDbGet,hhModel:HH_NORMAL_MELODY_MODEL,power:window.MHWeaponEffectDB.switchAxe.powerPhialSword})'].join('\n');
+const publicDb=vm.runInNewContext(sourceProgram,{window:{}},{timeout:2000});
+const saIds=['SA_SWORD_RIGHT_RISING','SA_SWORD_LEFT_RISING','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'];
+const hhIds=['HH_LEFT_SWING','HH_FORWARD_ATTACK','HH_SELF_IMPROVEMENT_PERFORMANCE','HH_ENCORE_JUST'];
+const specialIds=['HH_PERFORMANCE_SHOCKWAVE','HH_ECHO_BUBBLE_FOLLOWUP','HH_ECHO_BUBBLE_MELODY_EVENT','HH_MELODY_COMPLETION_FIXED_10'];
+const cmPending=['チャージマスター:CONDITIONAL_DAMAGE_FORMULA_PENDING','Charge Master:CONDITIONAL_DAMAGE_FORMULA_PENDING'];
+const element=()=>({element:0,elementType:'none',elementKnown:true,typeKnown:true,elementStatus:'CONFIRMED_NONE',elementComponents:{weaponBase:0,normalMultiplier:1,normalFlat:0},activeBonusEffects:[]});
+const plan=()=>({normal:element(),maximum:element(),maximumElementComponents:{weaponBase:0,normalMultiplier:1,normalFlat:0,conditionalFlat:0},applied:[],groupPlan:{applied:[]},selfStatePlan:{normal:[],maximum:[]},pending:[...cmPending,'SYNTHETIC_UNRELATED_PENDING']});
+const ordinary=line(adapter,'const STANDARD_NORMAL_HIT_CONTRACT=');
+const saProduction=[ordinary,section(adapter,'  const zeroConversionKinds=','  const waterEntries='),'({resolved:thunderZeroNoop,body:zeroConversionSaBody(),isolated:isolatedZeroConversion,scopeIssue:()=>{'+line(adapter,"if(!thunderAmmoScope&&((!thunderZeroNoop&&elementType!=='thunder')")+'return null;}})'].join('\n');
+const helpers=['const chargeIdentity=','const knownNoElement=','const zeroElementComponents=','const noAddedElement='].map(m=>line(adapter,m)).join('\n');
+const hhBranch=line(adapter,'if(hhChargeNoElementResolved&&Number(entry.skillId)===24)');
+assert.ok(adapter.indexOf(hhBranch)>adapter.indexOf('resolveSkillApplicability:entries=>entries.map(entry=>{'));
+assert.ok(adapter.indexOf(hhBranch)<adapter.indexOf("if(['normalUp','spreadUp','chargeMaster'"));
+const componentHook=line(adapter,'resolveComponentIssue:');
+const resultGuard=line(adapter,'if(hhChargeNoElementResolved&&Object.values(evaluated.channels||{}).some(');
+const hhProduction=[helpers,section(adapter,'  const hhChargeEqual=','  let conditionPlan='),line(adapter,'let conditionPlan='),'({resolved:hhChargeNoElementResolved,pending:conditionPlan.pending,apply:entries=>entries.map(entry=>{'+hhBranch+'return {unhandled:true,entry};}),componentValid:hhChargeComponentValid,resultValid:hhChargeResultValid,componentIssue:({'+componentHook+'}).resolveComponentIssue,guardResult:evaluated=>{'+resultGuard+'return {accepted:true};}})'].join('\n');
+function run(s,code){return vm.runInNewContext(code,{...s.c},{timeout:1000});}
+function saSynthetic(alias='耐性変換【雷】',level=1){
+ const resistance=()=>({status:'KNOWN_LIMITED',armorBase:0,total:0,reason:null,absorptionPlan:null,missing:[],contributions:[],rows:['head','chest','arms','waist','legs'].map(slot=>({slot,equipped:false,value:0,id:null}))});
+ const raw=Object.fromEntries(saIds.map(id=>[id,clone(publicDb.get('switch-axe',id))])),canonical=clone(raw);
+ const state={mode:'SWORD',awakened:false},stats=element(),p=plan();for(const x of [stats,p.normal,p.maximum])x.thunderResistanceInput=resistance();stats.conditionalConditionPlan=p;
+ const c={weapon:{kind:'switch-axe',phial:{kind:'power'},specials:[]},switchAxeState:state,conditions:{standardEvaluation:true,switchAxeState:clone(state),combatBuffs:{meal:null,charm:null,otherBuffs:null}},stats,rawSkills:[],buildSkills:[{skillId:165,name:alias,level}],resolvedTechniqueIds:[...saIds],techniques:{},techniqueDb:{get:(_kind,id)=>raw[id]},root:{TechniqueDBEngine:{get:(_kind,id)=>freeze(clone(canonical[id]))},MHWeaponEffectDB:{switchAxe:{powerPhialSword:freeze(clone(publicDb.power))}},MHWElementCapRule:{status:'OWNER_APPROVED_PROVISIONAL',flat:1,multiplier:1}},conversionComponentsSupported:true,bowState:null,dualBladesState:null,longSwordState:null,lanceState:null,thunderAmmoScope:false,elementType:'none'};
+ function generate(){for(const id of saIds){const r=clone(raw[id]);if(id.includes('MORPH')){r.stateRequirement=r.stateRequirement&&Object.keys(r.stateRequirement).length?r.stateRequirement:{mode:id==='SA_AXE_MORPH_SLASH'?'AXE':'SWORD'};r.hits=r.hits.map(h=>({...h,damageType:h.damageType??'slash',partModifier:h.partModifier,partModifierSource:h.partModifierSource??'MACARONGAMEMO_SWITCH_AXE_CURRENT;KUROYONHON_MEMO11_26'}));}c.techniques[id]=r;}}
+ generate();return {c,raw,canonical,generate};
+}
+function hhSynthetic(level=1,alias='チャージマスター'){
+ const raw=Object.fromEntries([...hhIds,...specialIds].map(id=>[id,clone(publicDb.get('hunting-horn',id))])),canonical=clone(raw);
+ const state={echoState:null,melodyState:null,model:'HH_NORMAL_MELODY_PROVISIONAL',melodies:['SELF_IMPROVEMENT'],echoBubbles:1,selfImprovementLevel:0,attackMelody:null,attackMelodyLevel:0},model=clone(publicDb.hhModel),entry={skillId:24,name:alias,level,skillKey:'chargeMaster'};
+ const c={weapon:{kind:'hunting-horn',phial:null,specials:[]},conditions:{standardEvaluation:true,mounted:false,huntingHornState:clone(state)},huntingHornState:state,hhModel:model,stats:element(),resolvedConditionPlan:plan(),chargeNoElementEntries:[entry],rawSkills:[],buildSkills:[clone(entry)],allSkills:[clone(entry)],attributeConversionLevel:0,resistanceConversionLevel:0,waterEntries:[],resolvedTechniqueIds:[...hhIds],techniqueId:hhIds[0],techniques:{},techniqueDb:{get:(_kind,id)=>raw[id]},root:{TechniqueDBEngine:{get:(_kind,id)=>canonical[id]}},gsChargeActive:false,bowChargeResolved:false,ammoChargeExcluded:false,chargeNoElementResolved:false,chargeSaNoElementResolved:false,cbChargeNoElementResolved:false,glChargeNonchargedResolved:false,contextAttackEntries:[],fail:reason=>({accepted:false,reason})};
+ function generate(){for(const id of hhIds){const r=clone(raw[id]);c.techniques[id]={...r,...(id===c.techniqueId?{hits:r.hits.map(h=>({...h,damageType:'blunt',partModifier:1,partModifierSource:r.evidenceRefs[0]}))}:{}),hhModel:{...model,action:model.techniques[id],input:state,specialRecords:Object.fromEntries(specialIds.map(k=>[k,raw[k]]))},...(id===c.techniqueId?{stateRequirement:{}}:{})};}}
+ generate();return {c,raw,canonical,generate};
+}
+const hhEvents={HH_LEFT_SWING:['HH_ECHO_BUBBLE_FOLLOWUP'],HH_FORWARD_ATTACK:['HH_ECHO_BUBBLE_FOLLOWUP'],HH_SELF_IMPROVEMENT_PERFORMANCE:['HH_PERFORMANCE_SHOCKWAVE','HH_ECHO_BUBBLE_MELODY_EVENT'],HH_ENCORE_JUST:['HH_ECHO_BUBBLE_MELODY_EVENT']};
+function components(s){const m=s.c.hhModel,adoption={status:m.status,verificationStatus:m.verificationStatus,source:m.source,approval:m.approval,scope:m.scope,updateOrder:m.updateOrder},build={element:0,elementType:'none',equipment:{elementComponents:{weaponBase:0,normalMultiplier:1,normalFlat:0}}},rows=[];
+ for(const id of hhIds){const r=s.raw[id];for(const [i,h] of r.hits.entries())rows.push({event:{techniqueId:id},build:clone(build),effects:[],component:{id:id+':physical:'+i,kind:'physical',unit:'MV',source:r.evidenceRefs[0],coefficient:h.mv,parameters:{partModifier:1,partModifierStatus:'RESOLVED',partModifierSource:r.evidenceRefs[0],shieldBoostAxeBody:false,elementModifier:h.elementModifier,damageType:'blunt',hitIndex:i,glComponent:null,glSharpnessOverride:null,excludedEffectIds:[],saHitMode:null,resourceContract:null,stateRequirement:null,damageStateTransition:null,damageStatsState:null,adoption:clone(adoption)}}});
+ for(const [i,key] of hhEvents[id].entries())rows.push({event:{techniqueId:id},build:clone(build),effects:[],component:{id:id+':reference:'+i,kind:'reference',unit:'REFERENCE',source:s.raw[key].evidenceRefs[0],coefficient:1,parameters:{hitIndex:i,referenceKind:'hunting-horn-model-event',hhRecord:clone(s.raw[key]),hhCount:1,adoption:clone(adoption),effectTargets:['physical','element'],effectStages:['attack','element']}}});}return rows;}
+function result(){const steps=['0:0','0:1','1:0','1:1','2:0','2:1','2:2','2:3','3:0','3:1','3:2','3:3'];const rows=[];for(const id of hhIds){for(const [i] of publicDb.get('hunting-horn',id).hits.entries())for(const kind of ['physical','element'])rows.push({id:id+':'+kind+':'+i,techniqueId:id,status:'available',value:kind==='element'?0:1});for(const [i,key] of hhEvents[id].entries())rows.push({id:id+':reference:'+i,techniqueId:id,status:'available',value:1,details:{element:0,fixed:0,trace:[{techniqueId:key,scenarioCount:1,element:0,fixed:0,formulaId:'HORN_SOUND_ATTACK_AND_ELEMENT'}]}});}return {metrics:{comboTotalDamage:{status:'available'}},execution:{status:'complete',expected:[...steps],executed:[...steps]},finalState:{huntingHorn:{selfImprovementLevel:2,attackMelodyLevel:0}},components:rows};}
+module.exports={root,adapter,html,sha,clone,plain,freeze,line,section,publicDb,saIds,hhIds,specialIds,cmPending,saProduction,hhProduction,run,saSynthetic,hhSynthetic,components,result};

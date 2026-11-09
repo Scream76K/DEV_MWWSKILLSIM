@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "scope": "SYNTHETIC_PREDICATE_ONLY",
+  "baselineCommit": "d3ce3cd1fed005e22fd8e5278da0be5f3b26b84e",
+  "adapterOnlyReviewedLocalCommit": "724e3d393538bf1ae0ee68b0a573d130eaae0fcc",
+  "numericGameAccuracyVerified": false,
+  "files": [
+    {
+      "path": "hope-hammer-browser-adapter.js",
+      "sha256": "9153a861129c7cb92c3cb90bf64b7674cb8a0843b2b703105ec892d6e30f2e10"
+    },
+    {
+      "path": "index.html",
+      "sha256": "fe937b4fd453756ba0b7cc9bf2642651ee18d5b399f68283110f36e118062a54"
+    },
+    {
+      "path": "tests/cb-h-ordinary-scope.test.cjs",
+      "sha256": "76c4d9432b6e64cd256d019e34c169845af837045eb9b07b66d46fbee02a69cf"
+    },
+    {
+      "path": "tests/charge-master-gl-noncharged-scope.test.cjs",
+      "sha256": "2c487f74a0030be02e67ae336334c4b80ce9b2b891b95271cd806c60da867acc"
+    },
+    {
+      "path": "tools/sa-hh-scope-regression/public-contracts.cjs",
+      "sha256": "72aecc9eb0418db1db14fcd905668a169c9dea509dd3089a8322cba259400f1c"
+    },
+    {
+      "path": "tools/sa-hh-scope-regression/sa-zero.test.cjs",
+      "sha256": "d7fd2fda4506f2140f0244c6e3231c6231795678f1a45db989e57a3f4d6d9cae"
+    },
+    {
+      "path": "tools/sa-hh-scope-regression/hh-zero.test.cjs",
+      "sha256": "e5b3662248144e2bd096cae53b152f5c9813b2da6f760bc37a30b5a4c7381e9f"
+    },
+    {
+      "path": "tools/sa-hh-scope-regression/run.cjs",
+      "sha256": "80af983bc2f1415e74fe82e8450932b0278fca85d8579a7f59fe41d8cbe95560"
+    },
+    {
+      "path": "tools/sa-hh-scope-regression/freshness.test.cjs",
+      "sha256": "0c86c95a6b736f66c1cd5de66887c4b9603ad1fc88c19618a8882a424ef68103"
+    }
+  ],
+  "tests": [
+    "tests/cb-h-ordinary-scope.test.cjs",
+    "tests/charge-master-gl-noncharged-scope.test.cjs",
+    "tools/sa-hh-scope-regression/sa-zero.test.cjs",
+    "tools/sa-hh-scope-regression/hh-zero.test.cjs"
+  ],
+  "expectedTests": 766
+}

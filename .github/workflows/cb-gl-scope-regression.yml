@@ -1,4 +1,4 @@
-name: CB ordinary H and GL noncharged boundaries
+name: CB GL SA HH bounded predicate contracts
 on:
   push:
     branches: ['work/gl-component-affinity-*']
@@ -8,6 +8,7 @@ on:
       - 'tests/cb-h-ordinary-scope.test.cjs'
       - 'tests/charge-master-gl-noncharged-scope.test.cjs'
       - 'tools/cb-gl-scope-regression/**'
+      - 'tools/sa-hh-scope-regression/**'
       - '.github/workflows/cb-gl-scope-regression.yml'
 permissions:
   contents: read
@@ -19,7 +20,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Verify fixture-free boundaries with exact input hashes
-        run: node tools/cb-gl-scope-regression/run.cjs
-      - name: Verify freshness and failure handling
+      - name: Verify current candidate boundaries with exact input hashes
+        run: node tools/sa-hh-scope-regression/run.cjs
+      - name: Verify inherited runner freshness and failure handling
         run: node --test tools/cb-gl-scope-regression/freshness.test.cjs
+
+      - name: Verify current runner freshness and failure handling
+        run: node --test tools/sa-hh-scope-regression/freshness.test.cjs
