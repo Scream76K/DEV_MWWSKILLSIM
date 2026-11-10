@@ -40,3 +40,5 @@ remote 59枝のうち、2枝と検証ソース統合で26枝は履歴包含を�
 `work/commit-autotest-v12-1`（`8c2d4c3b2756f9ded881b957c1fb8282b24ca933`）を同じ作業ブランチの履歴へ統合。追加62ファイルは全て元のblobと一致し、既存ファイルの上書きや製品変更はありません。`npm test --prefix tools/commit-autotest` は統合先で47件成功。固定DB・分類入力・oracleなどを別途必要とするsource-only保存であり、完全なE2E検証の再現を確認したものではありません。CIのpush対象はmainlineと旧検証枝、PR対象はmainlineです。
 
 `flamme/cb-pr1-other13-ui-baseline-20261104`（`5acc602cec0abd22e154b88e6079513494ce8d61`）の既存13武器smokeも保存しました。固定MHDB hashを照合し、統合先で13武器の通常/最大がavailable、例外0を確認。元の検証scriptは変更していません。CIには正本mainlineのpush/PRを追加しました。このsmoke自体は理由付き未算出も許すため、全件算出の必須ゲートではありません。古いUI数値へ固定するc84系の別版は現仕様と未照合なので上書きしていません。
+
+仕様の巻き戻りを防ぐ系譜と、旧kan108の未包含機能・検証の詳細は `INTEGRATION_LINEAGE.md` に記録しています。現行UI/保存/通常最大独立の42件と5幅Chromiumも成功しました。
