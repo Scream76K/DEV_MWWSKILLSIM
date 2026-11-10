@@ -2,11 +2,13 @@
 const fs = require('node:fs');
 const path = require('node:path');
 async function installLocalModules(page) {
-  await page.route('https://simulator.test/*.js', async route => {
+  await page.route('https://simulator.test/**/*.js', async route => {
     const url = new URL(route.request().url());
     const filename = path.basename(url.pathname);
-    const file = path.join(__dirname, '..', filename);
-    if (url.pathname !== '/' + filename || !fs.existsSync(file)) return route.abort();
+    // The delivered page also imports production scripts from ui/. Keep other paths blocked.
+    if (url.pathname !== '/' + filename && url.pathname !== '/ui/' + filename) return route.abort();
+    const file = path.join(__dirname, '..', url.pathname);
+    if (!fs.existsSync(file) || !fs.statSync(file).isFile()) return route.abort();
     return route.fulfill({contentType: 'text/javascript', body: fs.readFileSync(file, 'utf8')});
   });
 }

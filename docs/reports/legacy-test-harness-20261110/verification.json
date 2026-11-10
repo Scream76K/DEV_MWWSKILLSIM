@@ -1,0 +1,322 @@
+{
+  "version": "legacy-test-harness-20261110",
+  "baselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
+  "status": "LOCAL_REVIEWED_TEST_REPAIR_FULL_LEGACY_SUITES_STILL_FAIL",
+  "published": false,
+  "runtimeChanged": false,
+  "dbChanged": false,
+  "specChanged": false,
+  "numericExpectedValuesChanged": false,
+  "removedOrSkippedTests": 0,
+  "runtimeSha256": {
+    "index.html": "c3499eba8a8433525256967ffe6ca68587d8a6681c39cd214c2089d38d88dddb",
+    "hope-hammer-browser-adapter.js": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4",
+    "skill-effect-continuation.js": "62f077d4941380661da5a7e07448e244ed1ec1098d06a957000cdba4aad2cab3",
+    "skill-calculation-policy.js": "3ca0b86404597ea92d1e6a5e644ad0c26e170a2d97521395241e47bfd9fec9b4"
+  },
+  "suites": {
+    "official": {
+      "before": {
+        "tests": 1161,
+        "pass": 1038,
+        "fail": 123,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "after": {
+        "tests": 1224,
+        "pass": 1192,
+        "fail": 32,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "recoveredExistingFailures": 84,
+      "previousPassNowFails": 0,
+      "newlyDiscoveredOrAdded": 78,
+      "noLongerListedContainers": 15,
+      "baselineLogSha256": "afb655ee37abac1ccce2515fc84199dc98c2c5ae41f1e9fc8b8194405573064e",
+      "finalLogSha256": "54be12d4a0cb851c6b20337f7ab347b77fa9c5de7959aa89d5ad890cd4cba5fe"
+    },
+    "dom": {
+      "before": {
+        "tests": 510,
+        "pass": 322,
+        "fail": 188,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "after": {
+        "tests": 518,
+        "pass": 356,
+        "fail": 162,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "recoveredExistingFailures": 27,
+      "previousPassNowFails": 1,
+      "newlyDiscoveredOrAdded": 8,
+      "noLongerListedContainers": 0,
+      "baselineLogSha256": "d4f199b9eb08ea9f40363aad5dc15b52d79244a9b51f4a32c6eb43e78e2dac99",
+      "finalLogSha256": "6cf79e74ffb5829e86c0a62cbc5a423f81d38cb65c7832223a90ca11c4f5ea28"
+    },
+    "browser": {
+      "before": {
+        "tests": 88,
+        "pass": 18,
+        "fail": 70,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "after": {
+        "tests": 90,
+        "pass": 21,
+        "fail": 69,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "recoveredExistingFailures": 1,
+      "previousPassNowFails": 0,
+      "newlyDiscoveredOrAdded": 2,
+      "noLongerListedContainers": 0,
+      "baselineLogSha256": "1ea14c63b68e3ef02559855e4149d005d71eddbc3b2e71cfeea1a8256d14f5b5",
+      "finalLogSha256": "2314cc28a4898bfa8310d217f5e022da2107368bfd4172e6c67e2915d5a79023"
+    }
+  },
+  "coverageAccounting": {
+    "officialPreviouslyAbortingFiles": 15,
+    "officialPreviouslyHiddenAssertions": 72,
+    "newHelperAssertions": {
+      "official": 6,
+      "dom": 8,
+      "browser": 2
+    },
+    "previousPassNowFailExplanation": "The positive Wyvern fixture now reaches the empty manual fire-hitzone assertion. A real selected target supplies fire30 and produces187.29; the prior invalid fixture had stopped earlier. Runtime is unchanged; this is an exposed contract mismatch, not hidden as a product regression or silently accepted.",
+    "domFormerTargetFirstBlockers": {
+      "count": 53,
+      "progressedPastOriginalTargetGuard": 53,
+      "fullyPassing": 23,
+      "stillFailingLater": 30,
+      "source": "DOM worker failure-accounting.json; full aggregate independently reproduced"
+    }
+  },
+  "gates": {
+    "integration": {
+      "schemaVersion": 1,
+      "runId": "99f2b860-b447-48b8-b0ae-87ee34dc8cc4",
+      "status": "PASS",
+      "startedAt": "2026-11-10T14:15:09.754Z",
+      "scope": "SYNTHETIC_INGRESS_AND_PREDICATE_ONLY",
+      "numericGameAccuracyVerified": false,
+      "contractSha256": "8488572d267059c4e7c2e4f17b0fa6242ab631562bbb5191da7b275d72dbefc7",
+      "runnerSha256": "d63033a8bb011387d5214aa4c3ce095dc28798dda1d9e366510f673fe8dfbd67",
+      "adapterSha256": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4",
+      "verifiedInputCount": 76,
+      "childRunId": "fe6610a4-319c-4250-8a50-0424ba61077e",
+      "childStdoutSha256": "af8f0d865d196a4ddeec76a98d9dd604a015ee13f7f23b11377adf540259bf52",
+      "childStderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "childExit": 0,
+      "childSignal": null,
+      "counts": {
+        "tests": 1500,
+        "passed": 1500,
+        "failed": 0,
+        "skipped": 0,
+        "cancelled": 0
+      },
+      "finishedAt": "2026-11-10T14:15:10.235Z"
+    },
+    "freshness": {
+      "tests": 94,
+      "pass": 94,
+      "fail": 0,
+      "logSha256": "df822dd97d172510ddb24fe0f611b01882717bb0327dfe66b80018ce7a3cb4a7"
+    },
+    "sourceOnly": {
+      "tests": 47,
+      "pass": 47,
+      "fail": 0,
+      "logSha256": "5a4d46b9e65ae646af890c0cad2600c25920a19d9ab9aa509607e1bd8bcc3dc0"
+    }
+  },
+  "testRepairFiles": [
+    {
+      "path": "tests/gl-artillery-normal.test.cjs",
+      "before": "a747d89b76fb9527324df65ddb53438e0ad77bd58ec207be4a1c8e51621333ab",
+      "after": "2d37bad901216c8b543f3b1ff435e7b6d4d092c9cac0ec9df0d1a908d02af5b0"
+    },
+    {
+      "path": "tests/kan19-artia-source.test.cjs",
+      "before": "1aad788635c145c84426fba5c4ea39a62b381a1af7e81770cd69af4fe72d0fd6",
+      "after": "99ae1a714bb8c77df087258c9d211e9d540e1ccc89b7b05ce1e3f6f985d5d5e8"
+    },
+    {
+      "path": "tests/r126-charge-blade-rapid-morph.test.cjs",
+      "before": "92cfc51a0d8ef87ee4d084a4a2bd93006da9bbc495eb020e8d0aaf10ef197ceb",
+      "after": "650630d1d3a8647e1ed11fd4b1123170accf997194301f3567b4ed976c4c7507"
+    },
+    {
+      "path": "tests/r204-build-affinity-level-guard.test.cjs",
+      "before": "5df4bb1a0135df11cb88564773b3d008c6f16a9e817f064cae6ab61a5637fc7b",
+      "after": "53296c93ee1647f39c40e867d30393b72dc8dcc540e9cb09585a49950dae6f0a"
+    },
+    {
+      "path": "tests/r211-build-decoration-impact.test.cjs",
+      "before": "d6fb26dc0bf7da15fce5b2cdf2dcb401b000daa3bef20299c630d1723039067c",
+      "after": "5b6399bac7d13bcc0888de0d8a7fe8760d20540fc36d7ad9e580d4def97870fa"
+    },
+    {
+      "path": "tests/r212-decoration-comparison-integration.test.cjs",
+      "before": "8a4205e76f5ce286a23ecd1ff4033fd720d5c13ec9a48b7da2f3eb8803e0d21e",
+      "after": "416d3039e0d77fd245612810c76064694316cb28a6ebf58ba2ae671c43126da7"
+    },
+    {
+      "path": "tests/r216-saved-build-comparison-flow.test.cjs",
+      "before": "d74b7ba406723fb08083fe7b6bd5c70c2865f97dcfd922bb83bdb8386652d3dd",
+      "after": "cdfee09a4f523f4a49e8256e2ef2a2c446fbfb2292d5cfee307417ad28ef94d8"
+    },
+    {
+      "path": "tests/r217-armor-charm-comparison.test.cjs",
+      "before": "e56afd560ffb78d0e118466bd5e369818ef412237c09f7412e2877b9062f9b25",
+      "after": "778b233d9a804ea80c77895802c8df976e3cea926f172b9ac78c6d40d542900c"
+    },
+    {
+      "path": "tests/r218-combined-build-comparison.test.cjs",
+      "before": "2aa36fcca4337a6777dc6da586053af57bc6a371891b3b4d0ebab60a761d6f0e",
+      "after": "e8ab9c62cfe6cc5ee45c707c5ca24c9d8417482129b0cb02e1e200beacbcaac2"
+    },
+    {
+      "path": "tests/r219-elemental-build-comparison.test.cjs",
+      "before": "0b17e513b816c3b7c20cd8ce6e16f59481f19e296d913f07bf5246f4945d80fd",
+      "after": "b26b9925c5829649ab1f87fafb19b4be8fae88ef3784714839a2f51faa9c216a"
+    },
+    {
+      "path": "tests/r220-technique-audit.cjs",
+      "before": "d4443399980e7b84704a2170003da43b70e3879da582195b863dcf0bf93894a2",
+      "after": "801da6402acb2a794828546282a6b1f10bed04b4d8a06f5509cfda760faede25"
+    },
+    {
+      "path": "tests/r240-cb-measurement-audit.test.cjs",
+      "before": "863194a4627ee34adc99d373e4d40b77228817e5f635e26e0731d49227fc008e",
+      "after": "13b92348761da0fc6487ed7aa4d9eab5509cc2030b7084e9da9cb553cdbb8319"
+    },
+    {
+      "path": "tests/r241-cb-audit-access.test.cjs",
+      "before": "8bcc752a851c58b99c7b572080067ca9bff9507c46054261a24034f5a0584057",
+      "after": "b07fa9fcaad4ab59d405f4fc82bc806d512fdcd0491e091c227cac6d5e0dcb6f"
+    },
+    {
+      "path": "tests/r248-independent-dps-diagnostics.test.cjs",
+      "before": "3d85f8497d1b0861b924c6f65f3cc0a8fa93a40c901e9d76ac03c14d07d729c0",
+      "after": "8a67f60721131ff6d8564ba6c41a380b5d89fd848ac14090387a7abf123a5675"
+    },
+    {
+      "path": "tests/r249-saved-build-weapon-matrix.test.cjs",
+      "before": "78210ea8552838a0b88371730b7c19deaf46d923ac5874a36d00851db6e2ac87",
+      "after": "d799709e3b643f8a978b07354c88269e8079e10270935b815ff852718f832fdd"
+    },
+    {
+      "path": "tests/r250-dps-verification-gate.test.cjs",
+      "before": "292a9924e08303a69b88c8c7f0b5c7eda5d6731f91240c202d716c8c878d49e3",
+      "after": "b31f1b33c7acd93b3e6e1e7fdcb4162a47cf550ef8ca3599ec03c671be1dad68"
+    },
+    {
+      "path": "tests/technique-db.test.cjs",
+      "before": "78d69cf53d61955f39f446afb162f03601058ab2f99b4357707911142707c55c",
+      "after": "e6f7d4de57ccdcc7e37731e518385b0f9b695244adc0f879da74abd606f81993"
+    },
+    {
+      "path": "tools/bow-power-browser.test.cjs",
+      "before": "7f314b39a2cd14f63764197011e803cfc92d37d8c3ad8f6ceca6d1fbd7879b7a",
+      "after": "1d439d436a423bcad35fa7971b2f54fd2364912a0a9163cdaa6c7ddd930e3856"
+    },
+    {
+      "path": "tools/browser-test-setup.cjs",
+      "before": "43bd12369ef990ac2c2a3af458999a20c3d058a85dee47d4c564741b69a66c08",
+      "after": "2141a9c3fc947aa3f093c1b7919c534ea84e40245be085a821e08132311f08b3"
+    },
+    {
+      "path": "tools/element-vm-test-setup.cjs",
+      "before": "2a85959b5e59e74a87c27b3c67c44b412debb2619227ea500ac11642f1cabbb9",
+      "after": "23f8679b34df6ecd84e66606a9c9ee75548d8ef118157e873fd7722ff6d1790b"
+    },
+    {
+      "path": "tools/gl-artillery-version-dom.test.cjs",
+      "before": "224b153f9ead3cfe93fed64e6e5ce9846b25bfee444d102f43f5a21f7b680886",
+      "after": "d2e5ee903d655a3b1668ef6cc113b851774f5aa4e5ccaf9a99bb104745be73da"
+    },
+    {
+      "path": "tools/kan13-p0-comparison-dom.test.cjs",
+      "before": "1d4aa74b7f36c938b989d05d79df7bbe1008b9c254d76abff12bf9d3b8e1d633",
+      "after": "b2cc61b142726d8af976584241c5951ba121635af42b8c260e9cefe29ba1da94"
+    },
+    {
+      "path": "tools/kan17-fourteen-p0-dom.test.cjs",
+      "before": "13f9fd4f0f8d944f130c162bcb1ed6e6d5db2fb518ba358404f1fcc25a5de219",
+      "after": "effa858a3cd66f232f00c2578732fc81f530ae1c63475bb4b30589681b46ad4e"
+    },
+    {
+      "path": "tools/kan17-p0-damage-dom.test.cjs",
+      "before": "60a555883f3876dea9f65a54608058d6b6482c3c1bbcde5df0b5ec41a0e04134",
+      "after": "29763306bcd528256995f29be7007b315244231ca1621300c0f114fa03590635"
+    },
+    {
+      "path": "tools/kan22-double-slash-dom.test.cjs",
+      "before": "7a7af7958de9aabae7bf86f48c812c00429ab0e3e8a1d554d981793ca6a2d75a",
+      "after": "990e71e7616a504994a15e85bc0cd1afd8172d2dd6b1462a0196b030989c1d26"
+    },
+    {
+      "path": "tools/kan23-shell-p0-dom.test.cjs",
+      "before": "abe724ec348ffa7f535050657b485e546a46fd55873bea6cef8d480c95dc5e41",
+      "after": "cb767cc32e02a668881c1ebf6949397854f1837be5ae66a7c963b0a88a0cfec5"
+    },
+    {
+      "path": "tools/kan23-wyvern-product-dom.test.cjs",
+      "before": "5e5a3c9419405cd0c61641b45f98f7c01d8150ef35053da8b68b730db9f51fc2",
+      "after": "6dd27328cf7896599cbb5b734de04386c3792c2018f1da1e90af686660b5088f"
+    },
+    {
+      "path": "tests/legacy-test-context-contract.test.cjs",
+      "before": null,
+      "after": "6991303686b45bc06a3dd7528f754b983e4d1a071acc7fee80ee635f22758142"
+    },
+    {
+      "path": "tools/browser-test-setup-browser.test.cjs",
+      "before": null,
+      "after": "168daa6f55ecf7472f3d32fa22908268753124e4b0f122914d59893ed24b8ea8"
+    },
+    {
+      "path": "tools/legacy-page-test-context.cjs",
+      "before": null,
+      "after": "2050346e8f8c264492f082aa4465237eeb7fa06c65b15cc6509bbdd7192ff93d"
+    },
+    {
+      "path": "tools/synthetic-combat-fixture-dom.test.cjs",
+      "before": null,
+      "after": "7582de88e4c63184ccbad2c214ad6615cfe0d53938ec03212baa75c5c7054aaf"
+    },
+    {
+      "path": "tools/synthetic-combat-fixture.cjs",
+      "before": null,
+      "after": "9bd1f0c404dbe51b244e99f69ea0553688d1581ba7caa108c104fc22bc00ce01"
+    },
+    {
+      "path": "tools/synthetic-combat-source-skills.cjs",
+      "before": null,
+      "after": "f2806d2ff6fd565b01cd56521cacf5029550bdff0253a4915ab7f31cf810016f"
+    }
+  ],
+  "limitations": [
+    "Full suites are not green. All remaining failures are enumerated in failure-dispositions.json.",
+    "Positive fixtures are now explicit current-contract synthetic inputs; they are not identical old fixtures or live-game evidence.",
+    "The22 Wyvern expected values and two-hit identity/order are retained; only actual result access is migrated to the verified current component.details path.",
+    "No old hidden DPS/reference UI was re-enabled. No failed test was skipped or deleted.",
+    "Normal-ammo ten-shot implementation, legacy feature parity, complete equipment combinations and live-game/Safari acceptance remain outside this repair.",
+    "No new GitHub write is authorized by the prior publication of8f6e759."
+  ]
+}

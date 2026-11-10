@@ -1,5 +1,8 @@
-const {test}=require('node:test'),assert=require('node:assert/strict'),{JSDOM,VirtualConsole}=require('jsdom');
-function setup(t){const d=new JSDOM(require('./dom-test-setup.cjs').readSimulatorHtml(),{url:'https://simulator.test/',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));}});t.after(()=>d.window.close());const w=d.window;w.eval(`clearWeaponBuckets();const fixture={id:987,kind:'great-sword',name:'Parity',damage:{raw:200,display:960},affinity:0,specials:[],slots:[],skills:[{name:'攻撃',level:2},{name:'見切り',level:1},{name:'超会心',level:2}]};DB.weapons=[fixture];weaponIndexByKind['great-sword']=[fixture];weaponKind.value='great-sword';weapon.innerHTML='<option value="987">Parity</option>';weapon.value='987';App.build.setWeapon(fixture);build.armor={};build.charmCustom={skills:[],slots:[0,0],weaponSlots:[]};build.decos={};calcBuild();renderComboForWeapon();`);return w;}
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const {createSyntheticCombatDom,equipSyntheticWeapon}=require('./synthetic-combat-fixture.cjs');
+// Synthetic identity 987 and a one-unit white segment are explicit test inputs.
+// White preserves the legacy page's 1.32/1.15 sharpness premise, not real equipment evidence.
+function setup(t){const w=createSyntheticCombatDom(t);equipSyntheticWeapon(w,{id:987,gameId:987,sharpness:{white:1},kind:'great-sword',name:'Parity',damage:{raw:200,display:960},affinity:0,specials:[],slots:[],skills:[{name:'攻撃',level:2},{name:'見切り',level:1},{name:'超会心',level:2}]});return w;}
 
 function gl(t){const w=setup(t);w.eval(`const f=DB.weapons[0];f.kind='gunlance';weaponIndexByKind['gunlance']=[f];weaponKind.value='gunlance';calcBuild();renderComboForWeapon();monsterHZ=()=>({hz:45,ehz:20});`);return w;}
 

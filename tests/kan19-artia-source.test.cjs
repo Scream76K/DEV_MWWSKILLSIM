@@ -1,15 +1,23 @@
-const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const {createContext}=require('../tools/legacy-page-test-context.cjs');
+const {test}=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');
 const E=require('../element-state.js');
-const html=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
-function setup(a={}) { const start=html.indexOf('const ARTIA_ELEMENT_SOURCE_DB='),end=html.indexOf('function weaponElementInfoFromRecord',start);assert.ok(start>=0,'source-backed Artia DB missing');const ctx={MHWElementState:E,isArtia:()=>true,build:{artia:{element:'dragon',production:'element',...a}}};vm.createContext(ctx);vm.runInContext(html.slice(start,end),ctx);return {ctx,run(v={attack:190,affinity:0,element:null,elementKnown:false,elementStatus:'UNKNOWN'}){ctx.w={kind:'bow',artiaFixedVariants:{[ctx.build.artia.production]:v}};return vm.runInContext('artiaFixedVariantStats(w)',ctx);}};}
+// Mutation base attacks and the Gogma identity are source-valid inputs from
+// ARTIA_STAGE_ADOPTION / MHDB; the asserted element results remain independent.
+function setup(a={}) {
+ const ctx=createContext({build:{artia:{element:'dragon',production:'element',...a}}});
+ return {ctx,run(v={attack:{attack:200,affinity:180,element:190}[a.production||'element'],affinity:0,element:null,elementKnown:false,elementStatus:'UNKNOWN'}){
+  ctx.w={kind:'bow',name:'亡国のクピドバイン',artiaFixedVariants:{[a.production||'element']:v}};
+  return vm.runInContext('artiaFixedVariantStats(w)',ctx);
+ }};
+}
 test('source-confirmed bow three parts derives 260 before restore and skills',()=>{const x=setup({sameElementPartCount:3}).run();assert.equal(x.element,260);assert.equal(x.attack,190);assert.equal(x.affinity,0);assert.equal(x.elementEvidence.verificationStatus,'SOURCE_CONFIRMED_NOT_GAME_VERIFIED');});
 test('two bow parts and three mutation types use separate element deltas',()=>{for(const [production,expected] of [['attack',210],['affinity',190],['element',240]])assert.equal(setup({sameElementPartCount:2,production}).run().element,expected);});
 test('completed fixed element is never augmented a second time',()=>{assert.equal(setup({sameElementPartCount:3}).run({attack:190,affinity:0,element:300}).element,300);});
 test('unknown material count remains unknown, attack bonuses are not element parts',()=>{const x=setup({parts:['attack','attack','attack']}).run();assert.equal(x.element,null);assert.match(x.elementReason,/PART_COUNT/);});
 test('confirmed none stays zero and absent completed weapon stays blocked',()=>{assert.equal(setup({element:'none'}).run({attack:190,affinity:0,element:0,elementType:'none'}).element,0);const s=setup({sameElementPartCount:3});s.ctx.w={kind:'bow'};assert.equal(vm.runInContext('artiaFixedVariantStats(w)',s.ctx),null);});
-test('source DB covers fourteen kinds, bowguns do not receive inferred element',()=>{const s=setup();assert.equal(vm.runInContext('Object.keys(ARTIA_ELEMENT_SOURCE_DB.weapons).length',s.ctx),14);s.ctx.w={kind:'light-bowgun',artiaFixedVariants:{element:{attack:190,affinity:0,element:null}}};assert.equal(vm.runInContext('artiaFixedVariantStats(w).element',s.ctx),null);});
+test('source DB covers fourteen kinds, bowguns do not receive inferred element',()=>{const s=setup();assert.equal(vm.runInContext('Object.keys(ARTIA_ELEMENT_SOURCE_DB.weapons).length',s.ctx),14);s.ctx.w={kind:'light-bowgun',name:'荊冠のデストレーター',artiaFixedVariants:{element:{attack:190,affinity:0,element:null}}};assert.equal(vm.runInContext('artiaFixedVariantStats(w).element',s.ctx),null);});
 
-test('source-derived bow restoration and dragon skill are separate stages',()=>{const s=setup({sameElementPartCount:3,restores:['elem:I','elem:II','elem:EX']});const start=html.indexOf('function restoreStats(w)'),end=html.indexOf('function hasSkill(',start);vm.runInContext(html.slice(start,end),s.ctx);s.run();const r=vm.runInContext('restoreStats(w)',s.ctx);assert.equal(r.element,130);const out=E.applySkill(E.fromValue(260+r.element,'dragon'),{mult:1.2,add:60});assert.equal(out.element,528);});
+test('source-derived bow restoration and dragon skill are separate stages',()=>{const s=setup({sameElementPartCount:3,restores:['elem:I','elem:II','elem:EX']});s.run();const r=vm.runInContext('restoreStats(w)',s.ctx);assert.equal(r.element,130);const out=E.applySkill(E.fromValue(260+r.element,'dragon'),{mult:1.2,add:60});assert.equal(out.element,528);});
 test('source state stays pending for empty three-part table and unresolved source version',()=>{const s=setup({sameElementPartCount:3});s.run();s.ctx.w.kind='great-sword';assert.equal(vm.runInContext('artiaFixedVariantStats(w).element',s.ctx),null);s.ctx.w.kind='gunlance';assert.match(vm.runInContext('artiaFixedVariantStats(w).elementReason',s.ctx),/VERSION/);});
 
 test('unlisted attribute restore level is not silently treated as zero',()=>{assert.equal(setup({sameElementPartCount:3,restores:['elem:III']}).run().element,null);});

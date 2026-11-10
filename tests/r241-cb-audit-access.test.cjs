@@ -7,7 +7,7 @@ const src=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
 test('r241 phial audit requires valid base coefficients and prioritizes count capture',()=>{
   const start=src.indexOf('const CHARGE_BLADE_TECHNIQUES=');
   const end=src.indexOf('function chargeBladeEvidencePhialCount(',start);
-  const context=vm.createContext({});
+  const context=vm.createContext({window:{}});
   vm.runInContext(src.slice(start,end)+`;globalThis.audit=chargeBladePhialMeasurementAudit();globalThis.fn=chargeBladePhialMeasurementAudit;`,context);
   const audit=JSON.parse(JSON.stringify(context.audit));
   assert.equal(audit.length,5);

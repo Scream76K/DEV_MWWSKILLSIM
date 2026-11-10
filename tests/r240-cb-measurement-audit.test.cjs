@@ -7,7 +7,7 @@ test('r240 audit enumerates phial moves without inventing counts',()=>{
   const start=src.indexOf('const CHARGE_BLADE_TECHNIQUES=');
   const end=src.indexOf('function chargeBladeEvidencePhialCount(',start);
   assert.ok(start>=0&&end>start);
-  const context=vm.createContext({});
+  const context=vm.createContext({window:{}});
   vm.runInContext(src.slice(start,end)+';globalThis.audit=chargeBladePhialMeasurementAudit();',context);
   const audit=JSON.parse(JSON.stringify(context.audit));
   assert.equal(audit.length,5);

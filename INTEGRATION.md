@@ -1,3 +1,15 @@
+# 現在版: legacy-test-harness-20261110
+
+製品の確定基準は `8f6e759e0745618bb26b26c0962bc62735426616` で、既存GitHub mainlineへの通常更新と3件のCI成功を確認済みです。今回の版はその後のテスト環境・fixture修復で、製品4ファイル・DB・仕様は同一です。今回の差分はローカル保存のみで、GitHubへは未送信です。
+
+現在の全件検証は公式1224件（1192成功/32失敗）、DOM518件（356成功/162失敗）、browser90件（21成功/69失敗）。統合1500・freshness94・source47は成功しています。DOMでは旧無効fixtureによる見かけの成功1件が失敗として現れたことも記録しています。全suite成功ではありません。
+
+現行の詳細は [テスト修復報告](docs/reports/legacy-test-harness-20261110/README.md) と `INTEGRATION_VERSION.json`、実際の保存commitは `git rev-parse HEAD` で確認してください。新しいbranchは作成していません。
+
+## 以下は8f6e759e作成時点までの統合・実装検証の履歴
+
+以下の「未公開」「未反映」と旧suite件数は各作成段階の記録です。現在の公開状態と試験状態は上記を優先します。過去記録を現在の完成保証とは扱いません。
+
 # 統合版 integration-20261110-skill-continuation
 
 ## 正本と統合状態

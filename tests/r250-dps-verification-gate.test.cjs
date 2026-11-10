@@ -1,5 +1,6 @@
-const {test}=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm');const source=require('../tools/legacy-ocr-source.cjs');
-function load(names,c){vm.createContext(require('../tools/element-vm-test-setup.cjs').register(c));names=['weaponNumericPendingReason',...names];const h=source();if(h.includes('function comparisonDpsValue('))names=['comparisonDpsValue',...names];vm.runInContext(names.map(n=>source.functionSource(h,n)).join('\n'),c);return c;}
+const {createContext}=require('../tools/legacy-page-test-context.cjs');
+const {test}=require('node:test'),assert=require('node:assert/strict');
+function load(names,c){const context=createContext(c);for(const name of names)assert.equal(typeof context[name],'function',name+' must come from the production page');return context;}
 test('reference timing keeps damage and duration but cannot produce formal DPS',()=>{
  const c=load(['evaluateComboRoute'],{bonusDamagePendingReason:()=>null,comboMove:()=>({name:'reference',time:2,timingStatus:'USER_MEASURED_REFERENCE'}),comboTechniqueDamage:()=>({total:100,hits:[]})});
  const r=c.evaluateComboRoute([{techniqueId:'fixture'}],{},{});assert.equal(r.damage,100);assert.equal(r.time,2);assert.equal(r.status,'REFERENCE_ONLY');assert.equal(r.theoreticalDps,null);assert.equal(r.practicalDps,null);assert.equal(r.oneMinute,null);assert.equal(r.dpsStatus,'UNVERIFIED');assert.equal(r.dpsReason,'COMBO_DPS_UNVERIFIED');

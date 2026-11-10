@@ -1,0 +1,2526 @@
+{
+  "official": {
+    "recovered": [
+      "Artillery NORMAL Lv1 normal only adds displayed fire before common conversion",
+      "Artillery NORMAL Lv2 normal only adds displayed fire before common conversion",
+      "Artillery NORMAL Lv3 normal only adds displayed fire before common conversion",
+      "Artillery LONG Lv1 normal only adds displayed fire before common conversion",
+      "Artillery LONG Lv2 normal only adds displayed fire before common conversion",
+      "Artillery LONG Lv3 normal only adds displayed fire before common conversion",
+      "Artillery WIDE Lv1 normal only adds displayed fire before common conversion",
+      "Artillery WIDE Lv2 normal only adds displayed fire before common conversion",
+      "Artillery WIDE Lv3 normal only adds displayed fire before common conversion",
+      "two bow parts and three mutation types use separate element deltas",
+      "completed fixed element is never augmented a second time",
+      "unknown material count remains unknown, attack bonuses are not element parts",
+      "confirmed none stays zero and absent completed weapon stays blocked",
+      "source DB covers fourteen kinds, bowguns do not receive inferred element",
+      "source-derived bow restoration and dragon skill are separate stages",
+      "unlisted attribute restore level is not silently treated as zero",
+      "CB defaults omitted rapid morph to level zero",
+      "attack decoration increases calculated true attack and clearing restores baseline",
+      "switching attack to affinity decoration replaces rather than accumulates bonuses",
+      "shrinking armor slot removes old decoration from calculated attack",
+      "oversized decoration never changes attack",
+      "charm skills and decoration skills combine in calculation",
+      "attack decoration propagates through calcBuild and compareSnapshot to baseline-100 index",
+      "critical decoration changes affinity and the comparison index without retaining attack bonus",
+      "oversized decoration cannot alter comparison index",
+      "slot shrink removes attack decoration from comparison",
+      "comparison rejects different weapon kinds and profile IDs",
+      "actual generic damage keeps utility-only changes at baseline 100",
+      "actual physical hit damage increases when attack jewel is equipped",
+      "actual critical expectation increases with critical eye",
+      "adding utility skills to an attack build does not change damage",
+      "actual elemental damage stays separate from physical affinity",
+      "saved attack jewel increases actual calculated attack and generic power index",
+      "saved critical eye jewel increases affinity and expected physical damage",
+      "saved runner and defense jewels leave comparison index at 100",
+      "comparison restores original build and calculated stats after evaluating saved builds",
+      "saved build with different weapon kind is rejected before mutation",
+      "armor attack skill increases true attack and saved-build power index",
+      "charm critical eye increases affinity and physical comparison index",
+      "non-damage armor and charm skills do not change power index",
+      "armor and charm damage skill contributions stack across saved builds",
+      "original armor and charm state is restored after saved-build comparison",
+      "weapon, armor, charm, and decoration jointly change saved build power index",
+      "combined comparison restores original weapon and equipment after calculations",
+      "elemental weapon adds elemental component compared with raw-only weapon at same physical attack",
+      "matching elemental attack skill increases elemental damage without changing physical component",
+      "critical eye changes physical expectation but not elemental damage",
+      "elemental build comparison restores weapon, skills and stats",
+      "r232 audit checks all 23 history moves against real Technique DB",
+      "r241 phial audit requires valid base coefficients and prioritizes count capture",
+      "r248 DPS remains comparable when baseline STANDARD power is unavailable",
+      "r248 DPS failure is diagnosed from DPS, not normal power",
+      "r248 profile mismatch still blocks DPS",
+      "r249 saved comparison restores state and calculates normal index: great-sword",
+      "r249 cross-weapon guard prevents mutation: great-sword",
+      "r249 saved comparison restores state and calculates normal index: long-sword",
+      "r249 cross-weapon guard prevents mutation: long-sword",
+      "r249 saved comparison restores state and calculates normal index: sword-and-shield",
+      "r249 cross-weapon guard prevents mutation: sword-and-shield",
+      "r249 saved comparison restores state and calculates normal index: dual-blades",
+      "r249 cross-weapon guard prevents mutation: dual-blades",
+      "r249 saved comparison restores state and calculates normal index: hammer",
+      "r249 cross-weapon guard prevents mutation: hammer",
+      "r249 saved comparison restores state and calculates normal index: hunting-horn",
+      "r249 cross-weapon guard prevents mutation: hunting-horn",
+      "r249 saved comparison restores state and calculates normal index: lance",
+      "r249 cross-weapon guard prevents mutation: lance",
+      "r249 saved comparison restores state and calculates normal index: gunlance",
+      "r249 cross-weapon guard prevents mutation: gunlance",
+      "r249 saved comparison restores state and calculates normal index: switch-axe",
+      "r249 cross-weapon guard prevents mutation: switch-axe",
+      "r249 saved comparison restores state and calculates normal index: charge-blade",
+      "r249 cross-weapon guard prevents mutation: charge-blade",
+      "r249 saved comparison restores state and calculates normal index: insect-glaive",
+      "r249 cross-weapon guard prevents mutation: insect-glaive",
+      "r249 saved comparison restores state and calculates normal index: light-bowgun",
+      "r249 cross-weapon guard prevents mutation: light-bowgun",
+      "r249 saved comparison restores state and calculates normal index: heavy-bowgun",
+      "r249 cross-weapon guard prevents mutation: heavy-bowgun",
+      "r249 saved comparison restores state and calculates normal index: bow",
+      "r249 cross-weapon guard prevents mutation: bow",
+      "legacy cached DPS without verification is hidden in comparison and derived indices",
+      "saved comparison retains DPS verification state and reason instead of an object as numeric DPS",
+      "proposal cached DPS cannot be displayed or ranked without verification"
+    ],
+    "previousPassNowFails": [],
+    "newlyDiscoveredOrAdded": [
+      {
+        "name": "KAN21 SAED branches retain separate provisional DB records and five events",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "KAN21 CB_SAED enhanced=false applies shield once and five explosions",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/kan21-saed.test.cjs:8:149"
+      },
+      {
+        "name": "KAN21 CB_SAED enhanced=true applies shield once and five explosions",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "KAN21 CB_SAED_AED_DERIVED enhanced=false applies shield once and five explosions",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/kan21-saed.test.cjs:8:149"
+      },
+      {
+        "name": "KAN21 CB_SAED_AED_DERIVED enhanced=true applies shield once and five explosions",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "KAN21 unknown type/enhancement and impact coefficient remain blocked",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "KAN21 resolver dispatches SAED without altering existing handler",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "KAN21 shield off is neutral, stock overrides and capacity skill never increase five hits",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/kan21-saed.test.cjs:12:1"
+      },
+      {
+        "name": "page loader initializes real local dependencies and keeps browser/network boundaries",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "page loader binds supplied lexical DB build and calc state to the same App objects",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "page loader isolates globals lexical state DOM and storage between contexts",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "schedule work in two independent page windows",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "page loader closes every context after its test and cancels queued window work",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "element VM setup preserves caller window while real inline resolvers register there",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "attack skill Lv0 has no bonus",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "attack skill Lv4 and Lv5 reflect flat and multiplier",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "attack skill fractional level cannot produce undefined flat bonus",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "critical eye skill increases base affinity",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "critical eye fractional level cannot silently map to a valid bonus",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "element skill only applies to matching element",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "increased calculated power propagates into build comparison",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "unchanged calculated power stays baseline 100",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "fractional weakness exploit level does not corrupt max affinity",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "fractional conditional affinity skills do not create NaN",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "verified integer weakness exploit level 5 retains 50 percent maximum bonus",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "oversized affinity skill levels cap to valid maximum",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "fractional antivirus level does not corrupt frenzy affinity",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "fractional elemental attack level does not grant level 3 bonus",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "integer elemental attack level 3 still applies",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "audit enumerates all 14 weapon types",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "registered equals calculable plus blocked for every weapon",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "audit never promotes source-conflicted data to calculable",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "audit reports evidence gaps without modifying source data",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "blocked examples reference real records",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "triage accounts for 497 baseline blocked records plus KAN21 SAED and KAN24 scoped rule",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r221-technique-triage.test.cjs:4:1"
+      },
+      {
+        "name": "all weapon kinds are covered",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "all records follow source, user, measurement escalation policy",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "no blocked record is automatically confirmed or sent for measurement",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "triage is read-only and repeatable",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r222: all blocked techniques remain represented",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r222-technique-source-evidence.test.cjs:3:1"
+      },
+      {
+        "name": "r222: source review is never silently marked complete",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r222: conflicting sources are routed for review, not auto adoption",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r222: every record has explicit next route and reference version",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r222: route totals reconcile with inventory",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "37技の候補を欠落なく抽出",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "現行格納MVはTechnique DBと一致",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r226-historical-candidates.test.cjs:1:455"
+      },
+      {
+        "name": "履歴差分の集計は再現可能",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "原典未確認の値を承認せず計測も依頼しない",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "バージョンは最新基準を維持",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r227 triage covers exactly r226 differing records",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "12 before-matches and 1 neither match",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "stored MV matches live DB and classifications derive from history",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "all decisions remain pending and target version retained",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r230: every measured technique resolves against live Technique DB",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r230: measured values are independently compared with live DB values",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r230: conflict is not silently accepted as verified",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r230: strong-hit and normal-hit variants are separately guarded",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r230: aggregate counts are derived from individual records",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "all 23 user supplied update records are preserved",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "multi hit structures remain arrays, not summed into one hit",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "jump charge historical candidates and actual live DB are compared",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r234 explicitly approved DB promotion preserves historical r231 evidence",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r234: approved hammer jump charge motion values are adopted, source history preserved",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r234: full historical hammer audit now matches all 23 move records",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r235 provisional measured charge blade MV adopted without phial handler override",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r236 measured CB MV adoption, phial gate preserved",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r236 provisional motion values are not advertised as fully verified: CB_ELEMENT_DISCHARGE_1",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r236 provisional motion values are not advertised as fully verified: CB_ELEMENT_DISCHARGE_2",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "r46 STANDARD hit fixtures remain valid for all 14 registries",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/technique-db.test.cjs:12:1"
+      },
+      {
+        "name": "true charged slash retains two hits and separate strong-hit variant",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "long sword multi-hit releases are expanded rather than aggregate MV",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "sword and shield charged multi-hits retain per-hit element modifiers",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "source discrepancies and blank rows fail closed instead of fabricated values",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "source-confirmed numbers are gated until baseline-version audit is verified",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "coverage is distinct from STANDARD readiness and retains unresolved counts",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "registered source evidence is inspectable and immutable",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "already frozen r46 containers cannot leave STANDARD hit values mutable",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "all 110 new records retain evidence and remain fail closed",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/technique-db.test.cjs:57:1"
+      }
+    ],
+    "noLongerListedContainers": [
+      {
+        "name": "tests/kan21-saed.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/kan21-saed.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r194-skill-build-impact.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r194-skill-build-impact.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r204-build-affinity-level-guard.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r204-build-affinity-level-guard.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r220-technique-audit-regression.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r220-technique-audit-regression.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r221-technique-triage.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r221-technique-triage.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r222-technique-source-evidence.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r222-technique-source-evidence.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r226-historical-candidates.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r226-historical-candidates.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r227-history-triage.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r227-history-triage.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r230-live-gs-crosscheck.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r230-live-gs-crosscheck.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r231-hammer-evidence.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r231-hammer-evidence.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r234-hammer-mv-adoption.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r234-hammer-mv-adoption.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r235-cb-provisional.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r235-cb-provisional.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r236-cb-measured-mv.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r236-cb-measured-mv.test.cjs:1:1"
+      },
+      {
+        "name": "tests/r250-cb-provisional-status.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r250-cb-provisional-status.test.cjs:1:1"
+      },
+      {
+        "name": "tests/technique-db.test.cjs",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/technique-db.test.cjs:1:1"
+      }
+    ],
+    "remainingFailures": [
+      {
+        "name": "SAED rejects invalid skill level without inventing damage",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/flamme-cb-saed-mixed-phials.test.cjs:47:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Artillery with unresolved action or attack composition remains withheld",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/gl-artillery-normal.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "unknown Load Shells level and artillery FB remain withheld",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/gl-load-shells.test.cjs:7:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "unknown material count cannot inherit the previous template count",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/kan19-artia-integration.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "source-confirmed bow three parts derives 260 before restore and skills",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/kan19-artia-source.test.cjs:13:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "source state stays pending for empty three-part table and unresolved source version",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/kan19-artia-source.test.cjs:21:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "proposal uses nested candidate and captured baseline attribute states for verified delta",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/kan19-element-state.test.cjs:38:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "KAN21 CB_SAED enhanced=false applies shield once and five explosions",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/kan21-saed.test.cjs:8:149",
+        "baselineStatus": "not_discovered"
+      },
+      {
+        "name": "KAN21 CB_SAED_AED_DERIVED enhanced=false applies shield once and five explosions",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/kan21-saed.test.cjs:8:149",
+        "baselineStatus": "not_discovered"
+      },
+      {
+        "name": "KAN21 shield off is neutral, stock overrides and capacity skill never increase five hits",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/kan21-saed.test.cjs:12:1",
+        "baselineStatus": "not_discovered"
+      },
+      {
+        "name": "LBG rejects unresolved level mode range and shot skills instead of incomplete totals",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/kan24-lbg-normal.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "CB accepts level 0 to 3",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r126-charge-blade-rapid-morph.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "raw metric reads each row, independent of baseline",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r139-raw-metrics-spec.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "normalizer rejects fractional level rather than rounding upward",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r206-charm-skill-integrity.test.cjs:15:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "combined build comparison is unaffected by added non-damage armor and charm skills",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r218-combined-build-comparison.test.cjs:27:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "nonmatching elemental skill does not change elemental or physical damage",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r219-elemental-build-comparison.test.cjs:36:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "triage accounts for 497 baseline blocked records plus KAN21 SAED and KAN24 scoped rule",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r221-technique-triage.test.cjs:4:1",
+        "baselineStatus": "not_discovered"
+      },
+      {
+        "name": "r222: all blocked techniques remain represented",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r222-technique-source-evidence.test.cjs:3:1",
+        "baselineStatus": "not_discovered"
+      },
+      {
+        "name": "現行格納MVはTechnique DBと一致",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r226-historical-candidates.test.cjs:1:455",
+        "baselineStatus": "not_discovered"
+      },
+      {
+        "name": "r240 audit enumerates phial moves without inventing counts",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r240-cb-measurement-audit.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "readiness includes reason for numeric cached DPS without verification",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r250-dps-verification-gate.test.cjs:20:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "all five embedded engine self-tests pass",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r46-regression.test.cjs:17:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "unaffected STANDARD matches r46; GS HP correction and adopted DB are independently checked",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r46-regression.test.cjs:30:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "insect glaive aggregate STANDARD records remain archived but fail closed",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r49-expansion.test.cjs:15:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "all238 Phase3 records retain evidence and reject calculation reads",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r49-expansion.test.cjs:38:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "charge blade handler metadata no longer owns normal motion hit arrays",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r49-expansion.test.cjs:53:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "audit panel switches weapons and shows all STANDARD blockers and both spiral charges",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r50-audit-ui.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "IG alternatives retain six body hits at both charge states and separate kinsect damage",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r50-audit.test.cjs:15:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "profile blockers collect every technique instead of hiding all but the first failure",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r50-audit.test.cjs:27:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "aggregate record is archived and new stages expose separate verification counts",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/r51-dual-blades.test.cjs:42:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "r46 STANDARD hit fixtures remain valid for all 14 registries",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/technique-db.test.cjs:12:1",
+        "baselineStatus": "not_discovered"
+      },
+      {
+        "name": "all 110 new records retain evidence and remain fail closed",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tests/technique-db.test.cjs:57:1",
+        "baselineStatus": "not_discovered"
+      }
+    ]
+  },
+  "dom": {
+    "recovered": [
+      "P0 canonical template and identical custom order produce equal damage",
+      "P0 damage buttons execute selected template and single paths from UI",
+      "P0 sword-and-shield existing STANDARD DB reaches template and single UI",
+      "IG double slash keeps unsupported extract and kinsect states unresolved after restore",
+      "product Wyvern measured condition 1",
+      "product Wyvern measured condition 2",
+      "product Wyvern measured condition 3",
+      "product Wyvern measured condition 4",
+      "product Wyvern measured condition 5",
+      "product Wyvern measured condition 6",
+      "product Wyvern measured condition 7",
+      "product Wyvern measured condition 8",
+      "product Wyvern measured condition 9",
+      "product Wyvern measured condition 10",
+      "product Wyvern measured condition 11",
+      "product Wyvern measured condition 12",
+      "product Wyvern measured condition 13",
+      "product Wyvern measured condition 14",
+      "product Wyvern measured condition 15",
+      "product Wyvern measured condition 16",
+      "product Wyvern measured condition 17",
+      "product Wyvern measured condition 18",
+      "product Wyvern measured condition 19",
+      "product Wyvern measured condition 20",
+      "product Wyvern measured condition 21",
+      "product Wyvern measured condition 22",
+      "Wyvern single template free save comparison share two hit provisional route"
+    ],
+    "previousPassNowFails": [
+      "Wyvern missing buff target mode and unknown skills withhold complete damage"
+    ],
+    "newlyDiscoveredOrAdded": [
+      {
+        "name": "Wyvern current details mapping rejects missing or mismatched output instead of falling back",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "synthetic fixture preserves controlled weapon values and uses real calcBuild and training UI",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "synthetic fixture does not fill missing weapon identity or sharpness",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "synthetic fixture retains malformed zero-level skill and missing target guards",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "synthetic Wyvern applicability requires explicit positive ammo capacity",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "test realm clone retains undefined, nonfinite values and cycles instead of JSON coercion",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "weapon input transfer preserves undefined and nonfinite guard evidence",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "bounded test clone rejects exotic records and dangerous setter keys without applying them",
+        "occurrence": 1,
+        "status": "pass"
+      }
+    ],
+    "noLongerListedContainers": [],
+    "remainingFailures": [
+      {
+        "name": "guard requires traceable base components and applicable guarding weapon kind",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/attack-components-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "comparison readiness exposes enhanced-shot assumptions even with settings collapsed",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-bladescale-dom.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "bladescale close coating changes maximum physical only while normal is inactive",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-bladescale-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "three enhanced shots are consumed by actions rather than fourteen individual arrows",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-bladescale-dom.test.cjs:7:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "none and power coatings do not receive a close coating only bonus",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-bladescale-dom.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "bow skill composition keeps elemental skills outside bladescale physical multiplier",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-bladescale-dom.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "critical element uses bow coefficients and actual positive affinity for normal and maximum",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-critical-element-dom.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "zero and negative affinity do not create elemental critical penalties",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-critical-element-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "critical element multiplies charge master result including flats only once",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-critical-element-dom.test.cjs:7:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "status element remains zero HP damage with critical element equipped",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-critical-element-dom.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "bow first shot ranks do not add damage or block the comparison",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-first-shot-dom.test.cjs:4:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "bow first shot does not multiply bladescale and still rejects invalid levels",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-first-shot-dom.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "force shot ranks add attack only at fourth and sixth while affinity applies to all later shots",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-force-shot-dom.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "starting before fourth shot only changes qualifying stages rather than every arrow",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-force-shot-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "force shot affiliation changes positive critical element only and caps final affinity",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-force-shot-dom.test.cjs:7:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "force shot is excluded from freshly added bladescale shots while normal coated shots still receive it",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-force-shot-dom.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "force shot no coating is nonapplicable but coated missing invalid or reload crossing state remains pending",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-force-shot-dom.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "force shot late three shot window stays inside one magazine and does not repeat fourth or sixth bonuses",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-force-shot-dom.test.cjs:10:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "canonical charge uses element modifier and excludes part durability from HP",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/canonical-combo-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "all 29 eligible canonical moves accept explicit baseline timing without altering hit data",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/canonical-timing-dom.test.cjs:16:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "five phial techniques stay blocked even when boost state is explicit",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/charge-blade-combo-dom.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "CB UI identifies body MV and explains missing phial count in Japanese",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/charge-blade-combo-dom.test.cjs:13:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Coalescence uses Wilds weapon-specific elemental multipliers and never adds attack",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/coalescence-power-dom.test.cjs:4:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Coalescence missing components, other element multipliers and flat bonuses retain normal and gate maximum",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/coalescence-power-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Dark Arts combined with Coalescence remains gated even if a health branch would otherwise calculate",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/coalescence-power-dom.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "all blocked stages are listed in route order without partial totals",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/combo-blockers-dom.test.cjs:11:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "build comparison preserves the current common route rather than adopting saved routes",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/combo-persistence-dom.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "comparison table exposes ordinary and maximum blockers and baseline dependence before results",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/comparison-readiness-dom.test.cjs:7:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "comparison rounds second decimal to one place without changing source values or report precision",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/comparison-rounding-dom.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "six adopted non-GS profiles resolve Dark Arts normal and red-health maximum independently",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/dark-arts-power-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "unsupported overlapping conditions gate maximum only without concealing normal index",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/dark-arts-power-dom.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "unimplemented post-self-damage healing and Dark Arts interactions remain pending",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/dark-power-dom.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "new ordinary entries have unknown timing and never include evidence gated or dedicated special routes",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/expanded-combo-dom.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "proposal output preserves missing DPS and computes the current-build difference",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/expanded-combo-dom.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Fortify from three group pieces applies twice-fainted reference only to maximum across seven profiles",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/fortify-power-dom.test.cjs:4:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "unknown flat-value stacking keeps normal available and withholds maximum",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/fortify-power-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Fortify does not bypass health-branch uncertainty or unlock absolute damage",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/fortify-power-dom.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL NORMAL common conditions retain single/reference/free consistency and finite stock",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-applicability-audit-dom.test.cjs:8:64",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL LONG common conditions retain single/reference/free consistency and finite stock",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-applicability-audit-dom.test.cjs:8:64",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL WIDE common conditions retain single/reference/free consistency and finite stock",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-applicability-audit-dom.test.cjs:8:64",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL selected MHDB fire hitzone controls only shell fire component",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-applicability-audit-dom.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL shell reference depends on original attack while extra derived attack and affinity do not enter shell formula",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-applicability-audit-dom.test.cjs:10:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL unreviewed artillery and Load Shells Lv1 stay pending while adopted Lv2 retains explicit stock",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-applicability-audit-dom.test.cjs:11:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "neutral normal shelling NORMAL Artillery1 connects single/free but not unknown charged/FB",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-normal-dom.test.cjs:9:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "neutral normal shelling NORMAL Artillery2 connects single/free but not unknown charged/FB",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-normal-dom.test.cjs:9:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "neutral normal shelling NORMAL Artillery3 connects single/free but not unknown charged/FB",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-normal-dom.test.cjs:9:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "neutral normal shelling LONG Artillery1 connects single/free but not unknown charged/FB",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-normal-dom.test.cjs:9:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "neutral normal shelling LONG Artillery2 connects single/free but not unknown charged/FB",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-normal-dom.test.cjs:9:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "neutral normal shelling LONG Artillery3 connects single/free but not unknown charged/FB",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-normal-dom.test.cjs:9:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "neutral normal shelling WIDE Artillery1 connects single/free but not unknown charged/FB",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-normal-dom.test.cjs:9:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "neutral normal shelling WIDE Artillery2 connects single/free but not unknown charged/FB",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-normal-dom.test.cjs:9:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "neutral normal shelling WIDE Artillery3 connects single/free but not unknown charged/FB",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-normal-dom.test.cjs:9:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "current-version Artillery NORMAL Lv1 never publishes an incomplete action total",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-version-dom.test.cjs:12:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "current-version Artillery NORMAL Lv2 never publishes an incomplete action total",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-version-dom.test.cjs:12:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "current-version Artillery NORMAL Lv3 never publishes an incomplete action total",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-version-dom.test.cjs:12:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "current-version Artillery LONG Lv1 never publishes an incomplete action total",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-version-dom.test.cjs:12:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "current-version Artillery LONG Lv2 never publishes an incomplete action total",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-version-dom.test.cjs:12:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "current-version Artillery LONG Lv3 never publishes an incomplete action total",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-version-dom.test.cjs:12:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "current-version Artillery WIDE Lv1 never publishes an incomplete action total",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-version-dom.test.cjs:12:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "current-version Artillery WIDE Lv2 never publishes an incomplete action total",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-version-dom.test.cjs:12:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "current-version Artillery WIDE Lv3 never publishes an incomplete action total",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-artillery-version-dom.test.cjs:12:91",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Load Shells NORMAL all three routes and snapshot restore retain explicit stock",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-load-shells-dom.test.cjs:9:67",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Load Shells LONG all three routes and snapshot restore retain explicit stock",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-load-shells-dom.test.cjs:9:67",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Load Shells WIDE all three routes and snapshot restore retain explicit stock",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-load-shells-dom.test.cjs:9:67",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "MHDB source gameId 1 ホープガンランスⅠ shellLevel2 reference routes agree",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-shell-level-dom.test.cjs:10:29",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "MHDB source gameId 6 骨銃槍Ⅰ shellLevel2 reference routes agree",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-shell-level-dom.test.cjs:10:29",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "MHDB source gameId 11 トライバヨネットⅠ shellLevel2 reference routes agree",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-shell-level-dom.test.cjs:10:29",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL NORMAL Artillery Lv0 remains conditional on complete source evidence",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-shell-level-dom.test.cjs:12:93",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL LONG Artillery Lv0 remains conditional on complete source evidence",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-shell-level-dom.test.cjs:12:93",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL WIDE Artillery Lv0 remains conditional on complete source evidence",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gl-shell-level-dom.test.cjs:12:93",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "guts before consumption scales weapon multipliers before flats in normal and max",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/group-power-dom.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "guts after consumption removes offensive bonus and changes comparison without double addition",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/group-power-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "encouragement and resuscitate are inactive normally and add ten each in maximum",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/group-power-dom.test.cjs:7:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "guts combines guard and attack boost multipliers but never scales conditional flats",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/group-power-dom.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "unresolved extra conditional effect still blocks only max after known group resolution",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/group-power-dom.test.cjs:11:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "comparison indices include group effect against the same normal baseline",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/group-power-dom.test.cjs:12:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "group trace displays actual effect without invented level or hidden flat addition",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/group-power-dom.test.cjs:14:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "actual three-piece group entry resolves on generic STANDARD but stays gated in absolute DPS",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/group-power-dom.test.cjs:15:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "burst boost combines flats after root and guard and retains unknown gating",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/group-power-dom.test.cjs:20:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "uncertain red branch prevents a false maximum even when full branch calculates",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/health-branches-dom.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "six adopted profiles share safe health separation while invalid metadata and GS stay gated",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/health-branches-dom.test.cjs:10:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "seven adopted profiles apply Heroics level multipliers only to maximum physical power",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/heroics-power-dom.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "dance stages show all 27 hit rows with independent physical element and total values",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/hit-details-dom.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "fixed custom hit is shown as special and names are escaped",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/hit-details-dom.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL damage-only comparison reuses P0 shell handler and preserves build/stock",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-dom.test.cjs:7:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "unsupported component is pending in saved comparison, never partial total",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-dom.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "same-route relative damage changes are separate from STANDARD metrics",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-dom.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL incompatible shell metadata remains blocked after saving",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-dom.test.cjs:10:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "comparison report is detached and carries all blocked reasons",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-dom.test.cjs:11:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved bow damage prepares ranged state and matches standalone P0",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-dom.test.cjs:13:121",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved heavy-bowgun damage prepares ranged state and matches standalone P0",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-dom.test.cjs:13:121",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved light-bowgun damage prepares ranged state and matches standalone P0",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-dom.test.cjs:13:121",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved comparison preserves unknown attack as uncalculated",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-dom.test.cjs:14:52",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved comparison preserves unknown affinity as uncalculated",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-dom.test.cjs:14:52",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved comparison preserves unknown hitzone as uncalculated",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-dom.test.cjs:14:52",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "SAED single template and repeated custom routes reuse five phial handler",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-cb-saed-dom.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "derived enhanced SAED increases reference and impact stays pending",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-cb-saed-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "SAED result equals resolver and retains attack affinity and hitzone context",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-cb-saed-dom.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: great-sword selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: long-sword selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: sword-and-shield selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: dual-blades selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: hammer selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: lance selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: switch-axe selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: charge-blade selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: insect-glaive selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: hunting-horn selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: gunlance selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: bow selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: heavy-bowgun selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon matrix: light-bowgun selected / fixed / free are coherent in explicit supported scope",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-fourteen-p0-dom.test.cjs:6:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "gunlance explicit no-shelling template equals two complete melee techniques",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-gunlance-p0-dom.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "gunlance melee changes with current build affinity and target",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-gunlance-p0-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "P0 selected technique and repeated user combo share damage path without timing",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-p0-damage-dom.test.cjs:7:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "P0 visible damage automatically reflects build attack, equipped critical boost and monster hitzone",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-p0-damage-dom.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "P0 switch-axe existing STANDARD DB reaches template and single UI",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-p0-damage-dom.test.cjs:13:53",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "bow single, fixed template and ordered free combo reuse reference handler",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-ranged-p0-dom.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "HBG normal ammo three paths share handler without weapon element",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-ranged-p0-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "ranged damage refreshes attack affinity and target without sharpness effects",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-ranged-p0-dom.test.cjs:7:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "HBG sequential skills use successive shot ordinal and reject reload crossing",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-ranged-p0-dom.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "bow force shot works only for sourced fixed route and does not reset sequence in custom",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-ranged-p0-dom.test.cjs:11:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "all three HBG normal levels match the same saved comparison resolver",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-ranged-p0-dom.test.cjs:12:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "provisional combo DPS agrees across standalone, saved comparison and JSON with explicit fixture time",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-reference-dom.test.cjs:4:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "missing Artia stays uncalculated through summary restore comparison JSON and AI",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan19-element-integration-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "IG double slash shares single template free and saved comparison damage",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan22-double-slash-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "IG body-only single template and ordered repeated custom combo use the shared engine",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan22-ig-p0-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "IG current build affinity element and hitzones refresh without changing DB values",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan22-ig-p0-dom.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "HH four complete body techniques connect single template and free routes",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-hh-p0-dom.test.cjs:7:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "HH legacy body IDs in P0 cannot bypass echo pending guard",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-hh-p0-dom.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "HH build affinity elemental state and target refresh shared damage",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-hh-p0-dom.test.cjs:10:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL normal charged and fullburst use DB source with distinct raw/fire and three common P0 paths",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-shell-p0-dom.test.cjs:7:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL stock is consumed sequentially; missing fields unreviewed skills and special components withhold entire total",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-shell-p0-dom.test.cjs:8:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL shells ignore crit buffed attack sharpness weapon element and slash HZ; original raw and fire HZ remain effective",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-shell-p0-dom.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL source conflicts unsupported power and unknown original attack are not guessed",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-shell-p0-dom.test.cjs:10:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL fire HZ follows selected MHDB part and never uses weapon-element HZ",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-shell-p0-dom.test.cjs:13:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL reference UI does not show synthetic MV zero and refreshes after typed condition edits",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-shell-p0-dom.test.cjs:16:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL mixed body and shell sequence keeps body modifiers separate and fullburst consumes remaining stock",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-shell-p0-dom.test.cjs:17:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Wyvern missing buff target mode and unknown skills withhold complete damage",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-wyvern-product-dom.test.cjs:9:1",
+        "baselineStatus": "pass"
+      },
+      {
+        "name": "Wyvern fire hitzone comes from target and known zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-wyvern-product-dom.test.cjs:10:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved comparison preserves distinct buff inputs and provisional provenance without double adding",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-wyvern-product-dom.test.cjs:14:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "LBG Lv1/2 single reference template and free combo have identical complete damage",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan24-lbg-p0-dom.test.cjs:4:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "LBG current attack affinity and hitzone refresh all routes without weapon element or sharpness",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan24-lbg-p0-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "LBG additive state and two-shot JSON restore; old JSON and forged applicability stay unverified",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan24-lbg-p0-dom.test.cjs:7:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: great-sword source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: long-sword source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: sword-and-shield source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: dual-blades source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: hammer source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: lance source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: switch-axe source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: charge-blade source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: insect-glaive source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: hunting-horn source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: gunlance source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: bow source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: heavy-bowgun source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "14-weapon guard audit: light-bowgun source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:3:25",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Artia completion ingest preserves missing source affinity through fixed variant and calcBuild",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:13:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "shell-only GL ignores unknown affinity but mixed melee remains withheld",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/p1-source-stats-dom.test.cjs:20:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "baseline is actual STANDARD damage and every normal/maximum cell uses its usual damage denominator",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/power-change-display-dom.test.cjs:4:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "all seven ordinary standards calculate and all special standards retain reasons",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/power-index-dom.test.cjs:6:1",
+        "baselineStatus": "fail"
+      }
+    ]
+  },
+  "browser": {
+    "recovered": [
+      "two saved bow builds calculate changes, preserve state and gate unsupported coatings on mobile"
+    ],
+    "previousPassNowFails": [],
+    "newlyDiscoveredOrAdded": [
+      {
+        "name": "browser fixture loads delivered root and nested production scripts unchanged",
+        "occurrence": 1,
+        "status": "pass"
+      },
+      {
+        "name": "browser fixture keeps external data, non-script files and missing modules blocked",
+        "occurrence": 1,
+        "status": "pass"
+      }
+    ],
+    "noLongerListedContainers": [],
+    "remainingFailures": [
+      {
+        "name": "mobile consultation captures live combo verdict and condition edits clear stale payload",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/ai-combo-evaluation-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved bladescale builds show inactive normal and three-shot close-coating maximum without mobile overflow",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-bladescale-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved force shot builds use explicit magazine position and edits clear stale comparison on mobile",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-force-shot-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved bow critical element skill reaches the comparison report and visible one-decimal contributions",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-skills-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved bow skill builds calculate scoped physical and elemental contributions on mobile",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-skills-browser.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile bow comparison preserves explicit conditions in report and changing coating invalidates cached result",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/bow-state-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile adopted dance preset replaces old rows saves and produces a pending 27 hit report",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/canonical-presets-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile dance add calculate save load and compare preserves the route without page overflow",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/canonical-route-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile measured timing enables comparison and deletion clears it without page overflow",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/canonical-timing-browser.test.cjs:4:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile CB state timing load and comparison use the dedicated morph route",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/charge-blade-combo-browser.test.cjs:4:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved Coalescence builds use elemental source multiplier and visibly gate added-element stacking",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/coalescence-power-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile blocker list shows every pending stage and recovers after UI deletion",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/combo-blockers-browser.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile row controls reorder preserve saved builds and clear comparison after resize",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/combo-editing-browser.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "comparison uses compact fixed columns for one two and three builds without page overflow",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/comparison-columns-browser.test.cjs:4:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "relative DPS keeps a single baseline after mobile wrapping and resizing",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/comparison-index-browser.test.cjs:4:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile saved-load dialog cancels safely and comparison reports visible pending reasons",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/comparison-readiness-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile comparison report downloads chosen baseline and cached calculation conditions",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/comparison-report-browser.test.cjs:4:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "reported two bow builds stay side by side on mobile with fixed columns and local horizontal scroll",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/comparison-user-report-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "item width stays identical across comparison counts without inherited CSS variables",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/comparison-width-compat-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "fixed maximum keeps three builds together and wraps a fourth while preserving global best",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/comparison-wrap-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile source panel loads the external calculator and keeps required-input gates",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/dark-arts-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved Dark GS build exports preactivated maximum index and health conflict remains pending on mobile",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/dark-power-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile dragon target import records MHDB provenance and manual edits remove attribution",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/dragon-target-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Fortify condition changes clear cached report and new comparison records the shared selected count",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/fortify-condition-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved actual group pieces activate Fortify at three pieces and preserve mobile comparison",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/fortify-power-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile frame registration requires confirmation and exports exact interval metadata",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/frame-timing-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile guts selector changes saved comparison indices and exported common conditions",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/group-power-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved great sword comparison loads wave module, preserves separate dragon conditions and invalidates changes",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/gs-dark-arts-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "HBG first hit reference loads its module and clears stale results on mobile",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/hbg-element-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved HBG normal builds calculate shared reference conditions and clear stale report on mobile",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/hbg-normal-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved HBG shot skills use magazine settings and clear stale report on mobile",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/hbg-shot-skills-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile saved builds export mutually exclusive health candidates and selected full state",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/health-branches-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved Heroics builds select full or low health without adding conflicting bonuses on mobile",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/heroics-power-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "expanded dance hit tables scroll locally on narrow mobile screens without page overflow",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/hit-details-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved P0 combo damage/ratio and pending UI at 375",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-browser.test.cjs:2:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "saved P0 combo damage/ratio and pending UI at 1440",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan13-p0-comparison-browser.test.cjs:2:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "SAED three damage controls at 375px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-cb-saed-browser.test.cjs:4:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "SAED three damage controls at 1440px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-cb-saed-browser.test.cjs:4:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "gunlance melee P0 and JSON restore at 375px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-gunlance-p0-browser.test.cjs:5:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "gunlance melee P0 and JSON restore at 1440px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-gunlance-p0-browser.test.cjs:5:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "P0 damage UI at 375px computes three paths and refreshes equipment",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-p0-damage-browser.test.cjs:4:44",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "P0 damage UI at 390px computes three paths and refreshes equipment",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-p0-damage-browser.test.cjs:4:44",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "P0 damage UI at 768px computes three paths and refreshes equipment",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-p0-damage-browser.test.cjs:4:44",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "P0 damage UI at 1024px computes three paths and refreshes equipment",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-p0-damage-browser.test.cjs:4:44",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "P0 damage UI at 1440px computes three paths and refreshes equipment",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-p0-damage-browser.test.cjs:4:44",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "ranged P0 bow at 375px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-ranged-p0-browser.test.cjs:5:72",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "ranged P0 bow at 1440px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-ranged-p0-browser.test.cjs:5:72",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "ranged P0 heavy-bowgun at 375px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-ranged-p0-browser.test.cjs:5:72",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "ranged P0 heavy-bowgun at 1440px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan17-ranged-p0-browser.test.cjs:5:72",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "IG body P0 and JSON restore at 375px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan22-ig-p0-browser.test.cjs:5:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "IG body P0 and JSON restore at 1440px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan22-ig-p0-browser.test.cjs:5:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "HH body P0 and JSON restore at 375px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-hh-p0-browser.test.cjs:5:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "HH body P0 and JSON restore at 1440px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-hh-p0-browser.test.cjs:5:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL scoped three P0 controls and whole-route guard at 375px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-shell-p0-browser.test.cjs:3:44",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL scoped three P0 controls and whole-route guard at 390px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-shell-p0-browser.test.cjs:3:44",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL scoped three P0 controls and whole-route guard at 768px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-shell-p0-browser.test.cjs:3:44",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL scoped three P0 controls and whole-route guard at 1024px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-shell-p0-browser.test.cjs:3:44",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "GL scoped three P0 controls and whole-route guard at 1440px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-shell-p0-browser.test.cjs:3:44",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Wyvern 2Hit product UI and save comparison at 375px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-wyvern-product-browser.test.cjs:2:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "Wyvern 2Hit product UI and save comparison at 1440px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan23-wyvern-product-browser.test.cjs:2:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "LBG scoped three routes, guards and JSON restore at 375px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan24-lbg-p0-browser.test.cjs:4:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "LBG scoped three routes, guards and JSON restore at 1440px",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/kan24-lbg-p0-browser.test.cjs:4:31",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "reference panel follows title and comparison wraps locally at phone tablet and desktop widths",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/mobile-layout-browser.test.cjs:5:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile comparison shows baseline damage and weighted component changes and updates selected baseline",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/power-change-display-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile coverage panel lists all weapons, downloads evidence-gated report and keeps fixed comparison widths",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/power-coverage-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "mobile unverified registered timing never leaks numeric DPS through comparison download or AI",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/r250-dps-verification-browser.test.cjs:2:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "KAN16 protected UI and three regressions",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/r250-stage6-ui-browser.test.cjs:9:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "scorch UI loads delivered module, calculates and fits mobile widths",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/scorch-reference-browser.test.cjs:3:1",
+        "baselineStatus": "fail"
+      },
+      {
+        "name": "current combo full timestamps calculate and download a fresh route reference on mobile",
+        "occurrence": 1,
+        "status": "fail",
+        "location": "tools/scorch-reference-browser.test.cjs:11:1",
+        "baselineStatus": "fail"
+      }
+    ]
+  }
+}

@@ -6,7 +6,7 @@ const {test} = require('node:test');
 const html = fs.readFileSync(process.env.MH_TEST_HTML || require('node:path').join(__dirname,'../index.html'),'utf8');
 const context = {window:{},KINDS:['great-sword','long-sword','sword-and-shield','dual-blades','hammer','hunting-horn','lance','gunlance','switch-axe','charge-blade','insect-glaive','light-bowgun','heavy-bowgun','bow'].map(k=>[k])};
 vm.createContext(context);
-vm.runInContext(html.slice(html.indexOf('const TECHNIQUE_DB_SPEC='),html.indexOf('const GENERIC_STANDARD_PROFILE_CATALOG=')),context);
+vm.runInContext(html.slice(html.indexOf('const CHARGE_BLADE_ENGINE_VERSION='),html.indexOf('const GENERIC_STANDARD_PROFILE_CATALOG=')),context);
 const engine=context.window.TechniqueDBEngine;
 const plain=x=>JSON.parse(JSON.stringify(x));
 test('r46 STANDARD hit fixtures remain valid for all 14 registries',()=>{
