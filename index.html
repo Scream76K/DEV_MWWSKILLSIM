@@ -1479,7 +1479,7 @@ function mhdbRecordElementValue(w){
   }
   return best;
 }
-function artiaFixedRecord(w){const numericKnown=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));const state=MHWElementState.fromRecord(w,{artia:true});return {attack:mhdbTrueAttack(w),attackKnown:[w?.damage?.raw,w?.damage?.display,w?.attack].some(numericKnown),affinityKnown:numericKnown(w?.affinity),affinity:Number(w?.affinity??0),...state,sourceId:w?.id??null};}
+function artiaFixedRecord(w){const numericKnown=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));const state=MHWElementState.fromRecord(w,{artia:true});return {attack:mhdbTrueAttack(w),attackKnown:[w?.damage?.raw,w?.damage?.display,w?.attack].some(numericKnown),affinityKnown:numericKnown(w?.affinity),affinity:Number(w?.affinity??0),...state,sourceId:w?.id??null,normalAmmo:Array.isArray(w?.ammo)?w.ammo.filter(a=>a?.kind==='normal').map(a=>({...a})):null};}
 function consolidateArtiaFixedVariantRows(rows){
   const src=Array.isArray(rows)?rows:[];
   const groups=new Map(), passthrough=[];
@@ -2503,6 +2503,12 @@ function realPipelineWeapon(pipelineWeapon,lbgParts=comboLBGStoredState()){
       // Unknown elemental capacity stays unknown; normal-ammo restoration must not block capacity-independent damage.
       const unresolvedElementCapacity=completedAmmo?.completionEvidence?.capacityStatus==='UNRESOLVED_SOURCE_CONFLICT';
       let ammo=completedAmmo?[...(pipelineWeapon.ammo||[]).filter(a=>a.kind!==completedAmmo.kind),completedAmmo]:pipelineWeapon.ammo;
+      let normalAmmoVariantSourceId=null;
+      if(isGogmaArtia(pipelineWeapon)&&canonicalWeaponKind(pipelineWeapon)==='light-bowgun'&&(lbgParts?.ammoType==='NORMAL'||Array.isArray(pipelineWeapon.artiaFixedVariants?.[build.artia.production||'element']?.normalAmmo))){
+        const variant=pipelineWeapon.artiaFixedVariants?.[build.artia.production||'element'],normal=variant?.normalAmmo;
+        if(!Array.isArray(normal)||normal.length!==1||variant.sourceId!==fixed.sourceId||normal[0]?.kind!=='normal'||!Number.isInteger(normal[0].level)||typeof normal[0].rapid!=='boolean')throw Error('REAL_SLICE:ARTIA_VARIANT_NORMAL_AMMO_SOURCE_UNRESOLVED');
+        ammo=[...(ammo||[]).filter(a=>a.kind!=='normal'),...normal.map(a=>({...a}))];normalAmmoVariantSourceId=variant.sourceId;
+      }
       let capacityEvidence=null;
       if(restore.capacity>0){
         if(!Array.isArray(ammo)||!ammo.some(a=>a.kind==='normal'))throw new Error('REAL_SLICE:ARTIA_CAPACITY_BASE_AMMO_UNRESOLVED');
@@ -2522,7 +2528,7 @@ function realPipelineWeapon(pipelineWeapon,lbgParts=comboLBGStoredState()){
       }
       pipelineWeapon={...pipelineWeapon,...shellOverride,ammo,damage:{...pipelineWeapon.damage,raw:fixed.attack+restore.attack},affinity:fixed.affinity+restore.affinity,
         specials:element>0?[{kind:['fire','water','ice','thunder','dragon'].includes(type)?'element':'status',element:type,status:type,damage:{display:element,raw:element/10}}]:[],
-        artiaCalculationEvidence:{...fixed.stageEvidence,sharpnessPremise,capacityEvidence,restorationContract:isNormalArtiaRare8(pipelineWeapon)?NORMAL_ARTIA_R8_RESTORE:null,sourceId:fixed.sourceId,elementEvidence:fixed.elementEvidence||null,production:build.artia.production,parts:[...build.artia.parts],sameElementPartCount:3,restores:[...build.artia.restores],stage:'BASE_PLUS_FIXED_PRODUCTION_PLUS_RESTORE_BEFORE_SKILLS'}};
+        artiaCalculationEvidence:{...fixed.stageEvidence,sharpnessPremise,capacityEvidence,normalAmmoVariantSourceId,restorationContract:isNormalArtiaRare8(pipelineWeapon)?NORMAL_ARTIA_R8_RESTORE:null,sourceId:fixed.sourceId,elementEvidence:fixed.elementEvidence||null,production:build.artia.production,parts:[...build.artia.parts],sameElementPartCount:3,restores:[...build.artia.restores],stage:'BASE_PLUS_FIXED_PRODUCTION_PLUS_RESTORE_BEFORE_SKILLS'}};
     }
   return pipelineWeapon;
 }
@@ -9069,7 +9075,7 @@ function consumerAppliedAmmoPremise(kind,conditions){
 }
 function consumerStandardAmmoNote(plan){
  if(!plan?.standardAmmo)return '';
- if(plan.standardAmmo.ammoType==='NORMAL'){const a=plan.standardAmmo;return '<p class="notice small" data-standard-ammo>通常弾 Lv'+esc(a.level)+' / '+esc(a.shotCount)+'発 / '+esc(a.contactCount)+'命中 / '+esc(a.shotMode)+'（武器の対応Lv・装填数無視・資料参考値、実ゲーム未検証）</p>';}
+ if(plan.standardAmmo.ammoType==='NORMAL'){const a=plan.standardAmmo;return '<p class="notice small" data-standard-ammo>通常弾 Lv'+esc(a.level)+' / '+esc(a.shotCount)+'発 / '+esc(a.contactCount)+'命中 / '+esc(a.shotMode==='RAPID'?'速射（RAPID）':'非速射（NORMAL）')+'（武器の対応Lv・装填数無視・資料参考値、実ゲーム未検証）</p>';}
  const a=plan.standardAmmo,names={fire:'火炎',water:'水冷',thunder:'電撃',ice:'氷結',dragon:'滅龍'};
  const count=Number.isInteger(a.contactCount)&&a.contactCount>=1&&a.contactCount<=6?'接触'+a.contactCount+'回':'接触数未確定';
  const basis=a.status==='PROVISIONAL_COMPARISON_PREMISE'?'属性弾の比較基準（暫定）':'属性弾の指定条件';
@@ -9150,12 +9156,12 @@ function consumerStandardConditions(kind,conditions,target=null){
  for(const key of ['bowState','hbgState','lightBowgunState'])if(c[key])c[key]={...c[key],range:'CRITICAL'};
  if(['light-bowgun','heavy-bowgun'].includes(kind)){
   const key=kind==='light-bowgun'?'lightBowgunState':'hbgState';
-  let weapon;try{weapon=realPipelineWeapon(selectedWeapon(),c.lightBowgunState);}catch(error){c.standardBowgunReason=String(error.message||error);return c;}
+  let weapon;try{weapon=realPipelineWeapon(selectedWeapon(),kind==='light-bowgun'?{...c.lightBowgunState,ammoType:'NORMAL'}:c.lightBowgunState);}catch(error){c.standardBowgunReason=String(error.message||error);return c;}
   const selection=window.BowgunNormalReference.selectStandardAmmo(weapon,c[key]||{});
   if(selection.reason)c.standardBowgunReason=selection.reason;
   else{
    c.standardBowgunSequence=selection;
-   c[key]={...(c[key]||{}),ammoType:'NORMAL',ammoLevel:selection.ammoLevel,shotMode:selection.shotMode,range:'CRITICAL',normalModeLevel:0,contactPolicy:kind==='light-bowgun'?'ALL_FIVE':'ALL_THREE',...(kind==='light-bowgun'?{rapidReady:true,specialMagazine:c[key]?.specialMagazine||'NONE'}:{})};
+   c[key]={...(c[key]||{}),ammoType:'NORMAL',ammoLevel:selection.ammoLevel,shotMode:selection.shotMode,range:'CRITICAL',normalModeLevel:0,contactPolicy:selection.shotMode==='RAPID'?'ALL_FIVE':'ALL_THREE',...(kind==='light-bowgun'?{rapidReady:true,specialMagazine:c[key]?.specialMagazine||'NONE'}:{})};
    c.standardAmmoPremise={ammoType:'NORMAL',level:selection.ammoLevel,baseAmmoLevel:selection.baseAmmoLevel,shotCount:selection.shotCount,contactCount:selection.contactCount,shotMode:selection.shotMode,policy:'WEAPON_NORMAL_LEVEL_OWNER_SEQUENCE',status:'SOURCE_REFERENCE_NOT_LIVE_VERIFIED'};
   }
  }
@@ -9265,7 +9271,7 @@ function evaluateConsumerCombat({kind,moves=[],conditions={},target,plan=consume
     skills:Object.entries(calcState.total||{}),equipmentSkillsResolved:realPipelineSkillsResolved(),
     techniqueId:plan.techniqueIds[0],techniqueIds:plan.techniqueIds,techniqueDb:window.TechniqueDBEngine,trainingRoom:trainingRoomMonster(),
     conditions:resolvedConditions,conditionalConditionPlan:evaluationStats?.conditionalConditionPlan,...states,
-    ...(plan.selection==='STANDARD'&&resolvedConditions.standardBowgunSequence?(kind==='light-bowgun'?{rapidAmmoSequence:'LBG_FIVE_ROUNDS_25_HITS'}:{normalAmmoSequence:'NORMAL_TEN_SHOT_NO_RELOAD'}):{}),
+    ...(plan.selection==='STANDARD'&&resolvedConditions.standardBowgunSequence?(kind==='light-bowgun'?(resolvedConditions.standardBowgunSequence.shotMode==='RAPID'?{rapidAmmoSequence:'LBG_FIVE_ROUNDS_25_HITS'}:{normalAmmoSequence:'LBG_NORMAL_FIVE_SHOT_NO_RELOAD'}):{normalAmmoSequence:'NORMAL_TEN_SHOT_NO_RELOAD'}):{}),
     retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'};
     const original=adapter.evaluateCurrent(input);
     return {...continueConsumerSkillEffects(input,original),evaluationPlan:evidence};

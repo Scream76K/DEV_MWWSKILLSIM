@@ -22,7 +22,7 @@
     },
     {
       "path": "bowgun-normal-reference.js",
-      "sha256": "389e7a8157b09dca9696c720f304331a0999b9db3b463ed705919c1c3c30f96d"
+      "sha256": "a892258dd147b53541e891afc0afe5acd6ba8b72f5a456dec0f61a0be77ef465"
     },
     {
       "path": "build-relative-comparison.js",
@@ -122,11 +122,11 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "d1e1e372e20c5d96717605ce83270820725fa3ae8635e84ea9fbd3e9246b3e90"
+      "sha256": "b65b6f256488ab1876fe6b32a4d228214f754322494939e95c8fdf5b509c46e9"
     },
     {
       "path": "index.html",
-      "sha256": "fecf488b3f951913934fe1dca9a53452f4afdbf22743d5bb692d80c042fa7670"
+      "sha256": "a9e1a580066469a9300cc462007b71019e285022b7b6b10b2d0c8377df31d146"
     },
     {
       "path": "observed-shelling.js",
@@ -458,7 +458,7 @@
     },
     {
       "path": "tests/lbg-rapid-five-shot.test.cjs",
-      "sha256": "4f03883bccf2c38ab4041557c5a88537bf30316b98460402d844bab2f60060b6"
+      "sha256": "d45e01848407920de640c0a24ad10b34a2a3a228a0eebcd91524a0f718268723"
     },
     {
       "path": "tools/lbg-rapid-five-proof.cjs",
@@ -470,11 +470,15 @@
     },
     {
       "path": "tools/bowgun-standard-sequence-proof.cjs",
-      "sha256": "f54759cf116e460bd5d65883979a8e178727420a45ab64c8d9f480f140a17c52"
+      "sha256": "b032bce9b483b87e7f086e6eee4769d9f67853d9b452c79ffe76828dfc1096a9"
     },
     {
       "path": "tools/bowgun-standard-browser-proof.cjs",
-      "sha256": "f7e3ebee2f92cb4895d37639e5a0ca7ea91ee157fd7d5cb19ae7cab58bcd436b"
+      "sha256": "8cf5c261ca81c06b6501a677e0e041b1da4a308c2e6a648533c3045963f4b2c1"
+    },
+    {
+      "path": "tests/lbg-normal-five-shot.test.cjs",
+      "sha256": "c3f589ca43ca5effe3d420a7619d12ebd9b3fe59bd9dd17f2806fa16f3642ac1"
     }
   ],
   "tests": [
@@ -491,9 +495,10 @@
     "tests/bowgun-normal-ten-shot.test.cjs",
     "tests/monster-target-resolution.test.cjs",
     "tools/integration-regression/target-ingress.test.cjs",
-    "tests/lbg-rapid-five-shot.test.cjs"
+    "tests/lbg-rapid-five-shot.test.cjs",
+    "tests/lbg-normal-five-shot.test.cjs"
   ],
-  "expectedTests": 1526,
+  "expectedTests": 1530,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
@@ -508,5 +513,6 @@
     "46fbfbaed5d63b94807daccc5ce4268b44e076fd",
     "58bf6a8b66ddda29c8a1d2c5c8bf3e8e15e18e8a"
   ],
-  "rapidFiveRoundScope": "STANDARD_UI_WEAPON_NATIVE_LEVEL_FIRST_FORCE_RAPID_EFFECTS_NOT_APPLIED"
+  "rapidFiveRoundScope": "STANDARD_UI_WEAPON_NATIVE_LEVEL_FIRST_FORCE_RAPID_EFFECTS_NOT_APPLIED",
+  "nonrapidFiveRoundScope": "OWNER_APPROVED_LBG_NORMAL_FIVE_ROUNDS_15_CONTACTS"
 }

@@ -1599,7 +1599,7 @@ if(sequenceRequired){
 r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTechniqueId);
 }else if(['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_2','LBG_NORMAL_RAPID_3','LBG_NORMAL_RAPID_NATIVE_3'].includes(parameters.sourceTechniqueId)){
  r=root.BowgunNormalReference.rapidHit({techniqueId:parameters.sourceTechniqueId,state,hitIndex:parameters.hitIndex,normalUp:Number(input.skills?.normalUp||0),attack:Number(stats.attack)+criticalRangeAttackAdd,affinity:Math.min(100,Number(stats.affinity)+wexFor(part,'pierce')),criticalMultiplier,physicalHitzone:part?.multipliers?.pierce*100,rapidUp:rapidEntries.length?rapidShotRule.skillLevel:0},root.TechniqueDBEngine);
-}else{if(typeof root.BowgunNormalReference?.shot!=='function')return {status:'unavailable',reason:'REAL_SLICE:BOWGUN_REFERENCE_UNAVAILABLE'};const hz=part?.multipliers?.pierce,expected=Number(String(parameters.sourceTechniqueId).match(/^(?:HBG|LBG)_NORMAL_AMMO_([0-9]+)$/)?.[1]||0);if(!Number.isFinite(hz)||!Number.isInteger(state.ammoLevel)||state.ammoLevel!==expected)return {status:'unavailable',reason:'REAL_SLICE:BOWGUN_STATE_UNRESOLVED'};if(kind==='heavy-bowgun'&&(!state.weaponAmmoEntry||String(state.weaponAmmoEntry.kind).toLowerCase()!=='normal'||Number(state.weaponAmmoEntry.level)!==expected))return {status:'unavailable',reason:'REAL_SLICE:HBG_AMMO_NOT_SUPPORTED_BY_WEAPON'};if(state.ammoType!=='NORMAL'||state.range!=='CRITICAL'||state.contactPolicy!=='ALL_THREE'||!Number.isInteger(state.normalModeLevel)||state.normalModeLevel<0||state.normalModeLevel>2)return {status:'unavailable',reason:'REAL_SLICE:BOWGUN_STATE_UNRESOLVED'};r=root.BowgunNormalReference[normalAmmoSequence?'tenShot':'shot']({hitAttackAdds:referencePunishingAdds(channel,parameters.sourceTechniqueId),hitAffinityAdds:referenceDrawAdds(channel,parameters.sourceTechniqueId),weaponKind:kind,attack:Number(stats.attack)+(state.range==='CRITICAL'?criticalRangeAttackAdd:0),affinity:Number(stats.affinity),criticalMultiplier,physicalHitzone:hz*100,normalUp:Number(input.skills?.normalUp||0),firstShot:Number(input.skills?.firstShot||0),forceShot:Number(input.skills?.forceShot||0),state},root.TechniqueDBEngine);}const value=Number(r?.total??r?.comparisonPower);return Number.isFinite(value)?{status:'available',value,...(kind==='charge-blade-saed'?{details:{status:r.status,verificationStatus:r.verificationStatus,dps:r.dps,components:r.components,trace:r.trace}}:['bow','heavy-bowgun','light-bowgun'].includes(kind)?{details:{state:r.state,scope:r.scope||'FIXED_BOW_STANDARD_SOURCE_REFERENCE',trace:r.trace,...(r.sequence?{sequence:r.sequence,physical:r.physical,element:r.element}:{}),...(kind==='bow'?{effectiveDisplayedElement:r.effectiveDisplayedElement,elementBasis:r.elementBasis,physical:r.physical,element:r.element}:{})}}:{})}:{status:'unavailable',reason:'REAL_SLICE:REFERENCE_RESULT_UNRESOLVED'};}catch(error){return {status:'unavailable',reason:String(error?.message||error)}}}):null,
+}else{if(typeof root.BowgunNormalReference?.shot!=='function')return {status:'unavailable',reason:'REAL_SLICE:BOWGUN_REFERENCE_UNAVAILABLE'};const hz=part?.multipliers?.pierce,expected=Number(String(parameters.sourceTechniqueId).match(/^(?:HBG|LBG)_NORMAL_AMMO_([0-9]+)$/)?.[1]||0);if(!Number.isFinite(hz)||!Number.isInteger(state.ammoLevel)||state.ammoLevel!==expected)return {status:'unavailable',reason:'REAL_SLICE:BOWGUN_STATE_UNRESOLVED'};if(kind==='heavy-bowgun'&&(!state.weaponAmmoEntry||String(state.weaponAmmoEntry.kind).toLowerCase()!=='normal'||Number(state.weaponAmmoEntry.level)!==expected))return {status:'unavailable',reason:'REAL_SLICE:HBG_AMMO_NOT_SUPPORTED_BY_WEAPON'};if(state.ammoType!=='NORMAL'||state.range!=='CRITICAL'||state.contactPolicy!=='ALL_THREE'||!Number.isInteger(state.normalModeLevel)||state.normalModeLevel<0||state.normalModeLevel>2)return {status:'unavailable',reason:'REAL_SLICE:BOWGUN_STATE_UNRESOLVED'};r=root.BowgunNormalReference[normalAmmoSequence===NORMAL_FIVE_SHOT?'fiveShot':normalAmmoSequence?'tenShot':'shot']({hitAttackAdds:referencePunishingAdds(channel,parameters.sourceTechniqueId),hitAffinityAdds:referenceDrawAdds(channel,parameters.sourceTechniqueId),weaponKind:kind,attack:Number(stats.attack)+(state.range==='CRITICAL'?criticalRangeAttackAdd:0),affinity:Number(stats.affinity),criticalMultiplier,physicalHitzone:hz*100,normalUp:Number(input.skills?.normalUp||0),firstShot:Number(input.skills?.firstShot||0),forceShot:Number(input.skills?.forceShot||0),state},root.TechniqueDBEngine);}const value=Number(r?.total??r?.comparisonPower);return Number.isFinite(value)?{status:'available',value,...(kind==='charge-blade-saed'?{details:{status:r.status,verificationStatus:r.verificationStatus,dps:r.dps,components:r.components,trace:r.trace}}:['bow','heavy-bowgun','light-bowgun'].includes(kind)?{details:{state:r.state,scope:r.scope||'FIXED_BOW_STANDARD_SOURCE_REFERENCE',trace:r.trace,...(r.sequence?{sequence:r.sequence,physical:r.physical,element:r.element}:{}),...(kind==='bow'?{effectiveDisplayedElement:r.effectiveDisplayedElement,elementBasis:r.elementBasis,physical:r.physical,element:r.element}:{})}}:{})}:{status:'unavailable',reason:'REAL_SLICE:REFERENCE_RESULT_UNRESOLVED'};}catch(error){return {status:'unavailable',reason:String(error?.message||error)}}}):null,
    canonicalPhysical:{expectedGameVersion:versions.game,
     resolveElementApplicability:saDragonEligible?({state,parameters})=>{const mode=parameters?.saHitMode;if(!['SWORD','AXE'].includes(mode)||state?.switchAxe?.mode!==mode)throw Error('SA_DRAGON_HIT_MODE_UNRESOLVED');return {applies:mode==='SWORD',reason:mode==='SWORD'?'SA_DRAGON_SWORD_PHIAL':'SA_DRAGON_AXE_NO_ELEMENT',evidenceRef:'https://kuroyonhon.com/mhwilds/memo/11.php'};}:undefined,
     resolveSharpness:({build,state,parameters})=>{if(parameters?.glSharpnessOverride)return {value:parameters.glSharpnessOverride.value,gameVersion:versions.game,evidenceRef:parameters.glSharpnessOverride.source,status:'PROVISIONAL'};if(bladescaleEligible&&state?.bladescaleFirstHit===true)return {value:bladescaleRule.physicalSharpness,gameVersion:versions.game,evidenceRef:bladescaleRule.coefficientSource,sourceGameVersion:bladescaleRule.sourceVersion,status:bladescaleRule.status};const r=root.MHWWeaponMaxSharpness.resolve(build.equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});if(!r.options)throw Error('REAL_SLICE:SHARPNESS_UNRESOLVED');return {value:r.options.sharpnessPhysicalMultiplier,gameVersion:versions.game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:build.equipment.provenance.sourceGameVersion,status:'PROVISIONAL'};},
@@ -1633,7 +1633,7 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
    const key=weapon.kind==='light-bowgun'?'lightBowgunState':'hbgState';
    pipelineConditions[key]={...(pipelineConditions[key]||{})};
    for(const field of ['magazineCapacity','shotOrdinal','fullMagazine','loadedRounds']){delete pipelineConditions[field];delete pipelineConditions[key][field];}
-   pipelineConditions.normalAmmoSequence={id:normalAmmoSequence,shotCount:10,magazinePolicy:'IGNORED_NO_RELOAD'};
+   pipelineConditions.normalAmmoSequence={id:normalAmmoSequence,shotCount:normalAmmoSequence===NORMAL_FIVE_SHOT?5:10,magazinePolicy:'IGNORED_NO_RELOAD'};
   }
   if(rapidAmmoSequence){
    Object.assign(pipelineConditions,{lightBowgunState:{...(pipelineConditions.lightBowgunState||{})},rapidAmmoSequence:{consumedRounds:5,contactCount:25,resourceModel:'FIVE_ROUND_SEQUENCE_BUDGET_NOT_WEAPON_CAPACITY'}});
@@ -1652,7 +1652,7 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
    if(hhThunderZeroResolved&&Object.values(evaluated.channels||{}).some(r=>!hhChargeResultValid(r)))return fail('REAL_SLICE:HH_THUNDER_PRODUCED_COMPONENT_CONTRACT_INVALID');
    if(hhChargeNoElementResolved&&Object.values(evaluated.channels||{}).some(r=>!hhChargeResultValid(r)))return fail('REAL_SLICE:HH_CHARGE_PRODUCED_COMPONENT_CONTRACT_INVALID');
    if(target.monster!=='training-room'||target.part!=='training-front'){const {part:sourcePart,...targetEvidence}=targetData;evaluated.targetEvidence=targetEvidence;for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,targetEvidence};}
-   if(normalAmmoSequence)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,normalAmmoSequence:{id:normalAmmoSequence,shotCount:10,contactCount:30,magazinePolicy:'IGNORED_NO_RELOAD',standardAdoption:'PENDING_LEVEL_AND_LBG_RAPID_DECISION',source:'spec/CURRENT_CONTRACTS.md:C03',liveGameVerification:'PENDING'}};
+   if(normalAmmoSequence)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,normalAmmoSequence:{id:normalAmmoSequence,shotCount:normalAmmoSequence===NORMAL_FIVE_SHOT?5:10,contactCount:normalAmmoSequence===NORMAL_FIVE_SHOT?15:30,magazinePolicy:'IGNORED_NO_RELOAD',standardAdoption:normalAmmoSequence===NORMAL_FIVE_SHOT?'OWNER_APPROVED_NONRAPID_FIVE_ROUNDS':'PENDING_LEVEL_AND_LBG_RAPID_DECISION',source:'spec/CURRENT_CONTRACTS.md:C03',liveGameVerification:'PENDING'}};
    if(rapidAmmoSequence){
     const unappliedEffects=[137,140].flatMap(id=>{const rows=allSkills.filter(x=>Number(x.skillId)===id);return rows.length?[{skillId:id,name:rows[0].name,level:Math.max(...rows.map(x=>x.level)),status:'NOT_APPLIED',reason:'RAPID_ALL_FIVE_HIT_EFFECT_NOT_VERIFIED'}]:[];});
     for(const result of Object.values(evaluated.channels||{})){
@@ -1764,7 +1764,7 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
   }
   return {status:'OK',scope:'CB_INDEPENDENT_R_H_SUM',conditionKey:JSON.stringify({target:input.target,routeStates,r:rIds,h:hIds}),channels,routes};
  }
- const NORMAL_TEN_SHOT='NORMAL_TEN_SHOT_NO_RELOAD';
+ const NORMAL_TEN_SHOT='NORMAL_TEN_SHOT_NO_RELOAD',NORMAL_FIVE_SHOT='LBG_NORMAL_FIVE_SHOT_NO_RELOAD';
  function normalTenShotIssue(input){
   const kind=input.weapon?.kind,key=kind==='light-bowgun'?'lightBowgunState':'hbgState',state=input[key];
   if(!['heavy-bowgun','light-bowgun'].includes(kind)||!inputRecord(state))return 'BOWGUN_TEN_SHOT:EXPLICIT_WEAPON_AND_STATE_REQUIRED';
@@ -1779,6 +1779,10 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
   if(!inputRecord(input))return fail('REAL_SLICE:INPUT_CONTEXT_INVALID');
   return evaluateCurrent({...input,normalAmmoSequence:NORMAL_TEN_SHOT});
  }
+ function evaluateNormalFiveShot(input={}){
+  if(!inputRecord(input))return fail('REAL_SLICE:INPUT_CONTEXT_INVALID');
+  return evaluateCurrent({...input,normalAmmoSequence:NORMAL_FIVE_SHOT});
+ }
  function evaluateRapidFiveShot(input={}){
   if(!inputRecord(input))return fail('REAL_SLICE:INPUT_CONTEXT_INVALID');
   return evaluateCurrent({...input,rapidAmmoSequence:'LBG_FIVE_ROUNDS_25_HITS'});
@@ -1787,13 +1791,18 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
   if(!inputRecord(input))return fail('REAL_SLICE:INPUT_CONTEXT_INVALID');
   if(['weapon','stats','target'].some(key=>!inputRecord(input[key]))||(input.conditions!==undefined&&!inputRecord(input.conditions)))return fail('REAL_SLICE:INPUT_CONTEXT_INVALID');
   if(input.normalAmmoSequence!==undefined&&input.normalAmmoSequence!==null){
-   if(input.normalAmmoSequence!==NORMAL_TEN_SHOT)return fail('BOWGUN_TEN_SHOT:POLICY_INVALID');
+   if(![NORMAL_TEN_SHOT,NORMAL_FIVE_SHOT].includes(input.normalAmmoSequence))return fail('BOWGUN_TEN_SHOT:POLICY_INVALID');
+   if(input.normalAmmoSequence===NORMAL_FIVE_SHOT){
+    const selection=root.BowgunNormalReference?.selectStandardAmmo(input.weapon,input.lightBowgunState||{});
+    if(input.weapon.kind!=='light-bowgun'||!selection||selection.reason||selection.shotMode!=='NORMAL'||selection.shotCount!==5||selection.ammoLevel!==input.lightBowgunState?.ammoLevel)return fail('LBG_NORMAL_FIVE:EXACT_NONRAPID_WEAPON_REQUIRED');
+   }
    const issue=normalTenShotIssue(input);if(issue)return fail(issue);
   }
   if(input.rapidAmmoSequence!=null){
    if(input.rapidAmmoSequence!=='LBG_FIVE_ROUNDS_25_HITS'||input.normalAmmoSequence!=null||input.weapon.kind!=='light-bowgun')return fail('LBG_RAPID_FIVE:POLICY_INVALID');
    const selection=root.BowgunNormalReference?.selectStandardAmmo(input.weapon,input.lightBowgunState||{}),ids=normalizeTechniqueIds(input.techniqueIds||[],{fallback:input.techniqueId});
    if(!selection||selection.reason)return fail(selection?.reason||'LBG_RAPID_FIVE:SOURCE_UNAVAILABLE');
+   if(selection.shotMode!=='RAPID')return fail('LBG_RAPID_FIVE:RAPID_WEAPON_REQUIRED');
    if(ids.ids.length!==1||ids.ids[0]!==selection.techniqueId||input.lightBowgunState?.ammoLevel!==selection.ammoLevel)return fail('LBG_RAPID_FIVE:EXACT_WEAPON_LEVEL_ROUTE_REQUIRED');
   }
   const bonuses=input.stats.activeBonusEffects;
@@ -1825,5 +1834,5 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
   original.channels.maximum.diagnostics={...original.channels.maximum.diagnostics,healthBranchComparison:{policy:'WHOLE_ROUTE_TOTAL_NOT_COMPONENT_MAXIMA',status:ready?'RESOLVED':'PENDING',selectedState:selected?.state??null,branches:branches.map(b=>({state:b.state,value:b.value,execution:b.maximum?.execution,effectPlan:b.maximum?.effectPlan}))}};
   return original;
  }
- root.MHWRealOneHitBrowserAdapter=Object.freeze({evaluateCurrent,evaluateNormalTenShot,evaluateRapidFiveShot,normalizeTechniqueIds,resolveTarget});
+ root.MHWRealOneHitBrowserAdapter=Object.freeze({evaluateCurrent,evaluateNormalTenShot,evaluateNormalFiveShot,evaluateRapidFiveShot,normalizeTechniqueIds,resolveTarget});
 })(typeof window!=='undefined'?window:globalThis);
