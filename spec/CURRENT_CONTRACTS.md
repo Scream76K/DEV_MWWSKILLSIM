@@ -85,6 +85,8 @@ C04/C05実装追補（2026-11-10）: 基準 `a772e58af777bf4702237b22d4bdf39ed3d
 上書き: 11/1の属性弾目標、11/5の属性弾1接触標準。明示的な属性弾計算経路そのものの削除指示ではない。
 実装状態: **候補へ未反映**。確認対象index.htmlのconsumerStandardProfileはLBG/HBG_ELEMENT_FIRST_HIT_REFERENCEを選び、consumerElementAmmoChoiceはcontactCount=1、consumerStandardConditionsは初射を設定する。明示通常弾経路は存在するが、通常弾10射の基準実装ではない。旧経路で数値が出ることをこの契約の成功に数えない。
 
+専用経路の追補: 明示された対応通常弾Lvを受ける `BowgunNormalReference.tenShot` と `MHWRealOneHitBrowserAdapter.evaluateNormalTenShot` を追加。装填数に依存しない1〜10射とFirst/Forceを個別評価し、保存値を変更しない。[実装範囲と検証](../docs/reports/normal-ten-shot-20261111/README.md)。これはC03の標準入口切替ではない。現行属性弾1接触出力は10射基準を満たさず、標準採用完了・実ゲーム検証済みとは扱わない。標準弾Lvとライト速射の未決定は維持する。
+
 ### C04: スキル採否
 
 仕様状態: 下記のユーザー指定除外と条件は確定。
