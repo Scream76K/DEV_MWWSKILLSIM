@@ -1,3 +1,15 @@
+# 現在版: gl-reference-identity-integration-20261110
+
+直前のローカル確定版966ab612へ、GL補助計算の実行ID維持とstage記録の修正を統合しました。966のテスト修復は保持し、主計算・係数・adapter・スキル継続仕様は変更していません。今回までのローカル2commitはGitHubへ未送信で、反映確認済みmainlineは8f6e759eです。
+
+現在の全件検証は公式1230件（1198成功/32失敗）、DOM518件（357成功/161失敗）、browser90件（21成功/69失敗）。統合1506・freshness94・source47は成功。新6検査とDOM既存1件が成功し、966から以前の成功→失敗は0ですが、全suite成功ではありません。
+
+現在の詳細は [GL統合確認](docs/reports/gl-reference-identity-20261110/INTEGRATION_AFTER_966AB.md)、版情報は `INTEGRATION_VERSION.json`、正確なcommitは `git rev-parse HEAD`。新しいbranchは作成していません。
+
+## 以下は966ab612までの版説明の履歴
+
+以下の「現在版」と公開状態・件数はその作成時点の記録です。現在の状態は上記を優先します。
+
 # 現在版: legacy-test-harness-20261110
 
 製品の確定基準は `8f6e759e0745618bb26b26c0962bc62735426616` で、既存GitHub mainlineへの通常更新と3件のCI成功を確認済みです。今回の版はその後のテスト環境・fixture修復で、製品4ファイル・DB・仕様は同一です。今回の差分はローカル保存のみで、GitHubへは未送信です。

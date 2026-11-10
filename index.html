@@ -5294,12 +5294,14 @@ function evaluateP0DamageRoute(rows){
       // Public single/template/user buttons share equipment/comparison consumers.
       // Do not silently flatten a row whose repetition contract is unresolved.
       if(rows.some(r=>r.count!=null&&r.count!==1))throw Error('REAL_SLICE:ROW_REPEAT_NOT_ADOPTED');
-      const moves=rows.map(r=>({techniqueId:comboMove(r.techniqueId)?.canonicalTechniqueId||r.techniqueId}));
+      // GL reference IDs carry NORMAL/CHARGED/FULL_BURST execution semantics.
+      // Their shared canonical record is a coefficient source, not the action ID.
+      const moves=rows.map(r=>{const move=comboMove(r.techniqueId);return {techniqueId:move?.handler==='GunlanceShellReferenceHandler'&&move.referenceAction?move.id:move?.canonicalTechniqueId||r.techniqueId};});
       const pipeline=evaluateConsumerCombat({kind:comboKind(),moves,conditions:compareStep5Snapshot(),target:{monster:$('monster')?.value,part:$('monsterPart')?.value}});
       const metric=channel=>consumerDamageMetric({oneHitPipeline:pipeline},channel);
       const normal=metric('normal'),maximum=metric('maximum');
       const components=pipeline.channels?.normal?.components||[];
-      const stages=moves.map((move,i)=>{const found=components.filter(c=>c.status==='available'&&c.techniqueId===move.techniqueId&&String(c.eventId).split(':')[0]===String(i));return {index:i+1,name:comboMove(rows[i]?.techniqueId)?.name||move.techniqueId,result:{total:found.length?found.reduce((n,c)=>n+c.value,0):null,trace:found.flatMap(c=>c.details?.trace||[])}};});
+      const stages=moves.map((move,i)=>{const found=components.filter(c=>c.status==='available'&&c.techniqueId===move.techniqueId&&String(c.eventId).split(':')[0]===String(i));return {index:i+1,id:move.techniqueId,name:comboMove(rows[i]?.techniqueId)?.name||move.techniqueId,result:{total:found.length?found.reduce((n,c)=>n+c.value,0):null,trace:found.flatMap(c=>c.details?.trace||[])}};});
       return {status:normal.value===null?'BLOCKED':'SOURCE_REFERENCE',damage:normal.value,maximumDamage:maximum.value,maximumReason:maximum.reason,stages,blocked:normal.value===null?[{reason:normal.reason}]:[],pipeline,context:{scope:'SHARED_CONSUMER_CONDITIONS'}};
     }
 

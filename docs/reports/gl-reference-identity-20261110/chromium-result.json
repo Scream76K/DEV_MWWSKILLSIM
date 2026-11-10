@@ -1,0 +1,84 @@
+{
+  "scope": "DISPOSABLE_CHROMIUM_GL_PUBLIC_REFERENCE_AND_SAVED_COMPARE;NOT_GAME_ACCURACY",
+  "hashes": {
+    "index": "13b3697edd8e86696ae31e2cb35fe680ac84b4d1840d452530173506bd239cee",
+    "adapter": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4"
+  },
+  "cases": [
+    {
+      "action": "NORMAL",
+      "status": "PASS",
+      "builds": [
+        {
+          "weaponId": 315,
+          "damage": 9.3,
+          "maximumDamage": 9.3,
+          "stageId": "reference:gl_NORMAL"
+        },
+        {
+          "weaponId": 319,
+          "damage": 17.3,
+          "maximumDamage": 17.3,
+          "stageId": "reference:gl_NORMAL"
+        }
+      ],
+      "savedReloads": 2,
+      "savedComparisonAndJson": true,
+      "originalStatePreserved": true,
+      "pageErrors": []
+    },
+    {
+      "action": "CHARGED",
+      "status": "PASS",
+      "builds": [
+        {
+          "weaponId": 315,
+          "damage": 30.12,
+          "maximumDamage": 30.12,
+          "stageId": "reference:gl_CHARGED"
+        },
+        {
+          "weaponId": 319,
+          "damage": 58.92,
+          "maximumDamage": 58.92,
+          "stageId": "reference:gl_CHARGED"
+        }
+      ],
+      "savedReloads": 2,
+      "savedComparisonAndJson": true,
+      "originalStatePreserved": true,
+      "pageErrors": []
+    },
+    {
+      "action": "FULL_BURST",
+      "status": "PASS",
+      "builds": [
+        {
+          "weaponId": 315,
+          "damage": 73.07999999999998,
+          "maximumDamage": 73.07999999999998,
+          "stageId": "reference:gl_FULL_BURST"
+        },
+        {
+          "weaponId": 319,
+          "damage": 140.28,
+          "maximumDamage": 140.28,
+          "stageId": "reference:gl_FULL_BURST"
+        }
+      ],
+      "savedReloads": 2,
+      "savedComparisonAndJson": true,
+      "originalStatePreserved": true,
+      "pageErrors": []
+    }
+  ],
+  "failures": [],
+  "status": "PASS",
+  "counts": {
+    "actions": 3,
+    "distinctWeapons": 2,
+    "builds": 6,
+    "channels": 12,
+    "savedComparisonPairs": 3
+  }
+}

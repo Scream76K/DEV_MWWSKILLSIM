@@ -10,7 +10,7 @@
   "files": [
     {
       "path": ".github/workflows/cb-gl-scope-regression.yml",
-      "sha256": "4ba63f24bf8f75971d23033a2af3c225d24c17b5bb73094d01b20212e0fa740a"
+      "sha256": "9e195c4a71861a6903d471c4ee6d9213bd4aaf73f382d89783d1790811e48e20"
     },
     {
       "path": "bow-reference.js",
@@ -122,7 +122,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "c3499eba8a8433525256967ffe6ca68587d8a6681c39cd214c2089d38d88dddb"
+      "sha256": "13b3697edd8e86696ae31e2cb35fe680ac84b4d1840d452530173506bd239cee"
     },
     {
       "path": "observed-shelling.js",
@@ -311,6 +311,18 @@
     {
       "path": "tools/skill-continuation-browser-partial-save-all14.cjs",
       "sha256": "59397dc1240d71069fb81ddcef0f161bd302e129d829a714686f52c29d09d369"
+    },
+    {
+      "path": "tests/gl-reference-identity.test.cjs",
+      "sha256": "bc936237d58b106f53b416342bea500a1a9e370fc014ce31812f4a8697582f42"
+    },
+    {
+      "path": "tools/gl-reference-identity-public.cjs",
+      "sha256": "a2294b59bddbe740a41807f4b037b63da359205b9ff88eba447e555b50b88e31"
+    },
+    {
+      "path": "tools/gl-reference-identity-browser.cjs",
+      "sha256": "8132526b3ab4fedf53629a2cf7de146084e23ffd8112f1da906965808ce750c1"
     }
   ],
   "tests": [
@@ -322,10 +334,11 @@
     "tools/input-guard-regression/ingress.test.cjs",
     "tools/input-guard-regression/controls.test.cjs",
     "tests/skill-continuation.test.cjs",
-    "tests/skill-calculation-policy.test.cjs"
+    "tests/skill-calculation-policy.test.cjs",
+    "tests/gl-reference-identity.test.cjs"
   ],
-  "expectedTests": 1500,
-  "productBaselineCommit": "a772e58af777bf4702237b22d4bdf39ed3d2bd99",
+  "expectedTests": 1506,
+  "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
     "C05"

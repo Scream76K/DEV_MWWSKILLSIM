@@ -1,0 +1,160 @@
+{
+  "scope": "REAL_MHDB_GL_REFERENCE_ACTION_PUBLIC_CALCULATE_SAVE_COMPARE;NOT_GAME_ACCURACY",
+  "baseCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
+  "hashes": {
+    "index": "13b3697edd8e86696ae31e2cb35fe680ac84b4d1840d452530173506bd239cee",
+    "adapter": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4",
+    "database": "e2d6719012b4463e51f80a12e05df665c2b9e10e6f74139716b5471c21784d4e",
+    "fixtures": "cd15289e54157909f7a825f531440b718f28530891a144ec0d91cf61f17cbf4b",
+    "script": "a2294b59bddbe740a41807f4b037b63da359205b9ff88eba447e555b50b88e31"
+  },
+  "rows": [
+    {
+      "action": "NORMAL",
+      "weaponId": 315,
+      "main": 9.3,
+      "helper": 9.3,
+      "blocked": [],
+      "stageIds": [
+        "reference:gl_NORMAL"
+      ],
+      "stages": [
+        9.3
+      ]
+    },
+    {
+      "action": "NORMAL",
+      "weaponId": 319,
+      "main": 17.3,
+      "helper": 17.3,
+      "blocked": [],
+      "stageIds": [
+        "reference:gl_NORMAL"
+      ],
+      "stages": [
+        17.3
+      ]
+    },
+    {
+      "action": "CHARGED",
+      "weaponId": 315,
+      "main": 30.12,
+      "helper": 30.12,
+      "blocked": [],
+      "stageIds": [
+        "reference:gl_CHARGED"
+      ],
+      "stages": [
+        30.12
+      ]
+    },
+    {
+      "action": "CHARGED",
+      "weaponId": 319,
+      "main": 58.92,
+      "helper": 58.92,
+      "blocked": [],
+      "stageIds": [
+        "reference:gl_CHARGED"
+      ],
+      "stages": [
+        58.92
+      ]
+    },
+    {
+      "action": "FULL_BURST",
+      "weaponId": 315,
+      "main": 73.07999999999998,
+      "helper": 73.07999999999998,
+      "blocked": [],
+      "stageIds": [
+        "reference:gl_FULL_BURST"
+      ],
+      "stages": [
+        73.07999999999998
+      ]
+    },
+    {
+      "action": "FULL_BURST",
+      "weaponId": 319,
+      "main": 140.28,
+      "helper": 140.28,
+      "blocked": [],
+      "stageIds": [
+        "reference:gl_FULL_BURST"
+      ],
+      "stages": [
+        140.28
+      ]
+    }
+  ],
+  "savedComparisons": [
+    {
+      "action": "NORMAL",
+      "distinctWeaponIds": [
+        315,
+        319
+      ],
+      "currentSharedRoute": "reference:gl_NORMAL",
+      "savedReloads": 2,
+      "comparedRows": 2,
+      "comparisonJsonExact": true,
+      "mainChannelsExact": true,
+      "originalSnapshotConditionsSavedMapAndChannelsPreserved": true
+    },
+    {
+      "action": "CHARGED",
+      "distinctWeaponIds": [
+        315,
+        319
+      ],
+      "currentSharedRoute": "reference:gl_CHARGED",
+      "savedReloads": 2,
+      "comparedRows": 2,
+      "comparisonJsonExact": true,
+      "mainChannelsExact": true,
+      "originalSnapshotConditionsSavedMapAndChannelsPreserved": true
+    },
+    {
+      "action": "FULL_BURST",
+      "distinctWeaponIds": [
+        315,
+        319
+      ],
+      "currentSharedRoute": "reference:gl_FULL_BURST",
+      "savedReloads": 2,
+      "comparedRows": 2,
+      "comparisonJsonExact": true,
+      "mainChannelsExact": true,
+      "originalSnapshotConditionsSavedMapAndChannelsPreserved": true
+    }
+  ],
+  "sequenceChecks": [
+    {
+      "moves": [
+        "reference:gl_NORMAL",
+        "reference:gl_CHARGED",
+        "reference:gl_NORMAL"
+      ],
+      "damage": 93.52,
+      "stages": [
+        17.3,
+        58.92,
+        17.3
+      ],
+      "exhaustionBlocked": [
+        {
+          "reason": "REAL_SLICE:GL_NORMAL_ROUNDS_INSUFFICIENT"
+        }
+      ],
+      "fullBurstMixedStillUnsupported": [
+        {
+          "reason": "REAL_SLICE:GL_SEQUENCE_STATE_TRANSITION_UNRESOLVED"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "errors": [],
+  "status": "PASS"
+}

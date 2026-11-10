@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "status": "SCOPED_VERIFICATION_COMPLETE_NOT_INTEGRATED_OR_PUBLISHED",
+  "productBase": "8f6e759e0745618bb26b26c0962bc62735426616",
+  "productHashes": {
+    "index.html": "13b3697edd8e86696ae31e2cb35fe680ac84b4d1840d452530173506bd239cee",
+    "hope-hammer-browser-adapter.js": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4",
+    "skill-effect-continuation.js": "62f077d4941380661da5a7e07448e244ed1ec1098d06a957000cdba4aad2cab3",
+    "skill-calculation-policy.js": "3ca0b86404597ea92d1e6a5e644ad0c26e170a2d97521395241e47bfd9fec9b4"
+  },
+  "productionChangeScope": "ONLY_TWO_FIELDS_IN_evaluateP0DamageRoute",
+  "adapterCoefficientsDatabaseAndExistingInputGuardsUnchanged": true,
+  "newBranchCreated": false,
+  "published": false,
+  "tests": {
+    "unitRed": {
+      "tests": 6,
+      "passed": 1,
+      "failed": 5,
+      "logSha256": "48ed98bf5c9cfde46d15b7d46f48cc9aad9f784cd1edd3e0cb10816d6dc2d6e0"
+    },
+    "publicRed": {
+      "actions": 3,
+      "filterExceptions": 3,
+      "logSha256": "307da4078ef1490c15602c80578534db31821871ccfd12735c8a83caa364a60d"
+    },
+    "unitGreen": {
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "logSha256": "92f09873b915b5e19d7952209ca7692e44b33fa086ab7932bee91d278d67a5c9"
+    },
+    "publicGreen": {
+      "evidence": "public-result.json",
+      "weapons": [
+        315,
+        319
+      ],
+      "actions": [
+        "NORMAL",
+        "CHARGED",
+        "FULL_BURST"
+      ],
+      "builds": 6,
+      "channels": 12,
+      "savedComparisonPairs": 3,
+      "originalStatePreserved": true,
+      "mixedNormalChargedAndResourceGuardsChecked": true
+    },
+    "chromium": {
+      "evidence": "chromium-result.json",
+      "builds": 6,
+      "channels": 12,
+      "savedComparisonPairs": 3,
+      "comparisonDamageRowVisible": true,
+      "helperInvocation": "PUBLIC_FUNCTION",
+      "saveCalculateCompareReload": "PAGE_CONTROLS"
+    },
+    "mainAll14": {
+      "evidence": "main-flow-comparison.json",
+      "cases": 56,
+      "channels": 112,
+      "numericalValuesOmissionsAndReasonsUnchanged": true,
+      "wholePipelineJsonCompared": false
+    },
+    "integration": {
+      "evidence": "integration-result.json",
+      "tests": 1506,
+      "passed": 1506,
+      "failed": 0,
+      "previous1500AssertionsUnchanged": true,
+      "inputs": 79,
+      "contractSha256": "c6f9f3224e5bb5e1253257d644553de5a278dd4d82f9845828fce694e295886c"
+    },
+    "freshness": {
+      "tests": 94,
+      "passed": 94,
+      "failed": 0,
+      "logSha256": "ce3bccf50748f5ef78e49466856f4d79626b2f80abec01d47f305c75509e7ba0"
+    },
+    "legacy": {
+      "evidence": "legacy-suite-comparison.json",
+      "unitFailures": 123,
+      "domFailures": 188,
+      "browserFailures": 70,
+      "newFailureNames": 0,
+      "removedFailureNames": 0
+    }
+  },
+  "independentReviewAdditionalChecks": {
+    "evidenceType": "REVIEWER_REPORTED_INLINE_EXECUTION_NO_SAVED_ARTIFACT",
+    "mixedCases": 6,
+    "mainNormalMaximumChannelJsonExactlyEqualTo8f": true,
+    "sourceWeaponId": 319,
+    "sequenceChecks": [
+      {
+        "sequence": [
+          "NORMAL",
+          "CHARGED"
+        ],
+        "damage": 76.22
+      },
+      {
+        "sequence": [
+          "CHARGED",
+          "NORMAL"
+        ],
+        "damage": 76.22
+      },
+      {
+        "sequence": [
+          "NORMAL",
+          "NORMAL"
+        ],
+        "damage": 34.6
+      },
+      {
+        "sequence": [
+          "GL_SLAM",
+          "NORMAL",
+          "CHARGED"
+        ],
+        "damage": 191.72844800000001
+      },
+      {
+        "sequence": [
+          "CHARGED",
+          "NORMAL"
+        ],
+        "loadedRounds": 2,
+        "reason": "REAL_SLICE:GL_NORMAL_ROUNDS_INSUFFICIENT"
+      },
+      {
+        "sequence": [
+          "FULL_BURST",
+          "NORMAL"
+        ],
+        "reason": "REAL_SLICE:GL_SEQUENCE_STATE_TRANSITION_UNRESOLVED"
+      }
+    ],
+    "runtimeDecision": "APPROVED_LIMITED_SCOPE"
+  },
+  "limits": [
+    "Routing/persistence correction, not new shelling formula adoption or all legal combinations",
+    "Private MHDB snapshot and two weapon IDs, not game-measured numerical accuracy",
+    "All14 regression compares recorded values/omissions/reasons, not full pipeline objects",
+    "Existing legacy suite failures remain; later966ab test-harness repairs must be preserved",
+    "No Safari/iPhone acceptance, GitHub transmission, or publication"
+  ],
+  "artifactSha256": {
+    "chromium-result.json": "ecb773779606cb859fee03fcb14aaa9e7dffeecea2ef3ede5e4d53c72eaeba6c",
+    "legacy-suite-comparison.json": "aa45f7fdc5a542141be64409c7be1c5ee304aa7e7546aaaf14805ac50573a12c",
+    "public-result.json": "86639e0ead361b9ac4019a4f2141e6ca5f1f38b5f672e570a360aa8fb8802507",
+    "main-flow-comparison.json": "1630d5589197e42411dfe0093d84cde427ba7e33a06d2c4e86b8efe37ed6bca8",
+    "integration-result.json": "89ce2bde164f0aeec5a0ea2f59f3c430c93fb1691e681c1e2c890aa5a091274b"
+  }
+}
