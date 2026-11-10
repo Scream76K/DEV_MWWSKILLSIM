@@ -9043,7 +9043,7 @@ function consumerStandardProfile(kind,conditions={}){
 // Comparison policy, not a claim about all contacts of a projectile.
 function consumerElementAmmoChoice(weapons,target){
  const elements={flaming:'fire',water:'water',thunder:'thunder',freeze:'ice',dragon:'dragon'},order=['fire','water','thunder','ice','dragon'];
- const part=target?.monster==='training-room'?trainingRoomMonster()?.parts?.find(p=>p.id===target.part):null;
+ const part=window.MHWRealOneHitBrowserAdapter?.resolveTarget?.(target,trainingRoomMonster())?.part||null;
  if(!part)return null;
  const lists=weapons.map(w=>isArtiaWeapon(w)&&!w?.ammo?.some(a=>a.completionEvidence)?[]:(w?.ammo||[]).filter(a=>elements[a.kind]&&[1,2].includes(a.level)&&(a.kind!=='dragon'||canonicalWeaponKind(w)==='heavy-bowgun'&&a.level===1)&&(Number.isInteger(a.capacity)&&a.capacity>0||window.MHBaseHbgCapacityIndependentAmmo(w,a))).map(a=>({element:elements[a.kind],level:a.level})));
  if(!lists.length||lists.some(x=>!x.length))return null;
@@ -9166,7 +9166,7 @@ function consumerStandardConditions(kind,conditions,target=null){
    const loading=validCombatSkillLevel(calcState.total||{},['砲弾装填'],2),add=rules?.loadShellsReference?.capacityAdds?.[loading];
    const capacity=rules?.baseCapacity?.[shellingType]+add;
    fill('gunlanceState',{shellingType,shellingPower,stakeLoaded:true,...(Number.isInteger(capacity)?{loadedRounds:capacity}:{})});
-   const part=target?.monster==='training-room'?trainingRoomMonster()?.parts?.find(p=>p.id===target.part):null;
+   const part=window.MHWRealOneHitBrowserAdapter?.resolveTarget?.(target,trainingRoomMonster())?.part||null;
    if(Number.isFinite(part?.multipliers?.fire))fill('gunlanceState',{fireHitzone:part.multipliers.fire*100});
   }
  }

@@ -116,6 +116,36 @@
   }).filter(Boolean);
   return {ids:normalized,unresolved};
  }
+ function resolveTarget(target,trainingRoom){
+  if(!target||typeof target!=='object'||Array.isArray(target))return {reason:'REAL_SLICE:TARGET_ID_INVALID'};
+   const validId=id=>(typeof id==='number'&&Number.isSafeInteger(id)&&id>0)||(typeof id==='string'&&/^[1-9][0-9]*$/.test(id)&&Number.isSafeInteger(Number(id)));
+   const keys=['slash','blunt','pierce','fire','water','thunder','ice','dragon'];
+   let monster,part,sourceRef,status;
+   if(target.monster==='training-room'){
+    if(!['training-front','training-side','training-back'].includes(target.part))return {reason:'REAL_SLICE:TARGET_PART_ID_UNRESOLVED'};
+    monster=trainingRoom;
+    if(!Array.isArray(monster?.parts))return {reason:'REAL_SLICE:TARGET_PARTS_UNRESOLVED'};
+    const matches=monster.parts.filter(p=>p?.id===target.part);
+    if(matches.length!==1)return {reason:'REAL_SLICE:TARGET_PART_ID_UNRESOLVED'};
+    part=matches[0];sourceRef='index.html:trainingRoomMonster:'+target.part;status='PRODUCT_REFERENCE';
+   }else{
+    if(typeof target.monster==='string'&&/^[1-9][0-9]*:(?:v[1-9][0-9]*|king)$/.test(target.monster))return {reason:'REAL_SLICE:TARGET_VARIANT_HITZONE_SOURCE_NOT_ADOPTED'};
+    if(!validId(target.monster)||!validId(target.part))return {reason:'REAL_SLICE:TARGET_ID_INVALID'};
+    const monsters=root.__getBetaDB?.()?.monsters;
+    if(!Array.isArray(monsters))return {reason:'REAL_SLICE:TARGET_DATABASE_UNAVAILABLE'};
+    const matches=monsters.filter(m=>validId(m?.id)&&String(m.id)===String(target.monster));
+    if(matches.length!==1)return {reason:'REAL_SLICE:TARGET_MONSTER_ID_UNRESOLVED'};
+    monster=matches[0];
+    if(!Array.isArray(monster.parts))return {reason:'REAL_SLICE:TARGET_PARTS_UNRESOLVED'};
+    const parts=monster.parts.filter(p=>validId(p?.id)&&String(p.id)===String(target.part));
+    if(parts.length!==1)return {reason:'REAL_SLICE:TARGET_PART_ID_UNRESOLVED'};
+    part=parts[0];
+    if(!validId(part.monster?.id)||String(part.monster.id)!==String(monster.id))return {reason:'REAL_SLICE:TARGET_PART_MONSTER_MISMATCH'};
+    sourceRef='MHDB_LOADED_MONSTER:'+monster.id+':PART:'+part.id;status='SOURCE_REFERENCE_NOT_LIVE_VERIFIED';
+   }
+   if(!part.multipliers||keys.some(k=>typeof part.multipliers[k]!=='number'||!Number.isFinite(part.multipliers[k])||part.multipliers[k]<0||part.multipliers[k]>1))return {reason:'REAL_SLICE:TARGET_HITZONE_INVALID'};
+   return {part,sourceRef,status,monsterId:String(target.monster),partId:String(target.part),sourceGameVersion:'NOT_ESTABLISHED_BY_API_IMPORT_VERSION',scope:'UNCHANGED_MHDB_BASE_PART_OR_PRODUCT_TRAINING_REFERENCE_NO_VARIANT_WOUND_OR_RAGE_REINTERPRETATION'};
+ }
  function evaluateCurrentSingleHealth({weapon,stats,target,skills=[],equipmentSkillsResolved=false,conditions={},gunlanceState=null,bowState=null,hbgState=null,lightBowgunState=null,chargeBladeState=null,huntingHornState=null,insectGlaiveState=null,dualBladesState=null,longSwordState=null,lanceState=null,switchAxeState=null,techniqueDb,trainingRoom,techniqueId,techniqueIds,retrievedAt='UNKNOWN'}={}){
   if(typeof root.damageFromParams!=='function'||!root.MHWWeaponMaxSharpness||typeof root.HimmelRealOneHitPipeline!=='function')return fail('REAL_SLICE:BROWSER_DEPENDENCIES_UNAVAILABLE');
   if(!weapon||!Number.isInteger(weapon.id)||!Number.isInteger(weapon.gameId)||typeof weapon.kind!=='string')return fail('REAL_SLICE:CURRENT_WEAPON_NOT_SUPPORTED');
@@ -132,12 +162,18 @@
   if(elementSpecials.length>1)return fail('REAL_SLICE:MULTIPLE_ELEMENTS_UNSUPPORTED');
   if(!Array.isArray(weapon.skills))return fail('REAL_SLICE:WEAPON_SKILLS_UNKNOWN');
   if(!Array.isArray(skills)||skills.some(x=>!Array.isArray(x)||x.length!==2||typeof x[0]!=='string'||!x[0]))return fail('REAL_SLICE:BUILD_SKILL_INPUT_INVALID');
+  const targetData=resolveTarget(target,trainingRoom);
+  if(targetData.reason)return fail(targetData.reason);
+  const part=targetData.part;
+  // Newly supported targets must not inherit a stale explicit shell-fire hitzone.
+  // Preserve the existing training-front reference contract and never rewrite saved inputs.
+  if((target.monster!=="training-room"||target.part!=="training-front")&&weapon.kind==="gunlance"&&Number.isFinite(gunlanceState?.fireHitzone)&&Math.abs(gunlanceState.fireHitzone-part.multipliers.fire*100)>1e-9)return fail("REAL_SLICE:GL_FIRE_HITZONE_TARGET_MISMATCH");
   // UI count applies to the explicit current target; API per-contact inputs remain supported.
   const resolveContactCount=s=>{
    if(s?.contactPolicy!=='EXPLICIT_CONTACTS'||s.contactTargetPolicy!=='CURRENT_TARGET')return s;
    if(!Number.isInteger(s.contactCount)||s.contactCount<1||s.contactCount>6)throw Error('BOWGUN_ELEMENT:CONTACT_COUNT_REQUIRED_1_TO_6');
-   const p=trainingRoom?.parts?.find(p=>p.id===target?.part),element=String(s.elementType||s.ammoType||'').toLowerCase();
-  if(target?.monster!=='training-room'||!p||!Number.isFinite(p.multipliers?.pierce)||!Number.isFinite(p.multipliers?.[element]))throw Error('BOWGUN_ELEMENT:CONTACT_TARGET_UNRESOLVED');
+   const p=part,element=String(s.elementType||s.ammoType||'').toLowerCase();
+  if(!p||!Number.isFinite(p.multipliers?.pierce)||!Number.isFinite(p.multipliers?.[element]))throw Error('BOWGUN_ELEMENT:CONTACT_TARGET_UNRESOLVED');
    return {...s,contacts:Array.from({length:s.contactCount},(_,i)=>({ordinal:i+1,targetId:target.monster,partId:target.part,range:s.range,physicalHitzone:p.multipliers.pierce*100,elementalHitzone:p.multipliers[element]*100}))};
   };
   try{if(weapon.kind==='heavy-bowgun')hbgState=resolveContactCount(hbgState);if(weapon.kind==='light-bowgun')lightBowgunState=resolveContactCount(lightBowgunState);}catch(e){return fail(e.message);}
@@ -236,7 +272,6 @@
   const excludedCalculationSkills=equippedSkills.filter(x=>excludedCalculationPolicy(x)).map(x=>({skillId:x.skillId,name:x.name,level:x.level,reason:excludedCalculationPolicy(x).reason,status:excludedCalculationPolicy(x).status}));
   const allSkills=equippedSkills.filter(x=>!excludedCalculationPolicy(x));
   if(allSkills.some(x=>Number(x.skillId)===133&&(!Number.isInteger(x.level)||x.level<1||x.level>3)))return fail('REAL_SLICE:ABSORPTION_LEVEL_INVALID');
-  if(target?.monster!=='training-room'||target?.part!=='training-front')return fail('REAL_SLICE:TRAINING_ROOM_FRONT_REQUIRED');
   const normalized=normalizeTechniqueIds(Array.isArray(techniqueIds)?techniqueIds:null,{fallback:techniqueId});
   const resolvedTechniqueIds=normalized.ids;
   if(normalized.unresolved.length)return fail('REAL_SLICE:TECHNIQUE_ID_UNRESOLVED:'+normalized.unresolved.join(','));
@@ -353,7 +388,7 @@
    if(stats.affinityKnown!==true||!Number.isFinite(stats.affinity)||!Number.isFinite(stats.maxAffinity)||Math.abs(stats.affinity)>100||Math.abs(stats.maxAffinity)>100||typeof root.MHWMaxAffinityResolver!=='function')return false;
    if(!['normal','maximum'].every(ch=>plan[ch]?.affinity===stats.affinity&&plan[ch]?.maxAffinity===stats.maxAffinity))return false;
    // Revalidate the existing display-affinity producer; add no coefficient here.
-   try{return stats.maxAffinity===root.MHWMaxAffinityResolver(Object.fromEntries(skills),stats.affinity,weapon,trainingRoom?.parts?.find(p=>p.id===target.part),conditions);}catch(_){return false;}
+   try{return stats.maxAffinity===root.MHWMaxAffinityResolver(Object.fromEntries(skills),stats.affinity,weapon,part,conditions);}catch(_){return false;}
   };
   const unresolvedShellThunderBonusNames=new Set(allSkills.filter(x=>shellThunderBonusRelated(x)&&!shellThunderBonusResolved(x)).map(x=>x.name));
   const shellingInput={shellingState:gunlanceState,loadShellsLevel:loadShellEntries.length?Math.max(...loadShellEntries.map(x=>x.level)):0,artilleryLevel:artilleryEntries.length?Math.max(...artilleryEntries.map(x=>x.level)):0,normalAttackComponents:stats.attackComponents?{weaponBase:Number(stats.attackComponents.weaponBase),normalMultiplier:1,normalFlat:0}:null,unreviewedSkills:allSkills.filter(x=>shellThunderBonusRelated(x)?!shellThunderBonusResolved(x):!shellMightResolved(x)&&!shellAffinityOnlyResolved(x)&&!shellDefensiveOnlyResolved(x)&&!shellStateAffinityOnlyResolved(x)&&!shellSelfStateBonusResolved(x)&&![85,136].includes(Number(x.skillId))&&!(cornpopperEntries.length&&Number(x.skillId)===159)&&!(bladescaleEntries.length&&Number(x.skillId)===163)&&!fixedEntrySkill(x)&&!(x.skillKey==='selfState'&&![89,153].includes(Number(x.skillId)))&&!['handicraft','ballistics','attack','affinity','criticalBoost','conditionalAttack','shelling','slugger','fire','water','thunder','ice','dragon','normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].includes(x.skillKey)).map(x=>x.name)};
@@ -652,7 +687,6 @@
    if(typeof switchAxeState.awakened!=='boolean')return fail('REAL_SLICE:SA_AWAKENED_STATE_UNRESOLVED');
    if(!saStatusBodyOnly&&!saStatusAwakened&&!saDragonEligible&&!['power','element'].includes(weapon.phial?.kind))return fail('REAL_SLICE:SA_PHIAL_EFFECT_UNRESOLVED:'+String(weapon.phial?.kind||'missing'));
   }
-  const part=trainingRoom?.parts?.find(x=>x.id==='training-front');
   const isShellingTechnique=id=>{const r=techniques[id];return Array.isArray(r?.specialComponents)&&r.specialComponents.some(x=>String(x).includes('SHELL'));};
   const isShellingOnly=resolvedTechniqueIds.every(isShellingTechnique);
   const hasShelling=!!glTargetContext||resolvedTechniqueIds.some(isShellingTechnique);
@@ -1376,7 +1410,7 @@
      const originalHitzone=(part.originalMultipliers??(part.wounded===true?null:part.multipliers))?.[damageType];
      if(Number(entry.skillId)===136&&!Number.isFinite(originalHitzone))return fail('REAL_SLICE:ORIGINAL_HITZONE_UNRESOLVED');
      const active=Number(entry.skillId)===136?originalHitzone*100<=rule.originalHitzoneMaximum:rule.colorsByLevel[entry.level].includes(maxSharpness);
-     if(active)contextAttackEffects.push({id:'context-attack:'+entry.skillId+':'+id+':'+hitIndex,target:'physical',stage:'attack',unit:'dimensionless',operation:'multiply',amount:rule.multipliers[entry.level],order:12,componentIds:[id+':physical:'+hitIndex],source:hit.componentSource?cbMindRuleFor(techniques[id]).source:rules.source,status:hit.componentSource?cbMindRuleFor(techniques[id]).status:rules.status,condition:{type:'always'},...(Number(entry.skillId)===136?{originalHitzone:{value:originalHitzone*100,damageType,source:'trainingRoomMonster:UNWOUNDED_ORIGINAL'}}:{}),sharpness:maxSharpness});
+     if(active)contextAttackEffects.push({id:'context-attack:'+entry.skillId+':'+id+':'+hitIndex,target:'physical',stage:'attack',unit:'dimensionless',operation:'multiply',amount:rule.multipliers[entry.level],order:12,componentIds:[id+':physical:'+hitIndex],source:hit.componentSource?cbMindRuleFor(techniques[id]).source:rules.source,status:hit.componentSource?cbMindRuleFor(techniques[id]).status:rules.status,condition:{type:'always'},...(Number(entry.skillId)===136?{originalHitzone:{value:originalHitzone*100,damageType,source:target.monster==='training-room'&&target.part==='training-front'?'trainingRoomMonster:UNWOUNDED_ORIGINAL':targetData.sourceRef+':UNWOUNDED_ORIGINAL'}}:{}),sharpness:maxSharpness});
     }
    }
   }
@@ -1422,7 +1456,7 @@
    (()=>{const t=techniqueDb.get(techniqueKind,pierceAmmoId);return t.recordRole==='SPECIAL_REFERENCE'&&t.specialSourceValues?.status==='SOURCE_CONFIRMED'&&t.specialSourceValues.scope==='FIRST_HIT_ONLY_NOT_WHOLE_SHOT'&&Array.isArray(t.hits)&&t.hits.length===0;})();
   const pierceNonTargetResolved=weapon.skills.filter(x=>Number(x?.skill?.id??x?.id)===94||(x?.skill?.name||x?.name)==='貫通弾・竜の矢強化').every(x=>Number(x?.skill?.id??x?.id)===94&&(x?.skill?.name||x?.name)==='貫通弾・竜の矢強化'&&x.level===1)&&pierceEntries.length===1&&pierceEntries.every(x=>Number(x.skillId)===94&&x.name==='貫通弾・竜の矢強化'&&x.level===1)&&rawSkills.filter(pierceIdentity).length<=1&&buildSkills.filter(pierceIdentity).length<=1&&
    [conditions,stats,stats.conditionalConditionPlan?.normal,stats.conditionalConditionPlan?.maximum].every(pierceNoAlternateState)&&['mounted','dismountAttack','sneakAttack'].every(key=>conditions[key]==null||conditions[key]===false)&&(pierceBowNonTarget||pierceElementNonTarget);
-  const equipment={...weapon,waterConversionAdd,waterResistanceInput:waterInput||null,elementCapRule:root.MHWElementCapRule,...(contextAttackEntries.length?{originalPhysicalHitzones:{...(part.originalMultipliers??part.multipliers)},originalHitzoneSource:part.originalMultipliers?'EXPLICIT_PRE_WOUND_HITZONES':'TRAINING_UNWOUNDED',contextAttackScope:'ADOPTED_MELEE_BODY_ONLY'}:{}),thunderResistanceInput:resistanceInput||null,armorThunderResistanceInput:stats.armorThunderResistanceInput||null,apiId:weapon.id,sharpnessResolution,maxSharpness,maxSharpnessEvidenceRef:normalArtiaWhite?sharpnessPremise.source:provenance.sourceUrl,elementType,rapidMorphLevel,criticalBoostLevel,criticalElementLevel,criticalElementMultiplier:root.MHResolveCriticalElement(weapon.kind,criticalElementLevel),attributeConversionLevel,attributeConversionState:attributeState,resistanceConversionLevel,thunderResistance,resistanceConversionCoefficient,resistanceConversionAdd,chargeBladeState:normalizedChargeBladeState,activeBonusEffects,attackComponents:stats.attackComponents?{weaponBase:Number(stats.attackComponents.weaponBase),normalMultiplier:1,normalFlat:0}:null,elementComponents:{weaponBase:Number(elementRawValue),normalMultiplier:Number(elementRule?.mult??1),normalFlat:Number(elementRule?.add??0)},gsChargeMasterLevel:gsChargeActive?referenceSkills.chargeMaster:0,elementCalculatedValue:elementValue,maximumAffinity,normalAffinity:Number(stats.affinity),maximumElement:Number.isFinite(maximumElement)?maximumElement:null,conditionalAttackMultiplier:Number(conditionPlan?.attackComponents?.conditionalMultiplier??1),groupAttackMultiplier:Number(conditionPlan?.attackComponents?.groupMultiplier??1),conditionalAttackFlat:Number(conditionPlan?.attackComponents?.conditionalFlat??0),conditionalPlanStatus:conditionPlan?.status||'REFERENCE_ONLY',conditionalPending:Array.isArray(conditionPlan?.pending)?conditionPlan.pending:[],elementEvidence:elementSpecial?{sourceUrl:provenance.sourceUrl,raw:elementSpecial.damage.raw,display:elementRawValue,kind:'element',...(saDragonEligible?{scope:'SA_SWORD_PHIAL_ONLY',sourceField:'phial.damage.display',source:'https://kuroyonhon.com/mhwilds/memo/11.php'}:{})}:statusState?{sourceUrl:provenance.sourceUrl,kind:'status',statusType:statusState.elementType,display:statusState.element,hpElementContribution:0,scope:'STATUS_BUILDUP_EXCLUDED_FROM_HP',evidenceRef:'element-state.js:hpElement;spec/03_TECHNIQUE_AND_DAMAGE.md'}:{sourceUrl:provenance.sourceUrl,confirmedNone:true},provenance};
+  const equipment={...weapon,waterConversionAdd,waterResistanceInput:waterInput||null,elementCapRule:root.MHWElementCapRule,...(contextAttackEntries.length?{originalPhysicalHitzones:{...(part.originalMultipliers??part.multipliers)},originalHitzoneSource:part.originalMultipliers?'EXPLICIT_PRE_WOUND_HITZONES':target.monster==='training-room'?'TRAINING_UNWOUNDED':targetData.sourceRef+':UNWOUNDED_ORIGINAL',contextAttackScope:'ADOPTED_MELEE_BODY_ONLY'}:{}),thunderResistanceInput:resistanceInput||null,armorThunderResistanceInput:stats.armorThunderResistanceInput||null,apiId:weapon.id,sharpnessResolution,maxSharpness,maxSharpnessEvidenceRef:normalArtiaWhite?sharpnessPremise.source:provenance.sourceUrl,elementType,rapidMorphLevel,criticalBoostLevel,criticalElementLevel,criticalElementMultiplier:root.MHResolveCriticalElement(weapon.kind,criticalElementLevel),attributeConversionLevel,attributeConversionState:attributeState,resistanceConversionLevel,thunderResistance,resistanceConversionCoefficient,resistanceConversionAdd,chargeBladeState:normalizedChargeBladeState,activeBonusEffects,attackComponents:stats.attackComponents?{weaponBase:Number(stats.attackComponents.weaponBase),normalMultiplier:1,normalFlat:0}:null,elementComponents:{weaponBase:Number(elementRawValue),normalMultiplier:Number(elementRule?.mult??1),normalFlat:Number(elementRule?.add??0)},gsChargeMasterLevel:gsChargeActive?referenceSkills.chargeMaster:0,elementCalculatedValue:elementValue,maximumAffinity,normalAffinity:Number(stats.affinity),maximumElement:Number.isFinite(maximumElement)?maximumElement:null,conditionalAttackMultiplier:Number(conditionPlan?.attackComponents?.conditionalMultiplier??1),groupAttackMultiplier:Number(conditionPlan?.attackComponents?.groupMultiplier??1),conditionalAttackFlat:Number(conditionPlan?.attackComponents?.conditionalFlat??0),conditionalPlanStatus:conditionPlan?.status||'REFERENCE_ONLY',conditionalPending:Array.isArray(conditionPlan?.pending)?conditionPlan.pending:[],elementEvidence:elementSpecial?{sourceUrl:provenance.sourceUrl,raw:elementSpecial.damage.raw,display:elementRawValue,kind:'element',...(saDragonEligible?{scope:'SA_SWORD_PHIAL_ONLY',sourceField:'phial.damage.display',source:'https://kuroyonhon.com/mhwilds/memo/11.php'}:{})}:statusState?{sourceUrl:provenance.sourceUrl,kind:'status',statusType:statusState.elementType,display:statusState.element,hpElementContribution:0,scope:'STATUS_BUILDUP_EXCLUDED_FROM_HP',evidenceRef:'element-state.js:hpElement;spec/03_TECHNIQUE_AND_DAMAGE.md'}:{sourceUrl:provenance.sourceUrl,confirmedNone:true},provenance};
   const source={capture:pinned=>({versions:pinned,equipment,effects:{},techniques})};
   const bowSequenceCache=new Map();
   const pipeline=root.HimmelRealOneHitPipeline({versions,source,techniqueId,techniqueIds:resolvedTechniqueIds,weaponType:techniqueKind,
@@ -1569,8 +1603,8 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
     resolveElementApplicability:saDragonEligible?({state,parameters})=>{const mode=parameters?.saHitMode;if(!['SWORD','AXE'].includes(mode)||state?.switchAxe?.mode!==mode)throw Error('SA_DRAGON_HIT_MODE_UNRESOLVED');return {applies:mode==='SWORD',reason:mode==='SWORD'?'SA_DRAGON_SWORD_PHIAL':'SA_DRAGON_AXE_NO_ELEMENT',evidenceRef:'https://kuroyonhon.com/mhwilds/memo/11.php'};}:undefined,
     resolveSharpness:({build,state,parameters})=>{if(parameters?.glSharpnessOverride)return {value:parameters.glSharpnessOverride.value,gameVersion:versions.game,evidenceRef:parameters.glSharpnessOverride.source,status:'PROVISIONAL'};if(bladescaleEligible&&state?.bladescaleFirstHit===true)return {value:bladescaleRule.physicalSharpness,gameVersion:versions.game,evidenceRef:bladescaleRule.coefficientSource,sourceGameVersion:bladescaleRule.sourceVersion,status:bladescaleRule.status};const r=root.MHWWeaponMaxSharpness.resolve(build.equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});if(!r.options)throw Error('REAL_SLICE:SHARPNESS_UNRESOLVED');return {value:r.options.sharpnessPhysicalMultiplier,gameVersion:versions.game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:build.equipment.provenance.sourceGameVersion,status:'PROVISIONAL'};},
     resolveElementSharpness:({build,parameters})=>{if(parameters?.glSharpnessOverride)return {value:parameters.glSharpnessOverride.value,gameVersion:versions.game,evidenceRef:parameters.glSharpnessOverride.source,status:'PROVISIONAL'};const r=root.MHWWeaponMaxSharpness.resolve(build.equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});if(!r.options)throw Error('REAL_SLICE:ELEMENT_SHARPNESS_UNRESOLVED');return {value:r.options.sharpnessElementMultiplier,gameVersion:versions.game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:build.equipment.provenance.sourceGameVersion,status:'PROVISIONAL'};},
-    resolveHitzone:({parameters}={})=>{const key=parameters?.damageType||physicalKey,value=part.multipliers?.[key];if(typeof value!=='number'||!Number.isFinite(value))throw Error('REAL_SLICE:TRAINING_HITZONE_UNRESOLVED:'+key);return {value:value*100,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:${key}`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'};},
-    resolveElementHitzone:()=>{if(!elementSpecial)return {value:0,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:none`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'};const value=part.multipliers?.[elementType];if(typeof value!=='number'||!Number.isFinite(value)||value<0||value>1)throw Error('REAL_SLICE:ELEMENT_HITZONE_UNRESOLVED');return {value:value*100,gameVersion:versions.game,evidenceRef:`index.html:trainingRoomMonster:training-front:${elementType}`,sourceGameVersion:provenance.sourceGameVersion,status:'PRODUCT_REFERENCE'};},
+    resolveHitzone:({parameters}={})=>{const key=parameters?.damageType||physicalKey,value=part.multipliers?.[key];if(typeof value!=='number'||!Number.isFinite(value))throw Error('REAL_SLICE:TRAINING_HITZONE_UNRESOLVED:'+key);return {value:value*100,gameVersion:versions.game,evidenceRef:`${targetData.sourceRef}:${key}`,sourceGameVersion:target.monster==='training-room'?provenance.sourceGameVersion:targetData.sourceGameVersion,status:targetData.status};},
+    resolveElementHitzone:()=>{if(!elementSpecial)return {value:0,gameVersion:versions.game,evidenceRef:`${targetData.sourceRef}:none`,sourceGameVersion:target.monster==='training-room'?provenance.sourceGameVersion:targetData.sourceGameVersion,status:targetData.status};const value=part.multipliers?.[elementType];if(typeof value!=='number'||!Number.isFinite(value)||value<0||value>1)throw Error('REAL_SLICE:ELEMENT_HITZONE_UNRESOLVED');return {value:value*100,gameVersion:versions.game,evidenceRef:`${targetData.sourceRef}:${elementType}`,sourceGameVersion:target.monster==='training-room'?provenance.sourceGameVersion:targetData.sourceGameVersion,status:targetData.status};},
     resolvePartModifier:({parameters})=>({value:parameters.partModifier,gameVersion:versions.game,evidenceRef:parameters.partModifierSource}),
     calculate:root.damageFromParams}});
   const baseAttack=stats?.attackComponents?.weaponBase,baseElement=stats?.elementComponents?.weaponBase,baseAffinity=weapon.affinity;
@@ -1601,10 +1635,11 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
    }
   }
   if(stateStatsByState){pipelineConditions.stateStatsByState=stateStatsByState;pipelineConditions.stateStatsSource='MACARONGAMEMO_DAMAGE_UP_2025-04-16_PROVISIONAL';}
-  try{const evaluated=pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:'training-room',hitZoneKey:'training-front'},conditions:pipelineConditions,evaluation:{mode:'combo',kind:'combo',signature:'current-selection-reference-combo',techniqueIds:resolvedTechniqueIds}});
+  try{const evaluated=pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:targetData.monsterId,hitZoneKey:targetData.partId},conditions:pipelineConditions,evaluation:{mode:'combo',kind:'combo',signature:'current-selection-reference-combo',techniqueIds:resolvedTechniqueIds}});
    if(glOrdinaryActive&&Object.values(evaluated.channels||{}).some(r=>!glOrdinaryResultValid(r)))return fail('REAL_SLICE:GL_ORDINARY_PRODUCED_COMPONENT_CONTRACT_INVALID');
    if(hhThunderZeroResolved&&Object.values(evaluated.channels||{}).some(r=>!hhChargeResultValid(r)))return fail('REAL_SLICE:HH_THUNDER_PRODUCED_COMPONENT_CONTRACT_INVALID');
    if(hhChargeNoElementResolved&&Object.values(evaluated.channels||{}).some(r=>!hhChargeResultValid(r)))return fail('REAL_SLICE:HH_CHARGE_PRODUCED_COMPONENT_CONTRACT_INVALID');
+   if(target.monster!=='training-room'||target.part!=='training-front'){const {part:sourcePart,...targetEvidence}=targetData;evaluated.targetEvidence=targetEvidence;for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,targetEvidence};}
    const originalConditionKey=evaluated.conditionKey;
    if(glTargetContext)for(const result of Object.values(evaluated.channels||{})){
     result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',glTarget:{rules:glTargetContext.rules,initialRounds:gunlanceState.loadedRounds,initialStakeLoaded:gunlanceState.stakeLoaded,capacity:glTargetContext.capacity,sourcePower:gunlanceState.shellingType+'_'+gunlanceState.shellingPower}};
@@ -1741,5 +1776,5 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
   original.channels.maximum.diagnostics={...original.channels.maximum.diagnostics,healthBranchComparison:{policy:'WHOLE_ROUTE_TOTAL_NOT_COMPONENT_MAXIMA',status:ready?'RESOLVED':'PENDING',selectedState:selected?.state??null,branches:branches.map(b=>({state:b.state,value:b.value,execution:b.maximum?.execution,effectPlan:b.maximum?.effectPlan}))}};
   return original;
  }
- root.MHWRealOneHitBrowserAdapter=Object.freeze({evaluateCurrent,normalizeTechniqueIds});
+ root.MHWRealOneHitBrowserAdapter=Object.freeze({evaluateCurrent,normalizeTechniqueIds,resolveTarget});
 })(typeof window!=='undefined'?window:globalThis);
