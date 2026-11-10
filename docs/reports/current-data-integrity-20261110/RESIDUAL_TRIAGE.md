@@ -1,0 +1,12 @@
+# Residual failures and evidence boundaries
+
+This classification was made against published `02ced3f76cec94b37d86d37331324edc4e7dcfe5`; it is not a claim that every remaining failure is harmless or migrated. Full test-name deltas accompany the current repair report.
+
+- Historical report consumers: only the 15 named unit/DOM/browser tests and two GL proofs in `legacy-consumer-migrations.json` were migrated. The strict helper requires schema 3, an explicit legacy scope, an archive and matching build identity. Existing failing cases elsewhere still read old root fields; unchanged failure names do not certify all consumers.
+- Artia: missing/old material counts are normalized to three under the adopted fixed-production rule (`../r253-artia-fixed-production/REVIEW.md`). Attack190 plus adopted production15 is205 (`../r254-approved-artia/REPORT.md`). Some old fixtures also reuse a bow identity as another kind. Those expected-number migrations are not included here.
+- Technique evidence: a fresh targeted run found54 tests,39 passing and15 failing. Historical aggregate IDs, global move counts, approval scope and reference resolution differ from later adopted records. Direct source URLs or scoped adoption receipts may be valid without central registry keys. No missing provenance or game verification was invented, and no move was promoted to verified.
+- The source-audit tool `tools/technique-source-evidence-r222.cjs` does not read all current evidence/adoption forms; its zero-source result is not proof of source absence. Historical source tracing still needs reconciliation.
+- Browser failures include obsolete DPS headings/hidden reference controls, fixed widths/readiness wording and older output contracts. DOM failures include old trace/hit structures, incomplete synthetic input and superseded all-or-nothing skill assumptions. These families require individual evidence review, not bulk assertion changes.
+- `INTEGRATION_LINEAGE.md` remains the record of unreconciled older branch features. This repair does not restore or certify all historical functionality. Normal-ammo ten-shot implementation, its unresolved ammo level/rapid-fire choices, exhaustive skill combinations, game accuracy and Safari/device acceptance remain outside this repair.
+
+The audit did not fetch new game-source pages or re-verify original coefficient values. The two product fixes in this revision concern preservation and reporting of existing results only.

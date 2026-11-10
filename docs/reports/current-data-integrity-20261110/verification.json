@@ -1,0 +1,682 @@
+{
+  "scope": "SAVED_INPUT_PRESERVATION_AND_CURRENT_CONSUMER_REPORTING_NOT_GAME_ACCURACY",
+  "baseCommit": "02ced3f76cec94b37d86d37331324edc4e7dcfe5",
+  "publicationStateAtBuild": "LOCAL_NOT_UPLOADED",
+  "runtimeSha256": {
+    "index.html": "e516ca1349d490670829dd4954b49ffdc7d028eee81c60dc2b3abe249ad42b90",
+    "hope-hammer-browser-adapter.js": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4",
+    "skill-effect-continuation.js": "62f077d4941380661da5a7e07448e244ed1ec1098d06a957000cdba4aad2cab3",
+    "skill-calculation-policy.js": "3ca0b86404597ea92d1e6a5e644ad0c26e170a2d97521395241e47bfd9fec9b4"
+  },
+  "contractSha256": "c55aa9714521f3052b157935a3dcc9487f6e52b4f7c2df0eb7996bf58d8f36b6",
+  "contractInputs": 105,
+  "coreGate": {
+    "status": "PASS",
+    "runId": "f968c461-513b-4ec5-bd5c-91d45eef7148",
+    "reportFile": "/var/folders/yd/1xd0cch51pq3n9xlmqz4q6y80000gn/T/input-guard-f968c461-513b-4ec5-bd5c-91d45eef7148/summary.json",
+    "counts": {
+      "tests": 1506,
+      "passed": 1506,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0
+    }
+  },
+  "focusedLockedInstall": {
+    "command": "npm ci --ignore-scripts --offline --no-audit --no-fund",
+    "exitCode": 0,
+    "counts": {
+      "tests": 39,
+      "pass": 39,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    }
+  },
+  "freshness": {
+    "tests": 94,
+    "pass": 94,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "sourceOnly": {
+    "tests": 47,
+    "pass": 47,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "suites": {
+    "unit": {
+      "baseline": {
+        "tests": 1230,
+        "pass": 1198,
+        "fail": 32,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "candidate": {
+        "tests": 1243,
+        "pass": 1212,
+        "fail": 31,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "previousPassNowFails": 0,
+      "newTests": [
+        "saved named charm null level stays invalid through load, calculation, save and reload",
+        "saved named charm empty string level stays invalid through load, calculation, save and reload",
+        "saved named charm missing level stays invalid through load, calculation, save and reload",
+        "saved named charm fractional level stays invalid through load, calculation, save and reload",
+        "saved named charm non-numeric level stays invalid through load, calculation, save and reload",
+        "valid legacy numeric level and absent optional slot/type fields still load and calculate",
+        "blank editor rows retain their harmless default without granting a skill",
+        "owner-excluded valid skill remains displayed and saved without changing power",
+        "saved comparison keeps malformed row unavailable and restores original invalid input",
+        "historical report assertions select explicitly archived values, not current principal values",
+        "historical report selector rejects old schemas and missing declared scopes",
+        "historical report selector rejects missing rows and archives without root-value fallback",
+        "historical report selector rejects row-scope and build-identity mismatch",
+        "normalizer preserves fractional level for invalid-input rejection without granting a skill"
+      ],
+      "replacedOrRemoved": [
+        {
+          "name": "normalizer rejects fractional level rather than rounding upward",
+          "status": "fail"
+        }
+      ],
+      "remainingFailures": [
+        "SAED rejects invalid skill level without inventing damage",
+        "Artillery with unresolved action or attack composition remains withheld",
+        "unknown Load Shells level and artillery FB remain withheld",
+        "unknown material count cannot inherit the previous template count",
+        "source-confirmed bow three parts derives 260 before restore and skills",
+        "source state stays pending for empty three-part table and unresolved source version",
+        "proposal uses nested candidate and captured baseline attribute states for verified delta",
+        "KAN21 CB_SAED enhanced=false applies shield once and five explosions",
+        "KAN21 CB_SAED_AED_DERIVED enhanced=false applies shield once and five explosions",
+        "KAN21 shield off is neutral, stock overrides and capacity skill never increase five hits",
+        "LBG rejects unresolved level mode range and shot skills instead of incomplete totals",
+        "CB accepts level 0 to 3",
+        "raw metric reads each row, independent of baseline",
+        "combined build comparison is unaffected by added non-damage armor and charm skills",
+        "nonmatching elemental skill does not change elemental or physical damage",
+        "triage accounts for 497 baseline blocked records plus KAN21 SAED and KAN24 scoped rule",
+        "r222: all blocked techniques remain represented",
+        "現行格納MVはTechnique DBと一致",
+        "r240 audit enumerates phial moves without inventing counts",
+        "readiness includes reason for numeric cached DPS without verification",
+        "all five embedded engine self-tests pass",
+        "unaffected STANDARD matches r46; GS HP correction and adopted DB are independently checked",
+        "insect glaive aggregate STANDARD records remain archived but fail closed",
+        "all238 Phase3 records retain evidence and reject calculation reads",
+        "charge blade handler metadata no longer owns normal motion hit arrays",
+        "audit panel switches weapons and shows all STANDARD blockers and both spiral charges",
+        "IG alternatives retain six body hits at both charge states and separate kinsect damage",
+        "profile blockers collect every technique instead of hiding all but the first failure",
+        "aggregate record is archived and new stages expose separate verification counts",
+        "r46 STANDARD hit fixtures remain valid for all 14 registries",
+        "all 110 new records retain evidence and remain fail closed"
+      ],
+      "baselineLogSha256": "4add6908877f3b29cce85f308ca025435efea23f441115618f3a0abf36bcdc59",
+      "finalLogSha256": "d778189eaa212d9a25aa332db7aac8d3bdca2318bdea6698a1ec626e4099aca3"
+    },
+    "dom": {
+      "baseline": {
+        "tests": 518,
+        "pass": 357,
+        "fail": 161,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "candidate": {
+        "tests": 533,
+        "pass": 372,
+        "fail": 161,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "previousPassNowFails": 0,
+      "newTests": [
+        "public prepared comparison uses the displayed saved explicit routes rather than legacy STANDARD",
+        "unknown-technique A and valid B retain independent current absolutes and honest coverage in prepared data",
+        "different saved technique identities preserve both totals but withhold relative prepared comparisons",
+        "prepared current and saved maximum retain source-valid skill omission with available damage",
+        "prepared current results and saved comparison are detached and baseline change keeps absolute precision",
+        "current-route edit invalidates prepared saved comparisons and withholds stale live values until recalculation",
+        "legacy-only diagnostic report remains schema 2 and cannot masquerade as a current consumer report",
+        "current report preserves maximum when only that row normal is unavailable and preserves legitimate zero",
+        "mixed current cached rows cannot revive a missing pipeline from legacy STANDARD fallback",
+        "uncomputed weapon changes cannot reuse a current prepared calculation",
+        "uncomputed skill changes cannot reuse a current prepared calculation",
+        "uncomputed target changes cannot reuse a current prepared calculation",
+        "uncomputed condition changes cannot reuse a current prepared calculation",
+        "completed unavailable evaluation stays current and repeated preparation does not mutate or fabricate it",
+        "loading a different saved route prepares its freshly evaluated current result without another Calculate"
+      ],
+      "replacedOrRemoved": [],
+      "remainingFailures": [
+        "guard requires traceable base components and applicable guarding weapon kind",
+        "comparison readiness exposes enhanced-shot assumptions even with settings collapsed",
+        "bladescale close coating changes maximum physical only while normal is inactive",
+        "three enhanced shots are consumed by actions rather than fourteen individual arrows",
+        "none and power coatings do not receive a close coating only bonus",
+        "bow skill composition keeps elemental skills outside bladescale physical multiplier",
+        "critical element uses bow coefficients and actual positive affinity for normal and maximum",
+        "zero and negative affinity do not create elemental critical penalties",
+        "critical element multiplies charge master result including flats only once",
+        "status element remains zero HP damage with critical element equipped",
+        "bow first shot ranks do not add damage or block the comparison",
+        "bow first shot does not multiply bladescale and still rejects invalid levels",
+        "force shot ranks add attack only at fourth and sixth while affinity applies to all later shots",
+        "starting before fourth shot only changes qualifying stages rather than every arrow",
+        "force shot affiliation changes positive critical element only and caps final affinity",
+        "force shot is excluded from freshly added bladescale shots while normal coated shots still receive it",
+        "force shot no coating is nonapplicable but coated missing invalid or reload crossing state remains pending",
+        "force shot late three shot window stays inside one magazine and does not repeat fourth or sixth bonuses",
+        "canonical charge uses element modifier and excludes part durability from HP",
+        "all 29 eligible canonical moves accept explicit baseline timing without altering hit data",
+        "five phial techniques stay blocked even when boost state is explicit",
+        "CB UI identifies body MV and explains missing phial count in Japanese",
+        "Coalescence uses Wilds weapon-specific elemental multipliers and never adds attack",
+        "Coalescence missing components, other element multipliers and flat bonuses retain normal and gate maximum",
+        "Dark Arts combined with Coalescence remains gated even if a health branch would otherwise calculate",
+        "all blocked stages are listed in route order without partial totals",
+        "build comparison preserves the current common route rather than adopting saved routes",
+        "comparison table exposes ordinary and maximum blockers and baseline dependence before results",
+        "comparison rounds second decimal to one place without changing source values or report precision",
+        "six adopted non-GS profiles resolve Dark Arts normal and red-health maximum independently",
+        "unsupported overlapping conditions gate maximum only without concealing normal index",
+        "unimplemented post-self-damage healing and Dark Arts interactions remain pending",
+        "new ordinary entries have unknown timing and never include evidence gated or dedicated special routes",
+        "proposal output preserves missing DPS and computes the current-build difference",
+        "Fortify from three group pieces applies twice-fainted reference only to maximum across seven profiles",
+        "unknown flat-value stacking keeps normal available and withholds maximum",
+        "Fortify does not bypass health-branch uncertainty or unlock absolute damage",
+        "GL NORMAL common conditions retain single/reference/free consistency and finite stock",
+        "GL LONG common conditions retain single/reference/free consistency and finite stock",
+        "GL WIDE common conditions retain single/reference/free consistency and finite stock",
+        "GL selected MHDB fire hitzone controls only shell fire component",
+        "GL shell reference depends on original attack while extra derived attack and affinity do not enter shell formula",
+        "GL unreviewed artillery and Load Shells Lv1 stay pending while adopted Lv2 retains explicit stock",
+        "neutral normal shelling NORMAL Artillery1 connects single/free but not unknown charged/FB",
+        "neutral normal shelling NORMAL Artillery2 connects single/free but not unknown charged/FB",
+        "neutral normal shelling NORMAL Artillery3 connects single/free but not unknown charged/FB",
+        "neutral normal shelling LONG Artillery1 connects single/free but not unknown charged/FB",
+        "neutral normal shelling LONG Artillery2 connects single/free but not unknown charged/FB",
+        "neutral normal shelling LONG Artillery3 connects single/free but not unknown charged/FB",
+        "neutral normal shelling WIDE Artillery1 connects single/free but not unknown charged/FB",
+        "neutral normal shelling WIDE Artillery2 connects single/free but not unknown charged/FB",
+        "neutral normal shelling WIDE Artillery3 connects single/free but not unknown charged/FB",
+        "current-version Artillery NORMAL Lv1 never publishes an incomplete action total",
+        "current-version Artillery NORMAL Lv2 never publishes an incomplete action total",
+        "current-version Artillery NORMAL Lv3 never publishes an incomplete action total",
+        "current-version Artillery LONG Lv1 never publishes an incomplete action total",
+        "current-version Artillery LONG Lv2 never publishes an incomplete action total",
+        "current-version Artillery LONG Lv3 never publishes an incomplete action total",
+        "current-version Artillery WIDE Lv1 never publishes an incomplete action total",
+        "current-version Artillery WIDE Lv2 never publishes an incomplete action total",
+        "current-version Artillery WIDE Lv3 never publishes an incomplete action total",
+        "Load Shells NORMAL all three routes and snapshot restore retain explicit stock",
+        "Load Shells LONG all three routes and snapshot restore retain explicit stock",
+        "Load Shells WIDE all three routes and snapshot restore retain explicit stock",
+        "MHDB source gameId 1 ホープガンランスⅠ shellLevel2 reference routes agree",
+        "MHDB source gameId 6 骨銃槍Ⅰ shellLevel2 reference routes agree",
+        "MHDB source gameId 11 トライバヨネットⅠ shellLevel2 reference routes agree",
+        "GL NORMAL Artillery Lv0 remains conditional on complete source evidence",
+        "GL LONG Artillery Lv0 remains conditional on complete source evidence",
+        "GL WIDE Artillery Lv0 remains conditional on complete source evidence",
+        "guts before consumption scales weapon multipliers before flats in normal and max",
+        "guts after consumption removes offensive bonus and changes comparison without double addition",
+        "encouragement and resuscitate are inactive normally and add ten each in maximum",
+        "guts combines guard and attack boost multipliers but never scales conditional flats",
+        "unresolved extra conditional effect still blocks only max after known group resolution",
+        "comparison indices include group effect against the same normal baseline",
+        "group trace displays actual effect without invented level or hidden flat addition",
+        "actual three-piece group entry resolves on generic STANDARD but stays gated in absolute DPS",
+        "burst boost combines flats after root and guard and retains unknown gating",
+        "uncertain red branch prevents a false maximum even when full branch calculates",
+        "six adopted profiles share safe health separation while invalid metadata and GS stay gated",
+        "seven adopted profiles apply Heroics level multipliers only to maximum physical power",
+        "dance stages show all 27 hit rows with independent physical element and total values",
+        "fixed custom hit is shown as special and names are escaped",
+        "GL damage-only comparison reuses P0 shell handler and preserves build/stock",
+        "unsupported component is pending in saved comparison, never partial total",
+        "GL incompatible shell metadata remains blocked after saving",
+        "comparison report is detached and carries all blocked reasons",
+        "saved bow damage prepares ranged state and matches standalone P0",
+        "saved heavy-bowgun damage prepares ranged state and matches standalone P0",
+        "saved light-bowgun damage prepares ranged state and matches standalone P0",
+        "saved comparison preserves unknown attack as uncalculated",
+        "saved comparison preserves unknown affinity as uncalculated",
+        "saved comparison preserves unknown hitzone as uncalculated",
+        "SAED single template and repeated custom routes reuse five phial handler",
+        "derived enhanced SAED increases reference and impact stays pending",
+        "SAED result equals resolver and retains attack affinity and hitzone context",
+        "14-weapon matrix: great-sword selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: long-sword selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: sword-and-shield selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: dual-blades selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: hammer selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: lance selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: switch-axe selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: charge-blade selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: insect-glaive selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: hunting-horn selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: gunlance selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: bow selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: heavy-bowgun selected / fixed / free are coherent in explicit supported scope",
+        "14-weapon matrix: light-bowgun selected / fixed / free are coherent in explicit supported scope",
+        "gunlance explicit no-shelling template equals two complete melee techniques",
+        "gunlance melee changes with current build affinity and target",
+        "P0 selected technique and repeated user combo share damage path without timing",
+        "P0 visible damage automatically reflects build attack, equipped critical boost and monster hitzone",
+        "P0 switch-axe existing STANDARD DB reaches template and single UI",
+        "bow single, fixed template and ordered free combo reuse reference handler",
+        "HBG normal ammo three paths share handler without weapon element",
+        "ranged damage refreshes attack affinity and target without sharpness effects",
+        "HBG sequential skills use successive shot ordinal and reject reload crossing",
+        "bow force shot works only for sourced fixed route and does not reset sequence in custom",
+        "all three HBG normal levels match the same saved comparison resolver",
+        "provisional combo DPS agrees across standalone, saved comparison and JSON with explicit fixture time",
+        "missing Artia stays uncalculated through summary restore comparison JSON and AI",
+        "IG double slash shares single template free and saved comparison damage",
+        "IG body-only single template and ordered repeated custom combo use the shared engine",
+        "IG current build affinity element and hitzones refresh without changing DB values",
+        "HH four complete body techniques connect single template and free routes",
+        "HH legacy body IDs in P0 cannot bypass echo pending guard",
+        "HH build affinity elemental state and target refresh shared damage",
+        "GL normal charged and fullburst use DB source with distinct raw/fire and three common P0 paths",
+        "GL stock is consumed sequentially; missing fields unreviewed skills and special components withhold entire total",
+        "GL shells ignore crit buffed attack sharpness weapon element and slash HZ; original raw and fire HZ remain effective",
+        "GL source conflicts unsupported power and unknown original attack are not guessed",
+        "GL fire HZ follows selected MHDB part and never uses weapon-element HZ",
+        "GL reference UI does not show synthetic MV zero and refreshes after typed condition edits",
+        "GL mixed body and shell sequence keeps body modifiers separate and fullburst consumes remaining stock",
+        "Wyvern missing buff target mode and unknown skills withhold complete damage",
+        "Wyvern fire hitzone comes from target and known zero remains valid",
+        "saved comparison preserves distinct buff inputs and provisional provenance without double adding",
+        "LBG Lv1/2 single reference template and free combo have identical complete damage",
+        "LBG current attack affinity and hitzone refresh all routes without weapon element or sharpness",
+        "LBG additive state and two-shot JSON restore; old JSON and forged applicability stay unverified",
+        "14-weapon guard audit: great-sword source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: long-sword source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: sword-and-shield source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: dual-blades source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: hammer source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: lance source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: switch-axe source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: charge-blade source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: insect-glaive source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: hunting-horn source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: gunlance source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: bow source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: heavy-bowgun source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "14-weapon guard audit: light-bowgun source attack/affinity missing withholds P0/comparison; real zero remains valid",
+        "Artia completion ingest preserves missing source affinity through fixed variant and calcBuild",
+        "shell-only GL ignores unknown affinity but mixed melee remains withheld",
+        "baseline is actual STANDARD damage and every normal/maximum cell uses its usual damage denominator",
+        "all seven ordinary standards calculate and all special standards retain reasons"
+      ],
+      "baselineLogSha256": "079f82bb55e972ed67e65f39fa1c4a275a0cf8b9eddca0afa78082a2fa5cd18d",
+      "finalLogSha256": "c3e3d902be5e24c55b4df7f7a92bfe784c1f44d0d3529510ee8e00bb671bc5d5"
+    },
+    "browser": {
+      "baseline": {
+        "tests": 90,
+        "pass": 21,
+        "fail": 69,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "candidate": {
+        "tests": 92,
+        "pass": 23,
+        "fail": 69,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "previousPassNowFails": 0,
+      "newTests": [
+        "public AI preparation matches visible saved normal/max values offline at 390px",
+        "public AI preparation matches visible saved normal/max values offline at 1440px"
+      ],
+      "replacedOrRemoved": [],
+      "remainingFailures": [
+        "mobile consultation captures live combo verdict and condition edits clear stale payload",
+        "saved bladescale builds show inactive normal and three-shot close-coating maximum without mobile overflow",
+        "saved force shot builds use explicit magazine position and edits clear stale comparison on mobile",
+        "saved bow critical element skill reaches the comparison report and visible one-decimal contributions",
+        "saved bow skill builds calculate scoped physical and elemental contributions on mobile",
+        "mobile bow comparison preserves explicit conditions in report and changing coating invalidates cached result",
+        "mobile adopted dance preset replaces old rows saves and produces a pending 27 hit report",
+        "mobile dance add calculate save load and compare preserves the route without page overflow",
+        "mobile measured timing enables comparison and deletion clears it without page overflow",
+        "mobile CB state timing load and comparison use the dedicated morph route",
+        "saved Coalescence builds use elemental source multiplier and visibly gate added-element stacking",
+        "mobile blocker list shows every pending stage and recovers after UI deletion",
+        "mobile row controls reorder preserve saved builds and clear comparison after resize",
+        "comparison uses compact fixed columns for one two and three builds without page overflow",
+        "relative DPS keeps a single baseline after mobile wrapping and resizing",
+        "mobile saved-load dialog cancels safely and comparison reports visible pending reasons",
+        "mobile comparison report downloads chosen baseline and cached calculation conditions",
+        "reported two bow builds stay side by side on mobile with fixed columns and local horizontal scroll",
+        "item width stays identical across comparison counts without inherited CSS variables",
+        "fixed maximum keeps three builds together and wraps a fourth while preserving global best",
+        "mobile source panel loads the external calculator and keeps required-input gates",
+        "saved Dark GS build exports preactivated maximum index and health conflict remains pending on mobile",
+        "mobile dragon target import records MHDB provenance and manual edits remove attribution",
+        "Fortify condition changes clear cached report and new comparison records the shared selected count",
+        "saved actual group pieces activate Fortify at three pieces and preserve mobile comparison",
+        "mobile frame registration requires confirmation and exports exact interval metadata",
+        "mobile guts selector changes saved comparison indices and exported common conditions",
+        "saved great sword comparison loads wave module, preserves separate dragon conditions and invalidates changes",
+        "HBG first hit reference loads its module and clears stale results on mobile",
+        "saved HBG normal builds calculate shared reference conditions and clear stale report on mobile",
+        "saved HBG shot skills use magazine settings and clear stale report on mobile",
+        "mobile saved builds export mutually exclusive health candidates and selected full state",
+        "saved Heroics builds select full or low health without adding conflicting bonuses on mobile",
+        "expanded dance hit tables scroll locally on narrow mobile screens without page overflow",
+        "saved P0 combo damage/ratio and pending UI at 375",
+        "saved P0 combo damage/ratio and pending UI at 1440",
+        "SAED three damage controls at 375px",
+        "SAED three damage controls at 1440px",
+        "gunlance melee P0 and JSON restore at 375px",
+        "gunlance melee P0 and JSON restore at 1440px",
+        "P0 damage UI at 375px computes three paths and refreshes equipment",
+        "P0 damage UI at 390px computes three paths and refreshes equipment",
+        "P0 damage UI at 768px computes three paths and refreshes equipment",
+        "P0 damage UI at 1024px computes three paths and refreshes equipment",
+        "P0 damage UI at 1440px computes three paths and refreshes equipment",
+        "ranged P0 bow at 375px",
+        "ranged P0 bow at 1440px",
+        "ranged P0 heavy-bowgun at 375px",
+        "ranged P0 heavy-bowgun at 1440px",
+        "IG body P0 and JSON restore at 375px",
+        "IG body P0 and JSON restore at 1440px",
+        "HH body P0 and JSON restore at 375px",
+        "HH body P0 and JSON restore at 1440px",
+        "GL scoped three P0 controls and whole-route guard at 375px",
+        "GL scoped three P0 controls and whole-route guard at 390px",
+        "GL scoped three P0 controls and whole-route guard at 768px",
+        "GL scoped three P0 controls and whole-route guard at 1024px",
+        "GL scoped three P0 controls and whole-route guard at 1440px",
+        "Wyvern 2Hit product UI and save comparison at 375px",
+        "Wyvern 2Hit product UI and save comparison at 1440px",
+        "LBG scoped three routes, guards and JSON restore at 375px",
+        "LBG scoped three routes, guards and JSON restore at 1440px",
+        "reference panel follows title and comparison wraps locally at phone tablet and desktop widths",
+        "mobile comparison shows baseline damage and weighted component changes and updates selected baseline",
+        "mobile coverage panel lists all weapons, downloads evidence-gated report and keeps fixed comparison widths",
+        "mobile unverified registered timing never leaks numeric DPS through comparison download or AI",
+        "KAN16 protected UI and three regressions",
+        "scorch UI loads delivered module, calculates and fits mobile widths",
+        "current combo full timestamps calculate and download a fresh route reference on mobile"
+      ],
+      "baselineLogSha256": "0331ab5896a5a9ad6a5198bbb0a9028dd4b7189a4c8b2b41898e1a87fe2b158e",
+      "finalLogSha256": "6539cefc8a81230d520da62210370bb1ed3c7ec4ebc8b59e4a7c8222f22a7195"
+    }
+  },
+  "glPublic": {
+    "scope": "REAL_MHDB_GL_REFERENCE_ACTION_PUBLIC_CALCULATE_SAVE_COMPARE;NOT_GAME_ACCURACY",
+    "baseCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
+    "hashes": {
+      "index": "e516ca1349d490670829dd4954b49ffdc7d028eee81c60dc2b3abe249ad42b90",
+      "adapter": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4",
+      "database": "e2d6719012b4463e51f80a12e05df665c2b9e10e6f74139716b5471c21784d4e",
+      "fixtures": "cd15289e54157909f7a825f531440b718f28530891a144ec0d91cf61f17cbf4b",
+      "script": "19566d72b95b3e196dabca548771bd5c889ffe5c264f0f98c43a68a1787d178d"
+    },
+    "rows": [
+      {
+        "action": "NORMAL",
+        "weaponId": 315,
+        "main": 9.3,
+        "helper": 9.3,
+        "blocked": [],
+        "stageIds": [
+          "reference:gl_NORMAL"
+        ],
+        "stages": [
+          9.3
+        ]
+      },
+      {
+        "action": "NORMAL",
+        "weaponId": 319,
+        "main": 17.3,
+        "helper": 17.3,
+        "blocked": [],
+        "stageIds": [
+          "reference:gl_NORMAL"
+        ],
+        "stages": [
+          17.3
+        ]
+      },
+      {
+        "action": "CHARGED",
+        "weaponId": 315,
+        "main": 30.12,
+        "helper": 30.12,
+        "blocked": [],
+        "stageIds": [
+          "reference:gl_CHARGED"
+        ],
+        "stages": [
+          30.12
+        ]
+      },
+      {
+        "action": "CHARGED",
+        "weaponId": 319,
+        "main": 58.92,
+        "helper": 58.92,
+        "blocked": [],
+        "stageIds": [
+          "reference:gl_CHARGED"
+        ],
+        "stages": [
+          58.92
+        ]
+      },
+      {
+        "action": "FULL_BURST",
+        "weaponId": 315,
+        "main": 73.07999999999998,
+        "helper": 73.07999999999998,
+        "blocked": [],
+        "stageIds": [
+          "reference:gl_FULL_BURST"
+        ],
+        "stages": [
+          73.07999999999998
+        ]
+      },
+      {
+        "action": "FULL_BURST",
+        "weaponId": 319,
+        "main": 140.28,
+        "helper": 140.28,
+        "blocked": [],
+        "stageIds": [
+          "reference:gl_FULL_BURST"
+        ],
+        "stages": [
+          140.28
+        ]
+      }
+    ],
+    "savedComparisons": [
+      {
+        "action": "NORMAL",
+        "distinctWeaponIds": [
+          315,
+          319
+        ],
+        "currentSharedRoute": "reference:gl_NORMAL",
+        "savedReloads": 2,
+        "comparedRows": 2,
+        "comparisonJsonExact": true,
+        "mainChannelsExact": true,
+        "originalSnapshotConditionsSavedMapAndChannelsPreserved": true
+      },
+      {
+        "action": "CHARGED",
+        "distinctWeaponIds": [
+          315,
+          319
+        ],
+        "currentSharedRoute": "reference:gl_CHARGED",
+        "savedReloads": 2,
+        "comparedRows": 2,
+        "comparisonJsonExact": true,
+        "mainChannelsExact": true,
+        "originalSnapshotConditionsSavedMapAndChannelsPreserved": true
+      },
+      {
+        "action": "FULL_BURST",
+        "distinctWeaponIds": [
+          315,
+          319
+        ],
+        "currentSharedRoute": "reference:gl_FULL_BURST",
+        "savedReloads": 2,
+        "comparedRows": 2,
+        "comparisonJsonExact": true,
+        "mainChannelsExact": true,
+        "originalSnapshotConditionsSavedMapAndChannelsPreserved": true
+      }
+    ],
+    "sequenceChecks": [
+      {
+        "moves": [
+          "reference:gl_NORMAL",
+          "reference:gl_CHARGED",
+          "reference:gl_NORMAL"
+        ],
+        "damage": 93.52,
+        "stages": [
+          17.3,
+          58.92,
+          17.3
+        ],
+        "exhaustionBlocked": [
+          {
+            "reason": "REAL_SLICE:GL_NORMAL_ROUNDS_INSUFFICIENT"
+          }
+        ],
+        "fullBurstMixedStillUnsupported": [
+          {
+            "reason": "REAL_SLICE:GL_SEQUENCE_STATE_TRANSITION_UNRESOLVED"
+          }
+        ]
+      }
+    ],
+    "failures": [],
+    "errors": [],
+    "status": "PASS"
+  },
+  "glBrowser": {
+    "scope": "DISPOSABLE_CHROMIUM_GL_PUBLIC_REFERENCE_AND_SAVED_COMPARE;NOT_GAME_ACCURACY",
+    "hashes": {
+      "index": "e516ca1349d490670829dd4954b49ffdc7d028eee81c60dc2b3abe249ad42b90",
+      "adapter": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4"
+    },
+    "cases": [
+      {
+        "action": "NORMAL",
+        "status": "PASS",
+        "builds": [
+          {
+            "weaponId": 315,
+            "damage": 9.3,
+            "maximumDamage": 9.3,
+            "stageId": "reference:gl_NORMAL"
+          },
+          {
+            "weaponId": 319,
+            "damage": 17.3,
+            "maximumDamage": 17.3,
+            "stageId": "reference:gl_NORMAL"
+          }
+        ],
+        "savedReloads": 2,
+        "savedComparisonAndJson": true,
+        "originalStatePreserved": true,
+        "pageErrors": []
+      },
+      {
+        "action": "CHARGED",
+        "status": "PASS",
+        "builds": [
+          {
+            "weaponId": 315,
+            "damage": 30.12,
+            "maximumDamage": 30.12,
+            "stageId": "reference:gl_CHARGED"
+          },
+          {
+            "weaponId": 319,
+            "damage": 58.92,
+            "maximumDamage": 58.92,
+            "stageId": "reference:gl_CHARGED"
+          }
+        ],
+        "savedReloads": 2,
+        "savedComparisonAndJson": true,
+        "originalStatePreserved": true,
+        "pageErrors": []
+      },
+      {
+        "action": "FULL_BURST",
+        "status": "PASS",
+        "builds": [
+          {
+            "weaponId": 315,
+            "damage": 73.07999999999998,
+            "maximumDamage": 73.07999999999998,
+            "stageId": "reference:gl_FULL_BURST"
+          },
+          {
+            "weaponId": 319,
+            "damage": 140.28,
+            "maximumDamage": 140.28,
+            "stageId": "reference:gl_FULL_BURST"
+          }
+        ],
+        "savedReloads": 2,
+        "savedComparisonAndJson": true,
+        "originalStatePreserved": true,
+        "pageErrors": []
+      }
+    ],
+    "failures": [],
+    "status": "PASS",
+    "counts": {
+      "actions": 3,
+      "distinctWeapons": 2,
+      "builds": 6,
+      "channels": 12,
+      "savedComparisonPairs": 3
+    }
+  },
+  "evidenceRoot": "evidence/current-data-integrity-20261110/union",
+  "baselineEvidenceReused": "Exact published02ced baseline logs from evidence/gl-reference-integration-20261110/union; baseline full suites were not repeated in this revision. Fresh RED reproductions are preserved in producer evidence.",
+  "allSuitesPassed": false,
+  "externalConsultationTransmitted": false,
+  "liveGameAccuracyVerified": false,
+  "safariVerified": false,
+  "legacyFeatureParityFullyReconciled": false,
+  "newBranchesCreated": false
+}

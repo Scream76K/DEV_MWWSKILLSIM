@@ -1,3 +1,13 @@
+# 現在版: current-data-integrity-20261110
+
+公開済みmainline `02ced3f7` を基準に、保存護石の不正Lvの保持と、画面・相談用データの現行計算結果を一致させる修正を追加しました。旧診断は明示的な参照領域に隔離し、旧形式の互換性を維持しています。外部相談データの送信はしていません。この版の作成時点ではローカル保存のみでGitHub未送信です。
+
+公式1243件（1212成功/31失敗）、DOM533件（372成功/161失敗）、browser92件（23成功/69失敗）。新規失敗なし。1506・94・47と追加CIと同じローカル検査39件は成功。全suite成功や全旧機能完成とはしていません。
+
+[今回の修正・受入範囲](docs/reports/current-data-integrity-20261110/README.md)、`INTEGRATION_VERSION.json`、正確な保存commitは `git rev-parse HEAD`。新規branchはありません。以下の過去版の公開状態は各作成時点の履歴です。02ced3f7はその後mainline公開とCI成功を確認済みです。
+
+## 以下は02ced3f7作成時点までの履歴
+
 # 現在版: gl-reference-identity-integration-20261110
 
 直前のローカル確定版966ab612へ、GL補助計算の実行ID維持とstage記録の修正を統合しました。966のテスト修復は保持し、主計算・係数・adapter・スキル継続仕様は変更していません。今回までのローカル2commitはGitHubへ未送信で、反映確認済みmainlineは8f6e759eです。

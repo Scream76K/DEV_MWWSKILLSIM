@@ -1,10 +1,10 @@
 {
-  "version": "integration-20261110-gl-reference-identity",
-  "status": "LOCAL_GL_REFERENCE_FIX_REVIEWED_NOT_PUBLISHED",
-  "mainline": "8f6e759e0745618bb26b26c0962bc62735426616",
+  "version": "integration-20261110-current-data-integrity",
+  "status": "LOCAL_CURRENT_DATA_REPAIR_REVIEWED_NOT_PUBLISHED",
+  "mainline": "02ced3f76cec94b37d86d37331324edc4e7dcfe5",
   "mergeBase": "77dc3e0e6518b8313407249885f7b0f8447deccf",
   "productSha256": {
-    "index.html": "13b3697edd8e86696ae31e2cb35fe680ac84b4d1840d452530173506bd239cee",
+    "index.html": "e516ca1349d490670829dd4954b49ffdc7d028eee81c60dc2b3abe249ad42b90",
     "hope-hammer-browser-adapter.js": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4",
     "skill-effect-continuation.js": "62f077d4941380661da5a7e07448e244ed1ec1098d06a957000cdba4aad2cab3",
     "skill-calculation-policy.js": "3ca0b86404597ea92d1e6a5e644ad0c26e170a2d97521395241e47bfd9fec9b4"
@@ -38,15 +38,21 @@
   "specificationVersion": "SPEC-20261110-01",
   "phase4ProductBase": "a772e58af777bf4702237b22d4bdf39ed3d2bd99",
   "phase4Verification": "docs/reports/skill-continuation-20261110/verification.json",
-  "publishedProductBaseCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
+  "publishedProductBaseCommit": "02ced3f76cec94b37d86d37331324edc4e7dcfe5",
   "testHarnessBaseCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "testHarnessVerification": "docs/reports/legacy-test-harness-20261110/verification.json",
   "testHarnessProductChanges": false,
   "originalMainlineBeforeIntegration": "6c3185201139ed7ec2251373a364c5cf966b4390",
-  "mainlineObservation": "GitHub API verified 2026-11-10 during test-repair review; this local test revision is not published.",
+  "mainlineObservation": "Existing mainline02ced3f verified read-only during current-data integration. No upload of this revision authorized or performed.",
   "glReferenceBaseCommit": "966ab612ebdf44af3596391a9be14952e743f6e1",
   "glReferenceVerification": "docs/reports/gl-reference-identity-20261110/integration-after-966ab.json",
   "glReferenceProductChanges": [
+    "index.html"
+  ],
+  "publicationStatusScope": "SNAPSHOT_AT_BUILD; later publication receipts are outside this immutable revision",
+  "currentDataBaseCommit": "02ced3f76cec94b37d86d37331324edc4e7dcfe5",
+  "currentDataVerification": "docs/reports/current-data-integrity-20261110/verification.json",
+  "currentDataProductChanges": [
     "index.html"
   ]
 }

@@ -1197,7 +1197,8 @@ function normalizeCharm(){
   if(!Array.isArray(build.charmCustom.skills)) build.charmCustom.skills=[];
   build.charmCustom.skills=build.charmCustom.skills.slice(0,3).map(x=>({
     name:String(x?.name||''),
-    level:(x?.level===undefined||x?.level===null||x?.level===''?1:x.level),
+    // Only empty editor rows have a default level; named grants must keep invalid input evidence.
+    level:(!x?.name&&(x?.level===undefined||x?.level===null||x?.level==='')?1:x?.level),
     type:x?.type==='weapon'?'weapon':'armor'
   }));
   while(build.charmCustom.skills.length<3) build.charmCustom.skills.push({name:'',level:1,type:'armor'});
@@ -2796,6 +2797,7 @@ function calcBuild(){normalizeArtiaProduction();renderCharmLegality();
     conditions:compareStep5Snapshot(),target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''}
   });
   renderSummary();renderDetail();syncDamage();renderMonsterInfo();refreshDecorationSelects();updateWeaponCoeffDisplay();
+  calcState.currentCalculationInputKey=consumerCurrentInputKey(App.state.combo?.moves||[]);
 }
 function sortedSkills(o){const kindRank=name=>{const k=skillByIdByName(name)?.kind;return k==='weapon'?0:k==='armor'?1:2;};return Object.entries(o).sort((a,b)=>kindRank(a[0])-kindRank(b[0])||Number(b[1])-Number(a[1])||jpSort(a[0],b[0]));}
 function skillOptionSort(arr){return [...arr].sort((a,b)=>{const la=skillMax(a),lb=skillMax(b);return lb-la||jpSort(a?.name,b?.name);});}
@@ -9609,7 +9611,52 @@ function referenceComboChange(row,baseline){
   const index=b.damage/a.damage*100;
   return {index,changePercent:index-100,scope:'SAME_P0_ROUTE_DAMAGE_ONLY_REFERENCE'};
 }
+// Current prepared data uses the same per-channel metrics and identity guards
+// as the visible comparison. Historical STANDARD/DPS diagnostics stay isolated.
+function consumerComparisonPowerChange(row,baseline){
+  if(consumerRelativeReason(row,baseline))return null;
+  const denominator=consumerDamageMetric(baseline,'normal').value,base=consumerDamageParts(baseline,'normal');
+  const pack=channel=>{
+    const damage=consumerDamageMetric(row,channel).value;if(damage===null)return null;
+    const components=consumerDamageParts(row,channel),componentChangePercent={},componentContributionPercent={},componentReasons={};
+    for(const key of ['physical','element','special']){
+      const v=components[key],b=base[key];
+      if(key==='element'&&(!row.elementType||!baseline.elementType||row.elementType!==baseline.elementType)){
+        componentChangePercent[key]=null;componentContributionPercent[key]=null;componentReasons[key]='ELEMENT_TYPE_NOT_COMPARABLE';continue;
+      }
+      componentChangePercent[key]=Number.isFinite(v)&&Number.isFinite(b)?(b>0?(v/b-1)*100:v===0?0:null):null;
+      componentContributionPercent[key]=Number.isFinite(v)&&Number.isFinite(b)?(v-b)/denominator*100:null;
+    }
+    return {damage,changePercent:(damage/denominator-1)*100,components,componentChangePercent,componentContributionPercent,componentReasons};
+  };
+  return {baselineDamage:denominator,normal:pack('normal'),maximum:pack('maximum')};
+}
+function createConsumerBuildComparisonReport(legacy){
+  const rows=lastBuildComparisonRows.map(row=>row.oneHitPipeline?row:{...row,oneHitPipeline:{status:'UNAVAILABLE',reason:'REAL_SLICE:PIPELINE_UNAVAILABLE'}}),index=lastBuildComparisonBaselineIndex,baseline=rows[index];
+  const base=consumerDamageMetric(baseline,'normal');
+  const results=rows.map((row,i)=>{
+    const normal=consumerDamageMetric(row,'normal'),maximum=consumerDamageMetric(row,'maximum'),relativeReason=consumerRelativeReason(row,baseline);
+    const relative=value=>!relativeReason&&value!==null?value/base.value*100:null;
+    const {oneHitPipeline:oldPipeline,...oldResult}=legacy.results[i];
+    const powerChannel=(channel,result)=>result.value===null?null:{comparisonPower:result.value,...consumerDamageParts(row,channel)};
+    return {name:row.name,kind:row.kind,attack:row.attack,attackTrue:row.attackTrue,affinity:row.affinity,maxAffinity:row.maxAffinity,
+      element:row.element,elementType:row.elementType,elementKnown:row.elementKnown,typeKnown:row.typeKnown,elementStatus:row.elementStatus,elementReason:row.elementReason,
+      oneHitPipeline:row.oneHitPipeline,power:{profileId:row.oneHitPipeline?.evaluationPlan?.profileId||null,normal:powerChannel('normal',normal),maximum:powerChannel('maximum',maximum),reason:normal.reason,maximumReason:maximum.reason},
+      powerIndex:normal.value,maxPowerIndex:maximum.value,damage:normal.value,damageReason:normal.reason,maximumDamageReason:maximum.reason,
+      relativePowerIndex:relative(normal.value),relativeMaximumPowerIndex:relative(maximum.value),relativeReason,powerChange:consumerComparisonPowerChange(row,baseline),
+      legacyReference:{calculationScope:'LEGACY_STANDARD_AND_DPS_NOT_CURRENT_ROUTE',...oldResult}};
+  });
+  return JSON.parse(JSON.stringify({format:legacy.format,schemaVersion:3,calculationScope:'CURRENT_CONSUMER_NORMAL_MAXIMUM',createdAt:legacy.createdAt,referenceGameVersion:legacy.referenceGameVersion,
+    baseline:{index,name:baseline.name,damage:base.value,reason:base.reason,components:base.value===null?null:consumerDamageParts(baseline,'normal')},
+    context:lastBuildComparisonContext,coverage:consumerCoverageSummary(rows),results,
+    legacyReference:{calculationScope:'LEGACY_STANDARD_AND_DPS_NOT_CURRENT_ROUTE',schemaVersion:legacy.schemaVersion,release:legacy.release,baseline:legacy.baseline,coverage:legacy.coverage,notes:legacy.notes},
+    notes:['通常・最大の主値は画面と同じ選択技の丸め前実ダメージです。基準未算出でも他の算出済み絶対値は保持します。','相対指数は同じ武器種・対象・技構成・弾条件の基準通常=100です。各チャンネルの算出可否は独立です。','未反映スキルはoneHitPipeline.channelsのdiagnostics.ignoredSkillEffectsに記録します。未反映効果と相互作用を含む完全値ではありません。','DPS開発は中止しています。legacyReferenceは旧経路の診断値であり、主結果や不足値の代用には使いません。','参考計算であり実機検証済みを意味しません。']}));
+}
 function createBuildComparisonReport(){
+  const legacy=createLegacyBuildComparisonReport();if(!legacy)return null;
+  return lastBuildComparisonRows.some(row=>row.oneHitPipeline)?createConsumerBuildComparisonReport(legacy):legacy;
+}
+function createLegacyBuildComparisonReport(){
   if(!lastBuildComparisonRows?.length||!lastBuildComparisonContext)return null;
   const index=lastBuildComparisonBaselineIndex,baseline=lastBuildComparisonRows[index];if(!baseline)return null;
   const results=lastBuildComparisonRows.map(sourceRow=>{
@@ -9740,6 +9787,23 @@ function buildCalculationFingerprint(){
   lastBuildComparisonContext=JSON.parse(JSON.stringify({comparedAt:new Date().toISOString(),conditions:cond,combo:current.combo,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null}}));
   $('compareOut').innerHTML=renderCompareTable(rows);
 }
+// Preparing consultation data must not recalculate equipment or invalidate a
+// saved comparison. Changed live inputs withhold old results until Calculate.
+function consumerCurrentInputKey(evaluatedMoves=null){
+  const moves=evaluatedMoves||[...document.querySelectorAll('.comboRow .cmove')].map(x=>({techniqueId:x.value}));
+  const snapshot=buildSnapshotComparable({combatBuffs:combatBuffState(),weaponId:$('weapon')?.value||'',weaponKind:canonicalWeaponKind(selectedWeapon()),
+    armor:Object.fromEntries(Object.entries(build.armor||{}).map(([slot,item])=>[slot,item?.id||''])),charmCustom:build.charmCustom,artia:build.artia,decos:build.decos,
+    combo:{moves:moves.map(x=>({techniqueId:x.techniqueId}))},target:{monsterId:$('monster')?.value||'',partId:$('monsterPart')?.value||''}});
+  return JSON.stringify({snapshot,conditions:compareStep5Snapshot(),weaponSource:selectedWeapon(),armorSources:build.armor,targetSource:selectedPart(),
+    techniqueSpec:window.TechniqueDBEngine?.spec,techniqueSources:window.TechniqueDBEngine?.db?.[canonicalWeaponKind(selectedWeapon())],
+    decorationSources:Object.values(build.decos||{}).filter(Boolean).map(id=>DB.decorations.find(x=>String(x.id)===String(id))||null),skillSources:DB.skills});
+}
+function currentConsumerCalculation(){
+  const scope={calculationScope:'CURRENT_CONSUMER_NORMAL_MAXIMUM'};
+  if(!calcState?.realOneHit)return {...scope,status:'UNAVAILABLE',reason:'REAL_SLICE:NOT_EVALUATED'};
+  if(calcState.currentCalculationInputKey!==consumerCurrentInputKey())return {...scope,status:'UNAVAILABLE',reason:'REAL_SLICE:CURRENT_CALCULATION_STALE'};
+  return JSON.parse(JSON.stringify({...calcState.realOneHit,...scope}));
+}
 function aiBuildData(){
   const st=calcState?.stats||{};
   const weapon=selectedWeapon?.();
@@ -9760,13 +9824,13 @@ function aiBuildData(){
   const comboTimingStatus=combo.length>0&&combo.every(m=>m.time!==null)?'REFERENCE_ONLY':'PENDING';
   const comboEvaluation={status:evaluated.status,dpsStatus:evaluated.dpsStatus,dpsReason:evaluated.dpsReason,damage:evaluated.damage,time:evaluated.time,theoreticalDps:evaluated.theoreticalDps,practicalDps:evaluated.practicalDps,oneMinute:evaluated.oneMinute,context,contextError,pendingTimeTechniqueIds:evaluated.pendingTimeTechniqueIds,blockedStages:evaluated.blocked.map(s=>({index:s.index,techniqueId:s.id,name:s.name,reason:s.reason})),numericScope:'REFERENCE_NOT_LIVE_GAME_VERIFIED',externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT'};
    const comboProvenance=weapon&&combo.length?window.MHWTechniqueEvidenceBridge.inspectCombo(canonicalWeaponKind(weapon),combo,techniqueDbAudit):null;
- return {version:App.version,weapon:weapon?{name:weapon.name||'',kind:canonicalWeaponKind(weapon)||'',attack:weapon.attack||0,affinity:weapon.affinity||0,element:st.element,elementType:st.elementType||'',elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason}:null,armor,charm:charms,decos,stats:st,activeSkills:skills,buildComparison:createBuildComparisonReport(),step5:{uptime:$('uptime')?.value,uptimeMode:$('uptimeMode')?.value,combo,comboTimingStatus,comboEvaluation,comboProvenance,chargeBladeState:context?.chargeBladeState??null}};
+ return {version:App.version,weapon:weapon?{name:weapon.name||'',kind:canonicalWeaponKind(weapon)||'',attack:weapon.attack||0,affinity:weapon.affinity||0,element:st.element,elementType:st.elementType||'',elementKnown:st.elementKnown,typeKnown:st.typeKnown,elementStatus:st.elementStatus,elementReason:st.elementReason}:null,armor,charm:charms,decos,stats:st,activeSkills:skills,currentCalculation:currentConsumerCalculation(),buildComparison:createBuildComparisonReport(),step5:{calculationScope:'LEGACY_REFERENCE_NOT_CURRENT_CONSUMER',uptime:$('uptime')?.value,uptimeMode:$('uptimeMode')?.value,combo,comboTimingStatus,comboEvaluation,comboProvenance,chargeBladeState:context?.chargeBladeState??null}};
 }
 
 function makeAIPrompt(){
   const text=String($('aiPrompt')?.value||'').trim();
   if(!text){$('aiOut').innerHTML='<span class="warn">相談内容を入力してください。</span>';return null;}
-  const payload={request:text,currentBuild:aiBuildData(),instruction:'AIは候補提示・比較・評価を行い、最終ビルドはユーザーが決定する。未確認の時間や技を推定で補完せず、時間が未確認のコンボはDPS未算出として扱う。comboEvaluationがBLOCKEDの場合は全体火力・DPSを保留とし、計算可能な一部の技だけで全体を評価しない。REFERENCE_ONLYも実機検証済みとは扱わない。buildComparisonがある場合は、その基準ビルドと比較時の条件を使い、現在編集中の装備条件と混同しない。buildComparisonがnullなら比較結果を推定しない。'};
+  const payload={request:text,currentBuild:aiBuildData(),instruction:'AIは候補提示・比較・評価を行い、最終ビルドはユーザーが決定する。現在の通常・最大火力はcurrentCalculation、保存比較はschemaVersion 3のbuildComparisonを正本とし、画面と同じ丸め前実ダメージを各チャンネル独立に扱う。executionがcompleteかつcomboTotalDamageがavailableのチャンネルだけを算出済みとし、未算出理由を推測で補完しない。CURRENT_CALCULATION_STALEなら現在の入力で再計算が必要と伝え、旧値を使わない。基準Aが未算出でも算出済みBの絶対値は保持し、相対比較の保留と区別する。diagnostics.ignoredSkillEffectsの未反映スキル・Lv・武器・通常/最大・理由を明示し、その効果と相互作用を含む完全値と扱わない。未対応スキルの省略だけを理由に算出済みチャンネル全体を保留しない。技・入力・資源の欠損は省略せず、該当結果を未算出として扱う。DPS開発は中止しており、所要時間やDPSで評価・補完しない。legacyReference、schemaVersion 2の比較、step5は旧参考診断であり、現在の主値や不足値の代用にしない。参考値を実機検証済みとは扱わない。buildComparisonがある場合は、その基準ビルドと比較時の条件を使い、現在編集中の装備条件と混同しない。buildComparisonがnullなら比較結果を推定しない。'};
   const out=$('aiPayload');if(out)out.textContent=JSON.stringify(payload,null,2);
   $('aiOut').innerHTML='<span class="ok">AI相談データを作成しました。</span>';
   return payload;

@@ -20,6 +20,20 @@ on:
       - 'tools/gl-hh-scope-regression/**'
       - 'tools/input-guard-regression/**'
       - 'tools/integration-regression/**'
+      - 'tests/charm-saved-level-integrity.test.cjs'
+      - 'tests/r206-charm-skill-integrity.test.cjs'
+      - 'tests/r250-snapshot-ownership.test.cjs'
+      - 'tests/legacy-comparison-report-contract.test.cjs'
+      - 'tools/consumer-ai-comparison-*.cjs'
+      - 'tools/consumer-ai-comparison-source-skill.json'
+      - 'tools/legacy-comparison-report-test-helper.cjs'
+      - 'tools/dom-test-setup.cjs'
+      - 'tools/legacy-page-test-context.cjs'
+      - 'tools/synthetic-combat-fixture.cjs'
+      - 'tools/synthetic-combat-source-skills.cjs'
+      - 'docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/cb-gl-scope-regression.yml'
 permissions:
   contents: read
@@ -35,3 +49,21 @@ jobs:
         run: node tools/integration-regression/run.cjs
       - name: Verify all historical and current runner freshness checks
         run: node --test tools/cb-gl-scope-regression/freshness.test.cjs tools/sa-hh-scope-regression/freshness.test.cjs tools/gl-hh-scope-regression/freshness.test.cjs tools/input-guard-regression/freshness.test.cjs
+  current-data-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - name: Install locked test dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+      - name: Verify saved input and current comparison report integrity
+        run: >-
+          node --test
+          tests/charm-saved-level-integrity.test.cjs
+          tests/r206-charm-skill-integrity.test.cjs
+          tests/r250-snapshot-ownership.test.cjs
+          tests/legacy-comparison-report-contract.test.cjs
+          tools/consumer-ai-comparison-dom.test.cjs
