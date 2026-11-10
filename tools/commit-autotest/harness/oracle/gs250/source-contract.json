@@ -1,0 +1,96 @@
+{
+  "status": "PRIOR_ADOPTED_COEFFICIENTS_NO_NEW_APPROVAL",
+  "sourceCommit": "5f1f733fc00c770073704c699ea7c2641a8bc9fb",
+  "databaseSha256": "01c2c4edbccc9942a07241c39545a39b7c46ef2a9e7d61d7c616fda98676ccbb",
+  "comparisonStatus": "ADOPTED_COEFFICIENT_SOURCE_FORMULA_MATCH_UNROUNDED_ONLY",
+  "derivation": "Independent Decimal arithmetic from the fixed weapon DB and external/adopted coefficients, calculated before observing product results. Shared DB provenance is not independently re-validated.",
+  "formula": {
+    "physical": "rawAttack * 176/100 * 1.05 * 0.80 * ((1-affinityProbability) + affinityProbability*1.25)",
+    "elementBefore": "rawElement * 1.5 * 1 * 0.30",
+    "chargeMasterAfter": "elementBefore * adoptedChargeMaster[level]",
+    "criticalElementAfter": "elementBefore * ((1-affinityProbability)+affinityProbability*adoptedCriticalElement[level])"
+  },
+  "coefficients": {
+    "chargeMaster": {
+      "1": "1.15",
+      "2": "1.20",
+      "3": "1.25"
+    },
+    "criticalElement": {
+      "1": "1.07",
+      "2": "1.14",
+      "3": "1.21"
+    }
+  },
+  "sources": [
+    {
+      "url": "https://macarongamemo.com/entry/mhwilds-great_sword-motion",
+      "role": "Charged slash III MV176, elemental modifier1.5"
+    },
+    {
+      "url": "https://macarongamemo.com/entry/mhwilds-damage_calculation",
+      "role": "Damage formula, green sharpness1.05/1, physical positive critical1.25"
+    },
+    {
+      "url": "https://kuroyonhon.com/mhwilds/memo/28.php",
+      "role": "Great-sword Charge Master levels1-3, adopted provisional coefficients"
+    },
+    {
+      "url": "https://a-to-monhan.com/2025/02/26/wilds-sukiru-buki-bougu/",
+      "role": "Great-sword Critical Element levels1-3"
+    },
+    {
+      "url": "https://kuroyonhon.com/mhwilds/memo/21.php",
+      "role": "Great-sword Critical Element Lv3 example1.21"
+    },
+    {
+      "url": "https://kuroyonhon.com/mhwilds/memo/22.php",
+      "role": "Rounding boundary, not applied in this unrounded expectation"
+    }
+  ],
+  "alternativeApproximateSource": {
+    "url": "https://gamewith.jp/mhwilds/486605",
+    "values": [
+      "approximately1.07",
+      "approximately1.13",
+      "approximately1.2"
+    ],
+    "used": false,
+    "note": "Does not replace the existing adopted precise coefficients. Current-version discrepancy is unresolved."
+  },
+  "priorAdoption": {
+    "chargeMaster": "2026-10-25 provisional adoption, verified by independent review of original conversation",
+    "criticalElement": "2026-10-26 adoption, verified by independent review of original conversation",
+    "newApprovalCreated": false
+  },
+  "fixedPremises": {
+    "weapon250": {
+      "rawAttack": 100,
+      "affinityPercent": 5,
+      "elementType": "fire",
+      "rawElement": 14,
+      "displayedElement": 140,
+      "innateSkillId8Level": 1
+    },
+    "weapon236": {
+      "rawAttack": 90,
+      "affinityPercent": 0,
+      "rawElement": 0
+    },
+    "techniqueId": "GS_CHARGED_SLASH_3",
+    "physicalHitzone": 80,
+    "elementHitzone": 30,
+    "drawAttack": false,
+    "maxSharpness": "green"
+  },
+  "boundaries": [
+    "Unrounded expected damage, not one actual displayed critical hit.",
+    "Hitzones80/30 are test premises, not independent game measurements.",
+    "Current game version, source DB version, game display rounding and HP decrement are unverified.",
+    "Complete legal build and real charm availability remain unverified.",
+    "Numeric magnitude is checked only against the adopted source formula; numericAccuracyVerified/gameActivationObserved remain false.",
+    "Additive elemental effects, general ordering, other weapons and combinations are outside this oracle."
+  ],
+  "independentReviewComparisonSha256": "ca11c37bafef891a89b9d6a3ff186f04d623f0003099626cd7573b64aaa242ff",
+  "independentDerivationSourceSha256": "90277558caefe28ae706e98f63ae532a5a4690861e53c6843ea48c96bce6c568"
+}

@@ -1,0 +1,788 @@
+{
+  "schemaVersion": 1,
+  "status": "SOURCE_ONLY_NOT_FUNCTIONAL_PRODUCT_DISTRIBUTION",
+  "sourceVersion": "v12.1",
+  "repository": "https://github.com/Scream76K/DEV_MWWSKILLSIM",
+  "targetPath": "tools/commit-autotest",
+  "checkedMainlineCommit": "6c3185201139ed7ec2251373a364c5cf966b4390",
+  "productBaselineCommit": "5f1f733fc00c770073704c699ea7c2641a8bc9fb",
+  "targetCollisionCheck": {
+    "method": "read-only GitHub recursive tree",
+    "truncated": false,
+    "entries": 3006,
+    "targetMatches": 0
+  },
+  "runtimeSourceChanges": false,
+  "productSourceIncluded": false,
+  "actualGitHubProductE2EPerformed": false,
+  "includedFilesExcludingThisManifest": [
+    {
+      "path": ".gitignore",
+      "bytes": 487,
+      "sha256": "3ce1111f62b8d82e771c5b542b7531536250f9f4ebbd9db53d9640ffd68edff9",
+      "source": "new source-only packaging or test support"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9918,
+      "sha256": "c60cb27c94c2775219b97d0c7ba4b4cda68087e06e4ba4198bb212b81e41d424",
+      "upstreamSha256": "6f1b436fc1238d07ff8364d64a6d71549cbda8b7eea007c591094cc30efe33c2",
+      "source": "current emitted GL guard diagnosis only; no product, oracle or private data changes"
+    },
+    {
+      "path": "contracts/baseline.json",
+      "bytes": 7798,
+      "sha256": "9ba9434f9b9e203502bfe50ed449594b9343054a614ef2b85d0f338c18c64a28",
+      "upstreamSha256": "9ba9434f9b9e203502bfe50ed449594b9343054a614ef2b85d0f338c18c64a28",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "contracts/converter-provenance.json",
+      "bytes": 3358,
+      "sha256": "91e63a90de9f0a7469b55fc52f7e28de93ee6cedca6fcd1471a982d628bdf06d",
+      "upstreamSha256": "91e63a90de9f0a7469b55fc52f7e28de93ee6cedca6fcd1471a982d628bdf06d",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "contracts/database-provenance.json",
+      "bytes": 7653,
+      "sha256": "4cdd2aed12c4e1f8cbcea5cc97af299b54deb895aab8fc98061ea8b23acc92a3",
+      "upstreamSha256": "4cdd2aed12c4e1f8cbcea5cc97af299b54deb895aab8fc98061ea8b23acc92a3",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "dependencies/package-lock.json",
+      "bytes": 19144,
+      "sha256": "42fca990f5f1dc9dcc41e59f8ab3f598364bac00f1129b9e173e664c5c2a6ce3",
+      "upstreamSha256": "42fca990f5f1dc9dcc41e59f8ab3f598364bac00f1129b9e173e664c5c2a6ce3",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "dependencies/package.json",
+      "bytes": 341,
+      "sha256": "9d207b2cfb7fb3e1b6a006a52adeba1ee263374ce5ef067909f4bdb636c74507",
+      "upstreamSha256": "9d207b2cfb7fb3e1b6a006a52adeba1ee263374ce5ef067909f4bdb636c74507",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/all-cases.cjs",
+      "bytes": 3762,
+      "sha256": "9c8821e937ec842928b9779bcb26f5ca6708c9b2eb0f63c90e8d46ff9d2ead67",
+      "upstreamSha256": "9c8821e937ec842928b9779bcb26f5ca6708c9b2eb0f63c90e8d46ff9d2ead67",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/batch-summary.cjs",
+      "bytes": 10903,
+      "sha256": "7f311eee515267b127ad0cad7b784a0754c3618513d0432e183c6e392b170eed",
+      "upstreamSha256": "7f311eee515267b127ad0cad7b784a0754c3618513d0432e183c6e392b170eed",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/batch-summary.test.cjs",
+      "bytes": 3032,
+      "sha256": "06e010b4eb7a77cc1e74ac5a3aa7ecd26b24aa3d97b97fecef83ee6711a663da",
+      "upstreamSha256": "06e010b4eb7a77cc1e74ac5a3aa7ecd26b24aa3d97b97fecef83ee6711a663da",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/charge-master-plan.cjs",
+      "bytes": 2399,
+      "sha256": "c58599e3e0278c61fe6c4fb86215f2738a101f3c979ca8edaaa0c1bfbf1d7eab",
+      "upstreamSha256": "c58599e3e0278c61fe6c4fb86215f2738a101f3c979ca8edaaa0c1bfbf1d7eab",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/charge-master-smoke.cjs",
+      "bytes": 76,
+      "sha256": "1d1ad44c8cd1fb8227344f73c8938b1a41753b6bea7779a8ff6b9f16216a2ab2",
+      "upstreamSha256": "1d1ad44c8cd1fb8227344f73c8938b1a41753b6bea7779a8ff6b9f16216a2ab2",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/charge-master.cjs",
+      "bytes": 17193,
+      "sha256": "13a952fb88246d12d9c4ab7ddc36dd8082958b8ee4e56a601af534f3234f1b3e",
+      "upstreamSha256": "13a952fb88246d12d9c4ab7ddc36dd8082958b8ee4e56a601af534f3234f1b3e",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/commit-snapshot.cjs",
+      "bytes": 16888,
+      "sha256": "ebefd594c290380add16b4c7111bddd1fb8aa96ea37910534827c03e71c251e1",
+      "upstreamSha256": "ebefd594c290380add16b4c7111bddd1fb8aa96ea37910534827c03e71c251e1",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/commit-snapshot.test.cjs",
+      "bytes": 10318,
+      "sha256": "3b89e62c0597356f07b078428ff946e1c144803bb5bf9425d0f40464bfcfa6ce",
+      "upstreamSha256": "8f8f034bf5ee08f004a2fb3d52fac78daf3686b1fd77b041cba1aa3c6225bd42",
+      "source": "v12.1 test adapted to invented fixture"
+    },
+    {
+      "path": "harness/current-evidence.cjs",
+      "bytes": 824,
+      "sha256": "aabda9e4c97bd5230c6aa79a8a8eab03eadc4f7f03caab62f982cddb66eb4e2f",
+      "upstreamSha256": "aabda9e4c97bd5230c6aa79a8a8eab03eadc4f7f03caab62f982cddb66eb4e2f",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/current-evidence.test.cjs",
+      "bytes": 951,
+      "sha256": "fe22d8763e8f4ff0eb2280b4092da73e35189c3b508e5bfb0e25e5d2b0b53dd2",
+      "upstreamSha256": "fe22d8763e8f4ff0eb2280b4092da73e35189c3b508e5bfb0e25e5d2b0b53dd2",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/expected-inputs.json",
+      "bytes": 6087,
+      "sha256": "ba90c27e309c952dc8d7fd020f9b293e2266eff8deafc527ac9b7c02fd6c140a",
+      "upstreamSha256": "ba90c27e309c952dc8d7fd020f9b293e2266eff8deafc527ac9b7c02fd6c140a",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/fixture-applicability-data.cjs",
+      "bytes": 1824,
+      "sha256": "df52828ea778403c8fcf2b7c77ff9672eec01c049807b5289911c203cc2ceb39",
+      "source": "test-side applicability contract; no product behavior or oracle change"
+    },
+    {
+      "path": "harness/fixture-applicability.cjs",
+      "bytes": 2211,
+      "sha256": "ccf5b8f8fac4a98c3ee0f3f51360ff4d902079adcc0da2f24b7c7b623d1cb9dd",
+      "source": "test-side applicability contract; no product behavior or oracle change"
+    },
+    {
+      "path": "harness/fixture-applicability.test.cjs",
+      "bytes": 2511,
+      "sha256": "754ced8c76f073b9112d2c6928c9b2ad12c6a3787c6a8829218c5fa6f6190a08",
+      "source": "test-side applicability contract; no product behavior or oracle change"
+    },
+    {
+      "path": "harness/gl-affinity-plan.cjs",
+      "bytes": 3010,
+      "sha256": "ab7e29e7d37b730e7585af9fdd937501a3faddcbcdc919f6486a9cbaccabcb8a",
+      "upstreamSha256": "ab7e29e7d37b730e7585af9fdd937501a3faddcbcdc919f6486a9cbaccabcb8a",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/gl-affinity-smoke.cjs",
+      "bytes": 74,
+      "sha256": "05a0d8c1501c89da555ccc32990ae731c2f283c6fe2bc334f1d3702c03c38cd1",
+      "upstreamSha256": "05a0d8c1501c89da555ccc32990ae731c2f283c6fe2bc334f1d3702c03c38cd1",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/gl-affinity.cjs",
+      "bytes": 15163,
+      "sha256": "03c2874e629b85d2251c1a6054f6862e8c45a57375807fed053cd2de4593fb3e",
+      "upstreamSha256": "03c2874e629b85d2251c1a6054f6862e8c45a57375807fed053cd2de4593fb3e",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/gl-guard-diagnosis.cjs",
+      "bytes": 4262,
+      "sha256": "c86f2726e6efa77114f291cd7fd6e3900fafe6f980e64100ec3faf35f8556eca",
+      "source": "current emitted GL guard diagnosis only; no product, oracle or private data changes"
+    },
+    {
+      "path": "harness/gl-guard-diagnosis.test.cjs",
+      "bytes": 3989,
+      "sha256": "c075f5895aabade4902191378b60e3d1d4a61d751b029d80c979a24117db6fda",
+      "source": "current emitted GL guard diagnosis only; no product, oracle or private data changes"
+    },
+    {
+      "path": "harness/gs-smoke.cjs",
+      "bytes": 13904,
+      "sha256": "1bbcea3b8f5ec5127916be0529da7a9308b46c9eb69e14777cd6260dff6e8584",
+      "upstreamSha256": "1bbcea3b8f5ec5127916be0529da7a9308b46c9eb69e14777cd6260dff6e8584",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/gs250-oracle.cjs",
+      "bytes": 2371,
+      "sha256": "765cbc455fc65bd4e7c4b64db683afe6705e8fff8d15388c5b699e3ce098d2db",
+      "upstreamSha256": "765cbc455fc65bd4e7c4b64db683afe6705e8fff8d15388c5b699e3ce098d2db",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/gs250-oracle.test.cjs",
+      "bytes": 1439,
+      "sha256": "68c6d09b30455d4819d4c271d3be047d1b0089205cc10c78590d73e98002fbd3",
+      "upstreamSha256": "66b3cbbdbae9c6c7efa650b6110814d933793b1489814699ebd9157f4a058903",
+      "source": "v12.1 test adapted to invented fixture"
+    },
+    {
+      "path": "harness/isolation-preflight.cjs",
+      "bytes": 2216,
+      "sha256": "86175f064d63281833a39e8a5c59d44483f51ea8f218fe28321c3962f210d18a",
+      "upstreamSha256": "86175f064d63281833a39e8a5c59d44483f51ea8f218fe28321c3962f210d18a",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/oracle/gs250/derive_expected.py",
+      "bytes": 2124,
+      "sha256": "c6d228bf38d2dfb093e800d7002ea9977752144d4aad9ce3bf45847714ce3804",
+      "upstreamSha256": "c6d228bf38d2dfb093e800d7002ea9977752144d4aad9ce3bf45847714ce3804",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/oracle/gs250/source-contract.json",
+      "bytes": 3876,
+      "sha256": "3fdf4d27f550737e79b4dd2ae48ebb1431dc4a92c861c60329a223eac38077db",
+      "upstreamSha256": "3fdf4d27f550737e79b4dd2ae48ebb1431dc4a92c861c60329a223eac38077db",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/oracle/source-contract.json",
+      "bytes": 3465,
+      "sha256": "26158877e68ddd431cb940b5c67d0d2f7dfc5c2f94a302f4066bc1595b9769c9",
+      "upstreamSha256": "26158877e68ddd431cb940b5c67d0d2f7dfc5c2f94a302f4066bc1595b9769c9",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/representative-14.cjs",
+      "bytes": 7434,
+      "sha256": "ebb5d46015a32f50200cee5d48b6b8451558019844f58c58c94abb74f28e3998",
+      "upstreamSha256": "ebb5d46015a32f50200cee5d48b6b8451558019844f58c58c94abb74f28e3998",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/resistance-conditions-plan.cjs",
+      "bytes": 3031,
+      "sha256": "b06f18acaa4c13b42132b3829cc5ff308ed0bd2bb4241eb998ccdd5b35463ac4",
+      "upstreamSha256": "26eb6884d22ea4cd8e2894fddd8218c28823985c50ceade6f503fd623d393823",
+      "source": "test-side applicability contract; no product behavior or oracle change"
+    },
+    {
+      "path": "harness/resistance-conditions-smoke.cjs",
+      "bytes": 84,
+      "sha256": "621ff99263907ef9fd8f41ac343cfc1731c6d4685824316204d6e5c112313256",
+      "upstreamSha256": "621ff99263907ef9fd8f41ac343cfc1731c6d4685824316204d6e5c112313256",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/resistance-conditions.cjs",
+      "bytes": 13287,
+      "sha256": "e6c05acf9199ce8d0f2c475aefd0a0a7c3f0a464492f5b4e9ad175e6d70dcb1c",
+      "upstreamSha256": "e6c05acf9199ce8d0f2c475aefd0a0a7c3f0a464492f5b4e9ad175e6d70dcb1c",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/run-commit.cjs",
+      "bytes": 4294,
+      "sha256": "bc90214c888c4a7d164086e75a5e5df4a31470014a68c0a9f50ad13771d31c37",
+      "upstreamSha256": "bc90214c888c4a7d164086e75a5e5df4a31470014a68c0a9f50ad13771d31c37",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/script-coverage.test.cjs",
+      "bytes": 2989,
+      "sha256": "95d1fd8452503084d6c91f16b1239d3aef0067d9ecd727e6ca662d3f2045b5b0",
+      "upstreamSha256": "95d1fd8452503084d6c91f16b1239d3aef0067d9ecd727e6ca662d3f2045b5b0",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/skill-conditions-plan.cjs",
+      "bytes": 2123,
+      "sha256": "99e260076bacd349a59eb5c35bda17d374b58dff1cfbccbb99f136f380100add",
+      "upstreamSha256": "99e260076bacd349a59eb5c35bda17d374b58dff1cfbccbb99f136f380100add",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/skill-conditions-smoke.cjs",
+      "bytes": 77,
+      "sha256": "d946bb92565312b475d0bd6cbee4e779fece93908812eebbdcd8d53f97a1641d",
+      "upstreamSha256": "d946bb92565312b475d0bd6cbee4e779fece93908812eebbdcd8d53f97a1641d",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/skill-conditions.cjs",
+      "bytes": 14916,
+      "sha256": "2398b90d4d2e721c8c9bcef1b1a6212bbb7210fa91e72797322d9616f3ccd9ec",
+      "upstreamSha256": "2398b90d4d2e721c8c9bcef1b1a6212bbb7210fa91e72797322d9616f3ccd9ec",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/skill-contrast.cjs",
+      "bytes": 5085,
+      "sha256": "fdb6fd6fc9230ac2cec08c4ffe9ae509e4f8279a0fc11bd5556e69c12985bb62",
+      "upstreamSha256": "fdb6fd6fc9230ac2cec08c4ffe9ae509e4f8279a0fc11bd5556e69c12985bb62",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/skill-contrast.test.cjs",
+      "bytes": 2965,
+      "sha256": "e1347beccea30932f299d7e2cde00cef92387be14081fa79e2d96d13a9053c30",
+      "upstreamSha256": "e1347beccea30932f299d7e2cde00cef92387be14081fa79e2d96d13a9053c30",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/skill-plan.cjs",
+      "bytes": 4319,
+      "sha256": "6d7fddf5218a346901d0c6c5c88d6fd5bbc3ffd2b2e257524bd9254b5f33d3a6",
+      "upstreamSha256": "7e3e1788ee01afe81dd61d2f74c3c388b3056c2464b804e2ff00ea3e196cd3d1",
+      "source": "test-side applicability contract; no product behavior or oracle change"
+    },
+    {
+      "path": "harness/skill-scan.cjs",
+      "bytes": 17031,
+      "sha256": "f01802967fc569d383e1417d627d9b1bdb5f11711beded609f099e682950e29c",
+      "upstreamSha256": "f01802967fc569d383e1417d627d9b1bdb5f11711beded609f099e682950e29c",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/skill-smoke.cjs",
+      "bytes": 72,
+      "sha256": "2154d6fe5dcedcbaaf76dd81113d1a39b09d6dcd260c71baf980e28edb77c22c",
+      "upstreamSha256": "2154d6fe5dcedcbaaf76dd81113d1a39b09d6dcd260c71baf980e28edb77c22c",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/skill-sources/manifest.json",
+      "bytes": 259,
+      "sha256": "f817ee93b99e4b6413d47abbf093581d1e2c48e04bd75a79c7d9ad5018aa25fd",
+      "upstreamSha256": "f817ee93b99e4b6413d47abbf093581d1e2c48e04bd75a79c7d9ad5018aa25fd",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/skill-technique-plan.cjs",
+      "bytes": 3464,
+      "sha256": "c8e4f5f5423024e195f620ca2d0fae433616730c7807625360f51d3e4fac44c6",
+      "upstreamSha256": "c8e4f5f5423024e195f620ca2d0fae433616730c7807625360f51d3e4fac44c6",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/skill-technique-smoke.cjs",
+      "bytes": 78,
+      "sha256": "3d5e4a4b2bc395408082f35be43d37b2e111b5fdff53434ab26b7be1a32864dd",
+      "upstreamSha256": "3d5e4a4b2bc395408082f35be43d37b2e111b5fdff53434ab26b7be1a32864dd",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/skill-technique.cjs",
+      "bytes": 15318,
+      "sha256": "a7dd5fae8fb3a275679bebe116f9c25c18e267876792dea0a2bd3871b78a8178",
+      "upstreamSha256": "a7dd5fae8fb3a275679bebe116f9c25c18e267876792dea0a2bd3871b78a8178",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "harness/test-support/synthetic-tool.cjs",
+      "bytes": 2798,
+      "sha256": "c8e61a626b9d23fe3c1dae853204ef0e4727a7135796bb78a7fceb9d2210ca68",
+      "source": "new source-only packaging or test support"
+    },
+    {
+      "path": "harness/uncalculated-diagnostics.cjs",
+      "bytes": 8183,
+      "sha256": "f25950054bcaeaf92e9b47d3d528d25593e5c9648712afbd1410f3c8f528d313",
+      "upstreamSha256": "42af8998ec9e7050803a3a1b9e1680fde204494ccf7aac030b1853fe257d9eb5",
+      "source": "current emitted GL guard diagnosis only; no product, oracle or private data changes"
+    },
+    {
+      "path": "harness/v8-targeted.cjs",
+      "bytes": 1523,
+      "sha256": "f53077392a66d09080ce28ead1d7d84d4c5abb68a700e285c913a950e2901940",
+      "upstreamSha256": "f53077392a66d09080ce28ead1d7d84d4c5abb68a700e285c913a950e2901940",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "input-manifest.json",
+      "bytes": 6087,
+      "sha256": "ba90c27e309c952dc8d7fd020f9b293e2266eff8deafc527ac9b7c02fd6c140a",
+      "upstreamSha256": "ba90c27e309c952dc8d7fd020f9b293e2266eff8deafc527ac9b7c02fd6c140a",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "input/tools/dom-test-setup.cjs",
+      "bytes": 976,
+      "sha256": "17ecf654f9beb09fa91f5d7a35bc9d01c7aae290d76ff122a7b064863c282efa",
+      "upstreamSha256": "17ecf654f9beb09fa91f5d7a35bc9d01c7aae290d76ff122a7b064863c282efa",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "package.json",
+      "bytes": 203,
+      "sha256": "d5391ec08061300a3484f04488add9961cf33532dde78a651bde713d3f594c20",
+      "source": "new source-only packaging or test support"
+    },
+    {
+      "path": "run-all.sh",
+      "bytes": 560,
+      "sha256": "7f60b33d0eb9f26656d43d00bb6ca5a9b76a6a5cb06c391302f02172eef40cd9",
+      "upstreamSha256": "7f60b33d0eb9f26656d43d00bb6ca5a9b76a6a5cb06c391302f02172eef40cd9",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "run-commit.sh",
+      "bytes": 121,
+      "sha256": "39206c702f3277f4b6ed6053bc7d955bbcfbd3ae3edece59530449b7f8ed273e",
+      "upstreamSha256": "39206c702f3277f4b6ed6053bc7d955bbcfbd3ae3edece59530449b7f8ed273e",
+      "source": "v12.1 unchanged"
+    },
+    {
+      "path": "run-isolated.sh",
+      "bytes": 8027,
+      "sha256": "b9da6d581e3cc942aafc17b11d55179f957d3cb91f2a5aadf3ee49cbe9311f7a",
+      "upstreamSha256": "b9da6d581e3cc942aafc17b11d55179f957d3cb91f2a5aadf3ee49cbe9311f7a",
+      "source": "v12.1 unchanged"
+    }
+  ],
+  "requiredOmittedFiles": [
+    {
+      "path": "input/normalized-data.json",
+      "bytes": 7606942,
+      "sha256": "01c2c4edbccc9942a07241c39545a39b7c46ef2a9e7d61d7c616fda98676ccbb",
+      "neededFor": "all product modes",
+      "recovery": "Exact frozen capture/normalization output needed; a live API refetch is not byte-reproducible. License and approved durable storage unresolved."
+    },
+    {
+      "path": "harness/skill-sources/raw-skills.json",
+      "bytes": 147615,
+      "sha256": "368f184eebc8f4d98e62ad778fb50dd01a7a4bc643a1b5e8604c71ae1761f10b",
+      "neededFor": "skill plans and scans",
+      "recovery": "Exact frozen external capture needed. License and immutable source storage unresolved."
+    },
+    {
+      "path": "harness/skill-sources/classification.candidate.json",
+      "bytes": 664035,
+      "sha256": "fa8202c5de556f374901713a44bae4a2747ae68e532e590efdde982846fce0d7",
+      "neededFor": "snapshot preparation and skill plans",
+      "recovery": "Exact candidate classification needed. Not replaceable by current API data; classification review and reproducible build unresolved."
+    },
+    {
+      "path": "harness/diagnostic-sources/v7-uncalculated-classification.json",
+      "bytes": 254932,
+      "sha256": "5b6506525a151c01016df92a2ee12d9b33a4dbcf92f03c530a51c7625d91c30e",
+      "neededFor": "uncalculated-diagnostics and all-cases",
+      "recovery": "Exact historical evidence dependency needed by current runtime. Re-derivation or removal requires separate review; do not substitute current synthetic data."
+    },
+    {
+      "path": "contracts/extracted-converter.js",
+      "bytes": 8224,
+      "sha256": "e296e3e4981563358a332ab243d47c021ddd0ed7106714418eb782424c340f12",
+      "neededFor": "snapshot preparation",
+      "recovery": "Recover baseline Git index.html; concatenate the 12 complete line ranges in converter-provenance.json preserving line endings and inserting one newline between ranges. All part hashes and final hash reproduced from the local baseline bytes; independent GitHub retrieval not exercised."
+    },
+    {
+      "path": "harness/oracle/expected-values.json",
+      "bytes": 2895,
+      "sha256": "b631bdce996b7a256ec92ee3920fda3f779499d3d854a70ed074a4edec77e37b",
+      "neededFor": "snapshot oracle binding and/or product expectation comparison",
+      "recovery": "Exact hash-bound prior artifact or reviewed reproducible generation required. Included GS250 arithmetic script is not a complete generator for all these bytes."
+    },
+    {
+      "path": "harness/oracle/REPORT.md",
+      "bytes": 6513,
+      "sha256": "e37eac20721d2cfb993687cc06eb59fdc6f877bfb17f7c0c948bf1e05eb9f920",
+      "neededFor": "snapshot oracle binding and/or product expectation comparison",
+      "recovery": "Exact hash-bound prior artifact or reviewed reproducible generation required. Included GS250 arithmetic script is not a complete generator for all these bytes."
+    },
+    {
+      "path": "harness/oracle/gs250/expected-values.json",
+      "bytes": 5050,
+      "sha256": "b154023aaddd98123a6535ba93f7bc08f13d708918bf97dc7db63da159a393ad",
+      "neededFor": "snapshot oracle binding and/or product expectation comparison",
+      "recovery": "Exact hash-bound prior artifact or reviewed reproducible generation required. Included GS250 arithmetic script is not a complete generator for all these bytes."
+    },
+    {
+      "path": "harness/oracle/gs250/README.md",
+      "bytes": 936,
+      "sha256": "a1146faef47bf5cfed2300e0bc6073d2041998201104d7be0f601fc4e1bf1469",
+      "neededFor": "snapshot oracle binding and/or product expectation comparison",
+      "recovery": "Exact hash-bound prior artifact or reviewed reproducible generation required. Included GS250 arithmetic script is not a complete generator for all these bytes."
+    }
+  ],
+  "omittedProductFiles": [
+    {
+      "path": "input/index.html",
+      "bytes": 1726493,
+      "sha256": "fe937b4fd453756ba0b7cc9bf2642651ee18d5b399f68283110f36e118062a54"
+    },
+    {
+      "path": "input/element-state.js",
+      "bytes": 5910,
+      "sha256": "4091dabe4ba343e4bac751206885985bde1be62a1be67b333fe10c68638b915b"
+    },
+    {
+      "path": "input/hbg-wyvern-reference.js",
+      "bytes": 4326,
+      "sha256": "7af11c2d01c1bf287fc35233872f3872dc60c71a42e0d3aae38cb0d07729b407"
+    },
+    {
+      "path": "input/element-display.js",
+      "bytes": 2002,
+      "sha256": "7d22ce0b3c901cdcf3aede685de235c7899b327f645c9465846e2a01f34cce66"
+    },
+    {
+      "path": "input/ui/local-mhdb-cache.js",
+      "bytes": 7719,
+      "sha256": "ed03fe6b18dee5d3fda5f0839330816cc54d6448f923916c3053b653b303ff85"
+    },
+    {
+      "path": "input/ui/unresolved-damage-presentation.browser.js",
+      "bytes": 2439,
+      "sha256": "b6e78596690ef13a37f1247cc83d92065db14f7cc8103c8e0a87a5595e7742a2"
+    },
+    {
+      "path": "input/build-relative-comparison.js",
+      "bytes": 1962,
+      "sha256": "77c39cef899f095f1822f85baad3ac3c3344920fd8cab79d5ad0c363a85df248"
+    },
+    {
+      "path": "input/scorch-reference.js",
+      "bytes": 3558,
+      "sha256": "0776601873ca056b02abe513bfe7f7c454c22312a8a7cb2e4979eb4f8d44c0ed"
+    },
+    {
+      "path": "input/dark-arts-reference.js",
+      "bytes": 2325,
+      "sha256": "4ffc5c82aca14c09681380ebcf0cadb961db0aa918e9a5155dc1b6c8257ef935"
+    },
+    {
+      "path": "input/spread-shot-skill.js",
+      "bytes": 1010,
+      "sha256": "47876d2d2a3859c305f525d56150bebf118956db010f5afc271b3eecb1e2cdb3"
+    },
+    {
+      "path": "input/bow-reference.js",
+      "bytes": 12421,
+      "sha256": "f413e2038fda4f291cb3e015dad94a34734049cebb79f4140f927461a90e67e5"
+    },
+    {
+      "path": "input/bowgun-normal-reference.js",
+      "bytes": 7417,
+      "sha256": "7422a0aa9747356c7310969248e96117d2e122278cb30bdb396021c086d8dd75"
+    },
+    {
+      "path": "input/gunlance-shell-reference.js",
+      "bytes": 11995,
+      "sha256": "437ef512212728fb11e0f5ea346070dc30b702430f0b4fca1aab8b8de98bc9de"
+    },
+    {
+      "path": "input/bowgun-element-reference.js",
+      "bytes": 7153,
+      "sha256": "aa1be7850b3ffcb8c965047e29a35b0591559973aace637eb7d95656a3b059a7"
+    },
+    {
+      "path": "input/observed-shelling.js",
+      "bytes": 1885,
+      "sha256": "5e0f802244489c1dd891ce63c58fec79f7f4a4c95e3e3cbbc4c27b084c1fd318"
+    },
+    {
+      "path": "input/gunlance-observed-handler.js",
+      "bytes": 1570,
+      "sha256": "4746c4fd2b9c55f445b0f621fad3f07148bf4f093f002a98abf70c1362d29647"
+    },
+    {
+      "path": "input/gunlance-combo-observed.js",
+      "bytes": 2893,
+      "sha256": "a9b0dfe204019f806f8572de5df0692257c2431900beb2bc081fb75ea5c7ca37"
+    },
+    {
+      "path": "input/gunlance-observed-comparison.js",
+      "bytes": 1835,
+      "sha256": "b09d8dba723f2015e22801e16b951e9448eb560a381d7ba99526280136b7873d"
+    },
+    {
+      "path": "input/gunlance-generic-bridge.js",
+      "bytes": 4067,
+      "sha256": "fdba506bbdf0e364598ac820837f47f9f227d3f46e552e1b430beb0d831363f6"
+    },
+    {
+      "path": "input/gunlance-result-capture.js",
+      "bytes": 3088,
+      "sha256": "6ed61f06e4d10b84cc6c75fc6b4e5821a6d39e0be2e9eac9c8d4b4b1e9017698"
+    },
+    {
+      "path": "input/gunlance-observed-ui.js",
+      "bytes": 2460,
+      "sha256": "1ce556db0a8a916620d1892216aafce308aee79a2f7d9fa4965e2f9b66763222"
+    },
+    {
+      "path": "input/gunlance-capture-ui.js",
+      "bytes": 1654,
+      "sha256": "ef59d93940cf9668fd8daf07936cdde94f724180a3c53200d08c3dd2a6d2e55d"
+    },
+    {
+      "path": "input/gunlance-auto-capture-audit.js",
+      "bytes": 2122,
+      "sha256": "492c29020fe19d10896d0f39c49f218a2d4b2eb23aa88c0af8d39ec19ef86610"
+    },
+    {
+      "path": "input/gunlance-verified-transfer.js",
+      "bytes": 4026,
+      "sha256": "36991b0eaaf8857479cbf8375279a05908ef1b2ad9dec3e727f8a15286f66c11"
+    },
+    {
+      "path": "input/technique-evidence-bridge.js",
+      "bytes": 3959,
+      "sha256": "513c3c0cebc9cc2644a1e0b622048406012d10402cce5cd82cd9ceb6c88285cd"
+    },
+    {
+      "path": "input/combo-evidence-checklist.js",
+      "bytes": 2333,
+      "sha256": "aaf76211e36d86afedc96e3798297f6d80b76b09921a360d5eabf16c27397f6d"
+    },
+    {
+      "path": "input/combo-evidence-intake.js",
+      "bytes": 2405,
+      "sha256": "cdd995753a05058529b7cfc50afabbda600cad507db6dfbb2a8f6282d05296d5"
+    },
+    {
+      "path": "input/combo-measurement-review.js",
+      "bytes": 3274,
+      "sha256": "17906301c6a600152b110d3ec29630f74a2ccac1e674cc8d8ba5ad724d5009e2"
+    },
+    {
+      "path": "input/combo-technique-reconciliation.js",
+      "bytes": 2843,
+      "sha256": "446908f45ad0ecb80b769de808246e8237b8f00384f777a210600617f39ee8cb"
+    },
+    {
+      "path": "input/combo-damage-context-audit.js",
+      "bytes": 3912,
+      "sha256": "80644add2f3f19ba01a1dfd856d8f288e23a5c5c69182b401aab66757fdc7e54"
+    },
+    {
+      "path": "input/combo-damage-difference.js",
+      "bytes": 3671,
+      "sha256": "7c9881d989044d1766bfda13739d4f2c690d18d75dc7cf6a2f4ed44691ca6c32"
+    },
+    {
+      "path": "input/technique-damage-engine-bridge.js",
+      "bytes": 2805,
+      "sha256": "d113e70c5eef59a9819f7527a4de99554fd4c4c28f8070d71dc452e6000a21e0"
+    },
+    {
+      "path": "input/technique-engine-context-bridge.js",
+      "bytes": 3421,
+      "sha256": "dda778732818c2f15709f5cbcdc9e072162a729772e3575894d7b752d1a00395"
+    },
+    {
+      "path": "input/weapon-sharpness-schema-adapter.js",
+      "bytes": 1894,
+      "sha256": "ae14a2eb1e67f972fb08e7e9e03369538299c9caf758a49088a4dbf94b5e923c"
+    },
+    {
+      "path": "input/weapon-max-sharpness.js",
+      "bytes": 3070,
+      "sha256": "5f5965dad5ecafd5956ebf3f6dc9e3c0899b310aabedd677fc21a4c97d2e53a4"
+    },
+    {
+      "path": "input/weapon-sharpness-source-audit.js",
+      "bytes": 3359,
+      "sha256": "843849ff1014002be9ffb74e43ae5b60bd2c3974dbdfdf5b1a6940d9dea95888"
+    },
+    {
+      "path": "input/weapon-live-context-audit.js",
+      "bytes": 2450,
+      "sha256": "3c7238f22e43d34f859a255b6c77cd3e5daaad5b2b5c9818618fe7be173f7f5a"
+    },
+    {
+      "path": "input/weapon-critical-skill-audit.js",
+      "bytes": 2772,
+      "sha256": "b250f7af3c2e533a6efaf3ae6d193f834f0ef130587b65178582504288e541b8"
+    },
+    {
+      "path": "input/weapon-attack-skill-audit.js",
+      "bytes": 2531,
+      "sha256": "520defe15682cd644774297a0d3de5bbbe7e66d6927633b4a3b9fab4e104ad77"
+    },
+    {
+      "path": "input/weapon-attack-target-audit.js",
+      "bytes": 3793,
+      "sha256": "2377acc5efa53002340fdc7e306137a7a6b0dda48a011c4ac14c29ab3937c260"
+    },
+    {
+      "path": "input/technique-physical-formula-bridge.js",
+      "bytes": 3210,
+      "sha256": "51ab281e54e78cda9c9211bc05b548328966fba8d7f002f50479e2ebc5738c67"
+    },
+    {
+      "path": "input/combo-evidence-summary.js",
+      "bytes": 1502,
+      "sha256": "67d16a4357484e159c60388ea23b023696259e3e28083289de7970ef99bacf07"
+    },
+    {
+      "path": "input/himmel-real-browser-bundle.js",
+      "bytes": 169260,
+      "sha256": "207fbb7778b9ee37561baefd6795d2b7f8c1044b6774c95ec585e2f03f8a8325"
+    },
+    {
+      "path": "input/hope-hammer-browser-adapter.js",
+      "bytes": 221461,
+      "sha256": "c5d9cbabb384bf0da083f8c1bfd2616f409cc1d66a80b24a6d841f4ffe2d6853"
+    }
+  ],
+  "omittedDataDependentTests": [
+    {
+      "path": "harness/charge-master-plan.test.cjs",
+      "bytes": 929,
+      "sha256": "702457a51fee162eb1f9109682f76d2cde9e11939afe6866ebb745ceae1d4209"
+    },
+    {
+      "path": "harness/gl-affinity-plan.test.cjs",
+      "bytes": 1166,
+      "sha256": "6262f8e8d4359ad117c36ba096766c2ae66b03e767fad51322dee32f95f8f186"
+    },
+    {
+      "path": "harness/resistance-conditions-plan.test.cjs",
+      "bytes": 1267,
+      "sha256": "714d75254c6f2640253f35c4a38c40560a0e624f68e0ae57fb89db10e23c819b"
+    },
+    {
+      "path": "harness/skill-conditions-plan.test.cjs",
+      "bytes": 1185,
+      "sha256": "cc3f68a700fcaaf21ecfd99bbc42313b32867ea4eee9806bebe5b694ae900be9"
+    },
+    {
+      "path": "harness/skill-plan.test.cjs",
+      "bytes": 1601,
+      "sha256": "b1e236dfc472f1d9a9c2323ac359dbbad77b3f575a8ed1d227b442e2d7a26594"
+    },
+    {
+      "path": "harness/skill-technique-plan.test.cjs",
+      "bytes": 1084,
+      "sha256": "910f2df83583e8eb02a996798fd0c2b416a8bb62476ba2596cc8723f631c7734"
+    },
+    {
+      "path": "harness/uncalculated-diagnostics.test.cjs",
+      "bytes": 1386,
+      "sha256": "a84369df5f438637cde5a3d42ae5586142e7c8ef955d05a7b99693eb5786c072"
+    }
+  ],
+  "omittedCategories": [
+    {
+      "path": "dependencies/node_modules/",
+      "files": 1800,
+      "bytes": 20799555,
+      "neededFor": "product modes using jsdom",
+      "recovery": "npm --prefix dependencies ci --omit=dev --ignore-scripts --no-audit --no-fund --no-bin-links; lock pinned; unused CLI links must not be created because snapshot guard rejects symlinks; rerun ci only in this dedicated dependency directory, then prepare a new snapshot. Fresh registry install of 36 production packages and prepare-only verified on Linux x64 / Node 24.22.1 on 2026-11-08 for source commit 5692cd3c3ae1a5a743d56b8c91995742cc1b729e; not full product correctness verification. Linux Node 24.15+ in 24.x."
+    },
+    {
+      "path": "verification/",
+      "files": 188,
+      "bytes": 136368932,
+      "neededFor": "not needed; prior outputs must not become current evidence"
+    },
+    {
+      "path": "harness/test-fixtures/v11-uncalculated-scan.json",
+      "files": 1,
+      "bytes": 1861299,
+      "neededFor": "omitted data-dependent diagnostic test only; no longer needed by included self-contained tests"
+    },
+    {
+      "path": "HISTORICAL_NOTES.md, VERIFICATION.md, old README.md",
+      "neededFor": "not runtime dependencies; omitted to avoid duplicate reports and stale completion claims"
+    }
+  ],
+  "blockers": [
+    "Immutable licensed data distribution or reproducible recovery is not established.",
+    "Current all-cases runtime requires omitted historical diagnostic evidence.",
+    "Exact oracle artifact regeneration is not established.",
+    "Fresh registry dependency restore and actual GitHub product E2E are not executed."
+  ],
+  "licenseReview": "No license/redistribution grant inferred. External data omitted pending review; no new license assigned."
+}
