@@ -161,3 +161,8 @@ C04/C05実装追補（2026-11-10）: 基準 `a772e58af777bf4702237b22d4bdf39ed3d
 4. Gitの履歴包含だけで仕様保存を保証できない。契約ID→製品箇所→対象SHA→必要最小限の結果を対応付け、未包含の旧機能は[系譜記録](../INTEGRATION_LINEAGE.md)で追跡する。
 
 本更新は仕様の復旧・差分明示であり、上記未実装を修正済みにするものではない。新しい仕様を独断で採用していない。
+
+### C03 latest owner amendment (supersedes pending level/rapid wording above)
+The owner now selects the normal ammo level supported by each weapon and rapid fire for LBG. After confirming ten consumed rounds / fifty hits, the latest instruction reduces LBG to FIVE consumed rounds / TWENTY-FIVE hits. HBG remains ten discharges. Each selected ammo record must be explicit and unique; no automatic highest-level or nonrapid substitution.
+When First/Force application to all five rapid hits is unverified, retain calculable components and identify those skill effects as NOT_APPLIED / PARTIAL_REFERENCE. Do not stop other calculable components for these effects alone.
+Implementation stage: dedicated selectStandardAmmo / evaluateRapidFiveShot are added; standard UI switching remains unimplemented. Supported rapid source paths are Lv1 and explicit baseLv2 + powder effectiveLv3. Native Lv2/Lv3 expansion is separate. Old pending statements above describe history, not current owner intent.

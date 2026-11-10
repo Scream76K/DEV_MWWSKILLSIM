@@ -67,5 +67,26 @@
   const physical=physicalHit(attack,mv,hz,crit,rule.physicalModifier*rule.rangeModifier*up*normalUp);
   return {comparisonPower:physical,physical,element:0,scope:rule.scope,state:{...s},trace:[{hit:o.hitIndex+1,mv,attack,affinity:aff,criticalExpectation:crit,physical,element:0,rapidModifier:rule.physicalModifier,rapidUp:up,normalUp,rangeModifier:rule.rangeModifier}],liveGameVerification:'PENDING'};
  }
- const api=Object.freeze({shot:(o,engine)=>shot(o,engine),shotSkillBonuses:(o,s,rules)=>shotSkillBonuses(o,s,rules),tenShot,rapidHit});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowgunNormalReference=api;
+ function selectStandardAmmo(weapon,state={}){
+  const kind=weapon?.kind,rows=Array.isArray(weapon?.ammo)?weapon.ammo.filter(a=>a?.kind==='normal'):null;
+  if(!['heavy-bowgun','light-bowgun'].includes(kind)||!Array.isArray(rows)||rows.length!==1)return {reason:'BOWGUN_STANDARD:UNIQUE_NORMAL_AMMO_REQUIRED'};
+  const ammo=rows[0];if(!Number.isInteger(ammo.level)||![1,2,3].includes(ammo.level))return {reason:'BOWGUN_STANDARD:AMMO_LEVEL_UNSUPPORTED'};
+  if(kind==='heavy-bowgun')return {ammoLevel:ammo.level,baseAmmoLevel:ammo.level,techniqueId:'HBG_NORMAL_AMMO_'+ammo.level,shotCount:10,contactCount:30,shotMode:'NORMAL'};
+  if(ammo.rapid!==true)return {reason:'BOWGUN_STANDARD:WEAPON_NORMAL_RAPID_UNSUPPORTED',ammoLevel:ammo.level};
+  if(ammo.level===1&&(!state.normalPowder||state.normalPowder==='NONE'))return {ammoLevel:1,baseAmmoLevel:1,techniqueId:'LBG_NORMAL_RAPID_1',shotCount:5,contactCount:25,shotMode:'RAPID'};
+  if(ammo.level===2&&state.normalPowder==='LEVEL_PLUS_ONE')return {ammoLevel:3,baseAmmoLevel:2,techniqueId:'LBG_NORMAL_RAPID_3',shotCount:5,contactCount:25,shotMode:'RAPID',normalPowder:'LEVEL_PLUS_ONE'};
+  return {reason:'BOWGUN_STANDARD:RAPID_LEVEL_OR_POWDER_SOURCE_UNADOPTED',ammoLevel:ammo.level};
+ }
+ function rapidFiveShot(o,engine){
+  const s=o?.state,record=engine.get('light-bowgun',o?.techniqueId),rule=record?.rapidRule;
+  if(!s||!['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_3'].includes(o.techniqueId)||rule?.status!=='OWNER_APPROVED_PROVISIONAL'||rule.hitCount!==5||rule.consumedRounds!==1)throw Error('LBG_RAPID_FIVE:ADOPTED_SINGLE_TRIGGER_RULE_REQUIRED');
+  const selection=selectStandardAmmo({kind:'light-bowgun',ammo:[s.weaponAmmoEntry]},s);
+  if(selection.reason||selection.techniqueId!==o.techniqueId||s.ammoType!=='NORMAL'||s.ammoLevel!==selection.ammoLevel||s.normalModeLevel!==0)throw Error('LBG_RAPID_FIVE:WEAPON_AMMO_OR_STATE_UNSUPPORTED');
+  const unappliedEffects=[];
+  for(const [key,id] of [['firstShot',140],['forceShot',137]]){const level=o[key]??0;if(!Number.isInteger(level)||level<0||level>3)throw Error('LBG_RAPID_FIVE:SHOT_SKILL_LEVEL_INVALID');if(level)unappliedEffects.push({skillId:id,level,reason:'RAPID_ALL_FIVE_HIT_EFFECT_NOT_VERIFIED',status:'NOT_APPLIED'});}
+  const trace=[];for(let roundOrdinal=1;roundOrdinal<=5;roundOrdinal++)for(let hitIndex=0;hitIndex<5;hitIndex++){const r=rapidHit({...o,hitIndex},engine);if(!Number.isFinite(r.physical))throw Error('LBG_RAPID_FIVE:INCOMPLETE_COMPONENT');trace.push({...r.trace[0],roundOrdinal,triggerOrdinal:roundOrdinal});}
+  const physical=trace.reduce((a,t)=>a+t.physical,0);
+  return {status:unappliedEffects.length?'PARTIAL_REFERENCE':'SOURCE_REFERENCE',physical,comparisonPower:physical,element:0,trace,unappliedEffects,sequence:{consumedRounds:5,triggerCount:5,contactCount:25,magazinePolicy:'IGNORED_NO_RELOAD',scope:'NORMAL_RAPID_FIVE_CONSUMED_ROUNDS'},liveGameVerification:'PENDING',sourceGameVersion:'NOT_ESTABLISHED'};
+ }
+ const api=Object.freeze({shot:(o,engine)=>shot(o,engine),shotSkillBonuses:(o,s,rules)=>shotSkillBonuses(o,s,rules),tenShot,rapidHit,rapidFiveShot,selectStandardAmmo});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowgunNormalReference=api;
 })(typeof window!=='undefined'?window:globalThis);

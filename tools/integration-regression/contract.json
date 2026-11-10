@@ -22,7 +22,7 @@
     },
     {
       "path": "bowgun-normal-reference.js",
-      "sha256": "dd7f6af165cdc6b7eba752bc66fa3b799e32c1d8f86e5f29bfa78b8548077a5a"
+      "sha256": "da1f7c0b6d0d02132fbfd9605dc1d891ee729bae26ce4a6d351d571679a7ecdc"
     },
     {
       "path": "build-relative-comparison.js",
@@ -122,7 +122,7 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "daada5585f75d6b55cd6eec5349a4c413c0b88af96c3cbee902ad88d68e56aec"
+      "sha256": "a2c00237a785737b5db1b1f2409f8609bf8780a96e4a4bd10eb8cdf906d4d226"
     },
     {
       "path": "index.html",
@@ -455,6 +455,14 @@
     {
       "path": "tools/integration-regression/target-ingress.test.cjs",
       "sha256": "813096808433513e5c66a63d29c9eacf8d9773cd13e943e81b2c128f01840c9e"
+    },
+    {
+      "path": "tests/lbg-rapid-five-shot.test.cjs",
+      "sha256": "3107a8c156226d357b92bc69960a0f449efb67df0c324320aeebd5268ee63d81"
+    },
+    {
+      "path": "tools/lbg-rapid-five-proof.cjs",
+      "sha256": "e03ca44d2bf27113de017e2389d56f8566fdbe27afae49153ea776a071a53948"
     }
   ],
   "tests": [
@@ -470,9 +478,10 @@
     "tests/gl-reference-identity.test.cjs",
     "tests/bowgun-normal-ten-shot.test.cjs",
     "tests/monster-target-resolution.test.cjs",
-    "tools/integration-regression/target-ingress.test.cjs"
+    "tools/integration-regression/target-ingress.test.cjs",
+    "tests/lbg-rapid-five-shot.test.cjs"
   ],
-  "expectedTests": 1520,
+  "expectedTests": 1525,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
@@ -486,5 +495,6 @@
   "targetAndTenShotSourceCommits": [
     "46fbfbaed5d63b94807daccc5ce4268b44e076fd",
     "58bf6a8b66ddda29c8a1d2c5c8bf3e8e15e18e8a"
-  ]
+  ],
+  "rapidFiveRoundScope": "DEDICATED_ONLY_FIRST_FORCE_EFFECTS_NOT_APPLIED"
 }
