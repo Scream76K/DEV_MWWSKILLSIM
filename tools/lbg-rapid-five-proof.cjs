@@ -2,7 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto'),{JSDOM,VirtualConsole}=require('jsdom');
 const root=path.resolve(process.argv[2]),fixtures=path.resolve(process.argv[3]);
 const pack=JSON.parse(fs.readFileSync(path.join(fixtures,'mhdb-catalog-source/raw-pack.json'))),cases=JSON.parse(fs.readFileSync(path.join(fixtures,'ui-public-14-strict.json'))).cases;
-const files=['index.html','hope-hammer-browser-adapter.js','bowgun-normal-reference.js'],hash=n=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,n))).digest('hex');
+const files=['index.html','hope-hammer-browser-adapter.js','bowgun-normal-reference.js','himmel-real-browser-bundle.js','v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs'],hash=n=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,n))).digest('hex');
 const report={scope:'EXPLICIT_RAPID_FIVE_ROUNDS_25_HITS_PARTIAL_NOT_STANDARD_ADOPTION',hashes:Object.fromEntries(files.map(n=>[n,hash(n)])),rows:[],failures:[]};
 for(const [kind,weaponId,level] of [['light-bowgun',783,1],['light-bowgun',786,1],['light-bowgun',1169,3]]){
  const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));

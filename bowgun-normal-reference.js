@@ -74,12 +74,13 @@
   if(kind==='heavy-bowgun')return {ammoLevel:ammo.level,baseAmmoLevel:ammo.level,techniqueId:'HBG_NORMAL_AMMO_'+ammo.level,shotCount:10,contactCount:30,shotMode:'NORMAL'};
   if(ammo.rapid!==true)return {reason:'BOWGUN_STANDARD:WEAPON_NORMAL_RAPID_UNSUPPORTED',ammoLevel:ammo.level};
   if(ammo.level===1&&(!state.normalPowder||state.normalPowder==='NONE'))return {ammoLevel:1,baseAmmoLevel:1,techniqueId:'LBG_NORMAL_RAPID_1',shotCount:5,contactCount:25,shotMode:'RAPID'};
+  if([2,3].includes(ammo.level)&&(!state.normalPowder||state.normalPowder==='NONE'))return {ammoLevel:ammo.level,baseAmmoLevel:ammo.level,techniqueId:ammo.level===2?'LBG_NORMAL_RAPID_2':'LBG_NORMAL_RAPID_NATIVE_3',shotCount:5,contactCount:25,shotMode:'RAPID'};
   if(ammo.level===2&&state.normalPowder==='LEVEL_PLUS_ONE')return {ammoLevel:3,baseAmmoLevel:2,techniqueId:'LBG_NORMAL_RAPID_3',shotCount:5,contactCount:25,shotMode:'RAPID',normalPowder:'LEVEL_PLUS_ONE'};
   return {reason:'BOWGUN_STANDARD:RAPID_LEVEL_OR_POWDER_SOURCE_UNADOPTED',ammoLevel:ammo.level};
  }
  function rapidFiveShot(o,engine){
   const s=o?.state,record=engine.get('light-bowgun',o?.techniqueId),rule=record?.rapidRule;
-  if(!s||!['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_3'].includes(o.techniqueId)||rule?.status!=='OWNER_APPROVED_PROVISIONAL'||rule.hitCount!==5||rule.consumedRounds!==1)throw Error('LBG_RAPID_FIVE:ADOPTED_SINGLE_TRIGGER_RULE_REQUIRED');
+  if(!s||!['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_2','LBG_NORMAL_RAPID_3','LBG_NORMAL_RAPID_NATIVE_3'].includes(o.techniqueId)||rule?.status!=='OWNER_APPROVED_PROVISIONAL'||rule.hitCount!==5||rule.consumedRounds!==1)throw Error('LBG_RAPID_FIVE:ADOPTED_SINGLE_TRIGGER_RULE_REQUIRED');
   const selection=selectStandardAmmo({kind:'light-bowgun',ammo:[s.weaponAmmoEntry]},s);
   if(selection.reason||selection.techniqueId!==o.techniqueId||s.ammoType!=='NORMAL'||s.ammoLevel!==selection.ammoLevel||s.normalModeLevel!==0)throw Error('LBG_RAPID_FIVE:WEAPON_AMMO_OR_STATE_UNSUPPORTED');
   const unappliedEffects=[];
