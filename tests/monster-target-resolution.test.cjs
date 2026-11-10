@@ -1,6 +1,6 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
-const root=process.env.MHW_PRODUCT_ROOT||path.resolve(__dirname,'..');
+const root=process.env.PRODUCT_ROOT||process.env.MHW_PRODUCT_ROOT||path.resolve(__dirname,'..');
 function setup(){
  const multipliers={slash:.7,blunt:.75,pierce:.65,fire:0,water:.15,thunder:.2,ice:.15,dragon:.3};
  const part={id:2700,monster:{id:13},multipliers};

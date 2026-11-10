@@ -17,3 +17,15 @@ node --test tests/charm-saved-level-integrity.test.cjs tests/r206-charm-skill-in
 ```
 
 The job uses committed fixtures and offline simulated origins; it does not transmit consultation data. Chromium acceptance and full legacy suites are separate checks, with remaining failures documented in [the current repair report](../../docs/reports/current-data-integrity-20261110/README.md).
+
+## Target and explicit ten-shot contract repair
+
+The 58bf6a8 publication changed three pinned runtime inputs without refreshing this contract. Hash verification correctly stopped before running children. The old ingress helper also used an invalid synthetic monster and expected the removed training-front-only guard, so a hash-only update would not restore guard coverage.
+
+The helper now supplies a valid synthetic training-front record with all eight hitzones and no selected technique. Positive skill-ingress controls must reach TECHNIQUE_NOT_SELECTED; malformed skill records still require their exact skill refusal. Invalid-target and hitzone controls separately require target refusals. Damage/pipeline remain forbidden in this fixture. No runtime guard is weakened.
+
+The current contract binds 112 files. All original 109 pins were checked against d48aab2; only three runtime pins (exact 58bf6a8 bytes) and the helper changed. Original ten test entries and 1,506 tests are retained. Six explicit ten-shot, five target-resolution and three boundary tests bring the expected CI count to 1,520. Package/lock files and both runners remain unchanged. Historical contracts are not rewritten. This count is the contract expectation, not a claim that the integrated suite ran locally.
+
+Local verification: 232 ingress/control + 14 target/ten-shot + 30 synthetic freshness tests = 276 passes. Freshness negatives cover changed/missing inputs, stale PASS, missing dependency, wrong counts, failed/skipped child, concurrent input/contract/runner mutation and symlinks. The full integrated runner was not executed because a prior denied CB getter/prototype operation remains unidentified. Other CI checks and game accuracy are not inferred from these limited tests.
+
+The added target test prioritizes runner-pinned PRODUCT_ROOT over legacy MHW_PRODUCT_ROOT so inherited environment settings cannot silently redirect it. A conflicting nonexistent legacy root is explicitly tested with the pinned current root.
