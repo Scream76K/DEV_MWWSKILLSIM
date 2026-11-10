@@ -1,7 +1,7 @@
-name: Bounded CB GL SA HH predicate contracts
+name: Integrated input guard and bounded predicate contracts
 on:
   push:
-    branches: ['work/gl-component-affinity-*', 'work/gl-hh-scope-*']
+    branches: ['work/gl-component-affinity-*', 'work/gl-hh-scope-*', 'work/input-guard-v3-*', 'work/integrated-latest-*']
   pull_request:
     paths:
       - 'hope-hammer-browser-adapter.js'
@@ -11,6 +11,8 @@ on:
       - 'tools/cb-gl-scope-regression/**'
       - 'tools/sa-hh-scope-regression/**'
       - 'tools/gl-hh-scope-regression/**'
+      - 'tools/input-guard-regression/**'
+      - 'tools/integration-regression/**'
       - '.github/workflows/cb-gl-scope-regression.yml'
 permissions:
   contents: read
@@ -22,7 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Verify current adapter, exact runtime hashes and synthetic boundaries
-        run: node tools/gl-hh-scope-regression/run.cjs
-      - name: Verify all inherited and current runner freshness checks
-        run: node --test tools/cb-gl-scope-regression/freshness.test.cjs tools/sa-hh-scope-regression/freshness.test.cjs tools/gl-hh-scope-regression/freshness.test.cjs
+      - name: Verify both branches against the integrated runtime
+        run: node tools/integration-regression/run.cjs
+      - name: Verify all historical and current runner freshness checks
+        run: node --test tools/cb-gl-scope-regression/freshness.test.cjs tools/sa-hh-scope-regression/freshness.test.cjs tools/gl-hh-scope-regression/freshness.test.cjs tools/input-guard-regression/freshness.test.cjs

@@ -82,12 +82,29 @@
  });
  function annotationPolicy(entry){const p=root.MHSkillExtraDamagePolicies?.[entry.skillId];return p&&entry.name===p.name&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=p.maxLevel?p:null;}
  function confirmedNonDamage(entry){const rule=INTERNAL_SKILL_ADOPTION[entry.name];return !!rule&&rule.effectDisposition==='non_damage'&&rule.requiredSkillId!==undefined&&Number(entry.skillId)===rule.requiredSkillId&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=rule.maxLevel;}
+ // Only aliases already consumed by this adapter are eligible for MHDB identity
+ // validation. This table grants no effect or coefficient; existing scope gates
+ // remain authoritative. Caller-provided metadata is never an adoption policy.
+ const SKILL_IDENTITY_ALIASES=Object.freeze({
+  'Spread/Power Shots':2,'散弾強化':2,'Critical Eye':3,'Normal Shots':6,'通常弾強化':6,
+  'Rapid Morph':7,'Punishing Draw':8,'Coalescence':13,'Constitution':14,'Antivirus':18,
+  'Critical Boost':22,'Charge Master':24,'Slugger':36,'KO術':36,'Dragon Attack':41,
+  'Runner':43,'Artillery':47,'Fire Attack':50,'Ballistics':53,'Weakness Exploit':57,
+  'Focus':60,'Offensive Guard':66,'Ambush':67,'Attack Boost':72,'Foray':75,
+  'Counterstrike':81,'Critical Element':82,'Bludgeoner':85,'Heroics':87,'Water Attack':91,
+  'Burst':95,'Maximum Might':99,'Critical Draw':103,'抜刀術[技]':103,'Power Prolonger':104,
+  'Load Shells':109,'Defense':118,'Adrenaline Rush':120,'Ice Attack':121,'Resentment':123,
+  'Thunder Attack':127,'Element Absorption':133,'Force Shot':137,'Tetrad Shot':137,
+  'Everlasting':138,'First Shot':140,'Latent Power':142,'Agitator':144,'Convert Element':152,
+  'Peak Performance':154,'Bladescale Loading':160,'Thunder Resistance Conversion':165,'Dark':168
+ });
  const CONDITIONAL_AFFINITY_SKILLS=Object.freeze({
   '弱点特効':{id:57,max:5},'Weakness Exploit':{id:57,max:5},
   '渾身':{id:99,max:3},'Maximum Might':{id:99,max:3},
   '力の解放':{id:142,max:5},'Latent Power':{id:142,max:5}
  });
  function fail(reason){return {status:'UNAVAILABLE',reason};}
+ const inputRecord=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
  const STANDARD_NORMAL_HIT_CONTRACT=Object.freeze({GS_CHARGED_SLASH_3:{damageType:'slash',source:'MACARONGAMEMO_GREAT_SWORD_VER1040'},GS_STRONG_CHARGED_SLASH_3:{damageType:'slash',damageTypeStatus:'OWNER_APPROVED_PROVISIONAL',damageTypeApprovedAt:'2026-10-25',damageTypeReason:'技名と既存大剣通常技契約に基づく暫定分類。原典のdamageType明記は未確認。',source:'MACARONGAMEMO_GREAT_SWORD_VER1040'},GS_STRONG_WIDE_SLASH_3:{damageType:'slash',damageTypeStatus:'OWNER_APPROVED_PROVISIONAL',damageTypeApprovedAt:'2026-10-25',damageTypeReason:'技名と既存大剣通常技契約に基づく暫定分類。原典のdamageType明記は未確認。',source:'MACARONGAMEMO_GREAT_SWORD_VER1021_CURRENT'},LS_RED_BLADE_I:{damageType:'slash',partModifier:1,stateRequirement:{spiritGauge:'RED'},source:'MACARONGAMEMO_LONG_SWORD_MOTION_CURRENT'},LS_RED_BLADE_II:{damageType:'slash',partModifier:1,stateRequirement:{spiritGauge:'RED'},source:'GENERIC_STANDARD_PROFILES.long-sword;index.html:partPhysHz;MACARONGAMEMO_LONG_SWORD_MOTION_CURRENT'},LS_RED_BLADE_III:{damageType:'slash',partModifier:1,stateRequirement:{spiritGauge:'RED'},source:'GENERIC_STANDARD_PROFILES.long-sword;index.html:partPhysHz;MACARONGAMEMO_LONG_SWORD_MOTION_CURRENT'},SNS_SIDE_SLASH:{damageType:'slash',partModifier:1,source:'GAME8_2025_06_30_SNS_NERF'},DB_DEMON_DANCE_I:{damageType:'slash',partModifier:1,stateRequirement:{demonMode:true},source:'KUROYONHON_DB_R50_CHECK'},SA_SWORD_VERTICAL:{damageType:'slash',partModifier:1,stateRequirement:{mode:'SWORD'},source:'MACARONGAMEMO_SWITCH_AXE_CURRENT'},SA_SWORD_MORPH_DOUBLE:{damageType:'slash',stateRequirement:{mode:'SWORD'},source:'MACARONGAMEMO_SWITCH_AXE_CURRENT;KUROYONHON_MEMO11_26'},SA_AXE_MORPH_SLASH:{damageType:'slash',stateRequirement:{mode:'AXE'},source:'MACARONGAMEMO_SWITCH_AXE_CURRENT;KUROYONHON_MEMO11_26'},IG_DIAGONAL_SLASH:{damageType:'slash',partModifier:1,source:'MACARONGAMEMO_INSECT_GLAIVE_CURRENT'},IG_ENHANCED_DIAGONAL_SLASH:{damageType:'slash',stateRequirement:{tripleExtract:true},damageTypeStatus:'OWNER_APPROVED_PROVISIONAL',damageTypeApprovedAt:'2026-10-25',damageTypeReason:'資料一致の強化けさ斬り本体2Hitを三色前提で暫定採用。原典の切断表記を保持し、猟虫成分は含めない。',source:'MACARONGAMEMO_IG_R49_SOURCE;KUROYONHON_IG_R49_CHECK'},HH_LEFT_SWING:{damageType:'blunt',partModifier:1,source:'MACARONGAMEMO_HH_MOTION'}});
  function normalizeTechniqueIds(ids,{fallback=null}={}){
   const input=Array.isArray(ids)?ids:(fallback?[fallback]:[]),unresolved=[];
@@ -114,6 +131,7 @@
   if(statusSpecials.length&&(!statusState||root.MHWElementState.hpElement(statusState)!==0))return fail('REAL_SLICE:WEAPON_STATUS_UNRESOLVED');
   if(elementSpecials.length>1)return fail('REAL_SLICE:MULTIPLE_ELEMENTS_UNSUPPORTED');
   if(!Array.isArray(weapon.skills))return fail('REAL_SLICE:WEAPON_SKILLS_UNKNOWN');
+  if(!Array.isArray(skills)||skills.some(x=>!Array.isArray(x)||x.length!==2||typeof x[0]!=='string'||!x[0]))return fail('REAL_SLICE:BUILD_SKILL_INPUT_INVALID');
   // UI count applies to the explicit current target; API per-contact inputs remain supported.
   const resolveContactCount=s=>{
    if(s?.contactPolicy!=='EXPLICIT_CONTACTS'||s.contactTargetPolicy!=='CURRENT_TARGET')return s;
@@ -126,11 +144,27 @@
   const skillSource=`https://wilds.mhdb.io/en/weapons/${weapon.id}`;
   const classifySkill=(entry,source)=>{
    const name=entry?.skill?.name||entry?.name;
-   const level=Number(entry?.level);
-   if(!name||!Number.isFinite(level)||level<0)return {id:String(entry?.id||'unknown'),name:name||'UNKNOWN',level:Number.isFinite(level)?level:0,rank:0,source,effectDisposition:'unknown'};
-   const inputSkillId=entry?.skill?.id??entry?.id??null,dbSkills=root.__getBetaDB?.()?.skills||[],candidates=inputSkillId!=null?dbSkills.filter(x=>String(x?.id)===String(inputSkillId)):dbSkills.filter(x=>String(x?.name||'')===String(name));
-   if(candidates.length>1)return {id:'unknown',name,level,rank:0,source,effectDisposition:'unknown',reason:'REAL_SLICE:SKILL_RECORD_AMBIGUOUS',skillId:null};
-   const dbSkill=candidates[0]||null,skillId=dbSkill?.id??inputSkillId??null,skillRecord=entry?.skill||dbSkill||entry,description=entry?.description||entry?.skill?.description||dbSkill?.description||dbSkill?.descriptions?.ja||null,effectCategory=skillRecord?.effectCategory??skillRecord?.category??skillRecord?.effectType??null,damageRelated=skillRecord?.damageRelated;
+   const level=['number','string'].includes(typeof entry?.level)?Number(entry.level):NaN;
+   const invalid=reason=>({id:'unknown',name:typeof name==='string'?name:'UNKNOWN',level:Number.isFinite(level)?level:0,rank:0,source,effectDisposition:'unknown',identityError:reason,skillId:null});
+   if(!inputRecord(entry)||(entry.skill!==undefined&&!inputRecord(entry.skill)))return invalid('REAL_SLICE:SKILL_RECORD_INVALID');
+   if(typeof name!=='string'||!name||!['number','string'].includes(typeof entry.level)||!Number.isInteger(level)||level<1)return invalid('REAL_SLICE:SKILL_LEVEL_OR_NAME_INVALID');
+   const nestedId=entry.skill&&Object.prototype.hasOwnProperty.call(entry.skill,'id'),directId=Object.prototype.hasOwnProperty.call(entry,'id');
+   const inputSkillId=nestedId?entry.skill.id:directId?entry.id:null,dbSkills=root.__getBetaDB?.()?.skills||[];
+   // IDs are positive safe integers or their exact decimal string forms. Do not
+   // let JSON arrays, null, booleans or objects acquire identity by coercion.
+   if((nestedId||directId)&&!((typeof inputSkillId==='number'&&Number.isSafeInteger(inputSkillId)&&inputSkillId>0)||(typeof inputSkillId==='string'&&/^[1-9][0-9]*$/.test(inputSkillId)&&Number.isSafeInteger(Number(inputSkillId)))))return invalid('REAL_SLICE:SKILL_ID_PRIMITIVE_INVALID');
+   const aliasId=Object.prototype.hasOwnProperty.call(SKILL_IDENTITY_ALIASES,name)?SKILL_IDENTITY_ALIASES[name]:null;
+   const candidates=inputSkillId!=null?dbSkills.filter(x=>String(x?.id)===String(inputSkillId)):dbSkills.filter(x=>String(x?.name||'')===String(name));
+   if(candidates.length>1)return invalid('REAL_SLICE:SKILL_RECORD_AMBIGUOUS');
+   const dbSkill=candidates[0]||null,aliasRecords=aliasId!==null?dbSkills.filter(x=>x?.id===aliasId):[];
+   if(!dbSkill&&aliasRecords.length>1)return invalid('REAL_SLICE:SKILL_RECORD_AMBIGUOUS');
+   const identitySkill=dbSkill||aliasRecords[0]||null;
+   if(inputSkillId!=null&&(!dbSkill||(String(dbSkill.name)!==String(name)&&dbSkill.id!==aliasId)))return invalid('REAL_SLICE:SKILL_IDENTITY_MISMATCH');
+   if(!Number.isInteger(level)||level<1)return invalid('REAL_SLICE:SKILL_LEVEL_INVALID');
+   if(identitySkill&&(!Array.isArray(identitySkill.ranks)||identitySkill.ranks.filter(r=>r.level===level).length!==1))return invalid('REAL_SLICE:SKILL_LEVEL_NOT_IN_SOURCE');
+   // No raw effectCategory/damageRelated/description can authorize an unknown
+   // skill. Known source identity and the existing public policies decide scope.
+   const skillId=dbSkill?.id??inputSkillId??null,description=dbSkill?.description||dbSkill?.descriptions?.ja||null,effectCategory=dbSkill?.effectCategory??dbSkill?.category??dbSkill?.effectType??null,damageRelated=dbSkill?.damageRelated;
    const skillKey=Number(skillId)===84?'waterResistance':Number(skillId)===181?'resistanceConversionWater':Number(skillId)===83?'chargeStrike':Number(skillId)===150?'conditionalAttack':[89,153,164,171,173,174].includes(Number(skillId))?'selfState':Number(skillId)===119?'handicraft':[39,103].includes(Number(skillId))?'explicitAffinity':[85,136].includes(Number(skillId))?'contextAttack':skillId===53?'ballistics':skillId===156?'thunderResistance':['高速変形','Rapid Morph'].includes(name)?'rapidMorph':CONDITIONAL_AFFINITY_SKILLS[name]?'conditionalAffinity':(name==='Slugger'||name==='KO術'||name==='ＫＯ術')?'slugger':(name==='Attack Boost'||name==='攻撃')?'attack':(name==='Critical Eye'||name==='見切り')?'affinity':(name==='Critical Boost'||name==='超会心')?'criticalBoost':(['砲術','Artillery','砲弾装填','Load Shells'].includes(name))?'shelling':(['通常弾・通常矢強化','通常弾強化','Normal Shots'].includes(name))?'normalUp':(['散弾・剛射強化','散弾強化','Spread/Power Shots'].includes(name))?'spreadUp':(['チャージマスター','Charge Master'].includes(name))?'chargeMaster':(['会心撃【属性】','Critical Element'].includes(name))?'criticalElement':(['刃鱗増装','Bladescale Loading'].includes(name))?'bladescaleLoading':(['ファーストショット','First Shot'].includes(name))?'firstShot':(['フォースショット','Force Shot','Tetrad Shot'].includes(name))?'forceShot':(['挑戦者','Agitator','フルチャージ','Peak Performance','逆恨み','Resentment','巧撃','Adrenaline Rush','逆襲','Counterstrike','攻勢','Foray','火事場力','Heroics','暗黒','Dark','攻めの守勢','Offensive Guard','急襲','Ambush','連撃','Burst','属性吸収','Element Absorption','災禍転福','Coalescence','不屈','Fortify','抜刀術【技】','抜刀術[技]','Critical Draw','抜刀術【力】','Punishing Draw','研鑽','Everlasting'].includes(name))?'conditionalAttack':(['集中','Focus'].includes(name))?'focus':(['属性変換','Convert Element'].includes(name))?'attributeConversion':(['耐性変換【雷】','Thunder Resistance Conversion'].includes(name))?'resistanceConversionThunder':({'火属性攻撃強化':'fire','Fire Attack':'fire','水属性攻撃強化':'water','Water Attack':'water','雷属性攻撃強化':'thunder','Thunder Attack':'thunder','氷属性攻撃強化':'ice','Ice Attack':'ice','龍属性攻撃強化':'dragon','Dragon Attack':'dragon'}[name]||'unknown');
    return {id:String(skillId??name),name,level,rank:0,source,skillId,description,effectCategory,damageRelated,skillKey};
   };
@@ -149,6 +183,15 @@
    const policy=root.MHSkillExtraDamagePolicies?.[e.bonusSkillId],applied=(entryGroupPlan.applied||[]).filter(x=>x.skillId===e.bonusSkillId);
    return policy?.bodyEffect===false&&applied.length===1&&applied[0].annotationOnly===true&&applied[0].bodyEffect===false&&applied[0].attackAdd===0&&applied[0].attackMultiplier===1&&sameActivation(applied[0].annotationActivation,e);
   };
+  const sourceBonusActivation=entry=>{
+   const activations=activeBonusEffects.filter(e=>e.name===entry.name);
+   if(activations.length!==1||entry.level!==1)return false;
+   const e=activations[0],records=(root.__getBetaDB?.()?.skills||[]).filter(s=>s.id===e.bonusSkillId),skill=records[0];
+   if(records.length!==1||!['set','group'].includes(skill.kind)||e.level!==1||e.bonusName!==skill.name||e.source!==(skill.kind==='set'?'series':'group')||!Number.isInteger(e.count)||e.count<1||(entry.skillId!=null&&Number(entry.skillId)!==skill.id))return false;
+   const eligible=(skill.ranks||[]).filter(r=>Number.isInteger(r.level)&&Number.isInteger(r.setPiecesRequired)&&r.setPiecesRequired>0&&e.count>=r.setPiecesRequired).sort((a,b)=>b.setPiecesRequired-a.setPiecesRequired||b.level-a.level),rank=eligible[0];
+   return !!rank&&eligible.filter(r=>r.level===rank.level).length===1&&e.rankLevel===rank.level&&e.required===rank.setPiecesRequired&&entry.name===rank.name;
+  };
+  if(activeBonusEffects.some(e=>!sourceBonusActivation({name:e?.name,level:1})))return fail('REAL_SLICE:BONUS_SKILL_SOURCE_MISMATCH');
   // MHDB descriptions restrict these capabilities to an equipped bow. This is
   // non-application on known non-bow weapons, not approval of status coatings.
   const coatingCapabilities={5:['爆破ビン追加','BLAST'],44:['麻痺ビン追加','PARALYSIS'],65:['減気ビン追加','EXHAUST'],79:['睡眠ビン追加','SLEEP'],116:['毒ビン追加','POISON']};
@@ -180,6 +223,14 @@
 
   const canonicalSlugger=rawSkills.find(x=>x.skillKey==='slugger'&&String(x.skillId)==='36'&&Number.isInteger(x.level)&&x.level===1);
   const buildSkills=Array.isArray(skills)?skills.map(([name,level])=>{const ui=classifySkill({name,level},'index.html:calcBuild');return ui.skillKey==='slugger'&&canonicalSlugger?{...canonicalSlugger,level:ui.level,source:`${canonicalSlugger.source};index.html:calcBuild`}:ui;}):[];
+  if(!Array.isArray(skills))return fail('REAL_SLICE:BUILD_SKILLS_UNKNOWN');
+  for(const entries of [rawSkills,buildSkills]){
+   const invalid=entries.find(x=>x.identityError);if(invalid)return fail(invalid.identityError+':'+invalid.name);
+   const keys=entries.map(x=>x.skillId!=null?'id:'+String(x.skillId):Object.prototype.hasOwnProperty.call(SKILL_IDENTITY_ALIASES,x.name)?'id:'+SKILL_IDENTITY_ALIASES[x.name]:'name:'+String(x.name));
+   if(new Set(keys).size!==keys.length)return fail('REAL_SLICE:SKILL_INPUT_DUPLICATE');
+  }
+  // The aggregate may legitimately contain the weapon's skill at a higher
+  // total rank. Validate duplicates within each source, not across these views.
   const equippedSkills=[...rawSkills,...buildSkills.filter(x=>!rawSkills.some(y=>String(y.skillId)===String(x.skillId)&&y.level===x.level))];
   const excludedCalculationPolicy=x=>root.MHIsOwnerExcludedCalculationSkill?.(x)?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.(x,conditions)?root.MHStandardCalculationExclusion:null;
   const excludedCalculationSkills=equippedSkills.filter(x=>excludedCalculationPolicy(x)).map(x=>({skillId:x.skillId,name:x.name,level:x.level,reason:excludedCalculationPolicy(x).reason,status:excludedCalculationPolicy(x).status}));
@@ -1652,16 +1703,24 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
    const parts=['R','H'].map(key=>({key,result:routes[key].channels?.[ch],reason:routes[key].reason}));
    const ready=parts.every(p=>p.result?.execution?.status==='complete'&&p.result.metrics?.comboTotalDamage?.status==='available'&&Number.isFinite(p.result.metrics.comboTotalDamage.value));
    const reason=ready?null:parts.filter(p=>p.result?.execution?.status!=='complete'||p.result.metrics?.comboTotalDamage?.status!=='available'||!Number.isFinite(p.result.metrics.comboTotalDamage.value)).map(p=>p.key+':'+(p.result?.execution?.reason||p.result?.metrics?.comboTotalDamage?.reason||p.reason||'ROUTE_UNAVAILABLE')).join(';');
+   const excludedCalculationSkills=[...new Map(parts.flatMap(p=>p.result?.diagnostics?.excludedCalculationSkills||[]).map(x=>[JSON.stringify([x.skillId,x.name,x.level,x.reason,x.status]),x])).values()];
    channels[ch]={execution:{status:ready?'complete':'blocked',reason},metrics:{comboTotalDamage:ready?{status:'available',value:parts.reduce((sum,p)=>sum+p.result.metrics.comboTotalDamage.value,0),scope:'INDEPENDENT_ROUTE_RAW_SUM_NO_TIME'}:{status:'unavailable',reason}},components:[],finalState:{routes:Object.fromEntries(parts.map(p=>[p.key,p.result?.finalState??null]))},diagnostics:{formalStatus:'PROVISIONAL',scope:'CB_INDEPENDENT_R_H_SUM',routeTotals:Object.fromEntries(parts.map(p=>[p.key,p.result?.metrics?.comboTotalDamage??{status:'unavailable',reason:p.reason}])),independentStarts:routeStates,timeUsed:false}};
+   if(excludedCalculationSkills.length)channels[ch].diagnostics.excludedCalculationSkills=excludedCalculationSkills;
   }
   return {status:'OK',scope:'CB_INDEPENDENT_R_H_SUM',conditionKey:JSON.stringify({target:input.target,routeStates,r:rIds,h:hIds}),channels,routes};
  }
  function evaluateCurrent(input={}){
+  if(!inputRecord(input))return fail('REAL_SLICE:INPUT_CONTEXT_INVALID');
+  if(['weapon','stats','target'].some(key=>!inputRecord(input[key]))||(input.conditions!==undefined&&!inputRecord(input.conditions)))return fail('REAL_SLICE:INPUT_CONTEXT_INVALID');
+  const bonuses=input.stats.activeBonusEffects;
+  if(bonuses!==undefined&&(!Array.isArray(bonuses)||bonuses.some(x=>!inputRecord(x))))return fail('REAL_SLICE:BONUS_SKILL_CONTAINER_INVALID');
+  if(input.skills!==undefined&&(!Array.isArray(input.skills)||input.skills.some(x=>!Array.isArray(x)||x.length!==2||typeof x[0]!=='string'||!x[0])))return fail('REAL_SLICE:BUILD_SKILL_INPUT_INVALID');
   if(input.weapon?.kind==='charge-blade'&&input.chargeBladeState?.mixMode)return evaluateIndependentCBMix(input);
-  const original=evaluateCurrentSingleHealth(input),plan=input.stats?.conditionalConditionPlan;
-  const {dark,heroics}=healthBranchKinds(plan);
+  const original=evaluateCurrentSingleHealth(input);
+  if(!original.channels)return original;
+  const plan=input.stats?.conditionalConditionPlan,{dark,heroics}=healthBranchKinds(plan);
   const totals=Object.fromEntries(input.skills||[]),peak=Number(totals['フルチャージ']||totals['Peak Performance']||0);
-  if(!original.channels||(!dark&&!heroics)||!Number.isInteger(peak)||peak<=0)return original;
+  if((!dark&&!heroics)||!Number.isInteger(peak)||peak<=0)return original;
   // Do not strip 172/Heroics then reinterpret 168 as a full-health branch.
   if(plan?.excluded?.some(x=>x.reason==='DARK_BELOW_FULL_NO_HEALING_MAXIMUM')){
    original.channels.maximum.diagnostics={...original.channels.maximum.diagnostics,healthBranchComparison:{status:'PENDING',reason:'DARK168_HEALTH_COMBINATION_NOT_ADOPTED',branches:[]}};
