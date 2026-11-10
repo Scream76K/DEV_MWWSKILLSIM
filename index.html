@@ -1318,6 +1318,7 @@ let activeDataPack=null;
 function dataControlsBusy(busy){
   for(const id of ['load','clearDataCache','restorePreviousData'])if($(id))$(id).disabled=busy;
   const main=document.querySelector('main.wrap');if(main)main.inert=busy;
+  if(!busy&&DB.weapons.length)window.dispatchEvent(new Event('mhwilds-data-ready'));
 }
 function dataCacheFailure(e){
   if(e?.name==='QuotaExceededError')return '端末の保存容量が不足しています。';
@@ -1341,28 +1342,38 @@ async function saveDataCache(data,apiVersion){
   return MHWLocalDBCache.commitUpdate(pack);
 }
 async function loadDataCache(){
-  dataLoadBusy=true;dataControlsBusy(true);let warning='';
+  dataLoadBusy=true;dataControlsBusy(true);let warning='',currentValidated=false,currentReadSafe=false;
   try{
     if(!window.MHWLocalDBCache)throw Error('CACHE_MODULE_UNAVAILABLE');
     try{
-      const pair=await MHWLocalDBCache.read();
+      const pair=await MHWLocalDBCache.read();currentReadSafe=true;
       if(pair.active){
         let valid=false;try{await MHWLocalDBCache.verify(pair.active);valid=true;}catch(e){warning=dataCacheFailure(e);}
-        if(valid){adoptDataPack(pair.active);stat('端末に保存したデータを読み込みました。','ok');return true;}
+        if(valid){currentValidated=true;adoptDataPack(pair.active);stat('端末に保存したデータを読み込みました。','ok');return true;}
       }
       if(pair.previous){
+        await MHWLocalDBCache.verify(pair.previous);currentValidated=true;
         const rescued=await MHWLocalDBCache.rescuePrevious();adoptDataPack(rescued.pack);
         stat('使用データを検証できないため、検証済みの前のデータ版を復元しました。最新の保存装備に必要なIDが含まれない場合は再取得してください。','warn');return true;
       }
-    }catch(e){warning=dataCacheFailure(e);}
-    // Keep legacy localStorage intact, including when migration is denied or fails.
-    let raw=null;try{for(const key of [DATA_CACHE,...LEGACY_DATA_CACHES]){raw=localStorage.getItem(key);if(raw)break;}}catch(e){warning=dataCacheFailure(e);}
-    if(raw){
-      const legacy=JSON.parse(raw),pack=await MHWLocalDBCache.create(normalizeDB(legacy.data),null,{legacy:true,savedAt:legacy.savedAt});
-      adoptDataPack(pack);
-      try{await MHWLocalDBCache.commit(pack);stat('旧キャッシュを端末DBへ移行しました。元のキャッシュは保持しています。','ok');}
-      catch(e){stat('旧キャッシュを読み込みましたが、端末DBへの移行は未完了です：'+esc(dataCacheFailure(e)),'warn');}
-      return true;
+    }catch(e){warning=dataCacheFailure(e);const safePrewrite=currentReadSafe||e?.message==='CACHE_IDB_UNAVAILABLE'||['SecurityError','VersionError'].includes(e?.name);if(currentValidated||!safePrewrite){stat('端末データを読み込めません：'+esc(warning)+' 現行キャッシュは保持しています。','warn');return false;}}
+    // Each legacy source is independent: one malformed record must not hide a valid old IndexedDB pack.
+    const legacySources=[...([DATA_CACHE,...LEGACY_DATA_CACHES].map(key=>({read:()=>{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):null;},allowUnreadableMemory:true}))),{read:()=>MHWLocalDBCache.readLegacyCache(),allowUnreadableMemory:false}];
+    for(const source of legacySources){
+      let receipt,saved;
+      try{
+        const legacy=await source.read();if(!legacy)continue;
+        if(typeof legacy.savedAt!=='string'||!Number.isFinite(Date.parse(legacy.savedAt)))throw Error('LEGACY_CACHE_CAPTURE_DATE');
+        const pack=await MHWLocalDBCache.create(normalizeDB(legacy.data),null,{legacy:true,savedAt:legacy.savedAt});
+        await MHWLocalDBCache.verify(pack);saved=captureDataActivation();
+        receipt=await MHWLocalDBCache.commitLegacy(pack,{allowUnreadableMemory:source.allowUnreadableMemory&&!currentValidated});adoptDataPack(receipt.pack);
+        if(receipt.currentCacheUnknown)stat('検証済みの旧キャッシュを一時的に読み込みました。現行キャッシュの状態を確認できないため、端末DBへの移行は行っていません。','warn');
+        else if(receipt.migrationNotPersisted)stat('検証済みの旧キャッシュを一時的に読み込みましたが、容量不足のため端末DBへの移行は未完了です。元のキャッシュは保持しています。','warn');
+        else stat(receipt.legacyInstalled?'旧キャッシュを端末DBへ移行しました。元のキャッシュは保持しています。':'端末に保存したデータを読み込みました。','ok');return true;
+      }catch(e){
+        warning=dataCacheFailure(e);
+        if(saved){warning+=await recoverDataActivation(saved,receipt);break;}
+      }
     }
     stat(warning?'端末データを読み込めません：'+esc(warning)+' 初回利用にはデータ取得が必要です。':'初回利用は「最新データを取得 / 更新」を押してください。','warn');return false;
   }catch(e){stat('端末データを読み込めません：'+esc(dataCacheFailure(e)),'bad');return false;}
@@ -6016,6 +6027,11 @@ function applyBuildSnapshot(x,{preserveCombo=false,restoreExact=false}={}){
     const id=x.armor?.[k];
     if(id&&!DB.armor.some(a=>String(a.id)===String(id)))throw new Error('保存ビルドの防具がDBに見つかりません：'+k);
   }
+  // Resolve saved decoration identities before render/calculation can clear them.
+  for(const [slot,id] of Object.entries(x.decos||{})){
+    if(id===null||id===undefined||id==='')continue;
+    if(!DB.decorations.some(d=>String(d.id)===String(id)))throw new Error('保存ビルドの装飾品がDBに見つかりません：'+slot+' / '+String(id));
+  }
   const previousP0Suspend=p0DamageSuspend;p0DamageSuspend=true;
   try{
   $('weaponKind').value=canonicalWeaponKind(weapon)||'';weaponRows=[weapon];renderWeapon();$('weapon').value=String(weapon.id);App.build.setWeapon(weapon);
@@ -10510,4 +10526,5 @@ window.MHWeaponEffectDB=Object.freeze({switchAxe:Object.freeze({powerPhialSword:
  document.addEventListener('change',sync);document.addEventListener('click',()=>queueMicrotask(sync));sync();
 })();
 </script>
+<script src="./ui/comparison-session.js"></script>
 </body></html>

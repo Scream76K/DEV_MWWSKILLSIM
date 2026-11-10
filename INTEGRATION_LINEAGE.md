@@ -1,4 +1,27 @@
+# 復元修正のローカル追補（基準6df2116a）
+
+今回の同一履歴上の修正は、旧比較sessionの入力自動保存・再読込を現行計算APIへ移植し、既知の旧キャッシュを検証付きで読むものです。旧kan108を一括mergeしていません。下記公開6dfチェックポイントの「session照合中」はこの修正前の状態です。
+
+全14武器の入力復元・旧形式・破損時保全を限定検証しましたが、旧Rathian数値・旧API全経路・172波/本体仕様・龍肉質自動引継ぎは完成扱いにしません。新規branch・GitHub送信なし。[今回の検証](docs/reports/reload-input-integrity-20261110/README.md)。
+
+## 以下は今回追補前の記録（原文保持）
+
 # 統合系譜と仕様の確認範囲（2026-11-10）
+
+## 現在の公開チェックポイント（2026-11-10）
+
+正本は GitHub `Scream76K/DEV_MWWSKILLSIM` の公開済み mainline [`6df2116a0cec4cf22ea42592f8d3de6d036d523c`](https://github.com/Scream76K/DEV_MWWSKILLSIM/commit/6df2116a0cec4cf22ea42592f8d3de6d036d523c) です。この固定commitの公開確認を、β公開・実機受入・全仕様完成とは扱いません。
+
+- C04/C05のスキル除外・未対応効果を明示した計算継続は [`8f6e759e0745618bb26b26c0962bc62735426616`](https://github.com/Scream76K/DEV_MWWSKILLSIM/commit/8f6e759e0745618bb26b26c0962bc62735426616) で統合され、上記mainlineに含まれます。その後の `966ab612` の旧テスト環境修復、`02ced3f7` のGL実行ID維持、`6df2116a` の保存入力・現行比較データ整合修正も同じ履歴に含まれます。スキル継続を「共有基盤へ未適用」とする下記の記述は統合前の履歴です。
+- 同固定版の全件検証は公式1243件（1212成功/31失敗）、DOM533件（372成功/161失敗）、browser92件（23成功/69失敗）。[検証JSON](docs/reports/current-data-integrity-20261110/verification.json)に範囲と残失敗を保持しています。全suite成功ではありません。
+- 同commitのGitHub CIは [統合・入力検証](https://github.com/Scream76K/DEV_MWWSKILLSIM/actions/runs/42852965767) の1506件・freshness94件・現行データ39件が成功し、[非CB13武器smoke](https://github.com/Scream76K/DEV_MWWSKILLSIM/actions/runs/42852965731) は13武器26チャンネル・error0です。source-only47件は同commitのローカル再実行で47成功。このpushではそのCIは起動しておらず、GitHubで再実行済みとはしません。
+- C03の通常弾10射基準は未反映、弾Lvとライト速射は未決定です。旧kan108の比較session自動保存・offline reload、龍肉質の空欄時自動引継ぎ、DarkArts固定龍波/Burst経路の同等性は引き続き照合中です。履歴統合やCI成功をこれらの復旧完了へ読み替えません。全装備・全条件・実ゲーム数値精度・Safari/iPhone/iPad実機受入も未完了です。
+
+現在の採用仕様とC04/C05の実装状態は [spec/CURRENT_CONTRACTS.md](spec/CURRENT_CONTRACTS.md) を参照してください。[INTEGRATION.md](INTEGRATION.md) と [INTEGRATION_VERSION.json](INTEGRATION_VERSION.json) の未公開表示は作成時点の履歴（`SNAPSHOT_AT_BUILD`）であり、この公開確認で過去本文やhashを書き換えません。本追補は文書の状態整理だけで、計算・DB・テスト・採用仕様を変更しません。
+
+## 以下は初回統合・仕様確認時点の履歴（原文保持）
+
+以下の「正本」「現行」「今回」「未送信」、枝数・包含件数・失敗件数は各記録当時の状態です。現在の公開・実装・検証状態には上記チェックポイントを使用し、旧kan108等の未解決事項を完了扱いにしません。
 
 ## 正本と保護
 

@@ -1,10 +1,12 @@
 {
-  "version": "integration-20261110-current-data-integrity",
-  "status": "LOCAL_CURRENT_DATA_REPAIR_REVIEWED_NOT_PUBLISHED",
-  "mainline": "02ced3f76cec94b37d86d37331324edc4e7dcfe5",
+  "version": "integration-20261110-reload-input-integrity",
+  "status": "LOCAL_RELOAD_INPUT_REPAIR_REVIEWED_NOT_PUBLISHED",
+  "mainline": "6df2116a0cec4cf22ea42592f8d3de6d036d523c",
   "mergeBase": "77dc3e0e6518b8313407249885f7b0f8447deccf",
   "productSha256": {
-    "index.html": "e516ca1349d490670829dd4954b49ffdc7d028eee81c60dc2b3abe249ad42b90",
+    "index.html": "fe720d1995ba4fdfff7b1ee7605e2708e95b6fad78b9036d5b0fc91e51b1071d",
+    "ui/local-mhdb-cache.js": "66c1a114aa15542fd3e5616dd2e2dbdbe6aae46babbbc5801c16145fd9ef5ea7",
+    "ui/comparison-session.js": "0af42bca430f28f3b51f15c9b3b4976c1efcfc85d52106960279c8370305e881",
     "hope-hammer-browser-adapter.js": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4",
     "skill-effect-continuation.js": "62f077d4941380661da5a7e07448e244ed1ec1098d06a957000cdba4aad2cab3",
     "skill-calculation-policy.js": "3ca0b86404597ea92d1e6a5e644ad0c26e170a2d97521395241e47bfd9fec9b4"
@@ -38,12 +40,12 @@
   "specificationVersion": "SPEC-20261110-01",
   "phase4ProductBase": "a772e58af777bf4702237b22d4bdf39ed3d2bd99",
   "phase4Verification": "docs/reports/skill-continuation-20261110/verification.json",
-  "publishedProductBaseCommit": "02ced3f76cec94b37d86d37331324edc4e7dcfe5",
+  "publishedProductBaseCommit": "6df2116a0cec4cf22ea42592f8d3de6d036d523c",
   "testHarnessBaseCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "testHarnessVerification": "docs/reports/legacy-test-harness-20261110/verification.json",
   "testHarnessProductChanges": false,
   "originalMainlineBeforeIntegration": "6c3185201139ed7ec2251373a364c5cf966b4390",
-  "mainlineObservation": "Existing mainline02ced3f verified read-only during current-data integration. No upload of this revision authorized or performed.",
+  "mainlineObservation": "Published mainline6df2116 is the fixed base. This repair revision has no upload approval or upload at creation.",
   "glReferenceBaseCommit": "966ab612ebdf44af3596391a9be14952e743f6e1",
   "glReferenceVerification": "docs/reports/gl-reference-identity-20261110/integration-after-966ab.json",
   "glReferenceProductChanges": [
@@ -54,5 +56,12 @@
   "currentDataVerification": "docs/reports/current-data-integrity-20261110/verification.json",
   "currentDataProductChanges": [
     "index.html"
+  ],
+  "reloadInputBaseCommit": "6df2116a0cec4cf22ea42592f8d3de6d036d523c",
+  "reloadInputVerification": "docs/reports/reload-input-integrity-20261110/verification.json",
+  "reloadInputProductChanges": [
+    "index.html",
+    "ui/local-mhdb-cache.js",
+    "ui/comparison-session.js"
   ]
 }

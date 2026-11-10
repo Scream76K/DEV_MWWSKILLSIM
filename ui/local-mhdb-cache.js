@@ -98,7 +98,49 @@ async function rescuePrevious(){
 async function undo(receipt){if(receipt?.changed)await replacePair(receipt.after,receipt.before);}
 async function commit(pack){return (await commitUpdate(pack)).pack;}
 async function rollback(){return (await rollbackUpdate()).pack;}
+// Read the one historical browser-persistence format without creating/upgrading it.
+function readLegacyCache(){return new Promise((resolve,reject)=>{
+  if(!root.indexedDB)return resolve(null);
+  let settled=false,missing=false,db=null;
+  const finish=(error,value)=>{if(settled)return;settled=true;clearTimeout(timer);db?.close();error?reject(error):resolve(value);};
+  const timer=setTimeout(()=>finish(Error('LEGACY_CACHE_TIMEOUT')),5000);
+  let request;try{request=root.indexedDB.open('mhwilds-db-cache-v1',1);}catch(error){finish(error);return;}
+  request.onupgradeneeded=()=>{missing=true;request.transaction.abort();};
+  request.onerror=()=>finish(missing?null:request.error, null);
+  request.onblocked=()=>finish(Error('LEGACY_CACHE_BLOCKED'));
+  request.onsuccess=()=>{
+    db=request.result;if(settled){db.close();return;}
+    if(!db.objectStoreNames.contains('records')){finish(Error('LEGACY_CACHE_STORE'));return;}
+    try{
+      const tx=db.transaction('records','readonly'),get=tx.objectStore('records').get('data');let record;
+      get.onsuccess=()=>{record=get.result;};
+      tx.oncomplete=()=>{if(record==null){finish(null,null);return;}if(record.schemaVersion!==1||!record.pack||typeof record.pack!=='object'){finish(Error('LEGACY_CACHE_SCHEMA'));return;}finish(null,record.pack);};
+      tx.onabort=()=>finish(tx.error||Error('LEGACY_CACHE_READ'));tx.onerror=()=>{};
+    }catch(error){finish(error);}
+  };
+});}
+async function commitLegacy(pack,{allowUnreadableMemory=false}={}){
+  await verify(pack);let before;
+  try{before=await read();}catch(error){
+    // Historical localStorage was usable without IndexedDB. This is explicitly
+    // memory-only with unknown current state, never permission to replace it.
+    if(!allowUnreadableMemory||!(error?.message==='CACHE_IDB_UNAVAILABLE'||['SecurityError','VersionError'].includes(error?.name)))throw error;
+    return {pack,changed:false,legacyInstalled:false,currentCacheUnknown:true,migrationNotPersisted:true};
+  }
+  const active=await verifiedOrNull(before.active),previous=await verifiedOrNull(before.previous);
+  // Valid current generations always win, including if an earlier adoption failed.
+  if(active||previous)return {pack:active||previous,before,after:before,changed:false,legacyInstalled:false};
+  const after={active:pack,previous:before.previous||before.active||null};
+  try{await replacePair(before,after);}catch(error){
+    // Quota is reported only after the transaction aborts. Do not use this path
+    // for CAS conflict, timeout or any uncertain write; reread both generations.
+    if(error?.name!=='QuotaExceededError')throw error;
+    const current=await read(),latest=await verifiedOrNull(current.active)||await verifiedOrNull(current.previous);
+    return {pack:latest||pack,before:current,after:current,changed:false,legacyInstalled:false,migrationNotPersisted:!latest};
+  }
+  return {pack,before,after,changed:true,legacyInstalled:true};
+}
 async function clear(){return transact('readwrite',(s)=>s.clear());}
-const api={KEYS,WEAPON_KINDS,DB_NAME,validateData,assertCompatible,create,verify,read,commit,rollback,commitUpdate,rollbackUpdate,rescuePrevious,undo,clear};
+const api={KEYS,WEAPON_KINDS,DB_NAME,validateData,assertCompatible,create,verify,read,commit,rollback,commitUpdate,rollbackUpdate,rescuePrevious,undo,clear,readLegacyCache,commitLegacy};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.MHWLocalDBCache=api;
 })(typeof globalThis==='object'?globalThis:this);

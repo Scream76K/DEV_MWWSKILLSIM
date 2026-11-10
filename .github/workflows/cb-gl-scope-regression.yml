@@ -21,6 +21,12 @@ on:
       - 'tools/input-guard-regression/**'
       - 'tools/integration-regression/**'
       - 'tests/charm-saved-level-integrity.test.cjs'
+      - 'tests/saved-decoration-identity.test.cjs'
+      - 'ui/comparison-session.js'
+      - 'ui/local-mhdb-cache.js'
+      - 'tests/local-mhdb-cache.test.cjs'
+      - 'tools/comparison-session-reload-browser.test.cjs'
+      - 'tests/fixtures/comparison-session-inputs.json'
       - 'tests/r206-charm-skill-integrity.test.cjs'
       - 'tests/r250-snapshot-ownership.test.cjs'
       - 'tests/legacy-comparison-report-contract.test.cjs'
@@ -63,7 +69,25 @@ jobs:
         run: >-
           node --test
           tests/charm-saved-level-integrity.test.cjs
+          tests/saved-decoration-identity.test.cjs
           tests/r206-charm-skill-integrity.test.cjs
           tests/r250-snapshot-ownership.test.cjs
           tests/legacy-comparison-report-contract.test.cjs
           tools/consumer-ai-comparison-dom.test.cjs
+  comparison-session-reload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - name: Install locked test dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+      - name: Install the locked Playwright Chromium runtime
+        run: npx --no-install playwright install --with-deps chromium
+      - name: Verify session and legacy-cache restoration without external API access
+        run: node --test tools/comparison-session-reload-browser.test.cjs
