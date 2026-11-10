@@ -2,6 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<script src="./skill-calculation-policy.js"></script>
 <script src="./element-state.js"></script>
 <script src="./hbg-wyvern-reference.js"></script>
 <script src="./element-display.js"></script>
@@ -2697,12 +2698,12 @@ function armorThunderResistanceInput(armor,element="thunder"){
   }
   return {status:missing.length?'UNRESOLVED':'ARMOR_BASE_ONLY',armorBase:missing.length?null:sum,total:null,rows,missing,reason:missing.length?'ARMOR_RESISTANCE_RECORD_UNRESOLVED':'SKILL_BUFF_TOTAL_AND_CONVERSION_ACTIVATION_NOT_RESOLVED'};
 }
-function equipmentThunderResistanceInput(base,total,active=[],cond={},element="thunder"){
+function equipmentThunderResistanceInput(base,total,active=[],cond={},element="thunder",calculationSkillIds=null){
   const result={...base,contributions:[],scope:'ARMOR_SKILLS_PLUS_EXPLICIT_GUTS_VEIL_NO_FOOD_OR_AMMO',adoptionStatus:'OWNER_APPROVED_PROVISIONAL',source:'https://kuroyonhon.com/mhwilds/program/skill.php',verificationStatus:'UNVERIFIED'};
   const reject=reason=>({...result,status:'UNRESOLVED',total:null,reason});
   if(base.status!=='ARMOR_BASE_ONLY')return reject(base.reason);
   const absorptionDb=(DB.skills||[]).find(x=>x.id===133),absorptionLevel=Number(total[absorptionDb?.name||'属性吸収']||0);
-  const absorptionEquipped=Object.values(build.armor||{}).some(a=>(a?.skills||[]).some(entry=>entry.skill?.id===133));
+  const absorptionEquipped=calculationSkillIds===null?Object.values(build.armor||{}).some(a=>(a?.skills||[]).some(entry=>entry.skill?.id===133)):calculationSkillIds.includes(133);
   if(absorptionLevel||absorptionEquipped){
     const rank=absorptionDb?.ranks?.find(x=>x.level===absorptionLevel),text=String(rank?.description||'').normalize('NFKC'),match=text.match(/耐性値\s*\+\s*(\d+)/),absorbedElement=cond.absorbedElement;
     const validLevel=Number.isInteger(absorptionLevel)&&absorptionLevel>=1&&absorptionLevel<=3&&!!match,known=['fire','water','thunder','ice','dragon'].includes(absorbedElement);
@@ -2764,6 +2765,8 @@ function calcBuild(){normalizeArtiaProduction();renderCharmLegality();
   stats.thunderResistanceInput=equipmentThunderResistanceInput(stats.armorThunderResistanceInput,total,[...(calcState.bonusDisplay?.series||[]),...(calcState.bonusDisplay?.group||[])],{...explicitAffinityState(),gutsState:$('powerGutsState')?.value||null});
   stats.waterResistanceInput=equipmentThunderResistanceInput(armorThunderResistanceInput(build.armor,"water"),total,[...(calcState.bonusDisplay?.series||[]),...(calcState.bonusDisplay?.group||[])],{...explicitAffinityState(),gutsState:$('powerGutsState')?.value||null},"water");
   if(isArtia(w) && $('aSkillStatus')){let lines=[];for(const [label,skill,type] of [['シリーズ',skillById(build.artia.seriesSkill),'series'],['グループ',skillById(build.artia.groupSkill),'group']]){if(skill){const a=artiaSkillActivation(skill,type);lines.push(`${label}：${esc(skill.name)} → ${a.active?`発動（${a.count}/${a.required||"条件"}）`:`未発動（${a.count}/${a.required||"条件"}）`}`)}}$('aSkillStatus').innerHTML=lines.length?lines.join('<br>'):'シリーズ/グループスキル未選択';}
+  // Immutable pre-skill basis for isolated partial-effect evaluation.
+  const combatBaseStats={...stats,armorWaterResistanceInput:armorThunderResistanceInput(build.armor,"water")};
   // Always-on/selected-state combat stats
   const atk=calcAttackSkill(total);
   stats.attackComponents={weaponBase:stats.attack,normalMultiplier:atk.mult,normalFlat:atk.flat};
@@ -2787,7 +2790,7 @@ function calcBuild(){normalizeArtiaProduction();renderCharmLegality();
   }catch(error){
     stats.conditionalConditionPlan={status:'PARTIAL',maximum:stats,pending:['CONDITION_PLAN_ERROR:'+String(error?.message||error)]};
   }
-  calcState={total,rawTotal,stats,bonusDisplay:calcState.bonusDisplay||{series:[],group:[]}};
+  calcState={total,rawTotal,stats,combatBaseStats,bonusDisplay:calcState.bonusDisplay||{series:[],group:[]}};
   calcState.realOneHit=evaluateConsumerCombat({
     kind:canonicalWeaponKind(w),moves:App.state.combo?.moves||[],
     conditions:compareStep5Snapshot(),target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''}
@@ -3013,7 +3016,7 @@ function renderSummary(){
     const channel=one.channels?.[ch];
     const metrics=channel?.metrics;
     const m=metrics?.comboTotalDamage;
-    if(m?.status==='available'&&Number.isFinite(m.value))return Number(m.value).toFixed(1);
+    if(m?.status==='available'&&Number.isFinite(m.value))return Number(m.value).toFixed(1)+(channel?.diagnostics?.ignoredSkillEffects?.length?'（一部スキル未反映）':'');
     const reason=channel?.execution?.reason||channel?.issues?.[0]?.reason||m?.reason||one.reason||null;
     return '未算出（'+oneUnresolvedSummary(reason)+'）';
   };
@@ -3027,7 +3030,7 @@ function renderSummary(){
     <div class="gs-row"><span class="gs-label">最大会心率</span><span class="gs-value gs-percentage">${maxAff}%</span></div>
     <div class="gs-row"><span class="gs-label">属性</span><span class="gs-value">${equipmentElementDisplay(s,{detail:false})}</span></div>
     <div class="gs-row"><span class="gs-label">防御力</span><span class="gs-value">${Math.round(s.defense)}</span></div>
-    <div class="gs-row gs-one-hit-result"><span class="gs-label">選択技の実計算</span><span class="gs-value"><span class="one-hit-compact">${oneCompactText}</span><details class="one-hit-diagnostics"><summary>詳細・保留理由</summary><div class="one-hit-diagnostic-body">${oneText}</div></details></span></div>
+    <div class="gs-row gs-one-hit-result"><span class="gs-label">選択技の実計算</span><span class="gs-value"><span class="one-hit-compact">${oneCompactText}</span>${['normal','maximum'].map(ch=>one.channels?.[ch]?.diagnostics?.ignoredSkillEffects?.length?'<div class="small" data-ignored-skill-channel="'+ch+'">'+(ch==='normal'?'通常':'最大')+ignoredSkillEffectsDisplay(one.channels[ch].diagnostics)+'</div>':'').join('')}<details class="one-hit-diagnostics"><summary>詳細・保留理由</summary><div class="one-hit-diagnostic-body">${oneText}</div></details></span></div>
   </div>`;
   $('buildSummary').innerHTML+=consumerStandardAmmoNote(calcState.realOneHit?.evaluationPlan);
   const bonus=calcState.bonusDisplay||{series:[],group:[]};
@@ -7907,11 +7910,7 @@ const SKILL_EXTRA_DAMAGE_POLICIES=techniqueDbDeepFreeze({
  182:{name:'解キ放ツ鏡刃ノ破片',maxLevel:1,components:['AREA_EXTRA'],bodyEffect:false}
 });
 window.MHSkillExtraDamagePolicies=SKILL_EXTRA_DAMAGE_POLICIES;
-// Current-release owner scope, 2026-10-30. Keep DB coefficients for future weapon/sharpness reevaluation.
-window.MHOwnerCalculationExclusion=Object.freeze({skills:Object.freeze([Object.freeze({skillId:129,names:Object.freeze(['破壊王','Partbreaker']),maxLevel:3}),Object.freeze({skillId:85,names:Object.freeze(['鈍器使い','Bludgeoner'])}),Object.freeze({skillId:8,names:Object.freeze(['抜刀術【力】','Punishing Draw'])}),Object.freeze({skillId:103,names:Object.freeze(['抜刀術【技】','抜刀術[技]','Critical Draw'])}),Object.freeze({skillId:138,names:Object.freeze(['研鑽','Everlasting']),maxLevel:1}),Object.freeze({skillId:160,names:Object.freeze(['刃鱗増装','Bladescale Loading']),maxLevel:1})]),reason:'ユーザー指定により今回の火力計算対象外（装備・保存は保持）',status:'OWNER_EXCLUDED_CURRENT_RELEASE'});
-window.MHIsOwnerExcludedCalculationSkill=(entry)=>{const p=window.MHOwnerCalculationExclusion;return p.skills.some(x=>Number(entry?.skillId)===x.skillId&&x.names.includes(entry?.name)&&Number.isInteger(entry?.level)&&entry.level>=1&&entry.level<=(x.maxLevel??3));};
-window.MHStandardCalculationExclusion=Object.freeze({skillId:163,names:Object.freeze(['刃鱗研装','Bladescale Honing']),level:1,reason:'ユーザー指定により標準比較のみ火力計算対象外（明示経路・装備・保存は保持）',status:'OWNER_EXCLUDED_STANDARD_COMPARISON'});
-window.MHIsStandardExcludedCalculationSkill=(entry,conditions)=>{const p=window.MHStandardCalculationExclusion;return conditions?.standardEvaluation===true&&Number(entry?.skillId)===p.skillId&&p.names.includes(entry?.name)&&entry?.level===p.level;};
+// Owner exclusions are isolated in skill-calculation-policy.js; MHDB records stay intact.
 const CONTEXT_ATTACK_SKILL_RULES=techniqueDbDeepFreeze({source:'https://kuroyonhon.com/mhwilds/program/skill.php',status:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',mindsEye:{id:136,multipliers:[1,1.1,1.15,1.3],originalHitzoneMaximum:44},bludgeoner:{id:85,multipliers:[1,1.05,1.1,1.1],colorsByLevel:[[],['red','orange','yellow'],['red','orange','yellow'],['red','orange','yellow','green']]}});
 window.MHContextAttackSkillRules=CONTEXT_ATTACK_SKILL_RULES;
 window.MHSaedMindsEyeRule=techniqueDbDeepFreeze({skillId:136,techniqueIds:['CB_SAED','CB_SAED_AED_DERIVED'],component:'BODY_PHYSICAL_ONLY',multiplierRule:CONTEXT_ATTACK_SKILL_RULES.mindsEye,source:CONTEXT_ATTACK_SKILL_RULES.source,status:'OWNER_APPROVED_PROVISIONAL',approval:'Sentinel_11c1099a37508191ae33eacd6126c7f0',verification:'NOT_GAME_VERIFIED',order:'BASE_TIMES_EXISTING_MULTIPLIER_TIMES_MINDS_EYE_PLUS_FLATS',excluded:['BODY_ELEMENT','PHIAL']});
@@ -9180,6 +9179,46 @@ function consumerEvaluationPlan(kind,moves,conditions={},target=null){
   return {profileId:explicit?'SAVED_EXPLICIT_ROUTE':profile?.id||null,selection:explicit?'EXPLICIT':'STANDARD',scope:explicit?'SELECTED_ROUTE':profile?.scope||'OWNER_TARGET',standardAmmo:consumerAppliedAmmoPremise(kind,resolvedConditions),techniqueIds:normalized.ids,conditions:resolvedConditions,
     reason:resolvedConditions.standardBowReason||(!rawIds.length?'REAL_SLICE:STANDARD_PROFILE_UNREGISTERED':normalized.unresolved.length||normalized.ids.length!==rawIds.length?'REAL_SLICE:COMPARISON_TECHNIQUE_ID_UNRESOLVED':null)};
 }
+// Recovery applies only to source-valid public equipment skills. Strict adapter
+// contracts and malformed-input rejection remain unchanged for every evaluation.
+function continueConsumerSkillEffects(input,original){
+  const api=window.MHWSkillEffectContinuation,base=calcState.combatBaseStats;
+  if(!api||!base||!input.equipmentSkillsResolved)return original;
+  const reasons=[original.reason,...Object.values(original.channels||{}).flatMap(c=>[c.execution?.reason,...(c.issues||[]).map(x=>x.reason||x.code)])].filter(Boolean);
+  if(reasons.some(r=>/(?:INPUT_CONTEXT_INVALID|BUILD_SKILL_INPUT_INVALID|IDENTITY_|SKILL_RECORD_|SKILL_ID_PRIMITIVE|SKILL_LEVEL_|SKILL_INPUT_|BONUS_SKILL_SOURCE_MISMATCH|BONUS_SKILL_CONTAINER|STATE_OBJECT_INVALID)/.test(r)))return original;
+  const source=DB.skills||[],bonuses=input.stats.activeBonusEffects||[],candidates=[],protectedNames=new Set();
+  for(const [name,level] of input.skills){
+    const effects=bonuses.filter(x=>x.name===name),records=effects.length===1?source.filter(x=>x.id===effects[0].bonusSkillId):source.filter(x=>x.name===name);
+    if(records.length!==1||!Number.isInteger(level)||level<1)return original;
+    const record=records[0],rankLevel=effects.length===1?effects[0].rankLevel:level;
+    if(!Array.isArray(record.ranks)||record.ranks.filter(x=>x.level===rankLevel).length!==1)return original;
+    const entry={skillId:record.id,name,level,rankLevel,weaponKind:input.weapon.kind,weaponId:input.weapon.id,sourceKind:record.kind,preserveAdoptedBody:window.MHSkillExtraDamagePolicies?.[record.id]?.bodyEffect===true,sourceRef:'MHDB_SKILL:'+record.id,sourceRetrievedAt:input.retrievedAt,sourceGameVersion:'NOT_VERIFIED'};
+    if(window.MHIsOwnerExcludedCalculationSkill?.(entry)||window.MHIsStandardExcludedCalculationSkill?.(entry,input.conditions))protectedNames.add(name);else candidates.push(entry);
+  }
+  return api.continueSkillEffects({original,candidates,componentContext:input.conditions?.standardEvaluation===true?{weaponKind:input.weapon.kind,techniqueIds:input.techniqueIds}:null,evaluate(active){
+    const names=new Set([...protectedNames,...active.map(x=>x.name)]),skills=input.skills.filter(([name])=>names.has(name)),total=Object.fromEntries(skills);
+    const activeBonusEffects=bonuses.filter(x=>names.has(x.name)),calculationSkillIds=[...protectedNames].map(name=>source.find(s=>s.name===name)?.id).concat(active.map(x=>x.skillId));
+    const stats={...base},atk=calcAttackSkill(total),elem=calcElementSkill(total,base.elementType);
+    stats.attackComponents={weaponBase:base.attack,normalMultiplier:atk.mult,normalFlat:atk.flat};
+    stats.attackTrue=base.attack*atk.mult+atk.flat;
+    stats.attack=($('useWeaponCoeff')?.checked!==false)?stats.attackTrue*stats.weaponCoefficient:stats.attackTrue;
+    stats.affinity=base.affinity+calcAffinityBonus(total);
+    stats.maxAffinity=calcMaxAffinity(total,stats.affinity,input.weapon,selectedPart(),{...input.conditions,blackEclipseState:'BEFORE',fixedActivationConditions:true});
+    stats.rapidMorphLevel=Math.max(0,Math.min(3,skillLevel(total,['高速変形','Rapid Morph'])));
+    stats.elementComponents={weaponBase:base.element,normalMultiplier:elem.mult,normalFlat:elem.add};
+    Object.assign(stats,MHWElementState.applySkill(stats,elem));
+    stats.activeBonusEffects=activeBonusEffects;
+    stats.thunderResistanceInput=equipmentThunderResistanceInput(base.armorThunderResistanceInput,total,activeBonusEffects,input.conditions,'thunder',calculationSkillIds);
+    stats.waterResistanceInput=equipmentThunderResistanceInput(base.armorWaterResistanceInput,total,activeBonusEffects,input.conditions,'water',calculationSkillIds);
+    stats.conditionalConditionPlan=standardPowerConditionPlan(stats,total,input.weapon.kind,input.conditions);
+    const weapon={...input.weapon,skills:input.weapon.skills.filter(x=>names.has(x.skill?.name||x.name))};
+    return window.MHWRealOneHitBrowserAdapter.evaluateCurrent({...input,weapon,stats,skills,conditionalConditionPlan:stats.conditionalConditionPlan});
+  }});
+}
+function ignoredSkillEffectsDisplay(d){
+  const ignored=d?.ignoredSkillEffects||[];if(!ignored.length)return '';
+  return '［一部スキル未反映：'+ignored.map(x=>esc(x.name)+' Lv'+esc(x.rankLevel??x.level)+' (ID '+esc(x.skillId)+')：'+esc(x.reason)+(x.status==='PARTIALLY_APPLIED_UNSUPPORTED_COMPONENTS'?'（対応済み本体会心は保持、未対応の砲撃への効果のみ未反映）':'')).join(' / ')+'。この条件・残したスキルとの組合せで計算できない効果と相互作用を含みません。完全な火力値ではありません］';
+}
 function evaluateConsumerCombat({kind,moves=[],conditions={},target,plan=consumerEvaluationPlan(kind,moves,conditions,target)}){
   const {conditions:resolvedConditions,...evidence}=plan;
   evidence.target={monster:target?.monster||null,part:target?.part||null};
@@ -9198,11 +9237,13 @@ function evaluateConsumerCombat({kind,moves=[],conditions={},target,plan=consume
     const {conditionalConditionPlan:previousPlan,...baseStats}=calcState.stats;
     evaluationStats={...baseStats,conditionalConditionPlan:standardPowerConditionPlan(baseStats,calcState.total||{},kind,resolvedConditions)};
   }
-  try{return {...adapter.evaluateCurrent({weapon:realPipelineWeapon(selectedWeapon(),resolvedConditions.lightBowgunState),stats:evaluationStats,target,
+  try{const input={weapon:realPipelineWeapon(selectedWeapon(),resolvedConditions.lightBowgunState),stats:evaluationStats,target,
     skills:Object.entries(calcState.total||{}),equipmentSkillsResolved:realPipelineSkillsResolved(),
     techniqueId:plan.techniqueIds[0],techniqueIds:plan.techniqueIds,techniqueDb:window.TechniqueDBEngine,trainingRoom:trainingRoomMonster(),
     conditions:resolvedConditions,conditionalConditionPlan:evaluationStats?.conditionalConditionPlan,...states,
-    retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'}),evaluationPlan:evidence};
+    retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'};
+    const original=adapter.evaluateCurrent(input);
+    return {...continueConsumerSkillEffects(input,original),evaluationPlan:evidence};
   }catch(error){return unavailable(String(error?.message||error||'REAL_SLICE:EVALUATION_FAILED'));}
 }
 function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null,conditions=null){
@@ -9524,6 +9565,7 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   const baseDamage=consumerDamageMetric(baseline,'normal').value;
   let h='<div class="compare-note"><b>基準ダメージ：'+(Number.isFinite(baseDamage)&&baseDamage>0?comparisonDisplayNumber(baseDamage):'—')+'</b>（'+esc(baseline.name)+'・選択した通常側の比較条件、ゲーム表示の丸め前）</div><label for="comparisonBaseline">比較の基準ビルド（通常側の期待ダメージ）</label><select id="comparisonBaseline">'+rows.map((r,i)=>'<option value="'+i+'"'+(i===selectedIndex?' selected':'')+'>'+esc(r.name)+'</option>').join('')+'</select><div class="two" style="margin-top:8px"><button type="button" id="comparisonReportDownload">比較結果をJSON保存</button><button type="button" id="comparisonReportCopy">比較結果をコピー</button></div><button type="button" id="comparisonComboEvidence">コンボの技別・未検証項目を表示</button><button type="button" id="comparisonEvidenceChecklist">検証作業リストを表示</button><details><summary>実機検証の証拠参照を照合（JSON）</summary><textarea id="comparisonEvidenceInput" rows="4" style="width:100%" placeholder="JSON形式の証拠参照を入力"></textarea><button type="button" id="comparisonEvidenceIntake">証拠参照を照合</button></details><details><summary>実機ダメージ・Hit数・時間の記録を照合（JSON）</summary><textarea id="comparisonMeasurementInput" rows="4" style="width:100%" placeholder="[{&quot;stage&quot;:1,&quot;techniqueId&quot;:&quot;...&quot;,&quot;evidenceRef&quot;:&quot;video-1&quot;,&quot;gameVersion&quot;:&quot;1.042.00.02&quot;,&quot;hitCount&quot;:1,&quot;durationSeconds&quot;:1.2,&quot;damage&quot;:{&quot;physicalBody&quot;:100}}]"></textarea><button type="button" id="comparisonMeasurementReview">実機計測記録を照合</button><button type="button" id="comparisonTechniqueReconcile">Technique DBと計測値を照合（診断）</button><textarea id="comparisonDamageContextInput" rows="4" style="width:100%" placeholder="計算条件JSON：[{stage, techniqueId, evidenceRef, context:{weaponId, weaponAttack, weaponElement, sharpness, affinity, criticalBoostLevel, activeSkills, monsterId, hitZonePhysical, hitZoneElement, targetState, attackConditions, gameVersion}}]"></textarea><button type="button" id="comparisonDamageContextAudit">ダメージ計算条件を監査</button><textarea id="comparisonDamagePredictionInput" rows="4" style="width:100%" placeholder="予測値JSON：[{stage, techniqueId, evidenceRef, contextFingerprint, damage:{physicalBody:100}}]（監査結果のcontextFingerprintを使用）"></textarea><button type="button" id="comparisonDamageDifference">実測と計算値の成分別差異を診断</button><button type="button" id="comparisonTechniqueEngineBridge">Technique DBと計算エンジンの接続状況</button><button type="button" id="comparisonEngineContextHandoff">Technique DBと実機条件の受渡し診断</button><p class="small">斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。</p><button type="button" id="comparisonSharpnessSourceAudit">MHDB斬れ味データ構造を調査</button><button type="button" id="comparisonLiveContextAudit">選択装備と計算条件を照合</button><button type="button" id="comparisonAttackSkillAudit" type="button">攻撃スキル照合</button><button id="comparisonCriticalSkillAudit">会心・超会心・スキル条件を照合</button><button type="button" id="comparisonAttackTargetAudit">攻撃補正・モンスター肉質を照合</button><button type="button" id="comparisonPhysicalFormulaBridge">物理ダメージ参考計算（安全条件のみ）</button></details><button type="button" id="comparisonCaptureAudit">ガンランス自動連携の検証状況</button><button type="button" id="comparisonVerifiedTransfer">検証済みA/Bを自動登録</button><pre id="comparisonCaptureAuditOut" class="small" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre><pre id="comparisonReportOut" class="small" style="max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere"></pre><div class="compare-results">';
   const coverage=consumerCoverageSummary(rows);
+  for(const row of rows)for(const ch of ['normal','maximum'])if(row.oneHitPipeline?.channels?.[ch]?.diagnostics?.ignoredSkillEffects?.length)h+='<div class="compare-note small" data-ignored-skill-channel="'+ch+'">'+esc(row.name)+'／'+(ch==='normal'?'通常':'最大')+ignoredSkillEffectsDisplay(row.oneHitPipeline.channels[ch].diagnostics)+'</div>';
   h+='<div class="compare-note small" data-comparison-coverage="r248">比較可能：通常 '+coverage.normal+'/'+coverage.total+'件 ／ 最大 '+coverage.maximum+'/'+coverage.total+'件。未算出の結果は推測で補完しません。</div>';
   if(coverage.pending.length){
     h+='<details class="compare-note" data-comparison-pending="r248"><summary>比較保留の原因を確認（'+coverage.pending.length+'項目）</summary><p class="small">通常・最大それぞれの実ダメージを独立して確認します。</p><strong>原因別集計</strong>'+coverage.causes.map(x=>'<p class="small">'+esc(comparisonReasonText(x.reason))+'：'+x.buildCount+'ビルド／'+x.metricCount+'項目（通常'+x.metrics.normal+'・最大'+x.metrics.maximum+'）</p>').join('')+'<strong>個別の保留内容</strong>'+coverage.pending.map(x=>'<p class="small">'+esc(x.name)+' ／ '+({normal:'通常',maximum:'最大',dps:'DPS'}[x.metric])+'：'+esc(comparisonReasonText(x.reason))+' <code>'+esc(x.reason)+'</code></p>').join('')+'</details>';
@@ -10374,6 +10416,7 @@ $('powerCoverageDownload').addEventListener('click',()=>downloadSimulatorJson(cr
 window.MHWeaponEffectDB=Object.freeze({switchAxe:Object.freeze({powerPhialSword:Object.freeze({id:'switch-axe-power-phial-physical',target:'physical',stage:'attack',unit:'dimensionless',amount:1.17,operation:'multiply',order:20,source:'https://kuroyonhon.com/mhwilds/memo/11.php',sourceVersion:'ver.1.000.05.00-reference',status:'PROVISIONALLY_ADOPTED',condition:{type:'always'}}),powerElementPhialSword:Object.freeze({id:'switch-axe-power-element-phial-element',target:'element',stage:'element',unit:'dimensionless',amount:1.45,operation:'multiply',order:20,source:'https://kuroyonhon.com/mhwilds/memo/11.php',sourceVersion:'ver.1.000.05.00-reference',status:'OWNER_APPROVED_PROVISIONAL',approvedAt:'2026-10-25T14:46:00Z',liveGameVerification:'PENDING',condition:{type:'always'}})})});
 </script>
 <script src="himmel-real-browser-bundle.js"></script>
+<script src="skill-effect-continuation.js"></script>
 <script src="hope-hammer-browser-adapter.js"></script>
 
 <script id="zeerie-consumer-combat-controls">

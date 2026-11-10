@@ -2,9 +2,11 @@
 
 版: 2026-11-10 / SPEC-20261110-01
 状態: 最新の確認済み決定を反映。実装完了・全仕様網羅・公開承認ではない。
-確認対象: 作業ブランチ work/integrated-latest-20261110、ソース確認時 HEAD 5be4c5c37a58234c55a2842051994e7a83ce9c55（4673a77から文書のみ変更）。
-製品 SHA-256: index.html = 755d47570753cda951cdb82244b8bef1a117031e91c540588b7f506fa2053d45、hope-hammer-browser-adapter.js = 440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4。
+仕様確認時の対象（履歴）: 作業ブランチ work/integrated-latest-20261110、ソース確認時 HEAD 5be4c5c37a58234c55a2842051994e7a83ce9c55（4673a77から文書のみ変更）。
+仕様確認時の製品 SHA-256: index.html = 755d47570753cda951cdb82244b8bef1a117031e91c540588b7f506fa2053d45、hope-hammer-browser-adapter.js = 440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4。
 後続の製品変更後は、この確認結果をそのまま再検証済みと扱わない。
+
+C04/C05実装追補（2026-11-10）: 基準 `a772e58af777bf4702237b22d4bdf39ed3d2bd99` からの隔離候補。index.html `c3499eba8a8433525256967ffe6ca68587d8a6681c39cd214c2089d38d88dddb`、skill-effect-continuation.js `62f077d4941380661da5a7e07448e244ed1ec1098d06a957000cdba4aad2cab3`、skill-calculation-policy.js `3ca0b86404597ea92d1e6a5e644ad0c26e170a2d97521395241e47bfd9fec9b4`。adapterは上記440fc5e8と同一。今回の実行範囲・未実施・既存失敗は [検証記録](../docs/reports/skill-continuation-20261110/verification.json) で区別する。これは旧仕様確認を全製品の再受入へ読み替えるものではない。
 
 ## 正本と変更手順
 
@@ -78,8 +80,8 @@
 - 11/5 Sentinel_51df24b45f488191baa3fd444371a403「狂竜症は最大火力に反映、属性変換は最大火力に反映（固定ダメージは未反映）、刃鱗増装は考慮しない」。
 - 11/10 Sentinel_39815925717481918b126c5da1fb12b9「破壊王は計算対象外のはず」。
 
-実装確認: index.htmlのMHOwnerCalculationExclusionは上記6 IDを保持。破壊王は今回統合差分でLv1〜3を追加し、CB合算の除外注記も保持。検証範囲は[統合記録](../INTEGRATION.md)を参照。除外済み6件という事実を全スキル受入へ一般化しない。
-別の限定境界（現行実装の事実、直接の採用根拠は今回未照合）: index.htmlのMHStandardCalculationExclusion / MHIsStandardExcludedCalculationSkillは、ID163 刃鱗研装Lv1をstandardEvaluation===trueの標準比較だけで除外する。明示経路・装備・保存は保持する実装であり、上記6件の全域除外とは別。ここで7件目の全域除外を承認したり、明示経路まで除外を拡張したりしない。既存境界を保護し、直接のユーザー決定との照合対象として残す。
+実装確認: 第4段階候補ではskill-calculation-policy.jsのMHOwnerCalculationExclusionへ既存の上記6 IDを分離。値・API・採否の範囲は同一。破壊王は今回統合差分でLv1〜3を追加し、CB合算の除外注記も保持。検証範囲は[統合記録](../INTEGRATION.md)を参照。除外済み6件という事実を全スキル受入へ一般化しない。
+別の限定境界（現行実装の事実、直接の採用根拠は今回未照合）: skill-calculation-policy.jsのMHStandardCalculationExclusion / MHIsStandardExcludedCalculationSkillは、ID163 刃鱗研装Lv1をstandardEvaluation===trueの標準比較だけで除外する。明示経路・装備・保存は保持する実装であり、上記6件の全域除外とは別。ここで7件目の全域除外を承認したり、明示経路まで除外を拡張したりしない。既存境界を保護し、直接のユーザー決定との照合対象として残す。
 旧179件監査表・81/82・82/82等は当時の採用範囲とSHAの静的集計。現在の全14武器実行率や現在の除外数として再利用しない。
 
 ### C05: 未対応スキルでも計算継続
@@ -96,7 +98,7 @@
 - 10:24:32 / Sentinel_258bc28bd24c8191964eda1330ea93b0: 「そのあとは未対応スキルを一覧化すること」
 - 10:36:06 / Sentinel_f22acd31d17c8191a65d9ceeff8757b7: 既存対策・検証の統合を先にし、その後で未対応・部分対応を進める。
 上書き: 旧採用スキルの未対応を理由とする一律Fail-closed方針。技の必須成分失敗時の資源保護とは区別する。
-実装状態: **この確認対象版では共通対応未反映**。旧対策統合を先行するため別コピーでの候補対応を保留している。蒼雷一閃を含む残停止は修正・最小検証対象であり、仕様判断待ちへ戻さない。製品修正後、対象SHAと未反映一覧を更新する。
+実装状態: **第4段階の隔離候補へ実装・検証中、共有統合基盤へは未適用**。公開入口で元の通常/最大を独立に評価し、正常channelは完全保持、失敗channelはsource-validな未対応効果を明示して再計算する。元装備・保存・入力/技/資源の検査は保持。既存部分採用の152/162を優先し、標準GLの162は対応済み本体成分と未対応の砲撃への効果を分離する。旧全体停止を復活させず、条件・相互作用を未検証のまま完全値と表示しない。候補の全179スキル/442rank×14代表武器（6188ケース/12376channel）は算出・rank適用を確認、例外0。全装備/発動条件/実機精度の受入ではない。固定基準のfresh全走査と比較し、従来算出できた12232channelの数値変更0、未算出144channelを回復し残停止0。統合commitは別記録とし、[変更記録・限界・再現方法](../docs/reports/skill-continuation-20261110/README.md)および同フォルダの未反映一覧を参照する。
 
 ### C06: UI・保存と受入
 

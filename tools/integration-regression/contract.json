@@ -10,7 +10,7 @@
   "files": [
     {
       "path": ".github/workflows/cb-gl-scope-regression.yml",
-      "sha256": "2881b3be84fcf363b571633cb4a8f40c2146e8ffc48f88d785103063eaa537d6"
+      "sha256": "4ba63f24bf8f75971d23033a2af3c225d24c17b5bb73094d01b20212e0fa740a"
     },
     {
       "path": "bow-reference.js",
@@ -122,7 +122,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "755d47570753cda951cdb82244b8bef1a117031e91c540588b7f506fa2053d45"
+      "sha256": "c3499eba8a8433525256967ffe6ca68587d8a6681c39cd214c2089d38d88dddb"
     },
     {
       "path": "observed-shelling.js",
@@ -259,6 +259,58 @@
     {
       "path": "tools/integration-regression/run.cjs",
       "sha256": "041a5cc24e18e4956a98811212c0316d267fec727b09a6d410b9a12b7f4e25b6"
+    },
+    {
+      "path": "skill-calculation-policy.js",
+      "sha256": "3ca0b86404597ea92d1e6a5e644ad0c26e170a2d97521395241e47bfd9fec9b4"
+    },
+    {
+      "path": "skill-effect-continuation.js",
+      "sha256": "62f077d4941380661da5a7e07448e244ed1ec1098d06a957000cdba4aad2cab3"
+    },
+    {
+      "path": "tests/skill-continuation.test.cjs",
+      "sha256": "5ed7f949f29eb65a33745181a7b6bf6969cad24ad1b8b08d1df42b230df5b9c4"
+    },
+    {
+      "path": "tests/skill-calculation-policy.test.cjs",
+      "sha256": "b7a347d2b526425bf2c82d2a2b8c2c1f51578689062ff62563f1cc62cea2e5eb"
+    },
+    {
+      "path": "tools/skill-continuation-public.cjs",
+      "sha256": "449e8e24f9d16cf14f626f81d7313e8c104ce48f91ff38d6b6661241189da381"
+    },
+    {
+      "path": "tools/skill-continuation-saved-comparison.cjs",
+      "sha256": "1c82dac68b07feadbb72d97acf8631e2a04627c803c5f9b2a0149635bf803c6c"
+    },
+    {
+      "path": "tools/skill-continuation-equipment-smoke.cjs",
+      "sha256": "74832e3e80f37821f989a4defa89d81380b5230973d1192f35d3d2e6bd6757eb"
+    },
+    {
+      "path": "tools/skill-continuation-body-regression.cjs",
+      "sha256": "65be38b5786dd7d945fb9991d24c657d5eec1ea63802400df8a3f05442b2ec91"
+    },
+    {
+      "path": "tools/skill-continuation-catalog-scan.cjs",
+      "sha256": "09403a576f2f00ca91f522eaf8c1bd635d0aff13f20d0f92e27d20b33ce2a1b4"
+    },
+    {
+      "path": "tools/skill-continuation-catalog-report.cjs",
+      "sha256": "cc6f9c2018cb1a190641cdda70dfb9f6980e08c5d9b391821fe372beeedf5f25"
+    },
+    {
+      "path": "tools/skill-continuation-partial-save-all14.cjs",
+      "sha256": "40c9809adcec875711b9acab905c8055f69f140024ed2a16578af36266ed65f7"
+    },
+    {
+      "path": "tools/skill-continuation-browser-partbreaker.cjs",
+      "sha256": "36f3fa8e1ee897c3f86e7a6349fb7c01a2b69736c6b25a7cede258c027c05de2"
+    },
+    {
+      "path": "tools/skill-continuation-browser-partial-save-all14.cjs",
+      "sha256": "59397dc1240d71069fb81ddcef0f161bd302e129d829a714686f52c29d09d369"
     }
   ],
   "tests": [
@@ -268,7 +320,14 @@
     "tools/sa-hh-scope-regression/hh-zero.test.cjs",
     "tools/gl-hh-scope-regression/scope.test.cjs",
     "tools/input-guard-regression/ingress.test.cjs",
-    "tools/input-guard-regression/controls.test.cjs"
+    "tools/input-guard-regression/controls.test.cjs",
+    "tests/skill-continuation.test.cjs",
+    "tests/skill-calculation-policy.test.cjs"
   ],
-  "expectedTests": 1490
+  "expectedTests": 1500,
+  "productBaselineCommit": "a772e58af777bf4702237b22d4bdf39ed3d2bd99",
+  "changeContracts": [
+    "C04",
+    "C05"
+  ]
 }

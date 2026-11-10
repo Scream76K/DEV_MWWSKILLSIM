@@ -1,0 +1,3896 @@
+{
+  "scope": "CURRENT_SOURCE_ROLES_AND_OBSERVED_OMISSIONS_NOT_NEW_ADOPTION",
+  "counts": {
+    "skills": 179,
+    "ranks": 442,
+    "weapons": 14,
+    "cases": 6188,
+    "channels": 12376,
+    "calculatedCases": 6188,
+    "rankNotApplied": 0,
+    "previouslyAvailableChannels": 12232,
+    "previouslyAvailableNumericChanges": 0,
+    "recoveredChannels": 144,
+    "remainingStops": 0,
+    "omissionObservations": 144,
+    "omittedSkillIds": 13,
+    "wholeSkillOmissions": 140,
+    "partiallyRetainedObservations": 4,
+    "ownerExcludedIds": [
+      129,
+      85,
+      8,
+      103,
+      138,
+      160
+    ],
+    "standardOnlyId": 163,
+    "existingNonHP": 93
+  },
+  "ownerPolicy": {
+    "skills": [
+      {
+        "skillId": 129,
+        "names": [
+          "破壊王",
+          "Partbreaker"
+        ],
+        "maxLevel": 3
+      },
+      {
+        "skillId": 85,
+        "names": [
+          "鈍器使い",
+          "Bludgeoner"
+        ]
+      },
+      {
+        "skillId": 8,
+        "names": [
+          "抜刀術【力】",
+          "Punishing Draw"
+        ]
+      },
+      {
+        "skillId": 103,
+        "names": [
+          "抜刀術【技】",
+          "抜刀術[技]",
+          "Critical Draw"
+        ]
+      },
+      {
+        "skillId": 138,
+        "names": [
+          "研鑽",
+          "Everlasting"
+        ],
+        "maxLevel": 1
+      },
+      {
+        "skillId": 160,
+        "names": [
+          "刃鱗増装",
+          "Bladescale Loading"
+        ],
+        "maxLevel": 1
+      }
+    ],
+    "reason": "ユーザー指定により今回の火力計算対象外（装備・保存は保持）",
+    "status": "OWNER_EXCLUDED_CURRENT_RELEASE"
+  },
+  "standardOnlyPolicy": {
+    "skillId": 163,
+    "names": [
+      "刃鱗研装",
+      "Bladescale Honing"
+    ],
+    "level": 1,
+    "reason": "ユーザー指定により標準比較のみ火力計算対象外（明示経路・装備・保存は保持）",
+    "status": "OWNER_EXCLUDED_STANDARD_COMPARISON"
+  },
+  "catalog": [
+    {
+      "skillId": 1,
+      "name": "龍耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:1",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 2,
+      "name": "散弾・剛射強化",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 3,
+      "name": "見切り",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 4,
+      "name": "護竜の守り",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 5,
+      "name": "爆破ビン追加",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "COATING_CAPABILITY",
+          "scope": "NONBOW_OR_UNUSED_COATING_ONLY_NOT_GENERAL_EXCLUSION",
+          "source": "hope-hammer-browser-adapter.js:coatingCapabilities / unusedNonBowCoating",
+          "baselineSource": "hope-hammer-browser-adapter.js:coatingCapabilities / unusedNonBowCoating",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 6,
+      "name": "通常弾・通常矢強化",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 7,
+      "name": "高速変形",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "WEAPON_SCOPE",
+          "source": "hope-hammer-browser-adapter.js:nonTargetRapidMorph",
+          "baselineSource": "hope-hammer-browser-adapter.js:nonTargetRapidMorph",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 8,
+      "name": "抜刀術【力】",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "OWNER_EXCLUDED_CURRENT_RELEASE",
+          "scope": "ALL_CURRENT_CALCULATION_ROUTES",
+          "source": "skill-calculation-policy.js:MHOwnerCalculationExclusion",
+          "baselineSource": "index.html:MHOwnerCalculationExclusion",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": true,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 9,
+      "name": "麻痺属性強化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "DIRECT_HP_ONLY_STATUS_ACCUMULATION_EXCLUDED",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:9",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 10,
+      "name": "ヌシの誇り",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 11,
+      "name": "雷顎竜の闘志",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 12,
+      "name": "毒属性強化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "DIRECT_HP_ONLY_STATUS_ACCUMULATION_EXCLUDED",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:12",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 13,
+      "name": "災禍転福",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 14,
+      "name": "体術",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:14",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 15,
+      "name": "アイテム使用強化",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:15",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 16,
+      "name": "ガード強化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:16",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 17,
+      "name": "鱗重ねの工夫",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 18,
+      "name": "無我の境地",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 19,
+      "name": "革細工の柔性",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 20,
+      "name": "先達の導き",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 21,
+      "name": "毒ダメージ強化",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "ANNOTATION_ONLY",
+          "scope": "EXTRA_DAMAGE_SEPARATE_FROM_HP_INDICATOR",
+          "source": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "baselineSource": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "evidenceRef": null,
+          "components": [
+            "POISON_DURATION"
+          ],
+          "bodyEffect": false
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 22,
+      "name": "超会心",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 23,
+      "name": "速射強化",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "WEAPON_SCOPE",
+          "source": "hope-hammer-browser-adapter.js:weaponSpecificSkillScopes",
+          "baselineSource": "hope-hammer-browser-adapter.js:weaponSpecificSkillScopes",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 24,
+      "name": "チャージマスター",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 30,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 25,
+      "name": "暗器蛸の力",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 26,
+      "name": "護鎖刃竜の命脈",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 27,
+      "name": "護竜の脈動",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 28,
+      "name": "飛び込み",
+      "kind": "armor",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:28",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 29,
+      "name": "笛吹き名人",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:29",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 30,
+      "name": "体力回復量ＵＰ",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:30",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 31,
+      "name": "回復速度",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:31",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 32,
+      "name": "納刀術",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:32",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 33,
+      "name": "鎖刃竜の飢餓",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 34,
+      "name": "花舞の祈り",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "RANK_ONE_NONNUMERIC",
+          "scope": "RANK1_ONLY;HIGHER_RANK_RETAINS_BODY_EFFECT",
+          "source": "index.html:MHNonNumericRankOne",
+          "baselineSource": "index.html:MHNonNumericRankOne",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 35,
+      "name": "風圧耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:35",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 36,
+      "name": "ＫＯ術",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:36",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 37,
+      "name": "ボマー",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_SKILL_37;OWNER_FIXED_INDICATOR_SCOPE",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 38,
+      "name": "鎖刃刺撃",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [
+        {
+          "type": "ANNOTATION_ONLY",
+          "scope": "EXTRA_DAMAGE_SEPARATE_FROM_HP_INDICATOR",
+          "source": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "baselineSource": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "evidenceRef": null,
+          "components": [
+            "NON_ELEMENTAL_EXTRA"
+          ],
+          "bodyEffect": false
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 39,
+      "name": "濡れ刃紋",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 40,
+      "name": "爆破属性強化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "DIRECT_HP_ONLY_STATUS_ACCUMULATION_EXCLUDED",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:40",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 41,
+      "name": "龍属性攻撃強化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 42,
+      "name": "クライマー",
+      "kind": "armor",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:42",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 43,
+      "name": "ランナー",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:43",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 44,
+      "name": "麻痺ビン追加",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "COATING_CAPABILITY",
+          "scope": "NONBOW_OR_UNUSED_COATING_ONLY_NOT_GENERAL_EXCLUSION",
+          "source": "hope-hammer-browser-adapter.js:coatingCapabilities / unusedNonBowCoating",
+          "baselineSource": "hope-hammer-browser-adapter.js:coatingCapabilities / unusedNonBowCoating",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 45,
+      "name": "緩衝",
+      "kind": "armor",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:45",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 46,
+      "name": "耐震",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:46",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 47,
+      "name": "砲術",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 48,
+      "name": "環境利用の知識",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:48",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 49,
+      "name": "属性やられ耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:49",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 50,
+      "name": "火属性攻撃強化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 51,
+      "name": "白熾龍の脈動",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 52,
+      "name": "キノコ大好き",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:52",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 53,
+      "name": "弾導強化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 54,
+      "name": "鎧竜の守護",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 55,
+      "name": "悪臭耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:55",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 56,
+      "name": "泡狐竜の力",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 57,
+      "name": "弱点特効",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 58,
+      "name": "スタミナ急速回復",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:58",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 59,
+      "name": "ガード性能",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:59",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 60,
+      "name": "集中",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP_UTILITY",
+          "scope": "FIXED_INITIAL_STATE_NO_TIMING_EFFECT",
+          "source": "hope-hammer-browser-adapter.js:fixedEntrySkill utility",
+          "baselineSource": "hope-hammer-browser-adapter.js:fixedEntrySkill utility",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 61,
+      "name": "閃光強化",
+      "kind": "armor",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:61",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 62,
+      "name": "凍峰竜の反逆",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 63,
+      "name": "水場・油泥適応",
+      "kind": "armor",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:63",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 64,
+      "name": "睡眠耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:64",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 65,
+      "name": "減気ビン追加",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "COATING_CAPABILITY",
+          "scope": "NONBOW_OR_UNUSED_COATING_ONLY_NOT_GENERAL_EXCLUSION",
+          "source": "hope-hammer-browser-adapter.js:coatingCapabilities / unusedNonBowCoating",
+          "baselineSource": "hope-hammer-browser-adapter.js:coatingCapabilities / unusedNonBowCoating",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 66,
+      "name": "攻めの守勢",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 67,
+      "name": "急襲",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 68,
+      "name": "会心撃【特殊】",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "DIRECT_HP_ONLY_STATUS_ACCUMULATION_EXCLUDED",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:68",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 69,
+      "name": "特殊射撃強化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "WEAPON_SCOPE",
+          "source": "hope-hammer-browser-adapter.js:weaponSpecificSkillScopes",
+          "baselineSource": "hope-hammer-browser-adapter.js:weaponSpecificSkillScopes",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 4,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 70,
+      "name": "闢獣の力",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 71,
+      "name": "火竜の力",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "ANNOTATION_ONLY",
+          "scope": "EXTRA_DAMAGE_SEPARATE_FROM_HP_INDICATOR",
+          "source": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "baselineSource": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "evidenceRef": null,
+          "components": [
+            "FIXED",
+            "FIRE"
+          ],
+          "bodyEffect": false
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 72,
+      "name": "攻撃",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 73,
+      "name": "栄光の誉れ",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 74,
+      "name": "祝祭の巡り",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 75,
+      "name": "攻勢",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 76,
+      "name": "ジャンプ鉄人",
+      "kind": "armor",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:76",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 77,
+      "name": "回避性能",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:77",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 78,
+      "name": "睡眠属性強化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "DIRECT_HP_ONLY_STATUS_ACCUMULATION_EXCLUDED",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:78",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 79,
+      "name": "睡眠ビン追加",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "COATING_CAPABILITY",
+          "scope": "NONBOW_OR_UNUSED_COATING_ONLY_NOT_GENERAL_EXCLUSION",
+          "source": "hope-hammer-browser-adapter.js:coatingCapabilities / unusedNonBowCoating",
+          "baselineSource": "hope-hammer-browser-adapter.js:coatingCapabilities / unusedNonBowCoating",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 80,
+      "name": "耳栓",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261025:80",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 81,
+      "name": "逆襲",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 82,
+      "name": "会心撃【属性】",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 83,
+      "name": "溜打強化",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "WEAPON_SCOPE",
+          "source": "hope-hammer-browser-adapter.js:weaponSpecificSkillScopes",
+          "baselineSource": "hope-hammer-browser-adapter.js:weaponSpecificSkillScopes",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 84,
+      "name": "水耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 85,
+      "name": "鈍器使い",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "OWNER_EXCLUDED_CURRENT_RELEASE",
+          "scope": "ALL_CURRENT_CALCULATION_ROUTES",
+          "source": "skill-calculation-policy.js:MHOwnerCalculationExclusion",
+          "baselineSource": "index.html:MHOwnerCalculationExclusion",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": true,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 86,
+      "name": "飛燕",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 4,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 87,
+      "name": "火事場力",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 88,
+      "name": "環境適応",
+      "kind": "armor",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:88",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 89,
+      "name": "革細工の滑性",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 90,
+      "name": "整備",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:90",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 91,
+      "name": "水属性攻撃強化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 92,
+      "name": "麻痺耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:92",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 93,
+      "name": "煌雷竜の力",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 94,
+      "name": "貫通弾・竜の矢強化",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "WEAPON_SCOPE",
+          "source": "hope-hammer-browser-adapter.js:weaponSpecificSkillScopes",
+          "baselineSource": "hope-hammer-browser-adapter.js:weaponSpecificSkillScopes",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 4,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 95,
+      "name": "連撃",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 96,
+      "name": "白熾の奔流",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "ANNOTATION_ONLY",
+          "scope": "EXTRA_DAMAGE_SEPARATE_FROM_HP_INDICATOR",
+          "source": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "baselineSource": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "evidenceRef": null,
+          "components": [
+            "EXTRA",
+            "FIRE_WHEN_SCORCH"
+          ],
+          "bodyEffect": false
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 97,
+      "name": "毛皮の誘惑",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 98,
+      "name": "地質学",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:98",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 99,
+      "name": "渾身",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 100,
+      "name": "早食い",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:100",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 101,
+      "name": "氷耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:101",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 102,
+      "name": "回避距離ＵＰ",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:102",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 103,
+      "name": "抜刀術【技】",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "OWNER_EXCLUDED_CURRENT_RELEASE",
+          "scope": "ALL_CURRENT_CALCULATION_ROUTES",
+          "source": "skill-calculation-policy.js:MHOwnerCalculationExclusion",
+          "baselineSource": "index.html:MHOwnerCalculationExclusion",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": true,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 104,
+      "name": "強化持続",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP_UTILITY",
+          "scope": "FIXED_INITIAL_STATE_NO_TIMING_EFFECT",
+          "source": "hope-hammer-browser-adapter.js:fixedEntrySkill utility",
+          "baselineSource": "hope-hammer-browser-adapter.js:fixedEntrySkill utility",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 105,
+      "name": "気絶耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:105",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 106,
+      "name": "黒蝕竜の力",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 107,
+      "name": "雪獅子の闘志",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 108,
+      "name": "ひるみ軽減",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:108",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 109,
+      "name": "砲弾装填",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 110,
+      "name": "爆破やられ耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:110",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 111,
+      "name": "満足感",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:111",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 112,
+      "name": "植生学",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:112",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 113,
+      "name": "広域化",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:113",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 114,
+      "name": "昆虫標本の達人",
+      "kind": "armor",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:114",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 115,
+      "name": "兇爪竜の力",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 116,
+      "name": "毒ビン追加",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "COATING_CAPABILITY",
+          "scope": "NONBOW_OR_UNUSED_COATING_ONLY_NOT_GENERAL_EXCLUSION",
+          "source": "hope-hammer-browser-adapter.js:coatingCapabilities / unusedNonBowCoating",
+          "baselineSource": "hope-hammer-browser-adapter.js:coatingCapabilities / unusedNonBowCoating",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 117,
+      "name": "業物",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:117",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 118,
+      "name": "防御",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 119,
+      "name": "匠",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 120,
+      "name": "巧撃",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 121,
+      "name": "氷属性攻撃強化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 122,
+      "name": "精霊の加護",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261025:122",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 123,
+      "name": "逆恨み",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 124,
+      "name": "達人芸",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:124",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 125,
+      "name": "火耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:125",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 126,
+      "name": "砥石使用高速化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:126",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 127,
+      "name": "雷属性攻撃強化",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 128,
+      "name": "毒耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:128",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 129,
+      "name": "破壊王",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "OWNER_EXCLUDED_CURRENT_RELEASE",
+          "scope": "ALL_CURRENT_CALCULATION_ROUTES",
+          "source": "skill-calculation-policy.js:MHOwnerCalculationExclusion",
+          "baselineSource": "index.html:MHOwnerCalculationExclusion",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        },
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "EXPLICIT_ADOPTED_NO_WOUND_EVENT_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "https://kuroyonhon.com/mhwilds/program/skill.php",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": true,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 130,
+      "name": "威嚇",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:130",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 131,
+      "name": "ヌシの魂",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 132,
+      "name": "鱗張りの技法",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 133,
+      "name": "属性吸収",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 134,
+      "name": "剛刃研磨",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:134",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 135,
+      "name": "防御力ＤＯＷＮ耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:135",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 136,
+      "name": "心眼",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "WEAPON_SCOPE",
+          "source": "hope-hammer-browser-adapter.js:weaponSpecificSkillScopes",
+          "baselineSource": "hope-hammer-browser-adapter.js:weaponSpecificSkillScopes",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 137,
+      "name": "フォースショット",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 138,
+      "name": "研鑽",
+      "kind": "armor",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "OWNER_EXCLUDED_CURRENT_RELEASE",
+          "scope": "ALL_CURRENT_CALCULATION_ROUTES",
+          "source": "skill-calculation-policy.js:MHOwnerCalculationExclusion",
+          "baselineSource": "index.html:MHOwnerCalculationExclusion",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": true,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 139,
+      "name": "甲虫の擬態",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 140,
+      "name": "ファーストショット",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 141,
+      "name": "スタミナ奪取",
+      "kind": "weapon",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:141",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 142,
+      "name": "力の解放",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 143,
+      "name": "ハンター生活",
+      "kind": "armor",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:143",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 144,
+      "name": "挑戦者",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 145,
+      "name": "オトモへの采配",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:145",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 146,
+      "name": "裂傷耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:146",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 147,
+      "name": "拘束耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:147",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 148,
+      "name": "甲虫の知らせ",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 149,
+      "name": "獄焔蛸の反逆",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "ANNOTATION_ONLY",
+          "scope": "EXTRA_DAMAGE_SEPARATE_FROM_HP_INDICATOR",
+          "source": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "baselineSource": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "evidenceRef": null,
+          "components": [
+            "EXTRA"
+          ],
+          "bodyEffect": false
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 150,
+      "name": "毛皮の昂揚",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 151,
+      "name": "腹減り耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:151",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 152,
+      "name": "属性変換",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [
+        {
+          "type": "BODY_EFFECT_PLUS_SEPARATE_EXTRA",
+          "scope": "EXTRA_DAMAGE_SEPARATE_FROM_HP_INDICATOR",
+          "source": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "baselineSource": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "evidenceRef": null,
+          "components": [
+            "FIXED_FOLLOWUP",
+            "DRAGON_FOLLOWUP"
+          ],
+          "bodyEffect": true
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 153,
+      "name": "波衣竜の守護",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 154,
+      "name": "フルチャージ",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 155,
+      "name": "ヌシの憤激",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 156,
+      "name": "雷耐性",
+      "kind": "armor",
+      "levels": [
+        1,
+        2,
+        3
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 157,
+      "name": "拳を極めし者",
+      "kind": "group",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_STATE_NON_HP_BONUS",
+          "scope": "VALIDATED_ACTIVE_BONUS_ID_NAME_RANK_THRESHOLD_ONLY",
+          "source": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "baselineSource": "index.html:FIXED_STATE_NON_HP_BONUS_IDS / hpRelevantBonusEffects",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 158,
+      "name": "にぎりめし",
+      "kind": "armor",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_SKILL_158;OWNER_FIXED_INDICATOR_SCOPE",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 159,
+      "name": "焼き砲モロコシ",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "WEAPON_SCOPE",
+          "source": "hope-hammer-browser-adapter.js:weaponSpecificSkillScopes",
+          "baselineSource": "hope-hammer-browser-adapter.js:weaponSpecificSkillScopes",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 2,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 160,
+      "name": "刃鱗増装",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "OWNER_EXCLUDED_CURRENT_RELEASE",
+          "scope": "ALL_CURRENT_CALCULATION_ROUTES",
+          "source": "skill-calculation-policy.js:MHOwnerCalculationExclusion",
+          "baselineSource": "index.html:MHOwnerCalculationExclusion",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": true,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 161,
+      "name": "踊火の祈り",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "RANK_ONE_NONNUMERIC",
+          "scope": "RANK1_ONLY;HIGHER_RANK_RETAINS_BODY_EFFECT",
+          "source": "index.html:MHNonNumericRankOne",
+          "baselineSource": "index.html:MHNonNumericRankOne",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 162,
+      "name": "海竜の渦雷",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "BODY_EFFECT_PLUS_SEPARATE_EXTRA",
+          "scope": "EXTRA_DAMAGE_SEPARATE_FROM_HP_INDICATOR",
+          "source": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "baselineSource": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "evidenceRef": null,
+          "components": [
+            "FIXED",
+            "THUNDER"
+          ],
+          "bodyEffect": true
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 4,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 163,
+      "name": "刃鱗研装",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "OWNER_EXCLUDED_STANDARD_COMPARISON",
+          "scope": "STANDARD_ONLY",
+          "source": "skill-calculation-policy.js:MHStandardCalculationExclusion",
+          "baselineSource": "index.html:MHStandardCalculationExclusion",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": true,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 164,
+      "name": "パワーストーン",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 165,
+      "name": "耐性変換【雷】",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 12,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 166,
+      "name": "回避装填",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_SKILL_166;OWNER_FIXED_INDICATOR_SCOPE",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 167,
+      "name": "千刃竜の闘志",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "RANK_ONE_NONNUMERIC",
+          "scope": "RANK1_ONLY;HIGHER_RANK_RETAINS_BODY_EFFECT",
+          "source": "index.html:MHNonNumericRankOne",
+          "baselineSource": "index.html:MHNonNumericRankOne",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 168,
+      "name": "暗黒",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 13,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 169,
+      "name": "シールドオプション",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:169",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 170,
+      "name": "夢灯の祈り",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "RANK_ONE_NONNUMERIC",
+          "scope": "RANK1_ONLY;HIGHER_RANK_RETAINS_BODY_EFFECT",
+          "source": "index.html:MHNonNumericRankOne",
+          "baselineSource": "index.html:MHNonNumericRankOne",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 171,
+      "name": "炎の料理人",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 2,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 172,
+      "name": "暗黒騎士の証",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 42,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 173,
+      "name": "オメガレゾナンス",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 4,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 174,
+      "name": "連携プログラム",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 178,
+      "name": "巨戟龍の黙示録",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 8,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 179,
+      "name": "にゃんにゃんぼう",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "FIXED_HIT_NON_HP",
+          "scope": "FIXED_DECLARED_STATE_HP_ONLY",
+          "source": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "baselineSource": "hope-hammer-browser-adapter.js:INTERNAL_SKILL_ADOPTION",
+          "evidenceRef": "MHDB_JA_SKILLS_20261026:179",
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 180,
+      "name": "祝謡の祈り",
+      "kind": "set",
+      "levels": [
+        1,
+        2
+      ],
+      "existingRoles": [
+        {
+          "type": "RANK_ONE_NONNUMERIC",
+          "scope": "RANK1_ONLY;HIGHER_RANK_RETAINS_BODY_EFFECT",
+          "source": "index.html:MHNonNumericRankOne",
+          "baselineSource": "index.html:MHNonNumericRankOne",
+          "evidenceRef": null,
+          "components": null,
+          "bodyEffect": null
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 181,
+      "name": "耐性変換【水】",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 15,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    },
+    {
+      "skillId": 182,
+      "name": "解キ放ツ鏡刃ノ破片",
+      "kind": "weapon",
+      "levels": [
+        1
+      ],
+      "existingRoles": [
+        {
+          "type": "ANNOTATION_ONLY",
+          "scope": "EXTRA_DAMAGE_SEPARATE_FROM_HP_INDICATOR",
+          "source": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "baselineSource": "index.html:SKILL_EXTRA_DAMAGE_POLICIES",
+          "evidenceRef": null,
+          "components": [
+            "AREA_EXTRA"
+          ],
+          "bodyEffect": false
+        }
+      ],
+      "ownerExclusion": false,
+      "standardOnlyExclusion": false,
+      "observedOmissionCount": 0,
+      "observation": "NO_OMISSION_OBSERVED_IS_NOT_FULL_EFFECT_OR_GAME_ACCURACY_CERTIFICATION"
+    }
+  ]
+}

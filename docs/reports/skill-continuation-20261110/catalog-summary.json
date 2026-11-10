@@ -1,0 +1,158 @@
+{
+  "sourceMetadata": {
+    "apiDataVersion": "2026-04-15T01:28:18+00:00",
+    "retrievedAt": "2026-11-05T02:32:05.085Z",
+    "referenceGameVersion": "NOT_ESTABLISHED_BY_API_IMPORT_VERSION",
+    "rawApi": true,
+    "receipts": [
+      {
+        "url": "https://wilds.mhdb.io/ja/skills?limit=250&offset=0",
+        "count": 179
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/armor?limit=250&offset=0",
+        "count": 250
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/armor?limit=250&offset=250",
+        "count": 250
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/armor?limit=250&offset=500",
+        "count": 214
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/decorations?limit=250&offset=0",
+        "count": 250
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/decorations?limit=250&offset=250",
+        "count": 111
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/charms?limit=250&offset=0",
+        "count": 64
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/armor/sets?limit=250&offset=0",
+        "count": 194
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/weapons?limit=250&offset=0",
+        "count": 250
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/weapons?limit=250&offset=250",
+        "count": 250
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/weapons?limit=250&offset=500",
+        "count": 250
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/weapons?limit=250&offset=750",
+        "count": 250
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/weapons?limit=250&offset=1000",
+        "count": 188
+      },
+      {
+        "url": "https://wilds.mhdb.io/ja/monsters?limit=250&offset=0",
+        "count": 34
+      }
+    ],
+    "databaseSha256": "e2d6719012b4463e51f80a12e05df665c2b9e10e6f74139716b5471c21784d4e",
+    "scope": "MHDB_API_SNAPSHOT_METADATA_ONLY;RAW_EQUIPMENT_FIXTURE_NOT_DISTRIBUTED"
+  },
+  "status": "PASS",
+  "scope": "179_SOURCE_SKILLS_442_VALID_RANKS_X_14_REPRESENTATIVE_WEAPONS",
+  "productBase": "a772e58af777bf4702237b22d4bdf39ed3d2bd99",
+  "hashes": {
+    "index": "c3499eba8a8433525256967ffe6ca68587d8a6681c39cd214c2089d38d88dddb",
+    "adapter": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4",
+    "database": "e2d6719012b4463e51f80a12e05df665c2b9e10e6f74139716b5471c21784d4e",
+    "fixtures": "cd15289e54157909f7a825f531440b718f28530891a144ec0d91cf61f17cbf4b",
+    "test": "09403a576f2f00ca91f522eaf8c1bd635d0aff13f20d0f92e27d20b33ce2a1b4",
+    "continuation": "62f077d4941380661da5a7e07448e244ed1ec1098d06a957000cdba4aad2cab3",
+    "policy": "3ca0b86404597ea92d1e6a5e644ad0c26e170a2d97521395241e47bfd9fec9b4"
+  },
+  "sourceInventoryHashes": {
+    "index": "755d47570753cda951cdb82244b8bef1a117031e91c540588b7f506fa2053d45",
+    "adapter": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4"
+  },
+  "counts": {
+    "skills": 179,
+    "ranks": 442,
+    "weapons": 14,
+    "cases": 6188,
+    "channels": 12376,
+    "calculatedCases": 6188,
+    "rankNotApplied": 0,
+    "previouslyAvailableChannels": 12232,
+    "previouslyAvailableNumericChanges": 0,
+    "recoveredChannels": 144,
+    "remainingStops": 0,
+    "omissionObservations": 144,
+    "omittedSkillIds": 13,
+    "wholeSkillOmissions": 140,
+    "partiallyRetainedObservations": 4,
+    "ownerExcludedIds": [
+      129,
+      85,
+      8,
+      103,
+      138,
+      160
+    ],
+    "standardOnlyId": 163,
+    "existingNonHP": 93
+  },
+  "limits": [
+    "One representative weapon/state/route per kind; not all weapon records or legal equipment combinations.",
+    "Ordinary ranks use controlled custom charm inputs; set/group activation uses actual distinct armor pieces.",
+    "All rank activation was observed, but all coefficient correctness and activation permutations were not independently proved.",
+    "Previously available values compared exactly across the whole matrix; complete channel JSON compared on focused reviewed cases only.",
+    "Standalone source files and fixture hashes are recorded; no live-game/Safari/iPhone validation.",
+    "Unchanged legacy123 unit failures and the pre-existing comparison metadata restoration issue remain."
+  ],
+  "baselineEvidence": {
+    "index": "755d47570753cda951cdb82244b8bef1a117031e91c540588b7f506fa2053d45",
+    "adapter": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4",
+    "completedAt": "2026-11-10T12:06:47.117Z",
+    "reused": false,
+    "freshForProductBase": true
+  },
+  "manifests": [
+    {
+      "startedAt": "2026-11-10T11:43:39.654Z",
+      "finishedAt": "2026-11-10T11:52:57.257Z",
+      "completedWeapons": [
+        "great-sword",
+        "long-sword",
+        "sword-and-shield",
+        "dual-blades",
+        "hammer",
+        "hunting-horn",
+        "lance"
+      ],
+      "codeUnchanged": true,
+      "modulesUnchanged": true
+    },
+    {
+      "startedAt": "2026-11-10T11:43:39.654Z",
+      "finishedAt": "2026-11-10T11:52:35.245Z",
+      "completedWeapons": [
+        "gunlance",
+        "switch-axe",
+        "charge-blade",
+        "insect-glaive",
+        "light-bowgun",
+        "heavy-bowgun",
+        "bow"
+      ],
+      "codeUnchanged": true,
+      "modulesUnchanged": true
+    }
+  ]
+}

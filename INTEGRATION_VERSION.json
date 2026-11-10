@@ -1,15 +1,17 @@
 {
-  "version": "integration-20261110-spec1",
-  "status": "INTEGRATION_BASE_REVIEWED_SPECIFICATION_UPDATED_BUGFIXES_PENDING",
+  "version": "integration-20261110-skill-continuation",
+  "status": "LOCAL_C04_C05_CANDIDATE_REVIEWED_LIMITED_VALIDATION_NOT_PUBLISHED",
   "mainline": "6c3185201139ed7ec2251373a364c5cf966b4390",
   "mergeBase": "77dc3e0e6518b8313407249885f7b0f8447deccf",
   "productSha256": {
-    "index.html": "755d47570753cda951cdb82244b8bef1a117031e91c540588b7f506fa2053d45",
-    "hope-hammer-browser-adapter.js": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4"
+    "index.html": "c3499eba8a8433525256967ffe6ca68587d8a6681c39cd214c2089d38d88dddb",
+    "hope-hammer-browser-adapter.js": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4",
+    "skill-effect-continuation.js": "62f077d4941380661da5a7e07448e244ed1ec1098d06a957000cdba4aad2cab3",
+    "skill-calculation-policy.js": "3ca0b86404597ea92d1e6a5e644ad0c26e170a2d97521395241e47bfd9fec9b4"
   },
   "published": false,
   "liveGameAccuracyVerified": false,
-  "remaining": "Unsupported-skill continuation and normal-ammo ten-shot standard are not implemented in this version. Ammunition level and light-bowgun rapid-fire choice remain undecided. Legacy feature parity is not fully reconciled.",
+  "remaining": "Normal-ammo ten-shot standard is not implemented. Ammunition level and light-bowgun rapid-fire choice remain undecided. All legal skill/equipment combinations and live-game accuracy are not certified. Existing legacy suite failures and comparison display-metadata restoration differences remain; see the scoped verification report. Legacy feature parity is not fully reconciled.",
   "integratedVerificationSources": [
     {
       "head": "8c2d4c3b2756f9ded881b957c1fb8282b24ca933",
@@ -33,5 +35,7 @@
   ],
   "integrationBaseCommit": "cf88864e08cc4b7cdc7a4e293bb820825a22faca",
   "stage1Commit": "5be4c5c37a58234c55a2842051994e7a83ce9c55",
-  "specificationVersion": "SPEC-20261110-01"
+  "specificationVersion": "SPEC-20261110-01",
+  "phase4ProductBase": "a772e58af777bf4702237b22d4bdf39ed3d2bd99",
+  "phase4Verification": "docs/reports/skill-continuation-20261110/verification.json"
 }

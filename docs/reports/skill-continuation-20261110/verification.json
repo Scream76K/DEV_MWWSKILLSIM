@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "status": "REVIEWED_CANDIDATE_WITH_KNOWN_LEGACY_FAILURES",
+  "baseCommit": "a772e58af777bf4702237b22d4bdf39ed3d2bd99",
+  "productHashes": {
+    "index.html": "c3499eba8a8433525256967ffe6ca68587d8a6681c39cd214c2089d38d88dddb",
+    "hope-hammer-browser-adapter.js": "440fc5e8d50ba84b8be1ddc3c10c734bffc42310b004d42cb5d99bd316120fe4",
+    "skill-effect-continuation.js": "62f077d4941380661da5a7e07448e244ed1ec1098d06a957000cdba4aad2cab3",
+    "skill-calculation-policy.js": "3ca0b86404597ea92d1e6a5e644ad0c26e170a2d97521395241e47bfd9fec9b4"
+  },
+  "adapterChanged": false,
+  "published": false,
+  "newBranchCreated": false,
+  "productAndGameAccuracyFullyVerified": false,
+  "suiteResults": {
+    "integration": {
+      "evidence": "integration-regression.json",
+      "tests": 1500,
+      "passed": 1500,
+      "failed": 0,
+      "old1490Preserved": true,
+      "newTests": 10,
+      "contractSha256": "8488572d267059c4e7c2e4f17b0fa6242ab631562bbb5191da7b275d72dbefc7",
+      "runId": "40587d9f-3fa8-44d8-a78a-98e1e38caabc"
+    },
+    "freshness": {
+      "tests": 94,
+      "passed": 94,
+      "failed": 0,
+      "logSha256": "3a54545333839c341613ad845e11e6099a03e7d9552d2e948bb43a0b2062e019"
+    },
+    "unit": {
+      "tests": 1161,
+      "passed": 1038,
+      "failed": 123,
+      "newFailureNames": 0,
+      "removedFailureNames": 0,
+      "comparison": "npm-failure-comparison.json"
+    },
+    "catalog": {
+      "evidence": "catalog-summary.json",
+      "cases": 6188,
+      "channels": 12376,
+      "previouslyAvailableUnchanged": 12232,
+      "recovered": 144,
+      "remainingStops": 0,
+      "freshMatchingBaseline": true
+    },
+    "publicProbes": {
+      "evidence": "public-flow-56.json",
+      "cases": 56,
+      "failures": 0
+    },
+    "realFiveArmor": {
+      "evidence": "real-equipment-14.json",
+      "cases": 14,
+      "failures": 0
+    },
+    "retainedBody": {
+      "evidence": "retained-body-12.json",
+      "cases": 12,
+      "channels": 24,
+      "bodyComponentsExecutionFinalStateExact": true
+    },
+    "savedComparisonGL": {
+      "evidence": [
+        "saved-comparison-gl.json",
+        "saved-comparison-body-gl.json"
+      ],
+      "distinctWeapons": [
+        1151,
+        319
+      ],
+      "allPassed": true
+    },
+    "partialSaveAll14": {
+      "evidence": "partial-save-all14.json",
+      "weapons": 14,
+      "distinctBuilds": 28,
+      "currentChannels": 56,
+      "comparedChannels": 56,
+      "failed": 0
+    },
+    "chromiumPartbreaker": {
+      "evidence": "chromium-partbreaker-14.json",
+      "weapons": 14,
+      "skillLevels": 42,
+      "channels": 84,
+      "saveLoadCompare": 14,
+      "failed": 0
+    },
+    "chromiumPartial": {
+      "evidence": "chromium-partial-14.json",
+      "weapons": 14,
+      "distinctBuilds": 28,
+      "channels": 56,
+      "saveLoadCompare": 14,
+      "failed": 0,
+      "widthChecks": {
+        "weapons": [
+          "gunlance",
+          "switch-axe",
+          "charge-blade"
+        ],
+        "widths": [
+          390,
+          1440
+        ],
+        "horizontalOverflow": 0
+      }
+    },
+    "legacyDOMBrowser": {
+      "status": "PASS_NO_NEW_FAILURE_NAMES_LEGACY_FAILURES_REMAIN",
+      "evidence": "legacy-suite-comparison.json",
+      "runtimeUnchanged": true,
+      "suites": [
+        {
+          "suite": "dom",
+          "before": {
+            "tests": 510,
+            "pass": 322,
+            "fail": 188,
+            "cancelled": 0,
+            "skipped": 0
+          },
+          "after": {
+            "tests": 510,
+            "pass": 322,
+            "fail": 188,
+            "cancelled": 0,
+            "skipped": 0
+          },
+          "failureNameMultisetUnchanged": true
+        },
+        {
+          "suite": "browser",
+          "before": {
+            "tests": 88,
+            "pass": 18,
+            "fail": 70,
+            "cancelled": 0,
+            "skipped": 0
+          },
+          "after": {
+            "tests": 88,
+            "pass": 18,
+            "fail": 70,
+            "cancelled": 0,
+            "skipped": 0
+          },
+          "failureNameMultisetUnchanged": true
+        }
+      ]
+    }
+  },
+  "independentImplementationReview": {
+    "decision": "REVIEW_APPROVED_IN_TESTED_SCOPE",
+    "newUnresolvedBlockers": 0,
+    "independentlyExecuted": [
+      "10 unit cases",
+      "12 real GL equipment cases / 24 channels",
+      "supported body60 components, execution and final state exact",
+      "distinct-weapon saved comparison in empty-armor and body-skill modes, JSON export and load",
+      "source/state absence and duplicate component identity rejections",
+      "GL adopted-body priority counterexample"
+    ],
+    "didNotIndependentlyRerun": [
+      "catalog6188",
+      "all14 partial saves",
+      "Chromium"
+    ],
+    "limits": [
+      "No game-measured numeric accuracy or DPS certification",
+      "GL162 component retention restricted to STANDARD exact four-technique target",
+      "No exhaustive maximum subset or full equipment combination proof",
+      "Existing comparison metadata differences reproduce on baseline"
+    ]
+  },
+  "knownPreExistingIssues": [
+    "123 unit failures unchanged by failure-name multiset",
+    "After saved comparison, conditionKey and comparisonContext.damage/dps can retain last compared display-input metadata; current snapshot, conditions, saves and channels preserved in tested cases",
+    "C03 normal-ammo ten-shot standard not implemented"
+  ],
+  "limits": [
+    "One representative weapon/state/route per kind; not all weapon records or legal equipment combinations.",
+    "Ordinary ranks use controlled custom charm inputs; set/group activation uses actual distinct armor pieces.",
+    "All rank activation was observed, but all coefficient correctness and activation permutations were not independently proved.",
+    "Previously available values compared exactly across the whole matrix; complete channel JSON compared on focused reviewed cases only.",
+    "Standalone source files and fixture hashes are recorded; no live-game/Safari/iPhone validation.",
+    "Unchanged legacy123 unit failures and the pre-existing comparison metadata restoration issue remain."
+  ],
+  "performanceObservation": {
+    "realFiveArmorCases": 14,
+    "calcClickMsRange": [
+      22.595792000000074,
+      60.303750000000036
+    ],
+    "continuationNeededInTheseCases": false,
+    "concurrentLoadMayAffectTiming": true,
+    "notUniversalLatencyGuarantee": true,
+    "trialEvaluationUpperBound": "1 + 2*n*(n+1)",
+    "subsetIsNotExhaustiveMaximum": true
+  },
+  "artifactSha256": {
+    "integration-regression.json": "6d08e3d78211d443106298b0c40b0aa33f98d60e259bde3092a63d81a1bfced9",
+    "partial-save-all14.json": "8850ff1e4aa575df788d95dde65c3d990bf53b792fa9f74ef72323680bc69307",
+    "public-flow-56.json": "32fed809bbacce2e7e3bcbda5498e0660628b7d6d8232932d6adf8e372983447",
+    "real-equipment-14.json": "464e4928b7ed32c3230b64e8da9796e2adc32b66ed8ee46202139ea8850b3575",
+    "legacy-suite-comparison.json": "8c26dd9dfbc639f66237d959be60ec1f5acbae098bead9c2a6d6f9d3574a5f95",
+    "unsupported-effects.json": "a71dac552082fc961eb4826b24f14fd64deaad49b5d96a8c83243c9a0dd6e399",
+    "retained-body-12.json": "1a114488acb17b9c2897bb31c2b401866f4daf32111e731cbfe83fadf1ad1ff6",
+    "npm-failure-comparison.json": "682c894d587e293f00d7756181f62af00c9b402ce9093593e92e39f0372ca11e",
+    "skill-inventory.json": "47c88ff15cd8f60477ca7b8c4d7c033f4010f5c5830058f824cdca43cb154b65",
+    "chromium-partbreaker-14.json": "d7ab300cce03dcb61b9a700fc53cdbfbc3e51c40605c5864a0096b752118f2e7",
+    "source-metadata.json": "087b32134f4c08087c8db780ebb9295524678c0d3f6c08206bf0f3d72626d773",
+    "saved-comparison-body-gl.json": "61c4e126dedb550f1411c0c20b701589fff193c13ea9499a22300a2c89b1e3f1",
+    "owner-exclusion-observations.json": "9b7b7559769cc82de14ea8abe572d60d20bff06adcb601f8e2dfb696a38d480c",
+    "catalog-summary.json": "75a2c60876b5a454742aea616ecf52b5aaf2f43e176163f8b00789701af4b361",
+    "chromium-partial-14.json": "03da2acaef6447853047a7e993e425c3a27f3fedb0e4768b9c65f069599056ee",
+    "saved-comparison-gl.json": "56fa1c14f1043bb84c94726f901f7dbc8252943bb5166c1f8bab779ef986e420"
+  },
+  "ciCoverage": {
+    "workflowSha256": "4ba63f24bf8f75971d23033a2af3c225d24c17b5bb73094d01b20212e0fa740a",
+    "mainlinePushPreserved": true,
+    "newRuntimeTestsAndHarnessesInPullRequestPaths": true,
+    "historicalContractsUnchanged": true
+  }
+}
