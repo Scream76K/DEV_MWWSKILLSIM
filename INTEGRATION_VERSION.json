@@ -1,11 +1,7 @@
 {
-  "version": "integration-20261110-base",
-  "status": "REVIEWED_INTEGRATION_BASE_LEGACY_LINEAGE_RECONCILIATION_PENDING",
+  "version": "integration-20261110-spec1",
+  "status": "INTEGRATION_BASE_REVIEWED_SPECIFICATION_UPDATED_BUGFIXES_PENDING",
   "mainline": "6c3185201139ed7ec2251373a364c5cf966b4390",
-  "parents": [
-    "deb9cdbdb5cc7d75a374bac928a8f410fc5d44d4",
-    "33e7156bf6dd7c0971b4b18e16363e3e7ef88188"
-  ],
   "mergeBase": "77dc3e0e6518b8313407249885f7b0f8447deccf",
   "productSha256": {
     "index.html": "755d47570753cda951cdb82244b8bef1a117031e91c540588b7f506fa2053d45",
@@ -13,7 +9,7 @@
   },
   "published": false,
   "liveGameAccuracyVerified": false,
-  "remaining": "Legacy non-ancestor branches are being reconciled. New unsupported-skill continuation and policy extraction are isolated and deferred per owner instruction.",
+  "remaining": "Unsupported-skill continuation and normal-ammo ten-shot standard are not implemented in this version. Ammunition level and light-bowgun rapid-fire choice remain undecided. Legacy feature parity is not fully reconciled.",
   "integratedVerificationSources": [
     {
       "head": "8c2d4c3b2756f9ded881b957c1fb8282b24ca933",
@@ -30,5 +26,12 @@
       "errors": 0,
       "suiteAllowsReasonedUnavailable": true
     }
-  ]
+  ],
+  "integratedProductBranchHeads": [
+    "deb9cdbdb5cc7d75a374bac928a8f410fc5d44d4",
+    "33e7156bf6dd7c0971b4b18e16363e3e7ef88188"
+  ],
+  "integrationBaseCommit": "cf88864e08cc4b7cdc7a4e293bb820825a22faca",
+  "stage1Commit": "5be4c5c37a58234c55a2842051994e7a83ce9c55",
+  "specificationVersion": "SPEC-20261110-01"
 }

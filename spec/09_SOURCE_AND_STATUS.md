@@ -1,3 +1,13 @@
+# 現行参照: 出典・適用範囲・確認状態
+
+更新: 2026-11-10 / SPEC-20261110-01
+
+現行契約と確認対象SHA・製品hashは [CURRENT_CONTRACTS.md](CURRENT_CONTRACTS.md)。統合・検証状態は [INTEGRATION.md](../INTEGRATION.md)、履歴対応は [INTEGRATION_LINEAGE.md](../INTEGRATION_LINEAGE.md) を参照する。以下のr139・ゲーム版1.042.00.02は旧資料の対象版であり、現在の全DB・全採用係数の対象版を証明しない。
+
+出典の版、採用範囲、source_confirmedと実機verifiedを区別し、未確認を現在版で検証済みへ昇格しない。
+
+## 履歴: r139本文（原文保持）
+
 # 出典・適用範囲・不足情報
 現行コード基準: r139（index.html、evidence-review.js、各reference.js、tests/）。ゲーム版: 1.042.00.02。
 公式: MHDB（装備・武器・スキルデータの優先参照元）。
