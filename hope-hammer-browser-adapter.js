@@ -399,11 +399,13 @@
    if(rapidEntries.length>1||rapidEntries.some(x=>Number(x.skillId)!==rapidShotRule.skillId||x.name!==rapidShotRule.skillName||x.level!==rapidShotRule.skillLevel))return fail('LBG_RAPID:SKILL_CONTRACT_INVALID');
    const coexisting=[{id:6,name:'通常弾・通常矢強化',max:1},{id:53,name:'弾導強化',max:3}];
    for(const r of coexisting){const entries=allSkills.filter(x=>Number(x.skillId)===r.id||x.name===r.name);if(entries.length>1||entries.some(x=>Number(x.skillId)!==r.id||x.name!==r.name||!Number.isInteger(x.level)||x.level<1||x.level>r.max))return fail('LBG_RAPID:COEXISTING_SKILL_CONTRACT_INVALID');}
-   const rapidCommonRules=[{id:57,name:'弱点特効',max:5},{id:99,name:'渾身',max:3},{id:120,name:'巧撃',max:5},{id:95,name:'連撃',max:5}];
+   // Standard five-round scope only: reuse resolved channel affinity/attack producers.
+   // Explicit single-trigger routes retain their prior adopted skill scope.
+   const rapidCommonRules=[{id:57,name:'弱点特効',max:5},{id:99,name:'渾身',max:3},{id:120,name:'巧撃',max:5},{id:95,name:'連撃',max:5},...(rapidAmmoSequence?[{id:142,name:'力の解放',max:5},{id:154,name:'フルチャージ',max:5}]:[])];
    const rapidPlan=stats.conditionalConditionPlan;
    const rapidPlanReady=rapidPlan&&Array.isArray(rapidPlan.pending)&&rapidPlan.pending.length===0&&Array.isArray(entryGroupPlan?.unresolvedEffects)&&entryGroupPlan.unresolvedEffects.length===0;
    for(const r of rapidCommonRules){const es=allSkills.filter(x=>Number(x.skillId)===r.id||x.name===r.name);if(es.length>1||es.some(x=>Number(x.skillId)!==r.id||x.name!==r.name||!Number.isInteger(x.level)||x.level<1||x.level>r.max))return fail('LBG_RAPID:COMMON_SKILL_CONTRACT_INVALID');}
-   const rapidCommonSkill=x=>rapidPlanReady&&rapidCommonRules.some(r=>Number(x.skillId)===r.id&&x.name===r.name&&([57,99].includes(r.id)||(rapidPlan.applied||[]).filter(a=>a.skill===r.name&&a.level===x.level).length===1));
+   const rapidCommonSkill=x=>rapidPlanReady&&rapidCommonRules.some(r=>Number(x.skillId)===r.id&&x.name===r.name&&([57,99,142].includes(r.id)||(rapidPlan.applied||[]).filter(a=>a.skill===r.name&&a.level===x.level).length===1));
    const rapidGutsBonus=e=>{
     if(!rapidPlanReady||Number(e.bonusSkillId)!==131||e.name!=='根性【果敢】'||e.bonusName!=='ヌシの魂'||e.source!=='group'||e.rankLevel!==1||e.level!==1||e.required!==3||!Number.isInteger(e.count)||e.count<3||activeBonusEffects.filter(a=>a.bonusSkillId===e.bonusSkillId).length!==1)return false;
     const ap=(entryGroupPlan.applied||[]).filter(a=>a.skillId===131);

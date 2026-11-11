@@ -180,3 +180,6 @@ C03 nonrapid follow-up: the owner explicitly selected five NORMAL discharges for
 C04のID163標準比較限定除外は直接承認を照合済み。2026-11-05 08:31:49 UTCの標準比較で刃鱗研装を除外する質問（Sentinel_20af643222108191b47e9e88b6bb639f）に対し、08:39:39のユーザー回答（Sentinel_bd2fdf91f08c81918498c18deb7d917b）は「除外してOKです」。午後の刃鱗増装160の指示とは別件。既存採否は変更しない。ID172の後続直接決定は未確認のまま。
 
 表示修正候補は、実モンスター部位の元キー・ID保持による識別、既存非表示の技／テンプレ／指定コンボDOM経路の通常最大別未反映表示、保存比較の対象外・別注釈表示。係数・肉質値・保存ID・スキル採否を変更しない。[根拠と限界](../docs/reports/shared-ui-disclosure-20261111/README.md)。
+
+### Standard LBG rapid142/154 follow-up (86b653f baseline)
+The five-consumed-round/25-contact standard route now accepts source-valid Latent Power142 and Peak Performance154 only when the existing condition plan is resolved. Normal retains the existing inactive premise; maximum consumes the existing affinity/attack-flat producers. No coefficient change or explicit single-trigger scope expansion. Full-health conflicts, other skill gates and rapid First/Force omissions remain. The previous full skill matrix is historical at86b653f; a20-case142/154 delta and109-check proof cover this narrow change. See [scope and verification](../docs/reports/lbg-rapid-common-skills-20261111/README.md).
