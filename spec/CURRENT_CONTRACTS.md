@@ -1,3 +1,5 @@
+最新の公開参照基準は21d428aです。現在のボウガン標準とID163の直接承認照合は、末尾「後続の照合・表示修正」を参照してください。以下の過去チェックポイントは当時の記録として保持しています。
+
 # C06 再読込・保存入力の実装追補（基準6df2116a）
 
 既に採用されていた編集・比較入力の再読込復元を現行APIへ復旧しました。通常/最大を再計算し、保存した計算値やDPSを復活させません。旧形式の原記録・名前付き保存を保持し、破損・未知版・欠落IDは明示、部分適用を巻き戻します。欠落装飾品を空欄扱いにして数値を変えません。
@@ -170,3 +172,11 @@ Implementation stage: dedicated selectStandardAmmo / evaluateRapidFiveShot are a
 C03 standard-UI follow-up: the current candidate now selects weapon-supported normal ammo in the standard path, HBG10/30 and LBG5/25. Native LBG Lv2/Lv3 are added from directly listed source values, with nativeLv3 distinct from powder-upgradedLv3. Earlier dedicated-only statements describe the prior stage. Partial-effect warnings remain visible, unsupported rapid weapons are not substituted, and explicit saved combos are preserved.
 
 C03 nonrapid follow-up: the owner explicitly selected five NORMAL discharges for LBG weapons without normal-ammo rapid capability. This yields15 contacts using the existing nonrapid formula and adopted per-discharge First/Force rules, ignoring magazine count/reload. Rapid LBG remains five consumed rounds /25 hits with unverified First/Force effects omitted and disclosed; HBG remains ten/30. Same-kind owner-standard comparison may include both modes, with the mode and shot/hit count identified per row. Exact weapon variant normal-ammo capability must be retained; missing source data is not replaced with a representative variant's capability. Earlier no-substitution decisions describe the stage before this explicit approval.
+
+## 後続の照合・表示修正（21d428a基準）
+
+公開参照基準は21d428a4658e74f2f07f260c43f1b3393e5b27f2。C03は対応Lvの通常弾を選び、ライト速射5発25命中／非速射5発15命中、ヘビィ10射30接触を標準画面へ接続済み。速射First／Forceは未反映と明示し、実ゲーム精度は未確認。冒頭の6df2116a等は各時点の履歴であり現在の未実装一覧ではない。
+
+C04のID163標準比較限定除外は直接承認を照合済み。2026-11-05 08:31:49 UTCの標準比較で刃鱗研装を除外する質問（Sentinel_20af643222108191b47e9e88b6bb639f）に対し、08:39:39のユーザー回答（Sentinel_bd2fdf91f08c81918498c18deb7d917b）は「除外してOKです」。午後の刃鱗増装160の指示とは別件。既存採否は変更しない。ID172の後続直接決定は未確認のまま。
+
+表示修正候補は、実モンスター部位の元キー・ID保持による識別、既存非表示の技／テンプレ／指定コンボDOM経路の通常最大別未反映表示、保存比較の対象外・別注釈表示。係数・肉質値・保存ID・スキル採否を変更しない。[根拠と限界](../docs/reports/shared-ui-disclosure-20261111/README.md)。

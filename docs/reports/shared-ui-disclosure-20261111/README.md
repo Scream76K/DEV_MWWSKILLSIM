@@ -1,0 +1,24 @@
+# Shared target identity and skill disclosure repairs
+
+Base: published21d428a4658e74f2f07f260c43f1b3393e5b27f2. Changes are presentation and evidence reconciliation only; no damage coefficients, target multipliers, skill adoption, source validity or saved identifiers are changed.
+
+## Distinguishable monster parts
+The former partNameJP fallback collapsed different source parts into the same displayed name. Examples: Jin Dahaad26 parts2849/2854/2855 all appeared as the same generic part despite source slash0.75/0.75/0.01. Zoh Shia1 parts2559/2562/2566 all appeared as head despite source slash0.60/0.40/0.65. These are stored source values, not current-game verification.
+
+The selector and selected-target summary now retain the original part key and ID whenever the translated name is ambiguous or the source key has no exact translation. Known front-leg/hind-leg spellings have explicit aliases. Unknown state names are not guessed or translated into adopted game mechanics. Japanese training names stay unchanged. Option identifiers, hitzone lookup and saved targets remain unchanged. All34 monsters/340 source parts have distinguishable labels in the committed fixture.
+
+## Skill-effect disclosure
+The single-technique/template/user-combo consumers already continued calculations after excluding unimplemented effects. Their renderer omitted ignoredSkillEffects/unappliedEffects. Real source fixture: lance701 with decoration14 has Charge Master1; all three routes return maximum-channel ignored effect24 with CONDITIONAL_DAMAGE_FORMULA_PENDING, but the old output only said provisional/reference. The renderers now disclose each channel's name, level and reason through the existing skill formatter. The normal primary value is marked partial when that normal channel omits effects. This legacy combo card is deliberately hidden by existing product CSS. These three repairs apply to its DOM calculation paths and do not reopen the legacy UI. Staged screenshots of that hidden card are not evidence of public visibility.
+
+Current saved comparison readiness returned early and omitted owner exclusions and separate additional-damage annotations. Because readiness is deliberately hidden by existing CSS, those annotations now appear in the visible comparison results per saved build and channel, retaining the existing explicit statement that annotated additional damage is not part of either total. Nothing is added into damage and no incomplete result is promoted.
+
+## Direct decision reconciliation
+The user directly approved excluding Bladescale Honing163 from standard comparison on2026-11-05 at08:39:39 UTC: “除外してOKです”, answering the08:31:49 question specifically about standard comparison. Source message IDs Sentinel_20af643222108191b47e9e88b6bb639f (question), Sentinel_bd2fdf91f08c81918498c18deb7d917b (answer). This is distinct from the15:47:54 instruction about Bladescale Loading160, Sentinel_51df24b45f488191baa3fd444371a403. The163 policy is unchanged; its previously unresolved direct provenance is reconciled. No later direct decision for172 was found; no172 adoption changes follow from that absence.
+
+## Verification limits
+Nine new bounded tests first failed at the relevant old rendering behavior, then passed. Renderer-only synthetic values verify disclosure/escaping, not game arithmetic. Public-source and browser evidence are stored with final runtime hashes. Full repository/integration suites, Safari/iOS, all skill combinations and live-game accuracy are not certified. Existing unrelated LBG legacy DOM failures remain outside this change. New branch and publication are prohibited until separately authorized.
+
+## Bounded regression evidence
+The focused selection passed 295 tests. Independent current-data-integrity checks passed 55 tests, and the existing Chromium reload suite passed 15. The 14-weapon public calculation proof retained exactly the published baseline values across 56 cases and 112 channel outputs (104 available values and eight unchanged explicit LBG reference-path refusals); the bowgun public proof passed all nine cases. Explicit comparison updates its session metadata normally; saved builds, equipment, conditions and targets are checked separately rather than claiming all localStorage bytes remain unchanged.
+
+Final disposable Chromium proof: four cases passed with no page errors and unchanged runtime hashes. The two saved builds each show normal/maximum owner-exclusion notes in naturally visible comparison results (four notes, no hidden ancestor). Six selected monster-part IDs and source target evidence survive save/load. The three legacy combo calculations retain 48.6999 / 333.551475 / 333.551475 and expose maximum Charge Master1 omissions in their hidden DOM paths; screenshots exposing those paths are explicitly staged. The integration contract retains all previous tests and adds nine (expected1539,121 hashed inputs); the full suite was not run locally.

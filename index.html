@@ -1867,7 +1867,7 @@ function calcSetSkills(total){
 
   return total;
 }
-const PART_JP={'head':'頭','head-neck':'頭/首','body':'胴','torso':'胴','chest':'胸','abdomen':'腹','stomach':'腹','back':'背中','left-wing':'左翼','right-wing':'右翼','wing':'翼','left-foreleg':'左前脚','right-foreleg':'右前脚','foreleg':'前脚','left-hindleg':'左後脚','right-hindleg':'右後脚','hindleg':'後脚','leg':'脚','legs':'脚','tail':'尻尾','tail-tip':'尻尾先端','neck':'首','horn':'角','horns':'角','beak':'嘴','snout':'鼻先','face':'顔','eye':'目','mouth':'口','throat':'喉','shoulder':'肩','arm':'腕','claw':'爪','carapace':'甲羅','shell':'甲殻','tentacle':'触手','tentacles':'触手','fin':'ヒレ','left-fin':'左ヒレ','right-fin':'右ヒレ','wing-arm':'翼腕','core':'核','body-core':'胴体・核','left-leg':'左脚','right-leg':'右脚','left-arm':'左腕','right-arm':'右腕','left-chain-blade-wing':'左鎖翼刃','right-chain-blade-wing':'右鎖翼刃','chain-blade-wing':'鎖翼刃','left-chain-wing':'左鎖翼','right-chain-wing':'右鎖翼','chain-wing':'鎖翼','left-chain':'左鎖','right-chain':'右鎖','chain':'鎖'};
+const PART_JP={'head':'頭','head-neck':'頭/首','body':'胴','torso':'胴','chest':'胸','abdomen':'腹','stomach':'腹','back':'背中','left-wing':'左翼','right-wing':'右翼','wing':'翼','front-leg':'前脚','left-front-leg':'左前脚','right-front-leg':'右前脚','hind-leg':'後脚','left-hind-leg':'左後脚','right-hind-leg':'右後脚','left-foreleg':'左前脚','right-foreleg':'右前脚','foreleg':'前脚','left-hindleg':'左後脚','right-hindleg':'右後脚','hindleg':'後脚','leg':'脚','legs':'脚','tail':'尻尾','tail-tip':'尻尾先端','neck':'首','horn':'角','horns':'角','beak':'嘴','snout':'鼻先','face':'顔','eye':'目','mouth':'口','throat':'喉','shoulder':'肩','arm':'腕','claw':'爪','carapace':'甲羅','shell':'甲殻','tentacle':'触手','tentacles':'触手','fin':'ヒレ','left-fin':'左ヒレ','right-fin':'右ヒレ','wing-arm':'翼腕','core':'核','body-core':'胴体・核','left-leg':'左脚','right-leg':'右脚','left-arm':'左腕','right-arm':'右腕','left-chain-blade-wing':'左鎖翼刃','right-chain-blade-wing':'右鎖翼刃','chain-blade-wing':'鎖翼刃','left-chain-wing':'左鎖翼','right-chain-wing':'右鎖翼','chain-wing':'鎖翼','left-chain':'左鎖','right-chain':'右鎖','chain':'鎖'};
 function partNameJP(p){
   const raw=String(p?.name??p?.part??p?.kind??'').trim();
   if(!raw)return 'その他部位';
@@ -1886,6 +1886,14 @@ function partNameJP(p){
   if(x.includes('horn'))return '角'; if(x.includes('claw'))return '爪';
   if(x.includes('fin'))return x.includes('left')?'左ヒレ':x.includes('right')?'右ヒレ':'ヒレ';
   return 'その他部位';
+}
+function monsterPartDisplayName(p,parts=[]){
+  const label=partNameJP(p),raw=String(p?.name??p?.part??p?.kind??'').trim();
+  const ambiguous=parts.filter(q=>partNameJP(q)===label).length>1;
+  const exact=raw&&(/[\u3040-\u30ff\u3400-\u9fff]/.test(raw)||Object.hasOwn(PART_JP,raw));
+  if(exact&&!ambiguous)return label;
+  const identity=[raw,p?.id!=null?'ID '+String(p.id):null].filter(Boolean).join(' / ');
+  return identity?label+'（'+identity+'）':label;
 }
 function expandMonsterVariants(){
   const out=[];
@@ -2091,11 +2099,11 @@ function renderCharmEditor(){
   preset.onchange=()=>{if(!preset.value)return;const [cid,rid]=preset.value.split('|'),c=charms.find(x=>String(x.id)===cid),r=c?.ranks?.find(x=>String(x.id)===rid);if(r?.skills){build.charmCustom.skills=[...r.skills].slice(0,3).map(x=>({name:x.skill?.name||x.name||'',level:x.level||1,type:x.skill?.kind==='weapon'?'weapon':'armor'}));while(build.charmCustom.skills.length<3)build.charmCustom.skills.push({name:'',level:1,type:'armor'});normalizeCharm();renderCharmEditor();calcBuild()}};renderCharmDecos();renderCharmLegality();
 }
 function renderMonsters(){let s=$('monster');if(!s)return;let old=s.value;let arr=selectableMonsters();const training=arr.find(m=>m.id==='training-room');arr=arr.filter(m=>m.id!=='training-room').sort((a,b)=>jpSort(a.name,b.name));if(training)arr.unshift(training);s.innerHTML='<option value="">モンスターを選択</option>'+arr.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join('');if(old&&arr.some(m=>String(m.id)===old))s.value=old;else if(!old&&training)s.value='training-room';renderMonsterParts()}
-function renderMonsterParts(){let m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value),s=$('monsterPart');if(!s)return;let old=s.value;let parts=(m?.parts||[]).slice().sort((a,b)=>jpSort(partNameJP(a),partNameJP(b)));s.innerHTML='<option value="">部位を選択</option>'+parts.map(p=>`<option value="${p.id}">${esc(partNameJP(p))}</option>`).join('');if(old&&parts.some(p=>String(p.id)===old))s.value=old;else if(m?.id==='training-room')s.value='training-front';
+function renderMonsterParts(){let m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value),s=$('monsterPart');if(!s)return;let old=s.value;let parts=(m?.parts||[]).slice().sort((a,b)=>jpSort(partNameJP(a),partNameJP(b)));s.innerHTML='<option value="">部位を選択</option>'+parts.map(p=>`<option value="${p.id}">${esc(monsterPartDisplayName(p,parts))}</option>`).join('');if(old&&parts.some(p=>String(p.id)===old))s.value=old;else if(m?.id==='training-room')s.value='training-front';
   let box=document.getElementById('monsterStateBox');if(box)box.remove();
   if(String(m?.id??'').endsWith(':king')){const host=s.parentElement;const div=document.createElement('div');div.id='monsterStateBox';div.innerHTML='<label>鎖刃状態</label><select id="monsterState"><option value="released">鎖刃解放状態</option><option value="releasedOff">鎖刃解除状態</option></select><div class="muted small">★10歴戦王アルシュベルド：鎖翼刃の属性肉質を状態に応じて変更します。</div>';host.insertBefore(div,s);document.getElementById('monsterState').onchange=()=>{renderMonsterInfo();syncDamage();calcBuild()};}
   renderMonsterInfo()}
-function renderMonsterInfo(){const m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value)||null,p=selectedPart();if(!m||!p){$('monsterInfo').textContent='未選択';return}let w=selectedWeapon();let hz=partPhysHz(p,w);let ehz=w&&weaponElementInfo(w).type?partElemHz(p,weaponElementInfo(w).type):0;const state=String(m.id).endsWith(':king')?` / ${$('monsterState')?.selectedOptions?.[0]?.textContent||'鎖刃解放状態'}`:'';$('monsterInfo').innerHTML=`<b>${esc(m.name)} / ${esc(partNameJP(p))}${esc(state)}</b><br>物理肉質 ${hz}% / 属性肉質 ${ehz}%`}
+function renderMonsterInfo(){const m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value)||null,p=selectedPart();if(!m||!p){$('monsterInfo').textContent='未選択';return}let w=selectedWeapon();let hz=partPhysHz(p,w);let ehz=w&&weaponElementInfo(w).type?partElemHz(p,weaponElementInfo(w).type):0;const state=String(m.id).endsWith(':king')?` / ${$('monsterState')?.selectedOptions?.[0]?.textContent||'鎖刃解放状態'}`:'';$('monsterInfo').innerHTML=`<b>${esc(m.name)} / ${esc(monsterPartDisplayName(p,m.parts||[]))}${esc(state)}</b><br>物理肉質 ${hz}% / 属性肉質 ${ehz}%`}
 function normalizeWeaponKindValue(v){
   // UI -> official MHDB WeaponKind only. No heuristic inference.
   const raw=String(v==null?'':v).trim().toLowerCase();
@@ -5344,9 +5352,15 @@ function calcP0Damage(mode,{remember=true}={}){
     result=evaluateP0DamageRoute(rows);context=result.context;
   }catch(e){result={status:'BLOCKED',damage:null,stages:[],blocked:[{reason:String(e.message||e)}],context};}
   const label=mode==='single'?'選択技':mode==='template'?'テンプレコンボ':'指定コンボ';
+  const normalPartial=result.pipeline?.channels?.normal?.diagnostics;
+  const partialLabel=normalPartial?.ignoredSkillEffects?.length||normalPartial?.unappliedEffects?.length?'（一部スキル未反映）':'';
   if(result.damage==null||!Number.isFinite(result.damage))out.innerHTML='<b>'+label+'：未算出</b><div class="small">'+(result.blocked||[]).map(x=>esc((x.name?x.name+'：':'')+comboBlockedMessage(x.reason))).join('<br>')+'</div>';
-  else out.innerHTML='<b>'+label+' 合計ダメージ：'+damageDisplayNumber(result.damage)+'</b> <span class="small">暫定・参考</span><div class="small">'+result.stages.map(x=>esc(x.index+'. '+x.name)+'：'+(Number.isFinite(x.result.total)?damageDisplayNumber(x.result.total):'内訳未算出')).join('<br>')+'</div>';
+  else out.innerHTML='<b>'+label+' 合計ダメージ：'+damageDisplayNumber(result.damage)+partialLabel+'</b> <span class="small">暫定・参考</span><div class="small">'+result.stages.map(x=>esc(x.index+'. '+x.name)+'：'+(Number.isFinite(x.result.total)?damageDisplayNumber(x.result.total):'内訳未算出')).join('<br>')+'</div>';
   if(result.pipeline)out.innerHTML+='<div class="small">通常：'+(Number.isFinite(result.damage)?damageDisplayNumber(result.damage):'未算出')+' ／ 最大：'+(Number.isFinite(result.maximumDamage)?damageDisplayNumber(result.maximumDamage):'未算出（'+esc(result.maximumReason||'条件未確認')+'）')+'</div>';
+  if(result.pipeline)for(const ch of ['normal','maximum']){
+    const d=result.pipeline.channels?.[ch]?.diagnostics,notes=ignoredSkillEffectsDisplay(d)+excludedSkillDamageDisplay(d);
+    if(notes)out.innerHTML+='<div class="small" data-combo-skill-channel="'+ch+'">'+(ch==='normal'?'通常':'最大')+notes+'</div>';
+  }
   if(!result.pipeline&&comboKind()==='light-bowgun'){out.innerHTML+='<div class="small">共通参考条件・武器適用未検証（装填可否未確認）。適正距離・非速射・全3Hit命中。</div>';return {...result,scope:'DAMAGE_ONLY_PROVISIONAL_REFERENCE',weaponApplicability:'UNVERIFIED',equipmentSupportVerified:false};}
   if(!result.pipeline&&comboKind()==='gunlance'&&rows.some(r=>comboMove(r.techniqueId)?.handler==='GunlanceShellReferenceHandler'))out.innerHTML+='<div class="small">共通参考条件・武器適用未検証。砲撃の物理は武器本来の攻撃力を参照し、火属性は別肉質で計算。</div>';
   if(comboKind()==='heavy-bowgun'&&rows.some(r=>comboMove(r.techniqueId)?.handler==='HBGWyvernHandler'))out.innerHTML+='<div class="small">竜撃弾2Hitの暫定・参考値。ゲーム版番号未確定。会心・斬れ味・物理肉質補正は対象外。対応弾情報がない武器は装填可否未検証の共通参考条件。</div>';
@@ -9378,8 +9392,17 @@ function cbIndependentMixDisplay(pipeline){
  const val=(ch,r)=>{const c=pipeline.routes?.[r]?.channels?.[ch],m=c?.metrics?.comboTotalDamage;return c?.execution?.status==='complete'&&m?.status==='available'?damageDisplayNumber(m.value):'未算出：'+(c?.execution?.reason||m?.reason||pipeline.routes?.[r]?.reason||'ROUTE_UNAVAILABLE');};
  return 'R/H各1回の合計実ダメージ（独立開始・時間補正なし）／通常内訳 R '+val('normal','R')+' + H '+val('normal','H')+'／最大内訳 R '+val('maximum','R')+' + H '+val('maximum','H')+'。連続実行・DPSではありません。';
 }
+function comparisonExcludedNotesHtml(rows){
+  return rows.map(row=>['normal','maximum'].map(ch=>{
+      const note=excludedSkillDamageDisplay(row.oneHitPipeline?.channels?.[ch]?.diagnostics);
+      return note?'<div class="small" data-comparison-excluded-channel="'+ch+'">'+esc(row.name)+'／'+(ch==='normal'?'通常':'最大')+note+'</div>':'';
+  }).join('')).join('');
+}
 function comparisonReadinessHtml(rows,baseline){
-  if(rows.some(r=>r.oneHitPipeline)){const c=consumerCoverageSummary(rows);return '<div id="comparisonReadiness" class="compare-note" role="status">計算可能：通常 '+c.normal+'/'+c.total+'、最大 '+c.maximum+'/'+c.total+'。各ビルドの実ダメージを独立して計算します。</div>';}
+  if(rows.some(r=>r.oneHitPipeline)){
+    const c=consumerCoverageSummary(rows);
+    return '<div id="comparisonReadiness" class="compare-note" role="status">計算可能：通常 '+c.normal+'/'+c.total+'、最大 '+c.maximum+'/'+c.total+'。各ビルドの実ダメージを独立して計算します。</div>';
+  }
 
   const darkArtsNote=rows.some(r=>r.power?.healthBranchComparison||r.power?.conditionPlan?.applied?.some(x=>x.skill==='ダークアーツ'))?'<p class="small">ダークアーツは通常側を未発動として扱い、本体の属性倍率は赤ゲージ状態だけに適用します。フルチャージ併用時は満タン状態と赤ゲージ状態を別々に比較します。大剣の衝撃波は条件が揃った通常側のみ対応し、最大側は保留です。複数属性倍率・連撃等との併用が未確定の場合は最大側を保留します。実機照合済みではありません。</p>':'';
   let h='<div id="comparisonReadiness" class="compare-note" role="status"><b>比較の計算状況</b><br>火力指数は固定STANDARDで計算します。ヘビィで通常弾を選択した場合は、選択条件の3連射を追加参考計算します。DPSには⑦ コンボ火力のコンボ登録と所要時間が必要です。<br><strong>計算値について：</strong>装備・スキル構成の相対的な火力比較を目的とした参考値です。一部の技・補正には実測資料などから暫定採用したデータを使用しています。ゲーム内の実ダメージと一致しない場合があります。資料の確度が上がり次第、計算データを更新します。';
@@ -9598,6 +9621,7 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   let h='<div class="compare-note"><b>基準ダメージ：'+(Number.isFinite(baseDamage)&&baseDamage>0?comparisonDisplayNumber(baseDamage):'—')+'</b>（'+esc(baseline.name)+'・選択した通常側の比較条件、ゲーム表示の丸め前）</div><label for="comparisonBaseline">比較の基準ビルド（通常側の期待ダメージ）</label><select id="comparisonBaseline">'+rows.map((r,i)=>'<option value="'+i+'"'+(i===selectedIndex?' selected':'')+'>'+esc(r.name)+'</option>').join('')+'</select><div class="two" style="margin-top:8px"><button type="button" id="comparisonReportDownload">比較結果をJSON保存</button><button type="button" id="comparisonReportCopy">比較結果をコピー</button></div><button type="button" id="comparisonComboEvidence">コンボの技別・未検証項目を表示</button><button type="button" id="comparisonEvidenceChecklist">検証作業リストを表示</button><details><summary>実機検証の証拠参照を照合（JSON）</summary><textarea id="comparisonEvidenceInput" rows="4" style="width:100%" placeholder="JSON形式の証拠参照を入力"></textarea><button type="button" id="comparisonEvidenceIntake">証拠参照を照合</button></details><details><summary>実機ダメージ・Hit数・時間の記録を照合（JSON）</summary><textarea id="comparisonMeasurementInput" rows="4" style="width:100%" placeholder="[{&quot;stage&quot;:1,&quot;techniqueId&quot;:&quot;...&quot;,&quot;evidenceRef&quot;:&quot;video-1&quot;,&quot;gameVersion&quot;:&quot;1.042.00.02&quot;,&quot;hitCount&quot;:1,&quot;durationSeconds&quot;:1.2,&quot;damage&quot;:{&quot;physicalBody&quot;:100}}]"></textarea><button type="button" id="comparisonMeasurementReview">実機計測記録を照合</button><button type="button" id="comparisonTechniqueReconcile">Technique DBと計測値を照合（診断）</button><textarea id="comparisonDamageContextInput" rows="4" style="width:100%" placeholder="計算条件JSON：[{stage, techniqueId, evidenceRef, context:{weaponId, weaponAttack, weaponElement, sharpness, affinity, criticalBoostLevel, activeSkills, monsterId, hitZonePhysical, hitZoneElement, targetState, attackConditions, gameVersion}}]"></textarea><button type="button" id="comparisonDamageContextAudit">ダメージ計算条件を監査</button><textarea id="comparisonDamagePredictionInput" rows="4" style="width:100%" placeholder="予測値JSON：[{stage, techniqueId, evidenceRef, contextFingerprint, damage:{physicalBody:100}}]（監査結果のcontextFingerprintを使用）"></textarea><button type="button" id="comparisonDamageDifference">実測と計算値の成分別差異を診断</button><button type="button" id="comparisonTechniqueEngineBridge">Technique DBと計算エンジンの接続状況</button><button type="button" id="comparisonEngineContextHandoff">Technique DBと実機条件の受渡し診断</button><p class="small">斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。</p><button type="button" id="comparisonSharpnessSourceAudit">MHDB斬れ味データ構造を調査</button><button type="button" id="comparisonLiveContextAudit">選択装備と計算条件を照合</button><button type="button" id="comparisonAttackSkillAudit" type="button">攻撃スキル照合</button><button id="comparisonCriticalSkillAudit">会心・超会心・スキル条件を照合</button><button type="button" id="comparisonAttackTargetAudit">攻撃補正・モンスター肉質を照合</button><button type="button" id="comparisonPhysicalFormulaBridge">物理ダメージ参考計算（安全条件のみ）</button></details><button type="button" id="comparisonCaptureAudit">ガンランス自動連携の検証状況</button><button type="button" id="comparisonVerifiedTransfer">検証済みA/Bを自動登録</button><pre id="comparisonCaptureAuditOut" class="small" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre><pre id="comparisonReportOut" class="small" style="max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere"></pre><div class="compare-results">';
   const coverage=consumerCoverageSummary(rows);
   for(const row of rows)for(const ch of ['normal','maximum'])if(row.oneHitPipeline?.channels?.[ch]?.diagnostics?.ignoredSkillEffects?.length||row.oneHitPipeline?.channels?.[ch]?.diagnostics?.unappliedEffects?.length)h+='<div class="compare-note small" data-ignored-skill-channel="'+ch+'">'+esc(row.name)+'／'+(ch==='normal'?'通常':'最大')+ignoredSkillEffectsDisplay(row.oneHitPipeline.channels[ch].diagnostics)+'</div>';
+  h+=comparisonExcludedNotesHtml(rows);
   h+='<div class="compare-note small" data-comparison-coverage="r248">比較可能：通常 '+coverage.normal+'/'+coverage.total+'件 ／ 最大 '+coverage.maximum+'/'+coverage.total+'件。未算出の結果は推測で補完しません。</div>';
   if(coverage.pending.length){
     h+='<details class="compare-note" data-comparison-pending="r248"><summary>比較保留の原因を確認（'+coverage.pending.length+'項目）</summary><p class="small">通常・最大それぞれの実ダメージを独立して確認します。</p><strong>原因別集計</strong>'+coverage.causes.map(x=>'<p class="small">'+esc(comparisonReasonText(x.reason))+'：'+x.buildCount+'ビルド／'+x.metricCount+'項目（通常'+x.metrics.normal+'・最大'+x.metrics.maximum+'）</p>').join('')+'<strong>個別の保留内容</strong>'+coverage.pending.map(x=>'<p class="small">'+esc(x.name)+' ／ '+({normal:'通常',maximum:'最大',dps:'DPS'}[x.metric])+'：'+esc(comparisonReasonText(x.reason))+' <code>'+esc(x.reason)+'</code></p>').join('')+'</details>';

@@ -126,7 +126,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "a9e1a580066469a9300cc462007b71019e285022b7b6b10b2d0c8377df31d146"
+      "sha256": "e2610304dc734a7f307e1fd3a7af9e405edf198b6adb14844307ff5a12d917c5"
     },
     {
       "path": "observed-shelling.js",
@@ -479,6 +479,18 @@
     {
       "path": "tests/lbg-normal-five-shot.test.cjs",
       "sha256": "c3f589ca43ca5effe3d420a7619d12ebd9b3fe59bd9dd17f2806fa16f3642ac1"
+    },
+    {
+      "path": "tests/monster-part-labels.test.cjs",
+      "sha256": "0cbb2eb2dd2ed11631081cf1519f58a5a6273ffa0f5bd8debe612440f5fccb0c"
+    },
+    {
+      "path": "tests/combo-skill-disclosure.test.cjs",
+      "sha256": "6551dbb8427cf34fa37cd695b6fad041e1b3f8238effd5f00ea044b44da92632"
+    },
+    {
+      "path": "tools/shared-ui-disclosure-browser-proof.cjs",
+      "sha256": "0c399167f8c531bc14b58f099f0a91bb49ece96546aa603792ed8c94a9031bd2"
     }
   ],
   "tests": [
@@ -496,9 +508,11 @@
     "tests/monster-target-resolution.test.cjs",
     "tools/integration-regression/target-ingress.test.cjs",
     "tests/lbg-rapid-five-shot.test.cjs",
-    "tests/lbg-normal-five-shot.test.cjs"
+    "tests/lbg-normal-five-shot.test.cjs",
+    "tests/monster-part-labels.test.cjs",
+    "tests/combo-skill-disclosure.test.cjs"
   ],
-  "expectedTests": 1530,
+  "expectedTests": 1539,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
