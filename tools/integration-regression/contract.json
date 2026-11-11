@@ -10,7 +10,7 @@
   "files": [
     {
       "path": ".github/workflows/cb-gl-scope-regression.yml",
-      "sha256": "402c8670a1e191f71f32c0e5134bdba6637d7fdde96a0a62b7cf681951ffa49c"
+      "sha256": "429b438f204590e3aa266ae104cd7afb87d560119d283c97c4dd4285953dd8e4"
     },
     {
       "path": "bow-reference.js",
@@ -511,6 +511,10 @@
     {
       "path": "tools/lbg-rapid-common-skills-browser-proof.cjs",
       "sha256": "6a4c103a626015a1607867eecb65ab0a26dcded07aceef7309db8ec232f060a3"
+    },
+    {
+      "path": "tests/integration-ci-dependency.test.cjs",
+      "sha256": "b7e0dc02502d7ba2f212245a0db4e3f4385f8d1e2d99816a8b7b750e1aaf853f"
     }
   ],
   "tests": [
@@ -532,9 +536,10 @@
     "tests/monster-part-labels.test.cjs",
     "tests/combo-skill-disclosure.test.cjs",
     "tests/skill-audit-dispositions.test.cjs",
-    "tests/lbg-rapid-common-skills.test.cjs"
+    "tests/lbg-rapid-common-skills.test.cjs",
+    "tests/integration-ci-dependency.test.cjs"
   ],
-  "expectedTests": 1547,
+  "expectedTests": 1552,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",

@@ -51,8 +51,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Install locked test dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
       - name: Verify both branches against the integrated runtime
+        env:
+          REPORT_FILE: ${{ runner.temp }}/integrated-boundary-report/summary.json
         run: node tools/integration-regression/run.cjs
+      - name: Retain failed integrated test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integrated-boundary-failure
+          if-no-files-found: warn
+          retention-days: 7
+          path: |
+            ${{ runner.temp }}/integrated-boundary-report/summary.json
+            ${{ runner.temp }}/integrated-boundary-report/child-*.tap
+            ${{ runner.temp }}/integrated-boundary-report/child-*.stderr
       - name: Verify all historical and current runner freshness checks
         run: node --test tools/cb-gl-scope-regression/freshness.test.cjs tools/sa-hh-scope-regression/freshness.test.cjs tools/gl-hh-scope-regression/freshness.test.cjs tools/input-guard-regression/freshness.test.cjs
   current-data-integrity:
