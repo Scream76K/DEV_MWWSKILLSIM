@@ -378,7 +378,7 @@
     },
     {
       "path": "tools/skill-continuation-catalog-scan.cjs",
-      "sha256": "09403a576f2f00ca91f522eaf8c1bd635d0aff13f20d0f92e27d20b33ce2a1b4"
+      "sha256": "487082b78f311d326fc371722e04e30067bf52689d694d33f005fe4c5a21dbcd"
     },
     {
       "path": "tools/skill-continuation-equipment-smoke.cjs",
@@ -491,6 +491,14 @@
     {
       "path": "tools/shared-ui-disclosure-browser-proof.cjs",
       "sha256": "0c399167f8c531bc14b58f099f0a91bb49ece96546aa603792ed8c94a9031bd2"
+    },
+    {
+      "path": "tools/skill-audit-dispositions.cjs",
+      "sha256": "ed39269bdc79f7e92e75b89c427811838f1d59ab22948a3d28ed846b15bdf45a"
+    },
+    {
+      "path": "tests/skill-audit-dispositions.test.cjs",
+      "sha256": "84948a1d1172d1dd62b61924321e6fd146e6e84c2ebe5a5fe9b2d3b729570cb0"
     }
   ],
   "tests": [
@@ -510,9 +518,10 @@
     "tests/lbg-rapid-five-shot.test.cjs",
     "tests/lbg-normal-five-shot.test.cjs",
     "tests/monster-part-labels.test.cjs",
-    "tests/combo-skill-disclosure.test.cjs"
+    "tests/combo-skill-disclosure.test.cjs",
+    "tests/skill-audit-dispositions.test.cjs"
   ],
-  "expectedTests": 1539,
+  "expectedTests": 1546,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
