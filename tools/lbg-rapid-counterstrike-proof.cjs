@@ -38,7 +38,7 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
    assert.equal(r.channels[ch].diagnostics.rapidAmmoSequence.liveGameVerification,'PENDING');
    const d=r.channels[ch].diagnostics;for(const e of d.unappliedEffects||[])assert.equal(e.status,'NOT_APPLIED');
    assert.ok(![...(d.unappliedEffects||[]),...(d.ignoredSkillEffects||[])].some(x=>[81,137,140].includes(Number(x.skillId))));
-   if(weaponId===771)assert.ok((d.ignoredSkillEffects||[]).some(x=>Number(x.skillId)===82&&x.status==='IGNORED_UNSUPPORTED_EFFECT'&&x.liveGameVerification==='NOT_VERIFIED'));
+   if(weaponId===771)assert.ok(!(d.ignoredSkillEffects||[]).some(x=>Number(x.skillId)===82));
   }
  }
  verify(baseline,0);

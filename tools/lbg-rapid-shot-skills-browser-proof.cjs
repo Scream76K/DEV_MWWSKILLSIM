@@ -103,7 +103,7 @@ fs.mkdirSync(out, { recursive: true });
      near(result.channels[ch].metrics.comboTotalDamage.value, total, '25-Hit total');
      const d = result.channels[ch].diagnostics;
      assert.ok(![...(d.ignoredSkillEffects || []), ...(d.unappliedEffects || [])].some(x => [137, 140].includes(Number(x.skillId))), 'First/Force no longer reported unapplied in standard sequence');
-     if (weaponId === 771) assert.ok((d.ignoredSkillEffects || []).some(x => Number(x.skillId) === 82 && x.status === 'IGNORED_UNSUPPORTED_EFFECT' && x.reason === 'LBG_RAPID:SKILL_COMBINATION_NOT_ADOPTED'), 'unrelated 82 remains pending: '+JSON.stringify({ignored:d.ignoredSkillEffects,unapplied:d.unappliedEffects}));
+     if (weaponId === 771) assert.ok(!(d.ignoredSkillEffects || []).some(x => Number(x.skillId) === 82), '82 is non-applicable to physical-only standard rapid');
      assert.equal(d.rapidAmmoSequence.liveGameVerification, 'PENDING');
      result.channels[ch].independentRounds = expectedRounds;
     }
@@ -144,8 +144,7 @@ fs.mkdirSync(out, { recursive: true });
      const expected = r.name.startsWith('baseline-') ? baseline : combined; assert.equal(r.oneHitPipeline.status, 'OK'); assert.deepEqual(totals(r.oneHitPipeline), totals(expected));
      for (const ch of ['normal', 'maximum']) { const display = await run(`comparisonDisplayNumber(${totals(expected)[ch]})`); assert.ok(text.includes(display), `visible total ${display}`); }
     }
-    if (weaponId === 771) { assert.match(text, /会心撃【属性】/); assert.match(text, /未反映/); }
-    else assert.doesNotMatch(text, /一部スキル未反映/);
+    assert.doesNotMatch(text, /一部スキル未反映/);
     await page.click('#runCompare'); assert.equal(await stable(), before); assert.deepEqual((await run('lastBuildComparisonRows')).map(r => totals(r.oneHitPipeline)), comparison.map(r => totals(r.oneHitPipeline)));
     await page.locator('#compareOut').screenshot({ path: path.join(out, `weapon-${weaponId}-comparison.png`) });
     return { actualSaveLoad: true, inputPreserved: true, repeatedComparisonPreserved: true, visibleText: text, totals: comparison.map(r => ({ name: r.name, totals: totals(r.oneHitPipeline) })) };
