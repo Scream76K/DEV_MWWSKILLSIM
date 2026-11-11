@@ -58,15 +58,50 @@ for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEV
   ['pending plan',"input.stats.conditionalConditionPlan.pending.push('UNKNOWN_TEST_EFFECT')"],
   ['wrong state',"input.lightBowgunState.ammoType='FIRE'"],
   ['positive weapon element',"input.stats.element=10;input.stats.conditionalConditionPlan.normal.element=10;input.stats.conditionalConditionPlan.maximum.element=10"],
- ])check(`${skill.id} negative ${label}`,()=>{apply([[skill.name,3]]);const r=read(`(()=>{const input={...__input,weapon:structuredClone(__input.weapon),stats:structuredClone(__input.stats),skills:structuredClone(__input.skills),equipmentSkillsResolved:structuredClone(__input.equipmentSkillsResolved),lightBowgunState:structuredClone(__input.lightBowgunState)};${patch};return MHWRealOneHitBrowserAdapter.evaluateRapidFiveShot(input);})()`);assert.notEqual(r.status,'OK');return {reason:r.reason};});
+ ])check(`${skill.id} negative ${label}`,()=>{apply([[skill.name,3],...([82,133].includes(skill.id)?[['災禍転福',3]]:[])]);const r=read(`(()=>{const input={...__input,weapon:structuredClone(__input.weapon),stats:structuredClone(__input.stats),skills:structuredClone(__input.skills),equipmentSkillsResolved:structuredClone(__input.equipmentSkillsResolved),lightBowgunState:structuredClone(__input.lightBowgunState)};${patch};return MHWRealOneHitBrowserAdapter.evaluateRapidFiveShot(input);})()`);assert.notEqual(r.status,'OK');return {reason:r.reason};});
  for(const skill of rows.filter(x=>[13,133].includes(x.id)))for(const [label,patch] of [
-  ['missing applied row',`input.stats.conditionalConditionPlan.applied=input.stats.conditionalConditionPlan.applied.filter(x=>x.skill!==${JSON.stringify(skill.name)})`],
-  ['duplicate applied row',`input.stats.conditionalConditionPlan.applied.push(input.stats.conditionalConditionPlan.applied.find(x=>x.skill===${JSON.stringify(skill.name)}))`],
-  ['wrong level',`input.stats.conditionalConditionPlan.applied.find(x=>x.skill===${JSON.stringify(skill.name)}).level=1`],
-  ['wrong condition',`input.stats.conditionalConditionPlan.applied.find(x=>x.skill===${JSON.stringify(skill.name)}).condition='UNADOPTED'`],
-  ['injected physical multiplier',`input.stats.conditionalConditionPlan.applied.find(x=>x.skill===${JSON.stringify(skill.name)}).attackMultiplier=2`],
- ])check(`${skill.id} plan negative ${label}`,()=>{apply([[skill.name,3]]);const r=read(`(()=>{const input={...__input,stats:structuredClone(__input.stats)};${patch};return MHWRealOneHitBrowserAdapter.evaluateRapidFiveShot(input)})()`);assert.notEqual(r.status,'OK');return {reason:r.reason};});
- for(const skill of rows)check(`${skill.id} legacy scope stays pending`,()=>{apply([[skill.name,3]],763);const r=read("MHWRealOneHitBrowserAdapter.evaluateCurrent({...__input,lightBowgunState:{...__input.lightBowgunState,loadedRounds:1}})");assert.notEqual(r.status,'OK');});
+  ['missing applied row',`input.stats.conditionalConditionPlan.applied=input.stats.conditionalConditionPlan.applied.filter(x=>x.skill!==${JSON.stringify(skill.id===133?'災禍転福':skill.name)})`],
+  ['duplicate applied row',`input.stats.conditionalConditionPlan.applied.push(input.stats.conditionalConditionPlan.applied.find(x=>x.skill===${JSON.stringify(skill.id===133?'災禍転福':skill.name)}))`],
+  ['wrong level',`input.stats.conditionalConditionPlan.applied.find(x=>x.skill===${JSON.stringify(skill.id===133?'災禍転福':skill.name)}).level=1`],
+  ['wrong condition',`input.stats.conditionalConditionPlan.applied.find(x=>x.skill===${JSON.stringify(skill.id===133?'災禍転福':skill.name)}).condition='UNADOPTED'`],
+  ['injected physical multiplier',`input.stats.conditionalConditionPlan.applied.find(x=>x.skill===${JSON.stringify(skill.id===133?'災禍転福':skill.name)}).attackMultiplier=2`],
+ ])check(`${skill.id} plan negative ${label}`,()=>{apply([[skill.name,3],...([82,133].includes(skill.id)?[['災禍転福',3]]:[])]);const r=read(`(()=>{const input={...__input,stats:structuredClone(__input.stats)};${patch};return MHWRealOneHitBrowserAdapter.evaluateRapidFiveShot(input)})()`);assert.notEqual(r.status,'OK');return {reason:r.reason};});
+ const single=()=>read("MHWRealOneHitBrowserAdapter.evaluateCurrent({...__input,lightBowgunState:{...__input.lightBowgunState,loadedRounds:1}})");
+ for(const skill of rows.filter(x=>[13,66].includes(x.id)))check(`${skill.id} legacy scope stays pending`,()=>{apply([[skill.name,3]],763);assert.notEqual(single().status,'OK');});
+ // The paired boundary is deliberately the adopted NORMAL Lv2/763 fixture only.
+ if(weaponId===763 && level===2 && powder==='NONE')for(const id of [82,133])for(const refused of [false,true])check(`${id} paired single-trigger ${refused?'unrelated refusal':'numeric and diagnostics control'}`,()=>{
+  const skill=rows.find(x=>x.id===id),others=refused?[['災禍転福',3]]:[];
+  apply(others,763);const baseline=single();apply([...others,[skill.name,3]],763);const active=single();
+  const assertPair=(baseline,active)=>{
+  const boundary=r=>({status:r.status,reason:r.reason??null,diagnostics:r.diagnostics??null,channels:r.channels?Object.fromEntries(Object.entries(r.channels).map(([ch,v])=>[ch,{status:v.status??null,reason:v.reason??null,diagnostics:structuredClone(v.diagnostics??null)}])):null});
+  const b=boundary(baseline),a=boundary(active);
+  if(!refused)for(const ch of ['normal','maximum']){
+   assert.ok(b.channels?.[ch]?.diagnostics,`${id}/${ch}: baseline diagnostics required`);
+   assert.ok(a.channels?.[ch]?.diagnostics,`${id}/${ch}: active diagnostics required`);
+  }
+  for(const ch of ['normal','maximum'])if(a.channels?.[ch]?.diagnostics){
+   const notes=a.channels[ch].diagnostics.excludedCalculationSkills||[],original=b.channels[ch].diagnostics.excludedCalculationSkills||[];
+   const own=notes.filter(x=>x.skillId===id);assert.equal(own.length,1);assert.equal(own[0].level,3);assert.equal(own[0].status,'OWNER_EXCLUDED_CURRENT_RELEASE');
+   assert.deepEqual(notes.filter(x=>x.skillId!==id),original);
+   delete a.channels[ch].diagnostics.excludedCalculationSkills;delete b.channels[ch].diagnostics.excludedCalculationSkills;
+  }
+  assert.deepEqual(a,b);
+  if(refused){assert.equal(active.status,'UNAVAILABLE');assert.equal(active.reason,'LBG_RAPID:SKILL_COMBINATION_NOT_ADOPTED');}
+  else {assert.equal(active.status,'OK');assert.deepEqual(totals(active),totals(baseline));for(const ch of ['normal','maximum']){assert.equal(traces(active.channels[ch]).length,5);assert.deepEqual(traces(active.channels[ch]),traces(baseline.channels[ch]));}}
+  };
+  assertPair(baseline,active);
+  const assertionControls=[];
+  if(!refused)for(const ch of ['normal','maximum'])for(const defect of ['both_diagnostics_absent','baseline_diagnostics_absent','active_diagnostics_absent','active_note_absent']){
+   const b=structuredClone(baseline),a=structuredClone(active);
+   if(defect==='both_diagnostics_absent'||defect==='baseline_diagnostics_absent')delete b.channels[ch].diagnostics;
+   if(defect==='both_diagnostics_absent'||defect==='active_diagnostics_absent')delete a.channels[ch].diagnostics;
+   if(defect==='active_note_absent')delete a.channels[ch].diagnostics.excludedCalculationSkills;
+   assert.throws(()=>assertPair(b,a),undefined,`${id}/${ch}/${defect} must reject`);
+   assertionControls.push({id,channel:ch,defect,expected:'REJECT',status:'PASS',scope:'SYNTHETIC_ASSERTION_CLONE'});
+  }
+  assertPair(baseline,active); // Clone controls must not mutate the actual evaluated results.
+  return {baseline,active,assertionControls};
+ });
  check('snapshot reload keeps calculations',()=>{for(const id of ids){const s=snapshots.find(x=>x.skillId===id)?.snapshot;if(!s)continue;w.__snapshot=s;w.eval('applyBuildSnapshot(__snapshot)');click('calcBuild');prepare();const b=evaluate(),stored=read('buildSnapshot()');w.__snapshot=stored;w.eval('applyBuildSnapshot(__snapshot)');click('calcBuild');prepare();assert.deepEqual(numeric(evaluate()),numeric(b));}});
  check('no browser script errors',()=>assert.deepEqual(errors,[]));
  }catch(e){report.failures.push({weaponId,error:e.stack});}finally{w.close();}

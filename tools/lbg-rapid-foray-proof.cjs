@@ -26,7 +26,7 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
  apply();const baseline=evaluate();assert.equal(baseline.status,'OK');const base=read('__stats'),force=weaponId===783?1:0;
  function verify(r,rank,{flat=0,affinity=0,critBonus=.25,first=0}={}){
   assert.equal(r.status,'OK',r.reason);assert.equal(r.evaluationPlan.selection,'STANDARD');
-  const add=[0,6,8,10,12,15][rank]+flat,affAdd=[0,0,5,10,15,20][rank]+affinity;
+  const add=flat,affAdd=affinity; // Owner75 exclusion: retain only adopted companions.
   for(const ch of ['normal','maximum']){
    const ts=traces(r.channels[ch]),active=ch==='maximum';assert.equal(ts.length,25);let total=0;
    for(let i=0;i<25;i++){
@@ -48,8 +48,9 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
  ])check(`Foray rank ${rank} ${label}`,()=>{
   apply([['攻勢',rank],...extras]);const before=read('({input:__input,snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot()})');
   const actual=read('calcState.total');for(const [name,wanted] of [['攻勢',rank],...extras])assert.equal(Number(actual[name]),wanted,'requested rank applied: '+name);const source=pack.data.skills.find(x=>x.id===75),sourceRank=source.ranks.find(x=>x.level===rank);assert.equal(sourceRank.id,181+rank);assert.equal(sourceRank.skill.id,75);assert.match(sourceRank.description,/毒、麻痺状態の大型モンスター/);const r=evaluate();verify(r,rank,opts);assert.deepEqual(read('({input:__input,snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot()})'),before);
-  const plan=read('__stats.conditionalConditionPlan'),applied=plan.applied.filter(x=>x.skill==='攻勢'&&x.level===rank);assert.equal(applied.length,1);assert.equal(applied[0].condition,'MONSTER_POISON_OR_PARALYSIS');assert.equal(applied[0].attackAdd,[0,6,8,10,12,15][rank]);near(plan.attackComponents.conditionalFlat,[0,6,8,10,12,15][rank]+(opts.flat||0));
-  return {totals:totals(r),actualSkills:actual,foraySourceRankId:sourceRank.id,forayPlan:applied[0],conditionalFlat:plan.attackComponents.conditionalFlat,omissions:Object.fromEntries(['normal','maximum'].map(ch=>[ch,r.channels[ch].diagnostics.unappliedEffects||[]])),ignoredEffects:Object.fromEntries(['normal','maximum'].map(ch=>[ch,r.channels[ch].diagnostics.ignoredSkillEffects||[]])),maximumAttackAdd:[0,6,8,10,12,15][rank]+(opts.flat||0),maximumAffinityAdd:[0,0,5,10,15,20][rank]+(opts.affinity||0)};
+  const plan=read('__stats.conditionalConditionPlan');assert.equal(plan.applied.filter(x=>x.skill==='攻勢').length,0);near(plan.attackComponents.conditionalFlat,opts.flat||0);
+  for(const ch of ['normal','maximum']){const d=r.channels[ch].diagnostics;assert.ok(d.excludedCalculationSkills.some(x=>x.skillId===75));const n=d.excludedConditionalBuffs.find(x=>x.skillId===75);assert.equal(n.level,rank);assert.equal(n.includedInPower,false);assert.equal(n.effectDescription,sourceRank.description);assert.ok(n.condition.includes('毒・麻痺'));assert.ok(w.document.getElementById('buildSummary').textContent.includes(n.description));}
+  return {totals:totals(r),actualSkills:actual,foraySourceRankId:sourceRank.id,conditionalFlat:plan.attackComponents.conditionalFlat,maximumAttackAdd:opts.flat||0,maximumAffinityAdd:opts.affinity||0};
  });
  check('first shot 140 applies only to the first five hits with Foray',()=>{apply([['攻勢',5],['ファーストショット',3]]);verify(evaluate(),5,{first:3});});
  check('three flats save load comparison preserves inputs',()=>{
@@ -60,7 +61,8 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
   const rows=read('lastBuildComparisonRows');assert.equal(rows.length,2);assert.ok(rows.every(x=>x.oneHitPipeline.status==='OK'));
   assert.deepEqual(read('({snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot(),saved:savedBuildMap()})'),before);
  });
- apply([['攻勢',5]]);
+ // Plan negatives now mutate an adopted companion, never require an excluded75 applied row.
+ apply([['攻勢',5],['逆襲',3]]);
  for(const [label,patch] of [
   ['unfinished plan',"input.stats.conditionalConditionPlan.pending.push('PROOF_UNFINISHED')"],
   ['missing plan',"delete input.stats.conditionalConditionPlan"],
@@ -69,17 +71,17 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
   ['rank 6',"input.skills=input.skills.map(([n,l])=>[n,n==='攻勢'?6:l])"],
   ['fractional rank',"input.skills=input.skills.map(([n,l])=>[n,n==='攻勢'?1.5:l])"],
   ['duplicate skill',"input.skills.push(['攻勢',5])"],
-  ['missing applied row',"input.stats.conditionalConditionPlan.applied=input.stats.conditionalConditionPlan.applied.filter(x=>x.skill!=='攻勢')"],
-  ['duplicate applied row',"input.stats.conditionalConditionPlan.applied.push(input.stats.conditionalConditionPlan.applied.find(x=>x.skill==='攻勢'))"],
-  ['wrong applied rank',"input.stats.conditionalConditionPlan.applied.find(x=>x.skill==='攻勢').level=2"]
+  ['missing applied row',"input.stats.conditionalConditionPlan.applied=input.stats.conditionalConditionPlan.applied.filter(x=>x.skill!=='逆襲')"],
+  ['duplicate applied row',"input.stats.conditionalConditionPlan.applied.push(input.stats.conditionalConditionPlan.applied.find(x=>x.skill==='逆襲'))"],
+  ['wrong applied rank',"input.stats.conditionalConditionPlan.applied.find(x=>x.skill==='逆襲').level=2"]
  ])check('Foray negative '+label,()=>{
   const r=read(`(()=>{const input={...__input,weapon:structuredClone(__input.weapon),stats:structuredClone(__input.stats),skills:structuredClone(__input.skills)};${patch};return MHWRealOneHitBrowserAdapter.evaluateRapidFiveShot(input);})()`);
   assert.notEqual(r.status,'OK');return {reason:r.reason};
  });
- check('Foray explicit single trigger stays pending',()=>{const r=read("MHWRealOneHitBrowserAdapter.evaluateCurrent({...__input,lightBowgunState:{...__input.lightBowgunState,loadedRounds:1}})");assert.notEqual(r.status,'OK');return {reason:r.reason};});
+ check('excluded Foray retains the same explicit single-trigger boundary',()=>{apply();const baseline=read("MHWRealOneHitBrowserAdapter.evaluateCurrent({...__input,lightBowgunState:{...__input.lightBowgunState,loadedRounds:1}})");apply([['攻勢',5]]);const r=read("MHWRealOneHitBrowserAdapter.evaluateCurrent({...__input,lightBowgunState:{...__input.lightBowgunState,loadedRounds:1}})");assert.equal(r.status,baseline.status);assert.equal(r.reason,baseline.reason);if(r.status==='OK')for(const ch of ['normal','maximum']){assert.equal(traces(r.channels[ch]).length,5);near(r.channels[ch].metrics.comboTotalDamage.value,baseline.channels[ch].metrics.comboTotalDamage.value);}return {status:r.status,reason:r.reason||null};});
  check('legacy explicit baseline still five Hits',()=>{apply([],763);const r=read("MHWRealOneHitBrowserAdapter.evaluateCurrent({...__input,lightBowgunState:{...__input.lightBowgunState,loadedRounds:1}})");assert.equal(r.status,'OK',r.reason);for(const ch of ['normal','maximum'])assert.equal(traces(r.channels[ch]).length,5);});
- check('nonrapid contrast uses both existing bonuses once',()=>{apply([],773);const b=evaluate();assert.equal(b.status,'OK');apply([['攻勢',5]],773);const r=evaluate();assert.equal(r.status,'OK');for(const ch of ['normal','maximum']){const old=traces(b.channels[ch]),now=traces(r.channels[ch]);assert.equal(now.length,15);let sum=0;for(let i=0;i<15;i++){const aff=Math.min(100,old[i].effectiveAffinity+(ch==='maximum'?20:0)),attack=read('__stats.attackTrue')+(ch==='maximum'?15:0)+old[i].shotAttackAdd;near(now[i].effectiveAffinity,aff);const hit=attack*.17*.65*.8*(1+aff/100*.25)*old[i].normalUpModifier;near(now[i].physical,hit);sum+=hit;}near(r.channels[ch].metrics.comboTotalDamage.value,sum);}});
- if(weaponId===763)check('adapter supplied affinity crosses zero and caps without duplication',()=>{apply([['攻勢',5]]);for(const affinity of [-60,-10,0,95]){w.__aff=affinity;const r=read(`(()=>{const stats=structuredClone(__stats);stats.affinity=__aff;stats.maxAffinity=Math.min(100,__aff+20);for(const ch of ['normal','maximum']){stats.conditionalConditionPlan[ch].affinity=__aff;stats.conditionalConditionPlan[ch].maxAffinity=stats.maxAffinity;}return MHWRealOneHitBrowserAdapter.evaluateRapidFiveShot({...__input,weapon:{...__input.weapon,affinity:__aff},stats});})()`);assert.equal(r.status,'OK',r.reason);for(const ch of ['normal','maximum']){const aff=Math.min(100,affinity+(ch==='maximum'?20:0)),attack=base.attackTrue+(ch==='maximum'?15:0),hit=attack*({1:17,2:23.8,3:30.6}[level]/100)*.7*.65*(1+aff/100*.25);for(const t of traces(r.channels[ch])){near(t.attack,attack);near(t.affinity,aff);near(t.physical,hit);}near(r.channels[ch].metrics.comboTotalDamage.value,hit*25);}}});
+ check('nonrapid contrast uses both existing bonuses once',()=>{apply([],773);const b=evaluate();assert.equal(b.status,'OK');apply([['攻勢',5]],773);const r=evaluate();assert.equal(r.status,'OK');for(const ch of ['normal','maximum']){const old=traces(b.channels[ch]),now=traces(r.channels[ch]);assert.equal(now.length,15);let sum=0;for(let i=0;i<15;i++){const aff=Math.min(100,old[i].effectiveAffinity),attack=read('__stats.attackTrue')+old[i].shotAttackAdd;near(now[i].effectiveAffinity,aff);const hit=attack*.17*.65*.8*(1+aff/100*.25)*old[i].normalUpModifier;near(now[i].physical,hit);sum+=hit;}near(r.channels[ch].metrics.comboTotalDamage.value,sum);}});
+ if(weaponId===763)check('adapter supplied affinity crosses zero and caps without duplication',()=>{apply([['攻勢',5]]);for(const affinity of [-60,-10,0,95]){w.__aff=affinity;const r=read(`(()=>{const stats=structuredClone(__stats);stats.affinity=__aff;stats.maxAffinity=Math.min(100,__aff);for(const ch of ['normal','maximum']){stats.conditionalConditionPlan[ch].affinity=__aff;stats.conditionalConditionPlan[ch].maxAffinity=stats.maxAffinity;}return MHWRealOneHitBrowserAdapter.evaluateRapidFiveShot({...__input,weapon:{...__input.weapon,affinity:__aff},stats});})()`);assert.equal(r.status,'OK',r.reason);for(const ch of ['normal','maximum']){const aff=Math.min(100,affinity),attack=base.attackTrue,hit=attack*({1:17,2:23.8,3:30.6}[level]/100)*.7*.65*(1+aff/100*.25);for(const t of traces(r.channels[ch])){near(t.attack,attack);near(t.affinity,aff);near(t.physical,hit);}near(r.channels[ch].metrics.comboTotalDamage.value,hit*25);}}});
  check('no browser script errors',()=>assert.deepEqual(errors,[]));
  }catch(e){report.failures.push({weaponId,error:e.stack});}finally{w.close();}
 }

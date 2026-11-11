@@ -56,7 +56,7 @@ for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEV
  });
  for(const h of [2,5])for(const [label,skills,p,options]of [
   ['static flat',[['攻撃',5],['火事場力',h],['フルチャージ',5]],5,{staticAttack:true}],
-  ['Ambush',[['急襲',3],['火事場力',h],['フルチャージ',5]],5,{ambush:1.15}],
+  ['Ambush',[['急襲',3],['火事場力',h],['フルチャージ',5]],5,{ambush:1}],
   ['First and Force',[['火事場力',h],['ファーストショット',3],['フォースショット',3]],0,{first:3,force:3}],
  ])check(label+' order with Heroics '+h,()=>{apply(skills);const actual=read('calcState.total');for(const [name,rank]of skills)assert.equal(actual[name],rank,name);verify(evaluate(),h,p,0,options);});
  for(const [label,patch]of [

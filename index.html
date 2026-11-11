@@ -2645,7 +2645,7 @@ function calcMaxAffinity(total, baseAffinity, w, part,conditions={blackEclipseSt
   const ch=validCombatSkillLevel(total,['挑戦者','Agitator'],5); if(ch) v += [0,3,5,7,10,15][Math.min(5,ch)];
   const hm=validCombatSkillLevel(total,['渾身','Maximum Might'],3); if(hm) v += [0,10,20,30][Math.min(3,hm)];
   const rel=validCombatSkillLevel(total,['力の解放','Latent Power'],5); if(rel) v += [0,10,20,30,40,50][Math.min(5,rel)];
-  const op=validCombatSkillLevel(total,['攻勢','Foray'],5); if(op) v += [0,0,5,10,15,20][Math.min(5,op)];
+  const op=validCombatSkillLevel(total,['攻勢','Foray'],5); if(op&&!window.MHIsOwnerExcludedCalculationSkill({skillId:75,name:'攻勢',level:op})) v += [0,0,5,10,15,20][Math.min(5,op)];
 
   // 抜刀術【技】の既存係数は保持。現リリースのユーザー指定対象外は表示最大にも加算しない。
   const draw=validCombatSkillLevel(total,['抜刀術【技】','抜刀術[技]','Critical Draw'],3); if(draw&&!window.MHIsOwnerExcludedCalculationSkill({skillId:103,name:'抜刀術【技】',level:draw})) v += window.MHWExplicitAffinityRules.draw[Math.min(3,draw)];
@@ -2735,6 +2735,8 @@ function equipmentThunderResistanceInput(base,total,active=[],cond={},element="t
     const validLevel=Number.isInteger(absorptionLevel)&&absorptionLevel>=1&&absorptionLevel<=3&&!!match,known=['fire','water','thunder','ice','dragon'].includes(absorbedElement);
     const reason=!validLevel?'ABSORPTION_RESISTANCE_RULE_UNRESOLVED':!known?'ABSORPTION_ELEMENT_REQUIRED':null;
     result.absorptionPlan={skillId:133,level:absorptionLevel,absorbedElement:known?absorbedElement:null,maximumHitCount:STANDARD_ELEMENT_ABSORPTION_SOURCE.maximumHitCount,normalResistanceAdd:0,maximumResistanceAdd:reason?null:absorbedElement===element?Number(match[1])*STANDARD_ELEMENT_ABSORPTION_SOURCE.maximumHitCount:0,status:reason?'UNRESOLVED':'RESOLVED',reason,description:rank?.description||null,sourceUrl:'https://wilds.mhdb.io/ja/skills/133',numericSource:'MHDB_RANK_DESCRIPTION',condition:'NORMAL_INACTIVE_MAXIMUM_SAME_ELEMENT_THREE_HITS',adoptionStatus:'OWNER_APPROVED_PROVISIONAL'};
+    // Preserve the recorded resistance description, but do not consume absorption for current power.
+    if(window.MHIsOwnerExcludedCalculationSkill({skillId:133,name:absorptionDb?.name,level:absorptionLevel})){result.excludedAbsorptionPlan={...result.absorptionPlan,status:'OWNER_EXCLUDED_CURRENT_RELEASE',reason:null,normalResistanceAdd:0,maximumResistanceAdd:0,condition:'OWNER_EXCLUDED_CURRENT_POWER',includedInPower:false};delete result.absorptionPlan;}
   }
   let value=base.armorBase;
   for(const id of [131,153]){
@@ -2769,7 +2771,7 @@ function calcBuild(){normalizeArtiaProduction();renderCharmLegality();
     if(!Number.isFinite(baseAttackTrue)||baseAttackTrue<=0){const disp=Number(w?.damage?.display??w?.attack??0);baseAttackTrue=coef>0?disp/coef:disp;}
   }
   if(isArtiaWeapon(w)&&!fixed) baseAttackTrue=0;
-  let stats={attack:baseAttackTrue,attackTrue:baseAttackTrue,affinity:isArtiaWeapon(w)?(fixed?Number(fixed.affinity):0):(Number(w?.affinity??0)),element:0,elementType:'',defense:1,weaponCoefficient:coef,weaponKind:kind};
+  let stats={weaponId:w?.id??null,attack:baseAttackTrue,attackTrue:baseAttackTrue,affinity:isArtiaWeapon(w)?(fixed?Number(fixed.affinity):0):(Number(w?.affinity??0)),element:0,elementType:'',defense:1,weaponCoefficient:coef,weaponKind:kind};
   Object.assign(stats,{attackKnown,affinityKnown,armorThunderResistanceInput:armorThunderResistanceInput(build.armor)});
   Object.assign(stats,MHWElementState.unknown('','ELEMENT_WEAPON_NOT_SELECTED'));
   if(w){add(total,weaponSkills(w));const ei=isArtiaWeapon(w)?(fixed?{...fixed,type:fixed.elementType,value:fixed.element}:MHWElementState.unknown(build.artia.element,'ELEMENT_FIXED_VARIANT_MISSING')):weaponElementInfo(w);Object.assign(stats,{element:ei.value??ei.element,elementType:ei.type??ei.elementType,elementKnown:ei.elementKnown,typeKnown:ei.typeKnown,elementStatus:ei.elementStatus,elementReason:ei.elementReason});if(!isArtiaWeapon(w)||fixed){let rs=restoreStats(w);stats.attack+=Number(rs.attack);stats.affinity+=Number(rs.affinity);if(stats.elementKnown)stats.element+=Number(rs.element);}}
@@ -3017,7 +3019,15 @@ function equipmentElementDisplay(state={},options={}){
   if(typeof MHWElementDisplay!=='undefined')return MHWElementDisplay.render(view,options);
   return reason?'未算出：'+esc(comparisonReasonText(reason)):esc(Number.isFinite(state.element)?Math.round(state.element):'未算出');
 }
-function excludedSkillDamageDisplay(d){return (d?.excludedCalculationSkills||[]).map(x=>`［${esc(x.name)}：${esc(x.reason)}］`).join('')+(d?.excludedSkillDamage||[]).map(x=>{const a=x.additionalDamage;return `［${esc(x.skill)}：${x.referenceRank==='upper'?'上位資料・':''}${a?.status==='available'?`追加ダメージ${damageDisplayNumber(a.total)}（固定${damageDisplayNumber(a.fixed)}＋火${damageDisplayNumber(a.element)}、火肉質${Number(a.fireHitzone)}%）`:`追加ダメージ不明（${esc(a?.reason||'注釈入力未解決')}）`}。追加ダメージは基準／最大火力に含めず注釈のみ］`;}).join('');}
+// Conditional self-buffs are excluded power, not extra-damage events. Read effect text from MHDB.
+function ownerExcludedConditionalBuffNote(skillId,level){
+  if(![25,67,75].includes(skillId))return null;
+  const skill=DB.skills.find(x=>x.id===skillId),rank=skill?.ranks?.find(x=>x.level===level);
+  if(!rank||typeof rank.description!=='string')return null;
+  const condition=skillId===25?'こんがり肉などのアイテムを食べた時、一定時間':skillId===67?'大型モンスターへの奇襲攻撃成功後、30秒間だけ発動':'毒・麻痺状態の大型モンスター';
+  return {skillId,skill:rank.name||skill.name,level,kind:'CONDITIONAL_SELF_BUFF',includedInPower:false,condition,...(skillId===67?{durationSeconds:30,durationSource:'USER_DIRECTION'}:{}),effectDescription:rank.description,description:`${rank.name||skill.name} Lv${level}：${condition}。${rank.description}。今回の基本火力には未算入`,evidenceRef:'MHDB:skills/'+skillId+'/ranks/'+level,policy:'OWNER_EXCLUDED_CONDITIONAL_BUFF_ANNOTATION'};
+}
+function excludedSkillDamageDisplay(d){return (d?.excludedConditionalBuffs||[]).map(x=>`［${esc(x.description)}］`).join('')+(d?.excludedCalculationSkills||[]).map(x=>`［${esc(x.name)}：${esc(x.reason)}］`).join('')+(d?.excludedSkillDamage||[]).map(x=>{const a=x.additionalDamage;return `［${esc(x.skill)}：${x.referenceRank==='upper'?'上位資料・':''}${a?.status==='available'?`追加ダメージ${damageDisplayNumber(a.total)}（固定${damageDisplayNumber(a.fixed)}＋火${damageDisplayNumber(a.element)}、火肉質${Number(a.fireHitzone)}%）`:`追加ダメージ不明（${esc(a?.reason||'注釈入力未解決')}）`}。追加ダメージは基準／最大火力に含めず注釈のみ］`;}).join('');}
 function attributeConversionDisplay(d){const c=d?.attributeConversion;return c?`［属性変換${typeof c.active==='boolean'?(c.active?'発動':'非発動'):'状態未入力'}・龍${c.baseElement}→${c.effectiveElement??'未算出'}・本体限定参考値／固定・龍追撃を含まない］`:'';}
 function thunderConversionDisplay(d){const c=d?.thunderResistanceConversion;return c?`［耐性変換・雷${Number(c.baseElement)}→${Number(c.effectiveElement)}／装備由来・本体限定・食事/一時効果なし］`:'';}
 function renderSummary(){
@@ -5416,7 +5426,7 @@ function renderComboHitDetail(stage){
   return `<details class="combo-hit-detail" style="margin:8px 0;min-width:0"><summary>Hit別の参考内訳（${stage.hits}Hit）</summary><p class="small">${esc(origin)}。値は会心を含む参考計算です。ゲーム表示の整数丸めとは異なります。</p><div style="max-width:100%;overflow-x:auto"><table style="width:100%;min-width:340px;table-layout:fixed;font-size:12px;font-variant-numeric:tabular-nums" aria-label="${esc(stage.name)}のHit別参考内訳"><thead><tr>${['Hit・成分','物理','属性','特殊','合計'].map(s=>`<th scope="col" style="padding:6px">${s}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
 }
 
-function bowReferenceSkills(total){return {forceShot:skillLevel(total,['フォースショット','Force Shot']),firstShot:skillLevel(total,['ファーストショット','First Shot']),normalUp:skillLevel(total,['通常弾・通常矢強化','Normal/Rapid Up']),spreadUp:skillLevel(total,['散弾・剛射強化','Spread/Power Shots','Spread Up']),chargeMaster:skillLevel(total,['チャージマスター','Charge Master']),criticalElement:skillLevel(total,['会心撃【属性】','Critical Element']),bladescaleLoading:window.MHIsOwnerExcludedCalculationSkill?.({skillId:160,name:'刃鱗増装',level:skillLevel(total,['刃鱗増装','Bladescale Loading'])})?0:skillLevel(total,['刃鱗増装','Bladescale Loading'])};}
+function bowReferenceSkills(total){return {forceShot:skillLevel(total,['フォースショット','Force Shot']),firstShot:skillLevel(total,['ファーストショット','First Shot']),normalUp:skillLevel(total,['通常弾・通常矢強化','Normal/Rapid Up']),spreadUp:skillLevel(total,['散弾・剛射強化','Spread/Power Shots','Spread Up']),chargeMaster:skillLevel(total,['チャージマスター','Charge Master']),criticalElement:window.MHIsOwnerExcludedCalculationSkill({skillId:82,name:'会心撃【属性】',level:skillLevel(total,['会心撃【属性】','Critical Element'])})?0:skillLevel(total,['会心撃【属性】','Critical Element']),bladescaleLoading:window.MHIsOwnerExcludedCalculationSkill?.({skillId:160,name:'刃鱗増装',level:skillLevel(total,['刃鱗増装','Bladescale Loading'])})?0:skillLevel(total,['刃鱗増装','Bladescale Loading'])};}
 function rangedComboDamage(move,ctx){
   const result=ctx.p0RangedResults?.[ctx.routeIndex];
   if(!result||result.techniqueId!==move.canonicalTechniqueId)throw Error('RANGED_REFERENCE:P0_ROUTE_CONTEXT_REQUIRED');
@@ -7949,7 +7959,7 @@ const SKILL_EXTRA_DAMAGE_POLICIES=techniqueDbDeepFreeze({
  71:{name:'火竜の力',maxLevel:2,components:['FIXED','FIRE'],bodyEffect:false},
  96:{name:'白熾の奔流',maxLevel:1,components:['EXTRA','FIRE_WHEN_SCORCH'],bodyEffect:false},
  149:{name:'獄焔蛸の反逆',maxLevel:2,components:['EXTRA'],bodyEffect:false},
- 152:{name:'属性変換',maxLevel:3,components:['FIXED_FOLLOWUP','DRAGON_FOLLOWUP'],bodyEffect:true},
+ 152:{name:'属性変換',maxLevel:3,components:['FIXED_FOLLOWUP','DRAGON_FOLLOWUP'],bodyEffect:false},
  162:{name:'海竜の渦雷',maxLevel:2,components:['FIXED','THUNDER'],bodyEffect:true},
  182:{name:'解キ放ツ鏡刃ノ破片',maxLevel:1,components:['AREA_EXTRA'],bodyEffect:false}
 });
@@ -7994,7 +8004,9 @@ function adoptedSelfStatePlan(st,total,cond){
  const slideValid=slide.length===1&&slide[0].bonusName==='革細工の滑性'&&slide[0].name==='滑走強化'&&slide[0].source==='group'&&slide[0].rankLevel===1&&slide[0].required===3&&Number.isInteger(slide[0].count)&&slide[0].count>=3;
  const defs=[[89,'革細工の滑性'],[164,'パワーストーン'],[171,'炎の料理人'],[174,'連携プログラム'],[173,'オメガレゾナンス'],[153,'波衣竜の守護']];
  for(const [id,name] of defs){const level=id===89?(slide.length||skillLevel(total,[name,'滑走強化'])):[153,173].includes(id)?(active.filter(e=>e.bonusSkillId===id).length||skillLevel(total,[name])):skillLevel(total,[name]);if(!level)continue;
-  if((id===89&&!slideValid)||(![89,173,153].includes(id)&&level!==1)){out.pending.push(name+':ACTIVATION_INVALID');continue;}out.ids.push(id);
+  if((id===89&&!slideValid)||(![89,173,153].includes(id)&&level!==1)){out.pending.push(name+':ACTIVATION_INVALID');continue;}
+  if((id===89&&currentOwnerExcludedBonus(slide[0]))||([171,174].includes(id)&&window.MHIsOwnerExcludedCalculationSkill({skillId:id,name,level})))continue;
+  out.ids.push(id);
   for(const ch of ['normal','maximum']){const state=cond.selfSkillState?.[ch];let atk=0,aff=0,elem=0,reason=null;
    if(id===89){if(typeof state?.sliding!=='boolean')reason='SLIDING_STATE_REQUIRED';else aff=state.sliding?30:0;}
    if(id===164){const ores=state?.oreAdds;if(!Array.isArray(ores)||ores.some(x=>!rule.oreAdds.includes(x)))reason='ORE_ADDS_REQUIRED';else atk=Math.min(rule.oreCap,ores.reduce((a,b)=>a+b,0));}
@@ -8014,6 +8026,15 @@ const BLADESCALE_FIRST_HIT_RULE=techniqueDbDeepFreeze({skillId:163,name:'刃鱗�
 window.MHBladescaleFirstHitRule=BLADESCALE_FIRST_HIT_RULE;
 const STANDARD_GOG_ELEMENT_RULE=techniqueDbDeepFreeze({skillId:178,parent:'巨戟龍の黙示録',names:{1:'宣戦呼応Ⅰ',2:'宣戦呼応Ⅱ'},multipliers:[1,1.2,1.3],displayAdds:[0,20,40],status:'OWNER_APPROVED_PROVISIONAL',source:'https://mhw.fuguai-online.com/2025/12/19/sennsen/',sourceVersion:'2025-12-19 article; game build unspecified',approval:'Sentinel_85f2e44f91a88191bb1e86f56298c4c5',liveGameVerification:'PENDING',condition:'NORMAL_INACTIVE_MAXIMUM_PREACTIVATED_CONTINUING',order:'BASE_MULTIPLIERS_THEN_DISPLAY_FLATS_THEN_ORIGINAL_BASE_CAP',scope:'FIVE_ELEMENT_WEAPON_BODY_AND_ADOPTED_CB_POWER_ELEMENT_PHIAL;NO_AMMO_OR_DEDICATED_FIRE',hhModelScope:{modelId:'HH_NORMAL_MELODY_PROVISIONAL',elementTechniqueIds:['HH_PERFORMANCE_SHOCKWAVE','HH_ECHO_BUBBLE_FOLLOWUP','HH_ECHO_BUBBLE_MELODY_EVENT'],fixedExcludedTechniqueId:'HH_MELODY_COMPLETION_FIXED_10',approval:'Sentinel_58fc28ece07c8191b68e67e75afcd78a',status:'OWNER_APPROVED_PROVISIONAL',liveGameVerification:'PENDING',order:'COMMON_COMPLETED_ELEMENT_ONCE;NO_SPECIAL_REAPPLICATION'}});
 window.MHGogElementRule=STANDARD_GOG_ELEMENT_RULE;
+// Current owner exclusions retain source records and activation for future review.
+function currentOwnerExcludedBonus(e){
+  const rule={25:['暗器蛸の力','蛮勇の食卓','series'],10:['ヌシの誇り','激励','group'],150:['毛皮の昂揚','不屈','group'],89:['革細工の滑性','滑走強化','group'],107:['雪獅子の闘志','ウォークライ','series'],170:['夢灯の祈り','地の恵み【夢灯】','series'],180:['祝謡の祈り','地の恵み【祝謡】','series']}[e?.bonusSkillId];
+  if(!rule)return false;
+  const group=rule[2]==='group',rank=e.rankLevel,required=group?3:rank===1?2:4,name=group?rule[1]:rule[1]+(rank===1?'Ⅰ':'Ⅱ');
+  if(e.bonusName!==rule[0]||e.name!==name||e.source!==rule[2]||e.level!==1||!(group?rank===1:[1,2].includes(rank))||e.required!==required||!Number.isInteger(e.count)||e.count<required||(!group&&rank===1&&e.count>=4))return false;
+  const records=DB.skills.filter(s=>s.id===e.bonusSkillId),skill=records[0];
+  return records.length===1&&skill.kind===(group?'group':'set')&&skill.name===rule[0]&&skill.ranks.some(r=>r.level===rank&&r.name===name&&r.setPiecesRequired===required);
+}
 function standardGroupPowerPlan(st={},gutsState='BEFORE',total={},kind=null,cond={}){
   const original=st.activeBonusEffects??[],seen=new Set(),applied=[],unresolved=[];
   if(!Array.isArray(original))throw Error('BONUS_DAMAGE_EFFECT_PENDING:INVALID_ACTIVE_EFFECTS');
@@ -8021,6 +8042,11 @@ function standardGroupPowerPlan(st={},gutsState='BEFORE',total={},kind=null,cond
   let attackMultiplier=1;
   for(let i=0;i<effects.length;i++){
     const e=effects[i];
+    if(currentOwnerExcludedBonus(e)){
+      const key='OWNER_EXCLUDED:'+e.bonusSkillId;if(seen.has(key)){unresolved.push('OWNER_EXCLUDED_ACTIVATION_DUPLICATE');continue;}seen.add(key);
+      applied.push({skill:e.name,parent:e.bonusName,skillId:e.bonusSkillId,rank:e.rankLevel,excludedActivation:{...e},attackAdd:0,attackMultiplier:1,maximumAttackMultiplier:1,bonusSource:true,appliesToNormal:true,policyExcluded:true,effectDisposition:'non_damage',condition:'OWNER_EXCLUDED_CURRENT_COMPARISON',reason:e.bonusSkillId===10?'今回対象外（ソロ前提・将来再検討）':'今回対象外（ユーザー指定）',evidenceRef:'USER_DIRECTION_20261111_ID_'+e.bonusSkillId});continue;
+    }
+
     if([89,173,153].includes(e?.bonusSkillId)){const r=adoptedSelfStatePlan(st,total,cond);if(r.ids.includes(e.bonusSkillId)&&!r.pending.some(x=>x.includes('SERIES_ACTIVATION_INVALID'))){applied.push({skill:e.name,parent:e.bonusName,skillId:e.bonusSkillId,attackAdd:0,attackMultiplier:1,bonusSource:true,appliesToNormal:true,condition:'EXPLICIT_SELF_STATE',numericOrigin:'OWNER_APPROVED_PROVISIONAL'});continue;}}
     // MHDB rank I has only rewards/duration, not the rank II attack effect.
     const nonNumericRankOne=STANDARD_NON_NUMERIC_RANK_ONE[e?.bonusSkillId];
@@ -8052,7 +8078,20 @@ function standardGroupPowerPlan(st={},gutsState='BEFORE',total={},kind=null,cond
       const rank=e.rankLevel,required=rank===1?2:4,key='ACTIVATION_FLAT:'+e.bonusSkillId;
       if(![1,2].includes(rank)||e.name!==activationFlat.prefix+(rank===1?'Ⅰ':'Ⅱ')||e.bonusName!==activationFlat.parent||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4)||seen.has(key)){unresolved.push(e?.name||'SERIES_FLAT_ACTIVATION_INVALID');continue;}
       seen.add(key);
-      applied.push({skill:e.name,skillId:e.bonusSkillId,rank,attackAdd:activationFlat.adds[rank],attackMultiplier:1,bonusSource:true,appliesToNormal:false,condition:activationFlat.condition,evidenceRef:'MHDB_JA_SKILLS_20261026:'+e.bonusSkillId,numericOrigin:activationFlat.status||'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',scope:'NORMAL_INACTIVE_MAXIMUM_PREACTIVATED'});continue;
+      // Owner-approved STANDARD weapon sets. Explicit action scopes stay unchanged.
+      const standardScope=cond.standardEvaluation===true&&[62,70].includes(e.bonusSkillId);
+      const targetKinds=e.bonusSkillId===62?['great-sword','sword-and-shield','lance','gunlance','charge-blade','heavy-bowgun']:['great-sword','sword-and-shield','hammer','hunting-horn','lance','gunlance','switch-axe','charge-blade','heavy-bowgun','insect-glaive'];
+      let scope='NORMAL_INACTIVE_MAXIMUM_PREACTIVATED',maximumUnresolvedReason=null,enabled=true;
+      if(standardScope&&!targetKinds.includes(kind)){enabled=false;scope=kind==='light-bowgun'?'LBG_STANDARD_NO_CLASH_OR_OFFSET':'OWNER_WEAPON_SCOPE_NON_TARGET';}
+      if(standardScope&&e.bonusSkillId===70&&kind==='hunting-horn'){
+        const weapon=DB.weapons.find(w=>String(w.id)===String(st.weaponId)),songs=weapon?.melody?.songs;
+        if(!Array.isArray(songs)){enabled=false;scope='HH_OFFSET_MELODY_UNCONFIRMED';maximumUnresolvedReason='OFFSET_MELODY_DATA_UNCONFIRMED';}
+        else if(!songs.some(song=>song.effectId===46)){enabled=false;scope='HH_NO_OFFSET_MELODY';}
+        else scope='HH_OFFSET_MELODY_CAPABLE';
+      }
+      if(standardScope&&e.bonusSkillId===70&&kind==='heavy-bowgun'){enabled=false;scope='HBG_OFFSET_CUSTOM_UNCONFIRMED';maximumUnresolvedReason='HBG_OFFSET_CUSTOM_UNCONFIRMED';}
+
+      applied.push({skill:e.name,skillId:e.bonusSkillId,rank,attackAdd:enabled?activationFlat.adds[rank]:0,attackMultiplier:1,bonusSource:true,appliesToNormal:false,condition:activationFlat.condition,evidenceRef:'MHDB_JA_SKILLS_20261026:'+e.bonusSkillId,numericOrigin:activationFlat.status||'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',scope,...(maximumUnresolvedReason?{maximumUnresolvedReason}:{} )});continue;
     }
     if(e?.bonusSkillId===106){
       const rank=e.rankLevel,required=rank===1?2:4;
@@ -8732,13 +8771,14 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={}){
     else{const level=Math.min(3,guard),multiplier=[1,1.05,1.1,1.15][level];conditionalMultiplier*=multiplier;applied.push({skill:'攻めの守勢',level,attackAdd:0,attackMultiplier:multiplier,condition:'TIMED_GUARD_PREACTIVATED',exclusiveGroup:null,evidenceRef:'MHDB_JA_SKILL_66_20261007'});}
   }
   const ambush=skillLevel(total,['急襲','Ambush']);
-  if(ambush){
+  if(ambush&&!window.MHIsOwnerExcludedCalculationSkill({skillId:67,name:'急襲',level:ambush})){
     if(!Number.isInteger(ambush)||ambush<0)pending.push('急襲:LEVEL_INVALID');
     else if(!componentsValid)pending.push('急襲:ATTACK_COMPONENTS_UNRESOLVED');
     else{const level=Math.min(3,ambush),multiplier=[1,1.05,1.1,1.15][level];conditionalMultiplier*=multiplier;applied.push({skill:'急襲',level,attackAdd:0,attackMultiplier:multiplier,condition:'SUCCESSFUL_SNEAK_ATTACK_PREACTIVATED_30_SECONDS',evidenceRef:'MHDB_JA_SKILL_67_20261007',numericOrigin:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED'});}
   }
   for(const rule of STANDARD_CONDITIONAL_ATTACK_RULES){
     const raw=skillLevel(total,[rule.skill,...rule.aliases]);if(!raw)continue;
+    if(window.MHIsOwnerExcludedCalculationSkill({skillId:rule.sourceId,name:rule.skill,level:raw}))continue;
     if(!Number.isInteger(raw)||raw<0){pending.push(rule.skill+':LEVEL_INVALID');continue;}
     const level=Math.min(raw,rule.values.length-1);
     const item={skill:rule.skill,level,attackAdd:rule.values[level],condition:rule.condition,exclusiveGroup:rule.exclusiveGroup||null,evidenceRef:'MHDB_JA_SKILL_'+rule.sourceId+'_20261007'};
@@ -8757,7 +8797,8 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={}){
       maximum.element=Number(st.element||0)+elementAdd;
     }
   }
-  const absorption=skillLevel(total,['属性吸収','Element Absorption']);
+  const equippedAbsorption=skillLevel(total,['属性吸収','Element Absorption']);
+  const absorption=window.MHIsOwnerExcludedCalculationSkill({skillId:133,name:'属性吸収',level:equippedAbsorption})?0:equippedAbsorption;
   if(absorption){
     const group=STANDARD_ELEMENT_ABSORPTION_SOURCE.groups.find(x=>x.kinds.includes(kind)),elementType=st.elementType;
     if(!Number.isInteger(absorption)||absorption<0||!group)pending.push('属性吸収:WEAPON_OR_LEVEL_UNRESOLVED');
@@ -8796,12 +8837,12 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={}){
       }
     }
   }
-  for(const names of STANDARD_UNRESOLVED_CONDITIONAL_SKILLS)if(!(names[0]==='巨戟龍の黙示録'&&gog)&&!['革細工の滑性','滑走強化','パワーストーン','炎の料理人','連携プログラム','オメガレゾナンス','レゾナンス','波衣竜の守護'].includes(names[0])&&!groupPlan.applied.some(x=>[34,161,170,180,167].includes(x.skillId)&&x.parent===names[0]&&x.rank===2)&&!groupPlan.applied.some(x=>[10,131,155].includes(x.skillId)&&x.parent===names[0]&&x.rank===1)&&!(['暗器蛸の力','闢獣の力','凍峰竜の反逆','雪獅子の闘志'].includes(names[0])&&groupPlan.applied.some(x=>STANDARD_SERIES_ACTIVATION_FLATS[x.skillId]?.parent===names[0]))&&names[0]!=='鎖刃刺撃'&&!(names[0]==='黒蝕竜の力'&&groupPlan.applied.some(x=>x.skillId===106))&&!(names[0]==='海竜の渦雷'&&groupPlan.applied.some(x=>x.skillId===162))&&!['連撃','攻めの守勢','急襲','属性吸収','火事場力','災禍転福','研鑽','抜刀術【力】'].includes(names[0])&&!(names[0]==='暗黒'&&darkLevel)&&!(names[0]==='毛皮の昂揚'&&groupPlan.applied.some(x=>x.skill==='不屈'))&&!(names[0]==='兇爪竜の力'&&groupPlan.applied.some(x=>Object.prototype.hasOwnProperty.call(STANDARD_SERIES_POWER_RULES,x.skill)))&&!(names[0]==='暗黒'&&darkArts&&!skillLevel(total,['暗黒','Dark']))&&!(names[0]==='抜刀術【技】')&&skillLevel(total,names)>0)pending.push(names[0]+':CONDITIONAL_DAMAGE_FORMULA_PENDING');
+  for(const names of STANDARD_UNRESOLVED_CONDITIONAL_SKILLS)if(!(names[0]==='属性変換'&&window.MHIsOwnerExcludedCalculationSkill({skillId:152,name:names[0],level:skillLevel(total,names)}))&&!(names[0]==='巨戟龍の黙示録'&&gog)&&!['革細工の滑性','滑走強化','パワーストーン','炎の料理人','連携プログラム','オメガレゾナンス','レゾナンス','波衣竜の守護'].includes(names[0])&&!groupPlan.applied.some(x=>[34,161,170,180,167].includes(x.skillId)&&x.parent===names[0]&&x.rank===2)&&!groupPlan.applied.some(x=>[10,131,155].includes(x.skillId)&&x.parent===names[0]&&x.rank===1)&&!(['暗器蛸の力','闢獣の力','凍峰竜の反逆','雪獅子の闘志'].includes(names[0])&&groupPlan.applied.some(x=>STANDARD_SERIES_ACTIVATION_FLATS[x.skillId]?.parent===names[0]))&&names[0]!=='鎖刃刺撃'&&!(names[0]==='黒蝕竜の力'&&groupPlan.applied.some(x=>x.skillId===106))&&!(names[0]==='海竜の渦雷'&&groupPlan.applied.some(x=>x.skillId===162))&&!['連撃','攻めの守勢','急襲','属性吸収','火事場力','災禍転福','研鑽','抜刀術【力】'].includes(names[0])&&!(names[0]==='暗黒'&&darkLevel)&&!(names[0]==='毛皮の昂揚'&&groupPlan.applied.some(x=>x.skill==='不屈'))&&!(names[0]==='兇爪竜の力'&&groupPlan.applied.some(x=>Object.prototype.hasOwnProperty.call(STANDARD_SERIES_POWER_RULES,x.skill)))&&!(names[0]==='暗黒'&&darkArts&&!skillLevel(total,['暗黒','Dark']))&&!(names[0]==='抜刀術【技】')&&skillLevel(total,names)>0)pending.push(names[0]+':CONDITIONAL_DAMAGE_FORMULA_PENDING');
   if(groupPlan.attackMultiplier!==1&&!componentsValid)throw Error('BONUS_DAMAGE_EFFECT_PENDING:GUTS_ATTACK_COMPONENTS_UNRESOLVED');
   applied.push(...groupPlan.applied);
   conditionalMultiplier*=groupPlan.applied.filter(x=>x.skillId===167).reduce((m,x)=>m*x.maximumAttackMultiplier,1);
   const flat=applied.reduce((n,x)=>n+x.attackAdd,0);
-  const fortify=groupPlan.applied.find(x=>x.skill==='不屈');
+  const fortify=groupPlan.applied.find(x=>x.skill==='不屈'&&!x.policyExcluded);
   if(fortify){
     const count=cond.fortifyCount===undefined?STANDARD_FORTIFY_SOURCE.maximumDeathCount:cond.fortifyCount;
     if(typeof count!=='number'||!Number.isInteger(count)||count<0||count>STANDARD_FORTIFY_SOURCE.maximumDeathCount){
@@ -9362,6 +9403,7 @@ function comparisonReasonText(reason){
   if(text.includes('BOW_REFERENCE:FORCE_SHOT_ROUTE_UNRESOLVED'))return 'フォースショット：固定STANDARD以外の射撃順は未対応です。';
   if(text.includes('BOW_REFERENCE:SKILL_LEVEL_INVALID'))return '弓の射撃強化・チャージマスター・会心撃【属性】・刃鱗増装・ファーストショット・フォースショットのスキル段階が未対応または不正です。';
   if(text.includes('BOW_SKILL_FORMULA_PENDING'))return '弓専用スキルの計算が未接続です：'+text.split(':').slice(1).join(':');
+  if(text.includes('HBG_OFFSET_CUSTOM_UNCONFIRMED'))return '力自慢：相殺可能なボウガンカスタムが前提です。現入力では未確認のため最大側の効果は未算出です。';
   if(text.includes('WET_BUBBLE_STATE_REQUIRED'))return '濡れ刃紋：濡れ／泡の条件を確認してください。標準比較は通常「なし」・最大「両方」を使用し、手動指定を優先します。';
   if(text.includes('ORE_ADDS_REQUIRED'))return 'パワーストーン：手動の oreAdds を確認してください（加算なしは []、各値は10・15・30）。標準比較の未入力時は通常加算なし・最大は採用済み上限で計算します。';
   if(text.includes('GL_TARGET:INITIAL_STAKE_REQUIRED'))return 'ガンランスの開始条件で竜杭を「装填済み」に指定してください。';

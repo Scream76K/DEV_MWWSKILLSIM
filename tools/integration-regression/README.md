@@ -29,3 +29,21 @@ The current contract binds 112 files. All original 109 pins were checked against
 Local verification: 232 ingress/control + 14 target/ten-shot + 30 synthetic freshness tests = 276 passes. Freshness negatives cover changed/missing inputs, stale PASS, missing dependency, wrong counts, failed/skipped child, concurrent input/contract/runner mutation and symlinks. The full integrated runner was not executed because a prior denied CB getter/prototype operation remains unidentified. Other CI checks and game accuracy are not inferred from these limited tests.
 
 The added target test prioritizes runner-pinned PRODUCT_ROOT over legacy MHW_PRODUCT_ROOT so inherited environment settings cannot silently redirect it. A conflicting nonexistent legacy root is explicitly tested with the pinned current root.
+
+## Owner policy alignment candidate (2026-11-12)
+
+This is an uncommitted copy based on38b0d0d; it is not mainline integration. Historical contracts and the prior sections above remain historical evidence. The current candidate binds161files and33test entries, with1583expected TAP tests: the prior1562plus4public owner-note tests and17existing condition DOM tests. The expectation must match a fresh runner result; editing the count is not evidence of success.
+
+Owner policy tests distinguish ordinary IDs/valid levels (including Foray75Lv4/5), validated set/group activations, standard-only163, and unknown/unadopted effects. LBG proofs exclude75attack/affinity and67multiplier while retaining adopted companion effects. Plan-tampering negatives use an actually adopted companion (Counterstrike or Coalescence), because excluded skills must not require an applied plan row. Single-trigger cases compare the exact no-target-skill boundary; unrelated intrinsic-skill refusal remains refusal.
+
+The new owner-note fixture contains unmodified official raw weapon-family/armor/skill records and four previously used input snapshots with source hashes. It avoids the older loaded cache's derived Artia fixed-value records (unknown element) and contains no fabricated coefficient. It is a bounded offline test fixture, not another product DB or proof of all charm legality. Tests respect PRODUCT_ROOT and ordinary locked dependency resolution.
+
+Do not update historical freshness contracts or the protected38bsource to pass this runner. Before any future integration, preserve the complete baseline Git identity, tracked files, fixtures and old evidence in a distinct permanent bundle. Baseline replay and post-integration public verification need separate identities and output paths. An old read-only checker stays unchanged; a different baseline path would require a separately versioned checker. No baseline relocation or branch/upstream change is authorized by this candidate.
+
+## Supplemental refusal boundaries (candidate only)
+
+The current contract runs 1,584 tests across the same 33 entries and 161 pinned inputs. The prior 1,583 count above describes the parent candidate. One Coalescence positive/unknown-element paired test was added using the official DOM loader. The LBG nonapplicable proof now compares target-free single-trigger controls for 82/133, including totals, all traces and all diagnostics except explicitly validated owner-exclusion notes. A Coalescence companion must retain the same unsupported-combination refusal. Existing multi-weapon rapid, ammo-level and invalid-plan tests remain. Product files and historical contracts are unchanged.
+
+### Required diagnostics assertion controls
+
+Supported single-trigger paired results now require diagnostics on both normal and maximum channels for both baseline and active results. The same assertion function is exercised with 16 test-only clone defects (82/133 × two channels × both/baseline/active diagnostics missing or required note missing). All must throw; the valid outputs are checked before and after these controls. UNAVAILABLE results are not required to have channels and retain exact unrelated-refusal checks. These are assertion-control checks within the existing proof, not additional public calculations or TAP tests; the contract stays 1,584 tests / 33 entries / 161 inputs.

@@ -122,11 +122,11 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "cc792cde5c0646ebfaeb89e88014d34d1a2a6d0ba351dfbc8e2d24038fb22c80"
+      "sha256": "5631329df106500fb418d3bf349a30c884e6d9552f61889c1b95f896797267f8"
     },
     {
       "path": "index.html",
-      "sha256": "e2610304dc734a7f307e1fd3a7af9e405edf198b6adb14844307ff5a12d917c5"
+      "sha256": "ea282edcd69b885a7c685bc3a9ed3a81e6d532cfe62205ab0f71e0b4ba748a2c"
     },
     {
       "path": "observed-shelling.js",
@@ -146,7 +146,7 @@
     },
     {
       "path": "skill-calculation-policy.js",
-      "sha256": "3ca0b86404597ea92d1e6a5e644ad0c26e170a2d97521395241e47bfd9fec9b4"
+      "sha256": "894f4d12f39f658d836dea219cc19e56ce50c64f171667724ba1a3e908aa6ee8"
     },
     {
       "path": "skill-effect-continuation.js",
@@ -218,7 +218,7 @@
     },
     {
       "path": "tests/skill-calculation-policy.test.cjs",
-      "sha256": "b7a347d2b526425bf2c82d2a2b8c2c1f51578689062ff62563f1cc62cea2e5eb"
+      "sha256": "422607c7f35a34c1730615c21b28a075a2e7a760ee536a468b84ede5472f0dfb"
     },
     {
       "path": "tests/skill-continuation.test.cjs",
@@ -534,7 +534,7 @@
     },
     {
       "path": "tools/lbg-rapid-foray-proof.cjs",
-      "sha256": "13b8f833f62e35d28fcfb264d51de86bcd7ce0b51ad9845ba5c67f260b106175"
+      "sha256": "7fccedbc916829714ccaa9370e237482094fa3eb5b647d2f24b77790cba382f1"
     },
     {
       "path": "tools/lbg-rapid-foray-browser-proof.cjs",
@@ -546,7 +546,7 @@
     },
     {
       "path": "tools/lbg-rapid-shot-skills-proof.cjs",
-      "sha256": "c7245e49134d86d20061d9a44caaedbe1bb27e6b4cc3205bb2b4f77232db740a"
+      "sha256": "39b53a668bd0c40f52d66e69b264365bd70e28db3691faddbe96d81436ec76e2"
     },
     {
       "path": "tools/lbg-rapid-shot-skills-browser-proof.cjs",
@@ -554,7 +554,7 @@
     },
     {
       "path": "tools/lbg-rapid-nonapplicable-proof.cjs",
-      "sha256": "73eac7b5f82b68a67b3d30ac7725f878de940cc01713f4c9ebc5fec8cf59cfe2"
+      "sha256": "7d9239bbfb3d1f4797485a0b4a1341f2c746c0211277eaae823629cab1811f26"
     },
     {
       "path": "tools/lbg-rapid-nonapplicable-browser-proof.cjs",
@@ -566,7 +566,7 @@
     },
     {
       "path": "tools/lbg-rapid-resolved-attack-proof.cjs",
-      "sha256": "0cc21e3739a59d0d8cd643a6e4b6861ca68230d73cf7fb40684665802c89e4a7"
+      "sha256": "9f54b6de89a7d443acb64e15d4165d61c8122e2140db3483f339dd55f00743ab"
     },
     {
       "path": "tools/lbg-rapid-resolved-attack-browser-proof.cjs",
@@ -578,7 +578,7 @@
     },
     {
       "path": "tools/lbg-rapid-heroics-proof.cjs",
-      "sha256": "50485159ba533268e44518c4f44e53d3bf725b2f2bd4c74bc8bcd7503fa2b320"
+      "sha256": "7610532f75119a3612347123b9fb5f273e4fa3c5d936b2caa05edddb8bef966e"
     },
     {
       "path": "tools/lbg-rapid-heroics-browser-proof.cjs",
@@ -627,6 +627,30 @@
     {
       "path": "tests/conversion-harness-repair.test.cjs",
       "sha256": "b5e7b4972eab3a741053f22fa432bbd8fcac7f08f6651adc36fe2b9de848167b"
+    },
+    {
+      "path": "tests/owner-conditional-notes.test.cjs",
+      "sha256": "07017cc68d799c6fb42821c26e2fe1f87024697e0b164246065e5a58ad3f31de"
+    },
+    {
+      "path": "tools/power-conditions-dom.test.cjs",
+      "sha256": "b08f802cb2ef0445147b8ae9e10a0f14aa25ec62b9ab53a910905eb997671955"
+    },
+    {
+      "path": "tools/fortify-condition-dom.test.cjs",
+      "sha256": "1667a6d8e68cd78175ad458493061222e0c10464ed8f282a41ff581226fbe151"
+    },
+    {
+      "path": "tools/conditional-element-dom.test.cjs",
+      "sha256": "a25febb7704bdb0068a1761f1c7630054b5d5800de669d9816ebadf21a6fab5e"
+    },
+    {
+      "path": "tests/fixtures/owner-conditional-notes-inputs.json",
+      "sha256": "d6e22c79dfffbc5ec95d1b82655d6c85bd3b8ec64e10ee6c7f0d1b16c0c70217"
+    },
+    {
+      "path": "evidence/conditional-attack-mhdb-20261007.json",
+      "sha256": "281883f1dd29661e64e6c80b1323622e0e7dd16bdfef12d3a309079d61941a38"
     }
   ],
   "tests": [
@@ -658,9 +682,13 @@
     "tests/lbg-rapid-heroics.test.cjs",
     "tests/conversion-zero-scope.test.cjs",
     "tests/zero-conversion-physical.test.cjs",
-    "tests/conversion-harness-repair.test.cjs"
+    "tests/conversion-harness-repair.test.cjs",
+    "tests/owner-conditional-notes.test.cjs",
+    "tools/power-conditions-dom.test.cjs",
+    "tools/fortify-condition-dom.test.cjs",
+    "tools/conditional-element-dom.test.cjs"
   ],
-  "expectedTests": 1562,
+  "expectedTests": 1584,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
@@ -677,5 +705,8 @@
   ],
   "rapidFiveRoundScope": "STANDARD_UI_WEAPON_NATIVE_LEVEL_FIRST_FORCE_RAPID_EFFECTS_NOT_APPLIED",
   "nonrapidFiveRoundScope": "OWNER_APPROVED_LBG_NORMAL_FIVE_ROUNDS_15_CONTACTS",
-  "childTimeoutMs": 600000
+  "childTimeoutMs": 600000,
+  "ownerPolicyCandidateBaseCommit": "38b0d0d64bd6ef3b54b7832b404f3dfc84a03c91",
+  "ownerPolicyCandidateStatus": "UNCOMMITTED_INDEPENDENT_COPY_NOT_MAINLINE",
+  "ownerPolicyChangeScope": "Owner exclusions and conditional notes; no new game coefficients; preserve historical contracts"
 }

@@ -57,7 +57,7 @@ for(const [weaponId,level,powder] of [[783,1,'NONE'],[763,2,'NONE'],[771,3,'NONE
   for(const [label,extras,options] of [
    ['normal up',[['通常弾・通常矢強化',1]],{normalUp:1.05}],
    ['rapid up',[['速射強化',1]],{rapidUp:1.05}],
-   ['Foray',[['攻勢',5]],{flat:15,affinity:20}],
+   ['Foray excluded',[['攻勢',5]],{flat:0,affinity:0}],
    ['Latent Power',[['力の解放',5]],{affinity:50}],
    ['Peak Performance',[['フルチャージ',5]],{flat:20}],
    ['Counterstrike',[['逆襲',3]],{flat:25}],

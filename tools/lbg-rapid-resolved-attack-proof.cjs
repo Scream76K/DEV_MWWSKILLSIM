@@ -27,7 +27,8 @@ for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEV
 
  const omitted=r=>['normal','maximum'].flatMap(ch=>[...(r.channels?.[ch]?.diagnostics?.ignoredSkillEffects||[]),...(r.channels?.[ch]?.diagnostics?.unappliedEffects||[])]);
  apply();const baseline=evaluate(),base=read('__stats');assert.equal(baseline.status,'OK');
- const peakAdds=[0,3,6,10,15,20],resentAdds=[0,5,10,15,20,25],ambushMultipliers=[1,1.05,1.1,1.15];
+ const peakAdds=[0,3,6,10,15,20],resentAdds=[0,5,10,15,20,25],ambushMultipliers=[1,1,1,1] // Owner67 excluded; other attack modifiers retained
+;
  function verify(r,a,p,q,{first=0,force=weaponId===783?1:0,staticAttack=false}={}){
   assert.equal(r.status,'OK',r.reason);assert.equal(r.evaluationPlan.selection,'STANDARD');
   assert.ok(!omitted(r).some(x=>[67,123,154].includes(Number(x.skillId))),'adopted or health-excluded effect was omitted');
@@ -63,7 +64,7 @@ for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEV
   ['duplicate excluded',"input.stats.conditionalConditionPlan.excluded.push(input.stats.conditionalConditionPlan.excluded[0])"],
   ['wrong excluded condition',"input.stats.conditionalConditionPlan.excluded[0].condition='FAKE'"],
   ['injected excluded damage',"input.stats.conditionalConditionPlan.excluded[0].attackMultiplier=2"],
-  ['altered applied multiplier',"input.stats.conditionalConditionPlan.applied.find(x=>x.skill==='急襲').attackMultiplier=2"],
+  ['altered adopted companion flat',"input.stats.conditionalConditionPlan.applied.find(x=>x.skill==='逆恨み').attackAdd=999"],
   ['normal attack mismatch',"input.stats.conditionalConditionPlan.normal.attackTrue+=1"],
   ['maximum attack mismatch',"input.stats.conditionalConditionPlan.maximum.attackTrue+=1"],
   ['decomposition mismatch',"input.stats.conditionalConditionPlan.attackComponents.conditionalFlat+=1"],
@@ -73,7 +74,7 @@ for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEV
   ['nonphysical component',"const engine=input.techniqueDb;input.techniqueDb={get:(kind,id)=>{const t=engine.get(kind,id);return id===input.techniqueIds[0]?{...t,specialComponents:['AMMO_PHYSICAL','AMMO_ELEMENT']}:t}}"],
   ['positive element',"input.stats.element=1;input.stats.conditionalConditionPlan.normal.element=1;input.stats.conditionalConditionPlan.maximum.element=1"],
  ])check('negative '+label,()=>{apply([['急襲',3],['逆恨み',5],['フルチャージ',5]]);const r=read(`(()=>{const input={...__input,weapon:structuredClone(__input.weapon),stats:structuredClone(__input.stats),skills:structuredClone(__input.skills)};${patch};return MHWRealOneHitBrowserAdapter.evaluateRapidFiveShot(input);})()`);assert.notEqual(r.status,'OK');return {reason:r.reason};});
- for(const name of ['急襲','逆恨み'])check('old single trigger remains gated '+name,()=>{apply([[name,1]]);const r=read("MHWRealOneHitBrowserAdapter.evaluateCurrent({...__input,lightBowgunState:{...__input.lightBowgunState,loadedRounds:1}})");assert.notEqual(r.status,'OK');});
+ for(const name of ['急襲','逆恨み'])check('single-trigger boundary '+name,()=>{apply();const baseline=read("MHWRealOneHitBrowserAdapter.evaluateCurrent({...__input,lightBowgunState:{...__input.lightBowgunState,loadedRounds:1}})");apply([[name,1]]);const r=read("MHWRealOneHitBrowserAdapter.evaluateCurrent({...__input,lightBowgunState:{...__input.lightBowgunState,loadedRounds:1}})");if(name==='急襲'){assert.equal(r.status,baseline.status);assert.equal(r.reason,baseline.reason);if(r.status==='OK')assert.deepEqual(totals(r),totals(baseline));}else assert.notEqual(r.status,'OK');return {status:r.status,reason:r.reason||null};});
  check('Dark remains disclosed and does not erase adopted skills',()=>{apply([['急襲',3],['逆恨み',5],['暗黒',1]]);const r=evaluate();verify(r,3,0,5);assert.ok(omitted(r).some(x=>Number(x.skillId)===168));});
  check('Dark full-health branch remains gated',()=>{apply([['暗黒',1],['フルチャージ',5]]);const r=read('MHWRealOneHitBrowserAdapter.evaluateRapidFiveShot(__input)');assert.notEqual(r.status,'OK');});
  check('snapshot load preserves different A and B health plans',()=>{const saved=[];for(const skills of [[['急襲',3],['逆恨み',1],['フルチャージ',5]],[['急襲',1],['逆恨み',5],['フルチャージ',1]]]){apply(skills);saved.push({snapshot:read('buildSnapshot()'),totals:totals(evaluate())});}for(const s of saved){w.__snapshot=s.snapshot;w.eval('applyBuildSnapshot(__snapshot)');click('calcBuild');prepare();assert.deepEqual(totals(evaluate()),s.totals);}});
