@@ -394,7 +394,7 @@
   const shellingInput={shellingState:gunlanceState,loadShellsLevel:loadShellEntries.length?Math.max(...loadShellEntries.map(x=>x.level)):0,artilleryLevel:artilleryEntries.length?Math.max(...artilleryEntries.map(x=>x.level)):0,normalAttackComponents:stats.attackComponents?{weaponBase:Number(stats.attackComponents.weaponBase),normalMultiplier:1,normalFlat:0}:null,unreviewedSkills:allSkills.filter(x=>shellThunderBonusRelated(x)?!shellThunderBonusResolved(x):!shellMightResolved(x)&&!shellAffinityOnlyResolved(x)&&!shellDefensiveOnlyResolved(x)&&!shellStateAffinityOnlyResolved(x)&&!shellSelfStateBonusResolved(x)&&![85,136].includes(Number(x.skillId))&&!(cornpopperEntries.length&&Number(x.skillId)===159)&&!(bladescaleEntries.length&&Number(x.skillId)===163)&&!fixedEntrySkill(x)&&!(x.skillKey==='selfState'&&![89,153].includes(Number(x.skillId)))&&!['handicraft','ballistics','attack','affinity','criticalBoost','conditionalAttack','shelling','slugger','fire','water','thunder','ice','dragon','normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].includes(x.skillKey)).map(x=>x.name)};
   const rapidRequested=weapon.kind==='light-bowgun'&&resolvedTechniqueIds.some(id=>['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_2','LBG_NORMAL_RAPID_3','LBG_NORMAL_RAPID_NATIVE_3'].includes(id)),rapidShotRule=rapidRequested?techniqueDb.get('light-bowgun',resolvedTechniqueIds.find(id=>['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_2','LBG_NORMAL_RAPID_3','LBG_NORMAL_RAPID_NATIVE_3'].includes(id)))?.rapidRule:null;
   const rapidEntries=allSkills.filter(x=>Number(x.skillId)===23||x.name==='速射強化');
-  const rapidNonApplicableSkills=new Set();
+  const rapidNonApplicableSkills=new Set(),rapidResolvedAttackSkills=new Set(),rapidHealthExcludedSkills=new Set();
   if(rapidRequested){
    if(!rapidShotRule||resolvedTechniqueIds.length!==1)return fail('LBG_RAPID:SINGLE_TRIGGER_REQUIRED');
    if(rapidAmmoSequence&&(rapidShotRule.hitCount!==5||rapidShotRule.consumedRounds!==1))return fail('LBG_RAPID_FIVE:ADOPTED_SINGLE_TRIGGER_RULE_REQUIRED');
@@ -410,7 +410,8 @@
    const rapidPlan=stats.conditionalConditionPlan;
    const rapidPlanReady=rapidPlan&&Array.isArray(rapidPlan.pending)&&rapidPlan.pending.length===0&&Array.isArray(entryGroupPlan?.unresolvedEffects)&&entryGroupPlan.unresolvedEffects.length===0;
    for(const r of rapidCommonRules){const es=allSkills.filter(x=>Number(x.skillId)===r.id||x.name===r.name);if(es.length>1||es.some(x=>Number(x.skillId)!==r.id||x.name!==r.name||!Number.isInteger(x.level)||x.level<1||x.level>r.max))return fail('LBG_RAPID:COMMON_SKILL_CONTRACT_INVALID');}
-   const rapidCommonSkill=x=>rapidPlanReady&&rapidCommonRules.some(r=>Number(x.skillId)===r.id&&x.name===r.name&&([57,99,142].includes(r.id)||(rapidPlan.applied||[]).filter(a=>a.skill===r.name&&a.level===x.level).length===1));
+   const rapidResolvedAttackRequired=!!rapidAmmoSequence&&allSkills.some(x=>[67,123].includes(Number(x.skillId)));
+   const rapidCommonSkill=x=>rapidPlanReady&&rapidCommonRules.some(r=>(r.id!==154||!rapidResolvedAttackRequired||rapidResolvedAttackSkills.has(x))&&Number(x.skillId)===r.id&&x.name===r.name&&([57,99,142].includes(r.id)||(rapidPlan.applied||[]).filter(a=>a.skill===r.name&&a.level===x.level).length===1));
    // Reuse already adopted non-application, only for the fixed physical-only
    // normal-ammo sequence. This is not an expansion of elemental/guard effects.
    const nonApplicableRules=[{id:13,name:'災禍転福',key:'conditionalAttack'},{id:66,name:'攻めの守勢',key:'conditionalAttack'},{id:82,name:'会心撃【属性】',key:'criticalElement'},{id:133,name:'属性吸収',key:'conditionalAttack'}];
@@ -428,6 +429,27 @@
     rapidShotRule.status==='OWNER_APPROVED_PROVISIONAL'&&rapidShotRule.hitCount===5&&rapidShotRule.consumedRounds===1&&
     rapidSource?.weaponType==='light-bowgun'&&rapidSource.techniqueId===resolvedTechniqueIds[0]&&Array.isArray(rapidSource.hits)&&rapidSource.hits.length===0&&
     rapidSource.referenceKind==='light-bowgun'&&Array.isArray(rapidSource.specialComponents)&&rapidSource.specialComponents.length===1&&rapidSource.specialComponents[0]==='AMMO_PHYSICAL'&&rapidSource.phialReference==null&&rapidSource.damageStateTransition==null&&rapidSource.damageStatsState==null;
+   // Re-derive adopted attack/HEALTH selection from the single canonical
+   // producer. A legitimate excluded row is resolved, never stacked or dropped
+   // as an unsupported skill. Other rapid scopes and health branches stay gated.
+   const resolvedAttackRules=[{id:67,name:'急襲',max:3},{id:123,name:'逆恨み',max:5},{id:154,name:'フルチャージ',max:5}];
+   if(rapidResolvedAttackRequired){
+    for(const r of resolvedAttackRules){const es=allSkills.filter(x=>Number(x.skillId)===r.id||x.name===r.name);if(es.some(x=>Number(x.skillId)!==r.id||x.name!==r.name||x.skillKey!=='conditionalAttack'||!Number.isInteger(x.level)||x.level<1||x.level>r.max))return fail('LBG_RAPID:RESOLVED_ATTACK_IDENTITY_INVALID');}
+    if(physicalOnlyRapid&&typeof root.MHWStandardPowerConditionPlan==='function'){
+     const projection=p=>({status:p.status,scope:p.scope,pending:p.pending,normalPending:p.normalPending,applied:p.applied,excluded:p.excluded,attackOrder:p.attackOrder,attackComponents:p.attackComponents,normalAttack:p.normal?.attackTrue,maximumAttack:p.maximum?.attackTrue});
+     const finiteTree=x=>typeof x==='number'?Number.isFinite(x):x&&typeof x==='object'?Object.values(x).every(finiteTree):true;
+     try{
+      const expected=root.MHWStandardPowerConditionPlan(stats,Object.fromEntries(skills),weapon.kind,conditions),actual=projection(rapidPlan),canonical=projection(expected);
+      if(Array.isArray(actual.applied)&&Array.isArray(actual.excluded)&&Number.isFinite(actual.normalAttack)&&Number.isFinite(actual.maximumAttack)&&finiteTree(actual)&&finiteTree(canonical)&&JSON.stringify(actual)===JSON.stringify(canonical)){
+       for(const x of allSkills){const rule=resolvedAttackRules.find(r=>r.id===Number(x.skillId)&&r.name===x.name);if(!rule)continue;
+        const applied=actual.applied.filter(r=>r.skill===x.name&&r.level===x.level),excluded=actual.excluded.filter(r=>r.skill===x.name&&r.level===x.level);
+        if(applied.length===1&&excluded.length===0)rapidResolvedAttackSkills.add(x);
+        else if(applied.length===0&&excluded.length===1&&[123,154].includes(rule.id)&&excluded[0].exclusiveGroup==='HEALTH'&&actual.applied.some(r=>r.exclusiveGroup==='HEALTH'&&['逆恨み','フルチャージ'].includes(r.skill)&&r.skill!==x.name)){rapidResolvedAttackSkills.add(x);rapidHealthExcludedSkills.add(x);}
+       }
+      }
+     }catch(_){/* No inferred fallback: the existing continuation records failure. */}
+    }
+   }
    if(physicalOnlyRapid)for(const r of nonApplicableRules){
     const es=allSkills.filter(x=>nonApplicableRelated(x,r));if(!es.length)continue;
     const rows=(rapidPlan.applied||[]).filter(x=>x.skill===r.name);
@@ -443,7 +465,7 @@
     return ap.length===1&&ap[0].skill===e.name&&ap[0].parent===e.bonusName&&ap[0].rank===e.rankLevel&&ap[0].bonusSource===true&&ap[0].appliesToNormal===true&&['BEFORE','AFTER'].includes(entryGroupPlan.gutsState)&&ap[0].condition===(entryGroupPlan.gutsState==='BEFORE'?'GUTS_NOT_CONSUMED':'GUTS_CONSUMED');
    };
    const rapidGutsSkill=x=>(x.skillId==null||Number(x.skillId)===131)&&x.name==='根性【果敢】'&&x.level===1&&activeBonusEffects.some(rapidGutsBonus);
-   if(allSkills.some(x=>!fixedEntrySkill(x)&&!rapidNonApplicableSkills.has(x)&&!rapidCommonSkill(x)&&!rapidGutsSkill(x)&&!['attack','affinity','criticalBoost'].includes(x.skillKey)&&![144,23,6,53,...(rapidAmmoSequence?[137,140]:[])].includes(Number(x.skillId)))||activeBonusEffects.some(e=>!fixedEntryBonus(e)&&!rapidGutsBonus(e)))return fail('LBG_RAPID:SKILL_COMBINATION_NOT_ADOPTED');
+   if(allSkills.some(x=>!fixedEntrySkill(x)&&!rapidNonApplicableSkills.has(x)&&!rapidResolvedAttackSkills.has(x)&&!rapidCommonSkill(x)&&!rapidGutsSkill(x)&&!['attack','affinity','criticalBoost'].includes(x.skillKey)&&![144,23,6,53,...(rapidAmmoSequence?[137,140]:[])].includes(Number(x.skillId)))||activeBonusEffects.some(e=>!fixedEntryBonus(e)&&!rapidGutsBonus(e)))return fail('LBG_RAPID:SKILL_COMBINATION_NOT_ADOPTED');
    const s=lightBowgunState,a=weapon.ammo?.find(x=>x.kind==='normal'&&x.level===(rapidShotRule.baseAmmoLevel||1));
    if(!a||a.rapid!==true||!Number.isInteger(a.capacity)||a.capacity<1||(rapidShotRule.effectiveAmmoLevel!==3&&weapon.artiaCalculationEvidence?.capacityEvidence?.bonus>0))return fail('LBG_RAPID:WEAPON_AMMO_NOT_ADOPTED');
    if(s?.shotMode!=='RAPID'||s?.rapidReady!==true||s?.ammoType!=='NORMAL'||s?.ammoLevel!==(rapidShotRule.effectiveAmmoLevel||1)||s?.range!=='CRITICAL'||s?.contactPolicy!=='ALL_FIVE'||s?.normalModeLevel!==0||conditions.mounted===true)return fail('LBG_RAPID:START_CONDITION_REQUIRED');
@@ -1527,6 +1549,7 @@ const powerPhial=root.MHWeaponEffectDB?.switchAxe?.powerPhialSword,elementPhial=
     if(nonTargetWeaponSkill(entry))return {...entry,effectDisposition:'non_damage',reason:Number(entry.skillId)===136?'SOURCE_CONFIRMED_RANGED_MINDS_EYE_NOT_APPLICABLE':'MHDB_WEAPON_SPECIFIC_SKILL_NOT_APPLICABLE',evidenceRef:Number(entry.skillId)===136?'https://game8.jp/mhwilds/673680;https://gamewith.jp/mhwilds/488378':'MHDB_JA_SKILLS:'+entry.skillId};
     if(weapon.kind==='light-bowgun'&&resolvedTechniqueIds.length===1&&resolvedTechniqueIds[0]==='LBG_ELEMENT_FIRST_HIT_REFERENCE'&&Number(entry.skillId)===23&&entry.level===1)return {...entry,effectDisposition:'resolved',reason:'elemental rapid skill is applied by dedicated trigger formula only',evidenceRef:'https://kuroyonhon.com/mhwilds/program/skill.php'};
     if(rapidAmmoSequence&&[137,140].includes(Number(entry.skillId)))return {...entry,effectDisposition:'resolved',reason:'fixed five consumed rounds; existing First/Force rules apply to every Hit of each eligible round',evidenceRef:'HBG_R120_SHOT_SKILL_SOURCE;spec/CURRENT_CONTRACTS.md:C03'};
+    if(rapidHealthExcludedSkills.has(entry))return {...entry,effectDisposition:'resolved',reason:'CANONICAL_HEALTH_EXCLUSION_NO_SIMULTANEOUS_STACKING',evidenceRef:'index.html:standardPowerConditionPlan;STANDARD_CONDITIONAL_ATTACK_RULES',liveGameVerification:'PENDING'};
     if(rapidNonApplicableSkills.has(entry))return {...entry,effectDisposition:'non_damage',reason:Number(entry.skillId)===66?'NON_GUARD_LBG_STANDARD_NORMAL_RAPID':'NO_ELEMENT_STANDARD_NORMAL_RAPID_25_PHYSICAL_HITS',evidenceRef:'index.html:standardPowerConditionPlan;bowgun-normal-reference.js:rapidHit;MHDB_JA_SKILL_'+entry.skillId,liveGameVerification:'PENDING'};
     if(rapidRequested&&Number(entry.skillId)===23)return {...entry,effectDisposition:'resolved',reason:rapidShotRule.scope,evidenceRef:rapidShotRule.skillSource};
     if(Number(entry.skillId)===163&&bladescaleEntries.length)return {...entry,effectDisposition:'resolved',reason:bladescaleRule.scope,evidenceRef:bladescaleRule.source};
