@@ -1,0 +1,3 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),{spawnSync}=require('node:child_process');
+test('zero conversion remains valid with proven static physical companions',()=>{const root=path.resolve(process.env.PRODUCT_ROOT||path.join(__dirname,'..')),r=spawnSync(process.execPath,[path.join(root,'tools/zero-conversion-physical-proof.cjs'),root],{encoding:'utf8',maxBuffer:16*1024*1024});assert.equal(r.status,0,r.stdout+r.stderr);const p=JSON.parse(r.stdout);assert.equal(p.failures.length,0);assert.equal(p.rows.length,294);assert.equal(p.runtimeUnchanged,true);});

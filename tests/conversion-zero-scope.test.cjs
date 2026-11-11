@@ -29,4 +29,16 @@ for(const element of ['thunder','water']){
 }
 for(const mutate of [f=>f.weapon.kind='great-sword',f=>f.root.MHWaterConversionRule.skillId=999,f=>f.root.MHWaterConversionRule.status='UNRESOLVED',f=>delete f.root.MHWaterConversionRule.coefficients['long-sword'],f=>f.root.MHWaterConversionRule.coefficients['long-sword']=0,f=>f.root.MHWaterConversionRule.coefficients['long-sword']=3,f=>f.root.MHWaterConversionRule.coefficients['long-sword']=NaN])check('water',mutate,false);
 check('thunder',f=>f.buildSkills[0].name='Thunder Resistance Conversion',true);
+
+const physical=[{skillId:72,name:'攻撃',skillKey:'attack'},{skillId:3,name:'見切り',skillKey:'affinity'},{skillId:22,name:'超会心',skillKey:'criticalBoost'}];
+for(const [element,kinds]of [['thunder',['great-sword','long-sword','sword-shield','dual-blades','hammer','lance','bow']],['water',['long-sword','bow']]])for(const kind of kinds){
+ for(const item of physical)for(let level=1;level<=5;level++)check(element,f=>f.buildSkills.push({...item,level}),true,kind);
+ check(element,f=>f.buildSkills.push(...physical.map(x=>({...x,level:5}))),true,kind);
+}
+for(const element of ['thunder','water'])for(const item of physical){
+ for(const change of [{level:0},{level:6},{level:1.5},{skillId:999},{name:'UNKNOWN'},{skillKey:'conditionalAttack'}])check(element,f=>f.buildSkills.push({...item,level:1,...change}),false);
+ check(element,f=>f.buildSkills.push({...item,level:1},{...item,level:1}),false);
+ check(element,f=>f.rawSkills.push({...item,level:1},{...item,level:1}),false);
+ check(element,f=>{f.buildSkills.push({...item,level:5});f.rawSkills.push({...item,level:1});},true);
+}
 console.log(JSON.stringify({status:'PASS',assertions,scope:'Actual extracted predicates with synthetic inputs; not full adapter or game accuracy verification'}));

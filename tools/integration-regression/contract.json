@@ -122,7 +122,7 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "a44f23d0477a0547304b809e273f65f8553bc28655cea609073f628470eb5bdc"
+      "sha256": "cc792cde5c0646ebfaeb89e88014d34d1a2a6d0ba351dfbc8e2d24038fb22c80"
     },
     {
       "path": "index.html",
@@ -587,6 +587,22 @@
     {
       "path": "tests/lbg-rapid-heroics.test.cjs",
       "sha256": "dccf81450dc168114f4d63817667217189bfd001ae298f8e0101a8d83945ebc0"
+    },
+    {
+      "path": "tests/conversion-zero-scope.test.cjs",
+      "sha256": "e3ac670dfa78ece15e1cf28353f5f3fa79a1721b7d216e2ebe14833be93e3bfc"
+    },
+    {
+      "path": "tools/zero-conversion-physical-proof.cjs",
+      "sha256": "842a9302b38583e6fa978fb5fe7efddfb49e1c8ae6421b9e5d42f0ebe8c8045e"
+    },
+    {
+      "path": "tools/zero-conversion-physical-browser-proof.cjs",
+      "sha256": "f53178f6c6dff40c73e5854f58420ce0e07b1b2cc071e1f3a2fe4e70e1df83f2"
+    },
+    {
+      "path": "tests/zero-conversion-physical.test.cjs",
+      "sha256": "7813c3e00311244019b9808bec23b0102852941605c571bfab3459566ae3f76d"
     }
   ],
   "tests": [
@@ -615,9 +631,11 @@
     "tests/lbg-rapid-shot-skills.test.cjs",
     "tests/lbg-rapid-nonapplicable.test.cjs",
     "tests/lbg-rapid-resolved-attack.test.cjs",
-    "tests/lbg-rapid-heroics.test.cjs"
+    "tests/lbg-rapid-heroics.test.cjs",
+    "tests/conversion-zero-scope.test.cjs",
+    "tests/zero-conversion-physical.test.cjs"
   ],
-  "expectedTests": 1558,
+  "expectedTests": 1560,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",

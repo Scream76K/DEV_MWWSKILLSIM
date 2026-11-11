@@ -1,0 +1,39 @@
+{
+  "status": "PROPOSED_NOT_APPLIED",
+  "baseCommit": "ef114d02a8bf69e519a5c22b8b8bf103f7167a8f",
+  "contractSha256": "f5b3292c937d78f78e0eed65ab3c5acdd888c7d447407594bdd88a29e853fd3e",
+  "updates": [
+    {
+      "path": "hope-hammer-browser-adapter.js",
+      "oldSha256": "a44f23d0477a0547304b809e273f65f8553bc28655cea609073f628470eb5bdc",
+      "newSha256": "cc792cde5c0646ebfaeb89e88014d34d1a2a6d0ba351dfbc8e2d24038fb22c80"
+    }
+  ],
+  "appendFiles": [
+    {
+      "path": "tests/conversion-zero-scope.test.cjs",
+      "sha256": "e3ac670dfa78ece15e1cf28353f5f3fa79a1721b7d216e2ebe14833be93e3bfc"
+    },
+    {
+      "path": "tools/zero-conversion-physical-proof.cjs",
+      "sha256": "842a9302b38583e6fa978fb5fe7efddfb49e1c8ae6421b9e5d42f0ebe8c8045e"
+    },
+    {
+      "path": "tools/zero-conversion-physical-browser-proof.cjs",
+      "sha256": "f53178f6c6dff40c73e5854f58420ce0e07b1b2cc071e1f3a2fe4e70e1df83f2"
+    },
+    {
+      "path": "tests/zero-conversion-physical.test.cjs",
+      "sha256": "7813c3e00311244019b9808bec23b0102852941605c571bfab3459566ae3f76d"
+    }
+  ],
+  "appendTests": [
+    "tests/conversion-zero-scope.test.cjs",
+    "tests/zero-conversion-physical.test.cjs"
+  ],
+  "oldFileCount": 145,
+  "newFileCount": 149,
+  "oldExpectedTests": 1558,
+  "newExpectedTests": 1560,
+  "preserve": "Existing entries/order/metadata and childTimeoutMs600000 unchanged"
+}

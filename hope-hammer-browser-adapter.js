@@ -887,7 +887,8 @@
   }
 
   // R * c is exactly zero only inside the sourced coefficient domain. This
-  // deliberately covers isolated, empty-equipment ordinary body/Bow fixtures,
+  // covers empty-equipment ordinary body/Bow fixtures with only conversion
+  // and validated static physical companions (attack/affinity/critical damage),
   // not general wrong-element nonapplication or unknown-water coefficients.
   const zeroConversionKinds=['great-sword','long-sword','sword-shield','dual-blades','hammer','lance','bow'];
   // Thunder's sourced SA coefficient may multiply a proved zero, but a POWER
@@ -916,18 +917,19 @@
   };
   const emptyResistance=x=>x?.status==='KNOWN_LIMITED'&&x.armorBase===0&&x.total===0&&x.reason===null&&x.absorptionPlan==null&&Array.isArray(x.missing)&&x.missing.length===0&&Array.isArray(x.contributions)&&x.contributions.length===0&&Array.isArray(x.rows)&&x.rows.length===5&&['head','chest','arms','waist','legs'].every(slot=>x.rows.filter(r=>r.slot===slot&&r.equipped===false&&r.value===0&&r.id==null).length===1);
   const zeroBodyState=x=>x?.element===0&&x.elementType==='none'&&x.elementKnown===true&&x.typeKnown===true&&x.elementStatus==='CONFIRMED_NONE'&&x.elementComponents?.weaponBase===0&&Number.isFinite(x.elementComponents.normalMultiplier)&&x.elementComponents.normalMultiplier>0&&x.elementComponents.normalFlat===0&&Array.isArray(x.activeBonusEffects)&&x.activeBonusEffects.length===0;
+  const zeroConversionPhysical=e=>[{id:72,names:['攻撃','Attack Boost'],key:'attack'},{id:3,names:['見切り','Critical Eye'],key:'affinity'},{id:22,names:['超会心','Critical Boost'],key:'criticalBoost'}].some(r=>Number(e.skillId)===r.id&&r.names.includes(e.name)&&e.skillKey===r.key&&Number.isInteger(e.level)&&e.level>=1&&e.level<=5);
   const isolatedZeroConversion=(skillId,names,field)=>{
    const canonical=e=>Number(e.skillId)===skillId&&names.includes(e.name)&&e.level===1;
    const plan=stats.conditionalConditionPlan,cap=root.MHWElementCapRule;
    const noAppliedEffects=rows=>Array.isArray(rows)&&rows.length===0;
-   return conditions.standardEvaluation===true&&((zeroConversionKinds.includes(weapon.kind)&&weapon.phial==null)||(skillId===165&&zeroConversionSaBody()))&&weapon.specials.length===0&&rawSkills.length<=1&&buildSkills.length===1&&[...rawSkills,...buildSkills].every(canonical)&&
+   return conditions.standardEvaluation===true&&((zeroConversionKinds.includes(weapon.kind)&&weapon.phial==null)||(skillId===165&&zeroConversionSaBody()))&&weapon.specials.length===0&&rawSkills.filter(canonical).length<=1&&buildSkills.filter(canonical).length===1&&[rawSkills,buildSkills].every(rows=>new Set(rows.map(e=>Number(e.skillId))).size===rows.length&&rows.every(e=>canonical(e)||zeroConversionPhysical(e)))&&
     [stats,plan?.normal,plan?.maximum].every(x=>zeroBodyState(x)&&emptyResistance(x?.[field]))&&plan?.maximumElementComponents?.weaponBase===0&&plan.maximumElementComponents.normalFlat===0&&plan.maximumElementComponents.conditionalFlat===0&&Number.isFinite(plan.maximumElementComponents.normalMultiplier)&&plan.maximumElementComponents.normalMultiplier>0&&
     noAppliedEffects(plan.applied)&&noAppliedEffects(plan.groupPlan?.applied)&&noAppliedEffects(plan.selfStatePlan?.normal)&&noAppliedEffects(plan.selfStatePlan?.maximum)&&[conditions,stats,plan.normal,plan.maximum,bowState,dualBladesState,longSwordState,lanceState].every(x=>x?.damageStatsState==null&&x?.stateStatsByState==null)&&conditions.combatBuffs&&['meal','charm','otherBuffs'].every(k=>conditions.combatBuffs[k]===null)&&
     cap?.status==='OWNER_APPROVED_PROVISIONAL'&&Number.isFinite(cap.flat)&&Number.isFinite(cap.multiplier)&&conversionComponentsSupported&&resolvedTechniqueIds.every(id=>{const t=techniques[id];return t?.techniqueId===id&&t.damageStatsState==null&&t.damageStateTransition==null&&t.hpOnlyProvisional==null&&!t.phialReference&&!t.saAwakened&&!t.hhModel&&(!t.referenceKind||(weapon.kind==='bow'&&t.referenceKind==='bow'))&&(t.specialComponents===undefined||(Array.isArray(t.specialComponents)&&t.specialComponents.length===0))&&(weapon.kind==='bow'||(Array.isArray(t.hits)&&t.hits.length>0))&&(t.hits||[]).every(h=>h.damageStatsState==null&&!h.componentSource&&Number.isFinite(h.mv)&&h.mv>=0&&Number.isFinite(h.elementModifier)&&h.elementModifier>=0);});
   };
   const waterZeroNoop=['long-sword','bow'].includes(weapon.kind)&&root.MHWaterConversionRule?.skillId===181&&root.MHWaterConversionRule.status==='OWNER_APPROVED_PROVISIONAL'&&root.MHWaterConversionRule.coefficients?.[weapon.kind]===4&&isolatedZeroConversion(181,['耐性変換【水】'],'waterResistanceInput');
   const thunderZeroNoop=isolatedZeroConversion(165,['耐性変換【雷】','Thunder Resistance Conversion'],'thunderResistanceInput');
-  const zeroConversionDiagnostic={reason:'ISOLATED_EMPTY_EQUIPMENT_ZERO_ADD',scope:'KNOWN_COEFFICIENT_ZERO_RESISTANCE_NORMAL_AND_MAXIMUM_NO_PRODUCERS',verificationStatus:'NOT_GAME_VERIFIED'};
+  const zeroConversionDiagnostic={reason:[...rawSkills,...buildSkills].some(zeroConversionPhysical)?'EMPTY_EQUIPMENT_ZERO_ADD_WITH_STATIC_PHYSICAL_SKILLS':'ISOLATED_EMPTY_EQUIPMENT_ZERO_ADD',scope:'KNOWN_COEFFICIENT_ZERO_RESISTANCE_NORMAL_AND_MAXIMUM_NO_PRODUCERS',verificationStatus:'NOT_GAME_VERIFIED'};
   const waterEntries=allSkills.filter(x=>Number(x.skillId)===181),waterRule=root.MHWaterConversionRule,waterInput=stats.waterResistanceInput;
   const standardConversion=conditions.standardEvaluation===true;
   let conversionMaximumIssue=null;
