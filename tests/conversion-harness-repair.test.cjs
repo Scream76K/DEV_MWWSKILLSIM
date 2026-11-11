@@ -1,0 +1,4 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),{spawnSync}=require('node:child_process');
+const root=path.resolve(process.env.PRODUCT_ROOT||path.join(__dirname,'..'));
+for(const [file,args] of [['thunder-conversion-cap-connection-proof.cjs',['after']],['water-conversion-public-proof.cjs',[]]])test(file+' checks current route and retained legacy boundaries',()=>{const r=spawnSync(process.execPath,[path.join(root,'tools',file),...args],{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024});assert.equal(r.status,0,r.stderr);const j=JSON.parse(r.stdout);assert.equal(j.currentContractVerified,true);assert.equal(j.runtimeUnchanged,true);if(file.startsWith('thunder'))assert.equal(j.explicitCases.length,3);else assert.deepEqual(Object.keys(j.results),['long-sword','bow']);});
