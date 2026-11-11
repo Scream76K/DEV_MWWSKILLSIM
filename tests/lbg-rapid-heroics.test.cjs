@@ -1,0 +1,3 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),path=require('node:path'),{spawnSync}=require('node:child_process');
+test('standard rapid reuses Heroics whole-route health branches',()=>{const root=path.resolve(process.env.PRODUCT_ROOT||path.join(__dirname,'..')),r=spawnSync(process.execPath,[path.join(root,'tools/lbg-rapid-heroics-proof.cjs'),root],{encoding:'utf8',maxBuffer:16*1024*1024});assert.equal(r.status,0,r.stdout+r.stderr);const report=JSON.parse(r.stdout);assert.equal(report.failures.length,0);assert.equal(report.rows.length,816);assert.equal(report.runtimeUnchanged,true);});

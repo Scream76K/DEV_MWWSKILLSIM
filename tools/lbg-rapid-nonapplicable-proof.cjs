@@ -42,7 +42,7 @@ for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEV
   apply(pair.map(id=>[rows.find(x=>x.id===id).name,3]).concat([['ファーストショット',3]]));const first=evaluate();
   apply([['ファーストショット',3]]);const firstBase=evaluate();assert.deepEqual(numeric(first),numeric(firstBase));assert.ok(!omitted(first).some(x=>ids.includes(Number(x.skillId))));
  });
- check('other unsupported effects remain disclosed',()=>{apply([['火事場力',1],['会心撃【属性】',3]]);const r=evaluate();assert.equal(r.status,'OK');assert.ok(omitted(r).some(x=>Number(x.skillId)===87));assert.ok(!omitted(r).some(x=>Number(x.skillId)===82));});
+ check('other unsupported effects remain disclosed',()=>{apply([['暗黒',1],['会心撃【属性】',3]]);const r=evaluate();assert.equal(r.status,'OK');assert.ok(omitted(r).some(x=>Number(x.skillId)===168));assert.ok(!omitted(r).some(x=>Number(x.skillId)===82));});
  for(const skill of rows)for(const [label,patch] of [
   ['id name conflict',`input.weapon.skills.push({skill:{id:82,name:${JSON.stringify(skill.id===82?'災禍転福':skill.name)}},level:1})`],
   ['duplicate build row',`input.skills.push(input.skills.find(x=>x[0]===${JSON.stringify(skill.name)}))`],

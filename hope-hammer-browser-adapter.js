@@ -409,9 +409,11 @@
    const rapidCommonRules=[{id:57,name:'弱点特効',max:5},{id:99,name:'渾身',max:3},{id:120,name:'巧撃',max:5},{id:95,name:'連撃',max:5},...(rapidAmmoSequence?[{id:142,name:'力の解放',max:5},{id:154,name:'フルチャージ',max:5},{id:81,name:'逆襲',max:3},{id:75,name:'攻勢',max:5}]:[])];
    const rapidPlan=stats.conditionalConditionPlan;
    const rapidPlanReady=rapidPlan&&Array.isArray(rapidPlan.pending)&&rapidPlan.pending.length===0&&Array.isArray(entryGroupPlan?.unresolvedEffects)&&entryGroupPlan.unresolvedEffects.length===0;
+   const rapidHealthBranchPending=!!rapidAmmoSequence&&Array.isArray(rapidPlan?.pending)&&rapidPlan.pending.length===1&&rapidPlan.pending[0]==='火事場力:HEROICS_FULL_HEALTH_BRANCH_REQUIRED'&&allSkills.some(x=>Number(x.skillId)===87&&Number.isInteger(x.level)&&x.level>1&&x.level<=5)&&allSkills.some(x=>Number(x.skillId)===154&&Number.isInteger(x.level)&&x.level>0&&x.level<=5)&&Array.isArray(entryGroupPlan?.unresolvedEffects)&&entryGroupPlan.unresolvedEffects.length===0;
+   const rapidAttackPlanReady=rapidPlanReady||rapidHealthBranchPending;
    for(const r of rapidCommonRules){const es=allSkills.filter(x=>Number(x.skillId)===r.id||x.name===r.name);if(es.length>1||es.some(x=>Number(x.skillId)!==r.id||x.name!==r.name||!Number.isInteger(x.level)||x.level<1||x.level>r.max))return fail('LBG_RAPID:COMMON_SKILL_CONTRACT_INVALID');}
-   const rapidResolvedAttackRequired=!!rapidAmmoSequence&&allSkills.some(x=>[67,123].includes(Number(x.skillId)));
-   const rapidCommonSkill=x=>rapidPlanReady&&rapidCommonRules.some(r=>(r.id!==154||!rapidResolvedAttackRequired||rapidResolvedAttackSkills.has(x))&&Number(x.skillId)===r.id&&x.name===r.name&&([57,99,142].includes(r.id)||(rapidPlan.applied||[]).filter(a=>a.skill===r.name&&a.level===x.level).length===1));
+   const rapidResolvedAttackRequired=!!rapidAmmoSequence&&allSkills.some(x=>[67,87,123].includes(Number(x.skillId)));
+   const rapidCommonSkill=x=>rapidAttackPlanReady&&rapidCommonRules.some(r=>(r.id!==154||!rapidResolvedAttackRequired||rapidResolvedAttackSkills.has(x))&&Number(x.skillId)===r.id&&x.name===r.name&&([57,99,142].includes(r.id)||(rapidPlan.applied||[]).filter(a=>a.skill===r.name&&a.level===x.level).length===1));
    // Reuse already adopted non-application, only for the fixed physical-only
    // normal-ammo sequence. This is not an expansion of elemental/guard effects.
    const nonApplicableRules=[{id:13,name:'災禍転福',key:'conditionalAttack'},{id:66,name:'攻めの守勢',key:'conditionalAttack'},{id:82,name:'会心撃【属性】',key:'criticalElement'},{id:133,name:'属性吸収',key:'conditionalAttack'}];
@@ -422,7 +424,7 @@
    }
    const rapidSource=techniqueDb.get('light-bowgun',resolvedTechniqueIds[0]);
    const zeroElement=x=>x?.element===0&&x.elementType==='none'&&x.elementKnown===true&&x.typeKnown===true&&x.elementStatus==='CONFIRMED_NONE'&&x.elementComponents?.weaponBase===0&&x.elementComponents?.normalFlat===0&&Number.isFinite(x.elementComponents?.normalMultiplier)&&x.elementComponents.normalMultiplier>0;
-   const physicalOnlyRapid=rapidAmmoSequence==='LBG_FIVE_ROUNDS_25_HITS'&&rapidPlanReady&&conditions.standardEvaluation===true&&
+   const physicalOnlyRapid=rapidAmmoSequence==='LBG_FIVE_ROUNDS_25_HITS'&&rapidAttackPlanReady&&conditions.standardEvaluation===true&&
     lightBowgunState?.ammoType==='NORMAL'&&lightBowgunState.shotMode==='RAPID'&&lightBowgunState.normalModeLevel===0&&conditions.mounted===false&&
     weapon.specials.length===0&&weapon.phial==null&&[stats,rapidPlan.normal,rapidPlan.maximum].every(zeroElement)&&
     rapidPlan.maximumElementComponents?.weaponBase===0&&rapidPlan.maximumElementComponents?.normalFlat===0&&rapidPlan.maximumElementComponents?.conditionalFlat===0&&Number.isFinite(rapidPlan.maximumElementComponents?.normalMultiplier)&&rapidPlan.maximumElementComponents.normalMultiplier>0&&
@@ -431,8 +433,9 @@
     rapidSource.referenceKind==='light-bowgun'&&Array.isArray(rapidSource.specialComponents)&&rapidSource.specialComponents.length===1&&rapidSource.specialComponents[0]==='AMMO_PHYSICAL'&&rapidSource.phialReference==null&&rapidSource.damageStateTransition==null&&rapidSource.damageStatsState==null;
    // Re-derive adopted attack/HEALTH selection from the single canonical
    // producer. A legitimate excluded row is resolved, never stacked or dropped
-   // as an unsupported skill. Other rapid scopes and health branches stay gated.
-   const resolvedAttackRules=[{id:67,name:'急襲',max:3},{id:123,name:'逆恨み',max:5},{id:154,name:'フルチャージ',max:5}];
+   // as an unsupported skill. Only the canonical Heroics/Peak pending state may
+   // reach the existing whole-route health comparator; other scopes stay gated.
+   const resolvedAttackRules=[{id:67,name:'急襲',max:3},{id:87,name:'火事場力',max:5},{id:123,name:'逆恨み',max:5},{id:154,name:'フルチャージ',max:5}];
    if(rapidResolvedAttackRequired){
     for(const r of resolvedAttackRules){const es=allSkills.filter(x=>Number(x.skillId)===r.id||x.name===r.name);if(es.some(x=>Number(x.skillId)!==r.id||x.name!==r.name||x.skillKey!=='conditionalAttack'||!Number.isInteger(x.level)||x.level<1||x.level>r.max))return fail('LBG_RAPID:RESOLVED_ATTACK_IDENTITY_INVALID');}
     if(physicalOnlyRapid&&typeof root.MHWStandardPowerConditionPlan==='function'){
