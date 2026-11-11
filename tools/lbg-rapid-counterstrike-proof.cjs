@@ -23,22 +23,25 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
   const prepare=()=>w.eval("window.__kind=canonicalWeaponKind(selectedWeapon());window.__target={monster:buildSnapshot().target.monsterId,part:buildSnapshot().target.partId};window.__cond=compareStep5Snapshot();window.__plan=consumerEvaluationPlan(__kind,App.state.combo.moves,__cond,__target);window.__stats={...calcState.stats,conditionalConditionPlan:standardPowerConditionPlan(calcState.stats,calcState.total||{},__kind,__plan.conditions)};window.__input={weapon:realPipelineWeapon(selectedWeapon(),__plan.conditions.lightBowgunState),stats:__stats,target:__target,skills:Object.entries(calcState.total),equipmentSkillsResolved:realPipelineSkillsResolved(),techniqueIds:__plan.techniqueIds,techniqueDb:TechniqueDBEngine,trainingRoom:trainingRoomMonster(),conditions:__plan.conditions,hbgState:__plan.conditions.hbgState,lightBowgunState:__plan.conditions.lightBowgunState,retrievedAt:'FIXTURE_2026_11_05'};");
 
  const traces=r=>r.components.flatMap(c=>c.details?.trace||[]),totals=r=>['normal','maximum'].map(ch=>r.channels[ch].metrics.comboTotalDamage.value);
- apply();const baseline=evaluate();assert.equal(baseline.status,'OK');const base=Object.fromEntries(['normal','maximum'].map(ch=>[ch,traces(baseline.channels[ch])[0]]));
- function verify(r,rank,extra=0){
+ apply();const baseline=evaluate();assert.equal(baseline.status,'OK');const base=read('__stats'),force=weaponId===783?1:0;
+ function verify(r,rank,extra=0,{first=0}={}){
   assert.equal(r.status,'OK',r.reason);assert.equal(r.evaluationPlan.selection,'STANDARD');
   const add=[0,10,15,25][rank]+extra;
   for(const ch of ['normal','maximum']){
-   const ts=traces(r.channels[ch]),active=ch==='maximum',attack=base[ch].attack+(active?add:0),aff=base[ch].affinity;
-   const coefficient=({1:17,2:23.8,3:30.6}[level]/100)*.7*.65*(1+aff/100*.25),hit=attack*coefficient;
-   assert.equal(ts.length,25);near(r.channels[ch].metrics.comboTotalDamage.value,hit*25);
-   near(r.channels[ch].metrics.comboTotalDamage.value-baseline.channels[ch].metrics.comboTotalDamage.value,(active?add:0)*coefficient*25);
-   for(const t of ts){near(t.attack,attack);near(t.affinity,aff);near(t.physical,hit);}
+   const ts=traces(r.channels[ch]),active=ch==='maximum';assert.equal(ts.length,25);let total=0,delta=0;
+   for(let i=0;i<25;i++){
+    const t=ts[i],ordinal=Math.floor(i/5)+1,firstAdd=ordinal===1?[0,5,10,15][first]:0,forceAdd=ordinal===4?[0,3,6,10][force]:0,shotAttackAdd=firstAdd+forceAdd,shotAffinityAdd=ordinal>=4?[0,8,10,12][force]:0;
+    const attack=base.attackTrue+(active?add:0)+shotAttackAdd,aff=Math.min(100,base.affinity+shotAffinityAdd),coefficient=({1:17,2:23.8,3:30.6}[level]/100)*.7*.65*(1+aff/100*.25),hit=attack*coefficient;
+    assert.equal(t.shotOrdinal,ordinal);assert.equal(t.roundOrdinal,ordinal);assert.equal(t.triggerOrdinal,ordinal);near(t.shotAttackAdd,shotAttackAdd);near(t.shotAffinityAdd,shotAffinityAdd);near(t.attack,attack);near(t.affinity,aff);near(t.effectiveAffinity,aff);near(t.physical,hit);total+=hit;delta+=((active?add:0)+firstAdd)*coefficient;
+   }
+   near(r.channels[ch].metrics.comboTotalDamage.value,total);near(r.channels[ch].metrics.comboTotalDamage.value-baseline.channels[ch].metrics.comboTotalDamage.value,delta);
    assert.equal(r.channels[ch].diagnostics.rapidAmmoSequence.liveGameVerification,'PENDING');
-   assert.ok(!(r.channels[ch].diagnostics.unappliedEffects||[]).some(x=>x.skillId===81));
-   for(const e of r.channels[ch].diagnostics.unappliedEffects||[])assert.equal(e.status,'NOT_APPLIED');
-   if(weaponId===783)assert.ok(r.channels[ch].diagnostics.unappliedEffects.some(x=>x.skillId===137&&x.status==='NOT_APPLIED'));
+   const d=r.channels[ch].diagnostics;for(const e of d.unappliedEffects||[])assert.equal(e.status,'NOT_APPLIED');
+   assert.ok(![...(d.unappliedEffects||[]),...(d.ignoredSkillEffects||[])].some(x=>[81,137,140].includes(Number(x.skillId))));
+   if(weaponId===771)assert.ok((d.ignoredSkillEffects||[]).some(x=>Number(x.skillId)===82&&x.status==='IGNORED_UNSUPPORTED_EFFECT'&&x.liveGameVerification==='NOT_VERIFIED'));
   }
  }
+ verify(baseline,0);
  for(let rank=1;rank<=3;rank++)for(const [label,extras,flat] of [
   ['alone',[],0],['peak',[['フルチャージ',5]],20],['evade',[['巧撃',5]],30],['three flats',[['フルチャージ',5],['巧撃',5]],50]
  ])check(`Counterstrike rank ${rank} ${label}`,()=>{
@@ -47,7 +50,7 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
   const plan=read('__stats.conditionalConditionPlan'),applied=plan.applied.filter(x=>x.skill==='逆襲'&&x.level===rank);assert.equal(applied.length,1);assert.equal(applied[0].condition,'KNOCKBACK_BUFF');assert.equal(applied[0].attackAdd,[0,10,15,25][rank]);near(plan.attackComponents.conditionalFlat,[0,10,15,25][rank]+flat);
   return {totals:totals(r),maximumAttackAdd:[0,10,15,25][rank]+flat};
  });
- check('first shot 140 remains not applied',()=>{apply([['逆襲',3],['ファーストショット',3]]);const r=evaluate();verify(r,3);for(const ch of ['normal','maximum'])assert.ok(r.channels[ch].diagnostics.unappliedEffects.some(x=>x.skillId===140&&x.status==='NOT_APPLIED'));});
+ check('first shot 140 applies only to the first five hits with Counterstrike',()=>{apply([['逆襲',3],['ファーストショット',3]]);verify(evaluate(),3,0,{first:3});});
  check('three flats save load comparison preserves inputs',()=>{
   apply([['逆襲',3],['フルチャージ',5],['巧撃',5]]);const r=evaluate();verify(r,3,50);
   w.document.getElementById('buildName').value='counter-A';click('saveBuild');apply();w.document.getElementById('buildName').value='counter-B';click('saveBuild');

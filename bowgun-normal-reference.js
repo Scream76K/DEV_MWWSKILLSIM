@@ -66,12 +66,22 @@
   if(rule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isInteger(o.hitIndex)||o.hitIndex<0||o.hitIndex>=rule.hitCount)throw Error('LBG_RAPID:HIT_CONTRACT_INVALID');
   if(s?.shotMode!=='RAPID'||s.rapidReady!==true||s.range!=='CRITICAL'||s.contactPolicy!=='ALL_FIVE'||s.weaponAmmoEntry?.rapid!==true)throw Error('LBG_RAPID:STATE_INVALID');
   if(o.rapidUp!==0&&o.rapidUp!==rule.skillLevel)throw Error('LBG_RAPID:SKILL_LEVEL_INVALID');
-  const mv=valid(engine.get('light-bowgun',rule.sourceTechniqueId)?.specialSourceValues?.mvPerHit,0,100),attack=valid(o.attack,0,10000),hz=valid(o.physicalHitzone,0,100),aff=valid(o.affinity,-100,100),critMult=valid(o.criticalMultiplier,1,2),crit=aff>=0?1+aff/100*(critMult-1):1+aff/100*.25,up=o.rapidUp?rule.skillMultiplier:1;
+  const shotSkills=o.sequenceOrdinal===undefined?null:rapidSequenceShotSkills(o,engine);
+  const mv=valid(engine.get('light-bowgun',rule.sourceTechniqueId)?.specialSourceValues?.mvPerHit,0,100),attack=valid(o.attack,0,10000)+(shotSkills?.shotAttackAdd??0),hz=valid(o.physicalHitzone,0,100),aff=Math.min(100,valid(o.affinity,-100,100)+(shotSkills?.shotAffinityAdd??0)),critMult=valid(o.criticalMultiplier,1,2),crit=aff>=0?1+aff/100*(critMult-1):1+aff/100*.25,up=o.rapidUp?rule.skillMultiplier:1;
   const normalUpRules=engine.get('light-bowgun','LBG_NORMAL_REFERENCE_RULES')?.specialSourceValues?.normalUp,normalUpLevel=o.normalUp??0;
   if(!Number.isInteger(normalUpLevel)||!Object.hasOwn(normalUpRules||{},normalUpLevel))throw Error('LBG_RAPID:NORMAL_UP_LEVEL_INVALID');
   const normalUp=valid(normalUpRules[normalUpLevel],1,2);
   const physical=physicalHit(attack,mv,hz,crit,rule.physicalModifier*rule.rangeModifier*up*normalUp);
-  return {comparisonPower:physical,physical,element:0,scope:rule.scope,state:{...s},trace:[{hit:o.hitIndex+1,mv,attack,affinity:aff,criticalExpectation:crit,physical,element:0,rapidModifier:rule.physicalModifier,rapidUp:up,normalUp,rangeModifier:rule.rangeModifier}],liveGameVerification:'PENDING'};
+  return {comparisonPower:physical,physical,element:0,scope:rule.scope,state:{...s},trace:[{hit:o.hitIndex+1,mv,attack,affinity:aff,criticalExpectation:crit,physical,element:0,rapidModifier:rule.physicalModifier,rapidUp:up,normalUp,rangeModifier:rule.rangeModifier,...(shotSkills?{shotOrdinal:o.sequenceOrdinal,roundOrdinal:o.sequenceOrdinal,triggerOrdinal:o.sequenceOrdinal,shotAttackAdd:shotSkills.shotAttackAdd,shotAffinityAdd:shotSkills.shotAffinityAdd,effectiveAffinity:aff}:{})}],liveGameVerification:'PENDING'};
+ }
+ function rapidSequenceShotSkills(o,engine){
+  if(!Number.isInteger(o.sequenceOrdinal)||o.sequenceOrdinal<1||o.sequenceOrdinal>5)throw Error('LBG_RAPID_FIVE:SHOT_ORDINAL_INVALID');
+  const source=engine.get('heavy-bowgun','HBG_NORMAL_REFERENCE_RULES')?.specialSourceValues,rules=source?.shotSkills;
+  // Reuse the existing HBG source and evaluator. Only the consumed-round unit is
+  // newly adopted; no magazine state or user-entered shot position is required.
+  const ranks=(key,min,max)=>Array.isArray(rules?.[key])&&rules[key].length===4&&rules[key].every(n=>typeof n==='number'&&Number.isFinite(n)&&n>=min&&n<=max)&&rules[key][0]===min;
+  if(source?.status!=='SOURCE_CONFIRMED'||source.scope!=='EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO'||!['firstAttack','forceAttack','forceAffinity'].every(key=>ranks(key,0,100))||!['firstElement','forceElement'].every(key=>ranks(key,1,2))||!Array.isArray(rules.forceAttackOrdinals)||rules.forceAttackOrdinals.length!==2||rules.forceAttackOrdinals[0]!==4||rules.forceAttackOrdinals[1]!==6||rules.forceAffinityStart!==4)throw Error('LBG_RAPID_FIVE:SHOT_SKILL_SOURCE_UNRESOLVED');
+  return shotSkillBonuses(o,o.state,rules,o.sequenceOrdinal);
  }
  function selectStandardAmmo(weapon,state={}){
   const kind=weapon?.kind,rows=Array.isArray(weapon?.ammo)?weapon.ammo.filter(a=>a?.kind==='normal'):null;
@@ -91,8 +101,8 @@
   const selection=selectStandardAmmo({kind:'light-bowgun',ammo:[s.weaponAmmoEntry]},s);
   if(selection.reason||selection.techniqueId!==o.techniqueId||s.ammoType!=='NORMAL'||s.ammoLevel!==selection.ammoLevel||s.normalModeLevel!==0)throw Error('LBG_RAPID_FIVE:WEAPON_AMMO_OR_STATE_UNSUPPORTED');
   const unappliedEffects=[];
-  for(const [key,id] of [['firstShot',140],['forceShot',137]]){const level=o[key]??0;if(!Number.isInteger(level)||level<0||level>3)throw Error('LBG_RAPID_FIVE:SHOT_SKILL_LEVEL_INVALID');if(level)unappliedEffects.push({skillId:id,level,reason:'RAPID_ALL_FIVE_HIT_EFFECT_NOT_VERIFIED',status:'NOT_APPLIED'});}
-  const trace=[];for(let roundOrdinal=1;roundOrdinal<=5;roundOrdinal++)for(let hitIndex=0;hitIndex<5;hitIndex++){const r=rapidHit({...o,hitIndex},engine);if(!Number.isFinite(r.physical))throw Error('LBG_RAPID_FIVE:INCOMPLETE_COMPONENT');trace.push({...r.trace[0],roundOrdinal,triggerOrdinal:roundOrdinal});}
+  for(const key of ['firstShot','forceShot']){const level=o[key]??0;if(!Number.isInteger(level)||level<0||level>3)throw Error('LBG_RAPID_FIVE:SHOT_SKILL_LEVEL_INVALID');}
+  const trace=[];for(let roundOrdinal=1;roundOrdinal<=5;roundOrdinal++)for(let hitIndex=0;hitIndex<5;hitIndex++){const r=rapidHit({...o,hitIndex,sequenceOrdinal:roundOrdinal},engine);if(!Number.isFinite(r.physical))throw Error('LBG_RAPID_FIVE:INCOMPLETE_COMPONENT');trace.push(r.trace[0]);}
   const physical=trace.reduce((a,t)=>a+t.physical,0);
   return {status:unappliedEffects.length?'PARTIAL_REFERENCE':'SOURCE_REFERENCE',physical,comparisonPower:physical,element:0,trace,unappliedEffects,sequence:{consumedRounds:5,triggerCount:5,contactCount:25,magazinePolicy:'IGNORED_NO_RELOAD',scope:'NORMAL_RAPID_FIVE_CONSUMED_ROUNDS'},liveGameVerification:'PENDING',sourceGameVersion:'NOT_ESTABLISHED'};
  }

@@ -189,3 +189,11 @@ The standard five-consumed-round/25-contact route now accepts source-valid Count
 
 ### Standard LBG rapid Foray75 follow-up (eb12797 baseline)
 The standard five-consumed-round/25-contact route now admits source-valid Foray75 only through the existing resolved conditional plan and one matching applied row. The retained DB skill75 ranks182–186 and existing STANDARD producers specify poison/paralysis on a large monster, attack +6/+8/+10/+12/+15 and affinity +0/+5/+10/+15/+20. Normal remains inactive; maximum reuses the active-condition attack and affinity once per stat, with100% affinity cap. The global classification and explicit single-trigger route are not expanded. This is not a status-infliction or uptime model; rapid First/Force and other unadopted effects remain omitted and disclosed. See [scope and evidence](../docs/reports/lbg-rapid-foray-20261111/README.md).
+
+### C03 標準ライト速射First / Forceの後続採用（5c7013a基準）
+
+2026-11-11の直接指示「５発撃つので、初弾5ヒットにファーストショット適応、4&5発目にフォースショット適応です」「難しく考えなくていいです」「５発固定で考えているので、何発目かは管理しなくてもいい」「５発中１発はファーストショット適用、２発はフォースしょっちゅう適応で考えればいいです」に従い、STANDARDライト通常弾速射の固定5発25Hitへ自動適用します。追加の射順入力やユーザーによる管理は不要です。
+
+既存HBG `shotSkillBonuses` とTechnique DBの係数を共用します。First140は1発目の5Hitに攻撃加算。Force137は既存内訳のまま、4発目の5Hitに攻撃加算、4・5発目の計10Hitに会心加算します。5発目の攻撃加算や新係数は追加しません。通常・最大で各加算を一度だけ消費し、装填容量・リロード・保存された射順ではリセットしません。
+
+この採用範囲に限り上記のFirst/Force未反映記述を上書きします。他の未対応効果の注記・計算継続、通常弾強化・速射強化・既存条件効果、非速射5発15Hit、HBG10射30接触、明示1トリガー境界、保存入力・対象識別は維持します。限定候補検証であり、実ゲーム精度・全組合せ・公開の認定ではありません。[実装範囲と証拠](../docs/reports/lbg-rapid-shot-skills-20261111/README.md)。
