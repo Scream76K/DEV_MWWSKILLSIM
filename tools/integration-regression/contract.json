@@ -122,7 +122,7 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "77bb9b92b9497f8dcd8f91191d38a5b295974e467960b37f2025bc99f6f11ff6"
+      "sha256": "308ea76e3875ead1f391647ff0d261b91f577b27ed0a2de80030f139d12a777b"
     },
     {
       "path": "index.html",
@@ -515,6 +515,18 @@
     {
       "path": "tests/integration-ci-dependency.test.cjs",
       "sha256": "b7e0dc02502d7ba2f212245a0db4e3f4385f8d1e2d99816a8b7b750e1aaf853f"
+    },
+    {
+      "path": "tests/lbg-rapid-counterstrike.test.cjs",
+      "sha256": "067d7294acd13a00c641b7df718efeb5161c4bd7c300cfb2dc2afcf332c5c788"
+    },
+    {
+      "path": "tools/lbg-rapid-counterstrike-proof.cjs",
+      "sha256": "b452759f92ddfb07474fe66dffe4e8c700a3150d5d1a20e700be284b321659c2"
+    },
+    {
+      "path": "tools/lbg-rapid-counterstrike-browser-proof.cjs",
+      "sha256": "ae5d814f6cec32c87ea3d8ebe56f03ced4ba81d432ef2dae909dfe7c442f31c5"
     }
   ],
   "tests": [
@@ -537,9 +549,10 @@
     "tests/combo-skill-disclosure.test.cjs",
     "tests/skill-audit-dispositions.test.cjs",
     "tests/lbg-rapid-common-skills.test.cjs",
-    "tests/integration-ci-dependency.test.cjs"
+    "tests/integration-ci-dependency.test.cjs",
+    "tests/lbg-rapid-counterstrike.test.cjs"
   ],
-  "expectedTests": 1552,
+  "expectedTests": 1553,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
