@@ -1,3 +1,17 @@
+# Current status after owner approval
+
+Product and contract saved locally in commit `576752b4578f2662b55a4baea6993d612c3e5a5e` on the existing work branch. No new branch or GitHub push. The exact latest saved commit is `git rev-parse HEAD`.
+
+The owner approved the enumerated 9 hash updates, 3 new inputs and 1 test. Only those changes were applied. Existing input/test order and all other metadata are preserved: 139 inputs, expected 1556 aggregate tests. Contract SHA-256: `bf730d6419427a5bdcd03e1c354d0455c618461e112cc2c34640548e530328e0`. All 139 input hashes match. Independent review found no blocker.
+
+After contract registration, 56 explicitly selected tests passed: 21 focused regressions, 5 CI dependency checks and 30 synthetic freshness checks. Evidence: `../evidence/lbg-rapid-nonapplicable-20261111/post-contract-tests.log` and `contract-applied.json`. The full 1556 aggregate was NOT run. No full-suite or live-game accuracy claim.
+
+Bundle creation and restoration receipts belong in the same evidence directory as `save-receipt.json`. GitHub publication remains subject to separate approval. An encoding error prevented the first status-document update before the product commit; this documentation-only follow-up corrects that status without rewriting history. Product, tests and contract bytes are unchanged.
+
+The original candidate report below is preserved as historical evidence. Its pending-approval/uncommitted statements describe the earlier stage and are superseded by this section.
+
+---
+
 # 標準ライト速射の既存非適用効果の共通判定
 
 ## 状態

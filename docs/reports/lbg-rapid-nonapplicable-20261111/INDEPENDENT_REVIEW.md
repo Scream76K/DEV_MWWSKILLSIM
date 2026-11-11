@@ -1,3 +1,13 @@
+# Post-approval independent verification
+
+The current contract exactly equals the previous HEAD contract with only the approved 9 hash substitutions, 3 appended inputs, 1 appended test and expected count 1556. Existing order and other metadata are unchanged. All 139 hashes match; contract hash is `bf730d6419427a5bdcd03e1c354d0455c618461e112cc2c34640548e530328e0`.
+
+Product hash remains `36802461ecca1200986f16c76814b8a7c562a9475f2d14d46561ef7b144215fb`. Numeric and five browser-proof bound hashes still match. The reviewer reconfirmed unchanged numbers and snapshots across 48 cases / 96 channels and the 56-pass post-contract log. No blocking finding. No full aggregate execution or publication approval is implied.
+
+The original pre-approval review is preserved below.
+
+---
+
 # 独立レビュー
 
 対象adapter: `36802461ecca1200986f16c76814b8a7c562a9475f2d14d46561ef7b144215fb`。最終候補に阻害事項なし。
