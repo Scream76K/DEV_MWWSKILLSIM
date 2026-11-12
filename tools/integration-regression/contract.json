@@ -122,7 +122,7 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "d61d60640c8d816607cc488f1db8054a710958d4184a4b39f18035561d8f0ce1"
+      "sha256": "f15792a3088d97a7438834f829a2e7c8a4c08a933517aed515dc698d568bfa4d"
     },
     {
       "path": "index.html",
@@ -667,6 +667,14 @@
     {
       "path": "tests/fixtures/offset-maximum-inputs.json",
       "sha256": "7fc4f6f046e4dd695ad7e9162829dd81d2db674de48689ed075106e9f3a1a122"
+    },
+    {
+      "path": "tests/gog178-components.test.cjs",
+      "sha256": "55376d3ea407ff1a2aeb281a66cf289da7d72cbc44fd5606599f101e38c6c914"
+    },
+    {
+      "path": "tests/fixtures/gog178-inputs.json",
+      "sha256": "cce73908fb454d5936ce02ce9ecd0d2d7709f23010cd07a57c630a359f08cb52"
     }
   ],
   "tests": [
@@ -704,9 +712,10 @@
     "tools/fortify-condition-dom.test.cjs",
     "tools/conditional-element-dom.test.cjs",
     "tests/lbg-owner-exclusions.test.cjs",
-    "tests/offset-maximum.test.cjs"
+    "tests/offset-maximum.test.cjs",
+    "tests/gog178-components.test.cjs"
   ],
-  "expectedTests": 1586,
+  "expectedTests": 1588,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",

@@ -55,3 +55,7 @@ The 1983109 follow-up adds one public LBG regression (original 34/74/155 equipme
 ## Clash / offset maximum assumptions
 
 ID62/70 retain their weapon sets and normal inactivity. HBG70 uses the adopted maximum buff after clash (no custom required) or offset (offset-capable custom required); result notes state calculation assumptions, not verified equipment/action. HH melody capability remains required. One regression covers 56 real equipment inputs, HBG restoration and synthetic scope/activation guards. Contract: 1,586 tests, 35 entries, 165 pinned inputs.
+
+### ID178 bounded component connection (51fee2e working tree)
+
+Integration now runs 1588 assertions (two additional tests). Formal 28 inputs cover both ranks across 14 weapons; matched grant-free controls are synthetic. Completed weapon element is consumed once by adopted CB R/H body/axe components and the exact GL owner sequence. Normal ammo remains NO_ELEMENT_GRANT. Unknown component sources and invalid series activations remain rejected. Fixed fire/impact components and normal channels are unchanged. This is not live-game verification or adoption of elemental ammo/other dedicated routes.
