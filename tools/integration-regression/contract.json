@@ -126,7 +126,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "ea282edcd69b885a7c685bc3a9ed3a81e6d532cfe62205ab0f71e0b4ba748a2c"
+      "sha256": "db7e8d7307a6f363d7ea3111879ace1fd61a200f53fcfc3b39c38ec1030fa89f"
     },
     {
       "path": "observed-shelling.js",
@@ -651,6 +651,14 @@
     {
       "path": "evidence/conditional-attack-mhdb-20261007.json",
       "sha256": "281883f1dd29661e64e6c80b1323622e0e7dd16bdfef12d3a309079d61941a38"
+    },
+    {
+      "path": "tests/lbg-owner-exclusions.test.cjs",
+      "sha256": "62cc3a570e88632201a40d74a83de356f619a95e9eae7c0fb47f8a5c52432e91"
+    },
+    {
+      "path": "tests/fixtures/lbg-owner-exclusions-inputs.json",
+      "sha256": "a17e32bddf52cc838d8c17b2661305db6a5896365b2530bb69e7d85e55e526fc"
     }
   ],
   "tests": [
@@ -686,9 +694,10 @@
     "tests/owner-conditional-notes.test.cjs",
     "tools/power-conditions-dom.test.cjs",
     "tools/fortify-condition-dom.test.cjs",
-    "tools/conditional-element-dom.test.cjs"
+    "tools/conditional-element-dom.test.cjs",
+    "tests/lbg-owner-exclusions.test.cjs"
   ],
-  "expectedTests": 1584,
+  "expectedTests": 1585,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",

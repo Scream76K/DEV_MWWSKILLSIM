@@ -47,3 +47,7 @@ The current contract runs 1,584 tests across the same 33 entries and 161 pinned 
 ### Required diagnostics assertion controls
 
 Supported single-trigger paired results now require diagnostics on both normal and maximum channels for both baseline and active results. The same assertion function is exercised with 16 test-only clone defects (82/133 × two channels × both/baseline/active diagnostics missing or required note missing). All must throw; the valid outputs are checked before and after these controls. UNAVAILABLE results are not required to have channels and retain exact unrelated-refusal checks. These are assertion-control checks within the existing proof, not additional public calculations or TAP tests; the contract stays 1,584 tests / 33 entries / 161 inputs.
+
+## Direct-series exclusion classification follow-up
+
+The 1983109 follow-up adds one public LBG regression (original 34/74/155 equipment inputs, removal/restoration, strict activation negatives and retained veil resistance). Current contract: 1,585 tests, 34 entries, 163 pinned inputs. ID34/153 direct attack exclusion does not remove ID153 resistance contributions. No new coefficients or game-verification claim. Historical counts above remain unchanged.
