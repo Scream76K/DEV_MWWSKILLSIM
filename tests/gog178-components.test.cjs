@@ -14,15 +14,21 @@ test('178 exact public 28 inputs, element-only application, removal and snapshot
  const log=[];
  for(const c of f.cases){
   const hash=crypto.createHash('sha256').update(JSON.stringify(c.input)).digest('hex');assert.equal(hash,c.inputHash);
-  const r=run(c.input);for(const ch of ['normal','maximum']){assert.equal(r.channels[ch].metrics.comboTotalDamage.status,'available',c.label);near(r.channels[ch].metrics.comboTotalDamage.value,c.expected[ch],c.label+ch);}
+  // Keep original input/hash and maximum oracle. Explicit FULL also activates
+  // formal attached Peak in normal; derive its flat using the independent slope.
+  const input={...structuredClone(c.input),selectedHp:'FULL_HP'};
+  const hpOracle=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/selected-hp-inputs.json'))).profiles.find(p=>p.kind===input.weaponKind);
+  const peakLevel=Math.min(5,Object.values(input.armor).reduce((n,id)=>n+(f.armor.find(a=>a.id===Number(id))?.skills||[]).filter(s=>s.skill?.id===154).reduce((a,s)=>a+s.level,0),0));
+  const expected={normal:c.expected.normal+hpOracle.flatSlope*[0,3,6,10,15,20][peakLevel],maximum:c.expected.maximum};
+  const r=run(input);for(const ch of ['normal','maximum']){assert.equal(r.channels[ch].metrics.comboTotalDamage.status,'available',c.label);near(r.channels[ch].metrics.comboTotalDamage.value,expected[ch],c.label+ch);}
   assert.ok(!JSON.stringify(r).includes('GOG:DEDICATED_COMPONENT_NOT_ADOPTED'),c.label);assert.ok(!JSON.stringify(r).includes('LBG_RAPID:SKILL_COMBINATION_NOT_ADOPTED'),c.label);
   const saved=JSON.parse(w.eval('JSON.stringify(buildSnapshot())'));assert.deepEqual(run(saved),r);
   // Synthetic matched activation-off control: remove only the 178 grant from
   // copied formal armor records, preserving every attached skill. Not a claim
   // that this grant-free equipment exists in game.
   w.eval('window.__gogArmor=DB.armor.map(a=>a.skills);DB.armor.forEach(a=>{a.skills=a.skills.filter(s=>s.skill?.id!==178);});');
-  const off=run(c.input);w.eval('DB.armor.forEach((a,i)=>{a.skills=window.__gogArmor[i];});');
-  const restored=run(c.input);assert.deepEqual(restored,r);assert.equal(crypto.createHash('sha256').update(JSON.stringify(c.input)).digest('hex'),hash);
+  const off=run(input);w.eval('DB.armor.forEach((a,i)=>{a.skills=window.__gogArmor[i];});');
+  const restored=run(input);assert.deepEqual(restored,r);assert.equal(crypto.createHash('sha256').update(JSON.stringify(c.input)).digest('hex'),hash);
   near(off.channels.normal.metrics.comboTotalDamage.value,r.channels.normal.metrics.comboTotalDamage.value,c.label+' normal inactive');
   const a=routes(off),b=routes(r);assert.equal(a.length,b.length);
   for(let j=0;j<a.length;j++){
@@ -35,7 +41,7 @@ test('178 exact public 28 inputs, element-only application, removal and snapshot
     }else if(['gunlance','charge-blade','light-bowgun','heavy-bowgun'].includes(c.input.weaponKind))near(bc[i].value,ac[i].value,c.label+' non-element component');
    }
   }
-  log.push({label:c.label,inputHash:hash,result:r,offResult:off,restored:true,expected:c.expected});
+  log.push({label:c.label,originalInputHash:hash,input,inputHash:crypto.createHash('sha256').update(JSON.stringify(input)).digest('hex'),peakLevel,result:r,offResult:off,restored:true,expected});
  }
  assert.deepEqual(errors,[]);assert.equal(log.length,28);
  if(process.env.GOG_RESULT_FILE)fs.writeFileSync(process.env.GOG_RESULT_FILE,JSON.stringify({publicExecutions:112,realEquipmentInputs:28,syntheticMatchedOff:28,rows:log,errors},null,2));

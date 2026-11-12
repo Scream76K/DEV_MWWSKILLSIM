@@ -16,7 +16,7 @@ for(const [weaponId,level,powder] of [[783,1,'NONE'],[763,2,'NONE'],[771,3,'NONE
  try{
   w.__data=pack.data;w.eval('DB=normalizeDB({...__data,weapons:consolidateArtiaFixedVariantRows(__data.weapons)});weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters();');
   const snapshot=structuredClone(cases.find(c=>c.kind==='light-bowgun').inputSnapshots[0]);
-  Object.assign(snapshot,{weaponId:String(weaponId),target:{monsterId:'13',partId:'2700'},armor:{},decos:{},charmCustom:{skills:[],slots:[0,0,0],weaponSlots:[]}});
+  Object.assign(snapshot,{selectedHp:'FULL_HP',weaponId:String(weaponId),target:{monsterId:'13',partId:'2700'},armor:{},decos:{},charmCustom:{skills:[],slots:[0,0,0],weaponSlots:[]}});
   snapshot.combo.moves=[];snapshot.combo.lightBowgunState={ammoType:'NORMAL',ammoLevel:level,shotMode:'RAPID',rapidReady:true,loadedRounds:0,contactPolicy:'ALL_FIVE',range:'CRITICAL',normalModeLevel:0,normalPowder:powder,specialMagazine:'NONE',magazineCapacity:1,shotOrdinal:99,fullMagazine:false};
   const prepare=()=>w.eval("window.__kind=canonicalWeaponKind(selectedWeapon());window.__target={monster:buildSnapshot().target.monsterId,part:buildSnapshot().target.partId};window.__cond=compareStep5Snapshot();window.__plan=consumerEvaluationPlan(__kind,App.state.combo.moves,__cond,__target);window.__stats={...calcState.stats,conditionalConditionPlan:standardPowerConditionPlan(calcState.stats,calcState.total||{},__kind,__plan.conditions)};window.__input={weapon:realPipelineWeapon(selectedWeapon(),__plan.conditions.lightBowgunState),stats:__stats,target:__target,skills:Object.entries(calcState.total),equipmentSkillsResolved:realPipelineSkillsResolved(),techniqueIds:__plan.techniqueIds,techniqueDb:TechniqueDBEngine,trainingRoom:trainingRoomMonster(),conditions:__plan.conditions,hbgState:__plan.conditions.hbgState,lightBowgunState:__plan.conditions.lightBowgunState,retrievedAt:'FIXTURE_2026_11_05'};");
   const apply=(skills=[])=>{w.__snapshot={...snapshot,charmCustom:{...snapshot.charmCustom,skills:skills.map(([name,level])=>({name,level,type:'weapon'}))}};w.eval('applyBuildSnapshot(__snapshot)');click('calcBuild');prepare();};
@@ -24,13 +24,13 @@ for(const [weaponId,level,powder] of [[783,1,'NONE'],[763,2,'NONE'],[771,3,'NONE
   apply();const baseline=evaluate();assert.equal(baseline.status,'OK',baseline.reason);
   const baselineStats=read('__stats'),base=Object.fromEntries(['normal','maximum'].map(ch=>[ch,{attack:baselineStats.attackTrue,affinity:baselineStats.affinity}]));
   const firstAttack=[0,5,10,15],forceAttack=[0,3,6,10],forceAffinity=[0,8,10,12];
-  function verify(r,first,force,{normalUp=1,rapidUp=1,flat=0,affinity=0,critBonus=.25,baseAffinity=null}={}){
+  function verify(r,first,force,{normalUp=1,rapidUp=1,flat=0,peak=0,affinity=0,critBonus=.25,baseAffinity=null}={}){
    assert.equal(r.status,'OK',r.reason);if(r.evaluationPlan)assert.equal(r.evaluationPlan.selection,'STANDARD');
    for(const ch of ['normal','maximum']){
     const ts=traces(r.channels[ch]);assert.equal(ts.length,25);let sum=0;
     for(let i=0;i<25;i++){
      const ordinal=Math.floor(i/5)+1,add=(ordinal===1?firstAttack[first]:0)+(ordinal===4?forceAttack[force]:0),affAdd=ordinal>=4?forceAffinity[force]:0;
-     const attack=base[ch].attack+(ch==='maximum'?flat:0)+add,aff=Math.min(100,(baseAffinity??base[ch].affinity)+(ch==='maximum'?affinity:0)+affAdd);
+     const attack=base[ch].attack+(ch==='maximum'?flat:peak)+add,aff=Math.min(100,(baseAffinity??base[ch].affinity)+(ch==='maximum'?affinity:0)+affAdd);
      const hit=attack*({1:.17,2:.238,3:.306}[level])*.7*.65*normalUp*rapidUp*(1+aff/100*(aff<0?.25:critBonus));
      const t=ts[i];assert.equal(t.shotOrdinal,ordinal);assert.equal(t.roundOrdinal,ordinal);assert.equal(t.triggerOrdinal,ordinal);assert.equal(t.hit,i%5+1);
      near(t.shotAttackAdd,add);near(t.shotAffinityAdd,affAdd);near(t.attack,attack);near(t.affinity,aff);near(t.effectiveAffinity,aff);near(t.physical,hit);sum+=hit;
@@ -59,7 +59,7 @@ for(const [weaponId,level,powder] of [[783,1,'NONE'],[763,2,'NONE'],[771,3,'NONE
    ['rapid up',[['速射強化',1]],{rapidUp:1.05}],
    ['Foray excluded',[['攻勢',5]],{flat:0,affinity:0}],
    ['Latent Power',[['力の解放',5]],{affinity:50}],
-   ['Peak Performance',[['フルチャージ',5]],{flat:20}],
+   ['Peak Performance',[['フルチャージ',5]],{flat:20,peak:20}],
    ['Counterstrike',[['逆襲',3]],{flat:25}],
    ['critical boost',[['超会心',5]],{critBonus:.4}]
   ])check('coexisting '+label,()=>{apply([['ファーストショット',3],['フォースショット',weaponId===783?2:3],...extras]);const actual=read('calcState.total');for(const [name,rank] of [['ファーストショット',3],['フォースショット',3],...extras])assert.equal(actual[name],rank);const r=evaluate();verify(r,3,3,options);return {totals:totals(r)};});

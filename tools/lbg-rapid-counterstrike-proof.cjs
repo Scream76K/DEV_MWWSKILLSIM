@@ -16,7 +16,7 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
  try{
  w.__data=pack.data;w.eval('DB=normalizeDB({...__data,weapons:consolidateArtiaFixedVariantRows(__data.weapons)});weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters();');
  const snapshot=structuredClone(cases.find(c=>c.kind==='light-bowgun').inputSnapshots[0]);
- Object.assign(snapshot,{weaponId:String(weaponId),target:{monsterId:'13',partId:'2700'},armor:{},decos:{},charmCustom:{skills:[],slots:[0,0,0],weaponSlots:[]}});
+ Object.assign(snapshot,{selectedHp:'FULL_HP',weaponId:String(weaponId),target:{monsterId:'13',partId:'2700'},armor:{},decos:{},charmCustom:{skills:[],slots:[0,0,0],weaponSlots:[]}});
  snapshot.combo.moves=[];snapshot.combo.lightBowgunState={ammoType:'NORMAL',ammoLevel:level,shotMode:'RAPID',rapidReady:true,loadedRounds:0,contactPolicy:'ALL_FIVE',range:'CRITICAL',normalModeLevel:0,normalPowder:'NONE',specialMagazine:'NONE',magazineCapacity:4,shotOrdinal:1,fullMagazine:true};
  const apply=(skills=[],id=weaponId)=>{w.__snapshot={...snapshot,weaponId:String(id),charmCustom:{...snapshot.charmCustom,skills:skills.map(([name,level])=>({name,level,type:'armor'}))}};w.eval('applyBuildSnapshot(__snapshot)');click('calcBuild');prepare();};
  const evaluate=()=>read('evaluateConsumerCombat({kind:__kind,moves:[],conditions:__cond,target:__target,plan:__plan})');
@@ -24,15 +24,15 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
 
  const traces=r=>r.components.flatMap(c=>c.details?.trace||[]),totals=r=>['normal','maximum'].map(ch=>r.channels[ch].metrics.comboTotalDamage.value);
  apply();const baseline=evaluate();assert.equal(baseline.status,'OK');const base=read('__stats'),force=weaponId===783?1:0;
- function verify(r,rank,extra=0,{first=0}={}){
+ function verify(r,rank,extra=0,{first=0,peak=0}={}){
   assert.equal(r.status,'OK',r.reason);assert.equal(r.evaluationPlan.selection,'STANDARD');
   const add=[0,10,15,25][rank]+extra;
   for(const ch of ['normal','maximum']){
    const ts=traces(r.channels[ch]),active=ch==='maximum';assert.equal(ts.length,25);let total=0,delta=0;
    for(let i=0;i<25;i++){
     const t=ts[i],ordinal=Math.floor(i/5)+1,firstAdd=ordinal===1?[0,5,10,15][first]:0,forceAdd=ordinal===4?[0,3,6,10][force]:0,shotAttackAdd=firstAdd+forceAdd,shotAffinityAdd=ordinal>=4?[0,8,10,12][force]:0;
-    const attack=base.attackTrue+(active?add:0)+shotAttackAdd,aff=Math.min(100,base.affinity+shotAffinityAdd),coefficient=({1:17,2:23.8,3:30.6}[level]/100)*.7*.65*(1+aff/100*.25),hit=attack*coefficient;
-    assert.equal(t.shotOrdinal,ordinal);assert.equal(t.roundOrdinal,ordinal);assert.equal(t.triggerOrdinal,ordinal);near(t.shotAttackAdd,shotAttackAdd);near(t.shotAffinityAdd,shotAffinityAdd);near(t.attack,attack);near(t.affinity,aff);near(t.effectiveAffinity,aff);near(t.physical,hit);total+=hit;delta+=((active?add:0)+firstAdd)*coefficient;
+    const attack=base.attackTrue+(active?add:peak)+shotAttackAdd,aff=Math.min(100,base.affinity+shotAffinityAdd),coefficient=({1:17,2:23.8,3:30.6}[level]/100)*.7*.65*(1+aff/100*.25),hit=attack*coefficient;
+    assert.equal(t.shotOrdinal,ordinal);assert.equal(t.roundOrdinal,ordinal);assert.equal(t.triggerOrdinal,ordinal);near(t.shotAttackAdd,shotAttackAdd);near(t.shotAffinityAdd,shotAffinityAdd);near(t.attack,attack);near(t.affinity,aff);near(t.effectiveAffinity,aff);near(t.physical,hit);total+=hit;delta+=((active?add:peak)+firstAdd)*coefficient;
    }
    near(r.channels[ch].metrics.comboTotalDamage.value,total);near(r.channels[ch].metrics.comboTotalDamage.value-baseline.channels[ch].metrics.comboTotalDamage.value,delta);
    assert.equal(r.channels[ch].diagnostics.rapidAmmoSequence.liveGameVerification,'PENDING');
@@ -46,13 +46,13 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
   ['alone',[],0],['peak',[['フルチャージ',5]],20],['evade',[['巧撃',5]],30],['three flats',[['フルチャージ',5],['巧撃',5]],50]
  ])check(`Counterstrike rank ${rank} ${label}`,()=>{
   apply([['逆襲',rank],...extras]);const before=read('({input:__input,snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot()})');
-  const r=evaluate();verify(r,rank,flat);assert.deepEqual(read('({input:__input,snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot()})'),before);
+  const r=evaluate();verify(r,rank,flat,{peak:extras.some(([name])=>name==='フルチャージ')?20:0});assert.deepEqual(read('({input:__input,snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot()})'),before);
   const plan=read('__stats.conditionalConditionPlan'),applied=plan.applied.filter(x=>x.skill==='逆襲'&&x.level===rank);assert.equal(applied.length,1);assert.equal(applied[0].condition,'KNOCKBACK_BUFF');assert.equal(applied[0].attackAdd,[0,10,15,25][rank]);near(plan.attackComponents.conditionalFlat,[0,10,15,25][rank]+flat);
   return {totals:totals(r),maximumAttackAdd:[0,10,15,25][rank]+flat};
  });
  check('first shot 140 applies only to the first five hits with Counterstrike',()=>{apply([['逆襲',3],['ファーストショット',3]]);verify(evaluate(),3,0,{first:3});});
  check('three flats save load comparison preserves inputs',()=>{
-  apply([['逆襲',3],['フルチャージ',5],['巧撃',5]]);const r=evaluate();verify(r,3,50);
+  apply([['逆襲',3],['フルチャージ',5],['巧撃',5]]);const r=evaluate();verify(r,3,50,{peak:20});
   w.document.getElementById('buildName').value='counter-A';click('saveBuild');apply();w.document.getElementById('buildName').value='counter-B';click('saveBuild');
   w.document.querySelector('[data-build-load="counter-A"]').click();click('calcBuild');prepare();assert.deepEqual(totals(evaluate()),totals(r));
   const before=read('({snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot(),saved:savedBuildMap()})');click('selectAllCompare');click('runCompare');

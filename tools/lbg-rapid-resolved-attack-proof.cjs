@@ -8,15 +8,15 @@ const hash=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).diges
 const boundFiles=['index.html','hope-hammer-browser-adapter.js','bowgun-normal-reference.js','himmel-real-browser-bundle.js','v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs','tools/lbg-rapid-resolved-attack-proof.cjs','tests/lbg-rapid-resolved-attack.test.cjs','docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json','tests/fixtures/comparison-session-inputs.json'];
 const report={scope:'LBG_STANDARD_RAPID_RESOLVED_ATTACK_67_123_154',hashes:Object.fromEntries(boundFiles.map(f=>[f,hash(path.join(root,f))])),liveGameVerification:'PENDING',sourceVersion:'UNVERIFIED',adapterSha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'hope-hammer-browser-adapter.js'))).digest('hex'),rows:[],failures:[]};
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
-for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEVEL_PLUS_ONE']]){
+for(const selectedHp of ['FULL_HP','AT_OR_BELOW_30_PERCENT'])for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEVEL_PLUS_ONE']]){
  const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
  const w=new JSDOM(require(path.join(root,'tools/dom-test-setup.cjs')).readSimulatorHtml(),{url:'https://lbg-common-proof.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}).window;
  const read=s=>JSON.parse(w.eval('JSON.stringify('+s+')')),click=id=>w.document.getElementById(id).click();
- const check=(name,fn)=>{const row={weaponId,level,name};report.rows.push(row);try{Object.assign(row,fn()||{});row.status='PASS';}catch(e){row.status='FAIL';row.error=e.message;report.failures.push(row);}};
+ const check=(name,fn)=>{const row={weaponId,level,selectedHp,name};report.rows.push(row);try{Object.assign(row,fn()||{});row.status='PASS';}catch(e){row.status='FAIL';row.error=e.message;report.failures.push(row);}};
  try{
  w.__data=pack.data;w.eval('DB=normalizeDB({...__data,weapons:consolidateArtiaFixedVariantRows(__data.weapons)});weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters();');
  const snapshot=structuredClone(cases.find(c=>c.kind==='light-bowgun').inputSnapshots[0]);
- Object.assign(snapshot,{weaponId:String(weaponId),target:{monsterId:'13',partId:'2700'},armor:{},decos:{},charmCustom:{skills:[],slots:[0,0,0],weaponSlots:[]}});
+ Object.assign(snapshot,{selectedHp,weaponId:String(weaponId),target:{monsterId:'13',partId:'2700'},armor:{},decos:{},charmCustom:{skills:[],slots:[0,0,0],weaponSlots:[]}});
  snapshot.combo.moves=[];snapshot.combo.lightBowgunState={ammoType:'NORMAL',ammoLevel:level,shotMode:'RAPID',rapidReady:true,loadedRounds:0,contactPolicy:'ALL_FIVE',range:'CRITICAL',normalModeLevel:0,normalPowder:powder,specialMagazine:'NONE',magazineCapacity:4,shotOrdinal:1,fullMagazine:true};
  const apply=(skills=[],id=weaponId)=>{w.__snapshot={...snapshot,weaponId:String(id),charmCustom:{...snapshot.charmCustom,skills:skills.map(([name,level])=>({name,level,type:pack.data.skills.find(x=>x.name===name)?.kind==='weapon'?'weapon':'armor'}))}};w.eval('applyBuildSnapshot(__snapshot)');click('calcBuild');prepare();};
  const evaluate=()=>read('evaluateConsumerCombat({kind:__kind,moves:[],conditions:__cond,target:__target,plan:__plan})');
@@ -35,7 +35,7 @@ for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEV
   for(const ch of ['normal','maximum']){
    const ts=traces(r.channels[ch]);assert.equal(ts.length,25);let sum=0;
    for(let i=0;i<25;i++){
-    const shot=Math.floor(i/5)+1,flat=ch==='maximum'?Math.max(peakAdds[p],resentAdds[q]):0,m=ch==='maximum'?ambushMultipliers[a]:1;
+    const shot=Math.floor(i/5)+1,flat=selectedHp==='FULL_HP'?peakAdds[p]:(ch==='maximum'?resentAdds[q]:0),m=ch==='maximum'?ambushMultipliers[a]:1;
     const shotAttack=(shot===1?[0,5,10,15][first]:0)+(shot===4?[0,3,6,10][force]:0),shotAffinity=shot>=4?[0,8,10,12][force]:0;
     const attack=base.attackComponents.weaponBase*(staticAttack?1.04:base.attackComponents.normalMultiplier)*m+(staticAttack?9:base.attackComponents.normalFlat)+flat+shotAttack;
     const affinity=Math.min(100,base.affinity+shotAffinity),crit=1+affinity/100*.25,physical=attack*({1:17,2:23.8,3:30.6}[level]/100)*.7*.65*crit;
@@ -52,7 +52,7 @@ for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEV
   const before=snapshotBefore(),input=read('__input'),r=evaluate();verify(r,a,p,q);
   assert.deepEqual(snapshotBefore(),before);assert.deepEqual(read('__input'),input);
   const plan=read('__stats.conditionalConditionPlan');
-  if(p&&q){const loser=peakAdds[p]>=resentAdds[q]?'逆恨み':'フルチャージ',winner=loser==='逆恨み'?'フルチャージ':'逆恨み';assert.equal(plan.excluded.filter(x=>x.skill===loser).length,1);assert.equal(plan.applied.filter(x=>x.skill===winner).length,1);}
+  if(p&&q){const loser=selectedHp==='FULL_HP'?'逆恨み':'フルチャージ',winner=loser==='逆恨み'?'フルチャージ':'逆恨み';assert.equal(plan.excluded.filter(x=>x.skill===loser).length,1);assert.equal(plan.applied.filter(x=>x.skill===winner).length,1);}
   return {normal:totals(r)[0],maximum:totals(r)[1],excluded:plan.excluded.map(x=>x.skill)};
  });
  for(const [name,a,p,q]of [['急襲',3,0,0],['逆恨み',0,0,5]])check('First and Force with '+name,()=>{apply([[name,name==='急襲'?3:5],['ファーストショット',3],['フォースショット',3]]);verify(evaluate(),a,p,q,{first:3,force:3});});
@@ -64,7 +64,7 @@ for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEV
   ['duplicate excluded',"input.stats.conditionalConditionPlan.excluded.push(input.stats.conditionalConditionPlan.excluded[0])"],
   ['wrong excluded condition',"input.stats.conditionalConditionPlan.excluded[0].condition='FAKE'"],
   ['injected excluded damage',"input.stats.conditionalConditionPlan.excluded[0].attackMultiplier=2"],
-  ['altered adopted companion flat',"input.stats.conditionalConditionPlan.applied.find(x=>x.skill==='逆恨み').attackAdd=999"],
+  ['altered adopted companion flat',"input.stats.conditionalConditionPlan.applied.find(x=>x.skill===(input.conditions.selectedHp==='FULL_HP'?'フルチャージ':'逆恨み')).attackAdd=999"],
   ['normal attack mismatch',"input.stats.conditionalConditionPlan.normal.attackTrue+=1"],
   ['maximum attack mismatch',"input.stats.conditionalConditionPlan.maximum.attackTrue+=1"],
   ['decomposition mismatch',"input.stats.conditionalConditionPlan.attackComponents.conditionalFlat+=1"],

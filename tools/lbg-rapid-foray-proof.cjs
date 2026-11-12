@@ -16,7 +16,7 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
  try{
  w.__data=pack.data;w.eval('DB=normalizeDB({...__data,weapons:consolidateArtiaFixedVariantRows(__data.weapons)});weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters();');
  const snapshot=structuredClone(cases.find(c=>c.kind==='light-bowgun').inputSnapshots[0]);
- Object.assign(snapshot,{weaponId:String(weaponId),target:{monsterId:'13',partId:'2700'},armor:{},decos:{},charmCustom:{skills:[],slots:[0,0,0],weaponSlots:[]}});
+ Object.assign(snapshot,{selectedHp:'FULL_HP',weaponId:String(weaponId),target:{monsterId:'13',partId:'2700'},armor:{},decos:{},charmCustom:{skills:[],slots:[0,0,0],weaponSlots:[]}});
  snapshot.combo.moves=[];snapshot.combo.lightBowgunState={ammoType:'NORMAL',ammoLevel:level,shotMode:'RAPID',rapidReady:true,loadedRounds:0,contactPolicy:'ALL_FIVE',range:'CRITICAL',normalModeLevel:0,normalPowder:'NONE',specialMagazine:'NONE',magazineCapacity:4,shotOrdinal:1,fullMagazine:true};
  const apply=(skills=[],id=weaponId)=>{w.__snapshot={...snapshot,weaponId:String(id),charmCustom:{...snapshot.charmCustom,skills:skills.map(([name,level])=>({name,level,type:'armor'}))}};w.eval('applyBuildSnapshot(__snapshot)');click('calcBuild');prepare();};
  const evaluate=()=>read('evaluateConsumerCombat({kind:__kind,moves:[],conditions:__cond,target:__target,plan:__plan})');
@@ -24,14 +24,14 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
 
  const traces=r=>r.components.flatMap(c=>c.details?.trace||[]),totals=r=>['normal','maximum'].map(ch=>r.channels[ch].metrics.comboTotalDamage.value);
  apply();const baseline=evaluate();assert.equal(baseline.status,'OK');const base=read('__stats'),force=weaponId===783?1:0;
- function verify(r,rank,{flat=0,affinity=0,critBonus=.25,first=0}={}){
+ function verify(r,rank,{flat=0,peak=0,affinity=0,critBonus=.25,first=0}={}){
   assert.equal(r.status,'OK',r.reason);assert.equal(r.evaluationPlan.selection,'STANDARD');
   const add=flat,affAdd=affinity; // Owner75 exclusion: retain only adopted companions.
   for(const ch of ['normal','maximum']){
    const ts=traces(r.channels[ch]),active=ch==='maximum';assert.equal(ts.length,25);let total=0;
    for(let i=0;i<25;i++){
     const t=ts[i],ordinal=Math.floor(i/5)+1,shotAttackAdd=(ordinal===1?[0,5,10,15][first]:0)+(ordinal===4?[0,3,6,10][force]:0),shotAffinityAdd=ordinal>=4?[0,8,10,12][force]:0;
-    const attack=base.attackTrue+(active?add:0)+shotAttackAdd,aff=Math.min(100,base.affinity+(active?affAdd:0)+shotAffinityAdd),coefficient=({1:17,2:23.8,3:30.6}[level]/100)*.7*.65*(1+aff/100*(aff<0?.25:critBonus)),hit=attack*coefficient;
+    const attack=base.attackTrue+(active?add:peak)+shotAttackAdd,aff=Math.min(100,base.affinity+(active?affAdd:0)+shotAffinityAdd),coefficient=({1:17,2:23.8,3:30.6}[level]/100)*.7*.65*(1+aff/100*(aff<0?.25:critBonus)),hit=attack*coefficient;
     assert.equal(t.shotOrdinal,ordinal);assert.equal(t.roundOrdinal,ordinal);assert.equal(t.triggerOrdinal,ordinal);near(t.shotAttackAdd,shotAttackAdd);near(t.shotAffinityAdd,shotAffinityAdd);near(t.attack,attack);near(t.affinity,aff);near(t.effectiveAffinity,aff);near(t.physical,hit);total+=hit;
    }
    near(r.channels[ch].metrics.comboTotalDamage.value,total);assert.equal(r.channels[ch].diagnostics.rapidAmmoSequence.liveGameVerification,'PENDING');
@@ -42,9 +42,9 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
  }
  verify(baseline,0);
  for(let rank=1;rank<=5;rank++)for(const [label,extras,opts] of [
-  ['alone',[],{}],['peak',[['フルチャージ',5]],{flat:20}],['evade',[['巧撃',5]],{flat:30}],['counterstrike',[['逆襲',3]],{flat:25}],
+  ['alone',[],{}],['peak',[['フルチャージ',5]],{flat:20,peak:20}],['evade',[['巧撃',5]],{flat:30}],['counterstrike',[['逆襲',3]],{flat:25}],
   ['latent',[['力の解放',5]],{affinity:50}],['might',[['渾身',3]],{affinity:30}],['critical boost',[['超会心',5]],{critBonus:.4}],
-  ['combined attack and affinity',[['フルチャージ',5],['力の解放',5]],{flat:20,affinity:50}]
+  ['combined attack and affinity',[['フルチャージ',5],['力の解放',5]],{flat:20,peak:20,affinity:50}]
  ])check(`Foray rank ${rank} ${label}`,()=>{
   apply([['攻勢',rank],...extras]);const before=read('({input:__input,snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot()})');
   const actual=read('calcState.total');for(const [name,wanted] of [['攻勢',rank],...extras])assert.equal(Number(actual[name]),wanted,'requested rank applied: '+name);const source=pack.data.skills.find(x=>x.id===75),sourceRank=source.ranks.find(x=>x.level===rank);assert.equal(sourceRank.id,181+rank);assert.equal(sourceRank.skill.id,75);assert.match(sourceRank.description,/毒、麻痺状態の大型モンスター/);const r=evaluate();verify(r,rank,opts);assert.deepEqual(read('({input:__input,snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot()})'),before);
@@ -54,7 +54,7 @@ for(const [weaponId,level] of [[783,1],[763,2],[771,3]]){
  });
  check('first shot 140 applies only to the first five hits with Foray',()=>{apply([['攻勢',5],['ファーストショット',3]]);verify(evaluate(),5,{first:3});});
  check('three flats save load comparison preserves inputs',()=>{
-  apply([['攻勢',5],['フルチャージ',5],['巧撃',5]]);const r=evaluate();verify(r,5,{flat:50});
+  apply([['攻勢',5],['フルチャージ',5],['巧撃',5]]);const r=evaluate();verify(r,5,{flat:50,peak:20});
   w.document.getElementById('buildName').value='counter-A';click('saveBuild');apply();w.document.getElementById('buildName').value='counter-B';click('saveBuild');
   w.document.querySelector('[data-build-load="counter-A"]').click();click('calcBuild');prepare();assert.deepEqual(totals(evaluate()),totals(r));
   const before=read('({snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot(),saved:savedBuildMap()})');click('selectAllCompare');click('runCompare');

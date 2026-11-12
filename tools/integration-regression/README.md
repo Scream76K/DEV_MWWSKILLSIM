@@ -59,3 +59,7 @@ ID62/70 retain their weapon sets and normal inactivity. HBG70 uses the adopted m
 ### ID178 bounded component connection (51fee2e working tree)
 
 Integration now runs 1588 assertions (two additional tests). Formal 28 inputs cover both ranks across 14 weapons; matched grant-free controls are synthetic. Completed weapon element is consumed once by adopted CB R/H body/axe components and the exact GL owner sequence. Normal ammo remains NO_ELEMENT_GRANT. Unknown component sources and invalid series activations remain rejected. Fixed fire/impact components and normal channels are unchanged. This is not live-game verification or adoption of elemental ammo/other dedicated routes.
+
+## Selected HP follow-up candidate (e8c1fe3, uncommitted)
+
+The selected-HP candidate adds three TAP tests, so the current contract expects 1,591 tests. HP selection is shared by normal/maximum outputs; FULL activates Peak in both and LOW activates Heroics in both. Eight older regressions now use explicit HP inputs and source-derived equations. Original fixture hashes and historical sections above are retained. The Heroics proof covers 1,640 rows across both states; resolved-attack covers 1,344. Wrapper TAP counts remain one each. Unknown-HP behavior remains provisional: ignore only unresolved HP effects with a reason, without assuming FULL/LOW or suppressing other adopted skills. This is neither owner approval of a default nor live-game/full-matrix acceptance.

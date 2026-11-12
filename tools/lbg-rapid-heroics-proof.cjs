@@ -8,15 +8,15 @@ const hash=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).diges
 const boundFiles=['index.html','hope-hammer-browser-adapter.js','bowgun-normal-reference.js','himmel-real-browser-bundle.js','v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs','tools/lbg-rapid-heroics-proof.cjs','tests/lbg-rapid-heroics.test.cjs','docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json','tests/fixtures/comparison-session-inputs.json'];
 const report={scope:'LBG_STANDARD_RAPID_HEROICS_HEALTH_BRANCH',hashes:Object.fromEntries(boundFiles.map(f=>[f,hash(path.join(root,f))])),liveGameVerification:'PENDING',sourceVersion:'UNVERIFIED',adapterSha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'hope-hammer-browser-adapter.js'))).digest('hex'),rows:[],failures:[]};
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
-for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEVEL_PLUS_ONE']]){
+for(const selectedHp of ['FULL_HP','AT_OR_BELOW_30_PERCENT'])for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEVEL_PLUS_ONE']]){
  const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
  const w=new JSDOM(require(path.join(root,'tools/dom-test-setup.cjs')).readSimulatorHtml(),{url:'https://lbg-common-proof.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}).window;
  const read=s=>JSON.parse(w.eval('JSON.stringify('+s+')')),click=id=>w.document.getElementById(id).click();
- const check=(name,fn)=>{const row={weaponId,level,name};report.rows.push(row);try{Object.assign(row,fn()||{});row.status='PASS';}catch(e){row.status='FAIL';row.error=e.message;report.failures.push(row);}};
+ const check=(name,fn)=>{const row={weaponId,level,selectedHp,name};report.rows.push(row);try{Object.assign(row,fn()||{});row.status='PASS';}catch(e){row.status='FAIL';row.error=e.message;report.failures.push(row);}};
  try{
  w.__data=pack.data;w.eval('DB=normalizeDB({...__data,weapons:consolidateArtiaFixedVariantRows(__data.weapons)});weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters();');
  const snapshot=structuredClone(cases.find(c=>c.kind==='light-bowgun').inputSnapshots[0]);
- Object.assign(snapshot,{weaponId:String(weaponId),target:{monsterId:'13',partId:'2700'},armor:{},decos:{},charmCustom:{skills:[],slots:[0,0,0],weaponSlots:[]}});
+ Object.assign(snapshot,{selectedHp,weaponId:String(weaponId),target:{monsterId:'13',partId:'2700'},armor:{},decos:{},charmCustom:{skills:[],slots:[0,0,0],weaponSlots:[]}});
  snapshot.combo.moves=[];snapshot.combo.lightBowgunState={ammoType:'NORMAL',ammoLevel:level,shotMode:'RAPID',rapidReady:true,loadedRounds:0,contactPolicy:'ALL_FIVE',range:'CRITICAL',normalModeLevel:0,normalPowder:powder,specialMagazine:'NONE',magazineCapacity:4,shotOrdinal:1,fullMagazine:true};
  const apply=(skills=[],id=weaponId)=>{w.__snapshot={...snapshot,weaponId:String(id),charmCustom:{...snapshot.charmCustom,skills:skills.map(([name,level])=>({name,level,type:pack.data.skills.find(x=>x.name===name)?.kind==='weapon'?'weapon':'armor'}))}};w.eval('applyBuildSnapshot(__snapshot)');click('calcBuild');prepare();};
  const evaluate=()=>read('evaluateConsumerCombat({kind:__kind,moves:[],conditions:__cond,target:__target,plan:__plan})');
@@ -34,21 +34,20 @@ for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEV
   assert.equal(r.status,'OK',r.reason);assert.equal(r.evaluationPlan.selection,'STANDARD');
   assert.ok(!omitted(r).some(x=>[67,87,123,154].includes(Number(x.skillId))),'adopted health effect omitted');
   const b=base.attackComponents.weaponBase*(staticAttack?1.04:base.attackComponents.normalMultiplier),flat=staticAttack?9:base.attackComponents.normalFlat;
-  const full=b*ambush+flat+peakAdds[p],low=b*ambush*heroics[h]+flat+resentAdds[q];
-  const branch=h>1&&p>0,maximum=branch?Math.max(full,low):b*ambush*heroics[h]+flat+Math.max(peakAdds[p],resentAdds[q]);
+  // Owner-selected HP is independent of channel. Static flats stay outside Heroics.
+  const normal=selectedHp==='FULL_HP'?b+flat+peakAdds[p]:b*heroics[h]+flat;
+  const maximum=selectedHp==='FULL_HP'?b*ambush+flat+peakAdds[p]:b*ambush*heroics[h]+flat+resentAdds[q];
   for(const ch of ['normal','maximum']){
    const ts=traces(r.channels[ch]);assert.equal(ts.length,25);let sum=0;
    for(let i=0;i<25;i++){
     const shot=Math.floor(i/5)+1,shotAttack=(shot===1?[0,5,10,15][first]:0)+(shot===4?[0,3,6,10][force]:0),shotAffinity=shot>=4?[0,8,10,12][force]:0;
-    const attack=(ch==='normal'?b+flat:maximum)+shotAttack,affinity=Math.min(100,base.affinity+shotAffinity),physical=attack*({1:17,2:23.8,3:30.6}[level]/100)*.7*.65*(1+affinity/100*.25);
+    const attack=(ch==='normal'?normal:maximum)+shotAttack,affinity=Math.min(100,base.affinity+shotAffinity),physical=attack*({1:17,2:23.8,3:30.6}[level]/100)*.7*.65*(1+affinity/100*.25);
     near(ts[i].attack,attack);near(ts[i].physical,physical);near(ts[i].affinity,affinity);assert.equal(ts[i].element,0);sum+=physical;
    }
    near(r.channels[ch].metrics.comboTotalDamage.value,sum);
   }
-  const comparison=r.channels.maximum.diagnostics.healthBranchComparison;
-  if(branch){assert.equal(comparison.status,'RESOLVED');assert.equal(comparison.policy,'WHOLE_ROUTE_TOTAL_NOT_COMPONENT_MAXIMA');assert.equal(comparison.selectedState,low>full?'LOW_HEALTH_WITH_RECOVERABLE_DAMAGE':'FULL_HEALTH');assert.equal(comparison.branches.length,2);for(const [i,raw]of [full,low].entries()){
-   let sum=0;for(let shot=1;shot<=5;shot++){const add=(shot===1?[0,5,10,15][first]:0)+(shot===4?[0,3,6,10][force]:0),affinity=Math.min(100,base.affinity+(shot>=4?[0,8,10,12][force]:0));sum+=5*(raw+add)*({1:17,2:23.8,3:30.6}[level]/100)*.7*.65*(1+affinity/100*.25);}near(comparison.branches[i].value,sum);
-  }}else assert.equal(comparison,undefined);
+  assert.equal(r.channels.maximum.diagnostics.healthBranchComparison,undefined);
+  for(const ch of ['normal','maximum'])assert.equal(r.channels[ch].diagnostics.selectedHpPolicy.selectedHp,selectedHp);
  }
  for(let h=1;h<=5;h++)for(let p=0;p<=5;p++)for(let q=0;q<=5;q++)check(`heroics${h}-peak${p}-resent${q}`,()=>{
   const skills=[['火事場力',h],['フルチャージ',p],['逆恨み',q]].filter(x=>x[1]>0);apply(skills);const actual=read('calcState.total');for(const [name,rank]of skills)assert.equal(actual[name],rank);
@@ -62,7 +61,7 @@ for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEV
  for(const [label,patch]of [
  ['missing plan','delete input.stats.conditionalConditionPlan'],
  ['extra pending',"input.stats.conditionalConditionPlan.pending.push('UNADOPTED')"],
- ['removed pending',"input.stats.conditionalConditionPlan.pending=[]"],
+ ['wrong selected-HP normal attack',"input.stats.conditionalConditionPlan.normal.attackTrue+=1"],
  ['duplicate pending',"input.stats.conditionalConditionPlan.pending.push(input.stats.conditionalConditionPlan.pending[0])"],
  ['wrong branch pending',"input.stats.conditionalConditionPlan.pending=['暗黒:DARK_STANDARD_SEQUENCE_REQUIRED']"],
  ['missing Heroics row',"input.stats.conditionalConditionPlan.applied=input.stats.conditionalConditionPlan.applied.filter(x=>x.skill!=='火事場力')"],
@@ -77,7 +76,8 @@ for(const [weaponId,level,powder='NONE'] of [[783,1],[763,2],[771,3],[763,3,'LEV
  ])check('negative '+label,()=>{apply([['火事場力',5],['フルチャージ',5],['逆恨み',5]]);const r=read(`(()=>{const input={...__input,weapon:structuredClone(__input.weapon),stats:structuredClone(__input.stats),skills:structuredClone(__input.skills)};${patch};return MHWRealOneHitBrowserAdapter.evaluateRapidFiveShot(input);})()`);assert.notEqual(r.status,'OK');return {reason:r.reason};});
  check('old single trigger remains gated',()=>{apply([['火事場力',5]]);const r=read("MHWRealOneHitBrowserAdapter.evaluateCurrent({...__input,lightBowgunState:{...__input.lightBowgunState,loadedRounds:1}})");assert.notEqual(r.status,'OK');});
  check('Dark remains disclosed without erasing Heroics',()=>{apply([['火事場力',5],['暗黒',1]]);const r=evaluate();verify(r,5,0,0);assert.ok(omitted(r).some(x=>Number(x.skillId)===168));});
- check('snapshot A and B keep opposite health winners',()=>{const saved=[];for(const [h,p,q]of [[2,5,0],[5,1,5]]){apply([['火事場力',h],['フルチャージ',p],['逆恨み',q]].filter(x=>x[1]));const r=evaluate();verify(r,h,p,q);saved.push({snapshot:read('buildSnapshot()'),totals:totals(r)});}for(const s of saved){w.__snapshot=s.snapshot;w.eval('applyBuildSnapshot(__snapshot)');click('calcBuild');prepare();assert.deepEqual(totals(evaluate()),s.totals);}});
+ check('snapshot A and B retain the explicitly selected HP',()=>{const saved=[];for(const [h,p,q]of [[2,5,0],[5,1,5]]){apply([['火事場力',h],['フルチャージ',p],['逆恨み',q]].filter(x=>x[1]));const r=evaluate();verify(r,h,p,q);saved.push({snapshot:read('buildSnapshot()'),totals:totals(r)});}for(const s of saved){w.__snapshot=s.snapshot;w.eval('applyBuildSnapshot(__snapshot)');click('calcBuild');prepare();assert.deepEqual(totals(evaluate()),s.totals);}});
+ check('stale HP context is reconciled without altering input',()=>{apply([['火事場力',5],['フルチャージ',5],['逆恨み',5]]);const other=selectedHp==='FULL_HP'?'AT_OR_BELOW_30_PERCENT':'FULL_HP';w.__otherHp=other;const before=read('__input');const actual=read('MHWRealOneHitBrowserAdapter.evaluateRapidFiveShot({...__input,conditions:{...__input.conditions,selectedHp:__otherHp}})');assert.deepEqual(read('__input'),before);w.__snapshot={...read('buildSnapshot()'),selectedHp:other};w.eval('applyBuildSnapshot(__snapshot)');click('calcBuild');prepare();assert.deepEqual(totals(actual),totals(evaluate()));});
  check('no browser script errors',()=>assert.deepEqual(errors,[]));
  }catch(e){report.failures.push({weaponId,error:e.stack});}finally{w.close();}
 }
