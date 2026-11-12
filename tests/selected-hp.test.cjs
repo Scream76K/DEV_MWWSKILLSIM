@@ -6,6 +6,7 @@ test('selected HP 87/154 all ranks both channels 14 weapons, save and shared con
  const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));const w=new JSDOM(require(path.join(root,'tools/dom-test-setup.cjs')).readSimulatorHtml(),{url:'https://hp-selection.test',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}).window;
  let count=0;const fd=process.env.HP_RESULT_FILE?fs.openSync(process.env.HP_RESULT_FILE,'wx'):null;
  try{w.__pack={...structuredClone(pack),armor:structuredClone(f.armor)};w.eval('DB=normalizeDB({...__pack,weapons:consolidateArtiaFixedVariantRows(__pack.weapons)});weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters();');
+ assert.deepEqual([...w.document.getElementById('powerSelectedHp').options].map(o=>o.value),['FULL_HP','AT_OR_BELOW_30_PERCENT']);assert.equal(w.document.getElementById('powerSelectedHp').value,'FULL_HP');
  const run=(input,label)=>{const old=JSON.stringify(input);w.applyBuildSnapshot(structuredClone(input));w.document.getElementById('calcBuild').click();const result=JSON.parse(w.eval('JSON.stringify(calcState.realOneHit)'));assert.equal(JSON.stringify(input),old);count++;if(fd!==null)fs.writeSync(fd,JSON.stringify({label,input,result})+'\n');return result;};
  for(const p of f.profiles)for(const id of [87,154])for(const hp of ['FULL_HP','AT_OR_BELOW_30_PERCENT'])for(const lv of [0,1,2,3,4,5]){
   const input=structuredClone(p.input);input.selectedHp=hp;input.charmCustom.skills=lv?[{name:id===87?'火事場力':'フルチャージ',level:lv}]:[];
@@ -14,11 +15,15 @@ test('selected HP 87/154 all ranks both channels 14 weapons, save and shared con
   assert.ok(!JSON.stringify(r).includes('IGNORED_UNSUPPORTED_EFFECT'),label);
   if(lv===5){const saved=JSON.parse(w.eval('JSON.stringify(buildSnapshot())'));assert.equal(saved.selectedHp,hp);assert.deepEqual(run(saved,label+':restore'),r);assert.equal(w.document.getElementById('powerSelectedHp').value,hp);assert.ok(w.document.getElementById('buildSummary').textContent.includes(hp==='FULL_HP'?'HP最大':'HP30%以下'));}
  }
- // Missing/legacy HP is not silently filled from the output channel.
- for(const p of f.profiles){const input=structuredClone(p.input);input.charmCustom.skills=[{name:'火事場力',level:5},{name:'フルチャージ',level:5}];const r=run(input,p.kind+':legacy-unselected');for(const ch of ['normal','maximum']){near(r.channels[ch].metrics.comboTotalDamage.value,p.K+p.J,'unselected');assert.equal(r.channels[ch].diagnostics.selectedHpPolicy.status,'UNSELECTED');}assert.equal(w.document.getElementById('powerSelectedHp').value,'');}
+ // Owner decision: missing/legacy HP defaults FULL in both output channels, without rewriting input.
+ for(const p of f.profiles){const input=structuredClone(p.input);input.charmCustom.skills=[{name:'火事場力',level:5},{name:'フルチャージ',level:5}];const r=run(input,p.kind+':legacy-unselected');for(const ch of ['normal','maximum']){near(r.channels[ch].metrics.comboTotalDamage.value,p.K+p.J+20*p.flatSlope,'legacy FULL');assert.equal(r.channels[ch].diagnostics.selectedHpPolicy.status,'SELECTED');}assert.equal(w.document.getElementById('powerSelectedHp').value,'FULL_HP');}
+ // Missing, empty and historical UNSELECTED normalize only during restore.
+ const legacyBase=structuredClone(f.profiles[0].input);legacyBase.charmCustom.skills=[{name:'フルチャージ',level:5}];
+ const full=run({...legacyBase,selectedHp:'FULL_HP'},'normalization reference');
+ for(const selectedHp of [undefined,null,'','UNSELECTED']){const input={...legacyBase,selectedHp},old=JSON.stringify(input);run({...legacyBase,selectedHp:'AT_OR_BELOW_30_PERCENT'},'prior LOW');assert.deepEqual(run(input,'legacy normalize'),full);assert.equal(JSON.stringify(input),old);assert.equal(JSON.parse(w.eval('JSON.stringify(buildSnapshot())')).selectedHp,'FULL_HP');w.restoreStep5Snapshot({selectedHp});assert.equal(w.document.getElementById('powerSelectedHp').value,'FULL_HP');}
  // Reject corrupt saved HP before mutating the current build.
  const prior=w.eval('JSON.stringify(buildSnapshotComparable(buildSnapshot()))');for(const selectedHp of ['UNKNOWN',30,false,{},[]])assert.throws(()=>w.applyBuildSnapshot({...structuredClone(f.profiles[0].input),selectedHp}),/SELECTED_HP_INVALID/);assert.equal(w.eval('JSON.stringify(buildSnapshotComparable(buildSnapshot()))'),prior);
- assert.deepEqual(errors,[]);assert.equal(count,406);
+ assert.deepEqual(errors,[]);assert.equal(count,415);
  }finally{if(fd!==null)fs.closeSync(fd);w.close();}
 });
 test('selected HP shared saved comparison, attached155/178 and attack-component order',()=>{

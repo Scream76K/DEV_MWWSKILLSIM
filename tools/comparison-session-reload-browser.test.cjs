@@ -130,3 +130,18 @@ test('concurrent native current and legacy cache commits never replace a success
  },cacheSource);
  let casConflicts=0;for(const row of results.results){if(row.out[0].status==='fulfilled')assert.equal(row.apiVersion,results.version);for(const r of row.out){if(r.status==='rejected'){assert.equal(r.reason,'CACHE_CHANGED_IN_OTHER_TAB');casConflicts++;}assert.notEqual(r.unknown,true);assert.notEqual(r.memory,true);}}assert.ok(casConflicts>0,'native overlap must actually exercise the CAS rejection path');assert.deepEqual(errors,[]);t.diagnostic(casConflicts+' native CAS conflicts rejected without memory fallback');
 });
+
+test('selected HP has two choices, defaults FULL and retains explicit LOW through reload without rewriting named legacy data',async t=>{
+ const {page:p,errors}=await pageFor(t);await seedCurrent(p);assert.equal(await reload(p),true);
+ assert.deepEqual(await p.locator('#powerSelectedHp option').evaluateAll(xs=>xs.map(x=>x.value)),['FULL_HP','AT_OR_BELOW_30_PERCENT']);
+ assert.equal(await p.locator('#powerSelectedHp').inputValue(),'FULL_HP');
+ const input=fixture.cases[0].inputSnapshots[0];
+ await p.evaluate(input=>{const legacy={...input,selectedHp:'UNSELECTED'};localStorage.setItem('mh-wilds-builds-v625',JSON.stringify({legacy}));renderSavedBuilds();},input);
+ const raw=await p.evaluate(()=>localStorage.getItem('mh-wilds-builds-v625'));
+ await click(p,'[data-build-load="legacy"]');assert.equal(await p.locator('#powerSelectedHp').inputValue(),'FULL_HP');
+ for(const hp of ['AT_OR_BELOW_30_PERCENT','FULL_HP']){
+  await open(p,'#powerSelectedHp');await p.selectOption('#powerSelectedHp',hp);await click(p,'#calcBuild');assert.equal(await reload(p),true);
+  assert.equal(await p.locator('#powerSelectedHp').inputValue(),hp);assert.equal((await state(p)).conditions.selectedHp,hp);assert.equal(await p.evaluate(()=>localStorage.getItem('mh-wilds-builds-v625')),raw);
+ }
+ assert.deepEqual(errors,[]);
+});

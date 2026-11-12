@@ -1574,7 +1574,7 @@
   };
   const pierceBowIds=['BOW_SHOT_3','BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3'];
   const pierceBowNonTarget=weapon.kind==='bow'&&resolvedTechniqueIds.length===pierceBowIds.length&&resolvedTechniqueIds.every((id,i)=>id===pierceBowIds[i])&&
-   bowState?.chargeLevel===3&&bowState.coating==='POWER'&&bowState.range==='CRITICAL'&&bowState.startShot===1&&(bowState.guided==null||bowState.guided===false)&&[bowState,conditions.bowState].every(pierceNoAlternateState)&&
+   bowState?.chargeLevel===3&&['POWER','CLOSE_RANGE'].includes(bowState.coating)&&bowState.range==='CRITICAL'&&bowState.startShot===1&&(bowState.guided==null||bowState.guided===false)&&[bowState,conditions.bowState].every(pierceNoAlternateState)&&
    resolvedTechniqueIds.every(id=>{const t=techniqueDb.get(techniqueKind,id);return pierceOrdinaryRecord(id)&&t.sourceFormula?.scope==='FIXED_BOW_STANDARD_SOURCE_REFERENCE'&&Array.isArray(t.hits)&&t.hits.length>0&&t.hits.every(h=>h.component==='ARROW'&&h.componentSource==null&&pierceNoAlternateState(h)&&Number.isFinite(h.mv)&&h.mv>=0&&Number.isFinite(h.elementModifier)&&h.elementModifier>=0);});
   const pierceAmmoState=weapon.kind==='light-bowgun'?lightBowgunState:weapon.kind==='heavy-bowgun'?hbgState:null;
   const pierceAmmoId=weapon.kind==='light-bowgun'?'LBG_ELEMENT_FIRST_HIT_REFERENCE':weapon.kind==='heavy-bowgun'?'HBG_ELEMENT_FIRST_HIT_REFERENCE':null;
@@ -1966,10 +1966,10 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
   // HP is a shared input, not a channel choice. Reconcile only a stale HP
   // context; unchanged plans still pass through all existing source guards.
   const hpPlan=input.stats.conditionalConditionPlan,hpRaw=input.conditions?.selectedHp;
-  const hpKnown=['FULL_HP','AT_OR_BELOW_30_PERCENT'].includes(hpRaw),hpSelected=hpKnown?hpRaw:null;
-  const hpInvalid=hpRaw!=null&&hpRaw!==''&&!hpKnown;
+  const hpLegacy=hpRaw==null||hpRaw===''||hpRaw==='UNSELECTED',hpKnown=['FULL_HP','AT_OR_BELOW_30_PERCENT'].includes(hpRaw),hpSelected=hpKnown?hpRaw:hpLegacy?'FULL_HP':null;
+  const hpInvalid=!hpLegacy&&!hpKnown;
   if(hpPlan?.selectedHpPolicy&&(hpInvalid||hpPlan.selectedHp!==hpSelected)&&typeof root.MHWStandardPowerConditionPlan==='function'){
-   const conditions={...(input.conditions||{}),selectedHp:hpSelected};
+   const conditions={...(input.conditions||{}),selectedHp:hpInvalid?hpRaw:hpSelected};
    const next=root.MHWStandardPowerConditionPlan(input.stats,Object.fromEntries(input.skills||[]),input.weapon.kind,conditions);
    // Preserve unrelated pending guards instead of laundering a supplied plan.
    next.pending=[...new Set([...(next.pending||[]),...(hpPlan.pending||[]).filter(x=>x!=='DARK_ARTS:FULL_HEALTH_BRANCH_COMPARISON_PENDING'&&x!=='火事場力:HEROICS_FULL_HEALTH_BRANCH_REQUIRED')])];

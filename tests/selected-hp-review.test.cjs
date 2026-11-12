@@ -17,13 +17,14 @@ for(const p of fixture.profiles)for(const hp of ['FULL_HP','AT_OR_BELOW_30_PERCE
 }
 // Input-shape validation must precede reconciliation, including invalid HP.
 check('unrelated malformed skills remain rejected',()=>{const r=adapter.evaluateCurrent({...captured,conditions:{...captured.conditions,selectedHp:'UNKNOWN'},skills:[{}]});assert.equal(r.reason,'REAL_SLICE:BUILD_SKILL_INPUT_INVALID');});
-// No default HP is invented: a legacy/missing selection cannot let inactive154 suppress172.
+// Owner default FULL: legacy restores equal explicit FULL; LOW still retains172.
 const legacy=clone(source.rows.find(x=>x.label==='dark172:1:AT_OR_BELOW_30_PERCENT:peak0').input);delete legacy.selectedHp;
 const legacyPeak={...clone(legacy),charmCustom:{...legacy.charmCustom,skills:[{name:'フルチャージ',level:5}]}};
-for(const input of [legacy,legacyPeak]){const r=run(input,'unselected172');check('unselected172 retains body',()=>near(metric(r,'maximum'),1378.7334));}
-run({...legacyPeak,selectedHp:'FULL_HP'},'prior FULL');const restored=run(legacyPeak,'legacy restore clears prior HP');check('legacy restore',()=>{near(metric(restored,'maximum'),1378.7334);assert.equal(w.document.getElementById('powerSelectedHp').value,'');assert.equal(restored.channels.maximum.diagnostics.selectedHpPolicy.status,'UNSELECTED');});
-w.eval("buildName.value='missing-HP-172';saveNamedBuild();");run(legacy,'save control172');w.eval("buildName.value='missing-HP-control';saveNamedBuild();");const savedBefore=w.eval('JSON.stringify(savedBuildMap())');w.eval("document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true);runBuildCompare();");check('unselected saved comparison',()=>{const compared=JSON.parse(w.eval('JSON.stringify(lastBuildComparisonRows)'));assert.equal(compared.length,2);for(const r of compared)near(metric(r.oneHitPipeline,'maximum'),1378.7334);assert.equal(w.eval('JSON.stringify(savedBuildMap())'),savedBefore);assert.equal(w.document.getElementById('powerSelectedHp').value,'');});
+const expectedFull=run({...legacy,selectedHp:'FULL_HP'},'full172 control'),expectedPeak=run({...legacyPeak,selectedHp:'FULL_HP'},'full172 peak');
+for(const [input,expected] of [[legacy,expectedFull],[legacyPeak,expectedPeak]]){const r=run(input,'legacy172');check('legacy FULL equivalence',()=>assert.deepEqual(r,expected));}
+run({...legacyPeak,selectedHp:'AT_OR_BELOW_30_PERCENT'},'prior LOW');const restored=run(legacyPeak,'legacy restore FULL');check('legacy restore',()=>{assert.deepEqual(restored,expectedPeak);assert.equal(w.document.getElementById('powerSelectedHp').value,'FULL_HP');});
+w.eval("buildName.value='missing-HP-172';saveNamedBuild();");run(legacy,'save control172');w.eval("buildName.value='missing-HP-control';saveNamedBuild();");const savedBefore=w.eval('JSON.stringify(savedBuildMap())');w.eval("document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true);runBuildCompare();");check('legacy saved comparison',()=>{const compared=JSON.parse(w.eval('JSON.stringify(lastBuildComparisonRows)'));assert.equal(compared.length,2);for(const r of compared)near(metric(r.oneHitPipeline,'maximum'),metric(r.name==='missing-HP-172'?expectedPeak:expectedFull,'maximum'));assert.equal(w.eval('JSON.stringify(savedBuildMap())'),savedBefore);assert.equal(w.document.getElementById('powerSelectedHp').value,'FULL_HP');});
 check('script errors',()=>assert.deepEqual(errors,[]));
-}finally{w.close();if(process.env.HP_REVIEW_RESULT_FILE)fs.writeFileSync(process.env.HP_REVIEW_RESULT_FILE,JSON.stringify({rows,failures,errors},null,2));assert.deepEqual(failures,[]);assert.equal(rows.length,58);}
+}finally{w.close();if(process.env.HP_REVIEW_RESULT_FILE)fs.writeFileSync(process.env.HP_REVIEW_RESULT_FILE,JSON.stringify({rows,failures,errors},null,2));assert.deepEqual(failures,[]);assert.equal(rows.length,60);}
 
 });

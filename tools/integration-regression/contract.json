@@ -122,11 +122,11 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "511e9f1080c3db729dbc4f9388fe6bab5a444ba13e7f08efc06aaaabbeeac4a0"
+      "sha256": "d3513f15c28dced0f41df3a1d89a537827ee62803ce3718272b92e48c89872e2"
     },
     {
       "path": "index.html",
-      "sha256": "fe0732ab3f54ae272bc9b0f5bedbf22dfd8d8248f31ecd875d0c85cb73807c0e"
+      "sha256": "a9c4a74f84126e2895b3b48d2901203ac272d8bb0f8d00ee611c66cc052c1e76"
     },
     {
       "path": "observed-shelling.js",
@@ -234,7 +234,7 @@
     },
     {
       "path": "tools/comparison-session-reload-browser.test.cjs",
-      "sha256": "939ce616d083088f6817ac5fcfa8bc0c73bbffc580fc109873013c9a7c55ec84"
+      "sha256": "5c03c683bc97ef5249192ca4020fae3df7d1c21556060cce6396ca951e8d4ab1"
     },
     {
       "path": "tools/conditional-element-browser.test.cjs",
@@ -634,7 +634,7 @@
     },
     {
       "path": "tools/power-conditions-dom.test.cjs",
-      "sha256": "b08f802cb2ef0445147b8ae9e10a0f14aa25ec62b9ab53a910905eb997671955"
+      "sha256": "6748e46165bd1cb66f6b7249f513cad2995dcbadd4b806a401666c827ce793f9"
     },
     {
       "path": "tools/fortify-condition-dom.test.cjs",
@@ -678,7 +678,7 @@
     },
     {
       "path": "tests/selected-hp.test.cjs",
-      "sha256": "fcdb068f4fd95d543dfc4f218dc1ad440f252b62f8bbb155a821fc2594211771"
+      "sha256": "5f2df28e08fa820a08c826a700aaf7b9e50712bf08564b4e5e8fd4476f949553"
     },
     {
       "path": "tests/fixtures/selected-hp-inputs.json",
@@ -686,11 +686,19 @@
     },
     {
       "path": "tests/selected-hp-review.test.cjs",
-      "sha256": "df9bfd64a0ca0a9c2b7958b3dba12e7a66fb5404733b8981ac414b92c4683cf6"
+      "sha256": "04327938d4035d0c12fcee15fc930bfe4d4dc9847a5a4fd9759dcc349218b80b"
     },
     {
       "path": "tools/integration-regression/README.md",
       "sha256": "ad5a6f7cb7cad7d8f8b5d077d7b6f2eb24c1ffffc16ad2e4271de199dbd1f93b"
+    },
+    {
+      "path": "tests/pierce-nonapplication-scope.test.cjs",
+      "sha256": "c36358353ba2f46932a3d0c0020228acb90d8f67e1523a69468906c41fe58ef0"
+    },
+    {
+      "path": "tests/bow94-close-range.test.cjs",
+      "sha256": "59b898b0b657303477bb410a5d3a5b879003ea463019d74724ad8ff7ea3949a8"
     }
   ],
   "tests": [
@@ -731,9 +739,11 @@
     "tests/offset-maximum.test.cjs",
     "tests/gog178-components.test.cjs",
     "tests/selected-hp.test.cjs",
-    "tests/selected-hp-review.test.cjs"
+    "tests/selected-hp-review.test.cjs",
+    "tests/pierce-nonapplication-scope.test.cjs",
+    "tests/bow94-close-range.test.cjs"
   ],
-  "expectedTests": 1591,
+  "expectedTests": 1593,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",

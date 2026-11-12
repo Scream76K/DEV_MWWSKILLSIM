@@ -62,6 +62,12 @@ test('Pierce: synthetic production predicate boundary checks', t => {
     assert.equal(vm.runInNewContext(body + '\npierceNonTargetResolved;', f), expected, name);
     assertions++;
   }
+  check('CLOSE_RANGE ordinary three shots are nonapplicable', 'bow', f => f.bowState.coating = 'CLOSE_RANGE', true);
+  for (const coating of ['POWER','CLOSE_RANGE']) {
+    for (const mutate of [f => f.bowState.guided=true, f => f.bowState.range='NEAR', f => f.resolvedTechniqueIds[0]='BOW_DRAGON_PIERCER', f => f.allSkills[0].level=2, f => f.records[bowIds[0]].hits[0].componentSource='UNKNOWN']) {
+      check(coating+' retains target/unknown guards', 'bow', f => {f.bowState.coating=coating;mutate(f);});
+    }
+  }
   const kinds = ['bow', 'light-bowgun', 'heavy-bowgun'];
   for (const kind of kinds) {
     check(`${kind} exact ordinary route is accepted`, kind, () => {}, true);
