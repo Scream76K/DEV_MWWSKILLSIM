@@ -51,3 +51,7 @@ Supported single-trigger paired results now require diagnostics on both normal a
 ## Direct-series exclusion classification follow-up
 
 The 1983109 follow-up adds one public LBG regression (original 34/74/155 equipment inputs, removal/restoration, strict activation negatives and retained veil resistance). Current contract: 1,585 tests, 34 entries, 163 pinned inputs. ID34/153 direct attack exclusion does not remove ID153 resistance contributions. No new coefficients or game-verification claim. Historical counts above remain unchanged.
+
+## Clash / offset maximum assumptions
+
+ID62/70 retain their weapon sets and normal inactivity. HBG70 uses the adopted maximum buff after clash (no custom required) or offset (offset-capable custom required); result notes state calculation assumptions, not verified equipment/action. HH melody capability remains required. One regression covers 56 real equipment inputs, HBG restoration and synthetic scope/activation guards. Contract: 1,586 tests, 35 entries, 165 pinned inputs.

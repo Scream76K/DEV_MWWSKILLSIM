@@ -122,11 +122,11 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "5631329df106500fb418d3bf349a30c884e6d9552f61889c1b95f896797267f8"
+      "sha256": "d61d60640c8d816607cc488f1db8054a710958d4184a4b39f18035561d8f0ce1"
     },
     {
       "path": "index.html",
-      "sha256": "db7e8d7307a6f363d7ea3111879ace1fd61a200f53fcfc3b39c38ec1030fa89f"
+      "sha256": "f3e592fce91c7b13b7da9130ea0aa9f9beee43a3fab7e19283cd1bcded59013a"
     },
     {
       "path": "observed-shelling.js",
@@ -486,7 +486,7 @@
     },
     {
       "path": "tests/combo-skill-disclosure.test.cjs",
-      "sha256": "6551dbb8427cf34fa37cd695b6fad041e1b3f8238effd5f00ea044b44da92632"
+      "sha256": "01f8b806600e31642adf371297adb2e6109d141ba686673c2c856b998dd57ec2"
     },
     {
       "path": "tools/shared-ui-disclosure-browser-proof.cjs",
@@ -659,6 +659,14 @@
     {
       "path": "tests/fixtures/lbg-owner-exclusions-inputs.json",
       "sha256": "a17e32bddf52cc838d8c17b2661305db6a5896365b2530bb69e7d85e55e526fc"
+    },
+    {
+      "path": "tests/offset-maximum.test.cjs",
+      "sha256": "efd31965567a04b7790ca52be2a5cf82fe754198b07645dddb580200d82d6bdf"
+    },
+    {
+      "path": "tests/fixtures/offset-maximum-inputs.json",
+      "sha256": "7fc4f6f046e4dd695ad7e9162829dd81d2db674de48689ed075106e9f3a1a122"
     }
   ],
   "tests": [
@@ -695,9 +703,10 @@
     "tools/power-conditions-dom.test.cjs",
     "tools/fortify-condition-dom.test.cjs",
     "tools/conditional-element-dom.test.cjs",
-    "tests/lbg-owner-exclusions.test.cjs"
+    "tests/lbg-owner-exclusions.test.cjs",
+    "tests/offset-maximum.test.cjs"
   ],
-  "expectedTests": 1585,
+  "expectedTests": 1586,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",

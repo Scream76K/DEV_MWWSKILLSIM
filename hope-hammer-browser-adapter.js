@@ -1808,6 +1808,8 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
     ...([...new Map(equippedSkills.filter(x=>[67,75].includes(x.skillId)&&excludedCalculationPolicy(x)).sort((a,b)=>a.level-b.level).map(x=>[x.skillId,x])).values()]).map(x=>root.ownerExcludedConditionalBuffNote(x.skillId,x.level)),
     ...activeBonusEffects.filter(x=>x.bonusSkillId===25&&ownerExcludedBonus(x)).map(x=>root.ownerExcludedConditionalBuffNote(25,x.rankLevel))
    ].filter(Boolean).map(x=>[JSON.stringify(x),x])).values()];
+   const maximumActivationAssumptions=(conditionPlan?.groupPlan?.applied||[]).filter(x=>x.attackAdd>0&&x.appliesToNormal===false&&x.maximumConditionNote).map(x=>x.maximumConditionNote);
+   if(maximumActivationAssumptions.length&&evaluated.channels?.maximum)evaluated.channels.maximum.diagnostics={...evaluated.channels.maximum.diagnostics,maximumActivationAssumptions};
    if(excludedConditionalBuffs.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,excludedConditionalBuffs};
    if(excludedCalculationSkills.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,excludedCalculationSkills};
    if(excludedSkillDamage.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,excludedSkillDamage};
@@ -1891,6 +1893,8 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
    if(excludedCalculationSkills.length)channels[ch].diagnostics.excludedCalculationSkills=excludedCalculationSkills;
    const excludedConditionalBuffs=[...new Map(parts.flatMap(p=>p.result?.diagnostics?.excludedConditionalBuffs||[]).map(x=>[JSON.stringify(x),x])).values()];
    if(excludedConditionalBuffs.length)channels[ch].diagnostics.excludedConditionalBuffs=excludedConditionalBuffs;
+   const maximumActivationAssumptions=[...new Map(parts.flatMap(p=>p.result?.diagnostics?.maximumActivationAssumptions||[]).map(x=>[JSON.stringify(x),x])).values()];
+   if(maximumActivationAssumptions.length)channels[ch].diagnostics.maximumActivationAssumptions=maximumActivationAssumptions;
    const excludedSkillDamage=[...new Map(parts.flatMap(p=>p.result?.diagnostics?.excludedSkillDamage||[]).filter(x=>x.skillId===152).map(x=>[JSON.stringify(x),x])).values()];
    if(excludedSkillDamage.length)channels[ch].diagnostics.excludedSkillDamage=excludedSkillDamage;
   }
