@@ -1,0 +1,35 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('fs'),path=require('path');
+const P=path.resolve(process.env.PRODUCT_ROOT||path.join(__dirname,'..')),{JSDOM,VirtualConsole}=require('jsdom');
+const f=JSON.parse(fs.readFileSync(P+'/tests/fixtures/selected-hp-inputs.json')),pack=JSON.parse(fs.readFileSync(P+'/tests/fixtures/offset-maximum-inputs.json')).data;
+const near=(a,b)=>assert.ok(Number.isFinite(a)&&Math.abs(a-b)<1e-8,`${a} != ${b}`);
+test('rank I GS wave components, HP, target techniques, guards, other weapons and save restoration',()=>{
+ const errors=[],rows=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
+ const w=new JSDOM(require(P+'/tools/dom-test-setup.cjs').readSimulatorHtml(),{url:'https://dark-wave.invalid',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}).window;
+ const adapter=w.MHWRealOneHitBrowserAdapter;let captured;w.MHWRealOneHitBrowserAdapter={...adapter,evaluateCurrent(x){captured=x;return adapter.evaluateCurrent(x)}};
+ const clone=x=>JSON.parse(JSON.stringify(x));const waves=r=>r.channels.normal.components.filter(c=>c.componentSource==='GS_DARK_ARTS_WAVE');
+ const run=(input,label)=>{const original=JSON.stringify(input);w.applyBuildSnapshot(clone(input));w.document.getElementById('calcBuild').click();const result=JSON.parse(w.eval('JSON.stringify(calcState.realOneHit)'));assert.equal(JSON.stringify(input),original);rows.push({label,input,result});return result;};
+ try{w.__pack={...clone(pack),armor:clone(f.armor)};w.eval('DB=normalizeDB({...__pack,weapons:consolidateArtiaFixedVariantRows(__pack.weapons)});weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters();');
+ const base={...clone(f.profiles.find(x=>x.kind==='great-sword').input),armor:{head:653,chest:654}};
+ for(const selectedHp of ['FULL_HP','AT_OR_BELOW_30_PERCENT']){
+  const input={...base,selectedHp},r=run(input,'rank1 '+selectedHp),d=r.channels.normal.diagnostics.darkArtsWave;
+  near(d.physical,215*.3*1.32*.8*.975*2);near(d.element,600/10*1.15*.3*2);near(r.channels.normal.metrics.comboTotalDamage.value,1191.25908+d.physical+d.element);assert.equal(waves(r).length,4);
+  for(const ch of ['normal','maximum'])near(r.channels[ch].components.reduce((n,c)=>n+c.value,0),r.channels[ch].metrics.comboTotalDamage.value);
+  assert.match(r.channels.maximum.diagnostics.darkArtsWave.reason,/MAXIMUM_BUFF_INTERACTIONS_PENDING/);assert.equal(r.channels.maximum.metrics.comboTotalDamage.status,'available');
+  const snap=JSON.parse(w.eval('JSON.stringify(buildSnapshot())'));assert.deepEqual(run(snap,'restore '+selectedHp),r);
+ }
+ for(const [id,count] of [['GS_CHARGED_SLASH_3',1],['GS_STRONG_CHARGED_SLASH_3',1],['GS_STRONG_WIDE_SLASH_3',0]]){const r=run({...base,combo:{moves:[{techniqueId:'canonical:'+id}]}},id);assert.equal(waves(r).length,count*2);}
+ run(base,'direct base');const direct=captured;
+ for(const dragonHz of [0,15,30,60]){const r=adapter.evaluateCurrent({...direct,conditions:{...direct.conditions,dragonHz}});if(dragonHz===0){assert.equal(waves(r).length,0);assert.match(r.channels.normal.diagnostics.darkArtsWave.reason,/龍肉質0/);}else near(r.channels.normal.diagnostics.darkArtsWave.element,600/10*1.15*dragonHz/100*2);rows.push({label:'direct dragonHz'+dragonHz,result:r});}
+ for(const skills of [[{name:'見切り',level:5},{name:'超会心',level:5}],[{name:'攻撃',level:5},{name:'龍属性攻撃強化',level:3}]]){const r=run({...base,charmCustom:{skills,slots:[0,0,0],weaponSlots:[]}},'adopted normal buffs');const st=JSON.parse(w.eval('JSON.stringify(calcState.stats)')),d=r.channels.normal.diagnostics.darkArtsWave,cb=skills.some(x=>x.name==='超会心')?1.4:1.25,crit=st.affinity>=0?1+st.affinity/100*(cb-1):1+st.affinity/100*.25;near(d.physical,st.attackTrue*.3*1.32*.8*crit*2);near(d.element,(skills.some(x=>x.name==='龍属性攻撃強化')?780:600)/10*1.15*.3*2);}
+ for(const skill of ['チャージマスター','暗黒']){const r=run({...base,charmCustom:{skills:[{name:skill,level:1}],slots:[0,0,0],weaponSlots:[]}},skill);assert.equal(waves(r).length,0);assert.equal(r.channels.normal.metrics.comboTotalDamage.status,'available');}
+ for(const p of f.profiles.filter(p=>p.kind!=='great-sword')){const r=run({...clone(p.input),armor:base.armor},'other '+p.kind);assert.ok(!JSON.stringify(r.channels).includes('"componentSource":"GS_DARK_ARTS_WAVE"'));}
+ const rank2=run({...base,armor:{head:653,chest:654,arms:655,waist:656}},'rank2');assert.equal(waves(rank2).length,0);
+ run(base,'savedA');w.eval("buildName.value='waveA';saveNamedBuild();");run({...base,armor:{}},'savedB');w.eval("buildName.value='waveB';saveNamedBuild();");const before=w.eval('JSON.stringify(savedBuildMap())');w.eval("document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true);runBuildCompare();");assert.equal(w.eval('JSON.stringify(savedBuildMap())'),before);const compared=JSON.parse(w.eval('JSON.stringify(lastBuildComparisonRows)'));assert.equal(compared.length,2);assert.equal(waves(compared.find(x=>x.name==='waveA').oneHitPipeline).length,4);assert.equal(waves(compared.find(x=>x.name==='waveB').oneHitPipeline).length,0);assert.deepEqual(errors,[]);
+ }finally{if(process.env.DARK_WAVE_RESULTS)fs.writeFileSync(process.env.DARK_WAVE_RESULTS,JSON.stringify({rows,errors},null,2));w.close();}
+});
+
+test('wave reference independent critical/sharpness/hitzone arithmetic and zero dragon guard',()=>{
+ const w=new JSDOM(require(P+'/tools/dom-test-setup.cjs').readSimulatorHtml(),{url:'https://dark-wave-boundaries.invalid',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));}}).window;
+ try{for(const affinity of [-100,0,100])for(const sharpness of [1,1.32])for(const dragonAttack of [0,1,2,3]){const o={attack:220,affinity,criticalMultiplier:1.4,sharpness,elementSharpness:1.15,physicalHitzone:60,dragonHitzone:25,dragonAttack,count:2};const r=w.DarkArtsReference.observed(o,w.TechniqueDBEngine);near(r.physical,220*.3*sharpness*.6*(affinity<0?.75:affinity===0?1:1.4)*2);near(r.element,(600*[1,1,1.1,1.2][dragonAttack]+[0,40,50,60][dragonAttack])/10*1.15*.25*2);assert.throws(()=>w.DarkArtsReference.observed({...o,dragonHitzone:0},w.TechniqueDBEngine));assert.throws(()=>w.DarkArtsReference.observed({...o,otherBuffs:['unknown']},w.TechniqueDBEngine));}}
+ finally{w.close();}
+});

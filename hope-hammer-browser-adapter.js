@@ -1800,6 +1800,33 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
      if(result.metrics?.comboTotalDamage?.status==='available')result.metrics.comboTotalDamage={...result.metrics.comboTotalDamage,completeness:unappliedEffects.length?'PARTIAL_REFERENCE':'SOURCE_REFERENCE',unappliedEffects};
     }
    }
+   // Rank-I GS waves are independent fixed-dragon source components. Do not
+   // run weapon-element multipliers/caps or unresolved maximum buffs on them.
+   const darkWaveBonus=weapon.kind==='great-sword'?activeBonusEffects.find(e=>e.bonusSkillId===172&&e.name==='ダークアーツ'&&e.rankLevel===1):null;
+   if(darkWaveBonus)for(const [channel,result] of Object.entries(evaluated.channels||{})){
+    const note={skillId:172,name:'ダークアーツ追加波',level:1,channel,component:'GS_DARK_ARTS_WAVE',includedInPower:false,liveGameVerification:'PENDING'};
+    try{
+     if(result.metrics?.comboTotalDamage?.status!=='available')throw Error('DARK_ARTS_WAVE:BODY_UNAVAILABLE');
+     const events=[];for(const [stageIndex,id] of resolvedTechniqueIds.entries()){
+      const rule=techniqueDb.get('great-sword',id)?.sourceHitRules?.darkArtsWave;
+      if(!rule||typeof rule.eligible!=='boolean'||rule.status!=='SOURCE_CONFIRMED'||rule.waveTechniqueId!=='GS_DARK_ARTS_WAVE'||rule.eventCount!==(rule.eligible?1:0))throw Error('DARK_ARTS_WAVE:TECHNIQUE_RULE_UNRESOLVED');
+      if(rule.eligible){if(!['GS_CHARGED_SLASH_3','GS_STRONG_CHARGED_SLASH_3'].includes(id))throw Error('DARK_ARTS_WAVE:TECHNIQUE_SCOPE_PENDING');events.push({stageIndex,techniqueId:id});}
+     }
+     if(!events.length){result.diagnostics={...result.diagnostics,darkArtsWave:{...note,status:'NON_TARGET_TECHNIQUE',count:0}};continue;}
+     if(channel!=='normal')throw Error('DARK_ARTS_WAVE:MAXIMUM_BUFF_INTERACTIONS_PENDING');
+     if(allSkills.some(x=>[82,136].includes(Number(x.skillId))||['暗黒','Dark','チャージマスター','Charge Master'].includes(x.name)))throw Error('DARK_ARTS_WAVE:IN_ROUTE_SKILL_INTERACTION_PENDING');
+     if(contextAttackEntries.length||explicitAffinityEntries.length||wexEffects.length||allSkills.some(x=>Number(x.skillId)===8))throw Error('DARK_ARTS_WAVE:PER_HIT_BUFF_INTERACTIONS_PENDING');
+     if(Number(conditions.eCrit))throw Error('DARK_ARTS_WAVE:ELEMENT_CRITICAL_PENDING');
+     if(!root.DarkArtsReference?.observed)throw Error('DARK_ARTS_WAVE:REFERENCE_MODULE_UNAVAILABLE');
+     const sharp=root.MHWWeaponMaxSharpness.resolve(equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]})?.options;
+     if(!sharp)throw Error('DARK_ARTS_WAVE:SHARPNESS_UNRESOLVED');
+     const n=conditionPlan?.normal||stats,dragonHitzone=conditions.dragonHz!=null&&String(conditions.dragonHz).trim()!==''?Number(conditions.dragonHz):Number(part?.multipliers?.dragon)*100;
+     const wave=root.DarkArtsReference.observed({attack:Number(n.attackTrue??n.attack),affinity:Number(n.affinity),criticalMultiplier:1.25+[0,.03,.06,.09,.12,.15][criticalBoostLevel],sharpness:sharp.sharpnessPhysicalMultiplier,elementSharpness:sharp.sharpnessElementMultiplier,physicalHitzone:Number(part?.multipliers?.slash)*100,dragonHitzone,dragonAttack:Math.max(0,...allSkills.filter(x=>x.skillKey==='dragon').map(x=>x.level)),count:1},techniqueDb);
+     const added=events.flatMap(event=>['physical','element'].map(type=>({id:event.techniqueId+':'+type+':dark-arts-wave:'+event.stageIndex,eventId:event.stageIndex+':0',techniqueId:event.techniqueId,componentSource:'GS_DARK_ARTS_WAVE',source:wave.evidence.url,coefficientUnit:type==='physical'?'MV':'FIXED_DRAGON_DISPLAY',damageUnit:'damage',status:'available',value:wave[type],disposition:'emitted',effectsApplied:[],details:{...wave,damageIncluded:true,elementType:'dragon',parentStage:event.stageIndex}})));
+     result.components.push(...added);result.metrics.comboTotalDamage={...result.metrics.comboTotalDamage,value:result.metrics.comboTotalDamage.value+wave.total*events.length};
+     result.diagnostics={...result.diagnostics,darkArtsWave:{...note,status:'SOURCE_REFERENCE',includedInPower:true,count:events.length,physical:wave.physical*events.length,element:wave.element*events.length,evidence:wave.evidence,scope:'RANK_I_NORMAL_ONLY_FIXED_DRAGON_INDEPENDENT_OF_WEAPON_ELEMENT'}};
+    }catch(error){const reason=String(error.message||error);result.diagnostics={...result.diagnostics,darkArtsWave:{...note,status:'UNAVAILABLE',reason},calculationCompleteness:'PARTIAL_SKILL_EFFECTS',ignoredSkillEffects:[...(result.diagnostics?.ignoredSkillEffects||[]),{...note,status:'IGNORED_UNSUPPORTED_EFFECT',reason,preserveAdoptedBody:true}]};}
+   }
    const originalConditionKey=evaluated.conditionKey;
    if(glTargetContext)for(const result of Object.values(evaluated.channels||{})){
     result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',glTarget:{rules:glTargetContext.rules,initialRounds:gunlanceState.loadedRounds,initialStakeLoaded:gunlanceState.stakeLoaded,capacity:glTargetContext.capacity,sourcePower:gunlanceState.shellingType+'_'+gunlanceState.shellingPower}};
