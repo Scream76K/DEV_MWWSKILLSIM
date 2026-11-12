@@ -281,7 +281,7 @@
   // The aggregate may legitimately contain the weapon's skill at a higher
   // total rank. Validate duplicates within each source, not across these views.
   const equippedSkills=[...rawSkills,...buildSkills.filter(x=>!rawSkills.some(y=>String(y.skillId)===String(x.skillId)&&y.level===x.level))];
-  const excludedCalculationPolicy=x=>root.MHIsOwnerExcludedCalculationSkill?.(x)?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.(x,conditions)?root.MHStandardCalculationExclusion:null;
+  const excludedCalculationPolicy=x=>root.MHIsOwnerExcludedCalculationSkill?.({...x,weaponKind:weapon.kind})?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.(x,conditions)?root.MHStandardCalculationExclusion:null;
   const excludedCalculationSkills=equippedSkills.filter(x=>excludedCalculationPolicy(x)).map(x=>({skillId:x.skillId,name:x.name,level:x.level,reason:excludedCalculationPolicy(x).reason,status:excludedCalculationPolicy(x).status}));
   for(const e of activeBonusEffects.filter(ownerExcludedBonus))excludedCalculationSkills.push({skillId:e.bonusSkillId,name:e.name,level:e.level,reason:entryGroupPlan.applied.find(x=>x.skillId===e.bonusSkillId).reason,status:'OWNER_EXCLUDED_CURRENT_COMPARISON'});
   const allSkills=equippedSkills.filter(x=>!excludedCalculationPolicy(x));

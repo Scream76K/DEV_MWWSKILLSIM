@@ -3070,7 +3070,7 @@ function renderSummary(){
     <div class="gs-row"><span class="gs-label">防御力</span><span class="gs-value">${Math.round(s.defense)}</span></div>
     <div class="gs-row gs-one-hit-result"><span class="gs-label">選択技の実計算</span><span class="gs-value"><span class="one-hit-compact">${oneCompactText}</span>${['normal','maximum'].map(ch=>(one.channels?.[ch]?.diagnostics?.ignoredSkillEffects?.length||one.channels?.[ch]?.diagnostics?.unappliedEffects?.length)?'<div class="small" data-ignored-skill-channel="'+ch+'">'+(ch==='normal'?'通常':'最大')+ignoredSkillEffectsDisplay(one.channels[ch].diagnostics)+'</div>':'').join('')}<details class="one-hit-diagnostics"><summary>詳細・保留理由</summary><div class="one-hit-diagnostic-body">${oneText}</div></details></span></div>
   </div>`;
-  $('buildSummary').innerHTML+=consumerStandardAmmoNote(calcState.realOneHit?.evaluationPlan);
+  $('buildSummary').innerHTML+=consumerStandardAmmoNote(calcState.realOneHit?.evaluationPlan)+bowBladescalePremiseDisplay(calcState.realOneHit);
   const bonus=calcState.bonusDisplay||{series:[],group:[]};
   const bonusNames=new Set([...bonus.series,...bonus.group].map(x=>x.name));
   const normalEntries=entries.filter(([n,l])=>!bonusNames.has(n)&&Number(l)>0);
@@ -5427,7 +5427,7 @@ function renderComboHitDetail(stage){
   return `<details class="combo-hit-detail" style="margin:8px 0;min-width:0"><summary>Hit別の参考内訳（${stage.hits}Hit）</summary><p class="small">${esc(origin)}。値は会心を含む参考計算です。ゲーム表示の整数丸めとは異なります。</p><div style="max-width:100%;overflow-x:auto"><table style="width:100%;min-width:340px;table-layout:fixed;font-size:12px;font-variant-numeric:tabular-nums" aria-label="${esc(stage.name)}のHit別参考内訳"><thead><tr>${['Hit・成分','物理','属性','特殊','合計'].map(s=>`<th scope="col" style="padding:6px">${s}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
 }
 
-function bowReferenceSkills(total){return {forceShot:skillLevel(total,['フォースショット','Force Shot']),firstShot:skillLevel(total,['ファーストショット','First Shot']),normalUp:skillLevel(total,['通常弾・通常矢強化','Normal/Rapid Up']),spreadUp:skillLevel(total,['散弾・剛射強化','Spread/Power Shots','Spread Up']),chargeMaster:skillLevel(total,['チャージマスター','Charge Master']),criticalElement:window.MHIsOwnerExcludedCalculationSkill({skillId:82,name:'会心撃【属性】',level:skillLevel(total,['会心撃【属性】','Critical Element'])})?0:skillLevel(total,['会心撃【属性】','Critical Element']),bladescaleLoading:window.MHIsOwnerExcludedCalculationSkill?.({skillId:160,name:'刃鱗増装',level:skillLevel(total,['刃鱗増装','Bladescale Loading'])})?0:skillLevel(total,['刃鱗増装','Bladescale Loading'])};}
+function bowReferenceSkills(total){return {forceShot:skillLevel(total,['フォースショット','Force Shot']),firstShot:skillLevel(total,['ファーストショット','First Shot']),normalUp:skillLevel(total,['通常弾・通常矢強化','Normal/Rapid Up']),spreadUp:skillLevel(total,['散弾・剛射強化','Spread/Power Shots','Spread Up']),chargeMaster:skillLevel(total,['チャージマスター','Charge Master']),criticalElement:window.MHIsOwnerExcludedCalculationSkill({skillId:82,name:'会心撃【属性】',level:skillLevel(total,['会心撃【属性】','Critical Element'])})?0:skillLevel(total,['会心撃【属性】','Critical Element']),bladescaleLoading:window.MHIsOwnerExcludedCalculationSkill?.({skillId:160,name:'刃鱗増装',weaponKind:'bow',level:skillLevel(total,['刃鱗増装','Bladescale Loading'])})?0:skillLevel(total,['刃鱗増装','Bladescale Loading'])};}
 function rangedComboDamage(move,ctx){
   const result=ctx.p0RangedResults?.[ctx.routeIndex];
   if(!result||result.techniqueId!==move.canonicalTechniqueId)throw Error('RANGED_REFERENCE:P0_ROUTE_CONTEXT_REQUIRED');
@@ -8520,7 +8520,7 @@ function createPowerCoverageReport(){
   };
   const weapons=KINDS.map(([weaponKind,name])=>{
     const handler=buildComparisonHandlerDescriptor(weaponKind),availability=genericStandardProfileAvailability(weaponKind,weaponKind==='switch-axe'?consumerStandardProfile(weaponKind):null),ready=(handler.handler==='GenericWeaponHandler'&&availability.status==='READY')||(weaponKind==='bow'&&bowComparisonStatePlan({chargeLevel:3,range:'CRITICAL',coating:'NONE'}).status==='REFERENCE_READY');
-    return {weaponKind,name,additionalReferences:weaponKind==='heavy-bowgun'?[{id:'HBG_NORMAL_AMMO_REFERENCE',status:'REFERENCE_READY',scope:'EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO',ammoCapacityVerified:false,liveGameVerification:'PENDING'}]:[],status:ready?'REFERENCE_BASE_READY':'PENDING',handler:handler.handler,profileId:weaponKind==='bow'?BOW_STANDARD_PROFILE.id:isChargeBladeKind(weaponKind)?'CB_COMPOSITE_R_H':availability.profileId||null,reason:ready?null:handler.handler!=='GenericWeaponHandler'?(handler.reason||'SPECIAL_STANDARD_COMPONENTS_PENDING'):(availability.reason||'STANDARD_PROFILE_PENDING'),message:ready?(weaponKind==='switch-axe'?'現基準の剣右斬り上げ→左斬り上げ→剣変形二連斬り→斧変形斬り。採用済み暫定値による本体計算に対応。武器状態・ビン・スキルの成立は公開計算で別途確認します。':weaponKind==='bow'?'標準比較は溜め3の固定3射撃。武器DBから対応ビンを自動選択し、全Hit適正距離・1射目開始で計算します。貫通は採用済みの接触契約で計算します。刃鱗増装は通常・最大とも対象外です。未対応の補正は理由を表示します。':'固定コンボの参考計算に対応。装備スキルと入力条件によっては通常・最大側を保留します。'):gaps[weaponKind]||'固定コンボの技データまたは状態条件が未確定です。',blockers:availability.blockers||[],profileBlockers:availability.profileBlockers||[]};
+    return {weaponKind,name,additionalReferences:weaponKind==='heavy-bowgun'?[{id:'HBG_NORMAL_AMMO_REFERENCE',status:'REFERENCE_READY',scope:'EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO',ammoCapacityVerified:false,liveGameVerification:'PENDING'}]:[],status:ready?'REFERENCE_BASE_READY':'PENDING',handler:handler.handler,profileId:weaponKind==='bow'?BOW_STANDARD_PROFILE.id:isChargeBladeKind(weaponKind)?'CB_COMPOSITE_R_H':availability.profileId||null,reason:ready?null:handler.handler!=='GenericWeaponHandler'?(handler.reason||'SPECIAL_STANDARD_COMPONENTS_PENDING'):(availability.reason||'STANDARD_PROFILE_PENDING'),message:ready?(weaponKind==='switch-axe'?'現基準の剣右斬り上げ→左斬り上げ→剣変形二連斬り→斧変形斬り。採用済み暫定値による本体計算に対応。武器状態・ビン・スキルの成立は公開計算で別途確認します。':weaponKind==='bow'?'標準比較は溜め3の固定3射撃。武器DBから対応ビンを自動選択し、全Hit適正距離・1射目開始で計算します。貫通は採用済みの接触契約で計算します。刃鱗増装は固定3射・接撃の最大側のみ、回避による強化3回分が残る前提です。未対応の補正は理由を表示します。':'固定コンボの参考計算に対応。装備スキルと入力条件によっては通常・最大側を保留します。'):gaps[weaponKind]||'固定コンボの技データまたは状態条件が未確定です。',blockers:availability.blockers||[],profileBlockers:availability.profileBlockers||[]};
   });
   return JSON.parse(JSON.stringify({format:'MHWildsPowerCoverage',schemaVersion:1,release:'r140',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,referenceBaseReadyCount:weapons.filter(x=>x.status==='REFERENCE_BASE_READY').length,weaponCount:weapons.length,completeAllSkills:false,liveVerified:false,scope:'FIXED_STANDARD_ROUTE_BASE_READINESS_NOT_BUILD_RESULT_OR_DPS',weapons,notes:['全スキル対応・技DB完成・実機検証済みを意味しません。','実際の保存ビルドの計算可否は比較結果の保留理由を確認してください。','コンボDPSの対応状況とは別です。']}));
 }
@@ -9311,6 +9311,11 @@ function continueConsumerSkillEffects(input,original){
     return window.MHWRealOneHitBrowserAdapter.evaluateCurrent({...input,weapon,stats,skills,conditionalConditionPlan:stats.conditionalConditionPlan});
   }});
 }
+function bowBladescalePremiseDisplay(pipeline){
+ const statuses=Object.values(pipeline?.channels||{}).flatMap(c=>(c.components||[]).map(x=>x.details?.bladescaleStatus)).filter(Boolean);
+ if(!statuses.length||statuses.every(s=>s==='INACTIVE'))return '';
+ return '<div class="small" data-bow-bladescale-premise="160">刃鱗増装：通常側は未発動。'+(statuses.includes('ACTIVE_REFERENCE')?'最大側は適時回避後の強化3回分が残る計算前提。接撃の物理のみ1.25倍、属性不変。固定3射で残数2／1／0。':statuses.includes('INELIGIBLE_COATING')?'選択ビンには非適用。':'発動・固定3射条件は未確認。')+'実戦の発動・持続DPS・現行ゲーム実測は未確認です。</div>';
+}
 function ignoredSkillEffectsDisplay(d){
   const ignored=[...(d?.ignoredSkillEffects||[]),...(d?.unappliedEffects||[])];if(!ignored.length)return '';
   return '［一部スキル未反映：'+ignored.map(x=>esc(x.name)+' Lv'+esc(x.rankLevel??x.level)+' (ID '+esc(x.skillId)+')：'+esc(x.reason==='RAPID_ALL_FIVE_HIT_EFFECT_NOT_VERIFIED'?'速射各命中への適用が未確認のため未反映':x.reason)+(x.status==='PARTIALLY_APPLIED_UNSUPPORTED_COMPONENTS'?'（対応済み本体会心は保持、未対応の砲撃への効果のみ未反映）':'')).join(' / ')+'。この条件・残したスキルとの組合せで計算できない効果と相互作用を含みません。完全な火力値ではありません］';
@@ -9492,7 +9497,7 @@ function comparisonReadinessHtml(rows,baseline){
     if(row.kind==='bow'&&row.power?.normal?.skills?.firstShot)h+='<div class="small">ファーストショット：ボウガン用の効果のため弓には非適用です。通常・最大の火力に加算しません。</div>';
     if(row.power?.normal?.skills?.bladescaleLoading){
       const blade=row.power.maximum?.bladescaleLoading;
-      h+='<div class="small">刃鱗増装：ユーザー指定により通常・最大とも火力効果を含めません。</div>';
+      h+='<div class="small">刃鱗増装：通常側は未発動。'+(blade?.status==='ACTIVE_REFERENCE'?'最大側は適時回避後の強化3回分が残る前提で、接撃の物理のみ1.25倍。固定3射で残数2／1／0。':blade?.status==='INELIGIBLE_COATING'?'選択ビンには非適用。':'最大側の発動・固定3射条件は未確認。')+'実戦の発動・持続DPS・現行ゲーム実測は未確認です。</div>';
     }
     const health=row.power?.healthBranchComparison;
     const heroics=row.power?.conditionPlan?.applied?.find(x=>x.skill==='火事場力')||health?.branches?.flatMap(x=>x.conditionPlan?.applied||[]).find(x=>x.skill==='火事場力');
@@ -9676,6 +9681,7 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   const coverage=consumerCoverageSummary(rows);
   for(const row of rows)for(const ch of ['normal','maximum'])if(row.oneHitPipeline?.channels?.[ch]?.diagnostics?.ignoredSkillEffects?.length||row.oneHitPipeline?.channels?.[ch]?.diagnostics?.unappliedEffects?.length)h+='<div class="compare-note small" data-ignored-skill-channel="'+ch+'">'+esc(row.name)+'／'+(ch==='normal'?'通常':'最大')+ignoredSkillEffectsDisplay(row.oneHitPipeline.channels[ch].diagnostics)+'</div>';
   h+=comparisonExcludedNotesHtml(rows);
+  for(const row of rows)h+=bowBladescalePremiseDisplay(row.oneHitPipeline);
   h+='<div class="compare-note small" data-comparison-coverage="r248">比較可能：通常 '+coverage.normal+'/'+coverage.total+'件 ／ 最大 '+coverage.maximum+'/'+coverage.total+'件。未算出の結果は推測で補完しません。</div>';
   if(coverage.pending.length){
     h+='<details class="compare-note" data-comparison-pending="r248"><summary>比較保留の原因を確認（'+coverage.pending.length+'項目）</summary><p class="small">通常・最大それぞれの実ダメージを独立して確認します。</p><strong>原因別集計</strong>'+coverage.causes.map(x=>'<p class="small">'+esc(comparisonReasonText(x.reason))+'：'+x.buildCount+'ビルド／'+x.metricCount+'項目（通常'+x.metrics.normal+'・最大'+x.metrics.maximum+'）</p>').join('')+'<strong>個別の保留内容</strong>'+coverage.pending.map(x=>'<p class="small">'+esc(x.name)+' ／ '+({normal:'通常',maximum:'最大',dps:'DPS'}[x.metric])+'：'+esc(comparisonReasonText(x.reason))+' <code>'+esc(x.reason)+'</code></p>').join('')+'</details>';
