@@ -20,6 +20,8 @@ on:
       - 'tools/gl-hh-scope-regression/**'
       - 'tools/input-guard-regression/**'
       - 'tools/integration-regression/**'
+      - 'tests/integration-ci-partition.test.cjs'
+      - 'tests/integration-ci-dependency.test.cjs'
       - 'tests/charm-saved-level-integrity.test.cjs'
       - 'tests/saved-decoration-identity.test.cjs'
       - 'ui/comparison-session.js'
@@ -44,9 +46,13 @@ on:
 permissions:
   contents: read
 jobs:
-  synthetic-boundaries:
+  synthetic-partitions:
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        partition: [heroics, resolved-attack, remainder]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -54,21 +60,57 @@ jobs:
           node-version: '24'
       - name: Install locked test dependencies without lifecycle scripts
         run: npm ci --ignore-scripts
-      - name: Verify both branches against the integrated runtime
+      - name: Verify partition control
+        run: node --test tests/integration-ci-partition.test.cjs
+      - name: Run exact contract partition
         env:
-          REPORT_FILE: ${{ runner.temp }}/integrated-boundary-report/summary.json
-        run: node tools/integration-regression/run.cjs
-      - name: Retain failed integrated test reports
-        if: failure()
+          REPORT_DIR: ${{ runner.temp }}/integrated-partition/${{ matrix.partition }}
+        run: node tools/integration-regression/ci-partition.cjs run ${{ matrix.partition }}
+      - name: Retain current evidence on success or failure
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: integrated-boundary-failure
-          if-no-files-found: warn
+          name: integrated-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.partition }}
+          if-no-files-found: error
           retention-days: 7
           path: |
-            ${{ runner.temp }}/integrated-boundary-report/summary.json
-            ${{ runner.temp }}/integrated-boundary-report/child-*.tap
-            ${{ runner.temp }}/integrated-boundary-report/child-*.stderr
+            ${{ runner.temp }}/integrated-partition/${{ matrix.partition }}/contract.json
+            ${{ runner.temp }}/integrated-partition/${{ matrix.partition }}/receipt.json
+            ${{ runner.temp }}/integrated-partition/${{ matrix.partition }}/summary.json
+            ${{ runner.temp }}/integrated-partition/${{ matrix.partition }}/child-*.tap
+            ${{ runner.temp }}/integrated-partition/${{ matrix.partition }}/child-*.stderr
+            ${{ runner.temp }}/integrated-partition/${{ matrix.partition }}/runner.stdout
+            ${{ runner.temp }}/integrated-partition/${{ matrix.partition }}/runner.stderr
+  synthetic-boundaries:
+    needs: [synthetic-partitions]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Require every partition to succeed
+        env:
+          PARTITION_RESULT: ${{ needs.synthetic-partitions.result }}
+        run: test "$PARTITION_RESULT" = success
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install locked test dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@v4
+        with:
+          name: integrated-${{ github.run_id }}-${{ github.run_attempt }}-heroics
+          path: ${{ runner.temp }}/integrated-partition/heroics
+      - uses: actions/download-artifact@v4
+        with:
+          name: integrated-${{ github.run_id }}-${{ github.run_attempt }}-resolved-attack
+          path: ${{ runner.temp }}/integrated-partition/resolved-attack
+      - uses: actions/download-artifact@v4
+        with:
+          name: integrated-${{ github.run_id }}-${{ github.run_attempt }}-remainder
+          path: ${{ runner.temp }}/integrated-partition/remainder
+      - name: Require exact current contract coverage
+        run: node tools/integration-regression/ci-partition.cjs aggregate "${{ runner.temp }}/integrated-partition"
       - name: Verify all historical and current runner freshness checks
         run: node --test tools/cb-gl-scope-regression/freshness.test.cjs tools/sa-hh-scope-regression/freshness.test.cjs tools/gl-hh-scope-regression/freshness.test.cjs tools/input-guard-regression/freshness.test.cjs
   current-data-integrity:
