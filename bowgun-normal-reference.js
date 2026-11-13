@@ -36,13 +36,24 @@
   if(!Number.isInteger(normalUp)||!Object.hasOwn(rule.normalUp,normalUp))throw Error('HBG_NORMAL:SKILL_LEVEL_INVALID');
   const range=valid(rule.physicalRange[s.range],0,1),mode=valid(rule.normalMode[s.normalModeLevel],1,2),up=valid(rule.normalUp[normalUp],1,2),crit=affinity>=0?1+affinity/100*(criticalMultiplier-1):1+affinity/100*.25;
   const firstShot=o.firstShot??0,forceShot=o.forceShot??0;
-  const {shotAttackAdd,shotAffinityAdd}=shotSkillBonuses(o,s,rule.shotSkills,sequenceOrdinal);
+  const shotSkills=hbgBladescaleShotSkills(o,s,rule,sequenceOrdinal,kind);
+  const {shotAttackAdd,shotAffinityAdd}=shotSkills;
   const effectiveAffinity=Math.min(100,affinity+shotAffinityAdd),shotCrit=effectiveAffinity>=0?1+effectiveAffinity/100*(criticalMultiplier-1):1+effectiveAffinity/100*.25;
   const weaponPhysicalModifier=lbg?valid(rule.weaponPhysicalModifier,0,2):1;
   const attackAdds=o.hitAttackAdds;if(attackAdds!==undefined&&(!Array.isArray(attackAdds)||attackAdds.length!==ammo.hitCount||attackAdds.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0||v>7)))throw Error('HBG_NORMAL:HIT_ATTACK_INVALID');
   const drawAdds=o.hitAffinityAdds;if(drawAdds!==undefined&&(!Array.isArray(drawAdds)||drawAdds.length!==ammo.hitCount||drawAdds.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0||v>100)))throw Error('HBG_NORMAL:HIT_AFFINITY_INVALID');
-  const trace=Array.from({length:ammo.hitCount},(_,i)=>{const hitAffinity=Math.min(100,effectiveAffinity+(drawAdds?.[i]??0)),criticalExpectation=hitAffinity>=0?1+hitAffinity/100*(criticalMultiplier-1):1+hitAffinity/100*.25;return {hit:i+1,hitAttackAdd:attackAdds?.[i]??0,techniqueId:source.techniqueId,mv,physical:physicalHit(attack+shotAttackAdd+(attackAdds?.[i]??0),mv,hz,criticalExpectation,range*mode*up*weaponPhysicalModifier),element:0,weaponPhysicalModifier,rangePhysicalModifier:range,normalModeModifier:mode,normalUpModifier:up,criticalExpectation,shotOrdinal:sequenceOrdinal??s.shotOrdinal??null,shotAttackAdd,shotAffinityAdd,effectiveAffinity:hitAffinity,drawAffinityAdd:drawAdds?.[i]??0,sharpnessApplied:false,weaponElementApplied:false};}),physical=trace.reduce((sum,h)=>sum+h.physical,0);
+  const trace=Array.from({length:ammo.hitCount},(_,i)=>{const hitAffinity=Math.min(100,effectiveAffinity+(drawAdds?.[i]??0)),criticalExpectation=hitAffinity>=0?1+hitAffinity/100*(criticalMultiplier-1):1+hitAffinity/100*.25;return {hit:i+1,hitAttackAdd:attackAdds?.[i]??0,techniqueId:source.techniqueId,mv,physical:physicalHit(attack+shotAttackAdd+(attackAdds?.[i]??0),mv,hz,criticalExpectation,range*mode*up*weaponPhysicalModifier*(shotSkills.bladescale?.physicalMultiplier??1)),element:0,weaponPhysicalModifier,rangePhysicalModifier:range,normalModeModifier:mode,normalUpModifier:up,criticalExpectation,shotOrdinal:sequenceOrdinal??s.shotOrdinal??null,shotAttackAdd,shotAffinityAdd,...(shotSkills.bladescale?{bladescale:shotSkills.bladescale}:{}),effectiveAffinity:hitAffinity,drawAffinityAdd:drawAdds?.[i]??0,sharpnessApplied:false,weaponElementApplied:false};}),physical=trace.reduce((sum,h)=>sum+h.physical,0);
   return {status:'SOURCE_REFERENCE',profileId:prefix+'_NORMAL_AMMO_'+s.ammoLevel+'_THREE_CONTACT_REFERENCE',scope:rule.scope,comparisonPower:physical,physical,element:0,special:0,trace,state:{...s},skills:{normalUp,firstShot,forceShot},shotSkills:{shotAttackAdd,shotAffinityAdd,effectiveAffinity},ammoCapacityVerified:false,weaponApplicability:'UNVERIFIED',rounding:'UNROUNDED_REFERENCE',liveGameVerification:'PENDING',evidenceRefs:[...record.evidenceRefs,...source.evidenceRefs]};
+ }
+ function hbgBladescaleShotSkills(o,s,rule,ordinal,kind){
+  const level=o.bladescaleLoading??0;
+  if(!Number.isInteger(level)||![0,1].includes(level)||(level&&typeof o.bladescaleLoadingActive!=='boolean')||(!level&&o.bladescaleLoadingActive===true))throw Error('HBG_BLADESCALE:LEVEL_OR_ACTIVATION_INVALID');
+  if(!level)return shotSkillBonuses(o,s,rule.shotSkills,ordinal);
+  if(kind!=='heavy-bowgun'||!Number.isInteger(ordinal)||ordinal<1||ordinal>10)throw Error('HBG_BLADESCALE:FIXED_TEN_NORMAL_SCOPE_PENDING');
+  const b=rule.bladescaleLoading;
+  if(b?.skillId!==160||b.level!==1||b.enhancedRounds!==3||b.physicalMultiplier!==1.4||b.scope!=='HBG_FIXED_TEN_NORMAL_ONLY'||b.status!=='SOURCE_BACKED_PROVISIONAL')throw Error('HBG_BLADESCALE:SOURCE_RULE_UNRESOLVED');
+  const active=o.bladescaleLoadingActive,enhanced=active&&ordinal<=3,magazineOrdinal=active&&ordinal>3?ordinal-3:ordinal;
+  return {...shotSkillBonuses({...o,forceShot:enhanced?0:o.forceShot},s,rule.shotSkills,magazineOrdinal),bladescale:{...b,active,segment:enhanced?'BLADESCALE':'ORDINARY',magazineOrdinal,remainingEnhancedRounds:active?Math.max(0,3-ordinal):0,physicalMultiplier:enhanced?b.physicalMultiplier:1,elementMultiplier:1,activationAssumption:active?'PREACTIVATED_THREE_THEN_ORDINARY_SEVEN':'INACTIVE_ORDINARY_TEN'}};
  }
  function normalSequence(o,engine,shotCount=10){
   const kind=o?.weaponKind,s=o?.state;
@@ -51,10 +62,11 @@
   if(s.range!=='CRITICAL'||s.normalModeLevel!==0||s.contactPolicy!=='ALL_THREE'||(kind==='light-bowgun'?s.shotMode!=='NORMAL':s.shotMode!=null&&s.shotMode!=='NORMAL'))throw Error('BOWGUN_TEN_SHOT:NON_RAPID_REFERENCE_STATE_REQUIRED');
   // Per-contact draw effects cannot be repeated ten times without a sequence contract.
   for(const key of ['hitAttackAdds','hitAffinityAdds'])if(o[key]!==undefined&&(!Array.isArray(o[key])||o[key].length!==3||o[key].some(v=>v!==0)))throw Error('BOWGUN_TEN_SHOT:DRAW_SEQUENCE_SCOPE_UNADOPTED');
+  if(o.bladescaleLoading&&shotCount!==10)throw Error('HBG_BLADESCALE:FIXED_TEN_NORMAL_SCOPE_PENDING');
   const shots=Array.from({length:shotCount},(_,i)=>shot(o,engine,i+1));
   const physical=shots.reduce((sum,r)=>sum+r.physical,0);
   if(!Number.isFinite(physical)||shots.some(r=>r.trace.length!==3))throw Error('BOWGUN_TEN_SHOT:INCOMPLETE_SEQUENCE');
-  return {status:'SOURCE_REFERENCE',profileId:(kind==='light-bowgun'?'LBG':'HBG')+'_NORMAL_'+s.ammoLevel+(shotCount===5?'_FIVE_SHOT_REFERENCE':'_TEN_SHOT_REFERENCE'),scope:shotCount===5?'EXPLICIT_LBG_NORMAL_FIVE_SHOT_NO_RELOAD':'EXPLICIT_NORMAL_TEN_SHOT_NO_RELOAD',comparisonPower:physical,physical,element:0,special:0,shots,trace:shots.flatMap(r=>r.trace),state:{...s},sequence:{shotCount,contactCount:shotCount*3,ordinals:shots.map((_,i)=>i+1),magazinePolicy:'IGNORED_NO_RELOAD',firstShotPolicy:'SEQUENCE_START_ONLY',ammoLevel:s.ammoLevel,shotMode:'NORMAL',source:'spec/CURRENT_CONTRACTS.md:C03',standardAdoption:shotCount===5?'OWNER_APPROVED_NONRAPID_FIVE_ROUNDS':'PENDING_LEVEL_AND_LBG_RAPID_DECISION'},ammoCapacityVerified:false,weaponApplicability:'UNVERIFIED',rounding:'UNROUNDED_REFERENCE',liveGameVerification:'PENDING',evidenceRefs:shots[0].evidenceRefs};
+  return {status:'SOURCE_REFERENCE',profileId:(kind==='light-bowgun'?'LBG':'HBG')+'_NORMAL_'+s.ammoLevel+(shotCount===5?'_FIVE_SHOT_REFERENCE':'_TEN_SHOT_REFERENCE'),scope:shotCount===5?'EXPLICIT_LBG_NORMAL_FIVE_SHOT_NO_RELOAD':'EXPLICIT_NORMAL_TEN_SHOT_NO_RELOAD',comparisonPower:physical,physical,element:0,special:0,shots,trace:shots.flatMap(r=>r.trace),state:{...s},sequence:{shotCount,contactCount:shotCount*3,ordinals:shots.map((_,i)=>i+1),magazinePolicy:o.bladescaleLoadingActive?'SEPARATE_THREE_PLUS_SEVEN_NO_RELOAD':'IGNORED_NO_RELOAD',firstShotPolicy:o.bladescaleLoadingActive?'EACH_SEGMENT_START':'SEQUENCE_START_ONLY',ammoLevel:s.ammoLevel,shotMode:'NORMAL',source:'spec/CURRENT_CONTRACTS.md:C03',standardAdoption:shotCount===5?'OWNER_APPROVED_NONRAPID_FIVE_ROUNDS':'PENDING_LEVEL_AND_LBG_RAPID_DECISION'},ammoCapacityVerified:false,weaponApplicability:'UNVERIFIED',rounding:'UNROUNDED_REFERENCE',liveGameVerification:'PENDING',evidenceRefs:shots[0].evidenceRefs};
  }
  function tenShot(o,engine){return normalSequence(o,engine,10);}
  function fiveShot(o,engine){

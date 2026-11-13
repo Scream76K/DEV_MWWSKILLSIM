@@ -10,6 +10,6 @@ test('keeps owner exclusions separate from standard-only and unsupported disposi
  for(const id of [25,89,107,170,180])assert.equal(policy.isOwnerExcluded({skillId:id,name:'forged',level:1}),false,'set/group require activation validation');
  assert.equal(policy.isOwnerExcluded({skillId:99999,name:'攻勢',level:1}),false);
  assert.equal(policy.isOwnerExcluded({skillId:24,name:'チャージマスター',level:3}),false);
- for(const weaponKind of ['bow','light-bowgun','heavy-bowgun','great-sword'])assert.equal(policy.isOwnerExcluded({skillId:160,name:'刃鱗増装',level:1,weaponKind}),!['bow','light-bowgun'].includes(weaponKind));
+ for(const weaponKind of ['bow','light-bowgun','heavy-bowgun','great-sword'])assert.equal(policy.isOwnerExcluded({skillId:160,name:'刃鱗増装',level:1,weaponKind}),!['bow','light-bowgun','heavy-bowgun'].includes(weaponKind));
  assert.equal(new Set(policy.owner.skills.map(x=>x.skillId)).size,13);
 });
