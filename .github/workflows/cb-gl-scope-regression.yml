@@ -146,6 +146,6 @@ jobs:
       - name: Install locked test dependencies without lifecycle scripts
         run: npm ci --ignore-scripts
       - name: Install the locked Playwright Chromium runtime
-        run: npx --no-install playwright install --with-deps chromium
+        run: npx --no-install playwright install --with-deps --only-shell chromium
       - name: Verify session and legacy-cache restoration without external API access
         run: node --test tools/comparison-session-reload-browser.test.cjs
