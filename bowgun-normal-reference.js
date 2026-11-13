@@ -1,5 +1,6 @@
 (function(root){
  'use strict';
+
  const valid=(n,min,max)=>{if(typeof n!=='number'||!Number.isFinite(n)||n<min||n>max)throw Error('HBG_NORMAL:INVALID_INPUT');return n;};
  function shotSkillBonuses(o,s,rules,sequenceOrdinal=null){
   const firstShot=o.firstShot??0,forceShot=o.forceShot??0;
@@ -71,8 +72,8 @@
   const normalUpRules=engine.get('light-bowgun','LBG_NORMAL_REFERENCE_RULES')?.specialSourceValues?.normalUp,normalUpLevel=o.normalUp??0;
   if(!Number.isInteger(normalUpLevel)||!Object.hasOwn(normalUpRules||{},normalUpLevel))throw Error('LBG_RAPID:NORMAL_UP_LEVEL_INVALID');
   const normalUp=valid(normalUpRules[normalUpLevel],1,2);
-  const physical=physicalHit(attack,mv,hz,crit,rule.physicalModifier*rule.rangeModifier*up*normalUp);
-  return {comparisonPower:physical,physical,element:0,scope:rule.scope,state:{...s},trace:[{hit:o.hitIndex+1,mv,attack,affinity:aff,criticalExpectation:crit,physical,element:0,rapidModifier:rule.physicalModifier,rapidUp:up,normalUp,rangeModifier:rule.rangeModifier,...(shotSkills?{shotOrdinal:o.sequenceOrdinal,roundOrdinal:o.sequenceOrdinal,triggerOrdinal:o.sequenceOrdinal,shotAttackAdd:shotSkills.shotAttackAdd,shotAffinityAdd:shotSkills.shotAffinityAdd,effectiveAffinity:aff}:{})}],liveGameVerification:'PENDING'};
+  const physical=physicalHit(attack,mv,hz,crit,rule.physicalModifier*rule.rangeModifier*up*normalUp*(shotSkills?.bladescale?.physicalMultiplier??1));
+  return {comparisonPower:physical,physical,element:0,scope:rule.scope,state:{...s},trace:[{hit:o.hitIndex+1,mv,attack,affinity:aff,criticalExpectation:crit,physical,element:0,rapidModifier:rule.physicalModifier,rapidUp:up,normalUp,rangeModifier:rule.rangeModifier,...(shotSkills?{shotOrdinal:o.sequenceOrdinal,roundOrdinal:o.sequenceOrdinal,triggerOrdinal:o.sequenceOrdinal,shotAttackAdd:shotSkills.shotAttackAdd,shotAffinityAdd:shotSkills.shotAffinityAdd,effectiveAffinity:aff,...(shotSkills.bladescale?{bladescale:shotSkills.bladescale}:{})}:{})}],liveGameVerification:'PENDING'};
  }
  function rapidSequenceShotSkills(o,engine){
   if(!Number.isInteger(o.sequenceOrdinal)||o.sequenceOrdinal<1||o.sequenceOrdinal>5)throw Error('LBG_RAPID_FIVE:SHOT_ORDINAL_INVALID');
@@ -81,7 +82,14 @@
   // newly adopted; no magazine state or user-entered shot position is required.
   const ranks=(key,min,max)=>Array.isArray(rules?.[key])&&rules[key].length===4&&rules[key].every(n=>typeof n==='number'&&Number.isFinite(n)&&n>=min&&n<=max)&&rules[key][0]===min;
   if(source?.status!=='SOURCE_CONFIRMED'||source.scope!=='EXPLICIT_COMMON_NORMAL_AMMO_SCENARIO'||!['firstAttack','forceAttack','forceAffinity'].every(key=>ranks(key,0,100))||!['firstElement','forceElement'].every(key=>ranks(key,1,2))||!Array.isArray(rules.forceAttackOrdinals)||rules.forceAttackOrdinals.length!==2||rules.forceAttackOrdinals[0]!==4||rules.forceAttackOrdinals[1]!==6||rules.forceAffinityStart!==4)throw Error('LBG_RAPID_FIVE:SHOT_SKILL_SOURCE_UNRESOLVED');
-  return shotSkillBonuses(o,o.state,rules,o.sequenceOrdinal);
+  const level=o.bladescaleLoading??0;
+  if(!Number.isInteger(level)||![0,1].includes(level)||(level&&typeof o.bladescaleLoadingActive!=='boolean')||(!level&&o.bladescaleLoadingActive===true))throw Error('LBG_BLADESCALE:LEVEL_OR_ACTIVATION_INVALID');
+  if(!level)return shotSkillBonuses(o,o.state,rules,o.sequenceOrdinal);
+  const bladescaleRule=engine.get('light-bowgun',o.techniqueId)?.rapidRule?.bladescaleLoading;
+  if(bladescaleRule?.skillId!==160||bladescaleRule.level!==1||bladescaleRule.enhancedRounds!==3||bladescaleRule.physicalMultiplier!==1.4||bladescaleRule.scope!=='LBG_FIXED_FIVE_NORMAL_RAPID_ONLY'||bladescaleRule.status!=='SOURCE_BACKED_PROVISIONAL')throw Error('LBG_BLADESCALE:SOURCE_RULE_UNRESOLVED');
+  const active=o.bladescaleLoadingActive,enhanced=active&&o.sequenceOrdinal<=3,magazineOrdinal=active&&o.sequenceOrdinal>3?o.sequenceOrdinal-3:o.sequenceOrdinal;
+  const bonuses=shotSkillBonuses({...o,forceShot:enhanced?0:o.forceShot},o.state,rules,magazineOrdinal);
+  return {...bonuses,bladescale:{...bladescaleRule,active,segment:enhanced?'BLADESCALE':'ORDINARY',magazineOrdinal,remainingEnhancedRounds:active?Math.max(0,3-o.sequenceOrdinal):0,physicalMultiplier:enhanced?bladescaleRule.physicalMultiplier:1,elementMultiplier:1,activationAssumption:active?'PREACTIVATED_THREE_THEN_ORDINARY_TWO':'INACTIVE_ORDINARY_FIVE'}};
  }
  function selectStandardAmmo(weapon,state={}){
   const kind=weapon?.kind,rows=Array.isArray(weapon?.ammo)?weapon.ammo.filter(a=>a?.kind==='normal'):null;
