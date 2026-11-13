@@ -63,3 +63,8 @@ Integration now runs 1588 assertions (two additional tests). Formal 28 inputs co
 ## Selected HP follow-up candidate (e8c1fe3, uncommitted)
 
 The selected-HP candidate adds three TAP tests, so the current contract expects 1,591 tests. HP selection is shared by normal/maximum outputs; FULL activates Peak in both and LOW activates Heroics in both. Eight older regressions now use explicit HP inputs and source-derived equations. Original fixture hashes and historical sections above are retained. The Heroics proof covers 1,640 rows across both states; resolved-attack covers 1,344. Wrapper TAP counts remain one each. Unknown-HP behavior remains provisional: ignore only unresolved HP effects with a reason, without assuming FULL/LOW or suppressing other adopted skills. This is neither owner approval of a default nor live-game/full-matrix acceptance.
+
+### ID8/103 sourced opening candidate
+One public draw-opening test adds first-Hit independent arithmetic,14weapon scope/pending controls, restoration and explicit-map guards. Expected1600TAP tests. Historical counts above remain unchanged; no live-game or all-matrix certification.
+
+ID8/103 continuation correction: the same test now requires complete3Hit normal execution for missing maps.32direct map boundaries and6trigger boundaries require body/other-effect preservation, and maximum failures retain draw-specific diagnostics.1600TAP expectation unchanged; prior unavailable-normal expectation was incorrect.

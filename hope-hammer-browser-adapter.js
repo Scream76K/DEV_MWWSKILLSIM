@@ -284,7 +284,25 @@
   const excludedCalculationPolicy=x=>root.MHIsOwnerExcludedCalculationSkill?.({...x,weaponKind:weapon.kind})?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.({...x,weaponKind:weapon.kind},conditions)?root.MHStandardCalculationExclusion:null;
   const excludedCalculationSkills=equippedSkills.filter(x=>excludedCalculationPolicy(x)).map(x=>({skillId:x.skillId,name:x.name,level:x.level,reason:excludedCalculationPolicy(x).reason,status:excludedCalculationPolicy(x).status}));
   for(const e of activeBonusEffects.filter(ownerExcludedBonus))excludedCalculationSkills.push({skillId:e.bonusSkillId,name:e.name,level:e.level,reason:entryGroupPlan.applied.find(x=>x.skillId===e.bonusSkillId).reason,status:'OWNER_EXCLUDED_CURRENT_COMPARISON'});
-  const allSkills=equippedSkills.filter(x=>!excludedCalculationPolicy(x));
+  // Source-confirmed STANDARD starts; later three-second coverage is not inferred.
+  const drawSequences={
+   'great-sword':['GS_CHARGED_SLASH_3','GS_STRONG_CHARGED_SLASH_3','GS_STRONG_WIDE_SLASH_3'],
+   lance:['LAN_MID_THRUST_I','LAN_MID_THRUST_II','LAN_MID_THRUST_III','LAN_TRIPLE_THRUST']
+  };
+  const drawEquipped=equippedSkills.filter(x=>[8,103].includes(Number(x.skillId)));
+  const drawIds=Array.isArray(techniqueIds)?techniqueIds:[techniqueId];
+  const drawSequence=drawSequences[weapon.kind];
+  const drawOpeningEligible=conditions.standardEvaluation===true&&drawSequence&&JSON.stringify(drawIds)===JSON.stringify(drawSequence)&&drawIds.every(id=>{
+   const t=techniqueDb?.get?.(weapon.kind,id),canonical=root.TechniqueDBEngine?.get?.(weapon.kind,id);
+   return t&&JSON.stringify(t)===JSON.stringify(canonical)&&!t.referenceKind&&t.hits?.length&&t.hits.every(h=>!h.componentSource);
+  })&&root.TechniqueDBEngine.get(weapon.kind,drawIds[0]).hits.length===1&&![conditions.mounted,conditions.dismountAttack,conditions.sneakAttack].includes(true);
+  const drawPending=conditions.standardEvaluation===true&&!drawOpeningEligible?drawEquipped:[];
+  if(drawOpeningEligible&&drawEquipped.length){
+   const maps=Object.fromEntries(['normal','maximum'].map(ch=>[ch,Object.fromEntries(drawIds.map((id,n)=>[id,root.TechniqueDBEngine.get(weapon.kind,id).hits.map((h,i)=>ch==='maximum'&&n===0&&i===0)]))]));
+   // Saved explicit maps are retained in snapshots. STANDARD uses its own scoped scenario.
+   conditions={...conditions,criticalDrawHits:maps,punishingDrawHits:maps};
+  }
+  const allSkills=equippedSkills.filter(x=>!excludedCalculationPolicy(x)&&!drawPending.includes(x));
   if(allSkills.some(x=>Number(x.skillId)===133&&(!Number.isInteger(x.level)||x.level<1||x.level>3)))return fail('REAL_SLICE:ABSORPTION_LEVEL_INVALID');
   const normalized=normalizeTechniqueIds(Array.isArray(techniqueIds)?techniqueIds:null,{fallback:techniqueId});
   const resolvedTechniqueIds=normalized.ids;
@@ -1272,6 +1290,27 @@
   if(conditionPlan&&explicitAffinityEntries.length){const names=new Set(explicitAffinityEntries.flatMap(x=>Number(x.skillId)===39?['濡れ刃紋','Wet Blade Mark']:['抜刀術【技】','抜刀術[技]','Critical Draw']));const pending=conditionPlan.pending.filter(x=>!names.has(x.split(':')[0]));conditionPlan={...conditionPlan,pending,status:pending.length?conditionPlan.status:'READY'};}
   const drawEntry=explicitAffinityEntries.find(x=>Number(x.skillId)===103);
   const referenceDrawCount=(id,t)=>t.referenceKind==='charge-blade-saed'?t.hits?.length:t.referenceKind==='bow'?root.BowReference.hitsForState(root.TechniqueDBEngine,id,bowState).length:['heavy-bowgun-element','light-bowgun-element'].includes(t.referenceKind)?(t.referenceInput.state.contactPolicy==='EXPLICIT_CONTACTS'?t.referenceInput.state.contacts?.length:1):['heavy-bowgun','light-bowgun'].includes(t.referenceKind)?root.TechniqueDBEngine.get(weapon.kind,id)?.specialSourceValues?.hitCount:1;
+  // Resolve only draw-effect inputs here. Missing/invalid eligibility never stops body execution.
+  // Keep the original input untouched for storage and diagnostics; normal is unconditionally OFF.
+  const drawMapDiagnostics={normal:[],maximum:[]};
+  for(const [skillId,key] of [[8,'punishingDrawHits'],[103,'criticalDrawHits']]){
+   const entry=allSkills.find(x=>Number(x.skillId)===skillId);if(!entry)continue;
+   const count=id=>techniques[id].referenceKind?referenceDrawCount(id,techniques[id]):techniques[id].hits.length;
+   const zero=()=>Object.fromEntries(resolvedTechniqueIds.map(id=>[id,Array(count(id)).fill(false)]));
+   const original=conditions[key],next={};
+   for(const channel of ['normal','maximum']){
+    const map=original?.[channel];let reason=null;
+    if(map==null)reason='DRAW_HIT_MAP_MISSING';
+    else if(typeof map!=='object'||Array.isArray(map))reason='DRAW_HIT_MAP_INVALID';
+    else if(Object.keys(map).some(id=>!resolvedTechniqueIds.includes(id)))reason='DRAW_UNKNOWN_TECHNIQUE';
+    else if(resolvedTechniqueIds.some(id=>!Array.isArray(map[id])||map[id].length!==count(id)||map[id].some(v=>typeof v!=='boolean')))reason='DRAW_HIT_MAP_INVALID';
+    else if(resolvedTechniqueIds.some(id=>map[id].some(Boolean))&&[conditions.mounted,conditions.dismountAttack,conditions.sneakAttack].includes(true))reason='DRAW_TRIGGER_EXCLUDED';
+    else if(resolvedTechniqueIds.some(id=>map[id].some((on,n)=>on&&(techniques[id].referenceKind?!['bow','heavy-bowgun','light-bowgun','heavy-bowgun-element','light-bowgun-element','charge-blade-saed'].includes(techniques[id].referenceKind):!!techniques[id].hits[n].componentSource))))reason='DRAW_COMPONENT_ELIGIBILITY_PENDING';
+    next[channel]=channel==='normal'||reason?zero():map;
+    drawMapDiagnostics[channel].push({skillId,name:entry.name,level:entry.level,status:channel==='normal'?'INACTIVE_NORMAL':reason?'IGNORED_UNSUPPORTED_EFFECT':'EXPLICIT_OR_SOURCED_HITS',reason:reason||null,includedInPower:channel==='maximum'&&!reason});
+   }
+   conditions={...conditions,[key]:next};
+  }
   const referenceDrawAdds=(channel,id)=>{if(!drawEntry)return undefined;const t=techniques[id],flags=conditions.criticalDrawHits?.[channel]?.[id];if(!Array.isArray(flags)||flags.length!==referenceDrawCount(id,t)||flags.some(v=>typeof v!=='boolean'))throw Error('CRITICAL_DRAW_HIT_STATE_REQUIRED:'+id);return flags.map(on=>on?root.MHWExplicitAffinityRules.draw[drawEntry.level]:0);};
   const punishingEntry=allSkills.find(x=>Number(x.skillId)===8);
   const referencePunishingAdds=(channel,id)=>{if(!punishingEntry)return undefined;const flags=conditions.punishingDrawHits?.[channel]?.[id];if(!Array.isArray(flags)||flags.length!==referenceDrawCount(id,techniques[id])||flags.some(v=>typeof v!=='boolean'))throw Error('PUNISHING_DRAW_HIT_STATE_REQUIRED:'+id);return flags.map(on=>on?[0,3,5,7][punishingEntry.level]:0);};
@@ -1840,6 +1879,15 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
     result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',glTarget:{rules:glTargetContext.rules,initialRounds:gunlanceState.loadedRounds,initialStakeLoaded:gunlanceState.stakeLoaded,capacity:glTargetContext.capacity,sourcePower:gunlanceState.shellingType+'_'+gunlanceState.shellingPower}};
    }
 
+   for(const [channel,result] of Object.entries(evaluated.channels||{}))if(drawMapDiagnostics[channel].length){
+    const ignored=drawMapDiagnostics[channel].filter(x=>x.status==='IGNORED_UNSUPPORTED_EFFECT');
+    result.diagnostics={...result.diagnostics,drawHitPolicy:drawMapDiagnostics[channel],...(ignored.length?{calculationCompleteness:'PARTIAL_SKILL_EFFECTS',ignoredSkillEffects:[...(result.diagnostics?.ignoredSkillEffects||[]),...ignored]}:{})};
+   }
+   if(drawEquipped.length&&conditions.standardEvaluation===true)for(const [channel,result] of Object.entries(evaluated.channels||{})){
+    result.diagnostics={...result.diagnostics,drawOpening:{status:drawOpeningEligible?'SOURCE_CONFIRMED_LIMITED':'PENDING',active:drawOpeningEligible&&channel==='maximum',techniqueId:drawOpeningEligible?drawIds[0]:null,hitIndices:drawOpeningEligible?[0]:[],source:'https://kuroyonhon.com/mhwilds/memo/29.php',liveGameVerification:'PENDING',remainingScope:'LATER_THREE_SECOND_WINDOW_NOT_ESTABLISHED'}};
+    if(drawPending.length&&channel==='maximum')result.diagnostics={...result.diagnostics,calculationCompleteness:'PARTIAL_SKILL_EFFECTS',ignoredSkillEffects:[...(result.diagnostics?.ignoredSkillEffects||[]),...drawPending.map(x=>({skillId:x.skillId,name:x.name,level:x.level,status:'IGNORED_UNSUPPORTED_EFFECT',reason:'DRAW_STANDARD_OPENING_ELIGIBILITY_PENDING'}))]};
+    if(drawOpeningEligible&&channel==='maximum')result.diagnostics.maximumActivationAssumptions=[...(result.diagnostics.maximumActivationAssumptions||[]),{description:'抜刀術【力】【技】：納刀から固定始動の先頭1Hitのみ発動する計算前提。通常は非発動。後続の3秒窓は未確定のため未反映。現行実機未検証。'}];
+   }
    if(sustainedBladeEligible)for(const [channel,result] of Object.entries(evaluated.channels||{}))result.diagnostics={...result.diagnostics,bladescaleSustained:{...sustainedBladeRule,active:channel==='maximum',originalSharpness:maxSharpness,unappliedComponents:resolvedTechniqueIds.some(id=>techniques[id].saAwakened)?['SA_AWAKENED_FOLLOWUP_SPECIAL_SHARPNESS_INTERACTION_PENDING']:[]}};
    if(bladescaleEntries.length&&!sustainedBladeEligible)for(const [channel,result] of Object.entries(evaluated.channels||{}))result.diagnostics={...result.diagnostics,bladescaleFirstHit:{...bladescaleRule,eligible:bladescaleEligible,active:bladescaleEligible&&channel==='maximum',originalSharpness:maxSharpness}};
    if(conditionPlan?.selectedHpPolicy)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,selectedHpPolicy:conditionPlan.selectedHpPolicy};
@@ -1863,7 +1911,7 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
     ...activeBonusEffects.filter(x=>x.bonusSkillId===25&&ownerExcludedBonus(x)).map(x=>root.ownerExcludedConditionalBuffNote(25,x.rankLevel))
    ].filter(Boolean).map(x=>[JSON.stringify(x),x])).values()];
    const maximumActivationAssumptions=(conditionPlan?.groupPlan?.applied||[]).filter(x=>x.attackAdd>0&&x.appliesToNormal===false&&x.maximumConditionNote).map(x=>x.maximumConditionNote);
-   if(maximumActivationAssumptions.length&&evaluated.channels?.maximum)evaluated.channels.maximum.diagnostics={...evaluated.channels.maximum.diagnostics,maximumActivationAssumptions};
+   if(maximumActivationAssumptions.length&&evaluated.channels?.maximum)evaluated.channels.maximum.diagnostics={...evaluated.channels.maximum.diagnostics,maximumActivationAssumptions:[...(evaluated.channels.maximum.diagnostics?.maximumActivationAssumptions||[]),...maximumActivationAssumptions]};
    if(excludedConditionalBuffs.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,excludedConditionalBuffs};
    if(excludedCalculationSkills.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,excludedCalculationSkills};
    if(excludedSkillDamage.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,excludedSkillDamage};
