@@ -295,3 +295,12 @@ The standard five-consumed-round/25-contact route now admits source-valid Foray7
 
 ### ID8/103 continuation correction (2026-11-13)
 The prior candidate incorrectly expected a missing normal Punishing Draw map to stop execution. That expectation is rejected. Draw-specific missing/null/shape/count/boolean/unknown-technique/trigger/component eligibility failures are diagnosed before effect emission. Normal ignores the draw effect unconditionally; maximum uses a zero-effect map only for the affected invalid skill, retaining its reason and PARTIAL classification. Metrics are computed from executed body Hits, never replaced after failure. The matrix remains candidate/pending independent review; prior test PASS was not policy acceptance.
+
+
+## C04/C05 — ID164 パワーストーン除外と独立検証
+- ユーザー決定：2026年11月11日 JST「ID164は除外」。Lv1／rank421を通常・最大火力の両方から除外する。
+- 装備・スキル表示・保存値を削除しない。保存・復元は維持し、除外理由を結果に表示する。STANDARDの既定鉱石と明示oreAddsの双方で本人寄与を0とし、他の採用技能を維持する。
+- 検証対象：巨戟アーティア攻撃激化の大剣1148、既存STANDARD3技、OFF／Lv1、通常／最大、明示鉱石、攻撃Lv3併用、保存・復元。提出時点ではID164限定試験と契約照合を済ませた未公開・未commitの候補だった。2026年11月13日の独立検証では、公開基準091c5487と提出差分を組み合わせた隔離コピーに対し、実分割・集約1601件、freshness106件、保存・DOM55件、CI制御22件がすべてPASS。修正前のID164最大火力への誤加算を再現し、修正後の除外と表示・保存・復元の維持を確認した。
+- 公開091c5487のCI分割・--only-shell・runnerを維持。登録47テストファイル、合計1601件、分割期待1＋1＋1599。この1601件は独立検証で実行した回帰範囲であり、全ゲーム数値や全マトリックスの検証完了を意味しない。
+- ブラウザ16件はローカル環境のブラウザ取得失敗により初期化段階で停止し、テスト本体は未実行。公開コミットそのものに対するGitHub Actions確認は保留とし、ブラウザPASSや公開版全体の受入完了とは扱わない。
+- contract内の既存candidate状態ラベルは過去の候補来歴として保持する。上記の独立検証と公開後CIの状態は区別する。

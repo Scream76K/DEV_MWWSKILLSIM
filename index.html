@@ -8009,7 +8009,7 @@ function adoptedSelfStatePlan(st,total,cond){
  const defs=[[89,'革細工の滑性'],[164,'パワーストーン'],[171,'炎の料理人'],[174,'連携プログラム'],[173,'オメガレゾナンス'],[153,'波衣竜の守護']];
  for(const [id,name] of defs){const level=id===89?(slide.length||skillLevel(total,[name,'滑走強化'])):[153,173].includes(id)?(active.filter(e=>e.bonusSkillId===id).length||skillLevel(total,[name])):skillLevel(total,[name]);if(!level)continue;
   if((id===89&&!slideValid)||(![89,173,153].includes(id)&&level!==1)){out.pending.push(name+':ACTIVATION_INVALID');continue;}
-  if((id===89&&currentOwnerExcludedBonus(slide[0]))||([171,174].includes(id)&&window.MHIsOwnerExcludedCalculationSkill({skillId:id,name,level})))continue;
+  if((id===89&&currentOwnerExcludedBonus(slide[0]))||([164,171,174].includes(id)&&window.MHIsOwnerExcludedCalculationSkill({skillId:id,name,level})))continue;
   out.ids.push(id);
   for(const ch of ['normal','maximum']){const state=cond.selfSkillState?.[ch];let atk=0,aff=0,elem=0,reason=null;
    if(id===89){if(typeof state?.sliding!=='boolean')reason='SLIDING_STATE_REQUIRED';else aff=state.sliding?30:0;}
