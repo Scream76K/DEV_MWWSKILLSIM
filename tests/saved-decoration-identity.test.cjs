@@ -98,11 +98,18 @@ for(const [label,mutate,missing] of [
  assert.deepEqual(c.state(),before);assert.equal(c.ui(),ui);assert.equal(c.stored(),stored);
 });
 
-test('source-valid decoration remains saved when its unsupported skill effect is omitted',t=>{
- const c=setup(t),input=c.read('__base');input.weaponId='701';input.weaponKind='lance';input.decos={w0:'14'};c.store(input);const stored=c.stored();c.load('candidate');
+for(const explicit of [false,true])test('source-valid Charge Master decoration roundtrips: '+(explicit?'explicit unreviewed route':'standard noncharged route'),t=>{
+ const c=setup(t),input=c.read('__base');input.weaponId='701';input.weaponKind='lance';input.decos={w0:'14'};
+ if(explicit)input.combo.moves=['canonical:LAN_MID_THRUST_I','canonical:LAN_MID_THRUST_II','canonical:LAN_MID_THRUST_III','canonical:LAN_TRIPLE_THRUST'].map(techniqueId=>({techniqueId}));
+ c.store(input);const stored=c.stored();c.load('candidate');
  assert.deepEqual(c.alerts,[]);assert.equal(c.stored(),stored);assert.equal(c.read('build.decos.w0'),'14');
  assert.equal(c.read('calcState.total["チャージマスター"]'),1);
- for(const ch of ['normal','maximum'])assert.equal(c.read('calcState.realOneHit.channels.'+ch+'.metrics.comboTotalDamage.status'),'available');
- assert.ok(c.read('calcState.realOneHit.channels.maximum.diagnostics.ignoredSkillEffects').some(x=>x.skillId===24));
- c.save('unsupported');assert.equal(c.read('savedBuildMap().unsupported.decos.w0'),'14');
+ const r=c.read('calcState.realOneHit');
+ for(const ch of ['normal','maximum']) {
+  const channel=r.channels[ch];assert.equal(channel.metrics.comboTotalDamage.status,'available');
+  const d=channel.diagnostics;
+  if(!explicit){assert.equal(d.chargeMasterApplicability?.reason,'STANDARD_NONCHARGED_BODY_CM_NOT_APPLICABLE');assert.equal(d.ignoredSkillEffects?.some(x=>x.skillId===24)??false,false);}
+  else if(ch==='maximum'){assert.equal(d.chargeMasterApplicability,undefined);assert.equal(d.ignoredSkillEffects?.find(x=>x.skillId===24)?.reason,'UNRESOLVED_EFFECTS:チャージマスター:CONDITIONAL_DAMAGE_FORMULA_PENDING');}
+ }
+ c.save('roundtrip');assert.equal(c.read('savedBuildMap().roundtrip.decos.w0'),'14');
 });

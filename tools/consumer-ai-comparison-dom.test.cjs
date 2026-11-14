@@ -57,20 +57,26 @@ test('different saved technique identities preserve both totals but withhold rel
   assert.equal(r.results[1].powerChange,null);
 });
 
-// C05: a source-valid omitted effect is disclosed per channel, not converted to blocked total.
-test('prepared current and saved maximum retain source-valid skill omission with available damage',t=>{
+// C05: confirmed nonapplication and unreviewed explicit skill effects are separate states.
+for(const explicit of [false,true])test('prepared current and saved Charge Master: '+(explicit?'explicit route remains incomplete':'standard route is not applicable'),t=>{
   const w=setup(t,{kind:'sword-and-shield',element:true});
-  w.eval(`DB.skills.push(${JSON.stringify(sourceSkill.skill)});selectedWeapon().skills=[{skill:DB.skills.find(s=>s.id===24),level:1}];calcBuild();`);
-  save(w,'Partial');compare(w);const payload=prepare(w),r=payload.currentBuild.buildComparison;
-  close(r.results[0].maxPowerIndex,207.33);
-  assert.equal(r.results[0].oneHitPipeline.channels.normal.diagnostics.ignoredSkillEffects,undefined);
-  const max=r.results[0].oneHitPipeline.channels.maximum;
-  assert.equal(max.diagnostics.calculationCompleteness,'PARTIAL_SKILL_EFFECTS');assert.deepEqual(max.diagnostics.ignoredSkillEffects.map(x=>x.skillId),[24]);
-  assert.equal(max.diagnostics.ignoredSkillEffects[0].reason,'UNRESOLVED_EFFECTS:チャージマスター:CONDITIONAL_DAMAGE_FORMULA_PENDING');
+  if(explicit)for(const id of ['sns_slash','canonical:SNS_SIDE_SLASH','sns_horizontal','canonical:SNS_RETURN_SLASH'])w.addCombo(id);
+  w.calcBuild();
+  const expected=explicit?prepare(w).currentBuild.currentCalculation.channels.maximum.metrics.comboTotalDamage.value:207.33;
+  assert.ok(Number.isFinite(expected)&&expected>0);
+  w.eval(`DB.skills.push(${JSON.stringify(sourceSkill.skill)});selectedWeapon().skills=[{skill:DB.skills.find(s=>s.id===24),level:1}];`);
+  w.calcBuild();
+  save(w,'Scope');compare(w);const payload=prepare(w),r=payload.currentBuild.buildComparison;
+  close(r.results[0].maxPowerIndex,expected);
   const current=payload.currentBuild.currentCalculation;
   assert.ok(current,'current public result must be explicitly identified in prepared data');
-  close(current.channels.normal.metrics.comboTotalDamage.value,207.33);close(current.channels.maximum.metrics.comboTotalDamage.value,207.33);
-  assert.equal(current.channels.maximum.diagnostics.calculationCompleteness,'PARTIAL_SKILL_EFFECTS');
+  close(current.channels.normal.metrics.comboTotalDamage.value,expected);close(current.channels.maximum.metrics.comboTotalDamage.value,expected);
+  for(const x of [current,r.results[0].oneHitPipeline]) {
+   assert.equal(x.channels.normal.diagnostics.ignoredSkillEffects,undefined);
+   const d=x.channels.maximum.diagnostics;
+   if(explicit){assert.equal(d.chargeMasterApplicability,undefined);assert.equal(d.calculationCompleteness,'PARTIAL_SKILL_EFFECTS');assert.deepEqual(d.ignoredSkillEffects.map(x=>x.skillId),[24]);assert.equal(d.ignoredSkillEffects[0].reason,'UNRESOLVED_EFFECTS:チャージマスター:CONDITIONAL_DAMAGE_FORMULA_PENDING');}
+   else {assert.equal(d.chargeMasterApplicability?.reason,'STANDARD_NONCHARGED_BODY_CM_NOT_APPLICABLE');assert.notEqual(d.calculationCompleteness,'PARTIAL_SKILL_EFFECTS');assert.equal(d.ignoredSkillEffects,undefined);}
+  }
   assert.doesNotMatch(payload.instruction,/comboEvaluationがBLOCKEDの場合は全体火力・DPSを保留/);
   assert.match(payload.instruction,/DPS.*中止/);
 });
