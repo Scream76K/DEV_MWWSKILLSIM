@@ -122,7 +122,7 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "761d63b7f96b29d7fdbf31c2290d55bd623b33c6352fc3ff47ec47b83cb1dbbe"
+      "sha256": "7ef7d38998a8dc9aa0b75a7bbd713b18e4dfd0137310ca9594cfe51cb6f89258"
     },
     {
       "path": "index.html",
@@ -178,7 +178,7 @@
     },
     {
       "path": "tests/charge-master-gl-noncharged-scope.test.cjs",
-      "sha256": "2c487f74a0030be02e67ae336334c4b80ce9b2b891b95271cd806c60da867acc"
+      "sha256": "b2b44081aa87678de9b8448866c786c40080d7cc1e537f9f7e2417cfee7b76f3"
     },
     {
       "path": "tests/charm-saved-level-integrity.test.cjs",
@@ -350,7 +350,7 @@
     },
     {
       "path": "tools/sa-hh-scope-regression/public-contracts.cjs",
-      "sha256": "72aecc9eb0418db1db14fcd905668a169c9dea509dd3089a8322cba259400f1c"
+      "sha256": "ee534d4984c1c1416e7d775687d789f2a273e276a80c9b32a6bf967d2c3a92d2"
     },
     {
       "path": "tools/sa-hh-scope-regression/run.cjs",
@@ -739,6 +739,18 @@
     {
       "path": "tests/wet39-standard-normal.test.cjs",
       "sha256": "32a8b61c268392e9ab0e1b859cce584541471aa3367ea99205e780e399eae197"
+    },
+    {
+      "path": "tests/charge-master-standard-noncharged-boundary.test.cjs",
+      "sha256": "97ed0d008e123fd3b3ecd4316d3c124f30e7151c76a231e63344601a8447fcd0"
+    },
+    {
+      "path": "tests/charge-master-standard-noncharged-public.test.cjs",
+      "sha256": "707e0776f3ab6032f20e2e213a248733a55e7ec2a9473744634ffd5b5dfa46ae"
+    },
+    {
+      "path": "tests/fixtures/charge24-standard-records.json",
+      "sha256": "5773b1d10b52ddfad6c84b9bc0ac8b2fa925849683ab8e5166eb1e658b2a4cff"
     }
   ],
   "tests": [
@@ -789,9 +801,11 @@
     "tests/bladescale163-fixed.test.cjs",
     "tests/draw-opening-fixed.test.cjs",
     "tests/powerstone164-exclusion.test.cjs",
-    "tests/wet39-standard-normal.test.cjs"
+    "tests/wet39-standard-normal.test.cjs",
+    "tests/charge-master-standard-noncharged-boundary.test.cjs",
+    "tests/charge-master-standard-noncharged-public.test.cjs"
   ],
-  "expectedTests": 1602,
+  "expectedTests": 1803,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",

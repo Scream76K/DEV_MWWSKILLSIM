@@ -311,3 +311,9 @@ The prior candidate incorrectly expected a missing normal Punishing Draw map to 
 - 公開091c5487のCI分割・--only-shell・runnerを維持。登録47テストファイル、合計1601件、分割期待1＋1＋1599。この1601件は独立検証で実行した回帰範囲であり、全ゲーム数値や全マトリックスの検証完了を意味しない。
 - 独立ローカル環境ではブラウザ取得に失敗し、ブラウザ16件のテスト本体は未実行。これとは別に、公開実装 `c4089945e87b51cffb581c6d71d8500ffa47b49f` の [GitHub Actions](https://github.com/Scream76K/DEV_MWWSKILLSIM/actions/runs/43516595426) は全6ジョブ成功。回帰1,601件と [ブラウザの保存・復元](https://github.com/Scream76K/DEV_MWWSKILLSIM/actions/runs/43516595426/job/132199996589) を同じ実装版で確認した。全マトリックスや実機精度の検証完了ではない。
 - contract内の既存candidate状態ラベルは過去の候補来歴として保持する。上記の独立検証と公開後CIの状態は区別する。
+
+### ID24: four elemental STANDARD noncharged body sequences (candidate)
+
+LS red blade I–III, SNS downward/side/horizontal/return slashes, DB demon dance I–III, and Lance mid thrust I–III/triple thrust: ID24 Lv1–3 is explicitly NOT_APPLICABLE for these exact STANDARD body records in both channels. Damage and retained effects are unchanged. Source: MHDB skill 24 and https://kuroyonhon.com/mhwilds/memo/28.php (read 2026-11-14; current live game not verified). Numeric record pins identify the existing Technique DB definitions; they do not introduce coefficients.
+
+This is separate from the unchanged confirmed-zero-element guard. Custom/reordered/charged/unknown sequences, changed records, generated/dedicated components, other levels and other weapons are not recognized by this predicate. Existing GS/Hammer/IG/Bow positive paths remain unchanged. Diagnostics: `chargeMasterApplicability`, reason `STANDARD_NONCHARGED_BODY_CM_NOT_APPLICABLE`. Candidate only, independent review pending.

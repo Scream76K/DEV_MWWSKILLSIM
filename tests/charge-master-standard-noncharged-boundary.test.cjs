@@ -1,0 +1,14 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const text=fs.readFileSync(path.join(__dirname,'../hope-hammer-browser-adapter.js'),'utf8');
+const start=text.indexOf('  const chargeStandardRows='),end=text.indexOf('  // Separate SA contract:',start);assert.ok(start>0&&end>start);
+const body=text.slice(start,end)+'chargeStandardNonchargedResolved';
+const records=require('./fixtures/charge24-standard-records.json');
+const clone=x=>structuredClone(x);
+function fixture(kind){const f=clone(records[kind]),entry={skillId:24,skillKey:'chargeMaster',name:'チャージマスター',level:1};return {weapon:{kind,phial:null},conditions:{standardEvaluation:true},stats:{},resolvedConditionPlan:{normal:{},maximum:{}},dualBladesState:{},longSwordState:{},lanceState:{},chargeNoElementEntries:[entry],rawSkills:[],buildSkills:[entry],chargeIdentity:e=>e.skillId===24,resolvedTechniqueIds:f.rows.map(r=>r.id),techniques:Object.fromEntries(f.rows.map(r=>[r.id,r.t])),raw:Object.fromEntries(f.rows.map(r=>[r.id,r.raw]))};}
+function run(f){f.techniqueDb={get:(_kind,id)=>f.raw[id]};return vm.runInNewContext(body,f);}
+for(const kind of Object.keys(records)){
+ for(const level of [1,2,3])test(kind+' valid level '+level,()=>{const f=fixture(kind);f.chargeNoElementEntries[0].level=level;assert.equal(run(f),true);});
+ for(const [label,mutate] of Object.entries({custom:f=>f.conditions.standardEvaluation=false,missingStandard:f=>delete f.conditions.standardEvaluation,reorder:f=>f.resolvedTechniqueIds.reverse(),short:f=>f.resolvedTechniqueIds.pop(),unknown:f=>f.resolvedTechniqueIds[0]='UNKNOWN',otherWeapon:f=>f.weapon.kind='great-sword',phial:f=>f.weapon.phial={},alternate:f=>f.conditions.damageStatsState='CHARGED',rank0:f=>f.chargeNoElementEntries[0].level=0,rank4:f=>f.chargeNoElementEntries[0].level=4,fraction:f=>f.chargeNoElementEntries[0].level=1.5,wrongId:f=>f.chargeNoElementEntries[0].skillId=25,wrongName:f=>f.chargeNoElementEntries[0].name='Other',duplicate:f=>f.buildSkills.push(clone(f.buildSkills[0]))}))test(kind+' rejects '+label,()=>{const f=fixture(kind);mutate(f);assert.equal(run(f),false);});
+ for(const target of ['raw','techniques','both'])for(const [label,mutate] of Object.entries({revision:t=>t.revision++,charged:t=>t.stateRequirement={chargeLevel:3},reference:t=>t.referenceKind='dedicated',special:t=>t.specialComponents=['PHIAL'],generated:t=>t.hits[0].componentSource='generated',hitState:t=>t.hits[0].damageStatsState='CHARGED',mv:t=>t.hits[0].mv++,element:t=>t.hits[0].elementModifier++,count:t=>t.hits.push(clone(t.hits[0])),unknownField:t=>t.unknownEffect=1,blunt:t=>t.hits[0].damageType='blunt'}))test(kind+' '+target+' rejects '+label,()=>{const f=fixture(kind),id=f.resolvedTechniqueIds[0];if(target!=='techniques')mutate(f.raw[id]);if(target!=='raw')mutate(f.techniques[id]);assert.equal(run(f),false);});
+}
