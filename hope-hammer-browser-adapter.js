@@ -1319,7 +1319,7 @@
    const add=(id,amount,componentIds)=>{for(const target of ['physical','element'])effects.push({id:id+(target==='element'?'-element':''),target,stage:'affinity',unit:'percent',operation:'add',amount,order:84,source:rule.source,condition:{type:'always'},...(componentIds?{componentIds:componentIds(target)}:{})});};
    for(const entry of explicitAffinityEntries){
     if(!Number.isInteger(entry.level)||entry.level<1||entry.level>3)throw Error('EXPLICIT_AFFINITY_LEVEL_INVALID');
-    if(Number(entry.skillId)===39){const state=conditions.wetState?.[channel];if(typeof state?.wet!=='boolean'||typeof state?.bubble!=='boolean')throw Error('WET_BUBBLE_STATE_REQUIRED');add('wet-bubble', rapidAmmoSequence&&conditions.standardEvaluation===true&&channel==='normal'?0:(state.wet?rule.wet[entry.level]:0)+(state.bubble?rule.bubble[entry.level]:0));}
+    if(Number(entry.skillId)===39){const state=conditions.wetState?.[channel];if(typeof state?.wet!=='boolean'||typeof state?.bubble!=='boolean')throw Error('WET_BUBBLE_STATE_REQUIRED');add('wet-bubble', conditions.standardEvaluation===true&&channel==='normal'?0:(state.wet?rule.wet[entry.level]:0)+(state.bubble?rule.bubble[entry.level]:0));}
     else{const map=conditions.criticalDrawHits?.[channel];if(!map||typeof map!=='object'||Array.isArray(map))throw Error('CRITICAL_DRAW_HIT_STATE_REQUIRED');
      if(Object.keys(map).some(id=>!resolvedTechniqueIds.includes(id)))throw Error('CRITICAL_DRAW_UNKNOWN_TECHNIQUE');
      for(const id of new Set(resolvedTechniqueIds)){const t=techniques[id],hits=map[id],n=t.referenceKind?referenceDrawCount(id,t):t.hits.length;if(!Array.isArray(hits)||hits.length!==n||hits.some(x=>typeof x!=='boolean'))throw Error('CRITICAL_DRAW_HIT_STATE_REQUIRED:'+id);

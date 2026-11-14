@@ -1,0 +1,22 @@
+const fs=require('fs'),path=require('path'),crypto=require('crypto'),test=require('node:test'),assert=require('node:assert/strict'),{JSDOM,VirtualConsole}=require('jsdom');
+const P=path.resolve(process.env.PRODUCT_ROOT||path.join(__dirname,'..')),clone=x=>JSON.parse(JSON.stringify(x));
+test('ID39 STANDARD normal stays inactive across fourteen weapons and explicit wet states',()=>{
+ const profiles=JSON.parse(fs.readFileSync(P+'/tests/fixtures/selected-hp-inputs.json')).profiles,data=JSON.parse(fs.readFileSync(P+'/tests/fixtures/offset-maximum-inputs.json')).data,rows=[],failures=[],errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
+ const w=new JSDOM(require(P+'/tools/dom-test-setup.cjs').readSimulatorHtml(),{url:'https://wet39.invalid',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}).window;
+ const original=w.MHWRealOneHitBrowserAdapter;let captured;w.MHWRealOneHitBrowserAdapter={...original,evaluateCurrent(input){captured=input;return original.evaluateCurrent(input);}};
+ const run=(input,label)=>{w.applyBuildSnapshot(clone(input));w.document.getElementById('calcBuild').click();const result=JSON.parse(w.eval('JSON.stringify(calcState.realOneHit)'));rows.push({label,input,inputHash:crypto.createHash('sha256').update(JSON.stringify(input)).digest('hex'),result});return result;};
+ const near=(a,b,label)=>{if(Math.abs(a-b)>1e-7)failures.push({label,actual:a,expected:b});};
+ const val=(r,ch)=>{assert.equal(r.channels[ch].metrics.comboTotalDamage.status,'available');return r.channels[ch].metrics.comboTotalDamage.value;};
+ const states={OFF:{wet:false,bubble:false},WET:{wet:true,bubble:false},BUBBLE:{wet:false,bubble:true},BOTH:{wet:true,bubble:true}};
+ try{w.__pack=data;w.eval('DB=normalizeDB({...__pack,weapons:consolidateArtiaFixedVariantRows(__pack.weapons)});weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters();');
+ for(const p of profiles){const make=(lv,state)=>{const x=clone(p.input);x.selectedHp='FULL_HP';x.charmCustom.skills=lv?[{name:'濡れ刃紋',level:lv,type:'weapon'}]:[];x.combo.explicitAffinityState.wetState={normal:states[state],maximum:states.BOTH};return x;};
+ const base=run(make(0,'OFF'),p.kind+' base');
+ for(const lv of [1,2,3]){let ref;for(const state of ['OFF','WET','BUBBLE','BOTH']){const label=`${p.kind} Lv${lv} ${state}`,r=run(make(lv,state),label);near(val(r,'normal'),val(base,'normal'),label+' normal');if(state==='OFF')ref=r;near(val(r,'maximum'),val(ref,'maximum'),label+' maximum');if(p.kind==='great-sword')near(val(r,'maximum'),1191.25908+1100.17908/.975*([0,10,20,30][lv]/100*.25),label+' independent maximum');}}
+ near(val(run(make(0,'OFF'),p.kind+' restore'),'normal'),val(base,'normal'),p.kind+' restore');
+ }
+ const gs=clone(profiles.find(p=>p.kind==='great-sword').input);gs.charmCustom.skills=[{name:'濡れ刃紋',level:3,type:'weapon'},{name:'攻撃',level:3,type:'weapon'}];gs.combo.explicitAffinityState.wetState={normal:states.BOTH,maximum:states.BOTH};const on=run(gs,'companion both');const dry=clone(gs);dry.combo.explicitAffinityState.wetState.normal=states.OFF;const off=run(dry,'companion off');near(val(on,'normal'),val(off,'normal'),'companion normal');assert.ok(val(off,'normal')>1191.25908);
+ run(gs,'explicit source');const explicit=original.evaluateCurrent({...captured,conditions:{...captured.conditions,standardEvaluation:false}});rows.push({label:'explicit arbitrary contract',result:explicit});assert.ok(val(explicit,'normal')>val(off,'normal'));
+ const snap=JSON.parse(w.eval('JSON.stringify(buildSnapshot())'));assert.deepEqual(snap.combo.explicitAffinityState.wetState.normal,states.BOTH);w.eval("buildName.value='wet39';saveNamedBuild();");const bytes=w.eval('JSON.stringify(savedBuildMap())');run(dry,'before restore');const restored=run(snap,'saved restore');near(val(restored,'normal'),val(off,'normal'),'saved normal');assert.equal(w.eval('JSON.stringify(savedBuildMap())'),bytes);assert.deepEqual(JSON.parse(w.eval('JSON.stringify(buildSnapshot())')).combo.explicitAffinityState.wetState.normal,states.BOTH);
+ assert.deepEqual(errors,[]);assert.deepEqual(failures,[]);
+ }finally{if(process.env.WET39_RESULTS)fs.writeFileSync(process.env.WET39_RESULTS,JSON.stringify({rows,failures,errors},null,2));w.close();}
+});
