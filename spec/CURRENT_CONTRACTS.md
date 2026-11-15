@@ -329,3 +329,14 @@ Explicit/single/element ammo, LBG nonrapid five-round scope and other levels are
 For the adopted right rising → left rising → sword morph double → axe morph slash sequence, STANDARD sword start/non-awakened with dragon280 and power phial, CM Lv1–3 is explicitly NOT_APPLICABLE in both channels (`STANDARD_NONCHARGED_SA_POWER_BODY_CM_NOT_APPLICABLE`). Existing five body hits, physical power-phial stage and sword/axe transitions are unchanged. The separate confirmed-zero-element contract is unchanged.
 
 Source: MHDB24; memo/28 charged-action list; current Technique DB and `docs/reports/sa-ig-target-recovery-20261104.md` for the adopted right/left sequence. Numeric guards pin existing records, not new coefficients. No live-game or gauge-duration verification. Explicit/custom, awakened, another phial, altered/generated components, other attribute/amount scenarios and unrelated pending are not newly adopted. Independent review pending.
+
+### C04/C05 ID24 HH 固定標準・龍380（候補、独立受入待ち）
+基点14e03cb4698fbbcec08752126dcc6d99b3b0356c。自己強化・響玉1の
+HH_LEFT_SWING → HH_FORWARD_ATTACK → HH_SELF_IMPROVEMENT_PERFORMANCE → HH_ENCORE_JUST
+に限定し、Lv1–3のチャージマスターは通常・最大とも非溜めによる対象外。
+本体物理5・武器属性5・生成5（響玉追撃2、演奏音波1、響玉演奏2）を保持。
+技/生成定義、状態、効果集合と実生成成分を検証し、ID24を除いた再計算はしない。
+根拠はMHDB ID24、kuroyonhon memo/28.php（溜め対象表）とmemo/8.php（通常旋律）、
+既存Technique DBおよび通常旋律モデル。資料準拠であり現行実機検証ではない。
+明示/カスタム列、別旋律・響玉数、別生成定義、他属性/値・別効果集合は未認定。
+既存無属性ID24および雷耐性ゼロID165のゼロ条件は不変更。
