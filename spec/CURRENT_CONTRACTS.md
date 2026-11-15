@@ -323,3 +323,9 @@ This is separate from the unchanged confirmed-zero-element guard. Custom/reorder
 STANDARD LBG normal Lv2 RAPID five rounds/25 contacts and HBG normal Lv2 ten rounds/30 contacts explicitly classify Charge Master Lv1–3 as NOT_APPLICABLE, reason `STANDARD_FIXED_NORMAL_AMMO_CM_NOT_APPLICABLE`, in both channels. Require matching weapon-supported standard ammo selection, sequence, physical-only source/state, and recognized ID/name/level. No damage, First/Force or bladescale order changes. LBG readiness ignores only the matching CM pending entry in this bounded route; unrelated pending remains.
 
 Explicit/single/element ammo, LBG nonrapid five-round scope and other levels are not newly adopted here. Existing elemental single-shot guard is unchanged. Source: MHDB skill24 (charged element only); current live-game accuracy is not established. Candidate awaiting independent acceptance; wide integration and Chromium replay are delegated to independent review.
+
+### ID24 SA STANDARD dragon280 power-phial body (candidate)
+
+For the adopted right rising → left rising → sword morph double → axe morph slash sequence, STANDARD sword start/non-awakened with dragon280 and power phial, CM Lv1–3 is explicitly NOT_APPLICABLE in both channels (`STANDARD_NONCHARGED_SA_POWER_BODY_CM_NOT_APPLICABLE`). Existing five body hits, physical power-phial stage and sword/axe transitions are unchanged. The separate confirmed-zero-element contract is unchanged.
+
+Source: MHDB24; memo/28 charged-action list; current Technique DB and `docs/reports/sa-ig-target-recovery-20261104.md` for the adopted right/left sequence. Numeric guards pin existing records, not new coefficients. No live-game or gauge-duration verification. Explicit/custom, awakened, another phial, altered/generated components, other attribute/amount scenarios and unrelated pending are not newly adopted. Independent review pending.

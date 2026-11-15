@@ -122,7 +122,7 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "ce20fe6c926dc10d79420a1f2b1d74898f1d9b93d9d76ff6306ef5768865f3e6"
+      "sha256": "6fe4cb0528207422c89a2930f54447b750e955c0c3da91c40b4299f76e1b4beb"
     },
     {
       "path": "index.html",
@@ -759,6 +759,14 @@
     {
       "path": "tests/fixtures/charge24-bowgun-inputs.json",
       "sha256": "071887082ddaac4faa145e6bf6460196a16a1e1a0dd392ac62e80428a3c3ce60"
+    },
+    {
+      "path": "tests/charge-master-sa-standard.test.cjs",
+      "sha256": "3a1857bc4271f8946946046320e6f7331e136e109f45626d8ab4878eb9ed9175"
+    },
+    {
+      "path": "tests/fixtures/charge24-sa-input.json",
+      "sha256": "ddd790cec12356862838c5da87ced88d63c837cba931d80093840c58b6429a04"
     }
   ],
   "tests": [
@@ -812,9 +820,10 @@
     "tests/wet39-standard-normal.test.cjs",
     "tests/charge-master-standard-noncharged-boundary.test.cjs",
     "tests/charge-master-standard-noncharged-public.test.cjs",
-    "tests/charge-master-fixed-bowgun.test.cjs"
+    "tests/charge-master-fixed-bowgun.test.cjs",
+    "tests/charge-master-sa-standard.test.cjs"
   ],
-  "expectedTests": 1804,
+  "expectedTests": 1805,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
