@@ -6868,6 +6868,11 @@ skillRules:{...TECHNIQUE_DB_R117_BOW_STATE.specialSourceValues.skillRules,forceS
     for(const [id,mv,fire] of [['GL_SHELL_NORMAL_HIGH',9,80],['GL_SHELL_LONG_HIGH',12,160]]){
       const old=entries[id];entries[id]={...old,replacedRecord:old,revision:old.revision+1,specialSourceValues:{...old.specialSourceValues,unparenthesizedValue:mv,parenthesizedValue:fire},sourceVersionNote:targetRules.sourceVersion,validFromVersion:null,validToVersion:null,baselineGameVersion:null,liveGameVerification:'PENDING',sourceComparisonNote:'Post-1.011 table reconciled 2026-11-05; current official version not established',evidenceRefs:[...old.evidenceRefs,source]};
     }
+    // Isolated source-backed candidate: never alter shared MEDIUM rule fingerprints.
+    const normalHigh=entries.GL_SHELL_NORMAL_HIGH;
+    entries.GL_SHELL_NORMAL_HIGH={...normalHigh,normalHighCandidate:{
+      status:'SOURCE_BACKED_PROVISIONAL_CANDIDATE',sourceId:'GL_SHELL_NORMAL_HIGH',action:'NORMAL',source,
+      sourceVersion:'post-1.011 table; exact current game version unverified',liveGameVerification:'PENDING',ownerApproval:false}};
     for(const id of Object.keys(targetRules.actions)){
       const old=entries[id];entries[id]={...old,replacedRecord:old,revision:old.revision+1,numericStatus:'PROVISIONALLY_ADOPTED',verificationStatus:'PARTIALLY_VERIFIED',calculationStatus:'READY_COMPONENT_MODEL',validFromVersion:null,validToVersion:null,baselineGameVersion:null,sourceVersionNote:targetRules.sourceVersion,glTargetRules:targetRules,evidenceRefs:targetRules.sourceRefs,currentVersionAudit:'PENDING',liveGameVerification:'PENDING'};
     }

@@ -360,3 +360,11 @@ HH_LEFT_SWING → HH_FORWARD_ATTACK → HH_SELF_IMPROVEMENT_PERFORMANCE → HH_E
 最大結果へIGNORED_UNSUPPORTED_EFFECT / BLADESCALE_FIRST_HIT_SCOPE_PENDINGを付記する。
 別pending、砲撃のSOURCE_VERSION_OR_POWER_PENDING、入力/資源エラーはそのまま保持。
 既知の斬撃だけをコンボ合計と表示しない。NORMAL_HIGH砲撃の採用拡張やID162対応は本候補に含めない。
+
+### NORMAL_HIGH ordinary shell — isolated provisional candidate (2026-11-15)
+
+Only `GL_SHELL_NORMAL_HIGH` with action `NORMAL` is connected to the existing ordinary shell arithmetic. Source: https://kuroyonhon.com/mhwilds/memo/10.php post-1.011 table (MV9, displayed fire80; historical row11/80). Exact current game version and live-game accuracy remain unverified. Status `SOURCE_BACKED_PROVISIONAL_CANDIDATE`, ownerApproval=false; this is not owner-approved adoption. Runtime component details retain this provenance.
+
+One shell consumes one loaded round. Physical = resolved attack ×9/100 (existing normal multiplier1); fire =80/10 × fire hitzone/100, with existing explicitly supported modifiers and guards unchanged. No sharpness/affinity/weapon-element multiplier is newly applied. CHARGED, FULL_BURST, STAKE and LONG_HIGH are not admitted by this candidate. WIDE_HIGH, MEDIUM, fixed standard stake sequence, other pending effects and ID163 omission remain independent. Tests: `tests/gl-normal-high-candidate.test.cjs`; previous GL1084 continuation test now expects the separately sourced shell to complete, while retaining ID163 and invalid-state negatives. Independent acceptance and Chromium remain pending.
+
+Candidate v2: provenance lives only on GL_SHELL_NORMAL_HIGH. GL_SHELL_NORMAL_MEDIUM full runtime record must retain clean087118b SHA256 2793bc61ddbced65632979ca6b1ba19f675e0ceae3b2a1ec42434a8fa76f052d (JSON.stringify). Existing glOrdinaryRawValid strict checks and ID86/129/173 guards are unchanged.
