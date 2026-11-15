@@ -317,3 +317,9 @@ The prior candidate incorrectly expected a missing normal Punishing Draw map to 
 LS red blade I–III, SNS downward/side/horizontal/return slashes, DB demon dance I–III, and Lance mid thrust I–III/triple thrust: ID24 Lv1–3 is explicitly NOT_APPLICABLE for these exact STANDARD body records in both channels. Damage and retained effects are unchanged. Source: MHDB skill 24 and https://kuroyonhon.com/mhwilds/memo/28.php (read 2026-11-14; current live game not verified). Numeric record pins identify the existing Technique DB definitions; they do not introduce coefficients.
 
 This is separate from the unchanged confirmed-zero-element guard. Custom/reordered/charged/unknown sequences, changed records, generated/dedicated components, other levels and other weapons are not recognized by this predicate. Existing GS/Hammer/IG/Bow positive paths remain unchanged. Diagnostics: `chargeMasterApplicability`, reason `STANDARD_NONCHARGED_BODY_CM_NOT_APPLICABLE`. Candidate only, independent review pending.
+
+### ID24: fixed normal Lv2 bowgun non-application (candidate)
+
+STANDARD LBG normal Lv2 RAPID five rounds/25 contacts and HBG normal Lv2 ten rounds/30 contacts explicitly classify Charge Master Lv1–3 as NOT_APPLICABLE, reason `STANDARD_FIXED_NORMAL_AMMO_CM_NOT_APPLICABLE`, in both channels. Require matching weapon-supported standard ammo selection, sequence, physical-only source/state, and recognized ID/name/level. No damage, First/Force or bladescale order changes. LBG readiness ignores only the matching CM pending entry in this bounded route; unrelated pending remains.
+
+Explicit/single/element ammo, LBG nonrapid five-round scope and other levels are not newly adopted here. Existing elemental single-shot guard is unchanged. Source: MHDB skill24 (charged element only); current live-game accuracy is not established. Candidate awaiting independent acceptance; wide integration and Chromium replay are delegated to independent review.
