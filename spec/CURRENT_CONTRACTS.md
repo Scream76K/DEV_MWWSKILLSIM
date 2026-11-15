@@ -352,3 +352,11 @@ HH_LEFT_SWING → HH_FORWARD_ATTACK → HH_SELF_IMPROVEMENT_PERFORMANCE → HH_E
 境界検証であり、最終製品のID24保留を要求する契約とは区別する。
 基点96b73960f0934dcfd465415ceb25f773ae4abc29。HIGH1151と無属性MEDIUM315、明示技、
 溜め砲撃、装填不足、別保留を候補検証。統合・実Chromiumの独立受入待ち。
+
+### GL1084_ID163_CONTINUATION（候補、独立受入待ち）
+基点81bcdd73a929421fc0b43354bf7ae68009ef6ddf。明示GL_SLAM→reference:gl_NORMALに限り、
+既存ID163の適用範囲外ならその効果だけを未反映理由付きで計算外にする。
+通常OFF・最大の既存斬れ味を維持し、1.4等の新規適用はしない。既存適用済み固定コンボは不変更。
+最大結果へIGNORED_UNSUPPORTED_EFFECT / BLADESCALE_FIRST_HIT_SCOPE_PENDINGを付記する。
+別pending、砲撃のSOURCE_VERSION_OR_POWER_PENDING、入力/資源エラーはそのまま保持。
+既知の斬撃だけをコンボ合計と表示しない。NORMAL_HIGH砲撃の採用拡張やID162対応は本候補に含めない。

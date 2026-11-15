@@ -122,7 +122,7 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "82b3fac7f26ab4d18767ac3860f2b25b7726eeef13008e47610f351bf15756cc"
+      "sha256": "961b8adb282f8976b47d475adc58ea1a84cf8ab56a1c3486bbc18d880d3240b5"
     },
     {
       "path": "index.html",
@@ -770,7 +770,7 @@
     },
     {
       "path": "spec/CURRENT_CONTRACTS.md",
-      "sha256": "c542a61d59c5ab03d69ca4fec728f7807cf1c7c8c95180c7a70601f15eb6feeb"
+      "sha256": "1f89785ad8db0e5be962bae42f8cd373e25e8cdf936160e008796388399cddf8"
     },
     {
       "path": "tests/charge-master-hh-standard.test.cjs",
@@ -787,6 +787,14 @@
     {
       "path": "tests/fixtures/charge24-gl-input.json",
       "sha256": "f9e0cbb6dc28823eb994b3f88522f3044282fa7c83d9dc0cc1f4397fd3e4b8d5"
+    },
+    {
+      "path": "tests/gl1084-id163-continuation.test.cjs",
+      "sha256": "4d0c796bcb02de9889bfa5d746a92cb6178cf30ff3d14214d7bdd6139e7a28ab"
+    },
+    {
+      "path": "tests/fixtures/gl1084-id163-inputs.json",
+      "sha256": "71199d393243381931d9ecc860d592bed6cf31bd861edeb904952905bbfefcf1"
     }
   ],
   "tests": [
@@ -843,9 +851,10 @@
     "tests/charge-master-fixed-bowgun.test.cjs",
     "tests/charge-master-sa-standard.test.cjs",
     "tests/charge-master-hh-standard.test.cjs",
-    "tests/charge-master-gl-owner-scope.test.cjs"
+    "tests/charge-master-gl-owner-scope.test.cjs",
+    "tests/gl1084-id163-continuation.test.cjs"
   ],
-  "expectedTests": 1807,
+  "expectedTests": 1808,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
