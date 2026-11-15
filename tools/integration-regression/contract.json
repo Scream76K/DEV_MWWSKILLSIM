@@ -122,7 +122,7 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "c7042d534dfe6dd38354c7d7420c5fdc41d240c089ba4c00153ee2cb8b76c0ed"
+      "sha256": "7291bba4ffee783cbb1aebc17d277146f19fce60682adc96f329d0c1054b4661"
     },
     {
       "path": "index.html",
@@ -770,7 +770,7 @@
     },
     {
       "path": "spec/CURRENT_CONTRACTS.md",
-      "sha256": "c7fbf9420afd93904963294caca75c29f10fe30c4722e570c2d874539b620027"
+      "sha256": "6d1f616fd3696ba3ff7db5f6e6b10cd57e23c82ace4b2f28b91228492e921b81"
     },
     {
       "path": "tests/charge-master-hh-standard.test.cjs",
@@ -799,6 +799,14 @@
     {
       "path": "tests/gl-normal-high-candidate.test.cjs",
       "sha256": "1884deebdfaa5facd1dc8117be07fb176663632846088a0034e444aeedb28ddf"
+    },
+    {
+      "path": "tests/gl162-armor-only.test.cjs",
+      "sha256": "abe41f38f7b3b431b29c22792a1c13ae5ec1f87fdd09b2c4614b26ee63880bbe"
+    },
+    {
+      "path": "tests/fixtures/gl162-armor-only.json",
+      "sha256": "fb1bf01f208b3aaf29b6a31b90f99335bb62ae6f014a8ff6f77fb8a22aaecf84"
     }
   ],
   "tests": [
@@ -857,9 +865,10 @@
     "tests/charge-master-hh-standard.test.cjs",
     "tests/charge-master-gl-owner-scope.test.cjs",
     "tests/gl1084-id163-continuation.test.cjs",
-    "tests/gl-normal-high-candidate.test.cjs"
+    "tests/gl-normal-high-candidate.test.cjs",
+    "tests/gl162-armor-only.test.cjs"
   ],
-  "expectedTests": 1809,
+  "expectedTests": 1810,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",

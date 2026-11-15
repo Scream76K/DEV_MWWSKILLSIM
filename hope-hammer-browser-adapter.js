@@ -402,7 +402,22 @@
    // calcSetSkills counts five armor slots, plus an optional Gogma Artia weapon.
    // This bounded path requires actual armor provenance; weapon-bonus state stays gated.
    const armorInput=stats.armorThunderResistanceInput,slots=['head','chest','arms','waist','legs'],db=root.__getBetaDB?.();
-   if(typeof root.isArtia!=='function'||root.isArtia(weapon)||weapon.artiaCalculationEvidence||!Array.isArray(db?.armor)||typeof root.armorBonusSkillObjects!=='function'||typeof root.bonusSkillObjects!=='function'||typeof root.groupSetData!=='function')return false;
+   const armorOnlyArtia=()=>{
+    if(conditions.standardEvaluation!==true||conditions.mounted!==false||weapon.kind!=='gunlance'||weapon.id!==1151||typeof root.buildSnapshot!=='function'||typeof root.realPipelineWeapon!=='function'||!Array.isArray(db?.weapons))return false;
+    const ids=['GL_SLAM','GL_SWEEP','GL_WYRMSTAKE_FULL_BURST','GL_MULTI_WYRMSTAKE_FULL_BURST'];
+    if(JSON.stringify(resolvedTechniqueIds)!==JSON.stringify(ids)||!ids.every(id=>JSON.stringify(techniqueDb?.get?.('gunlance',id))===JSON.stringify(root.TechniqueDBEngine?.get?.('gunlance',id))))return false;
+    if(gunlanceState?.shellingType!=='NORMAL'||gunlanceState.shellingPower!=='HIGH'||gunlanceState.loadedRounds!==6||gunlanceState.stakeLoaded!==true||JSON.stringify(gunlanceState)!==JSON.stringify(conditions.gunlanceState))return false;
+    try{
+     const snapshot=root.buildSnapshot(),a=snapshot?.artia,records=db.weapons.filter(w=>w.id===1151);
+     if(String(snapshot?.weaponId)!=='1151'||a?.seriesSkill!==''||a.groupSkill!==''||a.production!=='attack'||a.element!=='dragon'||JSON.stringify(a.parts)!=='["attack","attack","attack"]'||JSON.stringify(a.restores)!=='["none","none","none","none","none"]'||records.length!==1)return false;
+     const expected=rank===1?{head:609,chest:610}:{head:609,chest:610,arms:611,waist:612};
+     if(!slots.every(slot=>String(snapshot.armor?.[slot]||'')===String(expected[slot]||'')))return false;
+     if(!Array.isArray(armorInput?.rows)||!slots.every(slot=>{const rows=armorInput.rows.filter(r=>r.slot===slot);return rows.length===1&&(expected[slot]?rows[0].equipped===true&&rows[0].id===expected[slot]:rows[0].equipped===false);} ))return false;
+     // Rebuild from actual DB and current explicit selection, not caller-supplied Artia evidence.
+     return JSON.stringify(weapon)===JSON.stringify(root.realPipelineWeapon(records[0]));
+    }catch(_){return false;}
+   };
+   if(typeof root.isArtia!=='function'||((root.isArtia(weapon)||weapon.artiaCalculationEvidence)&&!armorOnlyArtia())||!Array.isArray(db?.armor)||typeof root.armorBonusSkillObjects!=='function'||typeof root.bonusSkillObjects!=='function'||typeof root.groupSetData!=='function')return false;
    if(armorInput?.status!=='ARMOR_BASE_ONLY'||!Array.isArray(armorInput.missing)||armorInput.missing.length||!Array.isArray(armorInput.rows)||armorInput.rows.length!==slots.length)return false;
    let pieceCount=0,armorBase=0;
    for(const slot of slots){
