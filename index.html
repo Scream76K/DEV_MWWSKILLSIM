@@ -8751,6 +8751,17 @@ function darkSourceWeaponApplicable(weapon){
  return !!weapon&&weapon.kind==='great-sword'&&names[weapon.id]===weapon.name&&Array.isArray(weapon.skills)&&weapon.skills.some(x=>x.skill?.id===168&&x.skill?.name==='暗黒'&&x.level===1);
 }
 window.MHDarkSourceWeaponApplicable=darkSourceWeaponApplicable;
+// Bounded owner source exclusion: only normalized, known fixed Artia non-GS
+// records in STANDARD evaluation. An incomplete synthetic weapon is not proof.
+function darkFixedArtiaSourceNotApplicable(weapon,cond={}){
+ const ids={'long-sword':1172,'sword-and-shield':1180,'dual-blades':1145,hammer:1154,'hunting-horn':1160,lance:1166,gunlance:1151,'switch-axe':1175,'charge-blade':1142,'insect-glaive':1163,'light-bowgun':1169,'heavy-bowgun':1157,bow:1139};
+ if(cond.standardEvaluation!==true||!weapon||ids[canonicalWeaponKind(weapon)]!==weapon.id)return false;
+ const source=DB?.weapons?.find(x=>x.id===weapon.id&&canonicalWeaponKind(x)===canonicalWeaponKind(weapon));
+ if(!source||source.artiaFixedValueStatus!=='MHDB_FIXED_COMPLETE'||!source.artiaFixedVariants?.attack||!source.artiaFixedVariants?.element||!source.artiaFixedVariants?.affinity||source.rarity!==8||source.skills?.length!==0||!Array.isArray(weapon.skills)||weapon.skills.length!==0)return false;
+ return ['id','name','gameId','rarity','crafting','slots','artiaFixedVariants','artiaFixedValueStatus','artiaVariantSourceIds'].every(k=>JSON.stringify(weapon[k])===JSON.stringify(source[k]));
+}
+window.MHDarkFixedArtiaSourceNotApplicable=darkFixedArtiaSourceNotApplicable;
+
 function standardPowerConditionPlan(st,total={},kind=null,cond={},sourceWeapon=null){
   const normal={...st},maximum={...st},applied=[],excluded=[],pending=[];
   const groupPlan=standardGroupPowerPlan(st,cond.gutsState??'BEFORE',total,kind,cond);
@@ -8776,8 +8787,8 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={},sourceWeapon=n
     else{const multiplier=selectedHp==='AT_OR_BELOW_30_PERCENT'?STANDARD_HEROICS_SOURCE.attackMultipliers[heroicsLevel]:1;conditionalMultiplier*=multiplier;if(selectedHp)selectedHpNormalMultiplier=multiplier;applied.push({skill:'火事場力',level:heroicsLevel,attackAdd:0,attackMultiplier:multiplier,appliesToNormal:!!selectedHp,selectedHp,healthThresholdPercent:selectedHp?30:STANDARD_HEROICS_SOURCE.healthThresholdPercent,condition:heroicsLevel===1?'NO_ATTACK_BONUS_LV1':'HEALTH_AT_OR_BELOW_THRESHOLD',evidenceRef:STANDARD_HEROICS_SOURCE.url,numericOrigin:STANDARD_HEROICS_SOURCE.status,scope:STANDARD_HEROICS_SOURCE.scope});}
     // Explicit shared HP replaces automatic channel health branching.
   }
-  const darkLevel=skillLevel(total,['暗黒','Dark']),darkApplicable=!darkLevel||kind!==STANDARD_DARK_SOURCE.supportedKind||darkSourceWeaponApplicable(sourceWeapon);
-  if(darkLevel&&!darkApplicable)excluded.push({skill:'暗黒',skillId:168,level:darkLevel,reason:'DARK_SOURCE_WEAPON_NOT_APPLICABLE',status:'NOT_APPLICABLE'});
+  const darkLevel=skillLevel(total,['暗黒','Dark']),darkFixedNonTarget=darkLevel===1&&kind===canonicalWeaponKind(sourceWeapon)&&darkFixedArtiaSourceNotApplicable(sourceWeapon,cond),darkApplicable=!darkFixedNonTarget&&(!darkLevel||kind!==STANDARD_DARK_SOURCE.supportedKind||darkSourceWeaponApplicable(sourceWeapon));
+  if(darkLevel&&!darkApplicable)excluded.push({skill:'暗黒',skillId:168,level:darkLevel,reason:darkFixedNonTarget?'DARK_FIXED_ARTIA_SOURCE_NOT_APPLICABLE':'DARK_SOURCE_WEAPON_NOT_APPLICABLE',status:'NOT_APPLICABLE'});
   if(darkLevel&&darkApplicable){
     if(darkLevel!==STANDARD_DARK_SOURCE.level)pending.push('暗黒:DARK_LEVEL_UNRESOLVED');
     else if(kind!==STANDARD_DARK_SOURCE.supportedKind)pending.push('暗黒:DARK_WEAPON_UNRESOLVED');

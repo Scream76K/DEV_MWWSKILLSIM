@@ -142,11 +142,11 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "65a61cb0fff674b576f246de4f7a12669f365d654f29eed10806124b6322fc9a"
+      "sha256": "4e4e4880a4276b9cfd58f5356bc5fcd6fe93f64bdac12428b0ad9493625e58a5"
     },
     {
       "path": "index.html",
-      "sha256": "3d592059428c9b9b35eb2750f3e28c77b1e3007fb33ae48550b44183032d6cda"
+      "sha256": "1f7cec39c114e5133c6a188f0ed845c8a0314639baed98cadd38acf1e17a14fb"
     },
     {
       "path": "observed-shelling.js",
@@ -278,7 +278,7 @@
     },
     {
       "path": "tests/draw-opening-fixed.test.cjs",
-      "sha256": "c37addb9335ea20094d4caeb75e01b2106386a48a51d9ec0a817af7a89488d6b"
+      "sha256": "b583aba86ef72c50dd460cdd8d55ff5cee39d33cfaf0e804a497b38f05456577"
     },
     {
       "path": "tests/fixtures/charge24-bowgun-inputs.json",
@@ -414,7 +414,7 @@
     },
     {
       "path": "tests/lbg-rapid-elemental-nontarget.test.cjs",
-      "sha256": "0cf3545405b86ba98a338d034bb04290a2d493b4bdddee08c8c73fe113522134"
+      "sha256": "2cd8aa9bff8042ac2d4433e208f31f2c4e54abec39f398a58760f642f898adc3"
     },
     {
       "path": "tests/lbg-rapid-five-shot.test.cjs",
@@ -859,6 +859,14 @@
     {
       "path": "tests/draw-cb-fixed-visibility.test.cjs",
       "sha256": "40f68bc1774e6ae50ac39f2b047bc146c1f19557d3375d1190f8245ab2af355f"
+    },
+    {
+      "path": "tests/draw-gl-fixed-no-event.test.cjs",
+      "sha256": "dd20095a8838093535a76bdc95f3619a6655e984c39cde175b042031263a1a85"
+    },
+    {
+      "path": "tests/dark168-fixed-non-gs.test.cjs",
+      "sha256": "226ea5e2a18e0a324e1f60ed2dd2216604eb90d845bd162b42b6de6da3712c0b"
     }
   ],
   "tests": [
@@ -926,9 +934,11 @@
     "tests/id159-artia-source-scope.test.cjs",
     "tests/resonance173-standard.test.cjs",
     "tests/draw-bowguns-fixed-no-event.test.cjs",
-    "tests/draw-cb-fixed-visibility.test.cjs"
+    "tests/draw-cb-fixed-visibility.test.cjs",
+    "tests/draw-gl-fixed-no-event.test.cjs",
+    "tests/dark168-fixed-non-gs.test.cjs"
   ],
-  "expectedTests": 1819,
+  "expectedTests": 1834,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",

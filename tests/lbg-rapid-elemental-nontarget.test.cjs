@@ -20,7 +20,9 @@ test('physical-only standard rapid keeps elemental strengthening non-target in c
   for(const skill of rows){
    const shots=[['ファーストショット',3],['フォースショット',3]];
    const b=apply(shots),r=apply([...shots,[skill.name,3]]);verify(r,skill,3);assert.deepEqual(numeric(r),numeric(b));
-   const pending=apply([[skill.name,3],['暗黒',1]]);verify(pending,skill,3);assert.ok(pending.channels.maximum.diagnostics.ignoredSkillEffects.some(x=>x.skillId===168));
+   // Fixed Artia now positively excludes native-only Dark. Keep the independent
+   // unresolved-effect control using ID165, verified pending on this same input.
+   const pending=apply([[skill.name,3],['耐性変換【雷】',1]]);verify(pending,skill,3);assert.ok(pending.channels.maximum.diagnostics.ignoredSkillEffects.some(x=>x.skillId===165&&x.reason==='LBG_RAPID:SKILL_COMBINATION_NOT_ADOPTED'));
    apply([[skill.name,3]]);
    w.eval("window.__kind=canonicalWeaponKind(selectedWeapon());window.__target={monster:buildSnapshot().target.monsterId,part:buildSnapshot().target.partId};window.__cond=compareStep5Snapshot();window.__plan=consumerEvaluationPlan(__kind,App.state.combo.moves,__cond,__target);window.__stats={...calcState.stats,conditionalConditionPlan:standardPowerConditionPlan(calcState.stats,calcState.total||{},__kind,__plan.conditions)};window.__input={weapon:realPipelineWeapon(selectedWeapon(),__plan.conditions.lightBowgunState),stats:__stats,target:__target,skills:Object.entries(calcState.total),equipmentSkillsResolved:realPipelineSkillsResolved(),techniqueIds:__plan.techniqueIds,techniqueDb:TechniqueDBEngine,trainingRoom:trainingRoomMonster(),conditions:__plan.conditions,lightBowgunState:__plan.conditions.lightBowgunState,retrievedAt:'FIXTURE'};");
    // Synthetic validator control: this DB has no native LBG grant of these

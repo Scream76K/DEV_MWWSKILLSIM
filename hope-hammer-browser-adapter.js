@@ -163,7 +163,7 @@
   if(!Array.isArray(weapon.skills))return fail('REAL_SLICE:WEAPON_SKILLS_UNKNOWN');
   // A supplied plan from another weapon cannot contradict the source exclusion.
   // Reject invalid adapter context rather than laundering unrelated plan effects/pending.
-  if(weapon.kind==='great-sword'&&typeof root.MHDarkSourceWeaponApplicable==='function'&&!root.MHDarkSourceWeaponApplicable(weapon)){
+  if((weapon.kind==='great-sword'&&typeof root.MHDarkSourceWeaponApplicable==='function'&&!root.MHDarkSourceWeaponApplicable(weapon))||root.MHDarkFixedArtiaSourceNotApplicable?.(weapon,conditions)){
    const p=stats?.conditionalConditionPlan;
    if(p?.applied?.some(x=>['暗黒','Dark'].includes(x.skill)||Number(x.skillId)===168)||p?.excluded?.some(x=>x.reason==='DARK_BELOW_FULL_NO_HEALING_MAXIMUM'))return fail('DARK_SOURCE:CONDITION_PLAN_WEAPON_MISMATCH');
   }
@@ -330,8 +330,19 @@
    const plan=stats.conditionalConditionPlan,zero=x=>x?.element===0&&x.elementType==='none'&&x.elementKnown===true&&x.typeKnown===true&&x.elementStatus==='CONFIRMED_NONE'&&x.elementComponents?.weaponBase===0&&x.elementComponents.normalFlat===0;
    return [stats,plan?.normal,plan?.maximum].every(zero)&&[conditions,stats,plan?.normal,plan?.maximum].every(x=>x?.damageStatsState==null&&x?.stateStatsByState==null);
   })();
-  const drawFixedExcluded=x=>drawFixedNormalNoEvent&&Number.isInteger(x.level)&&x.level>=1&&x.level<=3&&((Number(x.skillId)===8&&x.name==='抜刀術【力】')||(Number(x.skillId)===103&&x.name==='抜刀術【技】'));
-  const excludedCalculationPolicy=x=>drawFixedExcluded(x)?{reason:'DRAW_FIXED_NORMAL_SEQUENCE_HAS_NO_DRAW_EVENT',status:'NOT_APPLICABLE'}:cornpopperArtiaStandard&&Number(x.skillId)===159&&x.name==='焼き砲モロコシ'&&x.level===1?{reason:'CORNPOPPER_ARTIA_STANDARD_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:resonanceExcludedEntry(x)?{reason:'RESONANCE_FIXED_STANDARD_OWNER_EXCLUDED',status:'NOT_APPLICABLE'}:weapon.kind==='great-sword'&&Number(x.skillId)===168&&['暗黒','Dark'].includes(x.name)&&typeof root.MHDarkSourceWeaponApplicable==='function'&&!root.MHDarkSourceWeaponApplicable(weapon)?{reason:'DARK_SOURCE_WEAPON_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:root.MHIsOwnerExcludedCalculationSkill?.({...x,weaponKind:weapon.kind})?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.({...x,weaponKind:weapon.kind},conditions)?root.MHStandardCalculationExclusion:null;
+  // Source memo29 distinguishes ground SLAM from draw thrust / aerial slam.
+  // This exact fixed sequence has no draw event or carried-in hit activation.
+  const drawFixedGLGroundNoEvent=(()=>{
+   if(weapon.kind!=='gunlance'||Number(weapon.id)!==1151||weapon.name!=='前兆のプロフェネシス'||weapon.shell!=='normal'||weapon.shellLevel!==3||conditions.standardEvaluation!==true||conditions.drawAttack!==false||conditions.mounted!==false||[conditions.dismountAttack,conditions.sneakAttack].some(x=>x!=null&&x!==false))return false;
+   if(['criticalDrawHits','punishingDrawHits'].some(k=>conditions[k]!=null&&(!inputRecord(conditions[k])||Object.keys(conditions[k]).some(ch=>!['normal','maximum'].includes(ch))||['normal','maximum'].some(ch=>conditions[k][ch]!=null))))return false;
+   const ids=['GL_SLAM','GL_SWEEP','GL_WYRMSTAKE_FULL_BURST','GL_MULTI_WYRMSTAKE_FULL_BURST'];
+   if(JSON.stringify(techniqueIds)!==JSON.stringify(ids)||gunlanceState?.shellingType!=='NORMAL'||gunlanceState.shellingPower!=='HIGH'||gunlanceState.loadedRounds!==6||gunlanceState.stakeLoaded!==true||JSON.stringify(gunlanceState)!==JSON.stringify(conditions.gunlanceState))return false;
+   if(!ids.every(id=>{const t=techniqueDb?.get?.('gunlance',id),c=root.TechniqueDBEngine?.get?.('gunlance',id);return t&&c&&JSON.stringify(t)===JSON.stringify(c)&&t.weaponType==='gunlance'&&!t.referenceKind&&t.damageStateTransition==null&&t.damageStatsState==null;}))return false;
+   return [conditions,stats,stats.conditionalConditionPlan?.normal,stats.conditionalConditionPlan?.maximum].every(x=>x?.damageStatsState==null&&x?.stateStatsByState==null);
+  })();
+  const drawFixedExcluded=x=>(drawFixedNormalNoEvent||drawFixedGLGroundNoEvent)&&Number.isInteger(x.level)&&x.level>=1&&x.level<=3&&((Number(x.skillId)===8&&x.name==='抜刀術【力】')||(Number(x.skillId)===103&&x.name==='抜刀術【技】'));
+  const darkFixedExcluded=x=>Number(x.skillId)===168&&['暗黒','Dark'].includes(x.name)&&x.level===1&&root.MHDarkFixedArtiaSourceNotApplicable?.(weapon,conditions);
+  const excludedCalculationPolicy=x=>darkFixedExcluded(x)?{reason:'DARK_FIXED_ARTIA_SOURCE_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:drawFixedExcluded(x)?{reason:drawFixedGLGroundNoEvent?'DRAW_FIXED_GL_GROUND_SEQUENCE_HAS_NO_DRAW_EVENT':'DRAW_FIXED_NORMAL_SEQUENCE_HAS_NO_DRAW_EVENT',status:'NOT_APPLICABLE'}:cornpopperArtiaStandard&&Number(x.skillId)===159&&x.name==='焼き砲モロコシ'&&x.level===1?{reason:'CORNPOPPER_ARTIA_STANDARD_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:resonanceExcludedEntry(x)?{reason:'RESONANCE_FIXED_STANDARD_OWNER_EXCLUDED',status:'NOT_APPLICABLE'}:weapon.kind==='great-sword'&&Number(x.skillId)===168&&['暗黒','Dark'].includes(x.name)&&typeof root.MHDarkSourceWeaponApplicable==='function'&&!root.MHDarkSourceWeaponApplicable(weapon)?{reason:'DARK_SOURCE_WEAPON_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:root.MHIsOwnerExcludedCalculationSkill?.({...x,weaponKind:weapon.kind})?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.({...x,weaponKind:weapon.kind},conditions)?root.MHStandardCalculationExclusion:null;
   const excludedCalculationSkills=equippedSkills.filter(x=>excludedCalculationPolicy(x)).map(x=>({skillId:resonanceExcludedEntry(x)?173:x.skillId,name:x.name,level:x.level,reason:excludedCalculationPolicy(x).reason,status:excludedCalculationPolicy(x).status}));
   for(const e of activeBonusEffects.filter(ownerExcludedBonus))excludedCalculationSkills.push({skillId:e.bonusSkillId,name:e.name,level:e.level,reason:entryGroupPlan.applied.find(x=>x.skillId===e.bonusSkillId).reason,status:'OWNER_EXCLUDED_CURRENT_COMPARISON'});
   // Source-confirmed STANDARD starts; later three-second coverage is not inferred.
