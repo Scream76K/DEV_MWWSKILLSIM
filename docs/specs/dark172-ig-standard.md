@@ -1,0 +1,14 @@
+# ID172 rank1: fixed standard Insect Glaive
+
+Source baseline: 53ba599d7b310a65bb5a7ca2abf6e0c52157f81b.
+Owner ID172 specification and https://kuroyonhon.com/mhwilds/program/skill.php establish native elemental multiplier 1.14 for Insect Glaive while recoverable HP exists. Source-based reference, not new live-game validation.
+
+Only normalized giant Artia1163 attack215/native dragon280, STANDARD ordered four-technique profile IG_TRIPLE_SIDESTEP_SLASH / IG_TRIPLE_ADVANCING_COMBO / IG_ENHANCED_DESCENDING_THRUST / IG_RISING_SPIRAL_SLASH, triple extract and stowed kinsect is newly admitted. Existing other weapon support remains unchanged. Rank1 must be genuine series ID172 ダークアーツ, required2/count2–3. Rank2 ブラックナイト is not adopted.
+
+Preserve the current declared-HP policy: FULL_HP has no passive boost in either channel; AT_OR_BELOW_30_PERCENT has passive boost only in maximum's existing recoverable-HP scenario. This is not a claim that low HP always implies a red recoverable gauge. All normal output remains unchanged. Exactly fifteen native elemental components receive the multiplier once, before existing cap evaluation; physical damage, event order, resource/final state and kinsect behavior remain unchanged. No additional GS-style wave occurs.
+
+Actual armor653/654 contributes unrelated skills, including conditional attack/affinity. Tests preserve same-equipment baselines separately for each HP state; never attribute off-armor versus on-armor numeric changes entirely to ID172. LowHP maximum physical1617.438636 stays unchanged, native elemental127.512 becomes145.36368, total1762.802316. Component coefficient expectations are independently multiplied by owner1.14, not copied from candidate output. Fixture source records and exact pre-change output were captured from the declared base.
+
+Custom routes, changed weapon identity, altered native base, active kinsect, mounted context, malformed/duplicate ranks and altered producer coefficient do not get this exception. Unrelated unresolved effects remain independently unresolved. Broader IG equipment/element variants, other five-kind extension work, rank2 cumulative effects, and live game validation are not completed by this change.
+
+Review hardening: exact canonical source-technique equality and fifteen-hit count are required. A fresh producer plan validates only ID172-dependent element projections; unrelated pending is neither removed nor replaced. Tests reject altered same-ID hits, coefficient rows, maximum element and element-basis multiplier. Named A/B reload restores each saved HP independently, while the existing comparison view deliberately uses the shared current HP for both rows. Both shared FULL_HP and lowHP settings are tested without changing stored bytes or active comparable snapshot. Genuine explicit four-technique and fire-variant public inputs stay finite with ID172 partial warnings.

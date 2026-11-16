@@ -619,6 +619,23 @@
     {id:127,name:'雷属性攻撃強化',key:'thunder'}
    ];
    if(physicalOnlyRapid)for(const x of allSkills)if(rapidElementNonTargets.some(r=>Number(x.skillId)===r.id&&x.name===r.name&&x.skillKey===r.key)&&Number.isInteger(x.level)&&x.level>=1&&x.level<=3)rapidNonApplicableSkills.add(x);
+   // Owner excludes direct damage from Defense/Handicraft; Thunder Resistance
+   // remains a status producer. Do not consume either resistance conversion.
+   // Only the fixed source-backed physical five-round 1169 route is adopted.
+   const rapidPassiveRules=[{id:118,name:'防御',key:'unknown',max:7},{id:119,name:'匠',key:'handicraft',max:5},{id:156,name:'雷耐性',key:'thunderResistance',max:3}];
+   const rapidPassiveScope=physicalOnlyRapid&&Number(weapon.id)===1169&&weapon.name==='荊冠のデストレーター'&&resolvedTechniqueIds[0]==='LBG_NORMAL_RAPID_2'&&lightBowgunState.ammoLevel===2&&normalAmmoSequence==null&&Number.isFinite(stats.defense)&&
+    !allSkills.some(x=>[165,181].includes(Number(x.skillId))||['resistanceConversionThunder','resistanceConversionWater'].includes(x.skillKey));
+   const rapidPassiveSourceRows=root.__getBetaDB?.()?.skills||[];
+   if(rapidPassiveScope)for(const r of rapidPassiveRules){
+    const related=x=>Number(x.skillId)===r.id||x.name===r.name,es=allSkills.filter(related);
+    if(!es.length)continue;
+    const source=rapidPassiveSourceRows.filter(x=>Number(x?.id)===r.id||x?.name===r.name);
+    // Missing/malformed proof refuses only this adoption. Existing ingress and
+    // continuation retain responsibility for unrelated or invalid effects.
+    if(source.length!==1||source[0].id!==r.id||source[0].name!==r.name||!Array.isArray(source[0].ranks)||es.some(x=>source[0].ranks.filter(rank=>rank.level===x.level).length!==1))continue;
+    if(es.some(x=>Number(x.skillId)!==r.id||x.name!==r.name||x.skillKey!==r.key||!Number.isInteger(x.level)||x.level<1||x.level>r.max)||[rawSkills,buildSkills].some(rows=>rows.filter(related).length>1))continue;
+    for(const x of es)rapidNonApplicableSkills.add(x);
+   }
    const rapidOrdinaryNonTargets={2:['散弾・剛射強化',1],47:['砲術',3],69:['特殊射撃強化',2],94:['貫通弾・竜の矢強化',1],109:['砲弾装填',2]};
    if(physicalOnlyRapid)for(const x of allSkills){const r=rapidOrdinaryNonTargets[x.skillId];if(r&&x.name===r[0]&&Number.isInteger(x.level)&&x.level>=1&&x.level<=r[1])rapidNonApplicableSkills.add(x);}
    const rapidSeriesBonus=e=>{
@@ -984,6 +1001,14 @@
   const elementEntries=allSkills.filter(x=>x.skillKey===elementType),elementSkillNames={fire:'火属性攻撃強化',water:'水属性攻撃強化',thunder:'雷属性攻撃強化',ice:'氷属性攻撃強化',dragon:'龍属性攻撃強化'},elementSkillName=elementSkillNames[elementType],elementLevel=Math.max(...elementEntries.map(x=>x.level),0),elementRule=root.MHWElementSkillResolver&&elementSpecial?root.MHWElementSkillResolver(skillTotal,elementType):{add:0,mult:1},elementValue=elementSpecial?elementRawValue*(elementRule?.mult??1)+(elementRule?.add??0):0;  const attributeConversionLevel=Math.max(...allSkills.filter(x=>x.skillKey==='attributeConversion').map(x=>x.level),0),attributeRule=root.MHAttributeConversionRule,attributeState=conditions?.attributeConversionState;
   // Only adopted Guts/Veil/Omega/Black Eclipse or DB-defined series attack flats with a resolved, activation-checked plan may coexist here.
   const conversionGroupPlan=stats.conditionalConditionPlan?.groupPlan,conversionSelfPlan=stats.conditionalConditionPlan?.selfStatePlan;
+  const darkIgIds=['IG_TRIPLE_SIDESTEP_SLASH','IG_TRIPLE_ADVANCING_COMBO','IG_ENHANCED_DESCENDING_THRUST','IG_RISING_SPIRAL_SLASH'];
+  const darkIgResolved=root.MHDarkArtsFixedIgSource?.(stats,conditions,weapon)===true&&resolvedTechniqueIds.length===darkIgIds.length&&resolvedTechniqueIds.every((id,i)=>id===darkIgIds[i])&&resolvedTechniqueIds.every(id=>{const t=techniques[id];return JSON.stringify(techniqueDb.get('insect-glaive',id))===JSON.stringify(root.TechniqueDBEngine.get('insect-glaive',id))&&!t.referenceKind&&Array.isArray(t.hits)&&t.hits.length>0&&t.hits.every(h=>!h.componentSource);})&&resolvedTechniqueIds.reduce((n,id)=>n+techniques[id].hits.length,0)===15;
+  if(weapon.kind==='insect-glaive'&&conversionGroupPlan?.applied?.some(a=>a.skill==='ダークアーツ')){
+   const actual=conversionGroupPlan.applied.filter(a=>a.skill==='ダークアーツ'),expected=root.standardGroupPowerPlan?.(stats,conditions.gutsState??'BEFORE',skillTotal,weapon.kind,conditions)?.applied?.filter(a=>a.skill==='ダークアーツ');
+   const fresh=root.MHWStandardPowerConditionPlan?.(stats,skillTotal,weapon.kind,conditions,weapon),plan=stats.conditionalConditionPlan;
+   const projection=p=>({normalElement:p?.normal?.element,maximumElement:p?.maximum?.element,maximumElementComponents:p?.maximumElementComponents});
+   if(!darkIgResolved||activeBonusEffects.filter(e=>e.bonusSkillId===172).length!==1||actual.length!==1||expected?.length!==1||JSON.stringify(actual[0])!==JSON.stringify(expected[0])||JSON.stringify(projection(plan))!==JSON.stringify(projection(fresh)))return fail('REAL_SLICE:DARK_ARTS_IG_FIXED_SCOPE_UNRESOLVED');
+  }
   const validatedNonDamageBonuses=typeof root.MHWValidatedNonDamageBonusEffects==='function'?root.MHWValidatedNonDamageBonusEffects(activeBonusEffects):[];
   const conversionResistanceBonusesResolved=activeBonusEffects.length>0&&activeBonusEffects.every(e=>{
    if(ownerExcludedBonus(e))return true;
@@ -999,7 +1024,7 @@
    }
    if(e.bonusSkillId===172){
     const rule=root.MHDarkArtsBodySource,rows=conversionGroupPlan?.applied?.filter(a=>a.skill==='ダークアーツ')||[],a=rows[0];
-    if(!rule||!rule.supportedKinds.includes(weapon.kind)||e.name!=='ダークアーツ'||e.bonusName!=='暗黒騎士の証'||e.source!=='series'||e.rankLevel!==1||e.required!==2||!Number.isInteger(e.count)||e.count<2||e.count>=4||rows.length!==1||!a?.darkArtsActivation)return false;
+    if(!rule||!(rule.supportedKinds.includes(weapon.kind)||darkIgResolved)||e.name!=='ダークアーツ'||e.bonusName!=='暗黒騎士の証'||e.source!=='series'||e.rankLevel!==1||e.required!==2||!Number.isInteger(e.count)||e.count<2||e.count>=4||rows.length!==1||!a?.darkArtsActivation)return false;
     return ['bonusSkillId','name','bonusName','source','rankLevel','required','count'].every(k=>a.darkArtsActivation[k]===e[k])&&a.attackAdd===0&&a.attackMultiplier===1&&a.elementMultiplier===(rule.highMultiplierKinds.includes(weapon.kind)?rule.highMultiplier:rule.otherMultiplier)&&a.condition==='RECOVERABLE_DAMAGE'&&a.exclusiveGroup==='HEALTH'&&a.appliesToNormal===false&&a.evidenceRef===rule.url&&a.numericOrigin===rule.status;
    }
    if([131,153,173].includes(e.bonusSkillId))return conversionGroupPlan?.applied?.some(a=>a.skillId===e.bonusSkillId&&a.skill===e.name);
@@ -1899,7 +1924,7 @@ const powerPhial=root.MHWeaponEffectDB?.switchAxe?.powerPhialSword,elementPhial=
     if(rapidAmmoSequence&&[137,140].includes(Number(entry.skillId)))return {...entry,effectDisposition:'resolved',reason:'fixed five consumed rounds; existing First/Force rules apply to every Hit of each eligible round',evidenceRef:'HBG_R120_SHOT_SKILL_SOURCE;spec/CURRENT_CONTRACTS.md:C03'};
     if(rapidHealthExcludedSkills.has(entry))return {...entry,effectDisposition:'resolved',reason:'CANONICAL_HEALTH_EXCLUSION_NO_SIMULTANEOUS_STACKING',evidenceRef:'index.html:standardPowerConditionPlan;STANDARD_CONDITIONAL_ATTACK_RULES',liveGameVerification:'PENDING'};
     if(rapidNonTargetBonuses.size&&[...rapidNonTargetBonuses].some(e=>e.name===entry.name))return {...entry,effectDisposition:'non_damage',reason:'LBG_STANDARD_NO_CLASH_OR_OFFSET',evidenceRef:'MHDB_JA_SKILL_'+entry.skillId};
-    if([...rapidNonApplicableSkills].some(x=>x.skillId===entry.skillId&&x.name===entry.name&&x.level===entry.level))return {...entry,effectDisposition:'non_damage',reason:[2,47,69,94,109].includes(Number(entry.skillId))?'NON_TARGET_STANDARD_NORMAL_RAPID_AMMO':Number(entry.skillId)===66?'NON_GUARD_LBG_STANDARD_NORMAL_RAPID':'NO_ELEMENT_STANDARD_NORMAL_RAPID_25_PHYSICAL_HITS',evidenceRef:'index.html:standardPowerConditionPlan;bowgun-normal-reference.js:rapidHit;MHDB_JA_SKILL_'+entry.skillId,liveGameVerification:'PENDING'};
+    if([...rapidNonApplicableSkills].some(x=>x.skillId===entry.skillId&&x.name===entry.name&&x.level===entry.level))return {...entry,effectDisposition:'non_damage',reason:[118,119,156].includes(Number(entry.skillId))?'PASSIVE_STATS_ONLY_FIXED_NORMAL_RAPID':[2,47,69,94,109].includes(Number(entry.skillId))?'NON_TARGET_STANDARD_NORMAL_RAPID_AMMO':Number(entry.skillId)===66?'NON_GUARD_LBG_STANDARD_NORMAL_RAPID':'NO_ELEMENT_STANDARD_NORMAL_RAPID_25_PHYSICAL_HITS',evidenceRef:'index.html:standardPowerConditionPlan;bowgun-normal-reference.js:rapidHit;MHDB_JA_SKILL_'+entry.skillId,liveGameVerification:'PENDING'};
     if(rapidRequested&&Number(entry.skillId)===23)return {...entry,effectDisposition:'resolved',reason:rapidShotRule.scope,evidenceRef:rapidShotRule.skillSource};
     if(Number(entry.skillId)===163&&glMixedBladescaleOmitted)return {...entry,effectDisposition:'non_damage',reason:'UNRESOLVED_ID163_EFFECT_OMITTED_EXPLICIT_GL_MIXED_ROUTE',evidenceRef:'spec/CURRENT_CONTRACTS.md:GL1084_ID163_CONTINUATION'};
     if(Number(entry.skillId)===163&&bladescaleEntries.length)return {...entry,effectDisposition:'resolved',reason:bladescaleRule.scope,evidenceRef:bladescaleRule.source};
@@ -2067,7 +2092,7 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
    if(rapidAmmoSequence){
     const unappliedEffects=[];
     for(const result of Object.values(evaluated.channels||{})){
-     result.diagnostics={...result.diagnostics,formalStatus:unappliedEffects.length?'PARTIAL_REFERENCE':'PROVISIONAL',unappliedEffects,nonApplicableEffects:[...[...rapidNonApplicableSkills].filter(x=>[2,41,47,50,69,91,94,109,121,127].includes(Number(x.skillId))).filter(x=>![41,50,91,121,127].includes(Number(x.skillId))||x.level===(buildSkills.find(y=>Number(y.skillId)===Number(x.skillId))?.level??Math.max(...[...rapidNonApplicableSkills].filter(y=>Number(y.skillId)===Number(x.skillId)).map(y=>y.level)))).map(x=>({skillId:x.skillId,name:x.name,level:x.level,reason:'NON_TARGET_STANDARD_NORMAL_RAPID_AMMO'})),...[...rapidNonTargetBonuses].map(e=>({skillId:e.bonusSkillId,name:e.name,rank:e.rankLevel,reason:'LBG_STANDARD_NO_CLASH_OR_OFFSET'}))],rapidAmmoSequence:{consumedRounds:5,triggerCount:5,contactCount:25,magazinePolicy:'IGNORED_NO_RELOAD',resourceModel:'FIVE_ROUND_SEQUENCE_BUDGET_NOT_WEAPON_CAPACITY',liveGameVerification:'PENDING'}};
+     result.diagnostics={...result.diagnostics,formalStatus:unappliedEffects.length?'PARTIAL_REFERENCE':'PROVISIONAL',unappliedEffects,nonApplicableEffects:[...[...rapidNonApplicableSkills].filter(x=>[2,41,47,50,69,91,94,109,118,119,121,127,156].includes(Number(x.skillId))).filter(x=>![41,50,91,118,119,121,127,156].includes(Number(x.skillId))||x.level===(buildSkills.find(y=>Number(y.skillId)===Number(x.skillId))?.level??Math.max(...[...rapidNonApplicableSkills].filter(y=>Number(y.skillId)===Number(x.skillId)).map(y=>y.level)))).map(x=>({skillId:x.skillId,name:x.name,level:x.level,reason:[118,119,156].includes(Number(x.skillId))?'PASSIVE_STATS_ONLY_FIXED_NORMAL_RAPID':'NON_TARGET_STANDARD_NORMAL_RAPID_AMMO'})),...[...rapidNonTargetBonuses].map(e=>({skillId:e.bonusSkillId,name:e.name,rank:e.rankLevel,reason:'LBG_STANDARD_NO_CLASH_OR_OFFSET'}))],rapidAmmoSequence:{consumedRounds:5,triggerCount:5,contactCount:25,magazinePolicy:'IGNORED_NO_RELOAD',resourceModel:'FIVE_ROUND_SEQUENCE_BUDGET_NOT_WEAPON_CAPACITY',liveGameVerification:'PENDING'}};
      if(result.metrics?.comboTotalDamage?.status==='available')result.metrics.comboTotalDamage={...result.metrics.comboTotalDamage,completeness:unappliedEffects.length?'PARTIAL_REFERENCE':'SOURCE_REFERENCE',unappliedEffects};
     }
    }

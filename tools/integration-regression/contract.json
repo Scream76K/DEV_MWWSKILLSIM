@@ -78,7 +78,7 @@
     },
     {
       "path": "docs/specs/dark168-source-scope.md",
-      "sha256": "c987dc90ec21aa7deb019fcba1292a0d944ec6dcde2616054a0069e8b196b695"
+      "sha256": "02d35994a2c12a121441c5bb7414a004ca25132435765df26061a0ebb47b6a62"
     },
     {
       "path": "element-display.js",
@@ -142,11 +142,11 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "4e4e4880a4276b9cfd58f5356bc5fcd6fe93f64bdac12428b0ad9493625e58a5"
+      "sha256": "d99f5737595e2b1d6b38fde07970fd7871204663f126a88dcf5ce4a7b4084641"
     },
     {
       "path": "index.html",
-      "sha256": "1f7cec39c114e5133c6a188f0ed845c8a0314639baed98cadd38acf1e17a14fb"
+      "sha256": "67d5348c2c8ffb8b7268c68ba76706938e0068677cd1399000d168af56f7da7b"
     },
     {
       "path": "observed-shelling.js",
@@ -867,6 +867,22 @@
     {
       "path": "tests/dark168-fixed-non-gs.test.cjs",
       "sha256": "226ea5e2a18e0a324e1f60ed2dd2216604eb90d845bd162b42b6de6da3712c0b"
+    },
+    {
+      "path": "tests/lbg-fixed-passive-nontarget.test.cjs",
+      "sha256": "1832264d2d74eb15f314c3b761b6ab93ccd878b7711982cbb49c8e9b8c405063"
+    },
+    {
+      "path": "tests/dark172-ig-standard.test.cjs",
+      "sha256": "f11c776a13886ab9ca7a580728f69548c6b6b48c671e41891ef85fed3817e3da"
+    },
+    {
+      "path": "tests/fixtures/dark172-ig-standard.json",
+      "sha256": "7a7b286f3a75ec46abf57405efe0e31b8f86695e8a759aa26d855281e89837bf"
+    },
+    {
+      "path": "docs/specs/dark172-ig-standard.md",
+      "sha256": "c5e5bcce485eda07a657527c12bee0d6748b02ce276fc3fdb896cd52e614f539"
     }
   ],
   "tests": [
@@ -936,9 +952,11 @@
     "tests/draw-bowguns-fixed-no-event.test.cjs",
     "tests/draw-cb-fixed-visibility.test.cjs",
     "tests/draw-gl-fixed-no-event.test.cjs",
-    "tests/dark168-fixed-non-gs.test.cjs"
+    "tests/dark168-fixed-non-gs.test.cjs",
+    "tests/lbg-fixed-passive-nontarget.test.cjs",
+    "tests/dark172-ig-standard.test.cjs"
   ],
-  "expectedTests": 1834,
+  "expectedTests": 1836,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
