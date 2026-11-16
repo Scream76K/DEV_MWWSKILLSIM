@@ -8005,6 +8005,11 @@ function darkArtsFixedIgSource(st,cond={},weapon=null){
  return source?.kind==='insect-glaive'&&source.id===1163&&darkFixedArtiaSourceNotApplicable(source,cond)&&cond.mounted===false&&cond.insectGlaiveState?.extractState==='TRIPLE_EXTRACT'&&cond.insectGlaiveState?.kinsectState==='STOWED'&&st.elementType==='dragon'&&st.elementComponents?.weaponBase===280&&st.attackComponents?.weaponBase===215;
 }
 window.MHDarkArtsFixedIgSource=darkArtsFixedIgSource;
+function darkArtsFixedBowSource(st,cond={},weapon=null){
+ const source=weapon||DB.weapons.find(w=>w.id===Number(st.weaponId)),b=cond.bowState;
+ return source?.kind==='bow'&&source.id===1139&&darkFixedArtiaSourceNotApplicable(source,cond)&&cond.mounted===false&&b?.chargeLevel===3&&b.coating==='CLOSE_RANGE'&&b.range==='CRITICAL'&&b.startShot===1&&st.elementType==='dragon'&&st.elementComponents?.weaponBase===230&&st.attackComponents?.weaponBase===215;
+}
+window.MHDarkArtsFixedBowSource=darkArtsFixedBowSource;
 const STANDARD_SERIES_ACTIVATION_FLATS=techniqueDbDeepFreeze({
  62:{parent:'凍峰竜の反逆',prefix:'束縛反攻',adds:[0,25,50],condition:'BIND_RELEASE_OR_CLASH_PREACTIVATED',status:'OWNER_APPROVED_PROVISIONAL'},
  107:{parent:'雪獅子の闘志',prefix:'ウォークライ',adds:[0,3,6],condition:'SELF_WAR_CRY_PREACTIVATED',status:'OWNER_APPROVED_PROVISIONAL'},
@@ -8133,7 +8138,7 @@ function standardGroupPowerPlan(st={},gutsState='BEFORE',total={},kind=null,cond
       continue;
     }
     if(e?.name==='ダークアーツ'){
-      if(e.bonusName!=='暗黒騎士の証'||e.source!=='series'||e.required!==2||e.rankLevel!==1||e.bonusSkillId!==172||!Number.isInteger(e.count)||e.count<2||e.count>=4||seen.has(e.name)||!(STANDARD_DARK_ARTS_BODY_SOURCE.supportedKinds.includes(kind)||(kind==='insect-glaive'&&darkArtsFixedIgSource(st,cond)))){unresolved.push('ダークアーツ');continue;}
+      if(e.bonusName!=='暗黒騎士の証'||e.source!=='series'||e.required!==2||e.rankLevel!==1||e.bonusSkillId!==172||!Number.isInteger(e.count)||e.count<2||e.count>=4||seen.has(e.name)||!(STANDARD_DARK_ARTS_BODY_SOURCE.supportedKinds.includes(kind)||(kind==='insect-glaive'&&darkArtsFixedIgSource(st,cond))||(kind==='bow'&&darkArtsFixedBowSource(st,cond)))){unresolved.push('ダークアーツ');continue;}
       seen.add(e.name);
       applied.push({skill:e.name,darkArtsActivation:{...e},attackAdd:0,attackMultiplier:1,elementMultiplier:STANDARD_DARK_ARTS_BODY_SOURCE.highMultiplierKinds.includes(kind)?STANDARD_DARK_ARTS_BODY_SOURCE.highMultiplier:STANDARD_DARK_ARTS_BODY_SOURCE.otherMultiplier,condition:'RECOVERABLE_DAMAGE',exclusiveGroup:'HEALTH',bonusSource:true,appliesToNormal:false,evidenceRef:STANDARD_DARK_ARTS_BODY_SOURCE.url,numericOrigin:STANDARD_DARK_ARTS_BODY_SOURCE.status});
       continue;
