@@ -161,6 +161,12 @@
   if(statusSpecials.length&&(!statusState||root.MHWElementState.hpElement(statusState)!==0))return fail('REAL_SLICE:WEAPON_STATUS_UNRESOLVED');
   if(elementSpecials.length>1)return fail('REAL_SLICE:MULTIPLE_ELEMENTS_UNSUPPORTED');
   if(!Array.isArray(weapon.skills))return fail('REAL_SLICE:WEAPON_SKILLS_UNKNOWN');
+  // A supplied plan from another weapon cannot contradict the source exclusion.
+  // Reject invalid adapter context rather than laundering unrelated plan effects/pending.
+  if(weapon.kind==='great-sword'&&typeof root.MHDarkSourceWeaponApplicable==='function'&&!root.MHDarkSourceWeaponApplicable(weapon)){
+   const p=stats?.conditionalConditionPlan;
+   if(p?.applied?.some(x=>['暗黒','Dark'].includes(x.skill)||Number(x.skillId)===168)||p?.excluded?.some(x=>x.reason==='DARK_BELOW_FULL_NO_HEALING_MAXIMUM'))return fail('DARK_SOURCE:CONDITION_PLAN_WEAPON_MISMATCH');
+  }
   if(!Array.isArray(skills)||skills.some(x=>!Array.isArray(x)||x.length!==2||typeof x[0]!=='string'||!x[0]))return fail('REAL_SLICE:BUILD_SKILL_INPUT_INVALID');
   const targetData=resolveTarget(target,trainingRoom);
   if(targetData.reason)return fail(targetData.reason);
@@ -281,7 +287,7 @@
   // The aggregate may legitimately contain the weapon's skill at a higher
   // total rank. Validate duplicates within each source, not across these views.
   const equippedSkills=[...rawSkills,...buildSkills.filter(x=>!rawSkills.some(y=>String(y.skillId)===String(x.skillId)&&y.level===x.level))];
-  const excludedCalculationPolicy=x=>root.MHIsOwnerExcludedCalculationSkill?.({...x,weaponKind:weapon.kind})?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.({...x,weaponKind:weapon.kind},conditions)?root.MHStandardCalculationExclusion:null;
+  const excludedCalculationPolicy=x=>weapon.kind==='great-sword'&&Number(x.skillId)===168&&['暗黒','Dark'].includes(x.name)&&typeof root.MHDarkSourceWeaponApplicable==='function'&&!root.MHDarkSourceWeaponApplicable(weapon)?{reason:'DARK_SOURCE_WEAPON_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:root.MHIsOwnerExcludedCalculationSkill?.({...x,weaponKind:weapon.kind})?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.({...x,weaponKind:weapon.kind},conditions)?root.MHStandardCalculationExclusion:null;
   const excludedCalculationSkills=equippedSkills.filter(x=>excludedCalculationPolicy(x)).map(x=>({skillId:x.skillId,name:x.name,level:x.level,reason:excludedCalculationPolicy(x).reason,status:excludedCalculationPolicy(x).status}));
   for(const e of activeBonusEffects.filter(ownerExcludedBonus))excludedCalculationSkills.push({skillId:e.bonusSkillId,name:e.name,level:e.level,reason:entryGroupPlan.applied.find(x=>x.skillId===e.bonusSkillId).reason,status:'OWNER_EXCLUDED_CURRENT_COMPARISON'});
   // Source-confirmed STANDARD starts; later three-second coverage is not inferred.
@@ -402,6 +408,7 @@
    // calcSetSkills counts five armor slots, plus an optional Gogma Artia weapon.
    // This bounded path requires actual armor provenance; weapon-bonus state stays gated.
    const armorInput=stats.armorThunderResistanceInput,slots=['head','chest','arms','waist','legs'],db=root.__getBetaDB?.();
+   let shellThunderWeaponPiece=0;
    const armorOnlyArtia=()=>{
     if(conditions.standardEvaluation!==true||conditions.mounted!==false||weapon.kind!=='gunlance'||weapon.id!==1151||typeof root.buildSnapshot!=='function'||typeof root.realPipelineWeapon!=='function'||!Array.isArray(db?.weapons))return false;
     const ids=['GL_SLAM','GL_SWEEP','GL_WYRMSTAKE_FULL_BURST','GL_MULTI_WYRMSTAKE_FULL_BURST'];
@@ -409,12 +416,21 @@
     if(gunlanceState?.shellingType!=='NORMAL'||gunlanceState.shellingPower!=='HIGH'||gunlanceState.loadedRounds!==6||gunlanceState.stakeLoaded!==true||JSON.stringify(gunlanceState)!==JSON.stringify(conditions.gunlanceState))return false;
     try{
      const snapshot=root.buildSnapshot(),a=snapshot?.artia,records=db.weapons.filter(w=>w.id===1151);
-     if(String(snapshot?.weaponId)!=='1151'||a?.seriesSkill!==''||a.groupSkill!==''||a.production!=='attack'||a.element!=='dragon'||JSON.stringify(a.parts)!=='["attack","attack","attack"]'||JSON.stringify(a.restores)!=='["none","none","none","none","none"]'||records.length!==1)return false;
-     const expected=rank===1?{head:609,chest:610}:{head:609,chest:610,arms:611,waist:612};
+     if(String(snapshot?.weaponId)!=='1151'||!['','162'].includes(a?.seriesSkill)||a.groupSkill!==''||a.production!=='attack'||a.element!=='dragon'||JSON.stringify(a.parts)!=='["attack","attack","attack"]'||JSON.stringify(a.restores)!=='["none","none","none","none","none"]'||records.length!==1)return false;
+     const weaponPiece=a.seriesSkill==='162';
+     if(weaponPiece){
+      const records=db.skills?.filter(s=>s.id===162),skill=records?.[0];
+      if(records?.length!==1||skill.name!==policy.name||skill.kind!=='set'||typeof root.selectedArtiaSkillObjects!=='function'||typeof root.artiaSkillActivation!=='function')return false;
+      if(JSON.stringify(root.selectedArtiaSkillObjects().series)!==JSON.stringify(skill))return false;
+      const activation=root.artiaSkillActivation(skill,'series');
+      if(activation?.active!==true||activation.count!==required||activation.required!==required||activation.rank?.skill?.id!==162||activation.rank.level!==rank||activation.rank.name!==x.name||activation.rank.setPiecesRequired!==required||activation.rank.id!==(rank===1?418:419))return false;
+     }
+     const expected=weaponPiece?(rank===1?{head:609}:{head:609,chest:610,arms:611}):(rank===1?{head:609,chest:610}:{head:609,chest:610,arms:611,waist:612});
      if(!slots.every(slot=>String(snapshot.armor?.[slot]||'')===String(expected[slot]||'')))return false;
      if(!Array.isArray(armorInput?.rows)||!slots.every(slot=>{const rows=armorInput.rows.filter(r=>r.slot===slot);return rows.length===1&&(expected[slot]?rows[0].equipped===true&&rows[0].id===expected[slot]:rows[0].equipped===false);} ))return false;
      // Rebuild from actual DB and current explicit selection, not caller-supplied Artia evidence.
-     return JSON.stringify(weapon)===JSON.stringify(root.realPipelineWeapon(records[0]));
+     if(JSON.stringify(weapon)!==JSON.stringify(root.realPipelineWeapon(records[0])))return false;
+     shellThunderWeaponPiece=weaponPiece?1:0;return true;
     }catch(_){return false;}
    };
    if(typeof root.isArtia!=='function'||((root.isArtia(weapon)||weapon.artiaCalculationEvidence)&&!armorOnlyArtia())||!Array.isArray(db?.armor)||typeof root.armorBonusSkillObjects!=='function'||typeof root.bonusSkillObjects!=='function'||typeof root.groupSetData!=='function')return false;
@@ -429,7 +445,7 @@
     const own=root.armorBonusSkillObjects(a,'series'),fallback=root.bonusSkillObjects(root.groupSetData(a)||a.armorSet,'series');
     if([...own,...fallback].some(b=>b.id===162&&b.name===policy.name))pieceCount++;
    }
-   if(e.count!==pieceCount||armorInput.armorBase!==armorBase)return false;
+   if(e.count!==pieceCount+shellThunderWeaponPiece||armorInput.armorBase!==armorBase)return false;
    const plan=stats.conditionalConditionPlan,group=plan?.groupPlan,related=a=>Number(a.skillId)===162||names.includes(a.skill)||names.includes(a.parent);
    if(group?.status!=='SOURCE_REFERENCE'||group.scope!=='GENERIC_STANDARD_POWER_ONLY'||!Array.isArray(group.unresolvedEffects)||group.unresolvedEffects.length||!Array.isArray(group.nonDamageEffects)||group.nonDamageEffects.some(a=>Number(a.bonusSkillId)===162||names.includes(a.name)))return false;
    const validRow=a=>!!a&&Object.keys(a).length===16&&a.skillId===162&&a.skill===x.name&&a.parent===policy.name&&a.rank===rank&&a.attackAdd===0&&a.attackMultiplier===1&&a.bonusSource===true&&a.appliesToNormal===true&&a.annotationOnly===true&&a.bodyEffect===true&&a.policy==='FIXED_DAMAGE_SKILL_ANNOTATION_ONLY'&&a.condition==='EXTRA_DAMAGE_EXCLUDED_BODY_EFFECT_RETAINED'&&a.evidenceRef==='MHDB_JA_SKILLS_20261026:162'&&a.numericOrigin==='ANNOTATION_FORMULA_NOT_ADOPTED'&&Array.isArray(a.excludedComponents)&&a.excludedComponents.length===2&&a.excludedComponents.every((v,i)=>v===policy.components[i])&&['bonusSkillId','name','level','bonusName','source','displayType','rankLevel','required','count'].every(k=>a.annotationActivation?.[k]===e[k]);
@@ -513,7 +529,7 @@
      const projection=p=>({status:p.status,scope:p.scope,pending:p.pending,normalPending:p.normalPending,applied:p.applied,excluded:p.excluded,attackOrder:p.attackOrder,attackComponents:p.attackComponents,normalAttack:p.normal?.attackTrue,maximumAttack:p.maximum?.attackTrue});
      const finiteTree=x=>typeof x==='number'?Number.isFinite(x):x&&typeof x==='object'?Object.values(x).every(finiteTree):true;
      try{
-      const expected=root.MHWStandardPowerConditionPlan(stats,Object.fromEntries(skills),weapon.kind,conditions),actual=projection(rapidPlan),canonical=projection(expected);
+      const expected=root.MHWStandardPowerConditionPlan(stats,Object.fromEntries(skills),weapon.kind,conditions,weapon),actual=projection(rapidPlan),canonical=projection(expected);
       if(Array.isArray(actual.applied)&&Array.isArray(actual.excluded)&&Number.isFinite(actual.normalAttack)&&Number.isFinite(actual.maximumAttack)&&finiteTree(actual)&&finiteTree(canonical)&&JSON.stringify(actual)===JSON.stringify(canonical)){
        for(const x of allSkills){const rule=resolvedAttackRules.find(r=>r.id===Number(x.skillId)&&r.name===x.name);if(!rule)continue;
         const applied=actual.applied.filter(r=>r.skill===x.name&&r.level===x.level),excluded=actual.excluded.filter(r=>r.skill===x.name&&r.level===x.level);
@@ -539,6 +555,15 @@
     {id:18,name:'無我の境地',key:'unknown'}, {id:39,name:'濡れ刃紋',key:'explicitAffinity'}
    ].some(r=>Number(x.skillId)===r.id&&x.name===r.name&&x.skillKey===r.key&&Number.isInteger(x.level)&&x.level>=1&&x.level<=3&&allSkills.filter(y=>Number(y.skillId)===r.id||y.name===r.name).length===1)&&
     conditions.blackEclipseState==='BEFORE'&&typeof root.MHResolveFrenzyAffinity==='function'&&typeof root.MHWMaxAffinityResolver==='function';
+   // Only the source-validated five-round physical NORMAL sequence has no
+   // elemental component to strengthen. Elemental ammo and custom sources
+   // remain outside this gate; retain the source skill rather than dropping it.
+   const rapidElementNonTargets=[
+    {id:41,name:'龍属性攻撃強化',key:'dragon'}, {id:50,name:'火属性攻撃強化',key:'fire'},
+    {id:91,name:'水属性攻撃強化',key:'water'}, {id:121,name:'氷属性攻撃強化',key:'ice'},
+    {id:127,name:'雷属性攻撃強化',key:'thunder'}
+   ];
+   if(physicalOnlyRapid)for(const x of allSkills)if(rapidElementNonTargets.some(r=>Number(x.skillId)===r.id&&x.name===r.name&&x.skillKey===r.key)&&Number.isInteger(x.level)&&x.level>=1&&x.level<=3)rapidNonApplicableSkills.add(x);
    const rapidOrdinaryNonTargets={2:['散弾・剛射強化',1],47:['砲術',3],69:['特殊射撃強化',2],94:['貫通弾・竜の矢強化',1],109:['砲弾装填',2]};
    if(physicalOnlyRapid)for(const x of allSkills){const r=rapidOrdinaryNonTargets[x.skillId];if(r&&x.name===r[0]&&Number.isInteger(x.level)&&x.level>=1&&x.level<=r[1])rapidNonApplicableSkills.add(x);}
    const rapidSeriesBonus=e=>{
@@ -1987,7 +2012,7 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
    if(rapidAmmoSequence){
     const unappliedEffects=[];
     for(const result of Object.values(evaluated.channels||{})){
-     result.diagnostics={...result.diagnostics,formalStatus:unappliedEffects.length?'PARTIAL_REFERENCE':'PROVISIONAL',unappliedEffects,nonApplicableEffects:[...[...rapidNonApplicableSkills].filter(x=>[2,47,69,94,109].includes(Number(x.skillId))).map(x=>({skillId:x.skillId,name:x.name,level:x.level,reason:'NON_TARGET_STANDARD_NORMAL_RAPID_AMMO'})),...[...rapidNonTargetBonuses].map(e=>({skillId:e.bonusSkillId,name:e.name,rank:e.rankLevel,reason:'LBG_STANDARD_NO_CLASH_OR_OFFSET'}))],rapidAmmoSequence:{consumedRounds:5,triggerCount:5,contactCount:25,magazinePolicy:'IGNORED_NO_RELOAD',resourceModel:'FIVE_ROUND_SEQUENCE_BUDGET_NOT_WEAPON_CAPACITY',liveGameVerification:'PENDING'}};
+     result.diagnostics={...result.diagnostics,formalStatus:unappliedEffects.length?'PARTIAL_REFERENCE':'PROVISIONAL',unappliedEffects,nonApplicableEffects:[...[...rapidNonApplicableSkills].filter(x=>[2,41,47,50,69,91,94,109,121,127].includes(Number(x.skillId))).filter(x=>![41,50,91,121,127].includes(Number(x.skillId))||x.level===(buildSkills.find(y=>Number(y.skillId)===Number(x.skillId))?.level??Math.max(...[...rapidNonApplicableSkills].filter(y=>Number(y.skillId)===Number(x.skillId)).map(y=>y.level)))).map(x=>({skillId:x.skillId,name:x.name,level:x.level,reason:'NON_TARGET_STANDARD_NORMAL_RAPID_AMMO'})),...[...rapidNonTargetBonuses].map(e=>({skillId:e.bonusSkillId,name:e.name,rank:e.rankLevel,reason:'LBG_STANDARD_NO_CLASH_OR_OFFSET'}))],rapidAmmoSequence:{consumedRounds:5,triggerCount:5,contactCount:25,magazinePolicy:'IGNORED_NO_RELOAD',resourceModel:'FIVE_ROUND_SEQUENCE_BUDGET_NOT_WEAPON_CAPACITY',liveGameVerification:'PENDING'}};
      if(result.metrics?.comboTotalDamage?.status==='available')result.metrics.comboTotalDamage={...result.metrics.comboTotalDamage,completeness:unappliedEffects.length?'PARTIAL_REFERENCE':'SOURCE_REFERENCE',unappliedEffects};
     }
    }
@@ -2205,7 +2230,7 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
   const hpInvalid=!hpLegacy&&!hpKnown;
   if(hpPlan?.selectedHpPolicy&&(hpInvalid||hpPlan.selectedHp!==hpSelected)&&typeof root.MHWStandardPowerConditionPlan==='function'){
    const conditions={...(input.conditions||{}),selectedHp:hpInvalid?hpRaw:hpSelected};
-   const next=root.MHWStandardPowerConditionPlan(input.stats,Object.fromEntries(input.skills||[]),input.weapon.kind,conditions);
+   const next=root.MHWStandardPowerConditionPlan(input.stats,Object.fromEntries(input.skills||[]),input.weapon.kind,conditions,input.weapon);
    // Preserve unrelated pending guards instead of laundering a supplied plan.
    next.pending=[...new Set([...(next.pending||[]),...(hpPlan.pending||[]).filter(x=>x!=='DARK_ARTS:FULL_HEALTH_BRANCH_COMPARISON_PENDING'&&x!=='火事場力:HEROICS_FULL_HEALTH_BRANCH_REQUIRED')])];
    next.selectedHpPolicy={...next.selectedHpPolicy,reconciliation:hpInvalid?'INVALID_SELECTED_HP_IGNORED':'SELECTED_HP_PLAN_REBUILT',description:next.selectedHpPolicy.description+(hpInvalid?'（不正なHP指定のためHP効果を未適用）':'（現在のHP選択から計画を再構成）')};
@@ -2225,7 +2250,7 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
   const run=(state,remove,removeDark)=>{
    const skills=(input.skills||[]).filter(([name])=>!remove.includes(name));
    const stats={...input.stats,activeBonusEffects:(input.stats.activeBonusEffects||[]).filter(x=>!removeDark||x.name!=='ダークアーツ')};
-   stats.conditionalConditionPlan=root.MHWStandardPowerConditionPlan(stats,Object.fromEntries(skills),input.weapon.kind,input.conditions||{});
+   stats.conditionalConditionPlan=root.MHWStandardPowerConditionPlan(stats,Object.fromEntries(skills),input.weapon.kind,input.conditions||{},input.weapon);
    const weapon={...input.weapon,skills:input.weapon.skills.filter(x=>!remove.includes(x.skill?.name||x.name))};
    const result=evaluateCurrentSingleHealth({...input,weapon,stats,skills});
    const maximum=result.channels?.maximum,metric=maximum?.metrics?.comboTotalDamage;

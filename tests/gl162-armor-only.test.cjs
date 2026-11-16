@@ -40,7 +40,7 @@ for(const i of [1,2]){
   probes.push({label:label+'-'+i,scope:'synthetic-direct-boundary',result:r});
  }
 }
-// Real public selection crosses threshold using weapon bonus: intentionally outside armor-only gate.
-for(const count of [1,3]){const input=structuredClone(rows[2].input);if(count===1)input.armor={head:'609'};else delete input.armor.waist;input.artia.seriesSkill='162';w.applyBuildSnapshot(input);w.document.getElementById('calcBuild').click();const result=JSON.parse(w.eval('JSON.stringify(calcState.realOneHit)'));assert.ok(JSON.stringify(result).includes('UNREVIEWED_MODIFIER'));probes.push({label:'weapon-threshold-'+count,input,result});}
+// Weapon-piece threshold now admitted only by the separately validated1151 gate.
+for(const count of [1,3]){const input=structuredClone(rows[2].input);if(count===1)input.armor={head:'609'};else delete input.armor.waist;input.artia.seriesSkill='162';w.applyBuildSnapshot(input);w.document.getElementById('calcBuild').click();const result=JSON.parse(w.eval('JSON.stringify(calcState.realOneHit)'));for(const ch of ['normal','maximum']){assert.equal(result.channels[ch].metrics.comboTotalDamage.status,'available');assert.ok(!result.channels[ch].diagnostics.ignoredSkillEffects?.some(x=>x.skillId===162));}probes.push({label:'weapon-threshold-'+count,input,result});}
 assert.deepEqual(errors,[]);for(const row of rows)for(const ch of ['normal','maximum']){const c=row.result.channels[ch];assert.equal(c.metrics.comboTotalDamage.status,'available');assert.equal(c.components.length,64);assert.ok(!c.diagnostics.ignoredSkillEffects?.some(x=>x.skillId===162),'armor-only ID162 must not be unsupported');}
 }finally{if(process.env.RESULT_FILE)fs.writeFileSync(process.env.RESULT_FILE,JSON.stringify({rows,probes,errors},null,2));w.close();}

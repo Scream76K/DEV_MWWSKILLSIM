@@ -122,11 +122,11 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "7291bba4ffee783cbb1aebc17d277146f19fce60682adc96f329d0c1054b4661"
+      "sha256": "25888b5cd10deeb9daa3e0a4391d905974cdbd67d61008e1817302ea86e10b9e"
     },
     {
       "path": "index.html",
-      "sha256": "2dec28f65b49a889b604481e8d1485c39bc7877c22be82b259512449a91c1d52"
+      "sha256": "940812a1cc6da6cefe6217ff7df19a74f754479fc4b5be7f7fd3387213f8eff0"
     },
     {
       "path": "observed-shelling.js",
@@ -702,7 +702,7 @@
     },
     {
       "path": "tests/dark-arts-wave-public.test.cjs",
-      "sha256": "3ba7bcf6efb1e5066186a1b8bbdca9c21f0ef4c0bb4b9888cf5e785a9da5510b"
+      "sha256": "8d30177edc915d2044447a4825b617b21bfdb5743d76e6532db07c3077f5ab21"
     },
     {
       "path": "tests/bow160-fixed.test.cjs",
@@ -770,7 +770,7 @@
     },
     {
       "path": "spec/CURRENT_CONTRACTS.md",
-      "sha256": "6d1f616fd3696ba3ff7db5f6e6b10cd57e23c82ace4b2f28b91228492e921b81"
+      "sha256": "4c5a9daaf3def4565d1f3910644053be049bee77980ffbfd3bddda4bd6f683da"
     },
     {
       "path": "tests/charge-master-hh-standard.test.cjs",
@@ -802,11 +802,39 @@
     },
     {
       "path": "tests/gl162-armor-only.test.cjs",
-      "sha256": "abe41f38f7b3b431b29c22792a1c13ae5ec1f87fdd09b2c4614b26ee63880bbe"
+      "sha256": "b8eac889b1d4c061c0f1ad007a5df07e5e95745b599a733371705108f2549ff0"
     },
     {
       "path": "tests/fixtures/gl162-armor-only.json",
       "sha256": "fb1bf01f208b3aaf29b6a31b90f99335bb62ae6f014a8ff6f77fb8a22aaecf84"
+    },
+    {
+      "path": "tests/gl162-weapon-piece.test.cjs",
+      "sha256": "fb989ce28349a6d4e71782020e602c78001dcf24d44720e44ceb700ba417150a"
+    },
+    {
+      "path": "tests/charge-master-cb-fixed-visibility.test.cjs",
+      "sha256": "2f334c0496558719389c5d9bb48d8faeb5f7c7416a56bc0c243c7747a3203dbe"
+    },
+    {
+      "path": "tests/lbg-rapid-elemental-nontarget.test.cjs",
+      "sha256": "0cf3545405b86ba98a338d034bb04290a2d493b4bdddee08c8c73fe113522134"
+    },
+    {
+      "path": "tests/fixtures/lbg-elemental-nontarget-input.json",
+      "sha256": "14530bccd6345ec38f5e679eda02178bf80a208c1b9167d4f742d1497b7fae89"
+    },
+    {
+      "path": "tests/dark168-source-scope.test.cjs",
+      "sha256": "dc9fc7613acfb7efd943601e513ad421a417e624751469ab7e9633b4d0ab36f3"
+    },
+    {
+      "path": "tests/fixtures/dark168-source-inputs.json",
+      "sha256": "7fa72f401d8b0329a73dd74ce03994b5a328d710488cce740c915d2e3733201d"
+    },
+    {
+      "path": "docs/specs/dark168-source-scope.md",
+      "sha256": "c987dc90ec21aa7deb019fcba1292a0d944ec6dcde2616054a0069e8b196b695"
     }
   ],
   "tests": [
@@ -866,9 +894,13 @@
     "tests/charge-master-gl-owner-scope.test.cjs",
     "tests/gl1084-id163-continuation.test.cjs",
     "tests/gl-normal-high-candidate.test.cjs",
-    "tests/gl162-armor-only.test.cjs"
+    "tests/gl162-armor-only.test.cjs",
+    "tests/gl162-weapon-piece.test.cjs",
+    "tests/charge-master-cb-fixed-visibility.test.cjs",
+    "tests/lbg-rapid-elemental-nontarget.test.cjs",
+    "tests/dark168-source-scope.test.cjs"
   ],
-  "expectedTests": 1810,
+  "expectedTests": 1815,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
