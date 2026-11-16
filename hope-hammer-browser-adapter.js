@@ -313,7 +313,25 @@
    return ['normal','maximum'].every(ch=>{const rows=self[ch]?.filter(x=>x.skillId===173)||[],check=expected[ch]?.filter(x=>x.skillId===173)||[];return rows.length===1&&check.length===1&&JSON.stringify(rows[0])===JSON.stringify(check[0])&&rows[0].attackAdd===0&&rows[0].affinityAdd===0&&rows[0].elementAdd===0;});
   };
   const resonanceExcludedEntry=x=>x.level===1&&activeBonusEffects.some(e=>e.name===x.name&&resonanceStandardExcluded(e));
-  const excludedCalculationPolicy=x=>cornpopperArtiaStandard&&Number(x.skillId)===159&&x.name==='焼き砲モロコシ'&&x.level===1?{reason:'CORNPOPPER_ARTIA_STANDARD_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:resonanceExcludedEntry(x)?{reason:'RESONANCE_FIXED_STANDARD_OWNER_EXCLUDED',status:'NOT_APPLICABLE'}:weapon.kind==='great-sword'&&Number(x.skillId)===168&&['暗黒','Dark'].includes(x.name)&&typeof root.MHDarkSourceWeaponApplicable==='function'&&!root.MHDarkSourceWeaponApplicable(weapon)?{reason:'DARK_SOURCE_WEAPON_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:root.MHIsOwnerExcludedCalculationSkill?.({...x,weaponKind:weapon.kind})?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.({...x,weaponKind:weapon.kind},conditions)?root.MHStandardCalculationExclusion:null;
+  // memo/29.php: the bowgun draw events are jump reload / weapon-ready jump.
+  // This fixed NORMAL sequence models neither event nor a preceding draw buff.
+  // Do not classify a whole weapon kind or consume explicit saved hit maps.
+  const drawFixedNormalNoEvent=(()=>{
+   if(!equippedSkills.some(x=>[8,103].includes(Number(x.skillId))&&Number.isInteger(x.level)&&x.level>=1&&x.level<=3))return false;
+   const routes={'light-bowgun':{id:1169,name:'荊冠のデストレーター',tech:'LBG_NORMAL_RAPID_2',mode:'RAPID',contacts:'ALL_FIVE',shots:5,hits:25},'heavy-bowgun':{id:1157,name:'戦慄のヘルシャフェン',tech:'HBG_NORMAL_AMMO_2',mode:'NORMAL',contacts:'ALL_THREE',shots:10,hits:30}},r=routes[weapon.kind];
+   if(!r||Number(weapon.id)!==r.id||weapon.name!==r.name||conditions.standardEvaluation!==true||conditions.drawAttack!==false||conditions.mounted!==false||[conditions.dismountAttack,conditions.sneakAttack].some(x=>x!=null&&x!==false))return false;
+   if(['criticalDrawHits','punishingDrawHits'].some(k=>conditions[k]!=null&&(!inputRecord(conditions[k])||Object.keys(conditions[k]).some(ch=>!['normal','maximum'].includes(ch))||['normal','maximum'].some(ch=>conditions[k][ch]!=null))))return false;
+   if(JSON.stringify(techniqueIds)!==JSON.stringify([r.tech])||!Array.isArray(weapon.specials)||weapon.specials.length||weapon.phial!=null)return false;
+   const st=weapon.kind==='light-bowgun'?lightBowgunState:hbgState,sel=root.BowgunNormalReference?.selectStandardAmmo?.(weapon,st||{});
+   if(st?.ammoType!=='NORMAL'||st.ammoLevel!==2||st.range!=='CRITICAL'||st.normalModeLevel!==0||st.shotMode!==r.mode||st.contactPolicy!==r.contacts||sel?.techniqueId!==r.tech||sel.shotCount!==r.shots||sel.contactCount!==r.hits)return false;
+   if(weapon.kind==='light-bowgun'?rapidAmmoSequence!=='LBG_FIVE_ROUNDS_25_HITS'||normalAmmoSequence!=null:normalAmmoSequence!=='NORMAL_TEN_SHOT_NO_RELOAD'||rapidAmmoSequence!=null)return false;
+   const src=techniqueDb?.get?.(weapon.kind,r.tech),canonical=root.TechniqueDBEngine?.get?.(weapon.kind,r.tech);
+   if(!src||!canonical||JSON.stringify(src)!==JSON.stringify(canonical)||src.weaponType!==weapon.kind||(weapon.kind==='light-bowgun'?src.referenceKind!==weapon.kind:src.referenceKind!=null)||src.hits?.length!==0||JSON.stringify(src.specialComponents)!=='["AMMO_PHYSICAL"]'||src.damageStateTransition!=null||src.damageStatsState!=null)return false;
+   const plan=stats.conditionalConditionPlan,zero=x=>x?.element===0&&x.elementType==='none'&&x.elementKnown===true&&x.typeKnown===true&&x.elementStatus==='CONFIRMED_NONE'&&x.elementComponents?.weaponBase===0&&x.elementComponents.normalFlat===0;
+   return [stats,plan?.normal,plan?.maximum].every(zero)&&[conditions,stats,plan?.normal,plan?.maximum].every(x=>x?.damageStatsState==null&&x?.stateStatsByState==null);
+  })();
+  const drawFixedExcluded=x=>drawFixedNormalNoEvent&&Number.isInteger(x.level)&&x.level>=1&&x.level<=3&&((Number(x.skillId)===8&&x.name==='抜刀術【力】')||(Number(x.skillId)===103&&x.name==='抜刀術【技】'));
+  const excludedCalculationPolicy=x=>drawFixedExcluded(x)?{reason:'DRAW_FIXED_NORMAL_SEQUENCE_HAS_NO_DRAW_EVENT',status:'NOT_APPLICABLE'}:cornpopperArtiaStandard&&Number(x.skillId)===159&&x.name==='焼き砲モロコシ'&&x.level===1?{reason:'CORNPOPPER_ARTIA_STANDARD_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:resonanceExcludedEntry(x)?{reason:'RESONANCE_FIXED_STANDARD_OWNER_EXCLUDED',status:'NOT_APPLICABLE'}:weapon.kind==='great-sword'&&Number(x.skillId)===168&&['暗黒','Dark'].includes(x.name)&&typeof root.MHDarkSourceWeaponApplicable==='function'&&!root.MHDarkSourceWeaponApplicable(weapon)?{reason:'DARK_SOURCE_WEAPON_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:root.MHIsOwnerExcludedCalculationSkill?.({...x,weaponKind:weapon.kind})?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.({...x,weaponKind:weapon.kind},conditions)?root.MHStandardCalculationExclusion:null;
   const excludedCalculationSkills=equippedSkills.filter(x=>excludedCalculationPolicy(x)).map(x=>({skillId:resonanceExcludedEntry(x)?173:x.skillId,name:x.name,level:x.level,reason:excludedCalculationPolicy(x).reason,status:excludedCalculationPolicy(x).status}));
   for(const e of activeBonusEffects.filter(ownerExcludedBonus))excludedCalculationSkills.push({skillId:e.bonusSkillId,name:e.name,level:e.level,reason:entryGroupPlan.applied.find(x=>x.skillId===e.bonusSkillId).reason,status:'OWNER_EXCLUDED_CURRENT_COMPARISON'});
   // Source-confirmed STANDARD starts; later three-second coverage is not inferred.
@@ -328,7 +346,7 @@
    const t=techniqueDb?.get?.(weapon.kind,id),canonical=root.TechniqueDBEngine?.get?.(weapon.kind,id);
    return t&&JSON.stringify(t)===JSON.stringify(canonical)&&!t.referenceKind&&t.hits?.length&&t.hits.every(h=>!h.componentSource);
   })&&root.TechniqueDBEngine.get(weapon.kind,drawIds[0]).hits.length===1&&![conditions.mounted,conditions.dismountAttack,conditions.sneakAttack].includes(true);
-  const drawPending=conditions.standardEvaluation===true&&!drawOpeningEligible?drawEquipped:[];
+  const drawPending=conditions.standardEvaluation===true&&!drawOpeningEligible?drawEquipped.filter(x=>!drawFixedExcluded(x)):[];
   if(drawOpeningEligible&&drawEquipped.length){
    const maps=Object.fromEntries(['normal','maximum'].map(ch=>[ch,Object.fromEntries(drawIds.map((id,n)=>[id,root.TechniqueDBEngine.get(weapon.kind,id).hits.map((h,i)=>ch==='maximum'&&n===0&&i===0)]))]));
    // Saved explicit maps are retained in snapshots. STANDARD uses its own scoped scenario.

@@ -374,3 +374,17 @@ Standard GL_SLAM → GL_SWEEP → GL_WYRMSTAKE_FULL_BURST → GL_MULTI_WYRMSTAKE
 
 ### ID162 GL1151 weapon-piece threshold candidate (2026-11-16)
 Extends only the validated attack/dragon/no-restore STANDARD1151 route: explicit series162 plus actual armor609 for I, or609/610/611 for II. Requires unique DB set skill162/海竜の渦雷, selected skill identity, producer rank418/419 and required/count2/4, exact current armor provenance and completed weapon reconstruction. Count exactly one weapon piece only after these checks. Empty series retains previous armor-only2/4 path; unknown/wrong selection or source remains gated. Normal0/maximum+15pt affinity uses existing producer/cap; no extra thunder event or shell affinity. Previous threshold-negative expectation updated only for these now-admitted inputs; all other guards retained. tests/gl162-weapon-piece.test.cjs proves actual UI selection, controls and synthetic boundaries. Independent review pending; no live-game claim.
+
+### Fixed Artia normal bowgun sequences: draw skills ID8 / ID103
+
+For standard Artia 1169 (LBG NORMAL rapid Lv2, 5 rounds / 25 contacts) and
+1157 (HBG NORMAL Lv2, 10 rounds / 30 contacts), with drawAttack=false and no
+explicit draw hit maps, ID8 and ID103 Lv1–3 are NOT_APPLICABLE in both channels.
+Reason: DRAW_FIXED_NORMAL_SEQUENCE_HAS_NO_DRAW_EVENT. This models no preceding
+draw-triggered buff; it is not a weapon-wide exclusion or a claim about the
+three-second Critical Draw window following a prior draw event.
+Source: https://kuroyonhon.com/mhwilds/memo/29.php (bowgun tested motion rows:
+jump reload / weapon-ready jump). Those events are absent from the adopted
+fixed firing sequence. No new coefficient or live-game accuracy claim.
+Explicit maps, mounted/dismount/sneak/draw input, altered canonical techniques,
+elemental ammo and nonstandard routes retain their existing dispositions.

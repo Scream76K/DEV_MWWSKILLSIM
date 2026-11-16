@@ -61,8 +61,24 @@
       "sha256": "4ffc5c82aca14c09681380ebcf0cadb961db0aa918e9a5155dc1b6c8257ef935"
     },
     {
+      "path": "docs/reports/r257-thunder-conversion/fixture.json",
+      "sha256": "057b8dc7748ad1889fa2da8f6ff29ec387997fcca3c751ba270ce0b6b6b4e36a"
+    },
+    {
+      "path": "docs/reports/r258-attribute-conversion/fixture.json",
+      "sha256": "be8b6097d7ebbce75157ad50c71b2ccea8490743ef5bd529cd4c41a722fefd35"
+    },
+    {
+      "path": "docs/reports/r263-skill-audit/mhdb-skills.json",
+      "sha256": "368f184eebc8f4d98e62ad778fb50dd01a7a4bc643a1b5e8604c71ae1761f10b"
+    },
+    {
       "path": "docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json",
       "sha256": "9491bfc1cf357aed4967418949d78c0ddd73407c6461443a7b594a2b2710c810"
+    },
+    {
+      "path": "docs/specs/dark168-source-scope.md",
+      "sha256": "c987dc90ec21aa7deb019fcba1292a0d944ec6dcde2616054a0069e8b196b695"
     },
     {
       "path": "element-display.js",
@@ -71,6 +87,10 @@
     {
       "path": "element-state.js",
       "sha256": "4091dabe4ba343e4bac751206885985bde1be62a1be67b333fe10c68638b915b"
+    },
+    {
+      "path": "evidence/conditional-attack-mhdb-20261007.json",
+      "sha256": "281883f1dd29661e64e6c80b1323622e0e7dd16bdfef12d3a309079d61941a38"
     },
     {
       "path": "gunlance-auto-capture-audit.js",
@@ -122,7 +142,7 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "7c45261f13c932737da830b4d6001532d9fba28961dd7e6a37243b513b911c89"
+      "sha256": "65a61cb0fff674b576f246de4f7a12669f365d654f29eed10806124b6322fc9a"
     },
     {
       "path": "index.html",
@@ -153,6 +173,10 @@
       "sha256": "62f077d4941380661da5a7e07448e244ed1ec1098d06a957000cdba4aad2cab3"
     },
     {
+      "path": "spec/CURRENT_CONTRACTS.md",
+      "sha256": "be4ffd32ccbc0cfc1c5a7fa47945830e2b73d6acfb829aa53b0da6808ea4e6c1"
+    },
+    {
       "path": "spread-shot-skill.js",
       "sha256": "47876d2d2a3859c305f525d56150bebf118956db010f5afc271b3eecb1e2cdb3"
     },
@@ -173,24 +197,196 @@
       "sha256": "51ab281e54e78cda9c9211bc05b548328966fba8d7f002f50479e2ebc5738c67"
     },
     {
+      "path": "tests/bladescale163-fixed.test.cjs",
+      "sha256": "47a61368e9dfecb107d4596b91d431f32936dd2865f683dde6218773eca714ed"
+    },
+    {
+      "path": "tests/bow160-fixed.test.cjs",
+      "sha256": "9ffedc85b0db8bb32e8dd7b8301164012c91b4934feeb8e577cf8e45bedf0286"
+    },
+    {
+      "path": "tests/bow94-close-range.test.cjs",
+      "sha256": "59b898b0b657303477bb410a5d3a5b879003ea463019d74724ad8ff7ea3949a8"
+    },
+    {
+      "path": "tests/bowgun-normal-ten-shot.test.cjs",
+      "sha256": "312865eacf6d8d2f7465f4db74e6560a554d9838b309eb8dc71cb012d1c7a815"
+    },
+    {
       "path": "tests/cb-h-ordinary-scope.test.cjs",
       "sha256": "76c4d9432b6e64cd256d019e34c169845af837045eb9b07b66d46fbee02a69cf"
+    },
+    {
+      "path": "tests/charge-master-cb-fixed-visibility.test.cjs",
+      "sha256": "2f334c0496558719389c5d9bb48d8faeb5f7c7416a56bc0c243c7747a3203dbe"
+    },
+    {
+      "path": "tests/charge-master-fixed-bowgun.test.cjs",
+      "sha256": "8d9c5c26e2693efe80eebc4426a81ba3314e897bb408283bb94a01d02e294ded"
     },
     {
       "path": "tests/charge-master-gl-noncharged-scope.test.cjs",
       "sha256": "b2b44081aa87678de9b8448866c786c40080d7cc1e537f9f7e2417cfee7b76f3"
     },
     {
+      "path": "tests/charge-master-gl-owner-scope.test.cjs",
+      "sha256": "ee3d7eda82908051ae57d17afea2d38ffd0d345773a069d63ac737d0458b66b7"
+    },
+    {
+      "path": "tests/charge-master-hh-standard.test.cjs",
+      "sha256": "52358724f9e5c5e4617d76166e86cdc101da25e4c60158f5db834d52a2a6fd09"
+    },
+    {
+      "path": "tests/charge-master-sa-standard.test.cjs",
+      "sha256": "3a1857bc4271f8946946046320e6f7331e136e109f45626d8ab4878eb9ed9175"
+    },
+    {
+      "path": "tests/charge-master-standard-noncharged-boundary.test.cjs",
+      "sha256": "97ed0d008e123fd3b3ecd4316d3c124f30e7151c76a231e63344601a8447fcd0"
+    },
+    {
+      "path": "tests/charge-master-standard-noncharged-public.test.cjs",
+      "sha256": "707e0776f3ab6032f20e2e213a248733a55e7ec2a9473744634ffd5b5dfa46ae"
+    },
+    {
       "path": "tests/charm-saved-level-integrity.test.cjs",
       "sha256": "3379548d738a0249d323173ee3296049cac08ab8103886c1b14aa5f2d3d09768"
+    },
+    {
+      "path": "tests/combo-skill-disclosure.test.cjs",
+      "sha256": "01f8b806600e31642adf371297adb2e6109d141ba686673c2c856b998dd57ec2"
+    },
+    {
+      "path": "tests/conversion-harness-repair.test.cjs",
+      "sha256": "b5e7b4972eab3a741053f22fa432bbd8fcac7f08f6651adc36fe2b9de848167b"
+    },
+    {
+      "path": "tests/conversion-zero-scope.test.cjs",
+      "sha256": "e3ac670dfa78ece15e1cf28353f5f3fa79a1721b7d216e2ebe14833be93e3bfc"
+    },
+    {
+      "path": "tests/dark-arts-wave-public.test.cjs",
+      "sha256": "8d30177edc915d2044447a4825b617b21bfdb5743d76e6532db07c3077f5ab21"
+    },
+    {
+      "path": "tests/dark168-source-scope.test.cjs",
+      "sha256": "dc9fc7613acfb7efd943601e513ad421a417e624751469ab7e9633b4d0ab36f3"
+    },
+    {
+      "path": "tests/draw-bowguns-fixed-no-event.test.cjs",
+      "sha256": "cf01bd552446f5f95bfa8248b7d809b7b2cf0aca64466b75e94193060f66a0b4"
+    },
+    {
+      "path": "tests/draw-opening-fixed.test.cjs",
+      "sha256": "c37addb9335ea20094d4caeb75e01b2106386a48a51d9ec0a817af7a89488d6b"
+    },
+    {
+      "path": "tests/fixtures/charge24-bowgun-inputs.json",
+      "sha256": "071887082ddaac4faa145e6bf6460196a16a1e1a0dd392ac62e80428a3c3ce60"
+    },
+    {
+      "path": "tests/fixtures/charge24-gl-input.json",
+      "sha256": "f9e0cbb6dc28823eb994b3f88522f3044282fa7c83d9dc0cc1f4397fd3e4b8d5"
+    },
+    {
+      "path": "tests/fixtures/charge24-hh-input.json",
+      "sha256": "b523153e400ac87579f2e63a31f34e6818047916d73493155cad964b50386607"
+    },
+    {
+      "path": "tests/fixtures/charge24-sa-input.json",
+      "sha256": "ddd790cec12356862838c5da87ced88d63c837cba931d80093840c58b6429a04"
+    },
+    {
+      "path": "tests/fixtures/charge24-standard-records.json",
+      "sha256": "5773b1d10b52ddfad6c84b9bc0ac8b2fa925849683ab8e5166eb1e658b2a4cff"
     },
     {
       "path": "tests/fixtures/comparison-session-inputs.json",
       "sha256": "489098cadae276b9bc68dc3142c3045174cc215ca22af262048934d16b763d7b"
     },
     {
+      "path": "tests/fixtures/dark168-source-inputs.json",
+      "sha256": "7fa72f401d8b0329a73dd74ce03994b5a328d710488cce740c915d2e3733201d"
+    },
+    {
+      "path": "tests/fixtures/gl1084-id163-inputs.json",
+      "sha256": "71199d393243381931d9ecc860d592bed6cf31bd861edeb904952905bbfefcf1"
+    },
+    {
+      "path": "tests/fixtures/gl162-armor-only.json",
+      "sha256": "fb1bf01f208b3aaf29b6a31b90f99335bb62ae6f014a8ff6f77fb8a22aaecf84"
+    },
+    {
+      "path": "tests/fixtures/gog178-inputs.json",
+      "sha256": "cce73908fb454d5936ce02ce9ecd0d2d7709f23010cd07a57c630a359f08cb52"
+    },
+    {
+      "path": "tests/fixtures/id159-artia-source-inputs.json",
+      "sha256": "d4727a137f130814c637560b470bf8dceccc66edaac52382b20ba389aee66889"
+    },
+    {
+      "path": "tests/fixtures/lbg-elemental-nontarget-input.json",
+      "sha256": "14530bccd6345ec38f5e679eda02178bf80a208c1b9167d4f742d1497b7fae89"
+    },
+    {
+      "path": "tests/fixtures/lbg-owner-exclusions-inputs.json",
+      "sha256": "a17e32bddf52cc838d8c17b2661305db6a5896365b2530bb69e7d85e55e526fc"
+    },
+    {
+      "path": "tests/fixtures/offset-maximum-inputs.json",
+      "sha256": "7fc4f6f046e4dd695ad7e9162829dd81d2db674de48689ed075106e9f3a1a122"
+    },
+    {
+      "path": "tests/fixtures/owner-conditional-notes-inputs.json",
+      "sha256": "d6e22c79dfffbc5ec95d1b82655d6c85bd3b8ec64e10ee6c7f0d1b16c0c70217"
+    },
+    {
+      "path": "tests/fixtures/resonance173-inputs.json",
+      "sha256": "64947f0457913f917cfeb1363ff541ce0c24781b9a9cd9646e257a9a562e9714"
+    },
+    {
+      "path": "tests/fixtures/selected-hp-inputs.json",
+      "sha256": "522a95c27389a66fc3ccc680dee6e9545fce0e757dc6ccf8208179e632c2233f"
+    },
+    {
+      "path": "tests/gl-normal-high-candidate.test.cjs",
+      "sha256": "1884deebdfaa5facd1dc8117be07fb176663632846088a0034e444aeedb28ddf"
+    },
+    {
       "path": "tests/gl-reference-identity.test.cjs",
       "sha256": "bc936237d58b106f53b416342bea500a1a9e370fc014ce31812f4a8697582f42"
+    },
+    {
+      "path": "tests/gl1084-id163-continuation.test.cjs",
+      "sha256": "aff7c5a4d05c3ac65d56dab71c492a8c5255067fcb45efdcaf0eea302ed3c166"
+    },
+    {
+      "path": "tests/gl162-armor-only.test.cjs",
+      "sha256": "b8eac889b1d4c061c0f1ad007a5df07e5e95745b599a733371705108f2549ff0"
+    },
+    {
+      "path": "tests/gl162-weapon-piece.test.cjs",
+      "sha256": "fb989ce28349a6d4e71782020e602c78001dcf24d44720e44ceb700ba417150a"
+    },
+    {
+      "path": "tests/gog178-components.test.cjs",
+      "sha256": "0daf7146ed5d8e7718b596c3598b32ee88922431b6e7bcd1216a9be6fd3da33c"
+    },
+    {
+      "path": "tests/hbg160-fixed.test.cjs",
+      "sha256": "eae1f096324c878984bd8ac7aa0f1c3e748c7384a2088496c8bf9a6a74129afe"
+    },
+    {
+      "path": "tests/id159-artia-source-scope.test.cjs",
+      "sha256": "7f2825b3bee661b1e10089a595bf33b57de0215381a22521430021e8a55f3f25"
+    },
+    {
+      "path": "tests/integration-ci-dependency.test.cjs",
+      "sha256": "08ba028e8f873bb425341605db110c38f69cba79bfd1c75bf6135ff853e17f7f"
+    },
+    {
+      "path": "tests/integration-ci-partition.test.cjs",
+      "sha256": "b7adce2283b7f5fa73fb9f029da81cdbb1c933ddc5691ece7dff92efebe2d866"
     },
     {
       "path": "tests/kan19-artia-integration.test.cjs",
@@ -201,8 +397,80 @@
       "sha256": "affda8fee026f59413fa2a85dcf40f39f3effeb6eabffaf009975676bf3afaf0"
     },
     {
+      "path": "tests/lbg-normal-five-shot.test.cjs",
+      "sha256": "c3f589ca43ca5effe3d420a7619d12ebd9b3fe59bd9dd17f2806fa16f3642ac1"
+    },
+    {
+      "path": "tests/lbg-owner-exclusions.test.cjs",
+      "sha256": "360f12d0e35c58ccacdac7b2e593a5c67fc7964a0b839e694f3390a11b9e0509"
+    },
+    {
+      "path": "tests/lbg-rapid-common-skills.test.cjs",
+      "sha256": "d469218eb8d025a8bbb15edbc488ea54e22ca3410bb3c19d7639252db0eaced3"
+    },
+    {
+      "path": "tests/lbg-rapid-counterstrike.test.cjs",
+      "sha256": "067d7294acd13a00c641b7df718efeb5161c4bd7c300cfb2dc2afcf332c5c788"
+    },
+    {
+      "path": "tests/lbg-rapid-elemental-nontarget.test.cjs",
+      "sha256": "0cf3545405b86ba98a338d034bb04290a2d493b4bdddee08c8c73fe113522134"
+    },
+    {
+      "path": "tests/lbg-rapid-five-shot.test.cjs",
+      "sha256": "1f0c6703d57156f3c4a775b02ebd069403570acd498446340dec36511d379856"
+    },
+    {
+      "path": "tests/lbg-rapid-foray.test.cjs",
+      "sha256": "2219988febce92c1df9e39c8880413d9ab3bccbf9b97810c91a83248bdd5ed30"
+    },
+    {
+      "path": "tests/lbg-rapid-heroics.test.cjs",
+      "sha256": "0b253df247d3088787930541c2080b6a8e34a9796bed4b038cf18c9c058d1bbd"
+    },
+    {
+      "path": "tests/lbg-rapid-nonapplicable.test.cjs",
+      "sha256": "ef50de95448bd122e9473ccbc947ed754d446080b153741a4a03095541836ee4"
+    },
+    {
+      "path": "tests/lbg-rapid-resolved-attack.test.cjs",
+      "sha256": "84c20e47d22266d1a82f2b451bb37b3c87c16cebf1f57d0293dfecb7c65bf67d"
+    },
+    {
+      "path": "tests/lbg-rapid-shot-skills.test.cjs",
+      "sha256": "1603daa3b9eeb6da00d4814c1ae77532a495c245c399467bd8f9d7a904207af4"
+    },
+    {
+      "path": "tests/lbg160-fixed.test.cjs",
+      "sha256": "c6333672e1e83b1a83cab67b0e0ba4f7617b35d422c4cae4d3a7d63483537817"
+    },
+    {
       "path": "tests/legacy-comparison-report-contract.test.cjs",
       "sha256": "9a2000c8631cd0c0b2f392e401f3788d18ecfc1d878a2f74a882ff211b8cff21"
+    },
+    {
+      "path": "tests/monster-part-labels.test.cjs",
+      "sha256": "0cbb2eb2dd2ed11631081cf1519f58a5a6273ffa0f5bd8debe612440f5fccb0c"
+    },
+    {
+      "path": "tests/monster-target-resolution.test.cjs",
+      "sha256": "d7fba0bde815558a246f1adabc5b751ffadfc502704406578c444c9ff2f56143"
+    },
+    {
+      "path": "tests/offset-maximum.test.cjs",
+      "sha256": "efd31965567a04b7790ca52be2a5cf82fe754198b07645dddb580200d82d6bdf"
+    },
+    {
+      "path": "tests/owner-conditional-notes.test.cjs",
+      "sha256": "07017cc68d799c6fb42821c26e2fe1f87024697e0b164246065e5a58ad3f31de"
+    },
+    {
+      "path": "tests/pierce-nonapplication-scope.test.cjs",
+      "sha256": "c36358353ba2f46932a3d0c0020228acb90d8f67e1523a69468906c41fe58ef0"
+    },
+    {
+      "path": "tests/powerstone164-exclusion.test.cjs",
+      "sha256": "e9914c60bb8c57a3b9f320e1910e431bc7698e87410e171c5b328b422a1cb313"
     },
     {
       "path": "tests/r206-charm-skill-integrity.test.cjs",
@@ -213,8 +481,24 @@
       "sha256": "d1f606a09bb89acf5947c0b4ea68d7e6b24380b7a5b6854cb5c2427b2475007e"
     },
     {
+      "path": "tests/resonance173-standard.test.cjs",
+      "sha256": "f4ce317a0cc2d11c4d98c430d39f969fdc55ea28662c2d1081627b6034ce4feb"
+    },
+    {
       "path": "tests/saved-decoration-identity.test.cjs",
       "sha256": "a6790fb56b8b4fb1d0d820d49d91a888d77584ed78781045fe66b2c02de8cf33"
+    },
+    {
+      "path": "tests/selected-hp-review.test.cjs",
+      "sha256": "04327938d4035d0c12fcee15fc930bfe4d4dc9847a5a4fd9759dcc349218b80b"
+    },
+    {
+      "path": "tests/selected-hp.test.cjs",
+      "sha256": "5f2df28e08fa820a08c826a700aaf7b9e50712bf08564b4e5e8fd4476f949553"
+    },
+    {
+      "path": "tests/skill-audit-dispositions.test.cjs",
+      "sha256": "84948a1d1172d1dd62b61924321e6fd146e6e84c2ebe5a5fe9b2d3b729570cb0"
     },
     {
       "path": "tests/skill-calculation-policy.test.cjs",
@@ -225,8 +509,24 @@
       "sha256": "5ed7f949f29eb65a33745181a7b6bf6969cad24ad1b8b08d1df42b230df5b9c4"
     },
     {
+      "path": "tests/wet39-standard-normal.test.cjs",
+      "sha256": "32a8b61c268392e9ab0e1b859cce584541471aa3367ea99205e780e399eae197"
+    },
+    {
+      "path": "tests/zero-conversion-physical.test.cjs",
+      "sha256": "7813c3e00311244019b9808bec23b0102852941605c571bfab3459566ae3f76d"
+    },
+    {
       "path": "tools/bow-power-browser.test.cjs",
       "sha256": "4afbe703be19e8a2ad2b74eae38f7c29075ef67184c632c14ade081ee1e4cd9c"
+    },
+    {
+      "path": "tools/bowgun-standard-browser-proof.cjs",
+      "sha256": "8cf5c261ca81c06b6501a677e0e041b1da4a308c2e6a648533c3045963f4b2c1"
+    },
+    {
+      "path": "tools/bowgun-standard-sequence-proof.cjs",
+      "sha256": "b032bce9b483b87e7f086e6eee4769d9f67853d9b452c79ffe76828dfc1096a9"
     },
     {
       "path": "tools/browser-test-setup.cjs",
@@ -239,6 +539,10 @@
     {
       "path": "tools/conditional-element-browser.test.cjs",
       "sha256": "a1702637867964c9f6e55a1763f7d9156f83a4d19bd314035ff26b0b22bcc1a9"
+    },
+    {
+      "path": "tools/conditional-element-dom.test.cjs",
+      "sha256": "a25febb7704bdb0068a1761f1c7630054b5d5800de669d9816ebadf21a6fab5e"
     },
     {
       "path": "tools/consumer-ai-comparison-browser.test.cjs",
@@ -259,6 +563,10 @@
     {
       "path": "tools/dom-test-setup.cjs",
       "sha256": "17ecf654f9beb09fa91f5d7a35bc9d01c7aae290d76ff122a7b064863c282efa"
+    },
+    {
+      "path": "tools/fortify-condition-dom.test.cjs",
+      "sha256": "1667a6d8e68cd78175ad458493061222e0c10464ed8f282a41ff581226fbe151"
     },
     {
       "path": "tools/gl-hh-scope-regression/freshness.test.cjs",
@@ -309,8 +617,20 @@
       "sha256": "439daf9fbb1617f30d7d9947bdbd91ebf765ebdcf2dc456bb9515383bd08af31"
     },
     {
+      "path": "tools/integration-regression/README.md",
+      "sha256": "a61b729b1fafe6bec59ffb795f5ae3fbd09634fddac8f9e73ab0205cc3d1fdf3"
+    },
+    {
+      "path": "tools/integration-regression/ci-partition.cjs",
+      "sha256": "47f9cebe265190ea178103e968045c24fe9dad8c4e6da28dadf42fd27c22d0bb"
+    },
+    {
       "path": "tools/integration-regression/run.cjs",
       "sha256": "041a5cc24e18e4956a98811212c0316d267fec727b09a6d410b9a12b7f4e25b6"
+    },
+    {
+      "path": "tools/integration-regression/target-ingress.test.cjs",
+      "sha256": "813096808433513e5c66a63d29c9eacf8d9773cd13e943e81b2c128f01840c9e"
     },
     {
       "path": "tools/kan13-p0-comparison-dom.test.cjs",
@@ -329,12 +649,76 @@
       "sha256": "3e70d140bec826aac9c986083f0a78b567ab7ee6cce6c9660b1e00d370d10282"
     },
     {
+      "path": "tools/lbg-rapid-common-skills-browser-proof.cjs",
+      "sha256": "6814685f7a4bfa8adcbe903aec9e776e88baf38dded74cfb7cb26088d32cf91a"
+    },
+    {
+      "path": "tools/lbg-rapid-common-skills-proof.cjs",
+      "sha256": "8cf719143cace9f03ba9d645cd772ee4b9b7886605257426dfac6e7215496b36"
+    },
+    {
+      "path": "tools/lbg-rapid-counterstrike-browser-proof.cjs",
+      "sha256": "6f8793c424f8eb0ae3fcb400cb52c557eb705ba7e61c508e2fde162ed01642c3"
+    },
+    {
+      "path": "tools/lbg-rapid-counterstrike-proof.cjs",
+      "sha256": "156323a963eb11c8cbfeb114e6feb7dd464f49c362399f6ccc710057cc080361"
+    },
+    {
+      "path": "tools/lbg-rapid-five-proof.cjs",
+      "sha256": "c4cd9d9b529282ae3c92131b61ce3a660b2148ea7d46580da874cbc27841fce5"
+    },
+    {
+      "path": "tools/lbg-rapid-foray-browser-proof.cjs",
+      "sha256": "9094e36b586293a04e9db2ea185ac4e4bdb010aba2f4af4292b5b36a2dff15b1"
+    },
+    {
+      "path": "tools/lbg-rapid-foray-proof.cjs",
+      "sha256": "cbc1788950ccc0ed5fc05bb6260242d10c27a555589e4d72c597f809b715092f"
+    },
+    {
+      "path": "tools/lbg-rapid-heroics-browser-proof.cjs",
+      "sha256": "8742fda77985d3a7ea8555a38bbc7a6401baee41ad83cb4f78b029de0ee696c9"
+    },
+    {
+      "path": "tools/lbg-rapid-heroics-proof.cjs",
+      "sha256": "145bf8b366f04f7dbd86417c4bf1a4789a270b940bbd021fafa14ea340c768fc"
+    },
+    {
+      "path": "tools/lbg-rapid-nonapplicable-browser-proof.cjs",
+      "sha256": "a2577e8488f8702296ab426924ebf5081cfc2e2a2b4fd5e21b3292aa332fc773"
+    },
+    {
+      "path": "tools/lbg-rapid-nonapplicable-proof.cjs",
+      "sha256": "7d9239bbfb3d1f4797485a0b4a1341f2c746c0211277eaae823629cab1811f26"
+    },
+    {
+      "path": "tools/lbg-rapid-resolved-attack-browser-proof.cjs",
+      "sha256": "47a89cace429cc38bea6f848a2966b5a02b1ca52572f07479808f2b5c0a2299a"
+    },
+    {
+      "path": "tools/lbg-rapid-resolved-attack-proof.cjs",
+      "sha256": "4ff51f5fe87ea39f8f11738d0e4c0f8f5ae35b0a565d3ec07cdd494801fd062a"
+    },
+    {
+      "path": "tools/lbg-rapid-shot-skills-browser-proof.cjs",
+      "sha256": "df09776489f43b2dd97b302460558471cea23da94546d15fbb72d5b6814d0d2b"
+    },
+    {
+      "path": "tools/lbg-rapid-shot-skills-proof.cjs",
+      "sha256": "efde1aafb6f7fee3435329068707e49dfa37fd050d96d9ca75eb8baa51f64f7d"
+    },
+    {
       "path": "tools/legacy-comparison-report-test-helper.cjs",
       "sha256": "c23c86281680d8e923c0bc3f56607213bb3e172b0f88da40ae7aafad30973c01"
     },
     {
       "path": "tools/legacy-page-test-context.cjs",
       "sha256": "2050346e8f8c264492f082aa4465237eeb7fa06c65b15cc6509bbdd7192ff93d"
+    },
+    {
+      "path": "tools/power-conditions-dom.test.cjs",
+      "sha256": "6748e46165bd1cb66f6b7249f513cad2995dcbadd4b806a401666c827ce793f9"
     },
     {
       "path": "tools/r250-dps-verification-dom.test.cjs",
@@ -359,6 +743,14 @@
     {
       "path": "tools/sa-hh-scope-regression/sa-zero.test.cjs",
       "sha256": "d7fd2fda4506f2140f0244c6e3231c6231795678f1a45db989e57a3f4d6d9cae"
+    },
+    {
+      "path": "tools/shared-ui-disclosure-browser-proof.cjs",
+      "sha256": "0c399167f8c531bc14b58f099f0a91bb49ece96546aa603792ed8c94a9031bd2"
+    },
+    {
+      "path": "tools/skill-audit-dispositions.cjs",
+      "sha256": "ed39269bdc79f7e92e75b89c427811838f1d59ab22948a3d28ed846b15bdf45a"
     },
     {
       "path": "tools/skill-continuation-body-regression.cjs",
@@ -405,6 +797,22 @@
       "sha256": "f2806d2ff6fd565b01cd56521cacf5029550bdff0253a4915ab7f31cf810016f"
     },
     {
+      "path": "tools/thunder-conversion-cap-connection-proof.cjs",
+      "sha256": "c9f551ea591d04e601f140d0910ef4198230581294a7ec3e2a4e47cd96746171"
+    },
+    {
+      "path": "tools/water-conversion-public-proof.cjs",
+      "sha256": "b9bcb4d98d7f2fb73e762f52cc36f4c8ea153063bef99a22881fe6e01e5a48e3"
+    },
+    {
+      "path": "tools/zero-conversion-physical-browser-proof.cjs",
+      "sha256": "f53178f6c6dff40c73e5854f58420ce0e07b1b2cc071e1f3a2fe4e70e1df83f2"
+    },
+    {
+      "path": "tools/zero-conversion-physical-proof.cjs",
+      "sha256": "842a9302b38583e6fa978fb5fe7efddfb49e1c8ae6421b9e5d42f0ebe8c8045e"
+    },
+    {
       "path": "ui/comparison-session.js",
       "sha256": "0af42bca430f28f3b51f15c9b3b4976c1efcfc85d52106960279c8370305e881"
     },
@@ -415,6 +823,10 @@
     {
       "path": "ui/unresolved-damage-presentation.browser.js",
       "sha256": "b6e78596690ef13a37f1247cc83d92065db14f7cc8103c8e0a87a5595e7742a2"
+    },
+    {
+      "path": "v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs",
+      "sha256": "1b619e4ef1363316cf904d6c7bc51b11acd7decacd8d4fdf4a3be7d5a451343d"
     },
     {
       "path": "weapon-attack-skill-audit.js",
@@ -443,414 +855,6 @@
     {
       "path": "weapon-sharpness-source-audit.js",
       "sha256": "843849ff1014002be9ffb74e43ae5b60bd2c3974dbdfdf5b1a6940d9dea95888"
-    },
-    {
-      "path": "tests/bowgun-normal-ten-shot.test.cjs",
-      "sha256": "312865eacf6d8d2f7465f4db74e6560a554d9838b309eb8dc71cb012d1c7a815"
-    },
-    {
-      "path": "tests/monster-target-resolution.test.cjs",
-      "sha256": "d7fba0bde815558a246f1adabc5b751ffadfc502704406578c444c9ff2f56143"
-    },
-    {
-      "path": "tools/integration-regression/target-ingress.test.cjs",
-      "sha256": "813096808433513e5c66a63d29c9eacf8d9773cd13e943e81b2c128f01840c9e"
-    },
-    {
-      "path": "tests/lbg-rapid-five-shot.test.cjs",
-      "sha256": "1f0c6703d57156f3c4a775b02ebd069403570acd498446340dec36511d379856"
-    },
-    {
-      "path": "tools/lbg-rapid-five-proof.cjs",
-      "sha256": "c4cd9d9b529282ae3c92131b61ce3a660b2148ea7d46580da874cbc27841fce5"
-    },
-    {
-      "path": "v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs",
-      "sha256": "1b619e4ef1363316cf904d6c7bc51b11acd7decacd8d4fdf4a3be7d5a451343d"
-    },
-    {
-      "path": "tools/bowgun-standard-sequence-proof.cjs",
-      "sha256": "b032bce9b483b87e7f086e6eee4769d9f67853d9b452c79ffe76828dfc1096a9"
-    },
-    {
-      "path": "tools/bowgun-standard-browser-proof.cjs",
-      "sha256": "8cf5c261ca81c06b6501a677e0e041b1da4a308c2e6a648533c3045963f4b2c1"
-    },
-    {
-      "path": "tests/lbg-normal-five-shot.test.cjs",
-      "sha256": "c3f589ca43ca5effe3d420a7619d12ebd9b3fe59bd9dd17f2806fa16f3642ac1"
-    },
-    {
-      "path": "tests/monster-part-labels.test.cjs",
-      "sha256": "0cbb2eb2dd2ed11631081cf1519f58a5a6273ffa0f5bd8debe612440f5fccb0c"
-    },
-    {
-      "path": "tests/combo-skill-disclosure.test.cjs",
-      "sha256": "01f8b806600e31642adf371297adb2e6109d141ba686673c2c856b998dd57ec2"
-    },
-    {
-      "path": "tools/shared-ui-disclosure-browser-proof.cjs",
-      "sha256": "0c399167f8c531bc14b58f099f0a91bb49ece96546aa603792ed8c94a9031bd2"
-    },
-    {
-      "path": "tools/skill-audit-dispositions.cjs",
-      "sha256": "ed39269bdc79f7e92e75b89c427811838f1d59ab22948a3d28ed846b15bdf45a"
-    },
-    {
-      "path": "tests/skill-audit-dispositions.test.cjs",
-      "sha256": "84948a1d1172d1dd62b61924321e6fd146e6e84c2ebe5a5fe9b2d3b729570cb0"
-    },
-    {
-      "path": "tests/lbg-rapid-common-skills.test.cjs",
-      "sha256": "d469218eb8d025a8bbb15edbc488ea54e22ca3410bb3c19d7639252db0eaced3"
-    },
-    {
-      "path": "tools/lbg-rapid-common-skills-proof.cjs",
-      "sha256": "8cf719143cace9f03ba9d645cd772ee4b9b7886605257426dfac6e7215496b36"
-    },
-    {
-      "path": "tools/lbg-rapid-common-skills-browser-proof.cjs",
-      "sha256": "6814685f7a4bfa8adcbe903aec9e776e88baf38dded74cfb7cb26088d32cf91a"
-    },
-    {
-      "path": "tests/integration-ci-dependency.test.cjs",
-      "sha256": "08ba028e8f873bb425341605db110c38f69cba79bfd1c75bf6135ff853e17f7f"
-    },
-    {
-      "path": "tests/lbg-rapid-counterstrike.test.cjs",
-      "sha256": "067d7294acd13a00c641b7df718efeb5161c4bd7c300cfb2dc2afcf332c5c788"
-    },
-    {
-      "path": "tools/lbg-rapid-counterstrike-proof.cjs",
-      "sha256": "156323a963eb11c8cbfeb114e6feb7dd464f49c362399f6ccc710057cc080361"
-    },
-    {
-      "path": "tools/lbg-rapid-counterstrike-browser-proof.cjs",
-      "sha256": "6f8793c424f8eb0ae3fcb400cb52c557eb705ba7e61c508e2fde162ed01642c3"
-    },
-    {
-      "path": "tests/lbg-rapid-foray.test.cjs",
-      "sha256": "2219988febce92c1df9e39c8880413d9ab3bccbf9b97810c91a83248bdd5ed30"
-    },
-    {
-      "path": "tools/lbg-rapid-foray-proof.cjs",
-      "sha256": "cbc1788950ccc0ed5fc05bb6260242d10c27a555589e4d72c597f809b715092f"
-    },
-    {
-      "path": "tools/lbg-rapid-foray-browser-proof.cjs",
-      "sha256": "9094e36b586293a04e9db2ea185ac4e4bdb010aba2f4af4292b5b36a2dff15b1"
-    },
-    {
-      "path": "tests/lbg-rapid-shot-skills.test.cjs",
-      "sha256": "1603daa3b9eeb6da00d4814c1ae77532a495c245c399467bd8f9d7a904207af4"
-    },
-    {
-      "path": "tools/lbg-rapid-shot-skills-proof.cjs",
-      "sha256": "efde1aafb6f7fee3435329068707e49dfa37fd050d96d9ca75eb8baa51f64f7d"
-    },
-    {
-      "path": "tools/lbg-rapid-shot-skills-browser-proof.cjs",
-      "sha256": "df09776489f43b2dd97b302460558471cea23da94546d15fbb72d5b6814d0d2b"
-    },
-    {
-      "path": "tools/lbg-rapid-nonapplicable-proof.cjs",
-      "sha256": "7d9239bbfb3d1f4797485a0b4a1341f2c746c0211277eaae823629cab1811f26"
-    },
-    {
-      "path": "tools/lbg-rapid-nonapplicable-browser-proof.cjs",
-      "sha256": "a2577e8488f8702296ab426924ebf5081cfc2e2a2b4fd5e21b3292aa332fc773"
-    },
-    {
-      "path": "tests/lbg-rapid-nonapplicable.test.cjs",
-      "sha256": "ef50de95448bd122e9473ccbc947ed754d446080b153741a4a03095541836ee4"
-    },
-    {
-      "path": "tools/lbg-rapid-resolved-attack-proof.cjs",
-      "sha256": "4ff51f5fe87ea39f8f11738d0e4c0f8f5ae35b0a565d3ec07cdd494801fd062a"
-    },
-    {
-      "path": "tools/lbg-rapid-resolved-attack-browser-proof.cjs",
-      "sha256": "47a89cace429cc38bea6f848a2966b5a02b1ca52572f07479808f2b5c0a2299a"
-    },
-    {
-      "path": "tests/lbg-rapid-resolved-attack.test.cjs",
-      "sha256": "84c20e47d22266d1a82f2b451bb37b3c87c16cebf1f57d0293dfecb7c65bf67d"
-    },
-    {
-      "path": "tools/lbg-rapid-heroics-proof.cjs",
-      "sha256": "145bf8b366f04f7dbd86417c4bf1a4789a270b940bbd021fafa14ea340c768fc"
-    },
-    {
-      "path": "tools/lbg-rapid-heroics-browser-proof.cjs",
-      "sha256": "8742fda77985d3a7ea8555a38bbc7a6401baee41ad83cb4f78b029de0ee696c9"
-    },
-    {
-      "path": "tests/lbg-rapid-heroics.test.cjs",
-      "sha256": "0b253df247d3088787930541c2080b6a8e34a9796bed4b038cf18c9c058d1bbd"
-    },
-    {
-      "path": "tests/conversion-zero-scope.test.cjs",
-      "sha256": "e3ac670dfa78ece15e1cf28353f5f3fa79a1721b7d216e2ebe14833be93e3bfc"
-    },
-    {
-      "path": "tools/zero-conversion-physical-proof.cjs",
-      "sha256": "842a9302b38583e6fa978fb5fe7efddfb49e1c8ae6421b9e5d42f0ebe8c8045e"
-    },
-    {
-      "path": "tools/zero-conversion-physical-browser-proof.cjs",
-      "sha256": "f53178f6c6dff40c73e5854f58420ce0e07b1b2cc071e1f3a2fe4e70e1df83f2"
-    },
-    {
-      "path": "tests/zero-conversion-physical.test.cjs",
-      "sha256": "7813c3e00311244019b9808bec23b0102852941605c571bfab3459566ae3f76d"
-    },
-    {
-      "path": "tools/thunder-conversion-cap-connection-proof.cjs",
-      "sha256": "c9f551ea591d04e601f140d0910ef4198230581294a7ec3e2a4e47cd96746171"
-    },
-    {
-      "path": "tools/water-conversion-public-proof.cjs",
-      "sha256": "b9bcb4d98d7f2fb73e762f52cc36f4c8ea153063bef99a22881fe6e01e5a48e3"
-    },
-    {
-      "path": "docs/reports/r257-thunder-conversion/fixture.json",
-      "sha256": "057b8dc7748ad1889fa2da8f6ff29ec387997fcca3c751ba270ce0b6b6b4e36a"
-    },
-    {
-      "path": "docs/reports/r258-attribute-conversion/fixture.json",
-      "sha256": "be8b6097d7ebbce75157ad50c71b2ccea8490743ef5bd529cd4c41a722fefd35"
-    },
-    {
-      "path": "docs/reports/r263-skill-audit/mhdb-skills.json",
-      "sha256": "368f184eebc8f4d98e62ad778fb50dd01a7a4bc643a1b5e8604c71ae1761f10b"
-    },
-    {
-      "path": "tests/conversion-harness-repair.test.cjs",
-      "sha256": "b5e7b4972eab3a741053f22fa432bbd8fcac7f08f6651adc36fe2b9de848167b"
-    },
-    {
-      "path": "tests/owner-conditional-notes.test.cjs",
-      "sha256": "07017cc68d799c6fb42821c26e2fe1f87024697e0b164246065e5a58ad3f31de"
-    },
-    {
-      "path": "tools/power-conditions-dom.test.cjs",
-      "sha256": "6748e46165bd1cb66f6b7249f513cad2995dcbadd4b806a401666c827ce793f9"
-    },
-    {
-      "path": "tools/fortify-condition-dom.test.cjs",
-      "sha256": "1667a6d8e68cd78175ad458493061222e0c10464ed8f282a41ff581226fbe151"
-    },
-    {
-      "path": "tools/conditional-element-dom.test.cjs",
-      "sha256": "a25febb7704bdb0068a1761f1c7630054b5d5800de669d9816ebadf21a6fab5e"
-    },
-    {
-      "path": "tests/fixtures/owner-conditional-notes-inputs.json",
-      "sha256": "d6e22c79dfffbc5ec95d1b82655d6c85bd3b8ec64e10ee6c7f0d1b16c0c70217"
-    },
-    {
-      "path": "evidence/conditional-attack-mhdb-20261007.json",
-      "sha256": "281883f1dd29661e64e6c80b1323622e0e7dd16bdfef12d3a309079d61941a38"
-    },
-    {
-      "path": "tests/lbg-owner-exclusions.test.cjs",
-      "sha256": "360f12d0e35c58ccacdac7b2e593a5c67fc7964a0b839e694f3390a11b9e0509"
-    },
-    {
-      "path": "tests/fixtures/lbg-owner-exclusions-inputs.json",
-      "sha256": "a17e32bddf52cc838d8c17b2661305db6a5896365b2530bb69e7d85e55e526fc"
-    },
-    {
-      "path": "tests/offset-maximum.test.cjs",
-      "sha256": "efd31965567a04b7790ca52be2a5cf82fe754198b07645dddb580200d82d6bdf"
-    },
-    {
-      "path": "tests/fixtures/offset-maximum-inputs.json",
-      "sha256": "7fc4f6f046e4dd695ad7e9162829dd81d2db674de48689ed075106e9f3a1a122"
-    },
-    {
-      "path": "tests/gog178-components.test.cjs",
-      "sha256": "0daf7146ed5d8e7718b596c3598b32ee88922431b6e7bcd1216a9be6fd3da33c"
-    },
-    {
-      "path": "tests/fixtures/gog178-inputs.json",
-      "sha256": "cce73908fb454d5936ce02ce9ecd0d2d7709f23010cd07a57c630a359f08cb52"
-    },
-    {
-      "path": "tests/selected-hp.test.cjs",
-      "sha256": "5f2df28e08fa820a08c826a700aaf7b9e50712bf08564b4e5e8fd4476f949553"
-    },
-    {
-      "path": "tests/fixtures/selected-hp-inputs.json",
-      "sha256": "522a95c27389a66fc3ccc680dee6e9545fce0e757dc6ccf8208179e632c2233f"
-    },
-    {
-      "path": "tests/selected-hp-review.test.cjs",
-      "sha256": "04327938d4035d0c12fcee15fc930bfe4d4dc9847a5a4fd9759dcc349218b80b"
-    },
-    {
-      "path": "tools/integration-regression/README.md",
-      "sha256": "a61b729b1fafe6bec59ffb795f5ae3fbd09634fddac8f9e73ab0205cc3d1fdf3"
-    },
-    {
-      "path": "tests/pierce-nonapplication-scope.test.cjs",
-      "sha256": "c36358353ba2f46932a3d0c0020228acb90d8f67e1523a69468906c41fe58ef0"
-    },
-    {
-      "path": "tests/bow94-close-range.test.cjs",
-      "sha256": "59b898b0b657303477bb410a5d3a5b879003ea463019d74724ad8ff7ea3949a8"
-    },
-    {
-      "path": "tests/dark-arts-wave-public.test.cjs",
-      "sha256": "8d30177edc915d2044447a4825b617b21bfdb5743d76e6532db07c3077f5ab21"
-    },
-    {
-      "path": "tests/bow160-fixed.test.cjs",
-      "sha256": "9ffedc85b0db8bb32e8dd7b8301164012c91b4934feeb8e577cf8e45bedf0286"
-    },
-    {
-      "path": "tests/lbg160-fixed.test.cjs",
-      "sha256": "c6333672e1e83b1a83cab67b0e0ba4f7617b35d422c4cae4d3a7d63483537817"
-    },
-    {
-      "path": "tests/hbg160-fixed.test.cjs",
-      "sha256": "eae1f096324c878984bd8ac7aa0f1c3e748c7384a2088496c8bf9a6a74129afe"
-    },
-    {
-      "path": "tests/bladescale163-fixed.test.cjs",
-      "sha256": "47a61368e9dfecb107d4596b91d431f32936dd2865f683dde6218773eca714ed"
-    },
-    {
-      "path": "tests/draw-opening-fixed.test.cjs",
-      "sha256": "395f85a644c382195ed9ba400275e3df8c064ed9e7c340aefe70d1f9b613c187"
-    },
-    {
-      "path": "tools/integration-regression/ci-partition.cjs",
-      "sha256": "47f9cebe265190ea178103e968045c24fe9dad8c4e6da28dadf42fd27c22d0bb"
-    },
-    {
-      "path": "tests/integration-ci-partition.test.cjs",
-      "sha256": "b7adce2283b7f5fa73fb9f029da81cdbb1c933ddc5691ece7dff92efebe2d866"
-    },
-    {
-      "path": "tests/powerstone164-exclusion.test.cjs",
-      "sha256": "e9914c60bb8c57a3b9f320e1910e431bc7698e87410e171c5b328b422a1cb313"
-    },
-    {
-      "path": "tests/wet39-standard-normal.test.cjs",
-      "sha256": "32a8b61c268392e9ab0e1b859cce584541471aa3367ea99205e780e399eae197"
-    },
-    {
-      "path": "tests/charge-master-standard-noncharged-boundary.test.cjs",
-      "sha256": "97ed0d008e123fd3b3ecd4316d3c124f30e7151c76a231e63344601a8447fcd0"
-    },
-    {
-      "path": "tests/charge-master-standard-noncharged-public.test.cjs",
-      "sha256": "707e0776f3ab6032f20e2e213a248733a55e7ec2a9473744634ffd5b5dfa46ae"
-    },
-    {
-      "path": "tests/fixtures/charge24-standard-records.json",
-      "sha256": "5773b1d10b52ddfad6c84b9bc0ac8b2fa925849683ab8e5166eb1e658b2a4cff"
-    },
-    {
-      "path": "tests/charge-master-fixed-bowgun.test.cjs",
-      "sha256": "8d9c5c26e2693efe80eebc4426a81ba3314e897bb408283bb94a01d02e294ded"
-    },
-    {
-      "path": "tests/fixtures/charge24-bowgun-inputs.json",
-      "sha256": "071887082ddaac4faa145e6bf6460196a16a1e1a0dd392ac62e80428a3c3ce60"
-    },
-    {
-      "path": "tests/charge-master-sa-standard.test.cjs",
-      "sha256": "3a1857bc4271f8946946046320e6f7331e136e109f45626d8ab4878eb9ed9175"
-    },
-    {
-      "path": "tests/fixtures/charge24-sa-input.json",
-      "sha256": "ddd790cec12356862838c5da87ced88d63c837cba931d80093840c58b6429a04"
-    },
-    {
-      "path": "spec/CURRENT_CONTRACTS.md",
-      "sha256": "4c5a9daaf3def4565d1f3910644053be049bee77980ffbfd3bddda4bd6f683da"
-    },
-    {
-      "path": "tests/charge-master-hh-standard.test.cjs",
-      "sha256": "52358724f9e5c5e4617d76166e86cdc101da25e4c60158f5db834d52a2a6fd09"
-    },
-    {
-      "path": "tests/fixtures/charge24-hh-input.json",
-      "sha256": "b523153e400ac87579f2e63a31f34e6818047916d73493155cad964b50386607"
-    },
-    {
-      "path": "tests/charge-master-gl-owner-scope.test.cjs",
-      "sha256": "ee3d7eda82908051ae57d17afea2d38ffd0d345773a069d63ac737d0458b66b7"
-    },
-    {
-      "path": "tests/fixtures/charge24-gl-input.json",
-      "sha256": "f9e0cbb6dc28823eb994b3f88522f3044282fa7c83d9dc0cc1f4397fd3e4b8d5"
-    },
-    {
-      "path": "tests/gl1084-id163-continuation.test.cjs",
-      "sha256": "aff7c5a4d05c3ac65d56dab71c492a8c5255067fcb45efdcaf0eea302ed3c166"
-    },
-    {
-      "path": "tests/fixtures/gl1084-id163-inputs.json",
-      "sha256": "71199d393243381931d9ecc860d592bed6cf31bd861edeb904952905bbfefcf1"
-    },
-    {
-      "path": "tests/gl-normal-high-candidate.test.cjs",
-      "sha256": "1884deebdfaa5facd1dc8117be07fb176663632846088a0034e444aeedb28ddf"
-    },
-    {
-      "path": "tests/gl162-armor-only.test.cjs",
-      "sha256": "b8eac889b1d4c061c0f1ad007a5df07e5e95745b599a733371705108f2549ff0"
-    },
-    {
-      "path": "tests/fixtures/gl162-armor-only.json",
-      "sha256": "fb1bf01f208b3aaf29b6a31b90f99335bb62ae6f014a8ff6f77fb8a22aaecf84"
-    },
-    {
-      "path": "tests/gl162-weapon-piece.test.cjs",
-      "sha256": "fb989ce28349a6d4e71782020e602c78001dcf24d44720e44ceb700ba417150a"
-    },
-    {
-      "path": "tests/charge-master-cb-fixed-visibility.test.cjs",
-      "sha256": "2f334c0496558719389c5d9bb48d8faeb5f7c7416a56bc0c243c7747a3203dbe"
-    },
-    {
-      "path": "tests/lbg-rapid-elemental-nontarget.test.cjs",
-      "sha256": "0cf3545405b86ba98a338d034bb04290a2d493b4bdddee08c8c73fe113522134"
-    },
-    {
-      "path": "tests/fixtures/lbg-elemental-nontarget-input.json",
-      "sha256": "14530bccd6345ec38f5e679eda02178bf80a208c1b9167d4f742d1497b7fae89"
-    },
-    {
-      "path": "tests/dark168-source-scope.test.cjs",
-      "sha256": "dc9fc7613acfb7efd943601e513ad421a417e624751469ab7e9633b4d0ab36f3"
-    },
-    {
-      "path": "tests/fixtures/dark168-source-inputs.json",
-      "sha256": "7fa72f401d8b0329a73dd74ce03994b5a328d710488cce740c915d2e3733201d"
-    },
-    {
-      "path": "docs/specs/dark168-source-scope.md",
-      "sha256": "c987dc90ec21aa7deb019fcba1292a0d944ec6dcde2616054a0069e8b196b695"
-    },
-    {
-      "path": "tests/id159-artia-source-scope.test.cjs",
-      "sha256": "7f2825b3bee661b1e10089a595bf33b57de0215381a22521430021e8a55f3f25"
-    },
-    {
-      "path": "tests/fixtures/id159-artia-source-inputs.json",
-      "sha256": "d4727a137f130814c637560b470bf8dceccc66edaac52382b20ba389aee66889"
-    },
-    {
-      "path": "tests/resonance173-standard.test.cjs",
-      "sha256": "f4ce317a0cc2d11c4d98c430d39f969fdc55ea28662c2d1081627b6034ce4feb"
-    },
-    {
-      "path": "tests/fixtures/resonance173-inputs.json",
-      "sha256": "64947f0457913f917cfeb1363ff541ce0c24781b9a9cd9646e257a9a562e9714"
     }
   ],
   "tests": [
@@ -916,9 +920,10 @@
     "tests/lbg-rapid-elemental-nontarget.test.cjs",
     "tests/dark168-source-scope.test.cjs",
     "tests/id159-artia-source-scope.test.cjs",
-    "tests/resonance173-standard.test.cjs"
+    "tests/resonance173-standard.test.cjs",
+    "tests/draw-bowguns-fixed-no-event.test.cjs"
   ],
-  "expectedTests": 1817,
+  "expectedTests": 1818,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
