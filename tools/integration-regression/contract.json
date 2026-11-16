@@ -122,7 +122,7 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "25888b5cd10deeb9daa3e0a4391d905974cdbd67d61008e1817302ea86e10b9e"
+      "sha256": "7c45261f13c932737da830b4d6001532d9fba28961dd7e6a37243b513b911c89"
     },
     {
       "path": "index.html",
@@ -835,6 +835,22 @@
     {
       "path": "docs/specs/dark168-source-scope.md",
       "sha256": "c987dc90ec21aa7deb019fcba1292a0d944ec6dcde2616054a0069e8b196b695"
+    },
+    {
+      "path": "tests/id159-artia-source-scope.test.cjs",
+      "sha256": "7f2825b3bee661b1e10089a595bf33b57de0215381a22521430021e8a55f3f25"
+    },
+    {
+      "path": "tests/fixtures/id159-artia-source-inputs.json",
+      "sha256": "d4727a137f130814c637560b470bf8dceccc66edaac52382b20ba389aee66889"
+    },
+    {
+      "path": "tests/resonance173-standard.test.cjs",
+      "sha256": "f4ce317a0cc2d11c4d98c430d39f969fdc55ea28662c2d1081627b6034ce4feb"
+    },
+    {
+      "path": "tests/fixtures/resonance173-inputs.json",
+      "sha256": "64947f0457913f917cfeb1363ff541ce0c24781b9a9cd9646e257a9a562e9714"
     }
   ],
   "tests": [
@@ -898,9 +914,11 @@
     "tests/gl162-weapon-piece.test.cjs",
     "tests/charge-master-cb-fixed-visibility.test.cjs",
     "tests/lbg-rapid-elemental-nontarget.test.cjs",
-    "tests/dark168-source-scope.test.cjs"
+    "tests/dark168-source-scope.test.cjs",
+    "tests/id159-artia-source-scope.test.cjs",
+    "tests/resonance173-standard.test.cjs"
   ],
-  "expectedTests": 1815,
+  "expectedTests": 1817,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",

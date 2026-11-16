@@ -232,7 +232,7 @@
   };
   const fixedEntryBonus=e=>{
    if(!entryGroupPlan||!Array.isArray(entryGroupPlan.unresolvedEffects)||entryGroupPlan.unresolvedEffects.length||activeBonusEffects.filter(x=>x.bonusSkillId===e.bonusSkillId).length!==1)return false;
-   if(ownerExcludedBonus(e)||gogNormalAmmoBonus(e))return true;
+   if(ownerExcludedBonus(e)||resonanceStandardExcluded(e)||gogNormalAmmoBonus(e))return true;
    const nonDamage=entryGroupPlan.nonDamageEffects?.filter(x=>sameActivation(x,e))||[];
    if(validatedEntryBonuses.includes(e)&&nonDamage.length===1&&!(entryGroupPlan.applied||[]).some(x=>x.skillId===e.bonusSkillId||x.skill===e.name))return true;
    const policy=root.MHSkillExtraDamagePolicies?.[e.bonusSkillId],applied=(entryGroupPlan.applied||[]).filter(x=>x.skillId===e.bonusSkillId);
@@ -287,8 +287,34 @@
   // The aggregate may legitimately contain the weapon's skill at a higher
   // total rank. Validate duplicates within each source, not across these views.
   const equippedSkills=[...rawSkills,...buildSkills.filter(x=>!rawSkills.some(y=>String(y.skillId)===String(x.skillId)&&y.level===x.level))];
-  const excludedCalculationPolicy=x=>weapon.kind==='great-sword'&&Number(x.skillId)===168&&['暗黒','Dark'].includes(x.name)&&typeof root.MHDarkSourceWeaponApplicable==='function'&&!root.MHDarkSourceWeaponApplicable(weapon)?{reason:'DARK_SOURCE_WEAPON_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:root.MHIsOwnerExcludedCalculationSkill?.({...x,weaponKind:weapon.kind})?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.({...x,weaponKind:weapon.kind},conditions)?root.MHStandardCalculationExclusion:null;
-  const excludedCalculationSkills=equippedSkills.filter(x=>excludedCalculationPolicy(x)).map(x=>({skillId:x.skillId,name:x.name,level:x.level,reason:excludedCalculationPolicy(x).reason,status:excludedCalculationPolicy(x).status}));
+  // Owner ID159 source policy: only the fixed Artia comparison is classified here.
+  // Native 1085/1086 and explicit/custom routes retain their existing technique gates.
+  const cornpopperArtiaStandard=weapon.kind==='gunlance'&&Number(weapon.id)===1151&&weapon.name==='前兆のプロフェネシス'&&conditions.standardEvaluation===true&&!(weapon.skills||[]).some(x=>Number(x.skill?.id??x.skillId)===159)&&JSON.stringify(techniqueIds)===JSON.stringify(['GL_SLAM','GL_SWEEP','GL_WYRMSTAKE_FULL_BURST','GL_MULTI_WYRMSTAKE_FULL_BURST']);
+  // Owner excludes Resonance in the fixed solo comparison. Preserve its source
+  // and self-state metadata (ID174 can still consume it in other scenarios).
+  const resonanceStandardExcluded=e=>{
+   const routes={gunlance:{id:1151,name:'前兆のプロフェネシス',ids:['GL_SLAM','GL_SWEEP','GL_WYRMSTAKE_FULL_BURST','GL_MULTI_WYRMSTAKE_FULL_BURST']},'light-bowgun':{id:1169,name:'荊冠のデストレーター',ids:['LBG_NORMAL_RAPID_2']}},route=routes[weapon.kind];
+   if(!route||Number(weapon.id)!==route.id||weapon.name!==route.name||conditions.standardEvaluation!==true||conditions.standardSoloPolicy!==true||conditions.selfSkillState?.shared?.omega!=='INACTIVE'||JSON.stringify(techniqueIds)!==JSON.stringify(route.ids))return false;
+   if(weapon.kind==='gunlance'&&!(weapon.shell==='normal'&&weapon.shellLevel===3&&gunlanceState?.shellingType==='NORMAL'&&gunlanceState?.shellingPower==='HIGH'))return false;
+   if(weapon.kind==='light-bowgun'&&!(lightBowgunState?.ammoType==='NORMAL'&&lightBowgunState?.shotMode==='RAPID'))return false;
+   if(e?.bonusSkillId!==173||!sourceBonusActivation({name:e.name,level:1})||activeBonusEffects.filter(x=>x.bonusSkillId===173).length!==1)return false;
+   const armor=stats.armorThunderResistanceInput,slots=['head','chest','arms','waist','legs'],db=root.__getBetaDB?.();
+   if(!Array.isArray(db?.armor)||typeof root.armorBonusSkillObjects!=='function'||typeof root.bonusSkillObjects!=='function'||typeof root.groupSetData!=='function'||armor?.status!=='ARMOR_BASE_ONLY'||!Array.isArray(armor.rows)||armor.rows.length!==5||!Array.isArray(armor.missing)||armor.missing.length)return false;
+   let count=0,total=0;
+   for(const slot of slots){const rows=armor.rows.filter(x=>x.slot===slot),r=rows[0];if(rows.length!==1||typeof r.equipped!=='boolean')return false;if(!r.equipped){if(r.id!=null||r.value!==0)return false;continue;}
+    const records=db.armor.filter(a=>a.id===r.id),a=records[0];if(records.length!==1||a.kind!==slot||r.sourceUrl!=='https://wilds.mhdb.io/ja/armor/'+a.id||!Number.isFinite(r.value)||r.value!==a.resistances?.thunder)return false;
+    total+=r.value;const own=root.armorBonusSkillObjects(a,'series'),fallback=root.bonusSkillObjects(root.groupSetData(a)||a.armorSet,'series');if([...own,...fallback].some(x=>x.id===173&&x.name==='オメガレゾナンス'))count++;
+   }
+   if(e.count!==count||armor.armorBase!==total)return false;
+   const group=stats.conditionalConditionPlan?.groupPlan,self=stats.conditionalConditionPlan?.selfStatePlan,rows=group?.applied?.filter(x=>x.skillId===173)||[],a=rows[0];
+   if(rows.length!==1||a.skill!==e.name||a.parent!=='オメガレゾナンス'||a.attackAdd!==0||a.attackMultiplier!==1||a.bonusSource!==true||a.appliesToNormal!==true||a.condition!=='EXPLICIT_SELF_STATE'||a.numericOrigin!=='OWNER_APPROVED_PROVISIONAL'||!Array.isArray(self?.ids)||self.ids.filter(id=>id===173).length!==1||typeof root.MHWAdoptedSelfStatePlan!=='function')return false;
+   const expected=root.MHWAdoptedSelfStatePlan(stats,Object.fromEntries(skills),conditions);
+   if([...self.pending||[],...expected.pending||[]].some(x=>/オメガレゾナンス|RESONANCE|OMEGA/.test(x)))return false;
+   return ['normal','maximum'].every(ch=>{const rows=self[ch]?.filter(x=>x.skillId===173)||[],check=expected[ch]?.filter(x=>x.skillId===173)||[];return rows.length===1&&check.length===1&&JSON.stringify(rows[0])===JSON.stringify(check[0])&&rows[0].attackAdd===0&&rows[0].affinityAdd===0&&rows[0].elementAdd===0;});
+  };
+  const resonanceExcludedEntry=x=>x.level===1&&activeBonusEffects.some(e=>e.name===x.name&&resonanceStandardExcluded(e));
+  const excludedCalculationPolicy=x=>cornpopperArtiaStandard&&Number(x.skillId)===159&&x.name==='焼き砲モロコシ'&&x.level===1?{reason:'CORNPOPPER_ARTIA_STANDARD_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:resonanceExcludedEntry(x)?{reason:'RESONANCE_FIXED_STANDARD_OWNER_EXCLUDED',status:'NOT_APPLICABLE'}:weapon.kind==='great-sword'&&Number(x.skillId)===168&&['暗黒','Dark'].includes(x.name)&&typeof root.MHDarkSourceWeaponApplicable==='function'&&!root.MHDarkSourceWeaponApplicable(weapon)?{reason:'DARK_SOURCE_WEAPON_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:root.MHIsOwnerExcludedCalculationSkill?.({...x,weaponKind:weapon.kind})?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.({...x,weaponKind:weapon.kind},conditions)?root.MHStandardCalculationExclusion:null;
+  const excludedCalculationSkills=equippedSkills.filter(x=>excludedCalculationPolicy(x)).map(x=>({skillId:resonanceExcludedEntry(x)?173:x.skillId,name:x.name,level:x.level,reason:excludedCalculationPolicy(x).reason,status:excludedCalculationPolicy(x).status}));
   for(const e of activeBonusEffects.filter(ownerExcludedBonus))excludedCalculationSkills.push({skillId:e.bonusSkillId,name:e.name,level:e.level,reason:entryGroupPlan.applied.find(x=>x.skillId===e.bonusSkillId).reason,status:'OWNER_EXCLUDED_CURRENT_COMPARISON'});
   // Source-confirmed STANDARD starts; later three-second coverage is not inferred.
   const drawSequences={
