@@ -9347,6 +9347,24 @@ function ignoredSkillEffectsDisplay(d){
   const ignored=[...(d?.ignoredSkillEffects||[]),...(d?.unappliedEffects||[])];if(!ignored.length)return '';
   return '［一部スキル未反映：'+ignored.map(x=>esc(x.name)+' Lv'+esc(x.rankLevel??x.level)+' (ID '+esc(x.skillId)+')：'+esc(x.reason==='RAPID_ALL_FIVE_HIT_EFFECT_NOT_VERIFIED'?'速射各命中への適用が未確認のため未反映':x.reason)+(x.status==='PARTIALLY_APPLIED_UNSUPPORTED_COMPONENTS'?'（対応済み本体会心は保持、未対応の砲撃への効果のみ未反映）':'')).join(' / ')+'。この条件・残したスキルとの組合せで計算できない効果と相互作用を含みません。完全な火力値ではありません］';
 }
+// Project only identical fixed R/H omissions into the maximum summary. This
+// does not apply draw skills or alter the independently evaluated routes.
+function projectFixedCbDrawOmissions(evaluated){
+ const maximum=evaluated.channels?.maximum, routes=['R','H'].map(key=>evaluated.routes?.[key]?.channels?.maximum);
+ const complete=x=>x?.execution?.status==='complete'&&x?.metrics?.comboTotalDamage?.status==='available'&&Number.isFinite(x.metrics.comboTotalDamage.value);
+ if(!complete(maximum)||!routes.every(complete))return evaluated;
+ const ignored=maximum.diagnostics?.ignoredSkillEffects||[], additions=[];
+ for(const [skillId,name] of [[8,'抜刀術【力】'],[103,'抜刀術【技】']]){
+  const matches=routes.map(route=>(route.diagnostics?.ignoredSkillEffects||[]).filter(x=>x.skillId===skillId));
+  if(matches.some(rows=>rows.length!==1)||ignored.some(x=>x.skillId===skillId))continue;
+  const [a,b]=matches.map(rows=>rows[0]);
+  if(a.name!==name||a.status!=='IGNORED_UNSUPPORTED_EFFECT'||a.reason!=='DRAW_STANDARD_OPENING_ELIGIBILITY_PENDING'||!Number.isInteger(a.level)||a.level<1||a.level>3)continue;
+  if(!['skillId','name','level','rankLevel','sourceRef','status','reason'].every(key=>a[key]===b[key]))continue;
+  additions.push({skillId,name,level:a.level,status:a.status,reason:a.reason,channel:'maximum'});
+ }
+ if(!additions.length)return evaluated;
+ return {...evaluated,channels:{...evaluated.channels,maximum:{...maximum,diagnostics:{...maximum.diagnostics,calculationCompleteness:'PARTIAL_SKILL_EFFECTS',ignoredSkillEffects:[...ignored,...additions]}}}};
+}
 function evaluateConsumerCombat({kind,moves=[],conditions={},target,plan=consumerEvaluationPlan(kind,moves,conditions,target)}){
   const {conditions:resolvedConditions,...evidence}=plan;
   evidence.target={monster:target?.monster||null,part:target?.part||null};
@@ -9372,7 +9390,8 @@ function evaluateConsumerCombat({kind,moves=[],conditions={},target,plan=consume
     ...(plan.selection==='STANDARD'&&resolvedConditions.standardBowgunSequence?(kind==='light-bowgun'?(resolvedConditions.standardBowgunSequence.shotMode==='RAPID'?{rapidAmmoSequence:'LBG_FIVE_ROUNDS_25_HITS'}:{normalAmmoSequence:'LBG_NORMAL_FIVE_SHOT_NO_RELOAD'}):{normalAmmoSequence:'NORMAL_TEN_SHOT_NO_RELOAD'}):{}),
     retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'};
     const original=adapter.evaluateCurrent(input);
-    const evaluated=continueConsumerSkillEffects(input,original);
+    let evaluated=continueConsumerSkillEffects(input,original);
+    if(kind==='charge-blade'&&plan.selection==='STANDARD'&&input.chargeBladeState?.mixMode==='R_H_INDEPENDENT'&&evaluated.scope==='CB_INDEPENDENT_R_H_SUM')evaluated=projectFixedCbDrawOmissions(evaluated);
     // The validated fixed R/H routes do not yet resolve ID24 for elemental
     // attacks in either channel. Reuse the source-validated omission from
     // recovery; this is diagnostic only and does not change either route.

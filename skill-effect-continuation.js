@@ -58,7 +58,13 @@
    }
    const ignoredSkillEffects=pending.map(entry=>({...entry,channel:ch,status:entry===partiallyRetained?'PARTIALLY_APPLIED_UNSUPPORTED_COMPONENTS':'IGNORED_UNSUPPORTED_EFFECT',reason:failed.get(entry.name),reasonOrigin:'TRIAL_COMBINATION_NOT_SINGLE_SKILL_CAUSATION',scope:entry===partiallyRetained?'BODY_AFFINITY_RETAINED_ONLY_UNSUPPORTED_SHELL_INTERACTION_OMITTED':'CURRENT_TECHNIQUE_CONDITIONS_AND_RETAINED_SKILL_COMBINATION',...(entry===partiallyRetained?{componentOrigins:recovered.diagnostics.componentSkillContinuation.origins}:{}),retainedSkills:active.map(x=>({skillId:x.skillId,name:x.name,level:x.level})),liveGameVerification:'NOT_VERIFIED'}));
    const skillContinuation={policy:'ADOPTED_BODY_FIRST_THEN_SOURCE_ID_WITH_DEPENDENCY_RETRY',originalReason:reason(original,ch),evaluations,budget,completeSkillResult:false,interactionWarning:'Omitted skills and their interactions are not included. The selected subset is not guaranteed globally maximal.'};
-   const annotate=c=>({...c,diagnostics:{...c.diagnostics,calculationCompleteness:'PARTIAL_SKILL_EFFECTS',ignoredSkillEffects,skillContinuation}});
+   // A completed fixed CB trial can still omit its draw opening. Keep those
+   // route-local omissions when recovering an unrelated skill (e.g. ID24).
+   const annotate=c=>{
+    const retainedDraw=ch==='maximum'&&componentContext?.weaponKind==='charge-blade'&&accepted.scope==='CB_INDEPENDENT_R_H_SUM'
+      ?(c.diagnostics?.ignoredSkillEffects||[]).filter(x=>((x.skillId===8&&x.name==='抜刀術【力】')||(x.skillId===103&&x.name==='抜刀術【技】'))&&Number.isInteger(x.level)&&x.level>=1&&x.level<=3&&x.status==='IGNORED_UNSUPPORTED_EFFECT'&&x.reason==='DRAW_STANDARD_OPENING_ELIGIBILITY_PENDING'&&!ignoredSkillEffects.some(y=>y.skillId===x.skillId)):[];
+    return {...c,diagnostics:{...c.diagnostics,calculationCompleteness:'PARTIAL_SKILL_EFFECTS',ignoredSkillEffects:[...ignoredSkillEffects,...retainedDraw],skillContinuation}};
+   };
    // A recovered channel is complete only for its disclosed retained subset.
    // Never carry a former global/route failure forward, or copy an unannotated
    // other channel out of a trial. Already available original channels stay exact.
