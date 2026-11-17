@@ -8015,6 +8015,11 @@ function darkArtsFixedHhSource(st,cond={},weapon=null,total={}){
  return source?.kind==='hunting-horn'&&source.id===1160&&darkFixedArtiaSourceNotApplicable(source,cond)&&cond.mounted===false&&h?.model==='HH_NORMAL_MELODY_PROVISIONAL'&&JSON.stringify(h.melodies)==='["SELF_IMPROVEMENT"]'&&h.echoBubbles===1&&h.selfImprovementLevel===0&&h.attackMelody===null&&h.attackMelodyLevel===0&&st.elementType==='dragon'&&st.elementComponents?.weaponBase===380&&st.elementComponents.normalMultiplier===1&&st.elementComponents.normalFlat===0&&st.attackComponents?.weaponBase===215&&Object.entries(total).every(([name,level])=>!Number(level)||['渾身','逆恨み','納刀術','力の解放','ダークアーツ'].includes(name));
 }
 window.MHDarkArtsFixedHhSource=darkArtsFixedHhSource;
+function darkArtsFixedGlSource(st,cond={},weapon=null,total={}){
+ const source=weapon||DB.weapons.find(w=>w.id===Number(st.weaponId)),g=cond.gunlanceState;
+ return cond.darkArtsGlContinuationExcluded!==true&&source?.kind==='gunlance'&&source.id===1151&&darkFixedArtiaSourceNotApplicable(source,cond)&&cond.mounted===false&&g?.shellingType==='NORMAL'&&g.shellingPower==='HIGH'&&g.loadedRounds===6&&g.chargedRounds===null&&g.stakeLoaded===true&&st.elementType==='dragon'&&st.elementComponents?.weaponBase===440&&st.elementComponents.normalMultiplier===1&&st.elementComponents.normalFlat===0&&st.attackComponents?.weaponBase===215&&Object.entries(total).every(([name,level])=>!Number(level)||['渾身','逆恨み','納刀術','力の解放','ダークアーツ'].includes(name)||(['攻撃','砲術'].includes(name)&&Number(level)===3));
+}
+window.MHDarkArtsFixedGlSource=darkArtsFixedGlSource;
 const STANDARD_SERIES_ACTIVATION_FLATS=techniqueDbDeepFreeze({
  62:{parent:'凍峰竜の反逆',prefix:'束縛反攻',adds:[0,25,50],condition:'BIND_RELEASE_OR_CLASH_PREACTIVATED',status:'OWNER_APPROVED_PROVISIONAL'},
  107:{parent:'雪獅子の闘志',prefix:'ウォークライ',adds:[0,3,6],condition:'SELF_WAR_CRY_PREACTIVATED',status:'OWNER_APPROVED_PROVISIONAL'},
@@ -8143,7 +8148,7 @@ function standardGroupPowerPlan(st={},gutsState='BEFORE',total={},kind=null,cond
       continue;
     }
     if(e?.name==='ダークアーツ'){
-      if(e.bonusName!=='暗黒騎士の証'||e.source!=='series'||e.required!==2||e.rankLevel!==1||e.bonusSkillId!==172||!Number.isInteger(e.count)||e.count<2||e.count>=4||seen.has(e.name)||!(STANDARD_DARK_ARTS_BODY_SOURCE.supportedKinds.includes(kind)||(kind==='insect-glaive'&&darkArtsFixedIgSource(st,cond))||(kind==='bow'&&darkArtsFixedBowSource(st,cond))||(kind==='hunting-horn'&&darkArtsFixedHhSource(st,cond,null,total)))){unresolved.push('ダークアーツ');continue;}
+      if(e.bonusName!=='暗黒騎士の証'||e.source!=='series'||e.required!==2||e.rankLevel!==1||e.bonusSkillId!==172||!Number.isInteger(e.count)||e.count<2||e.count>=4||seen.has(e.name)||!(STANDARD_DARK_ARTS_BODY_SOURCE.supportedKinds.includes(kind)||(kind==='insect-glaive'&&darkArtsFixedIgSource(st,cond))||(kind==='bow'&&darkArtsFixedBowSource(st,cond))||(kind==='hunting-horn'&&darkArtsFixedHhSource(st,cond,null,total))||(kind==='gunlance'&&darkArtsFixedGlSource(st,cond,null,total)))){unresolved.push('ダークアーツ');continue;}
       seen.add(e.name);
       applied.push({skill:e.name,darkArtsActivation:{...e},attackAdd:0,attackMultiplier:1,elementMultiplier:STANDARD_DARK_ARTS_BODY_SOURCE.highMultiplierKinds.includes(kind)?STANDARD_DARK_ARTS_BODY_SOURCE.highMultiplier:STANDARD_DARK_ARTS_BODY_SOURCE.otherMultiplier,condition:'RECOVERABLE_DAMAGE',exclusiveGroup:'HEALTH',bonusSource:true,appliesToNormal:false,evidenceRef:STANDARD_DARK_ARTS_BODY_SOURCE.url,numericOrigin:STANDARD_DARK_ARTS_BODY_SOURCE.status});
       continue;
@@ -9332,6 +9337,7 @@ function continueConsumerSkillEffects(input,original){
     const entry={skillId:record.id,name,level,rankLevel,weaponKind:input.weapon.kind,weaponId:input.weapon.id,sourceKind:record.kind,preserveAdoptedBody:window.MHSkillExtraDamagePolicies?.[record.id]?.bodyEffect===true,sourceRef:'MHDB_SKILL:'+record.id,sourceRetrievedAt:input.retrievedAt,sourceGameVersion:'NOT_VERIFIED'};
     if(window.MHIsOwnerExcludedCalculationSkill?.(entry)||window.MHIsStandardExcludedCalculationSkill?.(entry,input.conditions))protectedNames.add(name);else candidates.push(entry);
   }
+  const continuationConditions=input.weapon.kind==='gunlance'&&bonuses.some(e=>e.bonusSkillId===172)&&!darkArtsFixedGlSource(input.stats,input.conditions,input.weapon,Object.fromEntries(input.skills))?{...input.conditions,darkArtsGlContinuationExcluded:true}:input.conditions;
   return api.continueSkillEffects({original,candidates,componentContext:input.conditions?.standardEvaluation===true?{weaponKind:input.weapon.kind,techniqueIds:input.techniqueIds}:null,evaluate(active){
     const names=new Set([...protectedNames,...active.map(x=>x.name)]),skills=input.skills.filter(([name])=>names.has(name)),total=Object.fromEntries(skills);
     const activeBonusEffects=bonuses.filter(x=>names.has(x.name)),calculationSkillIds=[...protectedNames].map(name=>source.find(s=>s.name===name)?.id).concat(active.map(x=>x.skillId));
@@ -9347,9 +9353,9 @@ function continueConsumerSkillEffects(input,original){
     stats.activeBonusEffects=activeBonusEffects;
     stats.thunderResistanceInput=equipmentThunderResistanceInput(base.armorThunderResistanceInput,total,activeBonusEffects,input.conditions,'thunder',calculationSkillIds);
     stats.waterResistanceInput=equipmentThunderResistanceInput(base.armorWaterResistanceInput,total,activeBonusEffects,input.conditions,'water',calculationSkillIds);
-    stats.conditionalConditionPlan=standardPowerConditionPlan(stats,total,input.weapon.kind,input.conditions,input.weapon);
+    stats.conditionalConditionPlan=standardPowerConditionPlan(stats,total,input.weapon.kind,continuationConditions,input.weapon);
     const weapon={...input.weapon,skills:input.weapon.skills.filter(x=>names.has(x.skill?.name||x.name))};
-    return window.MHWRealOneHitBrowserAdapter.evaluateCurrent({...input,weapon,stats,skills,conditionalConditionPlan:stats.conditionalConditionPlan});
+    return window.MHWRealOneHitBrowserAdapter.evaluateCurrent({...input,weapon,stats,skills,conditions:continuationConditions,conditionalConditionPlan:stats.conditionalConditionPlan});
   }});
 }
 function bladescaleHoningPremiseDisplay(pipeline){
