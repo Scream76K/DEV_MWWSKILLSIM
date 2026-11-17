@@ -1757,18 +1757,57 @@
    });
   };
   const fixedElementalLsZero=conditions.standardEvaluation===true&&fixedElementalLsZeroBody();
+  // Native-element fixed melee profiles share a zero-add proof, not a
+  // general wrong-element exemption. Water and mixed/reference routes stay out.
+  const fixedElementalBodyThunderZero=(()=>{
+   const profiles={
+    'great-sword':[1148,87,480,['GS_CHARGED_SLASH_3','GS_STRONG_CHARGED_SLASH_3','GS_STRONG_WIDE_SLASH_3']],
+    'sword-shield':[1180,95,280,['SNS_DOWNWARD_SLASH','SNS_SIDE_SLASH','SNS_HORIZONTAL_SLASH','SNS_RETURN_SLASH']],
+    'dual-blades':[1145,90,270,['DB_DEMON_DANCE_I','DB_DEMON_DANCE_II','DB_DEMON_DANCE_III']],
+    hammer:[1154,86,350,['HAM_SIDE_SWING','HAM_VERTICAL_II','HAM_UPPERCUT','HAM_MIGHTY_CHARGE_UPPERCUT']],
+    lance:[1166,85,300,['LAN_MID_THRUST_I','LAN_MID_THRUST_II','LAN_MID_THRUST_III','LAN_TRIPLE_THRUST']]
+   },profile=profiles[weapon.kind];
+   if(!profile||weapon.id!==profile[0]||weapon.gameId!==profile[1]||conditions.standardEvaluation!==true||allSkills.length!==1||Number(allSkills[0].skillId)!==165||
+    weapon.phial!=null||target?.monster!=='training-room'||target?.part!=='training-front'||
+    !['dragon','water'].includes(elementType)||!emptyResistance(stats.thunderResistanceInput))return false;
+   const db=root.__getBetaDB?.();
+   if(typeof root.buildSnapshot!=='function'||typeof root.realPipelineWeapon!=='function'||!Array.isArray(db?.weapons))return false;
+   try{
+    const snapshot=root.buildSnapshot(),artia=snapshot?.artia,records=db.weapons.filter(w=>w.id===profile[0]);
+    if(String(snapshot?.weaponId)!==String(profile[0])||!snapshot.armor||Object.values(snapshot.armor).some(Boolean)||artia?.seriesSkill!==''||artia.groupSkill!==''||
+     artia.element!==elementType||records.length!==1||JSON.stringify(weapon)!==JSON.stringify(root.realPipelineWeapon(records[0])))return false;
+   }catch(_){return false;}
+   const ev=weapon.artiaCalculationEvidence,plan=stats.conditionalConditionPlan;
+   if(ev?.status!=='OWNER_APPROVED_PROVISIONAL'||ev.sourceId!==profile[0]||ev.production!=='attack'||ev.mutationIncluded!==true||
+    ev.sameElementPartCount!==3||!Array.isArray(ev.parts)||ev.parts.length!==3||!ev.parts.every(x=>x==='attack')||
+    !Array.isArray(ev.restores)||ev.restores.length!==5||!ev.restores.every(x=>x==='none')||
+    weapon.damage?.raw!==215||weapon.affinity!==-10||weapon.skills.length!==0||weapon.specials.length!==1||
+    elementSpecial?.damage?.display!==profile[2]||elementSpecial.damage.raw!==profile[2]/10||
+    elementRawValue!==profile[2]||elementValue!==profile[2]||elementEntries.length!==0)return false;
+   const native=c=>c?.weaponBase===elementRawValue&&c.normalMultiplier===1&&c.normalFlat===0;
+   if(![stats,plan?.normal,plan?.maximum].every(x=>x?.element===elementValue&&x.elementType===elementType&&x.elementKnown===true&&x.typeKnown===true&&x.elementStatus==='KNOWN'&&native(x.elementComponents)&&Array.isArray(x.activeBonusEffects)&&x.activeBonusEffects.length===0)||
+    !native(plan?.maximumElementComponents)||plan.maximumElementComponents.conditionalFlat!==0)return false;
+   return resolvedTechniqueIds.length===profile[3].length&&resolvedTechniqueIds.every((id,i)=>{
+    if(id!==profile[3][i])return false;
+    const raw=techniqueDb?.get?.(techniqueKind,id),canonical=root.TechniqueDBEngine?.get?.(techniqueKind,id),t=techniques[id],normal=STANDARD_NORMAL_HIT_CONTRACT[id];
+    if(!raw||!canonical||!Object.isFrozen(canonical)||JSON.stringify(raw)!==JSON.stringify(canonical))return false;
+    const expected=normal&&!Array.isArray(raw.specialComponents)?{...raw,stateRequirement:raw.stateRequirement&&Object.keys(raw.stateRequirement).length?raw.stateRequirement:(normal.stateRequirement||{}),hits:raw.hits.map(h=>({...h,damageType:h.damageType??normal.damageType,partModifier:h.partModifier??normal.partModifier,partModifierSource:h.partModifierSource??normal.source}))}:raw;
+    return JSON.stringify(t)===JSON.stringify(expected);
+   });
+  })();
+  const fixedElementalZero=fixedElementalLsZero||fixedElementalBodyThunderZero;
   const isolatedZeroConversion=(skillId,names,field)=>{
    const canonical=e=>Number(e.skillId)===skillId&&names.includes(e.name)&&e.level===1;
    const plan=stats.conditionalConditionPlan,cap=root.MHWElementCapRule;
    const noAppliedEffects=rows=>Array.isArray(rows)&&rows.length===0;
-   return conditions.standardEvaluation===true&&((zeroConversionKinds.includes(weapon.kind)&&weapon.phial==null)||(skillId===165&&zeroConversionSaBody()))&&(weapon.specials.length===0||(fixedElementalLsZero&&allSkills.every(canonical)))&&rawSkills.filter(canonical).length<=1&&buildSkills.filter(canonical).length===1&&[rawSkills,buildSkills].map(rows=>rows.filter(e=>!([133,152].includes(e.skillId)&&excludedCalculationPolicy(e)))).every(rows=>new Set(rows.map(e=>Number(e.skillId))).size===rows.length&&rows.every(e=>canonical(e)||zeroConversionPhysical(e)))&&
-    [stats,plan?.normal,plan?.maximum].every(x=>(fixedElementalLsZero||zeroBodyState(x))&&emptyResistance(x?.[field]))&&plan?.maximumElementComponents?.weaponBase===(fixedElementalLsZero?elementRawValue:0)&&plan.maximumElementComponents.normalFlat===0&&plan.maximumElementComponents.conditionalFlat===0&&Number.isFinite(plan.maximumElementComponents.normalMultiplier)&&plan.maximumElementComponents.normalMultiplier>0&&
+   return conditions.standardEvaluation===true&&((zeroConversionKinds.includes(weapon.kind)&&weapon.phial==null)||(skillId===165&&zeroConversionSaBody()))&&(weapon.specials.length===0||(fixedElementalZero&&allSkills.every(canonical)))&&rawSkills.filter(canonical).length<=1&&buildSkills.filter(canonical).length===1&&[rawSkills,buildSkills].map(rows=>rows.filter(e=>!([133,152].includes(e.skillId)&&excludedCalculationPolicy(e)))).every(rows=>new Set(rows.map(e=>Number(e.skillId))).size===rows.length&&rows.every(e=>canonical(e)||zeroConversionPhysical(e)))&&
+    [stats,plan?.normal,plan?.maximum].every(x=>(fixedElementalZero||zeroBodyState(x))&&emptyResistance(x?.[field]))&&plan?.maximumElementComponents?.weaponBase===(fixedElementalZero?elementRawValue:0)&&plan.maximumElementComponents.normalFlat===0&&plan.maximumElementComponents.conditionalFlat===0&&Number.isFinite(plan.maximumElementComponents.normalMultiplier)&&plan.maximumElementComponents.normalMultiplier>0&&
     noAppliedEffects(plan.applied)&&noAppliedEffects(plan.groupPlan?.applied)&&noAppliedEffects(plan.selfStatePlan?.normal)&&noAppliedEffects(plan.selfStatePlan?.maximum)&&[conditions,stats,plan.normal,plan.maximum,bowState,dualBladesState,longSwordState,lanceState].every(x=>x?.damageStatsState==null&&x?.stateStatsByState==null)&&conditions.combatBuffs&&['meal','charm','otherBuffs'].every(k=>conditions.combatBuffs[k]===null)&&
     cap?.status==='OWNER_APPROVED_PROVISIONAL'&&Number.isFinite(cap.flat)&&Number.isFinite(cap.multiplier)&&conversionComponentsSupported&&resolvedTechniqueIds.every(id=>{const t=techniques[id];return t?.techniqueId===id&&t.damageStatsState==null&&t.damageStateTransition==null&&t.hpOnlyProvisional==null&&!t.phialReference&&!t.saAwakened&&!t.hhModel&&(!t.referenceKind||(weapon.kind==='bow'&&t.referenceKind==='bow'))&&(t.specialComponents===undefined||(Array.isArray(t.specialComponents)&&t.specialComponents.length===0))&&(weapon.kind==='bow'||(Array.isArray(t.hits)&&t.hits.length>0))&&(t.hits||[]).every(h=>h.damageStatsState==null&&!h.componentSource&&Number.isFinite(h.mv)&&h.mv>=0&&Number.isFinite(h.elementModifier)&&h.elementModifier>=0);});
   };
   const waterZeroNoop=['long-sword','bow'].includes(weapon.kind)&&root.MHWaterConversionRule?.skillId===181&&root.MHWaterConversionRule.status==='OWNER_APPROVED_PROVISIONAL'&&root.MHWaterConversionRule.coefficients?.[weapon.kind]===4&&isolatedZeroConversion(181,['耐性変換【水】'],'waterResistanceInput');
   const thunderZeroNoop=isolatedZeroConversion(165,['耐性変換【雷】','Thunder Resistance Conversion'],'thunderResistanceInput');
-  const zeroConversionDiagnostic={reason:[...rawSkills,...buildSkills].some(zeroConversionPhysical)?'EMPTY_EQUIPMENT_ZERO_ADD_WITH_STATIC_PHYSICAL_SKILLS':'ISOLATED_EMPTY_EQUIPMENT_ZERO_ADD',scope:fixedElementalLsZero?'EXACT_LS1172_RED_BLADE_NATIVE_ELEMENT_ZERO_RESISTANCE':'KNOWN_COEFFICIENT_ZERO_RESISTANCE_NORMAL_AND_MAXIMUM_NO_PRODUCERS',verificationStatus:'NOT_GAME_VERIFIED'};
+  const zeroConversionDiagnostic={reason:[...rawSkills,...buildSkills].some(zeroConversionPhysical)?'EMPTY_EQUIPMENT_ZERO_ADD_WITH_STATIC_PHYSICAL_SKILLS':'ISOLATED_EMPTY_EQUIPMENT_ZERO_ADD',scope:fixedElementalLsZero?'EXACT_LS1172_RED_BLADE_NATIVE_ELEMENT_ZERO_RESISTANCE':fixedElementalBodyThunderZero?'EXACT_FIXED_MELEE_NATIVE_ELEMENT_ZERO_THUNDER_RESISTANCE':'KNOWN_COEFFICIENT_ZERO_RESISTANCE_NORMAL_AND_MAXIMUM_NO_PRODUCERS',verificationStatus:'NOT_GAME_VERIFIED'};
   const waterEntries=allSkills.filter(x=>Number(x.skillId)===181),waterRule=root.MHWaterConversionRule,waterInput=stats.waterResistanceInput;
   const standardConversion=conditions.standardEvaluation===true;
   let conversionMaximumIssue=null;
