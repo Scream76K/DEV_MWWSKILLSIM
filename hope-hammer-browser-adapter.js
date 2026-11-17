@@ -1,4 +1,543 @@
 (function(root){'use strict';
+ const darkCbRouteToken=Symbol('private independent CB route');
+ let darkCbContractCache;
+ function getDarkCbContract(){
+  if(!darkCbContractCache){
+   const freeze=x=>{if(x&&typeof x==='object'){Object.values(x).forEach(freeze);Object.freeze(x);}return x;};
+   darkCbContractCache=freeze({
+  "raw": {
+    "CB_ELEMENT_DISCHARGE_1": {
+      "weaponType": "charge-blade",
+      "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+      "techniqueName": "斧：属性解放斬りⅠ",
+      "revision": 2,
+      "validFromVersion": "1.042.00.02",
+      "validToVersion": null,
+      "verificationStatus": "PARTIALLY_VERIFIED",
+      "evidenceRefs": [
+        "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+        "KUROYONHON_CB_CURRENT",
+        "USER_CB_R236_PROVISIONAL_MV"
+      ],
+      "hits": [
+        {
+          "damageType": "slash",
+          "mv": 51,
+          "elementModifier": 1
+        }
+      ],
+      "sourceAuditEvidenceRefs": [
+        "KUROYONHON_CB_R49_CHECK",
+        "MACARONGAMEMO_CB_R49_SOURCE"
+      ],
+      "sourceAuditStatus": "INDEPENDENT_SOURCE_CORROBORATED",
+      "sourceAlternatives": [
+        {
+          "evidenceRef": "MACARONGAMEMO_CB_R49_SOURCE",
+          "historyMotionValues": [
+            51
+          ]
+        }
+      ],
+      "numericStatus": "PROVISIONALLY_ADOPTED",
+      "liveGameVerification": "PENDING",
+      "fieldVerification": {
+        "motionValues": {
+          "status": "PROVISIONALLY_ADOPTED",
+          "basis": "USER_PROVIDED_MEASURED_UPDATE_TABLE",
+          "sourceVersion": "1.020.00",
+          "baselineGameVersion": "1.042.00.02",
+          "evidenceRefs": [
+            "USER_CB_R236_PROVISIONAL_MV"
+          ]
+        }
+      },
+      "phialReference": {
+        "status": "OBSERVED",
+        "adoptionStatus": "PROVISIONALLY_ADOPTED",
+        "verificationStatus": "PROVISIONAL",
+        "eventCount": 1,
+        "hitCount": 1,
+        "sourceType": "USER_VIDEO_OBSERVATION",
+        "sourceRefs": [
+          "USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4"
+        ],
+        "gameVersion": "UNCONFIRMED",
+        "calculationUse": "PROVISIONAL_PIPELINE_ONLY"
+      }
+    },
+    "CB_ELEMENT_DISCHARGE_2": {
+      "weaponType": "charge-blade",
+      "techniqueId": "CB_ELEMENT_DISCHARGE_2",
+      "techniqueName": "斧：属性解放斬りⅡ",
+      "revision": 2,
+      "validFromVersion": "1.042.00.02",
+      "validToVersion": null,
+      "verificationStatus": "PARTIALLY_VERIFIED",
+      "evidenceRefs": [
+        "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+        "KUROYONHON_CB_CURRENT",
+        "USER_CB_R236_PROVISIONAL_MV"
+      ],
+      "hits": [
+        {
+          "damageType": "slash",
+          "mv": 25,
+          "elementModifier": 1
+        },
+        {
+          "damageType": "slash",
+          "mv": 58,
+          "elementModifier": 1
+        }
+      ],
+      "sourceAuditEvidenceRefs": [
+        "KUROYONHON_CB_R49_CHECK",
+        "MACARONGAMEMO_CB_R49_SOURCE"
+      ],
+      "sourceAuditStatus": "INDEPENDENT_SOURCE_CORROBORATED",
+      "sourceAlternatives": [
+        {
+          "evidenceRef": "MACARONGAMEMO_CB_R49_SOURCE",
+          "historyMotionValues": [
+            25,
+            58
+          ]
+        }
+      ],
+      "numericStatus": "PROVISIONALLY_ADOPTED",
+      "liveGameVerification": "PENDING",
+      "fieldVerification": {
+        "motionValues": {
+          "status": "PROVISIONALLY_ADOPTED",
+          "basis": "USER_PROVIDED_MEASURED_UPDATE_TABLE",
+          "sourceVersion": "1.020.00",
+          "baselineGameVersion": "1.042.00.02",
+          "evidenceRefs": [
+            "USER_CB_R236_PROVISIONAL_MV"
+          ]
+        }
+      },
+      "phialReference": {
+        "status": "OBSERVED",
+        "adoptionStatus": "PROVISIONALLY_ADOPTED",
+        "verificationStatus": "PROVISIONAL",
+        "eventCount": 2,
+        "hitCount": 2,
+        "sourceType": "USER_VIDEO_OBSERVATION",
+        "sourceRefs": [
+          "USER_VIDEO_OBSERVATION:1a11b21c9a340-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4"
+        ],
+        "gameVersion": "UNCONFIRMED",
+        "calculationUse": "PROVISIONAL_PIPELINE_ONLY"
+      }
+    },
+    "CB_AXE_TO_SWORD_MORPH": {
+      "weaponType": "charge-blade",
+      "techniqueId": "CB_AXE_TO_SWORD_MORPH",
+      "techniqueName": "変形斬り(斧)",
+      "revision": 2,
+      "introducedIn": "r49",
+      "validFromVersion": null,
+      "validToVersion": null,
+      "baselineGameVersion": null,
+      "numericStatus": "SOURCE_CONFIRMED",
+      "verificationStatus": "OWNER_APPROVED_PROVISIONAL",
+      "calculationStatus": "READY_HP_REFERENCE",
+      "currentVersionAudit": "PENDING",
+      "unresolvedReasons": [
+        "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+        "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+      ],
+      "evidenceRefs": [
+        "MACARONGAMEMO_CB_R49_SOURCE"
+      ],
+      "sourceLocator": "変形斬り(斧)",
+      "hits": [
+        {
+          "mv": 30,
+          "elementModifier": 1,
+          "damageType": "slash"
+        }
+      ],
+      "stateRequirement": {},
+      "specialComponents": [],
+      "replacedRecord": {
+        "weaponType": "charge-blade",
+        "techniqueId": "CB_AXE_TO_SWORD_MORPH",
+        "techniqueName": "変形斬り(斧)",
+        "revision": 1,
+        "introducedIn": "r49",
+        "validFromVersion": null,
+        "validToVersion": null,
+        "baselineGameVersion": "1.042.00.02",
+        "numericStatus": "SOURCE_CONFIRMED",
+        "verificationStatus": "PARTIALLY_VERIFIED",
+        "calculationStatus": "EVIDENCE_GATED",
+        "currentVersionAudit": "PENDING",
+        "unresolvedReasons": [
+          "OFFICIAL_BASELINE_VERSION_AUDIT_PENDING",
+          "PART_MODIFIER_NOT_REPORTED_IN_SOURCE"
+        ],
+        "evidenceRefs": [
+          "MACARONGAMEMO_CB_R49_SOURCE"
+        ],
+        "sourceLocator": "変形斬り(斧)",
+        "hits": [
+          {
+            "mv": 30,
+            "elementModifier": 1
+          }
+        ],
+        "stateRequirement": {},
+        "specialComponents": []
+      },
+      "calculationScope": "EXACT_H_ROUTE_ONLY",
+      "adoption": {
+        "status": "OWNER_APPROVED_PROVISIONAL",
+        "approval": "Sentinel_b0338f54b160819183484aed19d41354",
+        "techniqueIds": [
+          "CB_AXE_TO_SWORD_MORPH",
+          "CB_SHIELD_THRUST",
+          "CB_AED",
+          "CB_FOLLOWUP_AED"
+        ],
+        "prefixIds": [
+          "CB_AXE_TO_SWORD_MORPH",
+          "CB_SHIELD_THRUST"
+        ],
+        "shieldPhialCount": 1,
+        "prefixConsumption": 0,
+        "source": "https://kuroyonhon.com/mhwilds/memo/12.php;cb1-shield-limited/approved-readout.log",
+        "evidence": "CB1 three-contact increase supports two body plus one explosion; component attribution and zero internal consumption owner-provisional",
+        "liveGameVerification": "PENDING_COMPONENT_AND_RESOURCE_ISOLATION",
+        "gameVersion": null
+      },
+      "excludedComponents": []
+    },
+    "CB_SHIELD_THRUST": {
+      "weaponType": "charge-blade",
+      "techniqueId": "CB_SHIELD_THRUST",
+      "techniqueName": "剣：盾突き",
+      "revision": 2,
+      "validFromVersion": null,
+      "validToVersion": null,
+      "verificationStatus": "OWNER_APPROVED_PROVISIONAL",
+      "evidenceRefs": [
+        "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+        "KUROYONHON_CB_CURRENT"
+      ],
+      "hits": [
+        {
+          "mv": 15,
+          "elementModifier": 1,
+          "damageType": "slash"
+        },
+        {
+          "mv": 6,
+          "elementModifier": 1,
+          "damageType": "slash"
+        }
+      ],
+      "replacedRecord": {
+        "weaponType": "charge-blade",
+        "techniqueId": "CB_SHIELD_THRUST",
+        "techniqueName": "剣：盾突き",
+        "revision": 1,
+        "validFromVersion": "1.042.00.02",
+        "validToVersion": null,
+        "verificationStatus": "VERIFIED",
+        "evidenceRefs": [
+          "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+          "KUROYONHON_CB_CURRENT"
+        ],
+        "hits": [
+          {
+            "mv": 15,
+            "elementModifier": 1
+          },
+          {
+            "mv": 6,
+            "elementModifier": 1
+          }
+        ]
+      },
+      "calculationStatus": "READY_HP_REFERENCE",
+      "calculationScope": "EXACT_H_ROUTE_ONLY",
+      "adoption": {
+        "status": "OWNER_APPROVED_PROVISIONAL",
+        "approval": "Sentinel_b0338f54b160819183484aed19d41354",
+        "techniqueIds": [
+          "CB_AXE_TO_SWORD_MORPH",
+          "CB_SHIELD_THRUST",
+          "CB_AED",
+          "CB_FOLLOWUP_AED"
+        ],
+        "prefixIds": [
+          "CB_AXE_TO_SWORD_MORPH",
+          "CB_SHIELD_THRUST"
+        ],
+        "shieldPhialCount": 1,
+        "prefixConsumption": 0,
+        "source": "https://kuroyonhon.com/mhwilds/memo/12.php;cb1-shield-limited/approved-readout.log",
+        "evidence": "CB1 three-contact increase supports two body plus one explosion; component attribution and zero internal consumption owner-provisional",
+        "liveGameVerification": "PENDING_COMPONENT_AND_RESOURCE_ISOLATION",
+        "gameVersion": null
+      },
+      "baselineGameVersion": null,
+      "specialComponents": [],
+      "excludedComponents": [],
+      "phialReference": {
+        "status": "OWNER_APPROVED_PROVISIONAL",
+        "hitCount": 1,
+        "eventCount": 1,
+        "sourceRefs": [
+          "https://kuroyonhon.com/mhwilds/memo/12.php;cb1-shield-limited/approved-readout.log"
+        ],
+        "verificationStatus": "NOT_COMPONENT_ISOLATED"
+      }
+    },
+    "CB_AED": {
+      "weaponType": "charge-blade",
+      "techniqueId": "CB_AED",
+      "techniqueName": "斧：高出力属性解放斬り",
+      "revision": 1,
+      "validFromVersion": "1.042.00.02",
+      "validToVersion": null,
+      "verificationStatus": "VERIFIED",
+      "evidenceRefs": [
+        "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+        "KUROYONHON_CB_CURRENT"
+      ],
+      "hits": [
+        {
+          "damageType": "slash",
+          "mv": 68,
+          "elementModifier": 1
+        }
+      ],
+      "phialReference": {
+        "status": "OBSERVED",
+        "adoptionStatus": "PROVISIONALLY_ADOPTED",
+        "verificationStatus": "PROVISIONAL",
+        "eventCount": 2,
+        "hitCount": 2,
+        "sourceType": "USER_VIDEO_OBSERVATION",
+        "sourceRefs": [
+          "USER_VIDEO_OBSERVATION:1a11b213a0886-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4"
+        ],
+        "gameVersion": "UNCONFIRMED",
+        "calculationUse": "PROVISIONAL_PIPELINE_ONLY"
+      }
+    },
+    "CB_FOLLOWUP_AED": {
+      "weaponType": "charge-blade",
+      "techniqueId": "CB_FOLLOWUP_AED",
+      "techniqueName": "斧：追撃高出力属性解放斬り",
+      "revision": 1,
+      "validFromVersion": "1.042.00.02",
+      "validToVersion": null,
+      "verificationStatus": "VERIFIED",
+      "evidenceRefs": [
+        "MACARONGAMEMO_CHARGE_BLADE_MOTION",
+        "KUROYONHON_CB_CURRENT"
+      ],
+      "hits": [
+        {
+          "damageType": "slash",
+          "mv": 78,
+          "elementModifier": 1
+        }
+      ],
+      "phialReference": {
+        "status": "OBSERVED",
+        "adoptionStatus": "PROVISIONALLY_ADOPTED",
+        "verificationStatus": "PROVISIONAL",
+        "eventCount": 3,
+        "hitCount": 3,
+        "sourceType": "USER_VIDEO_OBSERVATION",
+        "sourceRefs": [
+          "USER_VIDEO_OBSERVATION:1a11b213a0886-master_playlist.mp4;1a11b4e1a1f6-master_playlist.mp4"
+        ],
+        "gameVersion": "UNCONFIRMED",
+        "calculationUse": "PROVISIONAL_PIPELINE_ONLY"
+      }
+    }
+  },
+  "engine": {
+    "CB_ELEMENT_DISCHARGE_1": {
+      "name": "斧：属性解放斬りⅠ",
+      "axeBoostHits": {
+        "count": 4,
+        "mv": 12,
+        "elementModifier": 0.2
+      },
+      "shieldBoostAxeBody": true,
+      "rapidMorphDamageEligible": false,
+      "phial": {
+        "impactCoefficient": 0.12,
+        "powerElementCoefficient": 2.1,
+        "enhancedImpactCoefficient": 0.14,
+        "enhancedPowerElementCoefficient": 2.4,
+        "count": null,
+        "verification": "TODO_COUNT"
+      }
+    },
+    "CB_ELEMENT_DISCHARGE_2": {
+      "name": "斧：属性解放斬りⅡ",
+      "axeBoostHits": {
+        "count": 8,
+        "mv": 12,
+        "elementModifier": 0.2
+      },
+      "shieldBoostAxeBody": true,
+      "rapidMorphDamageEligible": false,
+      "phial": {
+        "impactCoefficient": 0.12,
+        "powerElementCoefficient": 2.1,
+        "enhancedImpactCoefficient": 0.14,
+        "enhancedPowerElementCoefficient": 2.4,
+        "count": null,
+        "verification": "TODO_COUNT"
+      }
+    },
+    "CB_AXE_TO_SWORD_MORPH": {
+      "name": "斧：変形斬り",
+      "axeBoostHits": null,
+      "shieldBoostAxeBody": false,
+      "rapidMorphDamageEligible": true,
+      "phial": null
+    },
+    "CB_SHIELD_THRUST": {
+      "name": "剣：盾突き",
+      "axeBoostHits": null,
+      "shieldBoostAxeBody": false,
+      "rapidMorphDamageEligible": false,
+      "phial": {
+        "impactCoefficient": 0.05,
+        "powerElementCoefficient": 1.5,
+        "count": null,
+        "verification": "TODO_COUNT"
+      }
+    },
+    "CB_AED": {
+      "name": "斧：高出力属性解放斬り",
+      "axeBoostHits": {
+        "count": 4,
+        "mv": 12,
+        "elementModifier": 0.2
+      },
+      "shieldBoostAxeBody": true,
+      "rapidMorphDamageEligible": false,
+      "phial": {
+        "impactCoefficient": 0.16,
+        "powerElementCoefficient": 4.2,
+        "enhancedImpactCoefficient": 0.2,
+        "enhancedPowerElementCoefficient": 6,
+        "count": null,
+        "verification": "TODO_COUNT"
+      }
+    },
+    "CB_FOLLOWUP_AED": {
+      "name": "斧：追撃高出力属性解放斬り",
+      "axeBoostHits": {
+        "count": 4,
+        "mv": 12,
+        "elementModifier": 0.2
+      },
+      "shieldBoostAxeBody": true,
+      "rapidMorphDamageEligible": false,
+      "phial": {
+        "impactCoefficient": 0.16,
+        "powerElementCoefficient": 4.2,
+        "enhancedImpactCoefficient": 0.2,
+        "enhancedPowerElementCoefficient": 6,
+        "count": null,
+        "verification": "TODO_COUNT"
+      }
+    }
+  },
+  "rules": {
+    "discharge": {
+      "source": "OWNER_Sentinel_14bc108c09b88191b1ac6747a51730c7",
+      "prioritySource": "OWNER_Sentinel_eb64362a9dcc819194811fc693bdf65f",
+      "predecessorSource": "https://kuroyonhon.com/mhwilds/memo/12.php",
+      "rapidMorphOrigins": {
+        "CB_ELEMENT_DISCHARGE_1": [
+          "CHARGE"
+        ],
+        "CB_AED": [
+          "SHIELD_THRUST",
+          "GUARD"
+        ]
+      },
+      "predecessors": {
+        "CB_ELEMENT_DISCHARGE_1": [
+          "CHARGE",
+          "AXE_NEUTRAL"
+        ],
+        "CB_ELEMENT_DISCHARGE_2": [
+          "CB_ELEMENT_DISCHARGE_1"
+        ],
+        "CB_AED": [
+          "CB_ELEMENT_DISCHARGE_1",
+          "CB_ELEMENT_DISCHARGE_2",
+          "SHIELD_THRUST",
+          "GUARD"
+        ],
+        "CB_FOLLOWUP_AED": [
+          "CB_AED"
+        ]
+      },
+      "status": "OWNER_APPROVED",
+      "verificationStatus": "UNVERIFIED",
+      "baseConsumption": 1
+    },
+    "h": {
+      "status": "OWNER_APPROVED_PROVISIONAL",
+      "approval": "Sentinel_b0338f54b160819183484aed19d41354",
+      "techniqueIds": [
+        "CB_AXE_TO_SWORD_MORPH",
+        "CB_SHIELD_THRUST",
+        "CB_AED",
+        "CB_FOLLOWUP_AED"
+      ],
+      "prefixIds": [
+        "CB_AXE_TO_SWORD_MORPH",
+        "CB_SHIELD_THRUST"
+      ],
+      "shieldPhialCount": 1,
+      "prefixConsumption": 0,
+      "source": "https://kuroyonhon.com/mhwilds/memo/12.php;cb1-shield-limited/approved-readout.log",
+      "evidence": "CB1 three-contact increase supports two body plus one explosion; component attribution and zero internal consumption owner-provisional",
+      "liveGameVerification": "PENDING_COMPONENT_AND_RESOURCE_ISOLATION",
+      "gameVersion": null
+    },
+    "ed1": {
+      "id": "CB_ED1_NORMAL_RESOURCE",
+      "techniqueId": "CB_ELEMENT_DISCHARGE_1",
+      "consumeNormalPhials": 1,
+      "axeBoostedConsumptionMultiplier": 0.5,
+      "axeBoostedSource": "OWNER_Sentinel_bfe9f5e3bb4c8191b47c719ce4639dc3",
+      "source": "OWNER_2026-10-26T00:35Z_Sentinel_0e41b1370e348191b629f759852d578a",
+      "status": "OWNER_APPROVED",
+      "scope": "NORMAL_PHIAL_ONLY_EXPLICIT_AXE_STATE",
+      "rapidMorphEffectId": "rapid-morph-ed1-from-charge"
+    }
+  }
+});
+  }
+  return darkCbContractCache;
+ }
+ function withoutDarkCbAdoption(input){
+  const conditions={...input.conditions,darkArtsCbContinuationExcluded:true};
+  const plan=root.MHWStandardPowerConditionPlan(input.stats,Object.fromEntries(input.skills||[]),input.weapon.kind,conditions,input.weapon);
+  return {...input,conditions,stats:{...input.stats,conditionalConditionPlan:plan},conditionalConditionPlan:plan};
+ }
+ function darkCbPairSources(input){
+  const c=getDarkCbContract(),same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+  return same({discharge:root.MHCBDischargeResourceRules,h:root.MHCBHRouteRule,ed1:root.MHCBED1ResourceRule},c.rules)&&Object.keys(c.raw).every(id=>same(input.techniqueDb?.get?.('charge-blade',id),c.raw[id])&&same(root.TechniqueDBEngine?.get?.('charge-blade',id),c.raw[id])&&same(root.ChargeBladeEngine?.techniques?.[id],c.engine[id]));
+ }
  // Owner target IG records are adopted BODY_ONLY with no wound-destruction event; part durability is not HP.
  const ADOPTED_NO_WOUND_EVENT_IDS=new Set(["GS_CHARGED_SLASH_3", "GS_STRONG_CHARGED_SLASH_3", "GS_STRONG_WIDE_SLASH_3", "LS_RED_BLADE_I", "LS_RED_BLADE_II", "LS_RED_BLADE_III", "SNS_SIDE_SLASH", "SNS_BASH_UPPERCUT", "DB_DEMON_DANCE_I", "DB_DEMON_DANCE_II", "DB_DEMON_DANCE_III", "HAM_SIDE_SWING", "HAM_VERTICAL_II", "HAM_UPPERCUT", "LAN_MID_THRUST_I", "LAN_MID_THRUST_II", "LAN_MID_THRUST_III", "LAN_TRIPLE_THRUST", "GL_SLAM", "GL_SWEEP", "SA_SWORD_VERTICAL", "SA_SWORD_MORPH_DOUBLE", "SA_AXE_MORPH_SLASH", "IG_DIAGONAL_SLASH", "IG_ENHANCED_DIAGONAL_SLASH", "IG_TRIPLE_SIDESTEP_SLASH", "IG_TRIPLE_ADVANCING_COMBO", "IG_ENHANCED_DESCENDING_THRUST", "IG_RISING_SPIRAL_SLASH", "CB_SWORD_TO_AXE_MORPH", "CB_ELEMENT_DISCHARGE_1", "CB_ELEMENT_DISCHARGE_2", "CB_AED", "CB_FOLLOWUP_AED", "CB_SAED", "CB_SAED_AED_DERIVED", "BOW_SHOT_3", "BOW_POWER_SHOT_3", "BOW_POWER_VOLLEY_3", "HBG_NORMAL_AMMO_1", "HBG_NORMAL_AMMO_2", "HBG_NORMAL_AMMO_3", "LBG_NORMAL_AMMO_1", "LBG_NORMAL_AMMO_2", "HBG_ELEMENT_FIRST_HIT_REFERENCE", "LBG_ELEMENT_FIRST_HIT_REFERENCE", "HBG_WYVERN_AMMO", "HH_LEFT_SWING", "HH_RIGHT_SWING", "HH_FORWARD_ATTACK", "HH_SELF_IMPROVEMENT_PERFORMANCE", "HH_PERFORMANCE_BODY", "HH_PERFORMANCE_BEAT_1", "HH_PERFORMANCE_BEAT_1_JUST", "HH_PERFORMANCE_BEAT_2", "HH_PERFORMANCE_BEAT_2_JUST", "HH_ENCORE_NORMAL", "HH_ENCORE_JUST", "HH_PERFORMANCE_SHOCKWAVE", "HH_ECHO_BUBBLE_FOLLOWUP", "HH_ECHO_BUBBLE_MELODY_EVENT", "HH_MELODY_COMPLETION_FIXED_10", "reference:gl_NORMAL", "reference:gl_CHARGED"]);
  const INTERNAL_SKILL_ADOPTION=Object.freeze({
@@ -1034,6 +1573,13 @@
    const ec=plan?.maximumElementComponents,mult=plan?.selectedHp==='FULL_HP'?1:1.14;
    if(!darkGlResolved||activeBonusEffects.filter(e=>e.bonusSkillId===172).length!==1||actual.length!==1||expected?.length!==1||JSON.stringify(actual[0])!==JSON.stringify(expected[0])||JSON.stringify(projection(plan))!==JSON.stringify(projection(fresh))||ec?.weaponBase!==440||ec.normalMultiplier!==mult||ec.normalFlat!==0||ec.conditionalFlat!==0)return fail('REAL_SLICE:DARK_ARTS_GL_FIXED_SCOPE_UNRESOLVED');
   }
+  const darkCbResolved=root.MHDarkArtsFixedCbSource?.(stats,conditions,weapon,skillTotal)===true&&['R','H'].includes(conditions[darkCbRouteToken])&&conditions[darkCbRouteToken]===conditions.darkArtsCbIndependentRoute&&target?.monster==='training-room'&&target?.part==='training-front';
+  if(weapon.kind==='charge-blade'&&conversionGroupPlan?.applied?.some(a=>a.skill==='ダークアーツ')){
+   const actual=conversionGroupPlan.applied.filter(a=>a.skill==='ダークアーツ'),expected=root.standardGroupPowerPlan?.(stats,conditions.gutsState??'BEFORE',skillTotal,weapon.kind,conditions)?.applied?.filter(a=>a.skill==='ダークアーツ');
+   const fresh=root.MHWStandardPowerConditionPlan?.(stats,skillTotal,weapon.kind,conditions,weapon),plan=stats.conditionalConditionPlan,ec=plan?.maximumElementComponents,mult=plan?.selectedHp==='FULL_HP'?1:1.14;
+   const projection=p=>({normalElement:p?.normal?.element,maximumElement:p?.maximum?.element,maximumElementComponents:p?.maximumElementComponents});
+   if(!darkCbResolved||activeBonusEffects.filter(e=>e.bonusSkillId===172).length!==1||actual.length!==1||expected?.length!==1||JSON.stringify(actual[0])!==JSON.stringify(expected[0])||JSON.stringify(projection(plan))!==JSON.stringify(projection(fresh))||ec?.weaponBase!==300||ec.normalMultiplier!==mult||ec.normalFlat!==0||ec.conditionalFlat!==0)return fail('REAL_SLICE:DARK_ARTS_CB_FIXED_SCOPE_UNRESOLVED');
+  }
   const validatedNonDamageBonuses=typeof root.MHWValidatedNonDamageBonusEffects==='function'?root.MHWValidatedNonDamageBonusEffects(activeBonusEffects):[];
   const conversionResistanceBonusesResolved=activeBonusEffects.length>0&&activeBonusEffects.every(e=>{
    if(ownerExcludedBonus(e))return true;
@@ -1049,7 +1595,7 @@
    }
    if(e.bonusSkillId===172){
     const rule=root.MHDarkArtsBodySource,rows=conversionGroupPlan?.applied?.filter(a=>a.skill==='ダークアーツ')||[],a=rows[0];
-    if(!rule||!(rule.supportedKinds.includes(weapon.kind)||darkIgResolved||darkBowResolved||darkHhResolved||darkGlResolved)||e.name!=='ダークアーツ'||e.bonusName!=='暗黒騎士の証'||e.source!=='series'||e.rankLevel!==1||e.required!==2||!Number.isInteger(e.count)||e.count<2||e.count>=4||rows.length!==1||!a?.darkArtsActivation)return false;
+    if(!rule||!(rule.supportedKinds.includes(weapon.kind)||darkIgResolved||darkBowResolved||darkHhResolved||darkGlResolved||darkCbResolved)||e.name!=='ダークアーツ'||e.bonusName!=='暗黒騎士の証'||e.source!=='series'||e.rankLevel!==1||e.required!==2||!Number.isInteger(e.count)||e.count<2||e.count>=4||rows.length!==1||!a?.darkArtsActivation)return false;
     return ['bonusSkillId','name','bonusName','source','rankLevel','required','count'].every(k=>a.darkArtsActivation[k]===e[k])&&a.attackAdd===0&&a.attackMultiplier===1&&a.elementMultiplier===(rule.highMultiplierKinds.includes(weapon.kind)?rule.highMultiplier:rule.otherMultiplier)&&a.condition==='RECOVERABLE_DAMAGE'&&a.exclusiveGroup==='HEALTH'&&a.appliesToNormal===false&&a.evidenceRef===rule.url&&a.numericOrigin===rule.status;
    }
    if([131,153,173].includes(e.bonusSkillId))return conversionGroupPlan?.applied?.some(a=>a.skillId===e.bonusSkillId&&a.skill===e.name);
@@ -1533,6 +2079,26 @@
   // phials and intrinsic GL fire retain their existing independent formulas.
   const cbGogResolved=weapon.kind==='charge-blade'&&!!cbChargeRoute&&conditions.standardEvaluation===true&&weapon.phial==='impact'&&officialPhialType==='IMPACT'&&cbChargeStateValid(chargeBladeState)&&[conditions,conditions.chargeBladeState,stats].every(cbChargeNoAlternate)&&resolvedTechniqueIds.every(cbChargeRecordValid);
   const glGogResolved=weapon.kind==='gunlance'&&conditions.standardEvaluation===true&&conditions.mounted===false&&!!glTargetContext&&glTargetContext.rules.id==='GL_OWNER_STAKE_TARGET'&&glTargetContext.rules.status==='OWNER_APPROVED_PROVISIONAL'&&glChargeEqual(glTargetContext.rules,root.TechniqueDBEngine?.get?.('gunlance',glTargetIds[2])?.glTargetRules)&&glChargeEqual(gunlanceState,conditions.gunlanceState)&&gunlanceState.chargedRounds===null&&[conditions,stats,resolvedConditionPlan?.normal,resolvedConditionPlan?.maximum].every(glChargeNoAlternate)&&resolvedTechniqueIds.length===glTargetIds.length&&resolvedTechniqueIds.every((id,i)=>id===glTargetIds[i])&&resolvedTechniqueIds.every(glChargeRecordValid);
+  const darkCbActive=darkCbResolved&&conversionGroupPlan?.applied?.some(a=>a.skill==='ダークアーツ');
+  const darkCbContract=darkCbActive?getDarkCbContract():null;
+  const darkCbModelValid=()=>cbGogResolved&&cbChargeRoute===conditions.darkArtsCbIndependentRoute&&cbChargeStateValid(conditions.chargeBladeState)&&glChargeEqual(chargeBladeState,conditions.chargeBladeState)&&glChargeEqual({discharge:dischargeRules,h:hRule,ed1:ed1Rule},darkCbContract.rules)&&Object.keys(darkCbContract.raw).every(id=>glChargeEqual(techniqueDb.get('charge-blade',id),darkCbContract.raw[id])&&glChargeEqual(root.TechniqueDBEngine?.get?.('charge-blade',id),darkCbContract.raw[id])&&glChargeEqual(root.ChargeBladeEngine?.techniques?.[id],darkCbContract.engine[id]));
+  if(darkCbActive&&!darkCbModelValid())return fail('REAL_SLICE:DARK_ARTS_CB_MODEL_UNRESOLVED');
+  const darkCbResultValid=(r,channel)=>{
+   if(r?.metrics?.comboTotalDamage?.status!=='available')return true;
+   const components=[],steps=[];
+   for(const [j,id]of resolvedTechniqueIds.entries()){
+    const raw=darkCbContract.raw[id],n=raw.hits.length+(darkCbContract.engine[id].axeBoostHits?.count||0);
+    for(let i=0;i<n+(cbChargeRoute==='H'&&j<2?1:2);i++)steps.push(j+':'+i);
+    for(let i=0;i<n;i++){
+     const source=i<raw.hits.length?raw.evidenceRefs[0]:'index.html:CHARGE_BLADE_TECHNIQUES.'+id+'.axeBoostHits';
+     for(const kind of ['physical','element'])components.push({id:id+':'+kind+':'+i,eventId:j+':'+i,techniqueId:id,revision:String(raw.revision),source,coefficientUnit:kind==='physical'?'MV':'ELEMENT_MODIFIER',damageUnit:'damage'});
+     if(i===0&&raw.phialReference)components.push({id:id+':phial:0',eventId:j+':0',techniqueId:id,revision:String(raw.revision),source:raw.phialReference.sourceRefs.join(';'),coefficientUnit:'PHIAL',damageUnit:'damage'});
+    }
+   }
+   const finalState={chargeBlade:{...(cbChargeRoute==='H'?{mode:'AXE'}:{}),previousAction:'CB_FOLLOWUP_AED',normalPhials:cbChargeRoute==='R'?3:4,enhancedPhials:0}};
+   const element=channel==='maximum'&&conditionPlan.selectedHp!=='FULL_HP'?342:300;
+   return r.execution.status==='complete'&&glChargeEqual(r.execution.expected,steps)&&glChargeEqual(r.execution.executed,steps)&&glChargeEqual(r.finalState,finalState)&&glChargeEqual(r.components.map(c=>Object.fromEntries(['id','eventId','techniqueId','revision','source','coefficientUnit','damageUnit'].map(k=>[k,c[k]]))),components)&&r.components.every(c=>c.status==='available'&&Number.isFinite(c.value)&&(!c.id.includes(':element:')||Math.abs(c.details?.appliedElement-element)<1e-8));
+  };
   const darkGlRawContract={"GL_SLAM":{"weaponType":"gunlance","techniqueId":"GL_SLAM","techniqueName":"叩きつけ","revision":2,"validFromVersion":null,"validToVersion":null,"verificationStatus":"PARTIALLY_VERIFIED","evidenceRefs":["MACARONGAMEMO_GUNLANCE_MOTION_CURRENT","https://kuroyonhon.com/mhwilds/memo/10.php"],"hits":[{"mv":57,"elementModifier":2,"component":"BODY","damageType":"slash","damageTypeSource":"https://kuroyonhon.com/mhwilds/memo/10.php"}],"replacedRecord":{"weaponType":"gunlance","techniqueId":"GL_SLAM","techniqueName":"叩きつけ","revision":1,"validFromVersion":"1.042.00.02","validToVersion":null,"verificationStatus":"PARTIALLY_VERIFIED","evidenceRefs":["MACARONGAMEMO_GUNLANCE_MOTION_CURRENT"],"hits":[{"mv":57,"elementModifier":1,"component":"BODY"}]},"damageTypeStatus":"SOURCE_CONFIRMED_NOT_LIVE_VERIFIED","baselineGameVersion":null,"numericScope":"SOURCE_BACKED_PROVISIONAL_HP","sourceComparisonNote":"Current memo10 element2 provisionally replaces legacy element1; exact game version and live damage pending.","shellingBodyResourceContract":"NO_SHELL_CONSUMPTION_BODY","currentVersionAudit":"PENDING"},"GL_SWEEP":{"weaponType":"gunlance","techniqueId":"GL_SWEEP","techniqueName":"なぎ払い","revision":2,"validFromVersion":null,"validToVersion":null,"verificationStatus":"PARTIALLY_VERIFIED","evidenceRefs":["MACARONGAMEMO_GUNLANCE_MOTION_CURRENT","https://kuroyonhon.com/mhwilds/memo/10.php"],"hits":[{"mv":40,"elementModifier":1.5,"component":"BODY","damageType":"slash","damageTypeSource":"https://kuroyonhon.com/mhwilds/memo/10.php"}],"replacedRecord":{"weaponType":"gunlance","techniqueId":"GL_SWEEP","techniqueName":"なぎ払い","revision":1,"validFromVersion":"1.042.00.02","validToVersion":null,"verificationStatus":"PARTIALLY_VERIFIED","evidenceRefs":["MACARONGAMEMO_GUNLANCE_MOTION_CURRENT"],"hits":[{"mv":40,"elementModifier":1.5,"component":"BODY"}]},"damageTypeStatus":"SOURCE_CONFIRMED_NOT_LIVE_VERIFIED","baselineGameVersion":null,"numericScope":"SOURCE_BACKED_PROVISIONAL_HP","sourceComparisonNote":null,"shellingBodyResourceContract":"NO_SHELL_CONSUMPTION_BODY","currentVersionAudit":"PENDING"},"GL_WYRMSTAKE_FULL_BURST":{"weaponType":"gunlance","techniqueId":"GL_WYRMSTAKE_FULL_BURST","techniqueName":"竜杭フルバースト","revision":2,"validFromVersion":null,"validToVersion":null,"verificationStatus":"PARTIALLY_VERIFIED","evidenceRefs":["https://kuroyonhon.com/mhwilds/memo/10.php","https://note.com/kehaar6/n/ne919a3e7c6cb","https://note.com/kehaar6/n/n1be0abdb3a0a"],"hits":[],"specialComponents":["SHELLING","WYRMSTAKE"],"replacedRecord":{"weaponType":"gunlance","techniqueId":"GL_WYRMSTAKE_FULL_BURST","techniqueName":"竜杭フルバースト","revision":1,"validFromVersion":"1.042.00.02","validToVersion":null,"verificationStatus":"PARTIALLY_VERIFIED","evidenceRefs":["MACARONGAMEMO_GUNLANCE_MOTION_CURRENT"],"hits":[],"specialComponents":["SHELLING","WYRMSTAKE"]},"numericStatus":"PROVISIONALLY_ADOPTED","calculationStatus":"READY_COMPONENT_MODEL","baselineGameVersion":null,"sourceVersionNote":"post-1.011 table; exact current game version unverified","glTargetRules":{"id":"GL_OWNER_STAKE_TARGET","status":"OWNER_APPROVED_PROVISIONAL","source":"https://kuroyonhon.com/mhwilds/memo/10.php","retrievedAt":"2026-11-04","officialGameVersion":null,"sourceVersion":"post-1.011 table; exact current game version unverified","liveGameVerification":"PENDING","approvalBasis":"KAN-17#10062;OWNER_SOURCE_BACKED_GL_COMPLETION_2026-11-04","sourceRefs":["https://kuroyonhon.com/mhwilds/memo/10.php","https://note.com/kehaar6/n/ne919a3e7c6cb","https://note.com/kehaar6/n/n1be0abdb3a0a"],"scope":"EXACT_FOUR_ACTION_FULL_HIT_REFERENCE;NO_TIMING;NO_GAUGE_RECHARGE","body":[{"mv":30,"elementModifier":1},{"mv":20,"elementModifier":1}],"burstElementModifier":0.5,"powerRows":{"NORMAL_HIGH":{"burstMv":7,"explosionMv":28,"explosionFire":230},"LONG_HIGH":{"burstMv":8,"explosionMv":42,"explosionFire":230},"NORMAL_MEDIUM":{"burstMv":6,"explosionMv":25,"explosionFire":210},"LONG_MEDIUM":{"burstMv":7,"explosionMv":37,"explosionFire":210},"WIDE_MEDIUM":{"burstMv":6,"explosionMv":25,"explosionFire":210},"WIDE_HIGH":{"burstMv":7,"explosionMv":27,"explosionFire":230}},"stakeFullBurstMultiplier":{"NORMAL":1.25,"LONG":1.1,"WIDE":1.05},"actions":{"GL_WYRMSTAKE_FULL_BURST":{"burstCount":9,"explosionMultiplier":1,"reload":false},"GL_MULTI_WYRMSTAKE_FULL_BURST":{"burstCount":15,"explosionMultiplier":1.1,"reload":true}},"artilleryScope":"FIXED_SHELL_AND_FINAL_EXPLOSION_ONLY;EXISTING_GL_ATTACK_ORDER","noSharpnessMultiplier":1,"cornScope":"NOT_ADOPTED_FOR_STAKE_TARGET","sharpnesslessComponents":["STAKE_BURST"],"assumptions":["STAKE_FB_SHELL_CORRECTION_APPLIED_TO_BOTH_STAKE_FB_ACTIONS","ALL_BODY_AND_STAKE_CONTACTS_HIT","NO_AUTO_GUARD_ACTIVATION"]},"currentVersionAudit":"PENDING","liveGameVerification":"PENDING"},"GL_MULTI_WYRMSTAKE_FULL_BURST":{"weaponType":"gunlance","techniqueId":"GL_MULTI_WYRMSTAKE_FULL_BURST","techniqueName":"連装竜杭フルバースト","revision":2,"validFromVersion":null,"validToVersion":null,"verificationStatus":"PARTIALLY_VERIFIED","evidenceRefs":["https://kuroyonhon.com/mhwilds/memo/10.php","https://note.com/kehaar6/n/ne919a3e7c6cb","https://note.com/kehaar6/n/n1be0abdb3a0a"],"hits":[],"specialComponents":["SHELLING","WYRMSTAKE"],"replacedRecord":{"weaponType":"gunlance","techniqueId":"GL_MULTI_WYRMSTAKE_FULL_BURST","techniqueName":"連装竜杭フルバースト","revision":1,"validFromVersion":"1.042.00.02","validToVersion":null,"verificationStatus":"PARTIALLY_VERIFIED","evidenceRefs":["MACARONGAMEMO_GUNLANCE_MOTION_CURRENT"],"hits":[],"specialComponents":["SHELLING","WYRMSTAKE"]},"numericStatus":"PROVISIONALLY_ADOPTED","calculationStatus":"READY_COMPONENT_MODEL","baselineGameVersion":null,"sourceVersionNote":"post-1.011 table; exact current game version unverified","glTargetRules":{"id":"GL_OWNER_STAKE_TARGET","status":"OWNER_APPROVED_PROVISIONAL","source":"https://kuroyonhon.com/mhwilds/memo/10.php","retrievedAt":"2026-11-04","officialGameVersion":null,"sourceVersion":"post-1.011 table; exact current game version unverified","liveGameVerification":"PENDING","approvalBasis":"KAN-17#10062;OWNER_SOURCE_BACKED_GL_COMPLETION_2026-11-04","sourceRefs":["https://kuroyonhon.com/mhwilds/memo/10.php","https://note.com/kehaar6/n/ne919a3e7c6cb","https://note.com/kehaar6/n/n1be0abdb3a0a"],"scope":"EXACT_FOUR_ACTION_FULL_HIT_REFERENCE;NO_TIMING;NO_GAUGE_RECHARGE","body":[{"mv":30,"elementModifier":1},{"mv":20,"elementModifier":1}],"burstElementModifier":0.5,"powerRows":{"NORMAL_HIGH":{"burstMv":7,"explosionMv":28,"explosionFire":230},"LONG_HIGH":{"burstMv":8,"explosionMv":42,"explosionFire":230},"NORMAL_MEDIUM":{"burstMv":6,"explosionMv":25,"explosionFire":210},"LONG_MEDIUM":{"burstMv":7,"explosionMv":37,"explosionFire":210},"WIDE_MEDIUM":{"burstMv":6,"explosionMv":25,"explosionFire":210},"WIDE_HIGH":{"burstMv":7,"explosionMv":27,"explosionFire":230}},"stakeFullBurstMultiplier":{"NORMAL":1.25,"LONG":1.1,"WIDE":1.05},"actions":{"GL_WYRMSTAKE_FULL_BURST":{"burstCount":9,"explosionMultiplier":1,"reload":false},"GL_MULTI_WYRMSTAKE_FULL_BURST":{"burstCount":15,"explosionMultiplier":1.1,"reload":true}},"artilleryScope":"FIXED_SHELL_AND_FINAL_EXPLOSION_ONLY;EXISTING_GL_ATTACK_ORDER","noSharpnessMultiplier":1,"cornScope":"NOT_ADOPTED_FOR_STAKE_TARGET","sharpnesslessComponents":["STAKE_BURST"],"assumptions":["STAKE_FB_SHELL_CORRECTION_APPLIED_TO_BOTH_STAKE_FB_ACTIONS","ALL_BODY_AND_STAKE_CONTACTS_HIT","NO_AUTO_GUARD_ACTIVATION"]},"currentVersionAudit":"PENDING","liveGameVerification":"PENDING"},"GL_SHELL_NORMAL_MEDIUM":{"weaponType":"gunlance","techniqueId":"GL_SHELL_NORMAL_MEDIUM","techniqueName":"砲撃（通常／ふつう）","revision":1,"introducedIn":"r49","validFromVersion":null,"validToVersion":null,"baselineGameVersion":"1.042.00.02","numericStatus":"SOURCE_CONFIRMED","verificationStatus":"UNVERIFIED","calculationStatus":"EVIDENCE_GATED","currentVersionAudit":"PENDING","unresolvedReasons":["SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING","OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"],"evidenceRefs":["MACARONGAMEMO_GL_R49_SOURCE"],"sourceLocator":"砲撃のモーション値: 通常 / ふつう / 砲撃","hits":[],"stateRequirement":{"shellingType":"NORMAL","shellingPower":"MEDIUM"},"specialComponents":["SHELL"],"specialSourceValues":{"unparenthesizedValue":8,"parenthesizedValue":70,"p0ReferenceRules":{"loadShellsReference":{"capacityAdds":{"0":0,"1":0,"2":1},"supportedLevels":[0,1,2],"levelOneDisposition":"TIMING_ONLY_NO_CAPACITY_OR_HP_CHANGE","levelOneEvidenceRef":"MHDB_JA_SKILLS_20261026:109:rank1","evidenceRef":"KAN23_LOAD_SHELLS_LV2_20261012","adoptionStatus":"PROVISIONALLY_ADOPTED","verificationStatus":"UNVERIFIED","scope":"CAPACITY_ONLY_NO_AUTO_FILL_NO_TIMING","targetGameVersion":null},"cornpopperReference":{"skillId":159,"name":"焼き砲モロコシ","level":1,"supportedActions":["NORMAL","CHARGED"],"physicalMultiplier":1.35,"fireDisplayAdd":30,"fireUnit":"DISPLAY_ELEMENT","normalState":"INACTIVE","maximumState":"CONTINUOUS_COOLING","attackOrder":"BASE_MULTIPLIERS_ARTILLERY_CORNPOPPER_THEN_FLAT","adoptionStatus":"OWNER_APPROVED_PROVISIONAL","sourceVersion":"Ver1.020.02.00","evidenceRef":"https://note.com/kehaar6/n/n1be0abdb3a0a","approval":"Sentinel_b427654e40d88191a6ea7d004849a9dd","liveGameVerification":"UNVERIFIED_CURRENT_VERSION","scopeWarning":"通常未発動／最大は放熱継続。通常・溜め砲撃のみ暫定採用。フルバースト等は未採用。時間・ゲージの再現ではない。"},"artilleryReference":{"physicalMultipliers":[1,1.05,1.1,1.15],"fireDisplayAdds":[0,30,60,90],"fireUnit":"DISPLAY_ELEMENT","supportedActions":["NORMAL","CHARGED","FULL_BURST"],"actionExtensionAdoption":"OWNER_APPROVED_PROVISIONAL","actionExtensionScope":"ADOPTED_CHARGED_AND_ORDINARY_FULL_BURST_ONLY_NO_STAKE","evidenceRef":"KAN23_GAMEWITH_ARTILLERY_20260601","adoptionStatus":"PROVISIONALLY_ADOPTED","verificationStatus":"UNVERIFIED","scope":"NORMAL_CHARGED_ORDINARY_FULL_BURST_OWNER_APPROVED_ATTACK_COMPONENTS","attackOrder":"BASE_MULTIPLIERS_ARTILLERY_THEN_FLAT","attackOrderAdoption":"OWNER_APPROVED_PROVISIONAL","targetGameVersion":null},"mhdbShellLevelToPower":{"2":"MEDIUM"},"shellLevelEvidenceRef":"KAN23_MHDB_SHELL_LEVEL_20261012","adoptionStatus":"PROVISIONALLY_ADOPTED","verificationStatus":"UNVERIFIED","evidenceRef":"KAN23_SHELL_P0_SOURCE_20261011","sourceUrl":"https://kuroyonhon.com/mhwilds/memo/10.php","crosscheckUrl":"https://note.com/kehaar6/n/n03532a61038c","sourceGameVersion":"ver1.011 onwards; 1.042 live verification pending","checkedAt":"2026-10-11","supportedSourceIds":["GL_SHELL_NORMAL_MEDIUM","GL_SHELL_LONG_MEDIUM","GL_SHELL_WIDE_MEDIUM","GL_SHELL_WIDE_HIGH"],"baseCapacity":{"NORMAL":6,"LONG":3,"WIDE":2},"normalPhysicalMultiplier":1,"chargedPhysicalMultiplier":1.8,"fullBurstPhysicalMultiplier":{"NORMAL":1.4,"LONG":1.4,"WIDE":1.35},"fireElementModifier":1,"scope":"NO_ARTILLERY_NO_CAPACITY_MODIFIER_EXPLICIT_COMMON_REFERENCE","pendingReason":"砲術・装填スキル等の適用、他砲撃力の版差、武器砲撃情報との照合は未完了。集中竜杭穿ちと通常竜杭は含めない。","mhdbShellLevelToPowerByType":{"WIDE":{"3":"HIGH"},"NORMAL":{"3":"HIGH"}},"normalHighLevelEvidence":{"weaponId":329,"shellLevel":3,"power":"HIGH","sourceUrl":"https://appmedia.jp/mhwilds/78625499","scope":"MHDB normal shell level 3 corresponds to やや強い; reuse adopted NORMAL_HIGH coefficients","status":"SOURCE_CONFIRMED","liveGameVerification":"PENDING"},"highScope":{"sourceId":"GL_SHELL_WIDE_HIGH","supportedActions":["NORMAL","CHARGED"],"evidence":"MHDB weapon350 shell=wide shellLevel=3; source weapon table Alras Rook I = wide/high","adoptionStatus":"OWNER_APPROVED_PROVISIONAL"},"offensiveGuardReference":{"skillId":66,"supportedActions":["NORMAL","CHARGED","FULL_BURST"],"fullBurstPower":"MEDIUM","fullBurstAdoption":{"status":"OWNER_APPROVED_PROVISIONAL","liveGameVerification":"UNVERIFIED","scope":"Existing MEDIUM FULL_BURST only; shared resolved attack multiplier once, flat afterward, fire unchanged; no HIGH or Cornpopper FB extension","evidence":"docs/reports/r263-skill-audit/gl-guard-fb/REPORT.md"},"multiplierSource":"standardPowerConditionPlan / MHDB_JA_SKILL_66_20261007","attackOrder":"BASE_MULTIPLIERS_GUARD_ARTILLERY_CORNPOPPER_THEN_FLAT","fireAffected":false,"adoptionStatus":"OWNER_APPROVED_PROVISIONAL","evidence":"docs/reports/r263-skill-audit/gl-guard-video/READOUT.md","scope":"Observed shell damage increase; component and flat order owner adopted, not measured"}}}},"GL_SHELL_NORMAL_HIGH":{"weaponType":"gunlance","techniqueId":"GL_SHELL_NORMAL_HIGH","techniqueName":"砲撃（通常／やや強い）","revision":2,"introducedIn":"r49","validFromVersion":null,"validToVersion":null,"baselineGameVersion":null,"numericStatus":"SOURCE_CONFIRMED","verificationStatus":"UNVERIFIED","calculationStatus":"EVIDENCE_GATED","currentVersionAudit":"PENDING","unresolvedReasons":["SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING","OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"],"evidenceRefs":["MACARONGAMEMO_GL_R49_SOURCE","https://kuroyonhon.com/mhwilds/memo/10.php"],"sourceLocator":"砲撃のモーション値: 通常 / やや強い / 砲撃","hits":[],"stateRequirement":{"shellingType":"NORMAL","shellingPower":"HIGH"},"specialComponents":["SHELL"],"specialSourceValues":{"unparenthesizedValue":9,"parenthesizedValue":80},"replacedRecord":{"weaponType":"gunlance","techniqueId":"GL_SHELL_NORMAL_HIGH","techniqueName":"砲撃（通常／やや強い）","revision":1,"introducedIn":"r49","validFromVersion":null,"validToVersion":null,"baselineGameVersion":"1.042.00.02","numericStatus":"SOURCE_CONFIRMED","verificationStatus":"UNVERIFIED","calculationStatus":"EVIDENCE_GATED","currentVersionAudit":"PENDING","unresolvedReasons":["SPECIAL_FORMULA_AND_EVENT_COUNT_PENDING","OFFICIAL_BASELINE_VERSION_AUDIT_PENDING"],"evidenceRefs":["MACARONGAMEMO_GL_R49_SOURCE"],"sourceLocator":"砲撃のモーション値: 通常 / やや強い / 砲撃","hits":[],"stateRequirement":{"shellingType":"NORMAL","shellingPower":"HIGH"},"specialComponents":["SHELL"],"specialSourceValues":{"unparenthesizedValue":11,"parenthesizedValue":80}},"sourceVersionNote":"post-1.011 table; exact current game version unverified","liveGameVerification":"PENDING","sourceComparisonNote":"Post-1.011 table reconciled 2026-11-05; current official version not established","normalHighCandidate":{"status":"SOURCE_BACKED_PROVISIONAL_CANDIDATE","sourceId":"GL_SHELL_NORMAL_HIGH","action":"NORMAL","source":"https://kuroyonhon.com/mhwilds/memo/10.php","sourceVersion":"post-1.011 table; exact current game version unverified","liveGameVerification":"PENDING","ownerApproval":false}}};
   const darkGlActive=darkGlResolved&&conversionGroupPlan?.applied?.some(a=>a.skill==='ダークアーツ');
   const darkGlStateValid=g=>g?.shellingType==='NORMAL'&&g.shellingPower==='HIGH'&&g.loadedRounds===6&&g.chargedRounds===null&&g.stakeLoaded===true&&Number.isFinite(g.fireHitzone)&&g.fireHitzone>=0&&g.fireHitzone<=100&&Object.keys(g).every(k=>['shellingType','shellingPower','loadedRounds','chargedRounds','stakeLoaded','fireHitzone'].includes(k));
@@ -1971,7 +2537,7 @@ if(build.equipment.rapidMorphLevel>1){
  }
 }if(hhModel)effects.push({id:'hh-self-improvement',target:'physical',stage:'attack',unit:'dimensionless',operation:'multiply',amount:hhModel.selfImprovementMultiplier,order:10,source:hhModel.source,status:hhModel.status,condition:{type:'state-equals',path:['huntingHorn','selfImprovementLevel'],value:hhModel.selfImprovementCap}});if(hhModel&&huntingHornState.attackMelody)for(let rank=1;rank<=hhModel.attackMelodyCap;rank++)effects.push({id:'hh-attack-melody-rank:'+rank,target:'physical',stage:'attack',unit:'dimensionless',operation:'multiply',amount:hhModel.attackMelodies[huntingHornState.attackMelody][rank],order:11,source:hhModel.attackMelodyAdoption.source,status:hhModel.status,condition:{type:'state-equals',path:['huntingHorn','attackMelodyLevel'],value:rank}});
 if(saAwakened)effects.push({id:saAwakened.elementEffectId,elementCapBaseScaling:true,target:'element',stage:'element',unit:'dimensionless',operation:'multiply',amount:saAwakened.explosionElementMultiplier[saStatusAwakened?saAwakened.statusPhialExtension.coefficientKey:saDragonEligible?saAwakened.dragonPhialExtension.coefficientKey:weapon.phial.kind],order:25,source:saAwakened.source,status:saAwakened.status,condition:{type:'always'}});
-const powerPhial=root.MHWeaponEffectDB?.switchAxe?.powerPhialSword,elementPhial=root.MHWeaponEffectDB?.switchAxe?.powerElementPhialSword;if(build.weaponType==='switch-axe'){const phialKind=build.equipment?.phial?.kind;if(phialKind==='power'){if(!powerPhial)throw Error('REAL_SLICE:SA_POWER_PHIAL_DEFINITION_UNRESOLVED');effects.push({...powerPhial,condition:{type:'state-equals',path:['switchAxe','mode'],value:'SWORD'}});}else if(phialKind==='element'){if(!elementPhial)throw Error('REAL_SLICE:SA_POWER_ELEMENT_PHIAL_DEFINITION_UNRESOLVED');if(elementPhial.status!=='OWNER_APPROVED_PROVISIONAL')throw Error('REAL_SLICE:SA_POWER_ELEMENT_PHIAL_APPROVAL_PENDING');effects.push({...elementPhial,elementCapBaseScaling:true,condition:{type:'state-equals',path:['switchAxe','mode'],value:'SWORD'}});}else if(!saStatusBodyOnly&&!saStatusAwakened&&!saDragonEligible)throw Error('REAL_SLICE:SA_PHIAL_EFFECT_UNRESOLVED:'+String(phialKind||'missing')); }if(build.equipment.gsChargeMasterLevel>0){for(const id of gsCharge.techniqueIds)effects.push({id:'gs-charge-master:'+id,target:'element',stage:'element',unit:'dimensionless',operation:'multiply',amount:gsCharge.multipliers[build.equipment.gsChargeMasterLevel],order:25,source:gsCharge.source,status:gsCharge.status,sourceVersion:gsCharge.sourceVersion,liveGameVerification:gsCharge.liveGameVerification,condition:{type:'event-equals',key:'techniqueId',value:id}});}if(attack.length){if(!root.MHWAttackSkillResolver)throw Error('REAL_SLICE:ATTACK_RULE_UNAVAILABLE');const level=Math.max(...attack.map(x=>x.level)),rule=root.MHWAttackSkillResolver({攻撃:level});if(!Number.isFinite(Number(rule.flat))||!Number.isFinite(Number(rule.mult)))throw Error('REAL_SLICE:ATTACK_RULE_INVALID');effects.push({id:'attack-boost-multiply',target:'physical',stage:'attack',unit:'dimensionless',amount:Number(rule.mult),operation:'multiply',order:10,source:'index.html:calcAttackSkill',condition:{type:'always'}},{id:'attack-boost-flat',target:'physical',stage:'attack',unit:'true-attack',amount:Number(rule.flat),operation:'add',order:40,source:'index.html:calcAttackSkill',condition:{type:'always'}});}const punishingDraw=entries.find(x=>Number(x.skillId)===8);if(punishingDraw){if(!Number.isInteger(punishingDraw.level)||punishingDraw.level<1||punishingDraw.level>3)throw Error('REAL_SLICE:PUNISHING_DRAW_LEVEL_INVALID');const map=conditions.punishingDrawHits?.[channel];if(!map||typeof map!=='object'||Array.isArray(map)||Object.keys(map).some(id=>!resolvedTechniqueIds.includes(id)))throw Error('PUNISHING_DRAW_HIT_STATE_REQUIRED');for(const id of new Set(resolvedTechniqueIds)){const t=techniques[id],flags=map[id];if(!Array.isArray(flags)||flags.length!==(t.referenceKind?referenceDrawCount(id,t):t.hits.length)||flags.some(x=>typeof x!=='boolean'))throw Error('PUNISHING_DRAW_HIT_STATE_REQUIRED:'+id);for(const [i,on] of flags.entries())if(on){if(conditions.mounted===true||conditions.dismountAttack===true||conditions.sneakAttack===true)throw Error('PUNISHING_DRAW_TRIGGER_EXCLUDED');if(t.referenceKind){if(!['bow','heavy-bowgun','light-bowgun','heavy-bowgun-element','light-bowgun-element','charge-blade-saed'].includes(t.referenceKind))throw Error('PUNISHING_DRAW_REFERENCE_MAPPING_PENDING:'+id);continue;}effects.push({id:'punishing-draw-flat:'+id+':'+i,target:'physical',stage:'attack',unit:'true-attack',amount:[0,3,5,7][punishingDraw.level],operation:'add',order:40,componentIds:[id+':physical:'+i],source:'MACARONGAMEMO_DAMAGE_UP_2025-04-16;MACARONGAMEMO_SKILLS_LIST_2025-03-08',condition:{type:'always'}});}}}if(affinity.length){if(!root.MHWAffinitySkillResolver)throw Error('REAL_SLICE:AFFINITY_RULE_UNAVAILABLE');const level=Math.max(...affinity.map(x=>x.level)),amount=Number(root.MHWAffinitySkillResolver({'見切り':level}));if(!Number.isFinite(amount))throw Error('REAL_SLICE:AFFINITY_RULE_INVALID');if(amount)effects.push({id:'critical-eye-affinity',target:'physical',stage:'affinity',unit:'percent',amount,operation:'add',order:30,source:'index.html:calcAffinityBonus',condition:{type:'always'}},{id:'critical-eye-affinity-element',target:'element',stage:'affinity',unit:'percent',amount,operation:'add',order:30,source:'index.html:calcAffinityBonus',condition:{type:'always'}});}if(criticalBoost.length){const level=Math.max(...criticalBoost.map(x=>x.level));if(!Number.isInteger(level)||level<1||level>5)throw Error('REAL_SLICE:CRITICAL_BOOST_LEVEL_UNSUPPORTED');}if(Number(build.equipment.groupAttackMultiplier??1)!==1)effects.push({id:'set-group-attack-multiply',target:'physical',stage:'attack',unit:'dimensionless',amount:Number(build.equipment.groupAttackMultiplier),operation:'multiply',order:20,source:'index.html:standardGroupPowerPlan',condition:{type:'always'}});if(channel==='maximum'&&Number(build.equipment.conditionalAttackMultiplier??1)!==1){effects.push({id:'conditional-attack-multiply',target:'physical',stage:'attack',unit:'dimensionless',amount:Number(build.equipment.conditionalAttackMultiplier),operation:'multiply',order:30,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});}if(build.equipment.attributeConversionLevel&&build.equipment.attributeConversionState?.[channel]===true){effects.push({id:'attribute-conversion-element-add',target:'element',stage:'element',unit:'display-element',amount:attributeRule.adds[build.equipment.attributeConversionLevel],operation:'add',order:60,source:attributeRule.source,status:attributeRule.status,scope:conversionScope.scope,approval:conversionScope.approval,verificationStatus:conversionScope.verificationStatus,condition:{type:'always'}});}if(channel==='maximum'&&absorptionMaximumAdd)effects.push({id:'absorption-resistance-conversion-element-add',target:'element',stage:'element',unit:'display-element',amount:absorptionMaximumAdd,operation:'add',order:60,source:absorptionConversionPlan.sourceUrl,status:absorptionConversionPlan.adoptionStatus,scope:absorptionConversionPlan.condition,condition:{type:'always'}});if((!standardConversion||channel==='maximum')&&waterEntries.length&&waterConversionAdd!==0)effects.push({id:'water-resistance-conversion-element-add',target:'element',stage:'element',unit:'display-element',amount:waterConversionAdd,operation:'add',order:60,source:waterRule.source,status:waterRule.status,scope:waterRule.scope,condition:{type:'always'}});if((!standardConversion||channel==='maximum')&&Number(build.equipment.resistanceConversionAdd??0)!==0){effects.push({id:'thunder-resistance-conversion-element-add',target:'element',stage:'element',unit:'display-element',amount:Number(build.equipment.resistanceConversionAdd),operation:'add',order:60,source:'KUROYONHON_SKILL_TABLE_THUNDER_RESISTANCE_CONVERSION_20261025',status:'OWNER_APPROVED_PROVISIONAL',scope:conversionScope.scope,approval:conversionScope.approval,verificationStatus:conversionScope.verificationStatus,condition:{type:'always'}});}if(channel==='maximum'&&Number(build.equipment.conditionalAttackFlat??0)!==0){effects.push({id:'conditional-attack-flat',target:'physical',stage:'attack',unit:'true-attack',amount:Number(build.equipment.conditionalAttackFlat),operation:'add',order:50,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});}if(elementEntries.length){for(const entry of elementEntries)if(!Number.isInteger(entry.level)||entry.level<1||entry.level>3)throw Error('REAL_SLICE:ELEMENT_SKILL_LEVEL_UNSUPPORTED');}if(channel==='maximum'&&Number.isFinite(Number(build.equipment.maximumAffinity))&&Number(build.equipment.maximumAffinity)!==Number(build.affinity))effects.push({id:'conditional-affinity-maximum',target:'physical',stage:'affinity',unit:'percent',amount:Number(build.equipment.maximumAffinity)-Number(build.equipment.normalAffinity??build.affinity),operation:'add',order:80,source:'index.html:calcMaxAffinity',condition:{type:'always'}},{id:'conditional-affinity-maximum-element',target:'element',stage:'affinity',unit:'percent',amount:Number(build.equipment.maximumAffinity)-Number(build.equipment.normalAffinity??build.affinity),operation:'add',order:80,source:'index.html:calcMaxAffinity',condition:{type:'always'}});if(channel==='maximum'&&conditionPlan?.maximumElementComponents){const base=build.equipment.elementComponents,next=conditionPlan.maximumElementComponents;const dark=conditionPlan.groupPlan?.applied?.find(x=>x.skill==='ダークアーツ'),darkMultiplier=conditionPlan.selectedHp==='FULL_HP'?1:(dark?.elementMultiplier??1);const ratio=next.normalMultiplier/base.normalMultiplier/darkMultiplier;if(darkMultiplier!==1&&!darkBowResolved)effects.push({id:'dark-arts-body-element-multiplier',target:'element',stage:'element',unit:'dimensionless',operation:'multiply',amount:darkMultiplier,order:30,componentIds:resolvedTechniqueIds.flatMap(id=>[...(techniques[id].hits||[]).flatMap((h,i)=>h.componentSource?[]:[id+':element:'+i]),...(darkHhResolved?hhChargeEvents[id].map((_,i)=>id+':reference:'+i):[])]),source:dark.evidenceRef,status:dark.numericOrigin,scope:darkHhResolved?'FIXED_HH_NATIVE_BODY_AND_NORMAL_MELODY_ELEMENT_ONLY':darkGlActive?'FIXED_GL_NATIVE_BODY_AND_STAKE_ELEMENT_ONLY':'ADOPTED_BODY_ONLY_NO_GENERATED_FOLLOWUP',condition:{type:'always'}});if(ratio!==1)effects.push({id:'conditional-element-multiplier',target:'element',stage:'element',unit:'dimensionless',operation:'multiply',amount:ratio,order:30,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});if(next.conditionalFlat)effects.push({id:'conditional-element-flat',flatComponent:'conditional',target:'element',stage:'element',unit:'display-element',operation:'add',amount:next.conditionalFlat,order:80,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});}else if(channel==='maximum'&&Number.isFinite(Number(build.equipment.maximumElement))&&Number(build.equipment.maximumElement)!==Number(build.element))effects.push({id:'conditional-element-maximum',flatComponent:'conditional',target:'element',stage:'element',unit:'display-element',amount:Number(build.equipment.maximumElement)-Number(build.element),operation:'add',order:80,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});for(const target of ['physical','element'])effects.push({id:'affinity-upper-cap'+(target==='element'?'-element':''),target,stage:'affinity',unit:'percent',operation:'cap',amount:100,order:100,source:'index.html:calcMaxAffinity;common critical probability upper bound',condition:{type:'always'}});const unresolved=(conditionPlan?.groupPlan?.unresolvedEffects||[]).map(x=>({...x}));if(channel==='maximum')for(const row of conditionPlan?.groupPlan?.applied||[])if(row.maximumUnresolvedReason)unresolved.push({id:'maximum-scope:'+row.skillId,reason:row.maximumUnresolvedReason,target:'all',source:'OWNER_MAXIMUM_WEAPON_SCOPE;standardGroupPowerPlan'});if(activeBonusEffects.length&&!conditionPlan?.groupPlan)unresolved.push({id:'bonus-plan',reason:'BONUS_CONDITION_PLAN_MISSING',target:'all',source:'index.html:standardPowerConditionPlan'});if(channel==='maximum')for(const reason of build.equipment.conditionalPending||[])if(!unresolved.some(x=>x.reason===reason))unresolved.push({id:'conditional:'+reason,reason,target:'all',source:'index.html:standardPowerConditionPlan'});return {effects,unresolved};},resolveSkillApplicability:entries=>entries.map(entry=>{
+const powerPhial=root.MHWeaponEffectDB?.switchAxe?.powerPhialSword,elementPhial=root.MHWeaponEffectDB?.switchAxe?.powerElementPhialSword;if(build.weaponType==='switch-axe'){const phialKind=build.equipment?.phial?.kind;if(phialKind==='power'){if(!powerPhial)throw Error('REAL_SLICE:SA_POWER_PHIAL_DEFINITION_UNRESOLVED');effects.push({...powerPhial,condition:{type:'state-equals',path:['switchAxe','mode'],value:'SWORD'}});}else if(phialKind==='element'){if(!elementPhial)throw Error('REAL_SLICE:SA_POWER_ELEMENT_PHIAL_DEFINITION_UNRESOLVED');if(elementPhial.status!=='OWNER_APPROVED_PROVISIONAL')throw Error('REAL_SLICE:SA_POWER_ELEMENT_PHIAL_APPROVAL_PENDING');effects.push({...elementPhial,elementCapBaseScaling:true,condition:{type:'state-equals',path:['switchAxe','mode'],value:'SWORD'}});}else if(!saStatusBodyOnly&&!saStatusAwakened&&!saDragonEligible)throw Error('REAL_SLICE:SA_PHIAL_EFFECT_UNRESOLVED:'+String(phialKind||'missing')); }if(build.equipment.gsChargeMasterLevel>0){for(const id of gsCharge.techniqueIds)effects.push({id:'gs-charge-master:'+id,target:'element',stage:'element',unit:'dimensionless',operation:'multiply',amount:gsCharge.multipliers[build.equipment.gsChargeMasterLevel],order:25,source:gsCharge.source,status:gsCharge.status,sourceVersion:gsCharge.sourceVersion,liveGameVerification:gsCharge.liveGameVerification,condition:{type:'event-equals',key:'techniqueId',value:id}});}if(attack.length){if(!root.MHWAttackSkillResolver)throw Error('REAL_SLICE:ATTACK_RULE_UNAVAILABLE');const level=Math.max(...attack.map(x=>x.level)),rule=root.MHWAttackSkillResolver({攻撃:level});if(!Number.isFinite(Number(rule.flat))||!Number.isFinite(Number(rule.mult)))throw Error('REAL_SLICE:ATTACK_RULE_INVALID');effects.push({id:'attack-boost-multiply',target:'physical',stage:'attack',unit:'dimensionless',amount:Number(rule.mult),operation:'multiply',order:10,source:'index.html:calcAttackSkill',condition:{type:'always'}},{id:'attack-boost-flat',target:'physical',stage:'attack',unit:'true-attack',amount:Number(rule.flat),operation:'add',order:40,source:'index.html:calcAttackSkill',condition:{type:'always'}});}const punishingDraw=entries.find(x=>Number(x.skillId)===8);if(punishingDraw){if(!Number.isInteger(punishingDraw.level)||punishingDraw.level<1||punishingDraw.level>3)throw Error('REAL_SLICE:PUNISHING_DRAW_LEVEL_INVALID');const map=conditions.punishingDrawHits?.[channel];if(!map||typeof map!=='object'||Array.isArray(map)||Object.keys(map).some(id=>!resolvedTechniqueIds.includes(id)))throw Error('PUNISHING_DRAW_HIT_STATE_REQUIRED');for(const id of new Set(resolvedTechniqueIds)){const t=techniques[id],flags=map[id];if(!Array.isArray(flags)||flags.length!==(t.referenceKind?referenceDrawCount(id,t):t.hits.length)||flags.some(x=>typeof x!=='boolean'))throw Error('PUNISHING_DRAW_HIT_STATE_REQUIRED:'+id);for(const [i,on] of flags.entries())if(on){if(conditions.mounted===true||conditions.dismountAttack===true||conditions.sneakAttack===true)throw Error('PUNISHING_DRAW_TRIGGER_EXCLUDED');if(t.referenceKind){if(!['bow','heavy-bowgun','light-bowgun','heavy-bowgun-element','light-bowgun-element','charge-blade-saed'].includes(t.referenceKind))throw Error('PUNISHING_DRAW_REFERENCE_MAPPING_PENDING:'+id);continue;}effects.push({id:'punishing-draw-flat:'+id+':'+i,target:'physical',stage:'attack',unit:'true-attack',amount:[0,3,5,7][punishingDraw.level],operation:'add',order:40,componentIds:[id+':physical:'+i],source:'MACARONGAMEMO_DAMAGE_UP_2025-04-16;MACARONGAMEMO_SKILLS_LIST_2025-03-08',condition:{type:'always'}});}}}if(affinity.length){if(!root.MHWAffinitySkillResolver)throw Error('REAL_SLICE:AFFINITY_RULE_UNAVAILABLE');const level=Math.max(...affinity.map(x=>x.level)),amount=Number(root.MHWAffinitySkillResolver({'見切り':level}));if(!Number.isFinite(amount))throw Error('REAL_SLICE:AFFINITY_RULE_INVALID');if(amount)effects.push({id:'critical-eye-affinity',target:'physical',stage:'affinity',unit:'percent',amount,operation:'add',order:30,source:'index.html:calcAffinityBonus',condition:{type:'always'}},{id:'critical-eye-affinity-element',target:'element',stage:'affinity',unit:'percent',amount,operation:'add',order:30,source:'index.html:calcAffinityBonus',condition:{type:'always'}});}if(criticalBoost.length){const level=Math.max(...criticalBoost.map(x=>x.level));if(!Number.isInteger(level)||level<1||level>5)throw Error('REAL_SLICE:CRITICAL_BOOST_LEVEL_UNSUPPORTED');}if(Number(build.equipment.groupAttackMultiplier??1)!==1)effects.push({id:'set-group-attack-multiply',target:'physical',stage:'attack',unit:'dimensionless',amount:Number(build.equipment.groupAttackMultiplier),operation:'multiply',order:20,source:'index.html:standardGroupPowerPlan',condition:{type:'always'}});if(channel==='maximum'&&Number(build.equipment.conditionalAttackMultiplier??1)!==1){effects.push({id:'conditional-attack-multiply',target:'physical',stage:'attack',unit:'dimensionless',amount:Number(build.equipment.conditionalAttackMultiplier),operation:'multiply',order:30,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});}if(build.equipment.attributeConversionLevel&&build.equipment.attributeConversionState?.[channel]===true){effects.push({id:'attribute-conversion-element-add',target:'element',stage:'element',unit:'display-element',amount:attributeRule.adds[build.equipment.attributeConversionLevel],operation:'add',order:60,source:attributeRule.source,status:attributeRule.status,scope:conversionScope.scope,approval:conversionScope.approval,verificationStatus:conversionScope.verificationStatus,condition:{type:'always'}});}if(channel==='maximum'&&absorptionMaximumAdd)effects.push({id:'absorption-resistance-conversion-element-add',target:'element',stage:'element',unit:'display-element',amount:absorptionMaximumAdd,operation:'add',order:60,source:absorptionConversionPlan.sourceUrl,status:absorptionConversionPlan.adoptionStatus,scope:absorptionConversionPlan.condition,condition:{type:'always'}});if((!standardConversion||channel==='maximum')&&waterEntries.length&&waterConversionAdd!==0)effects.push({id:'water-resistance-conversion-element-add',target:'element',stage:'element',unit:'display-element',amount:waterConversionAdd,operation:'add',order:60,source:waterRule.source,status:waterRule.status,scope:waterRule.scope,condition:{type:'always'}});if((!standardConversion||channel==='maximum')&&Number(build.equipment.resistanceConversionAdd??0)!==0){effects.push({id:'thunder-resistance-conversion-element-add',target:'element',stage:'element',unit:'display-element',amount:Number(build.equipment.resistanceConversionAdd),operation:'add',order:60,source:'KUROYONHON_SKILL_TABLE_THUNDER_RESISTANCE_CONVERSION_20261025',status:'OWNER_APPROVED_PROVISIONAL',scope:conversionScope.scope,approval:conversionScope.approval,verificationStatus:conversionScope.verificationStatus,condition:{type:'always'}});}if(channel==='maximum'&&Number(build.equipment.conditionalAttackFlat??0)!==0){effects.push({id:'conditional-attack-flat',target:'physical',stage:'attack',unit:'true-attack',amount:Number(build.equipment.conditionalAttackFlat),operation:'add',order:50,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});}if(elementEntries.length){for(const entry of elementEntries)if(!Number.isInteger(entry.level)||entry.level<1||entry.level>3)throw Error('REAL_SLICE:ELEMENT_SKILL_LEVEL_UNSUPPORTED');}if(channel==='maximum'&&Number.isFinite(Number(build.equipment.maximumAffinity))&&Number(build.equipment.maximumAffinity)!==Number(build.affinity))effects.push({id:'conditional-affinity-maximum',target:'physical',stage:'affinity',unit:'percent',amount:Number(build.equipment.maximumAffinity)-Number(build.equipment.normalAffinity??build.affinity),operation:'add',order:80,source:'index.html:calcMaxAffinity',condition:{type:'always'}},{id:'conditional-affinity-maximum-element',target:'element',stage:'affinity',unit:'percent',amount:Number(build.equipment.maximumAffinity)-Number(build.equipment.normalAffinity??build.affinity),operation:'add',order:80,source:'index.html:calcMaxAffinity',condition:{type:'always'}});if(channel==='maximum'&&conditionPlan?.maximumElementComponents){const base=build.equipment.elementComponents,next=conditionPlan.maximumElementComponents;const dark=conditionPlan.groupPlan?.applied?.find(x=>x.skill==='ダークアーツ'),darkMultiplier=conditionPlan.selectedHp==='FULL_HP'?1:(dark?.elementMultiplier??1);const ratio=next.normalMultiplier/base.normalMultiplier/darkMultiplier;if(darkMultiplier!==1&&!darkBowResolved)effects.push({id:'dark-arts-body-element-multiplier',target:'element',stage:'element',unit:'dimensionless',operation:'multiply',amount:darkMultiplier,order:30,componentIds:resolvedTechniqueIds.flatMap(id=>[...(techniques[id].hits||[]).flatMap((h,i)=>h.componentSource&&!darkCbActive?[]:[id+':element:'+i]),...(darkHhResolved?hhChargeEvents[id].map((_,i)=>id+':reference:'+i):[])]),source:dark.evidenceRef,status:dark.numericOrigin,scope:darkCbActive?'FIXED_CB_INDEPENDENT_NATIVE_BODY_AND_AXE_ELEMENT_ONLY':darkHhResolved?'FIXED_HH_NATIVE_BODY_AND_NORMAL_MELODY_ELEMENT_ONLY':darkGlActive?'FIXED_GL_NATIVE_BODY_AND_STAKE_ELEMENT_ONLY':'ADOPTED_BODY_ONLY_NO_GENERATED_FOLLOWUP',condition:{type:'always'}});if(ratio!==1)effects.push({id:'conditional-element-multiplier',target:'element',stage:'element',unit:'dimensionless',operation:'multiply',amount:ratio,order:30,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});if(next.conditionalFlat)effects.push({id:'conditional-element-flat',flatComponent:'conditional',target:'element',stage:'element',unit:'display-element',operation:'add',amount:next.conditionalFlat,order:80,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});}else if(channel==='maximum'&&Number.isFinite(Number(build.equipment.maximumElement))&&Number(build.equipment.maximumElement)!==Number(build.element))effects.push({id:'conditional-element-maximum',flatComponent:'conditional',target:'element',stage:'element',unit:'display-element',amount:Number(build.equipment.maximumElement)-Number(build.element),operation:'add',order:80,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});for(const target of ['physical','element'])effects.push({id:'affinity-upper-cap'+(target==='element'?'-element':''),target,stage:'affinity',unit:'percent',operation:'cap',amount:100,order:100,source:'index.html:calcMaxAffinity;common critical probability upper bound',condition:{type:'always'}});const unresolved=(conditionPlan?.groupPlan?.unresolvedEffects||[]).map(x=>({...x}));if(channel==='maximum')for(const row of conditionPlan?.groupPlan?.applied||[])if(row.maximumUnresolvedReason)unresolved.push({id:'maximum-scope:'+row.skillId,reason:row.maximumUnresolvedReason,target:'all',source:'OWNER_MAXIMUM_WEAPON_SCOPE;standardGroupPowerPlan'});if(activeBonusEffects.length&&!conditionPlan?.groupPlan)unresolved.push({id:'bonus-plan',reason:'BONUS_CONDITION_PLAN_MISSING',target:'all',source:'index.html:standardPowerConditionPlan'});if(channel==='maximum')for(const reason of build.equipment.conditionalPending||[])if(!unresolved.some(x=>x.reason===reason))unresolved.push({id:'conditional:'+reason,reason,target:'all',source:'index.html:standardPowerConditionPlan'});return {effects,unresolved};},resolveSkillApplicability:entries=>entries.map(entry=>{
     if(entry.level===1&&activeBonusEffects.some(e=>e.name===entry.name&&ownerExcludedBonus(e)))return {...entry,effectDisposition:'non_damage',reason:'OWNER_EXCLUDED_CURRENT_COMPARISON',evidenceRef:'USER_DIRECTION_20261111'};
     if((glOrdinaryAirborne&&Number(entry.skillId)===86)||(glOrdinaryPartbreaker&&Number(entry.skillId)===129))return {...entry,effectDisposition:'non_damage',reason:'EXACT_GL_GROUND_NONFOCUS_HP_EVENTS;PART_DURABILITY_SEPARATE;INTRINSIC_FIRE_PRESERVED',evidenceRef:'MHDB_JA_SKILL_'+entry.skillId+';https://kuroyonhon.com/mhwilds/memo/10.php;https://kuroyonhon.com/mhwilds/memo/27.php;gunlance-shell-reference.js:calculateTargetComponent',status:'SOURCE_BACKED_PROVISIONAL',liveGameVerification:'PENDING'};
     if(hhThunderZeroResolved&&entry.skillId===165)return {...entry,effectDisposition:'resolved',reason:'CONFIRMED_ZERO_ADD_EXACT_HH_NORMAL_MELODY_ALL_COMPONENTS',evidenceRef:'https://kuroyonhon.com/mhwilds/program/skill.php;https://kuroyonhon.com/mhwilds/memo/8.php;https://macarongamemo.com/entry/mhwilds-damage_calculation',status:'SOURCE_BACKED_PROVISIONAL',liveGameVerification:'PENDING'};
@@ -2120,6 +2686,7 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
   const baseAttack=stats?.attackComponents?.weaponBase,baseElement=stats?.elementComponents?.weaponBase,baseAffinity=weapon.affinity;
   const stateStatsByState=weapon.kind==='insect-glaive'&&Number.isFinite(baseAttack)&&Number.isFinite(baseElement)&&Number.isFinite(baseAffinity)?{NO_EXTRACT:{attack:baseAttack,attackComponents:{weaponBase:baseAttack,normalMultiplier:1,normalFlat:0},element:elementValue,affinity:baseAffinity},TRIPLE_EXTRACT:{attack:baseAttack*1.15,attackComponents:{weaponBase:baseAttack,normalMultiplier:1.15,normalFlat:0},element:elementValue,affinity:baseAffinity}}:conditions?.stateStatsByState;
   const pipelineConditions={...(conditions||{})};
+  delete pipelineConditions.darkArtsCbIndependentRoute;delete pipelineConditions.darkArtsCbContinuationExcluded;delete pipelineConditions[darkCbRouteToken];
   const selectedStateBundle={
    'insect-glaive':insectGlaiveState,
    'hunting-horn':huntingHornState,
@@ -2157,6 +2724,7 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
   }
   if(stateStatsByState){pipelineConditions.stateStatsByState=stateStatsByState;pipelineConditions.stateStatsSource='MACARONGAMEMO_DAMAGE_UP_2025-04-16_PROVISIONAL';}
   try{const evaluated=pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:targetData.monsterId,hitZoneKey:targetData.partId},conditions:pipelineConditions,evaluation:{mode:'combo',kind:'combo',signature:'current-selection-reference-combo',techniqueIds:rapidAmmoSequence?Array(5).fill(resolvedTechniqueIds[0]):resolvedTechniqueIds}});
+   if(darkCbActive&&Object.entries(evaluated.channels||{}).some(([channel,r])=>!darkCbResultValid(r,channel)))return fail('REAL_SLICE:DARK_ARTS_CB_PRODUCED_COMPONENT_CONTRACT_INVALID');
    if(darkGlActive&&Object.values(evaluated.channels||{}).some(r=>!darkGlResultValid(r)))return fail('REAL_SLICE:DARK_ARTS_GL_PRODUCED_COMPONENT_CONTRACT_INVALID');
    if(glOrdinaryActive&&Object.values(evaluated.channels||{}).some(r=>!glOrdinaryResultValid(r)))return fail('REAL_SLICE:GL_ORDINARY_PRODUCED_COMPONENT_CONTRACT_INVALID');
    if(hhChargeStandardDragonResolved&&Object.values(evaluated.channels||{}).some(r=>!hhChargeDragonResultValid(r)))return fail('REAL_SLICE:HH_CHARGE_DRAGON_PRODUCED_COMPONENT_CONTRACT_INVALID');
@@ -2310,11 +2878,16 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
   if(!rIds||!hIds||JSON.stringify(normalized.ids)!==JSON.stringify(rIds))return unavailable('REAL_SLICE:CB_MIX_R_PROFILE_REQUIRED');
   const {mixMode,mixH,...shared}=state;
   const routeStates={R:{...shared},H:{...shared,mode:mixH?.mode??null,previousAction:mixH?.previousAction??null,normalPhials:mixH?.normalPhials??null,enhancedPhials:mixH?.enhancedPhials??null}};
+  const darkPlanned=input.stats.conditionalConditionPlan?.groupPlan?.applied?.some(a=>a.skill==='ダークアーツ');
+  const darkPair=!!darkPlanned&&JSON.stringify(state)===JSON.stringify(input.conditions?.chargeBladeState)&&input.target?.monster==='training-room'&&input.target?.part==='training-front'&&root.MHDarkArtsFixedCbSource?.(input.stats,input.conditions,input.weapon,Object.fromEntries(input.skills||[]))===true&&darkCbPairSources(input);
+  // Adoption is atomic across independent starts; a rejected pair uses the
+  // original pending-skill path for both routes, never one boosted half.
+  if(darkPlanned&&!darkPair)input=withoutDarkCbAdoption(input);
   const routes={};
   for(const [key,ids] of [['R',rIds],['H',hIds]]){
    const cb=routeStates[key];
    // A missing start is never supplied from the other route's end state.
-   routes[key]=cb.mode!=='AXE'?{status:'UNAVAILABLE',reason:'REAL_SLICE:CB_MIX_EXPLICIT_AXE_START_REQUIRED'}:evaluateCurrent({...input,techniqueId:ids[0],techniqueIds:[...ids],chargeBladeState:cb,conditions:{...(input.conditions||{}),chargeBladeState:cb}});
+   routes[key]=cb.mode!=='AXE'?{status:'UNAVAILABLE',reason:'REAL_SLICE:CB_MIX_EXPLICIT_AXE_START_REQUIRED'}:evaluateCurrent({...input,techniqueId:ids[0],techniqueIds:[...ids],chargeBladeState:cb,conditions:{...(input.conditions||{}),chargeBladeState:cb,...(darkPair?{darkArtsCbIndependentRoute:key,[darkCbRouteToken]:key}:{})}});
   }
   const channels={};
   for(const ch of ['normal','maximum']){
@@ -2392,6 +2965,7 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
    input={...input,conditions,stats:{...input.stats,conditionalConditionPlan:next}};
   }
   if(input.weapon?.kind==='charge-blade'&&input.chargeBladeState?.mixMode)return evaluateIndependentCBMix(input);
+  if(input.weapon.kind==='charge-blade'&&!input.conditions?.[darkCbRouteToken]&&input.stats.conditionalConditionPlan?.groupPlan?.applied?.some(a=>a.skill==='ダークアーツ'))input=withoutDarkCbAdoption(input);
   const original=evaluateCurrentSingleHealth(input);
   if(!original.channels)return original;
   const plan=input.stats?.conditionalConditionPlan;if(plan?.selectedHpPolicy)return original;const {dark,heroics}=healthBranchKinds(plan);
