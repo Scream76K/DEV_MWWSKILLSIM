@@ -142,11 +142,11 @@
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "4d62e3a29ca59defdc27e5a064f996066b5c32132acb4b4350673252ae9fe3f4"
+      "sha256": "aa1bb6ead589108015892178c6e9a38a1cab7fefded418c82f0be0e3071b8048"
     },
     {
       "path": "index.html",
-      "sha256": "91257a9153556dacc9c0e637cccd100b42fafa5eb5f417fde20f227c9a0ddc49"
+      "sha256": "1642459305bc0778bcf425dee5248bb2858768a021663c03dc74763fb3a7da63"
     },
     {
       "path": "observed-shelling.js",
@@ -895,6 +895,18 @@
     {
       "path": "docs/specs/dark172-bow-standard.md",
       "sha256": "be29c45c6be1d18cc86cb45a74179bc2e81ae780ac1ba48a6239d4c440292574"
+    },
+    {
+      "path": "docs/specs/dark172-hh-standard.md",
+      "sha256": "2fcb2e89c924c9fe0b8a0b232f985bdf632c7986c00919ffbe3862cc7a6e42c2"
+    },
+    {
+      "path": "tests/dark172-hh-standard.test.cjs",
+      "sha256": "9484a03286a5e730a8b064a97682eb6062a565cde8a2655235e8c76e30f3d994"
+    },
+    {
+      "path": "tests/fixtures/dark172-hh-standard.json",
+      "sha256": "174c0142f3669d4cba353c80c062b519d87091630b2c84a23b54070c94beb697"
     }
   ],
   "tests": [
@@ -967,9 +979,10 @@
     "tests/dark168-fixed-non-gs.test.cjs",
     "tests/lbg-fixed-passive-nontarget.test.cjs",
     "tests/dark172-ig-standard.test.cjs",
-    "tests/dark172-bow-standard.test.cjs"
+    "tests/dark172-bow-standard.test.cjs",
+    "tests/dark172-hh-standard.test.cjs"
   ],
-  "expectedTests": 1837,
+  "expectedTests": 1838,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",
