@@ -1180,6 +1180,15 @@
    const rapidSeriesBonus=e=>{
     if(!physicalOnlyRapid||!sourceBonusActivation({name:e.name,level:1})||activeBonusEffects.filter(x=>x.bonusSkillId===e.bonusSkillId).length!==1)return false;
     const rows=entryGroupPlan.applied.filter(a=>a.skillId===e.bonusSkillId),a=rows[0];
+    // Standard comparison disables festivals. Accept only the verified neutral
+    // rank plans on the fixed physical five-round Artia LBG route.
+    if(e.bonusSkillId===161){
+     if(!rapidPlanReady||conditions.festivalId!==0||Number(weapon.id)!==1169||weapon.name!=='荊冠のデストレーター'||resolvedTechniqueIds[0]!=='LBG_NORMAL_RAPID_2'||e.source!=='series'||![1,2].includes(e.rankLevel)||rows.length!==1||entryGroupPlan.attackMultiplier!==1||typeof root.standardGroupPowerPlan!=='function')return false;
+     const expected=root.standardGroupPowerPlan(stats,conditions.gutsState??'BEFORE',Object.fromEntries(skills),weapon.kind,conditions).applied.filter(x=>x.skillId===161);
+     if(expected.length!==1||JSON.stringify(a)!==JSON.stringify(expected[0])||a.attackAdd!==0||a.attackMultiplier!==1||a.appliesToNormal!==true||a.bonusSource!==true)return false;
+     return e.rankLevel===1?sameActivation(a.rankOneActivation,e)&&a.condition==='NO_DIRECT_HP_EFFECT'&&a.scope==='FESTIVAL_REWARDS_ONLY'&&a.effectDisposition==='non_damage':
+      sameActivation(a.festivalActivation,e)&&a.condition==='EXPLICIT_SHARED_FESTIVAL'&&a.festivalId===0&&a.festivalEnabled===false&&a.maximumAttackMultiplier===1;
+    }
     // Reuse the canonical producer for these two adopted set effects. The
     // fixed standard physical rapid sequence adds no extra attack events.
     if([162,167].includes(e.bonusSkillId)){
