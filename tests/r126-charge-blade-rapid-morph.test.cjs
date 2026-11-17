@@ -6,5 +6,6 @@ assert.ok(match,'CB component resolver exists');
 const sandbox={CHARGE_BLADE_TECHNIQUES:{TEST:{name:'test',rapidMorphDamageEligible:true}},techniqueDbGet:()=>({}),techniqueDbHits:()=>[{mv:10,elementModifier:1}],chargeBladeEvidencePhialCount:()=>null};
 vm.createContext(sandbox);vm.runInContext(html.match(/^const RAPID_MORPH_ATTACK_RULE=.*$/m)[0]+'\n'+match[0]+';this.resolve=chargeBladeTechniqueComponents;',sandbox);
 test('CB defaults omitted rapid morph to level zero',()=>assert.equal(sandbox.resolve('TEST',{}).trace.rapidMorphLevel,0));
-test('CB accepts level 0 to 3',()=>{for(const n of [0,1,2,3])assert.equal(sandbox.resolve('TEST',{rapidMorphLevel:n}).trace.rapidMorphLevel,n)});
+test('CB accepts level 0 to 3 with explicit axe boost off',()=>{for(const n of [0,1,2,3]){const r=sandbox.resolve('TEST',{rapidMorphLevel:n,axeBoosted:false});assert.equal(r.trace.rapidMorphLevel,n);assert.equal(r.physicalBody[0].attackMultiplier,[1,1,1.1,1.2][n]);assert.equal(r.elementalBody[0].multiplier,1);assert.equal(r.axeBoostPhysical.length,0);assert.equal(r.axeBoostElement.length,0);}});
+test('CB standalone helper retains pending rapid morph with axe followups',()=>{for(const n of [2,3])for(const axeBoosted of [undefined,true])assert.throws(()=>sandbox.resolve('TEST',{rapidMorphLevel:n,axeBoosted}),/RAPID_MORPH_AXE_FOLLOWUP_UNCONNECTED/);});
 test('CB rejects invalid rapid morph levels instead of silently clamping',()=>{for(const n of [-1,4,1.5,'oops',Infinity])assert.throws(()=>sandbox.resolve('TEST',{rapidMorphLevel:n}),/RAPID_MORPH_LEVEL_INVALID/)});

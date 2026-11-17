@@ -64,6 +64,8 @@ test('GL Thunder: synthetic production predicate boundary checks', t => {
         },
       },
     };
+    // Production now consumes resolveTarget's part, not a second training-room lookup.
+    f.part=f.trainingRoom.parts[0];
     f.root = {
       MHSkillExtraDamagePolicies: {162: {name: '海竜の渦雷', maxLevel: 2, bodyEffect: true, components: ['FIXED', 'THUNDER']}},
       __getBetaDB: () => f.db,
@@ -72,7 +74,7 @@ test('GL Thunder: synthetic production predicate boundary checks', t => {
       bonusSkillObjects: (set, type) => type === 'series' ? (set?.syntheticBonuses || []) : [],
       groupSetData: armor => armor.armorSet,
       // Deliberately constant: tests validate agreement checks, not affinity arithmetic.
-      MHWMaxAffinityResolver: () => 20,
+      MHWMaxAffinityResolver: (_total,_affinity,_weapon,part) => part===f.part?20:NaN,
     };
     return f;
   }
@@ -172,6 +174,7 @@ test('GL Thunder: synthetic production predicate boundary checks', t => {
     ['nonfinite maximum affinity', f => f.stats.maxAffinity = Infinity],
     ['out-of-range normal affinity', f => f.stats.affinity = -101],
     ['out-of-range maximum affinity', f => f.stats.maxAffinity = 101],
+    ['missing resolved part', f => delete f.part],
     ['missing affinity resolver', f => delete f.root.MHWMaxAffinityResolver],
     ['disagreeing affinity resolver', f => f.root.MHWMaxAffinityResolver = () => 21],
     ['throwing affinity resolver', f => f.root.MHWMaxAffinityResolver = () => { throw Error('synthetic-failure'); }],
@@ -209,7 +212,7 @@ test('GL Thunder: synthetic production predicate boundary checks', t => {
         TechniqueDBEngine: {}, MHWGenericProfileDamage: () => {},
       });
       Object.assign(f, {
-        hasShelling: true, resolvedTechniqueIds: ['synthetic-shell'],
+        hasShelling: true, glGogResolved: false, resolvedTechniqueIds: ['synthetic-shell'],
         cornpopperEntries: [], guardEntries: [], cornpopperRule: {level: 1}, blackEclipse: false,
         gogPlan: {skill: f.entry.name}, adoptedBonusAttackName: () => true,
       });

@@ -1,5 +1,9 @@
 const test=require('node:test'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto'),{JSDOM,VirtualConsole}=require('jsdom');
 const P=path.resolve(process.env.PRODUCT_ROOT||path.join(__dirname,'..'));
+// Fixture J includes GL_SLAM coefficient2; correct only native element, not K/flatSlope.
+// Dragon440 /10 × white1.15 × training-front dragon.30 × (2−1) =15.18.
+// Heroics/Peak/Resentment/attached155 alter attack, never this native element term.
+const correctedJ=p=>p.J-(p.kind==='gunlance'?440/10*1.15*.30*(2-1):0);
 test('selected HP preserves compatible172, reconciles direct contexts and excludes recoverable damage at FULL',()=>{
 const fixture=JSON.parse(fs.readFileSync(P+'/tests/fixtures/selected-hp-inputs.json')),source={rows:fixture.reviewRegressionInputs},clone=x=>JSON.parse(JSON.stringify(x)),rows=[],failures=[],errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
 const w=new JSDOM(require(P+'/tools/dom-test-setup.cjs').readSimulatorHtml(),{url:'https://hp-review.invalid',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}).window;
@@ -13,7 +17,7 @@ for(const kind of ['great-sword','light-bowgun','heavy-bowgun']){const input=clo
 for(const hp of ['FULL_HP','AT_OR_BELOW_30_PERCENT']){const input=clone(profiles.find(p=>p.kind==='great-sword').inputSnapshot);input.selectedHp=hp;input.charmCustom.skills=[{name:'フルチャージ',level:5},{name:'逆恨み',level:5}];const r=run(input,'HP03 '+hp);check('HP03 '+hp,()=>{near(metric(r,'normal'),hp==='FULL_HP'?1293.60132:1191.25908);near(metric(r,'maximum'),hp==='FULL_HP'?1293.60132:1319.18688);});}
 for(const p of fixture.profiles)for(const hp of ['FULL_HP','AT_OR_BELOW_30_PERCENT']){
  const input={...clone(p.input),selectedHp:hp};input.charmCustom.skills=[{name:'フルチャージ',level:5},{name:'逆恨み',level:5}];const r=run(input,'HP03 all14 '+p.kind+hp);
- check('HP03 all14 '+p.kind+hp,()=>{near(metric(r,'normal'),p.K+p.J+(hp==='FULL_HP'?20:0)*p.flatSlope);near(metric(r,'maximum'),p.K+p.J+(hp==='FULL_HP'?20:25)*p.flatSlope);});
+ check('HP03 all14 '+p.kind+hp,()=>{near(metric(r,'normal'),p.K+correctedJ(p)+(hp==='FULL_HP'?20:0)*p.flatSlope);near(metric(r,'maximum'),p.K+correctedJ(p)+(hp==='FULL_HP'?20:25)*p.flatSlope);});
 }
 // Input-shape validation must precede reconciliation, including invalid HP.
 check('unrelated malformed skills remain rejected',()=>{const r=adapter.evaluateCurrent({...captured,conditions:{...captured.conditions,selectedHp:'UNKNOWN'},skills:[{}]});assert.equal(r.reason,'REAL_SLICE:BUILD_SKILL_INPUT_INVALID');});

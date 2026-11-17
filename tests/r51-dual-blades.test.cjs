@@ -44,7 +44,10 @@ test('aggregate record is archived and new stages expose separate verification c
  assert.deepEqual(p(e.get('dual-blades','DB_DEMON_DANCE').replacedByTechniqueIds),ids);
  assert.equal(e.completion['dual-blades'].motionValueAdopted,3);
  assert.equal(e.completion['dual-blades'].hitCountConfirmed,3);
- assert.equal(Object.values(e.completion).reduce((n,x)=>n+x.registered,0),539);
+ const later=['GS_DARK_ARTS_WAVE','LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_2','LBG_NORMAL_RAPID_3','LBG_NORMAL_RAPID_NATIVE_3'];
+ const records=Object.values(e.db).flatMap(x=>Object.values(x));
+ assert.deepEqual(records.filter(t=>later.includes(t.techniqueId)).map(t=>t.techniqueId).sort(),later.slice().sort());
+ assert.equal(Object.values(e.completion).reduce((n,x)=>n+x.registered,0),539+later.length);
  assert.ok(e.get('charge-blade','CB_SAED_AED_DERIVED'));
- assert.equal(Object.values(e.db).flatMap(x=>Object.values(x)).filter(t=>!['CB_SAED_AED_DERIVED','LBG_NORMAL_REFERENCE_RULES'].includes(t.techniqueId)).length,537);
+ assert.equal(Object.values(e.db).flatMap(x=>Object.values(x)).filter(t=>!['CB_SAED_AED_DERIVED','LBG_NORMAL_REFERENCE_RULES',...later].includes(t.techniqueId)).length,537);
 });

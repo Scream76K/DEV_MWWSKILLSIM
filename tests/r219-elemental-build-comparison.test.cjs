@@ -37,7 +37,8 @@ test('nonmatching elemental skill does not change elemental or physical damage',
  const s=scenario();s.saved.A={weaponKind:'great-sword',weaponId:'fire',decos:{head0:null}};s.saved.B={weaponKind:'great-sword',weaponId:'fire',decos:{head0:'water'}};s.setNames(['A','B']);const rows=s.run();
  assert.equal(rows[0].power.normal.element,rows[1].power.normal.element);
  assert.equal(rows[0].power.normal.physical,rows[1].power.normal.physical);
- assert.equal(s.index(rows[1],rows[0]).normal,100);
+ // Exact underlying damage equality above remains mandatory; only the normalized ratio allows one rounding step.
+ assert.ok(Math.abs(s.index(rows[1],rows[0]).normal-100)<=Number.EPSILON*100);
 });
 test('critical eye changes physical expectation but not elemental damage',()=>{
  const s=scenario();s.saved.A={weaponKind:'great-sword',weaponId:'fire',decos:{head0:null}};s.saved.B={weaponKind:'great-sword',weaponId:'fire',decos:{head0:'eye'}};s.setNames(['A','B']);const rows=s.run();

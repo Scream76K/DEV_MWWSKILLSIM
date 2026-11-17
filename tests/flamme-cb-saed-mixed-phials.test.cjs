@@ -46,7 +46,6 @@ test('SAED ammo loading skill level governs five consumed phials',()=>{
 });
 test('SAED rejects invalid skill level without inventing damage',()=>{
   for(const ammoLoadingLevel of [null, '2', -1, 3, NaN]){
-    if(ammoLoadingLevel===null)continue; // null means unspecified via caller contract
-    assert.throws(()=>compute('CB_SAED',stats,{...state,ammoLoadingLevel}),/CB_SAED:AMMO_LOADING_LEVEL_INVALID/);
+    assert.throws(()=>compute('CB_SAED',stats,{...state,enhancedPhial:false,ammoLoadingLevel}),/CB_SAED:AMMO_LOADING_LEVEL_INVALID/);
   }
 });

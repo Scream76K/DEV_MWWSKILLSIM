@@ -17,17 +17,24 @@ test('IG alternatives retain six body hits at both charge states and separate ki
  assert.equal(a.registeredHits.length,6);
  assert.deepEqual(p(a.alternatives).map(x=>[x.stateRequirement.chargeLevel,x.hits.length,x.hits[0].mv]),[[1,6,48],[2,6,64]]);
  assert.ok(a.alternatives.every(x=>x.excludedComponents[0].hitCount===6&&x.hits.every(h=>h.elementModifier===.8)));
- assert.equal(a.calculable,false);
+ assert.equal(a.calculable,true);
+ assert.deepEqual(p(e.hits('insect-glaive','IG_RISING_SPIRAL_SLASH')).map(h=>[h.mv,h.elementModifier]),Array.from({length:6},()=>[64,.8]));
+ assert.equal(a.currentVersionAudit,'PENDING');
 });
 test('IG descending slash alternatives expose charge-specific hit values without invented modifiers',()=>{
  const a=e.audit('insect-glaive','IG_ENHANCED_DESCENDING_THRUST');
  assert.deepEqual(p(a.alternatives).filter(x=>x.evidenceRef==='KUROYONHON_IG_R49_CHECK').map(x=>x.hits.reduce((v,h)=>v+h.mv,0)),[86.4,108,144]);
  assert.ok(a.alternatives.filter(x=>x.evidenceRef==='KUROYONHON_IG_R49_CHECK').every(x=>x.hits.every(h=>!('elementModifier' in h))));
 });
-test('profile blockers collect every technique instead of hiding all but the first failure',()=>{
+test('profile blockers distinguish unresolved aggregate state from all individual technique blockers',()=>{
  const av=c.window.BuildComparisonEngine.profileAvailability('insect-glaive');
- assert.equal(av.status,'EVIDENCE_GATED');assert.equal(av.blockers.length,4);
- assert.ok(av.blockers.some(b=>b.reasons.includes('CHARGE_STATE_MAPPING_PENDING')));
+ assert.equal(av.status,'EVIDENCE_GATED');assert.deepEqual(p(av.blockers),[]);
+ assert.deepEqual(p(av.profileBlockers),['STATE_STATS_RESOLUTION_PENDING']);
+ const ids=['IG_ENHANCED_DESCENDING_CHARGE_0','IG_ENHANCED_DESCENDING_CHARGE_1','IG_SPIRAL_CHARGE_1','IG_SPIRAL_CHARGE_2'];
+ const pending=c.window.BuildComparisonEngine.profileAvailability('insect-glaive',{id:'explicit-unverified-charge-records',status:'ADOPTED',techniqueIds:ids,hits:[]});
+ assert.equal(pending.status,'EVIDENCE_GATED');
+ assert.deepEqual(p(pending.blockers).map(b=>b.techniqueId),ids);
+ assert.ok(pending.blockers.every(b=>b.reasons.length>0));
  assert.deepEqual(p(c.window.BuildComparisonEngine.profileAvailability('great-sword').blockers),[]);
 });
 test('audit inspection preserves absent fields and is immutable',()=>{

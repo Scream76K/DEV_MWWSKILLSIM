@@ -9,7 +9,15 @@ test('62/70 maximum activation assumptions, public scope and HBG clash route',()
  const kinds62=['great-sword','sword-and-shield','lance','gunlance','charge-blade','heavy-bowgun'];const kinds70=[...kinds62,'hammer','hunting-horn','switch-axe','insect-glaive'];
  for(const c of f.cases){assert.equal(crypto.createHash('sha256').update(JSON.stringify(c.input)).digest('hex'),c.inputHash);const immutable=JSON.stringify(c.input);w.__snapshot=structuredClone(c.input);w.applyBuildSnapshot(w.__snapshot);w.document.getElementById('calcBuild').click();assert.equal(JSON.stringify(c.input),immutable);const r=JSON.parse(w.eval('JSON.stringify(calcState.realOneHit)'));
   assert.ok(r.channels,c.label+' '+JSON.stringify(r));
-  for(const ch of ['normal','maximum']){const channel=r.channels[ch];assert.equal(channel.metrics.comboTotalDamage.status,'available',c.label+ch);assert.ok(Math.abs(channel.metrics.comboTotalDamage.value-c.expected[ch])<1e-8,c.label+ch+' '+channel.metrics.comboTotalDamage.value+' != '+c.expected[ch]);}
+  for(const ch of ['normal','maximum']){
+   const channel=r.channels[ch];
+   // Archived fixture used GL_SLAM element coefficient2. Owner correction is1:
+   // native dragon440 /10 × white1.15 × training-front dragon.30 × (2−1).
+   // 62/70 alter attack only, so this elemental subtraction is channel-invariant.
+   const slamDelta=c.input.weaponKind==='gunlance'?440/10*1.15*.30*(2-1):0,expected=c.expected[ch]-slamDelta;
+   if(slamDelta){const parts=channel.components.filter(x=>x.id==='GL_SLAM:element:0');assert.equal(parts.length,1);assert.ok(Math.abs(parts[0].value-slamDelta)<1e-8);assert.equal(parts[0].details.appliedElement,440);}
+   assert.equal(channel.metrics.comboTotalDamage.status,'available',c.label+ch);assert.ok(Math.abs(channel.metrics.comboTotalDamage.value-expected)<1e-8,c.label+ch+' '+channel.metrics.comboTotalDamage.value+' != '+expected);
+  }
   if(c.input.weaponKind==='heavy-bowgun'){const stored=JSON.parse(w.eval('JSON.stringify(buildSnapshot())'));w.__snapshot=stored;w.applyBuildSnapshot(w.__snapshot);w.document.getElementById('calcBuild').click();assert.deepEqual(JSON.parse(w.eval('JSON.stringify(calcState.realOneHit)')),r);}
   const kind=c.input.weaponKind==='sword-shield'?'sword-and-shield':c.input.weaponKind,target=(c.id===62?kinds62:kinds70).includes(kind),n=r.channels.normal.diagnostics,m=r.channels.maximum.diagnostics;
   assert.equal(n.maximumActivationAssumptions,undefined);const note=(m.maximumActivationAssumptions||[]).find(x=>x.skillId===c.id);assert.equal(!!note,target,c.label);

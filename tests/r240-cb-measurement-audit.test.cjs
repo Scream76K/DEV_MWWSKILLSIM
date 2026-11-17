@@ -11,7 +11,11 @@ test('r240 audit enumerates phial moves without inventing counts',()=>{
   vm.runInContext(src.slice(start,end)+';globalThis.audit=chargeBladePhialMeasurementAudit();',context);
   const audit=JSON.parse(JSON.stringify(context.audit));
   assert.equal(audit.length,5);
-  assert.equal(audit.filter(x=>x.measurementNeeded).length,5);
-  assert.ok(audit.every(x=>x.count===null&&x.countStatus==='MEASUREMENT_REQUIRED'&&x.source===null));
+  // Four explicit owner-video counts are provisional, never silently VERIFIED.
+  const known={CB_ELEMENT_DISCHARGE_1:1,CB_ELEMENT_DISCHARGE_2:2,CB_AED:2,CB_FOLLOWUP_AED:3};
+  assert.equal(audit.filter(x=>x.measurementNeeded).length,1);
+  for(const [id,count] of Object.entries(known)){const row=audit.find(x=>x.techniqueId===id);assert.ok(row,id);assert.equal(row.count,count);assert.equal(row.countStatus,'PROVISIONAL');assert.equal(row.measurementNeeded,false);assert.match(row.source,/^USER_VIDEO_OBSERVATION:/);assert.equal(row.priority,'COEFFICIENT_REVIEW');}
+  const unknown=audit.find(x=>x.techniqueId==='CB_SHIELD_THRUST');assert.ok(unknown);assert.equal(unknown.count,null);assert.equal(unknown.countStatus,'MEASUREMENT_REQUIRED');assert.equal(unknown.source,null);assert.equal(unknown.priority,'COUNT_FIRST');
+  assert.match(unknown.measurementInstruction,/distinguish body hits from phial hits/);
   assert.ok(audit.every(x=>x.coefficientStatus==='PROVISIONAL_EXISTING'));
 });

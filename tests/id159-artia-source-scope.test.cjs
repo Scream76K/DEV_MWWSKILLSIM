@@ -15,7 +15,7 @@ test('ID159 Artia standard is explicitly non-target; saved A/B and separate pend
  const a=base.channels[ch],b=withSkill.channels[ch];
  for(const k of ['components','execution','finalState'])assert.deepEqual(b[k],a[k],ch+':'+k);
  assert.equal(b.metrics.comboTotalDamage.value,a.metrics.comboTotalDamage.value);
- assert.ok(Math.abs(a.metrics.comboTotalDamage.value-1450.03308)<1e-8);
+ assert.ok(Math.abs(a.metrics.comboTotalDamage.value-(1450.03308-44*.3*1.15))<1e-8);
  assert.ok((b.diagnostics.excludedCalculationSkills||[]).some(x=>x.skillId===159&&x.status==='NOT_APPLICABLE'&&x.reason==='CORNPOPPER_ARTIA_STANDARD_NOT_APPLICABLE'));
  assert.ok(!(b.diagnostics.ignoredSkillEffects||[]).some(x=>x.skillId===159));
  }

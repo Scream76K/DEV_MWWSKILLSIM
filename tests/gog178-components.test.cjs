@@ -20,6 +20,9 @@ test('178 exact public 28 inputs, element-only application, removal and snapshot
   const hpOracle=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/selected-hp-inputs.json'))).profiles.find(p=>p.kind===input.weaponKind);
   const peakLevel=Math.min(5,Object.values(input.armor).reduce((n,id)=>n+(f.armor.find(a=>a.id===Number(id))?.skills||[]).filter(s=>s.skill?.id===154).reduce((a,s)=>a+s.level,0),0));
   const expected={normal:c.expected.normal+hpOracle.flatSlope*[0,3,6,10,15,20][peakLevel],maximum:c.expected.maximum};
+  // Preserve original fixture/hash. SLAM2->1 removes one native coefficient;
+  // ID178 maximum completes GL element to548/692, normal stays440.
+  if(input.weaponKind==='gunlance'){expected.normal-=44*.3*1.15;expected.maximum-=[0,548,692][c.rank]/10*.3*1.15;}
   const r=run(input);for(const ch of ['normal','maximum']){assert.equal(r.channels[ch].metrics.comboTotalDamage.status,'available',c.label);near(r.channels[ch].metrics.comboTotalDamage.value,expected[ch],c.label+ch);}
   assert.ok(!JSON.stringify(r).includes('GOG:DEDICATED_COMPONENT_NOT_ADOPTED'),c.label);assert.ok(!JSON.stringify(r).includes('LBG_RAPID:SKILL_COMBINATION_NOT_ADOPTED'),c.label);
   const saved=JSON.parse(w.eval('JSON.stringify(buildSnapshot())'));assert.deepEqual(run(saved),r);

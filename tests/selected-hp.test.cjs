@@ -2,6 +2,10 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(process.env.PRODUCT_ROOT||path.join(__dirname,'..')),{JSDOM,VirtualConsole}=require('jsdom'),f=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/selected-hp-inputs.json'))),pack=JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/offset-maximum-inputs.json'))).data;
 const near=(a,b,label)=>assert.ok(Number.isFinite(a)&&Math.abs(a-b)<1e-8,`${label}: ${a} != ${b}`);
+// Fixture J includes GL_SLAM coefficient2; correct only native element, not K/flatSlope.
+// Dragon440 /10 × white1.15 × training-front dragon.30 × (2−1) =15.18.
+// Heroics/Peak/Resentment/attached155 alter attack, never this native element term.
+const correctedJ=p=>p.J-(p.kind==='gunlance'?440/10*1.15*.30*(2-1):0);
 test('selected HP 87/154 all ranks both channels 14 weapons, save and shared conditions',()=>{
  const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));const w=new JSDOM(require(path.join(root,'tools/dom-test-setup.cjs')).readSimulatorHtml(),{url:'https://hp-selection.test',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}).window;
  let count=0;const fd=process.env.HP_RESULT_FILE?fs.openSync(process.env.HP_RESULT_FILE,'wx'):null;
@@ -10,13 +14,13 @@ test('selected HP 87/154 all ranks both channels 14 weapons, save and shared con
  const run=(input,label)=>{const old=JSON.stringify(input);w.applyBuildSnapshot(structuredClone(input));w.document.getElementById('calcBuild').click();const result=JSON.parse(w.eval('JSON.stringify(calcState.realOneHit)'));assert.equal(JSON.stringify(input),old);count++;if(fd!==null)fs.writeSync(fd,JSON.stringify({label,input,result})+'\n');return result;};
  for(const p of f.profiles)for(const id of [87,154])for(const hp of ['FULL_HP','AT_OR_BELOW_30_PERCENT'])for(const lv of [0,1,2,3,4,5]){
   const input=structuredClone(p.input);input.selectedHp=hp;input.charmCustom.skills=lv?[{name:id===87?'火事場力':'フルチャージ',level:lv}]:[];
-  const label=[id,p.kind,hp,lv].join(':'),r=run(input,label),m=id===87&&hp==='AT_OR_BELOW_30_PERCENT'?[1,1,1.05,1.05,1.1,1.3][lv]:1,flat=id===154&&hp==='FULL_HP'?[0,3,6,10,15,20][lv]:0,expected=p.K*m+p.J+p.flatSlope*flat;
+  const label=[id,p.kind,hp,lv].join(':'),r=run(input,label),m=id===87&&hp==='AT_OR_BELOW_30_PERCENT'?[1,1,1.05,1.05,1.1,1.3][lv]:1,flat=id===154&&hp==='FULL_HP'?[0,3,6,10,15,20][lv]:0,expected=p.K*m+correctedJ(p)+p.flatSlope*flat;
   for(const ch of ['normal','maximum']){assert.equal(r.channels[ch].metrics.comboTotalDamage.status,'available');near(r.channels[ch].metrics.comboTotalDamage.value,expected,label+ch);assert.equal(r.channels[ch].diagnostics.selectedHpPolicy.selectedHp,hp);}
   assert.ok(!JSON.stringify(r).includes('IGNORED_UNSUPPORTED_EFFECT'),label);
   if(lv===5){const saved=JSON.parse(w.eval('JSON.stringify(buildSnapshot())'));assert.equal(saved.selectedHp,hp);assert.deepEqual(run(saved,label+':restore'),r);assert.equal(w.document.getElementById('powerSelectedHp').value,hp);assert.ok(w.document.getElementById('buildSummary').textContent.includes(hp==='FULL_HP'?'HP最大':'HP30%以下'));}
  }
  // Owner decision: missing/legacy HP defaults FULL in both output channels, without rewriting input.
- for(const p of f.profiles){const input=structuredClone(p.input);input.charmCustom.skills=[{name:'火事場力',level:5},{name:'フルチャージ',level:5}];const r=run(input,p.kind+':legacy-unselected');for(const ch of ['normal','maximum']){near(r.channels[ch].metrics.comboTotalDamage.value,p.K+p.J+20*p.flatSlope,'legacy FULL');assert.equal(r.channels[ch].diagnostics.selectedHpPolicy.status,'SELECTED');}assert.equal(w.document.getElementById('powerSelectedHp').value,'FULL_HP');}
+ for(const p of f.profiles){const input=structuredClone(p.input);input.charmCustom.skills=[{name:'火事場力',level:5},{name:'フルチャージ',level:5}];const r=run(input,p.kind+':legacy-unselected');for(const ch of ['normal','maximum']){near(r.channels[ch].metrics.comboTotalDamage.value,p.K+correctedJ(p)+20*p.flatSlope,'legacy FULL');assert.equal(r.channels[ch].diagnostics.selectedHpPolicy.status,'SELECTED');}assert.equal(w.document.getElementById('powerSelectedHp').value,'FULL_HP');}
  // Missing, empty and historical UNSELECTED normalize only during restore.
  const legacyBase=structuredClone(f.profiles[0].input);legacyBase.charmCustom.skills=[{name:'フルチャージ',level:5}];
  const full=run({...legacyBase,selectedHp:'FULL_HP'},'normalization reference');
@@ -32,7 +36,7 @@ test('selected HP shared saved comparison, attached155/178 and attack-component 
  const run=(input,label)=>{w.applyBuildSnapshot(structuredClone(input));w.document.getElementById('calcBuild').click();const result=JSON.parse(w.eval('JSON.stringify(calcState.realOneHit)'));log.push({input,label,result});return result;};
  for(const p of f.profiles)for(const hp of ['FULL_HP','AT_OR_BELOW_30_PERCENT']){
   const input={...structuredClone(p.input),selectedHp:hp,armor:{head:152,chest:153,arms:154}};const r=run(input,'155:'+p.kind+hp),add=hp==='FULL_HP'?3:0;
-  near(r.channels.normal.metrics.comboTotalDamage.value,p.K+p.J+p.flatSlope*add,'155 normal');near(r.channels.maximum.metrics.comboTotalDamage.value,p.K+p.J+p.flatSlope*(add+10),'155 maximum');
+  near(r.channels.normal.metrics.comboTotalDamage.value,p.K+correctedJ(p)+p.flatSlope*add,'155 normal');near(r.channels.maximum.metrics.comboTotalDamage.value,p.K+correctedJ(p)+p.flatSlope*(add+10),'155 maximum');
  }
  for(const p of f.profiles.filter(p=>['charge-blade','heavy-bowgun'].includes(p.kind)))for(const rank of [1,2]){
   const input={...structuredClone(p.input),armor:rank===1?{head:670,chest:671}:{head:670,chest:671,arms:672,waist:673},selectedHp:'FULL_HP'},full=run(input,'178 FULL '+p.kind+rank),low=run({...input,selectedHp:'AT_OR_BELOW_30_PERCENT'},'178 LOW '+p.kind+rank);
@@ -44,7 +48,7 @@ test('selected HP shared saved comparison, attached155/178 and attack-component 
  for(const hp of ['FULL_HP','AT_OR_BELOW_30_PERCENT']){
   w.document.getElementById('powerSelectedHp').value=hp;w.document.getElementById('calcBuild').click();const storageBefore=w.eval('JSON.stringify(savedBuildMap())'),before=w.eval('JSON.stringify(buildSnapshotComparable(buildSnapshot()))');
   w.eval("document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true);runBuildCompare();");
-  const rows=JSON.parse(w.eval('JSON.stringify(lastBuildComparisonRows)'));assert.equal(rows.length,2);for(const row of rows)for(const ch of ['normal','maximum']){near(row.oneHitPipeline.channels[ch].metrics.comboTotalDamage.value,p.K+p.J+(row.name==='HP-A'&&hp==='FULL_HP'?20*p.flatSlope:0),'shared selected HP comparison');assert.equal(row.oneHitPipeline.channels[ch].diagnostics.selectedHpPolicy.selectedHp,hp);}
+  const rows=JSON.parse(w.eval('JSON.stringify(lastBuildComparisonRows)'));assert.equal(rows.length,2);for(const row of rows)for(const ch of ['normal','maximum']){near(row.oneHitPipeline.channels[ch].metrics.comboTotalDamage.value,p.K+correctedJ(p)+(row.name==='HP-A'&&hp==='FULL_HP'?20*p.flatSlope:0),'shared selected HP comparison');assert.equal(row.oneHitPipeline.channels[ch].diagnostics.selectedHpPolicy.selectedHp,hp);}
   assert.equal(w.eval('JSON.stringify(savedBuildMap())'),storageBefore);assert.equal(w.eval('JSON.stringify(buildSnapshotComparable(buildSnapshot()))'),before);log.push({label:'comparison '+hp,rows,storageUnchanged:true});
  }
  const st={attack:220,attackTrue:220,attackComponents:{weaponBase:200,normalMultiplier:1.05,normalFlat:10},element:0,affinity:0,activeBonusEffects:[]};

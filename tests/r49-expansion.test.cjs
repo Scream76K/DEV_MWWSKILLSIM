@@ -12,9 +12,13 @@ test('charge blade normal techniques omit undocumented part modifiers',()=>{
  const t=e.get('charge-blade','CB_CHARGED_DOUBLE_SLASH');assert.deepEqual(p(t.hits).map(h=>h.mv),[25,16]);
  assert.ok(t.hits.every(h=>!('partModifier' in h)));
 });
-test('insect glaive aggregate STANDARD records remain archived but fail closed',()=>{
- assert.equal(e.get('insect-glaive','IG_TRIPLE_ADVANCING_COMBO').hits[0].mv,48);
- assert.throws(()=>e.hits('insect-glaive','IG_TRIPLE_ADVANCING_COMBO'),/FAIL_CLOSED/);
+test('IG preserves archived aggregate while adopted native hits remain separate from profile readiness',()=>{
+ const t=e.get('insect-glaive','IG_TRIPLE_ADVANCING_COMBO');
+ assert.equal(t.replacedRecord.hits[0].mv,48);
+ assert.equal(t.replacedRecord.recordRole,'LEGACY_AGGREGATE');
+ assert.equal(t.replacedRecord.calculationStatus,'EVIDENCE_GATED');
+ assert.deepEqual(p(e.hits('insect-glaive',t.techniqueId)).map(h=>[h.mv,h.elementModifier]),[[18,.8],[30,.8]]);
+ assert.equal(t.calculationStatus,'READY_BODY_COMPONENT');
  assert.equal(c.window.BuildComparisonEngine.profileAvailability('insect-glaive').status,'EVIDENCE_GATED');
 });
 test('gunlance shell notation is kept separate from ordinary hits',()=>{
@@ -35,15 +39,25 @@ test('all14 source scopes are catalogued without marking DB COMPLETE',()=>{
  assert.equal(Object.values(e.completion).filter(x=>x.sourceCatalogued).length,14);
  assert.ok(Object.values(e.completion).every(x=>!x.complete));
 });
-test('all238 Phase3 records retain evidence and reject calculation reads',()=>{
+test('all238 historical Phase3 records retain evidence; only explicitly adopted current records permit hits',()=>{
+ const historical=vm.runInContext('TECHNIQUE_DB_R47_EXPANSION',c);
+ const adopted=[];
  let count=0;
- for(const [kind,records] of Object.entries(e.db))for(const t of Object.values(records)){
+ for(const [kind,records] of Object.entries(historical))for(const t of Object.values(records)){
   if(t.introducedIn!=='r49')continue;
-  count++;assert.ok(t.evidenceRefs.every(ref=>e.evidence[ref]));
-  assert.ok(t.unresolvedReasons.length);assert.throws(()=>e.hits(kind,t.techniqueId),/FAIL_CLOSED/);
+  count++;assert.ok(t.evidenceRefs.every(ref=>e.evidence[ref]),t.techniqueId);
+  assert.ok(t.unresolvedReasons.length,t.techniqueId);
+  const current=e.get(kind,t.techniqueId);assert.ok(current,t.techniqueId);
+  if(t.techniqueId==='SA_SWORD_LEFT_RISING'){
+   assert.equal(current.calculationStatus,'READY_BODY_COMPONENT');
+   assert.equal(current.adoptionStatus,'OWNER_APPROVED_PROVISIONAL');
+   assert.deepEqual(p(current.replacedRecord.hits),p(t.hits));
+   assert.deepEqual(p(e.hits(kind,t.techniqueId)).map(h=>h.mv),[62]);
+   adopted.push(t.techniqueId);
+  }else assert.throws(()=>e.hits(kind,t.techniqueId),/FAIL_CLOSED/,t.techniqueId);
   for(const h of t.hits){assert.ok(Number.isFinite(h.mv));for(const key of ['elementModifier','partModifier'])if(key in h)assert.ok(Number.isFinite(h[key]));}
  }
- assert.equal(count,238);
+ assert.equal(count,238);assert.deepEqual(adopted,['SA_SWORD_LEFT_RISING']);
 });
 test('bowgun canonical source view preserves legacy maximum-hit inspection',()=>{
  const b=c.window.BuildComparisonEngine;

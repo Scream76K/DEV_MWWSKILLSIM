@@ -5,16 +5,16 @@ const elements=Object.fromEntries(['techAuditKind','techAuditId','techAuditOut',
 const c={window:{},document:{getElementById:id=>elements[id]||null}};vm.createContext(c);
 vm.runInContext('const KINDS='+s.match(/const KINDS=(\[.*?\]);/)[1]+';'+s.slice(s.indexOf('const CHARGE_BLADE_ENGINE_VERSION='),s.indexOf('function compareStep5Snapshot()')),c);
 const ui=s.match(/<script id="technique-audit-ui">([\s\S]*?)<\/script>/);
-test('audit panel switches weapons and shows all STANDARD blockers and both spiral charges',()=>{
+test('audit panel switches weapons and shows current STANDARD profile blocker and both spiral charges',()=>{
  assert.ok(ui,'audit UI script must be present');vm.runInContext(ui[1],c);
  elements.techAuditKind.value='insect-glaive';elements.techAuditKind.change();
  assert.ok(elements.techAuditId.innerHTML.includes('IG_RISING_SPIRAL_SLASH'));
- assert.ok(elements.techAuditSummary.innerHTML.includes('IG_ENHANCED_DESCENDING_THRUST'));
+ assert.ok(elements.techAuditSummary.innerHTML.includes('STATE_STATS_RESOLUTION_PENDING'));
  elements.techAuditId.value='IG_RISING_SPIRAL_SLASH';elements.techAuditId.change();
  assert.ok(elements.techAuditOut.innerHTML.includes('溜め段階 1'));
  assert.ok(elements.techAuditOut.innerHTML.includes('溜め段階 2'));
  assert.ok(elements.techAuditOut.innerHTML.includes('0.8'));
- assert.ok(elements.techAuditOut.innerHTML.includes('計算保留'));
+ assert.ok(elements.techAuditOut.innerHTML.includes('全成分の計算可否は別'));
 });
 test('audit panel treats missing part coefficients as unknown, and displays special ammo source values',()=>{
  assert.ok(ui);vm.runInContext(ui[1],c);

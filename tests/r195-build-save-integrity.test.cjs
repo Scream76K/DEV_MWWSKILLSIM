@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 const html=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
-const begin=html.indexOf('function buildSnapshotComparable(');
+const begin=html.indexOf('function normalizeSelectedHp(');
 const end=html.indexOf('function savedBuildMap()',begin);
 assert.ok(begin>0&&end>begin);
 const ctx=vm.createContext({JSON});
@@ -17,3 +17,9 @@ for(const [field,value] of [['weaponId','other'],['weaponKind','great-sword'],['
 }
 test('missing saved snapshot fails integrity check',()=>assert.equal(same(null,base),false));
 test('save handler verifies full snapshot instead of mere presence',()=>assert.match(html,/buildSnapshotMatches\(JSON\.parse\(verify\)\[name\],m\[name\]\)/));
+
+// Exercise the real HP normalizer added to the production snapshot contract.
+test('legacy HP omission and explicit FULL_HP compare equal',()=>assert.equal(same(base,{...base,selectedHp:'FULL_HP'}),true));
+for(const [field,value] of [['selectedHp','AT_OR_BELOW_30_PERCENT'],['combatBuffs',{meal:'fixture-meal',charm:null,otherBuffs:null}],['target',{monsterId:'other-monster',partId:'other-part'}]]){
+ test('save integrity includes '+field,()=>assert.equal(same(base,{...base,[field]:value}),false));
+}

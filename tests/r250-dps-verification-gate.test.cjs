@@ -17,8 +17,14 @@ test('comparison JSON clears unverified cached DPS and includes status and reaso
 test('saved comparison retains DPS verification state and reason instead of an object as numeric DPS',()=>{
  const c=load(['compareSnapshot'],{applyBuildSnapshot:()=>{},calcState:{stats:{}},damageForStats:()=>10,dpsForStats:()=>({dps:null,dpsStatus:'UNVERIFIED',dpsReason:'COMBO_DPS_UNVERIFIED'}),document:{querySelector:()=>true},bonusDamagePendingReason:()=>null,canonicalWeaponKind:()=> 'great-sword',selectedWeapon:()=>({}),standardPowerForStats:()=>({}),skillLevel:()=>0});const r=c.compareSnapshot('A',{},{});assert.equal(r.dps,null);assert.equal(r.dpsStatus,'UNVERIFIED');assert.equal(r.dpsReason,'COMBO_DPS_UNVERIFIED');
 });
-test('readiness includes reason for numeric cached DPS without verification',()=>{
- const c=load(['comparisonReadinessHtml'],{comparisonPowerIndex:()=>({maximum:100}),comparisonReasonText:r=>r,esc:String});const r=row('cached',123.4);assert.match(c.comparisonReadinessHtml([r],r),/DPS：COMBO_DPS_UNVERIFIED/);
+test('static damage readiness is independent of cached unverified DPS and counts channels separately',()=>{
+ const c=load(['comparisonReadinessHtml','comparisonDpsValue'],{esc:String});
+ const r=row('cached',123.4),channel=value=>({execution:{status:'complete'},metrics:{comboTotalDamage:{status:'available',value}}});
+ r.oneHitPipeline={channels:{normal:channel(100),maximum:channel(200)}};
+ assert.equal(c.comparisonDpsValue(r),null);
+ let html=c.comparisonReadinessHtml([r],r);assert.match(html,/通常 1\/1、最大 1\/1/);assert.doesNotMatch(html,/123\.4|COMBO_DPS_UNVERIFIED/);
+ r.oneHitPipeline.channels.maximum={execution:{status:'blocked',reason:'TEST_PENDING'},metrics:{comboTotalDamage:{status:'unavailable'}}};
+ html=c.comparisonReadinessHtml([r],r);assert.match(html,/通常 1\/1、最大 0\/1/);assert.equal(c.comparisonDpsValue(r),null);
 });
 test('proposal cached DPS cannot be displayed or ranked without verification',()=>{
  const c=load(['groupProposalRenderCandidate','groupProposalDpsCompare'],{DB:{armor:[]},$:()=>null,esc:String,comparisonReasonText:r=>r});const a={armor:{},skills:[],damage:10,dps:123.4,baseDps:10},b={...a,dps:246.8};const h=c.groupProposalRenderCandidate(a,0);assert.doesNotMatch(h,/123\.40|113\.40/);assert.match(h,/未算出/);assert.equal(c.groupProposalDpsCompare(a,b),0);

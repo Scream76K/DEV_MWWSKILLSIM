@@ -6557,8 +6557,20 @@ function runComparisonUiR26SelfTest(){
 function runChargeBladeR25SelfTest(){
   const eq=(a,b,msg,eps=1e-9)=>{if(Math.abs(Number(a)-Number(b))>eps)throw new Error(`CB_R25_TEST_FAIL:${msg}:${a}!=${b}`)};
   const r=chargeBladeProfileTrace('RELEASE_ROUTE',{axeBoosted:true,shieldBoosted:false});
-  const h=chargeBladeProfileTrace('AED_ROUTE',{axeBoosted:true,shieldBoosted:false});
-  eq(r.physicalMv,520,'release_route_raw_mv'); eq(h.physicalMv,365,'aed_route_raw_mv');
+  eq(r.physicalMv,520,'release_route_raw_mv');
+  const hRule=window.MHCBHRouteRule, hIds=CHARGE_BLADE_STANDARD_PROFILES.AED_ROUTE.techniqueIds;
+  if(JSON.stringify(hIds)!==JSON.stringify(['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST','CB_AED','CB_FOLLOWUP_AED'])||
+     JSON.stringify(hRule.techniqueIds)!==JSON.stringify(hIds)||JSON.stringify(hRule.prefixIds)!==JSON.stringify(hIds.slice(0,2))||
+     hRule.status!=='OWNER_APPROVED_PROVISIONAL'||hRule.shieldPhialCount!==1||hRule.prefixConsumption!==0)
+    throw new Error('CB_R25_TEST_FAIL:dedicated_h_route_contract');
+  for(const [id,mvs] of [['CB_AXE_TO_SWORD_MORPH',[30]],['CB_SHIELD_THRUST',[15,6]]]){
+    const row=techniqueDbGet('charge-blade',id);
+    let gated=false;
+    try { techniqueDbHits('charge-blade',id); }
+    catch(e){gated=e.message==='TECHNIQUE_DB_FAIL_CLOSED:charge-blade:'+id;}
+    if(!gated||JSON.stringify(row.hits.map(x=>x.mv))!==JSON.stringify(mvs))
+      throw new Error('CB_R25_TEST_FAIL:dedicated_h_prefix:'+id);
+  }
   const c=chargeBladeCompositeRatio(1.04,1.10,{releaseFrames:120,aedFrames:90});
   eq(c.weights.release,4/7,'duration_weight_release'); eq(c.weights.aed,3/7,'duration_weight_aed');
   eq(c.ratio,1.04*(4/7)+1.10*(3/7),'duration_weighted_composite');
@@ -6576,12 +6588,15 @@ function runChargeBladeR25SelfTest(){
   eq(shielded.elementalBody[0].multiplier,1,'shield_boost_element_scope_fail_closed');
   eq(shielded.axeBoostPhysical[0].multiplier,1,'shield_boost_axe_physical_scope_fail_closed');
   eq(shielded.axeBoostElement[0].multiplier,1,'shield_boost_axe_element_scope_fail_closed');
-  if(r.status!=='FAIL_CLOSED'||h.status!=='FAIL_CLOSED')throw new Error('CB_R25_TEST_FAIL:unverified_phial_count_must_fail_closed');
+  if(r.status!=='READY'||r.unresolved.length||JSON.stringify(r.techniques.map(t=>t.phial?.count))!==JSON.stringify([1,2,2,3]))
+    throw new Error('CB_R25_TEST_FAIL:release_phial_counts');
+  if(chargeBladeTechniqueComponents('CB_SWORD_TO_AXE_MORPH',{axeBoosted:false,shieldBoosted:false}).phial!==null)
+    throw new Error('CB_R25_TEST_FAIL:morph_does_not_generate_a_phial');
   const n=chargeBladeConditionStats({affinity:20,maxAffinity:80},'NORMAL'),m=chargeBladeConditionStats({affinity:20,maxAffinity:80},'MAX');
   eq(n.affinity,20,'normal_affinity'); eq(m.affinity,80,'max_affinity');
   let badCondition=false;try{chargeBladeConditionStats({affinity:20,maxAffinity:80},'ALL')}catch(e){badCondition=String(e.message).includes('UNKNOWN_CONDITION')}
   if(!badCondition)throw new Error('CB_R25_TEST_FAIL:unknown_condition_must_fail_closed');
-  return {ok:true,engineVersion:CHARGE_BLADE_ENGINE_VERSION,releaseRouteMv:r.physicalMv,aedRouteMv:h.physicalMv,durationWeightExample:c,componentIsolation:true,conditionContract:true,unresolved:[...r.unresolved,...h.unresolved]};
+  return {ok:true,engineVersion:CHARGE_BLADE_ENGINE_VERSION,releaseRouteMv:r.physicalMv,aedRouteMv:null,aedRouteStatus:'DEDICATED_ROUTE_REQUIRED',durationWeightExample:c,componentIsolation:true,conditionContract:true,unresolved:[...r.unresolved]};
 }
 function runStandardProfilesR41SelfTest(){
   const ls=GENERIC_STANDARD_PROFILES['long-sword'],db={hits:techniqueDbGet('dual-blades','DB_DEMON_DANCE').hits};
@@ -6880,6 +6895,10 @@ skillRules:{...TECHNIQUE_DB_R117_BOW_STATE.specialSourceValues.skillRules,forceS
       const old=entries[id];
       entries[id]={...old,revision:old.revision+1,replacedRecord:old,hits:old.hits.map(hit=>({...hit,...(id==='GL_SLAM'?{elementModifier:2}:{}),damageType:'slash',damageTypeSource:source})),evidenceRefs:[...old.evidenceRefs,source],damageTypeStatus:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED',validFromVersion:null,validToVersion:null,baselineGameVersion:null,numericScope:'SOURCE_BACKED_PROVISIONAL_HP',sourceComparisonNote:id==='GL_SLAM'?'Current memo10 element2 provisionally replaces legacy element1; exact game version and live damage pending.':null,shellingBodyResourceContract:'NO_SHELL_CONSUMPTION_BODY',currentVersionAudit:'PENDING'};
     }
+    // Restore the owner's retained coefficient without erasing the later
+    // provisional2 record or promoting the source discrepancy to live verification.
+    const priorSlam=entries.GL_SLAM;
+    entries.GL_SLAM={...priorSlam,revision:priorSlam.revision+1,replacedRecord:priorSlam,hits:priorSlam.hits.map(hit=>({...hit,elementModifier:1})),sourceComparisonNote:"Owner Sentinel_2f73209af1408191b3023b8bbf7541f8 retains element1. Supersedes provisional revision2 element2 from https://kuroyonhon.com/mhwilds/memo/10.php; that source discrepancy remains in replacedRecord. Exact current game version and live damage remain unverified."};
   }
   if(kind==='sword-and-shield'){
     const old=entries.SNS_BASH_UPPERCUT;
@@ -7001,17 +7020,21 @@ function runTechniqueDbR43SelfTest(){
   const lan=['LAN_MID_THRUST_I','LAN_MID_THRUST_II','LAN_MID_THRUST_III','LAN_TRIPLE_THRUST'].flatMap(id=>techniqueDbHits('lance',id));
   if(lan.length!==6||sum(lan,'mv')!==179||Math.abs(sum(lan,'elementModifier')-7.9)>1e-9)throw new Error('R44_TECHNIQUE_DB_TEST_FAIL:lance');
   const sa=['SA_SWORD_VERTICAL','SA_SWORD_RIGHT_RISING','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'].flatMap(id=>techniqueDbHits('switch-axe',id));
-  if(sa.length!==5||sum(sa,'mv')!==188||sum(sa,'elementModifier')!==5)throw new Error('R44_TECHNIQUE_DB_TEST_FAIL:switch_axe');
+  if(sa.length!==5||sum(sa,'mv')!==238||sum(sa,'elementModifier')!==5)throw new Error('R44_TECHNIQUE_DB_TEST_FAIL:switch_axe');
   const ig=['IG_TRIPLE_SIDESTEP_SLASH','IG_TRIPLE_ADVANCING_COMBO','IG_ENHANCED_DESCENDING_THRUST','IG_RISING_SPIRAL_SLASH'].flatMap(id=>techniqueDbGet('insect-glaive',id).hits);
-  if(ig.length!==9||sum(ig,'mv')!==558)throw new Error('R45_TECHNIQUE_DB_TEST_FAIL:insect_glaive');
+  if(ig.length!==15||sum(ig,'mv')!==602)throw new Error('R45_TECHNIQUE_DB_TEST_FAIL:insect_glaive');
   const hh=['HH_LEFT_SWING','HH_FORWARD_ATTACK','HH_SELF_IMPROVEMENT_PERFORMANCE','HH_ENCORE_JUST'].flatMap(id=>techniqueDbHits('hunting-horn',id));
   if(hh.length!==5||sum(hh,'mv')!==195)throw new Error('R45_TECHNIQUE_DB_TEST_FAIL:hunting_horn');
   const echo=techniqueDbGet('hunting-horn','HH_ECHO_BUBBLE_FOLLOWUP');let echoGated=false;try{techniqueDbHits('hunting-horn',echo.techniqueId)}catch(e){echoGated=String(e.message).includes('FAIL_CLOSED')}if(!echoGated||echo.hits.length!==0||echo.specialSourceValues.coefficient!==5||echo.specialSourceValues.elementModifier!==.3)throw new Error('R56_TECHNIQUE_DB_TEST_FAIL:hunting_horn_echo_special');
-  const gl=['GL_SLAM','GL_SWEEP'].flatMap(id=>techniqueDbHits('gunlance',id));if(gl.length!==2||sum(gl,'mv')!==97||Math.abs(sum(gl,'elementModifier')-2.5)>1e-9)throw new Error('R46_TECHNIQUE_DB_TEST_FAIL:gunlance_body');
+  const gl=['GL_SLAM','GL_SWEEP'].map(id=>techniqueDbHits('gunlance',id));
+  if(gl[0].length!==1||gl[0][0].mv!==57||gl[0][0].elementModifier!==1||
+     gl[1].length!==1||gl[1][0].mv!==40||gl[1][0].elementModifier!==1.5)
+    throw new Error('R46_TECHNIQUE_DB_TEST_FAIL:gunlance_body');
   const bow=['BOW_SHOT_3','BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3'].flatMap(id=>techniqueDbHits('bow',id));if(bow.length!==14||sum(bow,'mv')!==186||Math.abs(sum(bow,'elementModifier')-13)>1e-9)throw new Error('R46_TECHNIQUE_DB_TEST_FAIL:bow');
-  const cb=['CB_SWORD_TO_AXE_MORPH','CB_SHIELD_THRUST','CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED'].flatMap(id=>techniqueDbHits('charge-blade',id));if(cb.length!==8||sum(cb,'mv')!==355)throw new Error('R46_TECHNIQUE_DB_TEST_FAIL:charge_blade_body');
+  // Shield thrust is available only in the dedicated H path. Inspect its source row without bypassing the generic gate.
+  const cb=['CB_SWORD_TO_AXE_MORPH','CB_SHIELD_THRUST','CB_ELEMENT_DISCHARGE_1','CB_ELEMENT_DISCHARGE_2','CB_AED','CB_FOLLOWUP_AED'].flatMap(id=>id==='CB_SHIELD_THRUST'?techniqueDbGet('charge-blade',id).hits:techniqueDbHits('charge-blade',id));if(cb.length!==8||sum(cb,'mv')!==355)throw new Error('R46_TECHNIQUE_DB_TEST_FAIL:charge_blade_body');
   if(!techniqueDbGet('light-bowgun','LBG_STANDARD_ELEMENT_AMMO')||!techniqueDbGet('heavy-bowgun','HBG_STANDARD_ELEMENT_AMMO'))throw new Error('R46_TECHNIQUE_DB_TEST_FAIL:bowgun_ammo_registry');
-  return Object.freeze({ok:true,greatSword:Object.freeze({hits:3,mv:497,elementModifierSum:5.5,partModifier:1.2}),longSword:Object.freeze({hits:7,mv:185}),dualBlades:Object.freeze({hits:27,mv:393}),hammer:Object.freeze({hits:4,mv:293}),lance:Object.freeze({hits:6,mv:179,elementModifierSum:7.9}),switchAxe:Object.freeze({hits:5,mv:188})});
+  return Object.freeze({ok:true,greatSword:Object.freeze({hits:3,mv:497,elementModifierSum:5.5,partModifier:1.2}),longSword:Object.freeze({hits:7,mv:185}),dualBlades:Object.freeze({hits:27,mv:393}),hammer:Object.freeze({hits:4,mv:293}),lance:Object.freeze({hits:6,mv:179,elementModifierSum:7.9}),switchAxe:Object.freeze({hits:5,mv:238})});
 }
 // Explicit identity decisions only; no automatic name matching or numeric replacement.
 const LEGACY_CANONICAL_IDENTITY_MAP=techniqueDbDeepFreeze({
@@ -8642,9 +8665,13 @@ function buildComparisonRouter({snapshotA,snapshotB=null,cond,stateA={},stateB={
 function runBuildComparisonBridgeR39SelfTest(){
   const stats={baseAttack:200,displayedElement:100,physicalHitzone:80,elementalHitzone:30,sharpnessPhysical:1.32,sharpnessElement:1.15,affinity:20,maxAffinity:80,criticalMultiplier:1.25,negativeCriticalMultiplier:.75};
   const sns=genericProfileDamage(GENERIC_STANDARD_PROFILES['sword-and-shield'],stats,'NORMAL');
-  const sa=genericProfileDamage(GENERIC_STANDARD_PROFILES['switch-axe'],stats,'NORMAL');
+  const saProfile=GENERIC_STANDARD_PROFILES['switch-axe'];
+  let saGenericBlocked=false;
+  try { genericProfileDamage(saProfile,stats,'NORMAL'); }
+  catch(e){saGenericBlocked=e.message==='BUILD_COMPARE_FAIL_CLOSED:GENERIC_PROFILE_INVALID';}
   if(sns.trace.length!==4)throw new Error('R30_TEST_FAIL:sns_hit_count');
-  if(sa.trace.length!==5||sa.trace.reduce((x,h)=>x+Number(h.mv),0)!==188)throw new Error('R30_TEST_FAIL:sa_5hit_mv188');
+  if(!saGenericBlocked||saProfile.status!=='OWNER_APPROVED_PROVISIONAL'||JSON.stringify(saProfile.hits.map(h=>h.mv))!==JSON.stringify([40,58,40,60,40]))
+    throw new Error('R30_TEST_FAIL:sa_provisional_native_profile');
   const lance=genericProfileDamage(GENERIC_STANDARD_PROFILES.lance,stats,'NORMAL');
   if(lance.trace.reduce((x,h)=>x+Number(h.mv),0)!==179)throw new Error('R30_TEST_FAIL:lance_mv179');
   const hammer=genericProfileDamage(GENERIC_STANDARD_PROFILES.hammer,stats,'MAX');
@@ -8673,7 +8700,8 @@ function runBuildComparisonBridgeR39SelfTest(){
   {const hh=huntingHornComponentPlan();if(hh.status!=='FAIL_CLOSED'||hh.calculationReady!==false||hh.verifiedCore.bodyMv!==100||hh.verifiedCore.performanceShockwaveMv!==27||hh.verifiedCore.encore.selected!=='JUST'||hh.verifiedCore.encore.selectedSecondHitMv!==75||hh.verifiedCore.echoBubble.eventCount!==4||hh.verifiedCore.echoBubble.totalFollowupMv!==null||hh.verifiedCore.echoBubble.totalElementModifier!==null||hh.verifiedCore.selfImprovement.applyAfterTechnique!=='HH_ENCORE'||hh.verifiedCore.selfImprovement.affectsCurrentStandardRoute!==false||!hh.unresolved.includes('ECHO_EVENT_TYPE_MAPPING')||!hh.unresolved.includes('HORN_HANDLER_RESOLVER_PENDING'))throw new Error('R56_TEST_FAIL:hunting_horn_component_readiness_contract');}
   const glBody=gunlanceBodyComponents(stats,'NORMAL');if(glBody.trace.length!==2||glBody.trace.reduce((x,h)=>x+h.mv,0)!==97||glBody.trace[1].elementModifier!==1.5)throw new Error('R32_TEST_FAIL:gunlance_body_components');
   if(gunlanceEvidenceReady())throw new Error('R32_TEST_FAIL:gunlance_unverified_special_must_gate');
-  for(const k of ['long-sword','dual-blades','sword-and-shield','hammer','lance','switch-axe','insect-glaive']){const d=buildComparisonHandlerDescriptor(k);if(d.handler!=='GenericWeaponHandler'||d.status!=='IMPLEMENTED')throw new Error(`R31_TEST_FAIL:generic_handler:${k}`);}
+  for(const k of ['long-sword','dual-blades','sword-and-shield','hammer','lance','insect-glaive']){const d=buildComparisonHandlerDescriptor(k);if(d.handler!=='GenericWeaponHandler'||d.status!=='IMPLEMENTED')throw new Error(`R31_TEST_FAIL:generic_handler:${k}`);}
+  {const d=buildComparisonHandlerDescriptor('switch-axe');if(d.handler!=='GenericWeaponHandler'||d.status!=='WAITING_PROFILE')throw new Error('R31_TEST_FAIL:provisional_sa_handler_boundary');}
   const cap=buildComparisonCapabilityReport();if(Object.keys(cap).length!==14)throw new Error('R31_TEST_FAIL:capability_14_weapons');
   return {ok:true,engineVersion:BUILD_COMPARISON_ENGINE_VERSION,chargeBladeHandler:'dedicated',genericReady:Object.keys(GENERIC_STANDARD_PROFILES),specialHandlerScaffolds:[],evidenceGatedHandlers:['gunlance','hunting-horn','light-bowgun','heavy-bowgun','bow'],genericUnverified:'FAIL_CLOSED',crossWeaponTimingGate:true,legacyCompareUntouched:false,legacyTechniqueArchiveUnchanged:true,comboAndComparisonSharedHitPath:true};
 }

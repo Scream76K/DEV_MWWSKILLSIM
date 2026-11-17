@@ -30,8 +30,21 @@ test('all inline JavaScript remains syntactically valid',()=>{
 test('unaffected STANDARD matches r46; GS HP correction and adopted DB are independently checked',()=>{
   for(const kind of Object.keys(golden.expected)){
     for(const condition of ['NORMAL','MAX']){
+      if(kind==='switch-axe'){
+        const profile=c.window.BuildComparisonEngine.genericProfiles[kind];
+        assert.equal(profile.status,'OWNER_APPROVED_PROVISIONAL');
+        assert.deepEqual(JSON.parse(JSON.stringify(profile.techniqueIds)),['SA_SWORD_VERTICAL','SA_SWORD_RIGHT_RISING','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH']);
+        // Current source-backed mode-aware route uses its dedicated adapter, not this legacy generic helper.
+        assert.throws(()=>c.window.BuildComparisonEngine.genericProfileDamage(profile,golden.stats,condition),/GENERIC_PROFILE_INVALID/);
+        continue;
+      }
       if(kind==='insect-glaive'){
-        assert.throws(()=>c.window.BuildComparisonEngine.genericProfileDamage(c.window.BuildComparisonEngine.genericProfiles[kind],golden.stats,condition),/TECHNIQUE_DB_FAIL_CLOSED/);
+        assert.throws(()=>c.window.BuildComparisonEngine.genericProfileDamage(c.window.BuildComparisonEngine.genericProfiles[kind],golden.stats,condition),/BUILD_COMPARE_FAIL_CLOSED:GENERIC_STATE_STATS:TRIPLE_EXTRACT/);
+        const profile=c.window.BuildComparisonEngine.genericProfiles[kind];
+        const result=c.window.BuildComparisonEngine.genericProfileDamage(profile,golden.stats,condition,{statsByState:{TRIPLE_EXTRACT:golden.stats,NO_EXTRACT:golden.stats}});
+        const g=golden.stats,crit=1+g[condition==='MAX'?'maxAffinity':'affinity']/100*.25;
+        assert.ok(Math.abs(result.physical-g.baseAttack*6.02*g.sharpnessPhysical*g.physicalHitzone/100*crit)<1e-9);
+        assert.ok(Math.abs(result.element-g.displayedElement/10*13.2*g.sharpnessElement*g.elementalHitzone/100)<1e-9);
         continue;
       }
       const now=c.window.BuildComparisonEngine.genericProfileDamage(c.window.BuildComparisonEngine.genericProfiles[kind],golden.stats,condition);

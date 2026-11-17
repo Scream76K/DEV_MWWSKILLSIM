@@ -7,7 +7,11 @@ const begin=html.indexOf('function applyBuildSnapshot(');
 const end=html.indexOf('function renderSavedBuilds()',begin);
 assert.ok(begin>0&&end>begin);
 const ctx=vm.createContext({DB:{weapons:[{id:'known'}]}});
-vm.runInContext(html.slice(begin,end),ctx);
+// Include the actual production dependency, not a fixture reimplementation.
+const hpBegin=html.indexOf('function normalizeSelectedHp(');
+const hpEnd=html.indexOf('function buildSnapshotComparable(',hpBegin);
+assert.ok(hpBegin>0&&hpEnd>hpBegin);
+vm.runInContext(html.slice(hpBegin,hpEnd)+html.slice(begin,end),ctx);
 test('missing saved weapon cannot reuse current build weapon',()=>{
  assert.throws(()=>vm.runInContext("applyBuildSnapshot({weaponId:'missing'})",ctx),/武器がDBに見つかりません/);
 });
@@ -16,4 +20,8 @@ test('empty saved weapon cannot reuse current build weapon',()=>{
 });
 test('load UI catches and reports missing weapon',()=>{
  assert.match(html,/try\{applyBuildSnapshot\(m\[name\]\);\}catch\(e\)\{alert\(/);
+});
+
+test('invalid saved HP is rejected before looking up weapon',()=>{
+ assert.throws(()=>vm.runInContext("applyBuildSnapshot({weaponId:'missing',selectedHp:'INVALID'})",ctx),/SELECTED_HP_INVALID/);
 });

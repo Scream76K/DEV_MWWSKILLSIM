@@ -54,16 +54,25 @@ test('already frozen r46 containers cannot leave STANDARD hit values mutable',()
     assert.equal(Object.isFrozen(engine.get(kind,id).hits[0]),true,kind);
   }
 });
-test('all 110 new records retain evidence and remain fail closed',()=>{
+test('110 historical records retain evidence; only owner-adopted SNS hit classification permits current reads',()=>{
+  const historical=vm.runInContext('TECHNIQUE_DB_R47_EXPANSION',context);
+  const adopted=[];
   let count=0;
-  for(const [kind,records] of Object.entries(engine.db))for(const t of Object.values(records)){
+  for(const [kind,records] of Object.entries(historical))for(const t of Object.values(records)){
     if(!t.calculationStatus||!t.evidenceRefs.some(id=>id.endsWith('_R47_SOURCE')))continue;
     count++;
     assert.equal(t.baselineGameVersion,'1.042.00.02');
     assert.ok(t.unresolvedReasons.length>0);
     assert.ok(t.evidenceRefs.every(id=>!!engine.evidence[id]));
-    assert.throws(()=>engine.hits(kind,t.techniqueId),/TECHNIQUE_DB_FAIL_CLOSED/);
+    if(t.techniqueId==='SNS_BASH_UPPERCUT'){
+      const current=engine.get(kind,t.techniqueId);
+      assert.equal(current.adoption.status,'OWNER_APPROVED_PROVISIONAL');
+      assert.equal(current.adoption.scope,'SNS_BASH_UPPERCUT_FOUR_HIT_TYPES_ONLY');
+      assert.deepEqual(plain(current.replacedRecord.hits),plain(t.hits));
+      assert.deepEqual(plain(engine.hits(kind,t.techniqueId)).map(h=>[h.mv,h.elementModifier,h.damageType]),[[15,1,'slash'],[15,1,'slash'],[20,0,'blunt'],[20,0,'blunt']]);
+      adopted.push(t.techniqueId);
+    }else assert.throws(()=>engine.hits(kind,t.techniqueId),/TECHNIQUE_DB_FAIL_CLOSED/);
     for(const hit of t.hits)assert.ok(Number.isFinite(hit.mv)&&Number.isFinite(hit.elementModifier)&&Number.isFinite(hit.partModifier));
   }
-  assert.equal(count,110);
+  assert.equal(count,110);assert.deepEqual(adopted,['SNS_BASH_UPPERCUT']);
 });
