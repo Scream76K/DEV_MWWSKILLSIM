@@ -1,0 +1,528 @@
+--- embedded.patch.base
++++ embedded.patch.candidate
+@@ -2010 +2010 @@
+-  return String(v||'').normalize('NFKC').replace(/[［］]/g,'【').replace(/[\[\]]/g,'【').replace(/\s+/g,'').trim();
++  return String(v||'').normalize('NFKC').replace(/\[/g,'【').replace(/\]/g,'】').replace(/\s+/g,'').trim();
+@@ -2078 +2078 @@
+-  return key==='mainWeapon'||key==='subWeapon'?'weapon':'armor';
++  return key==='charm'?null:key==='mainWeapon'||key==='subWeapon'?'weapon':'armor';
+@@ -2143 +2143 @@
+-  s=s.replace('綾衝珠','緩衝珠').replace('耐衝珠','緩衝珠');
++  s=s.replace('綾衝珠','緩衝珠');
+@@ -2336 +2336 @@
+-  if (state.decoration) html += `<div class="result"><b>装飾品グループ</b><div class="mono">${state.decoration.buildGroups.map(g => `${g.groupIndex+1}. ${g.label||'装備グループ'}：${g.slots.length}スロット${g.expectedSlotLevels.length?' / 上限['+g.expectedSlotLevels.join(',')+']':''} → ${g.slots.map(x=>x.ocr?.raw||'未OCR').join(' / ')}`).join('<br>')}</div></div>`;
++  if (state.decoration) html += `<div class="result"><b>装飾品グループ</b><div class="mono">${state.decoration.buildGroups.map(g => `${g.groupIndex+1}. ${g.label||'装備グループ'}：${g.slots.length}スロット${g.expectedSlotLevels.length?' / 上限['+g.expectedSlotLevels.join(',')+']':''} → ${g.slots.map(x=>x.jewel?.name||(x.confirmationStatus==='NO_SLOT'?'スロットなし':x.confirmationStatus==='SKIP'?'空きスロット':'未選択')).join(' / ')}`).join('<br>')}</div></div>`;
+@@ -2340,0 +2341,33 @@
++function ocrRandomCharmGroup(group,equipment=window.equipmentContext){
++  const best=equipment?.results?.find(x=>x.key==='charm')?.best;
++  if(group?.equipmentKey!=='charm'||group.reflect===false||best?.id==null)return null;
++  const records=window.__getBetaDB?.()?.charms||[];
++  const record=records.find(c=>c.random===true&&String(c.id)===String(best.id));
++  return record||null;
++}
++function ocrCharmLayoutState(group,equipment=window.equipmentContext){
++  const record=ocrRandomCharmGroup(group,equipment);
++  if(!record){if(group)group.charmLayoutChoice=null;return null;}
++  const rows=group.slots||[];
++  // Infer only from the displayed jewel choices. Missing/unreadable rows
++  // and explicit skips supply no lower bound on physical slot capacity.
++  const slots=rows.filter(s=>s.proposedJewel?.id!=null).map(s=>({slotInGroup:s.slotInGroup,id:s.proposedJewel.id}));
++  const result=slots.length?window.__ocrCharmProfiles?.({charmId:record.id,slots}):[];
++  const profiles=Array.isArray(result)?[...new Set(result.filter(x=>typeof x==='string'&&/^[武防][1-3](?:-[武防][1-3]){0,2}$/.test(x)))]:[];
++  const size=p=>p.split('-').length,capacity=p=>[...p].reduce((sum,c)=>sum+(/[1-3]/.test(c)?Number(c):0),0);
++  profiles.sort((a,b)=>size(a)-size(b)||capacity(a)-capacity(b)||(a<b?-1:a>b?1:0));
++  const key=JSON.stringify([record.id,rows.map(s=>[s.slotInGroup,s.confirmationStatus==='SKIP',s.proposedJewel?.id??null]),profiles]);
++  if(group.charmLayoutChoice?.key!==key)group.charmLayoutChoice=null;
++  const choice=group.charmLayoutChoice?.choice;
++  const empty=rows.length>0&&rows.every(s=>['SKIP','NO_SLOT'].includes(s.confirmationStatus));
++  return {key,profiles,empty,deferred:empty||choice==='defer',pattern:profiles.includes(choice)?choice:profiles[0]??null};
++}
++function renderOCRCharmLayout(group){
++  const state=ocrCharmLayoutState(group);
++  if(!state){group.visibleCharmLayout=null;return '';}
++  const {profiles,deferred,pattern}=state;
++  group.visibleCharmLayout={key:state.key,deferred,pattern};
++  if(state.empty)return '<div class="small">取り込む護石の珠がありません。</div>';
++  const layout=profiles.length>1?`<label>護石のスロット構成 <select data-ocr-charm-layout>${profiles.map(p=>`<option value="${esc(p)}"${pattern===p?' selected':''}>${esc(p)}</option>`).join('')}</select></label>`:profiles.length===1?`<span>護石のスロット構成：${esc(profiles[0])}</span>`:'<span>護石のスロット構成を特定できません。</span>';
++  return `<div class="small" style="margin-top:8px">${deferred?'護石と珠は反映しません。':layout} <button type="button" data-ocr-charm-defer>${deferred?'護石の珠を設定する':'護石の珠を後で設定'}</button></div>`;
++}
+@@ -2341,0 +2375 @@
++  if(!acceptVisibleEquipmentChoices())return;
+@@ -2347,0 +2382,6 @@
++  // The explicit global apply accepts only the proposal actually displayed.
++  for(const r of window.lastDecorationOCR||[]){
++    const g=window.decorationSlotResult?.groups?.find(g=>g.groupIndex===r.groupIndex);
++    if(g?.reflect!==false&&!ocrRandomCharmGroup(g,equipment)&&!r.manualChoice&&r.proposedJewel)r.manualChoice=String(r.proposedJewel.id);
++  }
++  reviewDecorationResults({render:false});
+@@ -2349 +2389,28 @@
+-  const state = { version: 'beta-integrated-ocr-1.0', reflectedAt: new Date().toISOString(), equipment, decoration };
++  const deferredEquipment=new Set((equipment?.results||[]).filter(r=>r.resolutionStatus==='unresolved'&&r.failureKnowledge?.status==='unresolved').map(r=>r.key));
++  if(decoration)decoration.buildGroups=decoration.buildGroups.filter(g=>!deferredEquipment.has(g.equipmentKey));
++  const charmGroup=window.decorationSlotResult?.groups?.find(g=>g.equipmentKey==='charm'&&(decoration?.buildGroups||[]).some(d=>d.groupIndex===g.groupIndex));
++  const charmLayout=ocrCharmLayoutState(charmGroup,equipment);
++  if(charmLayout){
++    const visible=charmGroup.visibleCharmLayout;
++    if(!visible||visible.key!==charmLayout.key||visible.pattern!==charmLayout.pattern||visible.deferred!==charmLayout.deferred){
++      $('buildReflectionStatus').textContent='護石の候補が変わりました。表示を確認してから、もう一度反映してください。';
++      renderDecorationOCRResult(window.lastDecorationOCR||[]);return;
++    }
++    if(charmLayout.deferred)decoration.buildGroups=decoration.buildGroups.filter(g=>g.equipmentKey!=='charm');
++    else if(!charmLayout.pattern){
++      $('buildReflectionStatus').textContent='護石の珠を確認するか、「護石の珠を後で設定」を選んでください。';
++      renderDecorationOCRResult(window.lastDecorationOCR||[]);return;
++    }else{
++      // Materialize an import-only copy from the same visible choices used
++      // by the resolver. Never edit the current build before the host apply.
++      decoration.buildGroups=decoration.buildGroups.map(g=>g.groupIndex!==charmGroup.groupIndex?g:{...g,slots:g.slots.map(s=>s.proposedJewel&&!s.jewel?{...s,jewel:s.proposedJewel,confirmationStatus:'DISPLAYED'}:s)});
++    }
++  }
++  const pendingDecos=(decoration?.buildGroups||[]).flatMap(g=>g.slots.filter(x=>!['AUTO','MANUAL','SKIP','NO_SLOT','DISPLAYED'].includes(x.confirmationStatus)).map(x=>g.label+' '+(x.slotInGroup+1)+'番'));
++  if(pendingDecos.length){
++    $('buildReflectionStatus').textContent='装飾品に未確定の枠があります：'+pendingDecos.join('、')+'。STEP 2で候補か「空き・取り込まない」を選んでください。';
++    renderDecorationOCRResult(window.lastDecorationOCR||[]);
++    return;
++  }
++  const importEquipment=charmLayout?.deferred?{...equipment,results:equipment.results.filter(x=>x.key!=='charm')}:equipment;
++  const state = { version: 'beta-integrated-ocr-1.0', reflectedAt: new Date().toISOString(), equipment:importEquipment, decoration };
+@@ -2351 +2418 @@
+-  const charmBest=(equipment?.results||[]).find(x=>x.key==='charm')?.best||null;
++  const charmBest=(importEquipment?.results||[]).find(x=>x.key==='charm')?.best||null;
+@@ -2354,2 +2421,3 @@
+-    equipment: (equipment?.results||[]).map(x=>({key:x.key,id:x.best?.id??null,gameId:x.best?.gameId??null,kind:x.best?.kind??null,name:x.best?.name??null,decision:x.best?.decision??null,slotLevels:x.best?.slotLevels||[]})),
+-    decorations: (decoration?.buildGroups||[]).map(g=>({equipmentKey:g.equipmentKey||null,slots:(g.slots||[]).map(s=>({slotIndex:s.slotIndex,slotInGroup:s.slotInGroup,id:s.jewel?.id??s.decorationBest?.id??s.ocr?.dbBest?.id??null,name:s.jewel?.name??s.decorationBest?.name??s.ocr?.dbBest?.name??null,slot:Number(s.jewel?.slot??s.decorationBest?.slot??s.ocr?.dbBest?.slot??0)||0}))})),
++    equipment: (importEquipment?.results||[]).map(x=>({key:x.key,id:x.best?.id??null,gameId:x.best?.gameId??null,kind:x.best?.kind??null,name:x.best?.name??null,decision:x.best?.decision??null,slotLevels:x.best?.slotLevels||[]})),
++    charmSlotPattern:charmLayout?.deferred?null:charmLayout?.pattern??null,
++    decorations: (decoration?.buildGroups||[]).map(g=>({equipmentKey:g.equipmentKey||null,slots:(g.slots||[]).filter(s=>s.confirmationStatus!=='NO_SLOT').map(s=>({slotIndex:s.slotIndex,slotInGroup:s.slotInGroup,id:s.jewel?.id??null,name:s.jewel?.name??null,slot:Number(s.jewel?.slot??0)||0}))})),
+@@ -2360 +2428,5 @@
+-  try{window.applyOCRImportPayload(importPayload);$('buildReflectionStatus').textContent='OCRで解析したビルドを現在の装備セットへ直接反映しました。';}catch(e){$('buildReflectionStatus').textContent='β版への反映に失敗しました：'+(e?.message||e);console.error(e)}
++  try{
++    if(window.applyOCRImportPayload(importPayload)===false){$('buildReflectionStatus').textContent='ビルドを反映できませんでした。装備や護石のスロット構成を確認してください。';return;}
++    const omitted=window.__ocrDecorationUnapplied||[];
++    $('buildReflectionStatus').textContent=omitted.length?'ビルドを反映しました。装飾品の一部は未反映です：'+omitted.map(v=>v.label+' '+(v.slotInGroup==null?'不明':v.slotInGroup+1)+'番 '+v.name).join('、')+'。③で装備のスロットを確認してから、もう一度取り込めます。':'OCRで解析したビルドを現在のビルドへ直接反映しました。';
++  }catch(e){$('buildReflectionStatus').textContent='β版への反映に失敗しました：'+(e?.message||e);console.error(e)}
+@@ -2377,0 +2450,19 @@
++
++// Image geometry and OCR-to-name evidence are independent gates. A bright
++// separator or a generic part suffix must never manufacture a DB suggestion.
++function equipmentCandidateEvidence(row,candidate){
++  if(row?.region?.cropEvidence?.valid!==true||!candidate?.name)return false;
++  const core=value=>String(value||'').normalize('NFKC').replace(/(?:メイン武器|サブ武器|頭防具|胴防具|腕防具|腰防具|脚防具|ヘルム|メイル|アーム|コイル|グリーヴ|グリーブ|ヘッド|ガード|フォールド|レギンス|装衣|護石)/g,'').replace(/[^\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}A-Za-z]/gu,'').toLowerCase();
++  const name=core(candidate.name);
++  if(name.length<2)return false;
++  return (row.rows||[]).some(r=>{
++    const text=core(r.raw);if(!Number.isFinite(r.conf)||r.conf<25)return false;
++    const cleanBare=value=>String(value||'').normalize('NFKC').replace(/[^\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}A-Za-zー]/gu,'').replace(/[IVX]+$/i,'');
++    if(Object.values(CATEGORY_ANCHORS).some(terms=>terms.some(term=>cleanBare(term)===cleanBare(r.raw))))return false;
++    if(text.length<3)return text.length===2&&text===name&&r.conf>=70;
++    let overlap=0;const grams=new Set();for(let i=0;i<text.length-1;i++)grams.add(text.slice(i,i+2));
++    for(let i=0;i<name.length-1;i++)if(grams.has(name.slice(i,i+2)))overlap++;
++    return overlap>=Math.min(2,name.length-1)&&overlap/Math.max(1,name.length-1)>=.35;
++  });
++}
++function equipmentEvidenceCandidates(row,candidates){return (candidates||[]).filter(c=>equipmentCandidateEvidence(row,c));}
+@@ -2420,0 +2512 @@
++      if(region?.cropEvidence?.valid!==true){output.push({key,rows:[],ranked:[],best:null,region});continue;}
+@@ -2445,0 +2538 @@
++      ranked=equipmentEvidenceCandidates({region,rows},ranked);
+@@ -2447 +2540 @@
+-      output.push({key,rows,ranked:ranked.slice(0,3),best,region});
++      output.push({key,rows,ranked:ranked.slice(0,4),best,region});
+@@ -2460 +2553 @@
+-      x.ranked=ranked.slice(0,3);
++      x.ranked=equipmentEvidenceCandidates(x,ranked).slice(0,4);
+@@ -3734,67 +3827,30 @@
+-  const iw = img.naturalWidth || img.width;
+-  const ih = img.naturalHeight || img.height;
+-  const canvas = document.createElement('canvas');
+-  canvas.width = iw; canvas.height = ih;
+-  const c = canvas.getContext('2d', {willReadFrequently:true});
+-  c.drawImage(img, 0, 0);
+-
+-  // v4.5.1: The base ROI is a layout anchor, not the final OCR crop.
+-  // In the Wilds equipment UI the category label and equipment name are two
+-  // lines. The old refinement found the name-line peak correctly, but the
+-  // downstream crop helper shifted it a second time and often cut the glyphs.
+-  // Here the detected peak is carried explicitly as nameAnchor so OCR consumes
+-  // the same band that the refinement actually detected.
+-  const baseY = Number(baseROI?.yExact ?? baseROI?.y ?? 0);
+-  const baseH = Number(baseROI?.hExact ?? baseROI?.h ?? gameArea.h*0.032);
+-  const searchTop = Math.max(gameArea.y, baseY + gameArea.h * 0.012);
+-  const searchBottom = Math.min(gameArea.y + gameArea.h, baseY + gameArea.h * 0.070);
+-  const x0 = Math.max(0, Math.floor(baseROI.x));
+-  const x1 = Math.min(iw, Math.ceil(baseROI.x + baseROI.w));
+-  const y0 = Math.max(0, Math.floor(searchTop));
+-  const y1 = Math.min(ih, Math.ceil(searchBottom));
+-  if (x1 <= x0 || y1 <= y0) return {...baseROI, refined:false, refineScore:0};
+-
+-  const data = c.getImageData(x0, y0, x1-x0, y1-y0).data;
+-  const w=x1-x0, h=y1-y0;
+-  const profile=new Float64Array(h);
+-  for(let y=0;y<h;y++){
+-    let hit=0;
+-    for(let x=0;x<w;x++){
+-      const i=(y*w+x)*4, r=data[i],g=data[i+1],b=data[i+2];
+-      const mx=Math.max(r,g,b), mn=Math.min(r,g,b);
+-      const lum=.299*r+.587*g+.114*b;
+-      // White/gray glyphs on the dark translucent UI. Keep a second, softer
+-      // luminance contribution so anti-aliased edges are not discarded.
+-      if(lum>=125 && (mx-mn)<=68) hit += lum>=160 ? 1.0 : 0.45;
+-    }
+-    profile[y]=hit;
+-  }
+-  const smooth=new Float64Array(h);
+-  for(let y=0;y<h;y++){
+-    let sum=0,n=0;
+-    for(let k=-2;k<=2;k++){const yy=y+k;if(yy>=0&&yy<h){sum+=profile[yy];n++;}}
+-    smooth[y]=sum/Math.max(1,n);
+-  }
+-  let peak=-1,score=0;
+-  for(let y=1;y<h-1;y++){
+-    if(smooth[y]>=smooth[y-1] && smooth[y]>=smooth[y+1] && smooth[y]>score){score=smooth[y];peak=y;}
+-  }
+-  if(peak<0 || score<1.5) return {...baseROI, refined:false, refineScore:Number(score.toFixed(2))};
+-
+-  const peakY=y0+peak;
+-  // Estimate the glyph band from game height. At 760px this is ~14px; at
+-  // 2160px it is ~39px, matching the UI text scale much better than baseH.
+-  const glyphH=Math.max(10, Math.min(gameArea.h*0.022, gameArea.h*0.032));
+-  const bandH=Math.max(14, glyphH*1.55);
+-  const bandY=Math.max(gameArea.y, Math.round(peakY-bandH*0.48));
+-  const refined={
+-    ...baseROI,
+-    x:Math.round(baseROI.x), y:bandY,
+-    w:Math.round(baseROI.w), h:Math.round(bandH),
+-    xExact:baseROI.x, yExact:bandY, wExact:baseROI.w, hExact:bandH,
+-    refined:true, baselineY:baseROI.y, refinePeakY:peakY,
+-    refineScore:Number(score.toFixed(2)), refineDelta:bandY-baseROI.y,
+-    nameAnchor:{x:baseROI.x,y:bandY,width:baseROI.w,height:bandH}
+-  };
+-  if(refined.y<0 || refined.y+refined.h>ih) return {...baseROI, refined:false, refineScore:Number(score.toFixed(2))};
+-  return refined;
++  const iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;
++  const canvas=document.createElement('canvas');canvas.width=iw;canvas.height=ih;
++  const c=canvas.getContext('2d',{willReadFrequently:true});c.drawImage(img,0,0);
++  const baseY=Number(baseROI.yExact??baseROI.y),scale=gameArea.h/1152;
++  // Stay inside this card's name band. The old 0.070H search crossed the
++  // bottom separator and selected bright scenery instead of outlined glyphs.
++  const x0=Math.max(0,Math.floor(baseROI.x)),x1=Math.min(iw,Math.ceil(baseROI.x+baseROI.w));
++  const y0=Math.max(0,Math.floor(baseY-gameArea.h*.006)),y1=Math.min(ih,Math.ceil(baseY+gameArea.h*.043));
++  const w=x1-x0,h=y1-y0;
++  if(w<=0||h<=0)return {...baseROI,refined:false,cropEvidence:{valid:false,reason:'INVALID_RECT'}};
++  const data=c.getImageData(x0,y0,w,h).data,profile=new Float64Array(h),radius=Math.max(1,Math.round(scale*2));
++  const lum=(x,y)=>{const i=(y*w+x)*4;return .299*data[i]+.587*data[i+1]+.114*data[i+2];};
++  for(let y=radius;y<h-radius;y++)for(let x=radius;x<w-radius;x++){
++    const i=(y*w+x)*4,L=lum(x,y);
++    if(L<150||Math.max(data[i],data[i+1],data[i+2])-Math.min(data[i],data[i+1],data[i+2])>65)continue;
++    const dark=Math.min(lum(x-radius,y),lum(x+radius,y),lum(x,y-radius),lum(x,y+radius));
++    if(dark<100&&L-dark>70)profile[y]++;
++  }
++  const threshold=Math.max(3,w*.012),runs=[];let start=null;
++  for(let y=0;y<=h;y++){
++    const active=y<h&&profile[y]>=threshold;
++    if(active&&start===null)start=y;
++    if(!active&&start!==null){if(y-start>=Math.max(4,scale*5))runs.push({start,end:y,score:profile.slice(start,y).reduce((a,b)=>a+b,0)});start=null;}
++  }
++  const expected=baseY+gameArea.h*.018;
++  const best=runs.filter(r=>(r.end-r.start)<=gameArea.h*.032).sort((a,b)=>b.score-a.score||Math.abs(y0+(a.start+a.end)/2-expected)-Math.abs(y0+(b.start+b.end)/2-expected))[0];
++  if(!best)return {...baseROI,refined:false,cropEvidence:{valid:false,reason:'NO_OUTLINED_GLYPH_BAND'}};
++  const pad=Math.max(3,Math.ceil(scale*4)),y=Math.max(0,y0+best.start-pad),bottom=Math.min(ih,y0+best.end+pad),height=bottom-y;
++  return {...baseROI,y,h:height,yExact:y,hExact:height,refined:true,refineScore:best.score,refineDelta:y-baseROI.y,
++    nameAnchor:{x:baseROI.x,y,width:baseROI.w,height},cropEvidence:{valid:true,source:'ORIGINAL_OUTLINED_GLYPH_BAND',glyphTop:y0+best.start,glyphBottom:y0+best.end,score:best.score}};
+@@ -4203,0 +4260,34 @@
++// The visible no-slot dash sits left of the OCR text crop. Recognize its
++// short, solid neutral-gray bar, not absence of text or a blank OCR result.
++function decorationNoSlotMarker(img,roi){
++  const iw=img?.naturalWidth||img?.width, pitch=Number(roi?.pitch);
++  if(!iw||!Number.isFinite(pitch)||pitch<14||!Number.isFinite(roi.x)||!Number.isFinite(roi.y)||roi.h<8)return false;
++  const x=Math.round(roi.x-iw*.022),y=Math.round(roi.y+roi.h*.27);
++  const w=Math.round(iw*.022),h=Math.max(3,Math.round(roi.h*.5));
++  if(x<0||y<0)return false;
++  try{
++    const c=document.createElement('canvas');c.width=w;c.height=h;
++    const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,x,y,w,h,0,0,w,h);
++    const d=ctx.getImageData(0,0,w,h).data, runs=[];
++    for(let yy=0;yy<h;yy++){
++      const gray=xx=>{const i=(yy*w+xx)*4,a=d[i],b=d[i+1],c=d[i+2];return Math.min(a,b,c)>=64&&Math.max(a,b,c)<=121&&Math.max(a,b,c)-Math.min(a,b,c)<=15;};
++      let first=0,best=null;
++      for(let xx=0;xx<=w;xx++){
++        if(xx<w&&gray(xx))continue;
++        if(xx-first>(best?.w||0))best={x:first,w:xx-first};
++        first=xx+1;
++      }
++      runs.push(best&&best.x>=2&&best.x+best.w<=w-2&&best.w>=pitch*.43&&best.w<=pitch*.85?best:null);
++    }
++    let top=0;
++    for(let k=0;k<=runs.length;k++){
++      const r=runs[k],head=runs[top];
++      if(r&&head&&Math.abs(r.x-head.x)<=2&&Math.abs(r.w-head.w)<=3)continue;
++      const thickness=k-top;
++      if(thickness>=Math.max(2,Math.ceil(pitch*.06))&&thickness<=Math.ceil(pitch*.19)&&top>0&&k<runs.length)return true;
++      top=k;
++    }
++  }catch(_){return false;}
++  return false;
++}
++
+@@ -4236,0 +4327 @@
++      r.noSlotMarker=decorationNoSlotMarker(img,r);
+@@ -4239 +4330 @@
+-    return {groupIndex,key:def.key,label:def.label,equipmentKey:def.key,reflect:def.reflect!==false,expectedSlotLevels:expected,slots};
++    return {groupIndex,key:def.key,label:def.label,equipmentKey:def.key,reflect:def.reflect!==false,expectedSlotLevels:expected,physicalMappingVerified:logicalBlocks.length===DECORATION_GROUP_ORDER.length&&block.every((r,j)=>j===0||r.slotIndex===block[j-1].slotIndex+1),slots};
+@@ -4404 +4495 @@
+-    $('workflowDecorationStatus').textContent=`装飾品${result.groups.length}グループ / ${result.groups.reduce((n,g)=>n+g.slots.length,0)}スロットをOCR中…（珠DBは並行取得）`;
++    $('workflowDecorationStatus').textContent='処理中…';
+@@ -4453 +4544 @@
+-      if(group){ const gs=group.slots.find(x=>x.slotIndex===roi.slotIndex); if(gs){ gs.slotLevel=slotLevel; gs.ocr={slotIndex:roi.slotIndex,groupIndex:roi.groupIndex,slotInGroup:roi.slotInGroup,slotLevel,maxSlot,raw:best.raw,confidence:best.confidence,mode:best.mode,candidates,dbBest:candidates[0]||null}; gs.jewel=candidates[0]||null; } }
++      if(group){ const gs=group.slots.find(x=>x.slotIndex===roi.slotIndex); if(gs){ gs.slotLevel=slotLevel; gs.ocr={slotIndex:roi.slotIndex,groupIndex:roi.groupIndex,slotInGroup:roi.slotInGroup,slotLevel,maxSlot,raw:best.raw,confidence:best.confidence,mode:best.mode,candidates,dbBest:candidates[0]||null}; gs.jewel=null; } }
+@@ -4455 +4546 @@
+-      if((out.length)%4===0) $('workflowDecorationStatus').textContent=`装飾品OCR中… ${out.length}/${result.groups.reduce((n,g)=>n+g.slots.length,0)}`;
++      if((out.length)%4===0) $('workflowDecorationStatus').textContent='処理中…';
+@@ -4460,0 +4552 @@
++    if(window.decorationSlotResult!==result)return;
+@@ -4472 +4564 @@
+-      if(gs){ gs.ocr={...(gs.ocr||{}),maxSlot,candidates:r.candidates,dbBest:r.dbBest}; gs.jewel=r.dbBest||null; }
++      if(gs){ gs.ocr={...(gs.ocr||{}),maxSlot,candidates:r.candidates,dbBest:r.dbBest}; gs.jewel=null; }
+@@ -4476,2 +4568 @@
+-    updateDecorationContext();
+-    renderDecorationOCRResult(out);
++    reviewDecorationResults();
+@@ -4480 +4571 @@
+-    $('workflowDecorationStatus').textContent=`装飾品OCR完了：${result.groups.length}グループ / ${out.length}スロット / 文字候補${recognized}件 / ${elapsed.toFixed(1)}秒`;
++    $('workflowDecorationStatus').textContent='装飾品を読み取りました。';
+@@ -4481,0 +4573 @@
++    if(window.decorationSlotResult!==result)return;
+@@ -4485,0 +4578,84 @@
++function decorationPhysicalNoSlot(group,slot,row,equipped){
++  const best=equipped?.best,i=row.slotInGroup;
++  if(group.physicalMappingVerified!==true||slot?.noSlotMarker!==true||group.slots[i]!==slot||slot.slotInGroup!==i||!Number.isInteger(i)||i<0||i>2||!best?.id||best.kind!==group.equipmentKey||!['head','chest','arms','waist','legs'].includes(best.kind))return false;
++  const records=window.__getBetaDB?.()?.armor?.filter(a=>a.id===best.id&&a.kind===best.kind&&a.name===best.name)||[];
++  if(records.length!==1)return false;
++  const a=records[0];
++  if(!Array.isArray(a.slots)||a.slots.length>3||!a.slots.every(level=>Number.isInteger(level)&&level>=1&&level<=3)||!Number.isInteger(a.rarity)||a.rarity<1||a.rarity>8||i<extractDecorationSlotLevels(a).length)return false;
++  if(row.manualChoice&&row.manualChoice!=='skip')return false;
++  // Check uncapped text candidates: cap 0 would otherwise mask real jewels
++  // if the two screenshots came from different equipment or were misaligned.
++  const texts=[row.raw,...(row.passes||[]).map(p=>p.raw)].filter(Boolean);
++  return !texts.some(t=>/珠|【[1-3]】/.test(String(t).normalize('NFKC'))||matchDecorationCandidates(t,null,'armor').length);
++}
++function reviewDecorationResults({render=true}={}){
++  const rows=window.lastDecorationOCR||[], result=window.decorationSlotResult;
++  if(!result)return;
++  for(const r of rows){
++    const g=result.groups.find(x=>x.groupIndex===r.groupIndex),slot=g?.slots.find(x=>x.slotIndex===r.slotIndex);
++    if(!slot)continue;
++    const equipped=window.equipmentContext?.results?.find(x=>x.key===g.equipmentKey);
++    const knownSlots=equipped?getEquipmentExpectedGroupSlots(g.equipmentKey):[];
++    const randomCharm=!!ocrRandomCharmGroup(g);
++    // A generated charm's kind is known but its individual slot layout is not.
++    // Offer this jewel for review; the host still verifies the actual typed slot.
++    const cap=equipped?((randomCharm?null:knownSlots[r.slotInGroup]??0)):(g.expectedSlotLevels?.[r.slotInGroup]??null);
++    const kind=decorationKindForEquipmentKey(g.equipmentKey),check=window.MHWDecorationOCRConfirmation;
++    const pool=decorationDB.filter(d=>check.compatible(d,kind,cap)),manual=pool.find(d=>r.manualChoice===String(d.id));
++    const exact=check.resolve({passes:r.passes?.length?r.passes:[{raw:r.raw}],db:decorationDB,kind,maxSlot:cap});
++    // Keep the fuzzy list separate. Only exact or explicitly selected IDs become jewels.
++    r.candidates=matchDecorationCandidates(r.raw,cap,kind).filter(d=>check.compatible(d,kind,cap));
++    r.reviewPool=pool;
++    r.confirmationStatus=decorationPhysicalNoSlot(g,slot,r,equipped)?'NO_SLOT':r.manualChoice==='skip'?'SKIP':manual?'MANUAL':r.manualChoice?'REVIEW':exact.status;
++    r.jewel=r.confirmationStatus==='MANUAL'?manual:r.confirmationStatus==='AUTO'?exact.jewel:null;
++    r.proposedJewel=['NO_SLOT','SKIP'].includes(r.confirmationStatus)?null:r.jewel||(!r.manualChoice?r.candidates[0]||null:null);
++    slot.jewel=r.jewel;slot.proposedJewel=r.proposedJewel;slot.confirmationStatus=r.confirmationStatus;
++  }
++  updateDecorationContext();
++  if(render)renderDecorationOCRResult(rows);
++}
++window.MHWOCRReviewDecorations=reviewDecorationResults;
++$('workflowDecorationOut').addEventListener('change',event=>{
++  const layout=event.target.closest('[data-ocr-charm-layout]');
++  if(layout){
++    const g=window.decorationSlotResult?.groups?.find(g=>g.equipmentKey==='charm'),state=ocrCharmLayoutState(g);
++    if(!state)return;
++    g.charmLayoutChoice=state.profiles.includes(layout.value)?{key:state.key,choice:layout.value}:null;
++    renderDecorationOCRResult(window.lastDecorationOCR||[]);
++    $('workflowDecorationOut').querySelector('[data-ocr-charm-layout]')?.focus();return;
++  }
++  const n=event.target.closest('[data-decoration-review]');
++  if(!n)return;
++  const row=(window.lastDecorationOCR||[]).find(r=>String(r.slotIndex)===n.dataset.decorationReview);
++  if(!row)return;
++  row.manualChoice=n.value;row.showPicker=n.value==='other';
++  reviewDecorationResults();
++  refreshFinalBuildPreview();
++  const restored=$('workflowDecorationOut').querySelector('select[data-decoration-review="'+n.dataset.decorationReview+'"]');
++  restored?.focus();
++});
++$('workflowDecorationOut').addEventListener('click',event=>{
++  if(!event.target.closest('[data-ocr-charm-defer]'))return;
++  const g=window.decorationSlotResult?.groups?.find(g=>g.equipmentKey==='charm'),state=ocrCharmLayoutState(g);
++  if(!state)return;
++  g.charmLayoutChoice=state.deferred?null:{key:state.key,choice:'defer'};
++  renderDecorationOCRResult(window.lastDecorationOCR||[]);
++  $('workflowDecorationOut').querySelector('[data-ocr-charm-defer]')?.focus();
++});
++function decorationSourceCrop(r){
++  const img=$('decorationImg'),roi=r.roi||window.decorationSlotResult?.rois?.find(x=>x.slotIndex===r.slotIndex);
++  if(!img?.naturalWidth||!img.naturalHeight||!roi||![roi.x,roi.y,roi.w,roi.h].every(Number.isFinite)||roi.w<=0||roi.h<=0)return '';
++  const x=Math.max(0,roi.x),y=Math.max(0,roi.y),w=Math.min(img.naturalWidth,roi.x+roi.w)-x,h=Math.min(img.naturalHeight,roi.y+roi.h)-y;
++  if(w<=0||h<=0)return '';
++  const c=document.createElement('canvas');c.width=Math.ceil(w);c.height=Math.ceil(h);
++  c.getContext('2d').drawImage(img,x,y,w,h,0,0,c.width,c.height);
++  return c.toDataURL('image/png');
++}
++function decorationGroupSourceCrop(rows){
++  const rects=rows.map(r=>r.roi||window.decorationSlotResult?.rois?.find(x=>x.slotIndex===r.slotIndex)).filter(r=>r&&[r.x,r.y,r.w,r.h].every(Number.isFinite)&&r.w>0&&r.h>0);
++  if(!rects.length)return '';
++  // Proven no-slot rows show the dash in the source crop as well.
++  const markerPad=rows.some(r=>r.confirmationStatus==='NO_SLOT')?Math.round(($('decorationImg')?.naturalWidth||0)*.022):0;
++  const x=Math.max(0,Math.min(...rects.map(r=>r.x))-markerPad),y=Math.min(...rects.map(r=>r.y));
++  return decorationSourceCrop({roi:{x,y,w:Math.max(...rects.map(r=>r.x+r.w))-x,h:Math.max(...rects.map(r=>r.y+r.h))-y}});
++}
+@@ -4487,4 +4663,4 @@
+-  const byGroup=new Map();
+-  rows.forEach(r=>{if(!byGroup.has(r.groupIndex))byGroup.set(r.groupIndex,[]);byGroup.get(r.groupIndex).push(r);});
+-  const groups=Array.from(byGroup.entries()).sort((a,b)=>a[0]-b[0]).map(([gi,rs])=>{
+-    const g=window.decorationSlotResult?.groups?.find(x=>x.groupIndex===gi);
++  const labels={weapon:'武器装飾品',head:'頭装飾品',chest:'胴装飾品',arms:'腕装飾品',waist:'腰装飾品',legs:'脚装飾品',charm:'護石装飾品'};
++  const groups=(window.decorationSlotResult?.groups||[]).filter(g=>g.reflect!==false).map(g=>{
++    const rs=rows.filter(r=>r.groupIndex===g.groupIndex);if(!rs.length)return '';
++    const crop=decorationGroupSourceCrop(rs),label=labels[g.equipmentKey]||g.label||'装飾品';
+@@ -4492,3 +4668,5 @@
+-      const slotLabel=(Number.isFinite(Number(r.slotInGroup))?`${Number(r.slotInGroup)+1}番スロット`:'スロット未割当');
+-      const db=r.dbBest;
+-      return `<div class="ocr-deco-simple-row"><b>${slotLabel}</b>　${db?esc(db.name):'<span class="note">未照合</span>'}</div>`;
++      if(r.confirmationStatus==='NO_SLOT')return `<div class="ocr-deco-simple-row"><span>スロット${Number(r.slotInGroup)+1}</span>　<b>スロットなし</b></div>`;
++      const db=r.proposedJewel,empty=r.confirmationStatus==='SKIP',name=db?.name||(empty?'空きスロット':'未選択');
++      const top=r.candidates||[],ids=new Set(top.map(d=>String(d.id))),others=(r.reviewPool||[]).filter(d=>!ids.has(String(d.id))).sort((a,b)=>a.name.localeCompare(b.name,'ja'));
++      const option=d=>`<option value="${esc(String(d.id))}"${String(db?.id)===String(d.id)?' selected':''}>${esc(d.name)}</option>`;
++      return `<div class="ocr-deco-simple-row" style="display:grid;grid-template-columns:auto minmax(0,1fr) minmax(100px,1fr);align-items:center;gap:6px;padding:5px 0"><span>スロット${Number(r.slotInGroup)+1}</span><b style="overflow-wrap:anywhere">${esc(name)}</b><select style="width:100%;min-width:0" aria-label="${esc(label+' スロット'+(Number(r.slotInGroup)+1))}" data-decoration-review="${r.slotIndex}"><option value=""${!db&&!empty?' selected':''}>未選択</option><option value="skip"${empty?' selected':''}>空きスロット</option>${top.length?'<optgroup label="候補">'+top.map(option).join('')+'</optgroup>':''}${others.length?'<optgroup label="一覧">'+others.map(option).join('')+'</optgroup>':''}</select></div>`;
+@@ -4496 +4674 @@
+-    return `<div class="ocr-deco-simple-group"><b>${g?.label||`装備グループ${gi+1}`}</b>${lines}</div>`;
++    return `<div class="ocr-deco-simple-group"><div style="display:flex;align-items:center;gap:8px"><b>${esc(label)}</b>${crop?`<img src="${crop}" alt="${esc(label+'の元画像')}" style="width:min(75%,320px);height:auto;object-fit:contain">`:''}</div>${lines}${renderOCRCharmLayout(g)}</div>`;
+@@ -4498,3 +4676,2 @@
+-  const html=`<div class="result"><b>装飾品候補</b>${groups}</div>`;
+-  $('decorationOCROut').innerHTML=html;
+-  $('workflowDecorationOut').innerHTML=html;
++  const html=`<div class="result"><b>装飾品</b><div class="small">違うものだけ変更し、最後に「ビルドに反映」を押してください。</div>${groups}</div>`;
++  $('decorationOCROut').innerHTML=html;$('workflowDecorationOut').innerHTML=html;
+@@ -4627 +4804 @@
+-$('workflowReflectBuild').onclick=()=>{reflectAnalysisToBuild(); $('workflowReflectionStatus').textContent=$('buildReflectionStatus').textContent; $('workflowReflectionOut').innerHTML=$('buildReflectionOut').innerHTML;};
++$('workflowReflectBuild').onclick=()=>{reflectAnalysisToBuild(); $('workflowReflectionStatus').textContent=$('buildReflectionStatus').textContent; $('workflowReflectionOut').textContent='';};
+@@ -4634,0 +4812 @@
++  $('workflowDecorationOut').innerHTML='';
+@@ -4654 +4832 @@
+-    $('workflowDecorationStatus').textContent=decoReady?`装飾品画像を読み込みました。DB照合を含む解析を開始できます。（装飾品${decorationDB.length}件）`:'装飾品画像を読み込みました。β版の装飾品DBが準備できていません。上の「① データ取得」を確認してください。'; $('workflowDecorationOut').innerHTML=''; $('workflowDecorationOCR').disabled=!decoReady; $('decorationPreviewButton').disabled=false;
++    $('workflowDecorationStatus').textContent=decoReady?'装飾品画像を読み込みました。解析できます。':'装飾品画像を読み込みました。β版の装飾品DBが準備できていません。上の「① データ取得」を確認してください。'; $('workflowDecorationOut').innerHTML=''; $('workflowDecorationOCR').disabled=!decoReady; $('decorationPreviewButton').disabled=false;
+@@ -4737,5 +4915 @@
+-$('workflowReflectBuild')?.addEventListener('click',()=>{
+-  reflectAnalysisToBuild();
+-  $('workflowReflectionStatus').textContent=$('buildReflectionStatus').textContent;
+-  $('workflowReflectionOut').innerHTML=$('buildReflectionOut').innerHTML;
+-});
++
+@@ -4763,0 +4938 @@
++
+@@ -4771 +4946 @@
+-  const rows=eq.map(x=>{const g=jewels.get(x.key);const js=(g?.slots||[]).map(s=>s.jewel?.name||s.ocr?.raw||'未確定').join('<br>')||'—';return `<div class="build-row"><div class="build-equip">${equipmentSlotLabel(x.key)}<br><span class="subtle">${x.best?.name||'未確定'}</span></div><div class="build-jewels">${js}</div></div>`}).join('');
++  const rows=eq.map(x=>{const g=jewels.get(x.key);const js=(g?.slots||[]).map(s=>(s.jewel||((g?.equipmentKey==='charm'&&ocrRandomCharmGroup(g))?s.proposedJewel:null))?esc((s.jewel||s.proposedJewel).name):s.confirmationStatus==='NO_SLOT'?'スロットなし':s.confirmationStatus==='SKIP'?'空き・取り込まない':'要確認').join('<br>')||'—';return `<div class="build-row"><div class="build-equip">${equipmentSlotLabel(x.key)}<br><span class="subtle">${x.best?.name||'未確定'}</span></div><div class="build-jewels">${js}</div></div>`}).join('');
+@@ -4786 +4961 @@
+-  const row=(window.lastEquipmentOCR||[]).find(x=>x.key===key); if(!row||!row.ranked?.[index])return;
++  const row=(window.lastEquipmentOCR||[]).find(x=>x.key===key); if(!row||!row.ranked?.[index]||!equipmentCandidateEvidence(row,row.ranked[index]))return;
+@@ -4789 +4964 @@
+-  updateEquipmentContext(); renderProductionEquipment(); refreshFinalBuildPreview();
++  updateEquipmentContext(); reviewDecorationResults(); renderProductionEquipment(); refreshFinalBuildPreview();
+@@ -4795 +4970 @@
+-  updateEquipmentContext(); renderProductionEquipment(); refreshFinalBuildPreview();
++  updateEquipmentContext(); reviewDecorationResults(); renderProductionEquipment(); refreshFinalBuildPreview();
+@@ -4800 +4975 @@
+-  const pool=equipmentManualPool(key); const hit=pool.find(x=>String(x.id??x.gameId??x.name)===String(value)); if(!hit)return;
++  const pool=equipmentManualPool(key); const hit=/^index:\d+$/.test(value)?pool[Number(value.slice(6))]:pool.find(x=>String(x.id??x.gameId??x.name)===String(value)); if(!hit)return;
+@@ -4804 +4979 @@
+-  updateEquipmentContext(); renderProductionEquipment(); refreshFinalBuildPreview();
++  updateEquipmentContext(); reviewDecorationResults(); renderProductionEquipment(); refreshFinalBuildPreview();
+@@ -4810 +4985 @@
+-  updateEquipmentContext(); renderProductionEquipment(); refreshFinalBuildPreview();
++  updateEquipmentContext(); reviewDecorationResults(); renderProductionEquipment(); refreshFinalBuildPreview();
+@@ -4813,2 +4988,2 @@
+-  const pool=equipmentManualPool(x.key).slice().sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ja'));
+-  const opts=pool.map(c=>`<option value="${esc(String(c.id??c.gameId??c.name))}">${esc(c.name||'名称不明')}</option>`).join('');
++  const pool=equipmentManualPool(x.key).map((item,index)=>({...item,manualIndex:index})).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ja'));
++  const opts=pool.map(c=>`<option value="${esc('index:'+c.manualIndex)}">${esc(c.name||'名称不明')}</option>`).join('');
+@@ -4816,0 +4992,27 @@
++function equipmentSourceCrop(row){
++  const img=$('img'),iw=Number(img?.naturalWidth||img?.width),ih=Number(img?.naturalHeight||img?.height);
++  if(!row?.region||!iw||!ih)return '';
++  try{
++    const raw=equipmentNameCropRect(row.region,iw,ih);if(!raw)return '';
++    const r=clampRectToImage(raw,iw,ih),w=Math.max(1,Math.round(r.width)),h=Math.max(1,Math.round(r.height));
++    const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
++    canvas.getContext('2d').drawImage(img,r.x,r.y,w,h,0,0,w,h);
++    return canvas.toDataURL('image/png');
++  }catch(_){return '';}
++}
++function equipmentVisibleChoice(row){
++  if(['candidate_rejected','unresolved'].includes(row.resolutionStatus))return null;
++  if(row.resolutionStatus==='manual_confirmed')return row.best||null;
++  const choice=row.best||row.ranked?.[0]||null;
++  return equipmentCandidateEvidence(row,choice)?choice:null;
++}
++function acceptVisibleEquipmentChoices(){
++  const rows=window.lastEquipmentOCR||[];
++  const missing=rows.filter(row=>!equipmentVisibleChoice(row)&&!(row.resolutionStatus==='unresolved'&&row.failureKnowledge?.status==='unresolved'));
++  if(missing.length){$('buildReflectionStatus').textContent='装備を選ぶか「あとで設定する」を選んでください：'+missing.map(row=>equipmentSlotLabel(row.key)).join('、');return false;}
++  for(const row of rows){const chosen=equipmentVisibleChoice(row);if(!chosen)continue;
++    row.best={...chosen,decision:{level:'user',label:'表示内容を確定',reason:'ビルドに反映で表示中の装備を確定'}};
++    if(row.resolutionStatus!=='manual_confirmed')row.resolutionStatus='candidate_confirmed';
++  }
++  return true;
++}
+@@ -4818,15 +5020,15 @@
+-  const rows=window.lastEquipmentOCR||[]; if(!rows.length){$('workflowEquipmentOut').innerHTML='';return;}
+-  const status=x=>x.resolutionStatus||(x.best?.decision?.level==='auto'?'auto_confirmed':x.best?'candidate_pending':'unresolved');
+-  const confirmed=x=>!!x.best&&['auto_confirmed','candidate_confirmed','manual_confirmed'].includes(status(x));
+-  const auto=rows.filter(x=>confirmed(x)&&status(x)==='auto_confirmed').length;
+-  const selected=rows.filter(confirmed).length-auto, needs=rows.length-auto-selected;
+-  let html=`<div class="confirm-summary"><b>③ 装備の確認</b><br>自動確定${auto} / ユーザー・手動確定${selected} / 確認待ち${needs}</div>`;
+-  for(const x of rows){
+-    const b=x.best; const need=!confirmed(x); const editable=b?.decision?.level!=='auto'; const rejected=x.resolutionStatus==='candidate_rejected'; const unresolved=x.resolutionStatus==='unresolved';
+-    const cs=(x.ranked||[]).slice(0,3).map((c,i)=>{
+-      const selected=!rejected&&!unresolved&&!!b&&String(b.id??b.gameId??b.name)===String(c.id??c.gameId??c.name);
+-      return `<label class="candidate-choice ${selected?'selected':''}"><input type="radio" name="eq-${x.key}" ${selected?'checked':''} onchange="selectEquipmentCandidate('${x.key}',${i})"><span><span class="candidate-name">${c.name}</span><span class="candidate-meta">総合 ${Math.round((c.totalScore??0)*100)}pt / OCR ${Math.round(c.confAvg||0)}%</span></span></label>`;
+-    }).join('');
+-    const none=`<label class="candidate-choice ${rejected||unresolved?'selected':''}"><input type="radio" name="eq-${x.key}" ${rejected||unresolved?'checked':''} onchange="rejectEquipmentCandidates('${x.key}')"><span><span class="candidate-name">どれでもない</span><span class="candidate-meta">候補外の装備を手動で選択</span></span></label>`;
+-    const state=unresolved?'未確定':rejected?'候補外・手動選択待ち':status(x)==='manual_confirmed'?'手動確定':status(x)==='candidate_confirmed'?'ユーザー確定':need?'要確認':'自動確定';
+-    html+=`<div class="confirm-item ${need?'warning':''}"><div class="confirm-head"><b>${equipmentSlotLabel(x.key)}</b><span class="confirm-state ${need?'warn':''}">${state}</span></div><div style="margin-top:5px;font-weight:800">${b?.name||(unresolved?'あとで設定':'候補なし')}</div>${editable?`<div class="candidate-list">${cs}${none}</div>${rejected||unresolved?manualEquipmentPickerHtml(x):''}`:''}</div>`;
++  const rows=window.lastEquipmentOCR||[];if(!rows.length){$('workflowEquipmentOut').innerHTML='';return;}
++  let html='<div class="confirm-summary"><b>③ 装備の確認</b><br>画像と装備名が合っていれば、そのまま「ビルドに反映」へ。違う場合だけ変更してください。</div>';
++  for(const row of rows){
++    const chosen=equipmentVisibleChoice(row),crop=equipmentSourceCrop(row);
++    const deferred=row.resolutionStatus==='unresolved'&&row.failureKnowledge?.status==='unresolved';
++    const identity=c=>JSON.stringify([c?.id??null,c?.gameId??null,c?.kind??null,c?.name??null]);
++    const seen=new Set();
++    const eligible=(row.ranked||[]).map((c,index)=>({c,index})).filter(({c})=>{if(!equipmentCandidateEvidence(row,c))return false;const key=identity(c);if(seen.has(key))return false;seen.add(key);return true;});
++    const chosenKey=chosen?identity(chosen):null;
++    const visible=eligible.slice(0,3);
++    if(chosen&&!visible.some(({c})=>identity(c)===chosenKey))visible.unshift({c:chosen,index:eligible.find(({c})=>identity(c)===chosenKey)?.index??null});
++    const candidates=visible.slice(0,3).map(({c,index})=>{const selected=identity(c)===chosenKey;return `<label class="candidate-choice ${selected?'selected':''}"><input type="radio" name="eq-${esc(row.key)}" ${selected?'checked':''} ${index===null?'':`onchange="selectEquipmentCandidate('${row.key}',${index})"`}><span class="candidate-name">${esc(c.name||'名称不明')}</span></label>`;}).join('');
++    const none=visible.length?`<label class="candidate-choice ${row.resolutionStatus==='candidate_rejected'?'selected':''}"><input type="radio" name="eq-${esc(row.key)}" ${row.resolutionStatus==='candidate_rejected'?'checked':''} onchange="rejectEquipmentCandidates('${row.key}')"><span class="candidate-name">どれでもない</span></label>`:'';
++    const noChoice=!chosen&&!deferred;
++    html+=`<div class="confirm-item ${noChoice?'warning':''}" data-equipment-review="${esc(row.key)}"><div class="confirm-head" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px"><b>${esc(equipmentSlotLabel(row.key))}</b><div style="flex:0 1 220px;min-width:0">${crop?`<img src="${crop}" alt="${esc(equipmentSlotLabel(row.key))}の元画像の切り出し" style="display:block;width:auto;height:auto;max-width:min(100%,220px);max-height:42px;object-fit:contain;background:#111">`:'<p>元画像の切り出しを表示できません。装備を確認してください。</p>'}</div></div>${!chosen?`<div style="margin-top:8px;font-weight:800">${deferred?'あとで設定':'候補なし：装備を選択してください'}</div>`:''}${candidates?`<div class="candidate-list">${candidates}${none}</div>`:''}${!chosen?manualEquipmentPickerHtml(row):''}</div>`;
+@@ -4835,0 +5038 @@
++
+@@ -4868,3 +5071,6 @@
+-  updateDecorationContext();renderDecorationOCRResult(window.lastDecorationOCR||[]);
+-  setAnalysisProgress('deco',100,'解析完了',4);
+-  $('workflowDecorationStatus').textContent='装飾品の解析が完了しました。下の候補を確認してください。';
++  reviewDecorationResults();
++  const reviewed=(window.lastDecorationOCR||[]).length>0;
++  if(reviewed){
++    setAnalysisProgress('deco',100,'解析完了',4);
++    $('workflowDecorationStatus').textContent='装飾品を読み取りました。違うものだけ変更してください。';
++  }
+@@ -4875 +5081,6 @@
+-$('skipDecoration').onclick=()=>{$('workflowDecorationStatus').textContent='装飾品の取り込みをスキップしました。';$('decorationProgress').classList.remove('show');refreshFinalBuildPreview()};
++$('skipDecoration').onclick=()=>{
++  window.decorationSlotResult=null;window.lastDecorationOCR=[];updateDecorationContext();
++  $('workflowDecorationOut').innerHTML='';
++  $('workflowDecorationStatus').textContent='装飾品の取り込みをスキップしました。';
++  $('decorationProgress').classList.remove('show');refreshFinalBuildPreview();
++};
