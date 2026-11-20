@@ -1,0 +1,116 @@
+--- host.patch.base
++++ host.patch.candidate
+@@ -895,0 +896 @@
++<script src="./ui/decoration-ocr-confirmation.js"></script>
+@@ -1945 +1946 @@
+-  for(let i=0;i<3;i++){const se=document.querySelector(`.chSkill[data-i="${i}"]`),le=document.querySelector(`.chLv[data-i="${i}"]`);se.onchange=()=>{const v=build.charmCustom.skills[i];v.name=se.value;v.type=se.selectedOptions[0]?.dataset?.type||'armor';v.level=1;for(let j=i+1;j<3;j++)build.charmCustom.skills[j]={name:'',level:1,type:'armor'};build.charmCustom.slots=[0,0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;renderCharmEditor();calcBuild()};le.onchange=()=>{build.charmCustom.skills[i].level=+le.value||1;for(let j=i+1;j<3;j++)build.charmCustom.skills[j]={name:'',level:1,type:'armor'};build.charmCustom.slots=[0,0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;renderCharmEditor();calcBuild()};}
++  for(let i=0;i<3;i++){const se=document.querySelector(`.chSkill[data-i="${i}"]`),le=document.querySelector(`.chLv[data-i="${i}"]`);se.onchange=()=>{const previousSkills=build.charmCustom.skills.map(s=>({...s}));const v=build.charmCustom.skills[i];v.name=se.value;v.type=se.selectedOptions[0]?.dataset?.type||'armor';v.level=1;for(let j=i+1;j<3;j++)build.charmCustom.skills[j]={name:'',level:1,type:'armor'};ocrRetainCharmLayoutAfterSkills(previousSkills);renderCharmEditor();calcBuild()};le.onchange=()=>{const previousSkills=build.charmCustom.skills.map(s=>({...s}));build.charmCustom.skills[i].level=+le.value||1;for(let j=i+1;j<3;j++)build.charmCustom.skills[j]={name:'',level:1,type:'armor'};ocrRetainCharmLayoutAfterSkills(previousSkills);renderCharmEditor();calcBuild()};}
+@@ -9294,0 +9296,39 @@
++function ocrCharmProfileState(pattern){
++  const shapes={'防1':[[1],[]],'防2':[[2],[]],'防3':[[3],[]],'防1-防1':[[1,1],[]],'防2-防1':[[2,1],[]],'武1':[[],[1]],'武1-防1':[[1],[1]],'武1-防1-防1':[[1,1],[1]]};
++  const s=shapes[pattern];return s?{slots:s[0].slice(),weaponSlots:s[1].slice(),weaponSlot:!!s[1].length}:null;
++}
++function ocrRandomCharmRarity(charm){
++  if(charm?.random!==true)return null;
++  const rs=charm.ranks||[];
++  const rarities=[...new Set(rs.map(r=>Number(r.rarity)).filter(Number.isInteger))];
++  if(rarities.length!==1||!Object.hasOwn(CHARM_RARITY_NAMES,rarities[0])||rs.some(r=>(r.skills||[]).length))return null;
++  const rarity=rarities[0];
++  if(charm.rarity!=null&&Number(charm.rarity)!==rarity)return null;
++  return rarity;
++}
++function ocrCharmProfiles({charmId,slots=[]}={}){
++  const charms=(DB.charms||[]).filter(c=>String(c.id)===String(charmId));
++  if(charms.length!==1||!Array.isArray(slots))return [];
++  const rarity=ocrRandomCharmRarity(charms[0]);if(rarity==null)return [];
++  const evidence=[],indices=new Set();
++  for(const z of slots){
++    if(z?.id==null)continue;
++    const idx=z.slotInGroup;
++    const matches=(DB.decorations||[]).filter(d=>String(d.id)===String(z.id));
++    if(!Number.isInteger(idx)||idx<0||idx>2||indices.has(idx)||matches.length!==1)return [];
++    const j=matches[0],kind=normalizeDecorationKind(j.kind),level=Number(j.slot);
++    if(!['weapon','armor'].includes(kind)||!Number.isInteger(level)||level<1||level>3)return [];
++    indices.add(idx);evidence.push({idx,j,kind,level});
++  }
++  // A DB charm ID identifies the rarity family, not a generated roll.
++  const patterns=[...new Set(CHARM_RULES.filter(r=>Number(r.rarity)===rarity).flatMap(r=>r.slotPatterns||[]))];
++  return patterns.filter(p=>{const state=ocrCharmProfileState(p);if(!state)return false;const entries=charmSlotEntries(state);return evidence.every(({idx,j,kind,level})=>entries[idx]&&entries[idx].kind===kind&&entries[idx].level>=level&&decorationCompatibleWithSlot(j,entries[idx].kind));});
++}
++window.__ocrCharmProfiles=ocrCharmProfiles;
++function ocrRetainCharmLayoutAfterSkills(previousSkills){
++  const p=charmSlotPattern(build.charmCustom);
++  if(p==='なし'||charmPossibleSlotValues(build.charmCustom.skills).includes(p))return;
++  build.charmCustom.skills=previousSkills;
++  alert('現在のスロット構成と、このスキルの組み合わせは確認できません。スロット・装飾品は変更せず、スキル変更を取り消しました。先にスロット構成を確認してください。');
++}
++
+@@ -9299,0 +9340,5 @@
++  const previousDecos={...build.decos};
++  const previousEquip={mainWeapon:String(selectedWeapon()?.id??''),...Object.fromEntries(['head','chest','arms','waist','legs'].map(k=>[k,String(build.armor[k]?.id??'')]))};
++  const previousCharm=build.charmCustom;
++  const previousCharmId=String(build.charm?.id??'');
++  window.__ocrDecorationUnapplied=[];
+@@ -9304,0 +9350,10 @@
++  const charmInput=eq.find(v=>v.key==='charm'), charmResolved=findCharm(charmInput);
++  const randomCharm=charmResolved&&ocrRandomCharmRarity(charmResolved.charm)!=null;
++  const charmRows=(Array.isArray(x.decorations)?x.decorations:[]).filter(g=>g.equipmentKey==='charm').flatMap(g=>g.slots||[]);
++  const profileOptions=randomCharm?ocrCharmProfiles({charmId:charmResolved.charm.id,slots:charmRows}):[];
++  const hasCharmJewelEvidence=charmRows.some(z=>z?.id!=null);
++  let chosenProfile=x.charmSlotPattern||'';
++  if(chosenProfile&&(!randomCharm||!hasCharmJewelEvidence||!profileOptions.includes(chosenProfile)))throw Error('護石スロット構成を確認してください。指定された構成に装飾品を反映できません。');
++  const sameRandom=randomCharm&&String(charmResolved.charm.id)===previousCharmId;
++  if(!chosenProfile&&hasCharmJewelEvidence&&profileOptions.length===1)chosenProfile=profileOptions[0];
++  if(randomCharm&&hasCharmJewelEvidence&&!chosenProfile)throw Error('護石のスロット構成を選択してください。スキル入力は後からできます。');
+@@ -9375 +9430 @@
+-  for(const k of ['head','chest','arms','waist','legs']){const a=findArmor(eq.find(v=>v.key===k));build.armor[k]=a;}
++  for(const k of ['head','chest','arms','waist','legs']){const a=findArmor(eq.find(v=>v.key===k));if(a)build.armor[k]=a;}
+@@ -9377 +9432,23 @@
+-  if(cr){const rank=cr.rank;const skills=(rank?.skills||[]).map(z=>({name:String(z.name||''),level:Number(z.level)||1,type:'armor'})).filter(z=>z.name);build.charm=cr.charm;build.charmCustom={skills:[0,1,2].map(i=>skills[i]||{name:'',level:1,type:'armor'}),slots:charmPattern(charmR?.slotLevels||rank?.slots||[]),weaponSlots:[],weaponSlot:false};}
++  if(cr){
++    const rank=cr.rank,known=(rank?.skills||[]).length>0;
++    const keepTyped=randomCharm&&sameRandom&&!hasCharmJewelEvidence;
++    build.charm=cr.charm;
++    if(!keepTyped){
++      const skills=(rank?.skills||[]).map(z=>({name:String(z.skill?.name||z.name||''),level:Number(z.level)||1,type:(z.skill?.kind||z.kind)==='weapon'?'weapon':'armor'})).filter(z=>z.name);
++      // The random-talisman kind in MHDB does not describe this instance's slots.
++      const declared=known?(charmR?.slotLevels?.length?charmR.slotLevels:rank?.slots||rank?.decorationSlots||[]):[];
++      build.charmCustom={skills:[0,1,2].map(i=>skills[i]||{name:'',level:1,type:'armor'}),slots:charmPattern(declared),weaponSlots:[],weaponSlot:false};
++    }
++  }
++  if(randomCharm&&chosenProfile){
++    // Use the observed slots and jewels, never the previous roll's grants.
++    build.charmCustom.skills=[0,1,2].map(()=>({name:'',level:1,type:'armor'}));
++    Object.assign(build.charmCustom,ocrCharmProfileState(chosenProfile));
++  }
++  normalizeCharm();
++  const entries=allEquipSlots(),byKey=new Map(entries.map(slot=>[slot.key,slot]));
++  const groups=(Array.isArray(x.decorations)?x.decorations:[]).filter(g=>g?.equipmentKey!=='subWeapon');
++  const equipKeys={mainWeapon:'w',head:'head',chest:'chest',arms:'arms',waist:'waist',legs:'legs'};
++  const labels={mainWeapon:'メイン武器',head:'頭防具',chest:'胴防具',arms:'腕防具',waist:'腰防具',legs:'脚防具',charm:'護石'};
++  const jewelById=new Map(DB.decorations.map(d=>[String(d.id),d]));
++  const stillFits=(j,slot)=>j&&slot&&decorationCompatibleWithSlot(j,slot.kind)&&validDecorationSlotFit(j,slot.level);
+@@ -9379,4 +9456,19 @@
+-  for(const g of (Array.isArray(x.decorations)?x.decorations:[])){
+-    const target=g.equipmentKey;if(target==='subWeapon')continue;
+-    const prefix=target==='mainWeapon'?'w':(['head','chest','arms','waist','legs'].includes(target)?target:target==='charm'?'c':null);if(!prefix)continue;
+-    for(const z of(g.slots||[])){const idx=Number.isFinite(Number(z.slotInGroup))?Number(z.slotInGroup):Number(z.slotIndex);if(Number.isFinite(idx)&&z.id!=null)build.decos[`${prefix}${idx}`]=String(z.id);}
++  // Skipping an image must not carry jewels across changed equipment, nor
++  // clear valid jewels from pieces that did not change.
++  for(const [key,id] of Object.entries(previousDecos)){
++    const target=key.startsWith('c')&&!key.startsWith('chest')?'charm':Object.keys(equipKeys).find(k=>key.startsWith(equipKeys[k]));
++    if(!target||groups.some(g=>g.equipmentKey===target))continue;
++    const same=target==='charm'?build.charmCustom===previousCharm:(String((target==='mainWeapon'?selectedWeapon():build.armor[target])?.id??'')===previousEquip[target]);
++    if(same&&stillFits(jewelById.get(String(id)),byKey.get(key)))build.decos[key]=String(id);
++  }
++  const touched=new Set();
++  for(const g of groups){
++    const target=g?.equipmentKey,prefix=equipKeys[target];
++    if(!prefix&&target!=='charm')continue;
++    for(const z of (Array.isArray(g.slots)?g.slots:[])){
++      if(z?.id==null)continue;
++      const idx=z.slotInGroup,jewel=jewelById.get(String(z.id));
++      const slot=Number.isInteger(idx)&&idx>=0&&idx<3?(target==='charm'?charmSlotEntries(build.charmCustom)[idx]:byKey.get(prefix+idx)):null;
++      if(slot&&!touched.has(slot.key)&&stillFits(jewel,slot)){touched.add(slot.key);build.decos[slot.key]=String(jewel.id);continue;}
++      window.__ocrDecorationUnapplied.push({id:z.id,label:labels[target],slotInGroup:Number.isInteger(idx)?idx:null,name:jewel?.name||'DB未確認の装飾品'});
++    }
