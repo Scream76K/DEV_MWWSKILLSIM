@@ -314,6 +314,11 @@ header h1{font-family:Georgia,"Times New Roman","Noto Serif JP",serif;letter-spa
 .grid{grid-template-columns:300px minmax(0,1fr)}
 .grid>*{min-width:0}
 #compareOut{min-width:0;max-width:100%}
+.used-combo-panel{margin:12px 0;padding:12px 14px;min-width:0;border:1px solid var(--line,#625039);border-radius:12px;background:var(--paper2);overflow-wrap:anywhere}
+.used-combo-panel h4{margin:0 0 6px;font-size:1.18rem}
+.used-combo-entry{font-size:clamp(1.075rem,2.5vw,1.4rem);font-weight:700;line-height:1.5}
+.used-combo-entry+.used-combo-entry{border-top:1px solid var(--line,#625039);margin-top:6px;padding-top:6px}
+.used-combo-group,.used-combo-independence{display:block;font-size:.84em}
 .compare-results{width:100%;max-width:474px;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
 .compare-table{width:max-content;min-width:0;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media(max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}}
@@ -9800,6 +9805,37 @@ function comparisonCoverageSummary(rows,baseline){
   return {total:rows.length,...counts,pending,causes};
 }
 
+function usedComparisonCombo(row,channel){
+  if(consumerDamageMetric(row,channel).value===null)return {status:'pending',routes:[]};
+  const p=row.oneHitPipeline;
+  const sequence=result=>{const steps=window.MHWRealOneHitBrowserAdapter?.usedComboSteps?.(result);return result?.execution?.status==='complete'&&Array.isArray(steps)&&steps.length&&steps.every(x=>typeof x==='string'&&x)?steps:null;};
+  if(p?.scope==='CB_INDEPENDENT_R_H_SUM'){
+    const r=sequence(p.routes?.R?.channels?.[channel]),h=sequence(p.routes?.H?.channels?.[channel]);
+    return r&&h?{status:'used',routes:[{label:'解放系',steps:r},{label:'高出力系',steps:h}]}:{status:'unknown',routes:[]};
+  }
+  const steps=sequence(p?.channels?.[channel]);
+  return steps?{status:'used',routes:[{label:'',steps}]}:{status:'unknown',routes:[]};
+}
+function renderUsedComparisonCombo(rows){
+  const groups=new Map();
+  for(const row of rows){
+    const n=usedComparisonCombo(row,'normal'),m=usedComparisonCombo(row,'maximum'),key=JSON.stringify([n,m]);
+    if(groups.has(key))groups.get(key).names.push(row.name);
+    else groups.set(key,{names:[row.name],n,m});
+  }
+  const render=result=>{
+    if(result.status==='pending')return '未算出';
+    if(result.status!=='used')return 'コンボ未確認';
+    const sequences=result.routes.map(({label,steps})=>(label?'<b>'+esc(label)+'：</b>':'')+steps.map(esc).join(' → '));
+    return sequences.join('<br>')+(sequences.length>1?'<small class="used-combo-independence">各ルートを別々に計算し、ダメージを合算</small>':'');
+  };
+  const lines=[...groups.values()].map(({names,n,m})=>{
+    const heading=groups.size>1?'<b class="used-combo-group">'+names.map(esc).join('／')+'</b>':'';
+    return '<div class="used-combo-entry">'+heading+(JSON.stringify(n)===JSON.stringify(m)?render(n):'<div>通常：'+render(n)+'</div><div>最大：'+render(m)+'</div>')+'</div>';
+  });
+  return '<section class="used-combo-panel" data-used-combo aria-label="計算に使用したコンボ"><h4>計算に使用したコンボ</h4>'+lines.join('')+'</section>';
+}
+
 let lastBuildComparisonRows=null,lastBuildComparisonBaselineIndex=0,lastBuildComparisonContext=null;
 function renderCompareTable(rows,{baselineIndex=0}={}){
   if(!rows.length)return '<span class="muted small">比較結果はありません。</span>';
@@ -9809,6 +9845,7 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   const perGroup=Math.max(1,Math.floor((474-2-112)/120));
   const baseDamage=consumerDamageMetric(baseline,'normal').value;
   let h='<div class="compare-note"><b>基準ダメージ：'+(Number.isFinite(baseDamage)&&baseDamage>0?comparisonDisplayNumber(baseDamage):'—')+'</b>（'+esc(baseline.name)+'・選択した通常側の比較条件、ゲーム表示の丸め前）</div><label for="comparisonBaseline">比較の基準ビルド（通常側の期待ダメージ）</label><select id="comparisonBaseline">'+rows.map((r,i)=>'<option value="'+i+'"'+(i===selectedIndex?' selected':'')+'>'+esc(r.name)+'</option>').join('')+'</select><div class="two" style="margin-top:8px"><button type="button" id="comparisonReportDownload">比較結果をJSON保存</button><button type="button" id="comparisonReportCopy">比較結果をコピー</button></div><button type="button" id="comparisonComboEvidence">コンボの技別・未検証項目を表示</button><button type="button" id="comparisonEvidenceChecklist">検証作業リストを表示</button><details><summary>実機検証の証拠参照を照合（JSON）</summary><textarea id="comparisonEvidenceInput" rows="4" style="width:100%" placeholder="JSON形式の証拠参照を入力"></textarea><button type="button" id="comparisonEvidenceIntake">証拠参照を照合</button></details><details><summary>実機ダメージ・Hit数・時間の記録を照合（JSON）</summary><textarea id="comparisonMeasurementInput" rows="4" style="width:100%" placeholder="[{&quot;stage&quot;:1,&quot;techniqueId&quot;:&quot;...&quot;,&quot;evidenceRef&quot;:&quot;video-1&quot;,&quot;gameVersion&quot;:&quot;1.042.00.02&quot;,&quot;hitCount&quot;:1,&quot;durationSeconds&quot;:1.2,&quot;damage&quot;:{&quot;physicalBody&quot;:100}}]"></textarea><button type="button" id="comparisonMeasurementReview">実機計測記録を照合</button><button type="button" id="comparisonTechniqueReconcile">Technique DBと計測値を照合（診断）</button><textarea id="comparisonDamageContextInput" rows="4" style="width:100%" placeholder="計算条件JSON：[{stage, techniqueId, evidenceRef, context:{weaponId, weaponAttack, weaponElement, sharpness, affinity, criticalBoostLevel, activeSkills, monsterId, hitZonePhysical, hitZoneElement, targetState, attackConditions, gameVersion}}]"></textarea><button type="button" id="comparisonDamageContextAudit">ダメージ計算条件を監査</button><textarea id="comparisonDamagePredictionInput" rows="4" style="width:100%" placeholder="予測値JSON：[{stage, techniqueId, evidenceRef, contextFingerprint, damage:{physicalBody:100}}]（監査結果のcontextFingerprintを使用）"></textarea><button type="button" id="comparisonDamageDifference">実測と計算値の成分別差異を診断</button><button type="button" id="comparisonTechniqueEngineBridge">Technique DBと計算エンジンの接続状況</button><button type="button" id="comparisonEngineContextHandoff">Technique DBと実機条件の受渡し診断</button><p class="small">斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。</p><button type="button" id="comparisonSharpnessSourceAudit">MHDB斬れ味データ構造を調査</button><button type="button" id="comparisonLiveContextAudit">選択装備と計算条件を照合</button><button type="button" id="comparisonAttackSkillAudit" type="button">攻撃スキル照合</button><button id="comparisonCriticalSkillAudit">会心・超会心・スキル条件を照合</button><button type="button" id="comparisonAttackTargetAudit">攻撃補正・モンスター肉質を照合</button><button type="button" id="comparisonPhysicalFormulaBridge">物理ダメージ参考計算（安全条件のみ）</button></details><button type="button" id="comparisonCaptureAudit">ガンランス自動連携の検証状況</button><button type="button" id="comparisonVerifiedTransfer">検証済みA/Bを自動登録</button><pre id="comparisonCaptureAuditOut" class="small" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre><pre id="comparisonReportOut" class="small" style="max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere"></pre><div class="compare-results">';
+  if(rows.some(row=>row.oneHitPipeline))h+=renderUsedComparisonCombo(rows);
   const coverage=consumerCoverageSummary(rows);
   for(const row of rows)for(const ch of ['normal','maximum'])if(row.oneHitPipeline?.channels?.[ch]?.diagnostics?.ignoredSkillEffects?.length||row.oneHitPipeline?.channels?.[ch]?.diagnostics?.unappliedEffects?.length)h+='<div class="compare-note small" data-ignored-skill-channel="'+ch+'">'+esc(row.name)+'／'+(ch==='normal'?'通常':'最大')+ignoredSkillEffectsDisplay(row.oneHitPipeline.channels[ch].diagnostics)+'</div>';
   h+=comparisonExcludedNotesHtml(rows);

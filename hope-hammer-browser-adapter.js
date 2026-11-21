@@ -1,4 +1,8 @@
 (function(root){'use strict';
+ // Keep display provenance outside serialized calculation results. Channel
+ // projections retain the identity of their executed event record.
+ const usedComboByExecution=new WeakMap();
+ function usedComboSteps(channel){return usedComboByExecution.get(channel?.execution)||null;}
  const darkCbRouteToken=Symbol('private independent CB route');
  let darkCbContractCache;
  function getDarkCbContract(){
@@ -2805,7 +2809,8 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
    }
   }
   if(stateStatsByState){pipelineConditions.stateStatsByState=stateStatsByState;pipelineConditions.stateStatsSource='MACARONGAMEMO_DAMAGE_UP_2025-04-16_PROVISIONAL';}
-  try{const evaluated=pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:targetData.monsterId,hitZoneKey:targetData.partId},conditions:pipelineConditions,evaluation:{mode:'combo',kind:'combo',signature:'current-selection-reference-combo',techniqueIds:rapidAmmoSequence?Array(5).fill(resolvedTechniqueIds[0]):resolvedTechniqueIds}});
+  const executedComboIds=rapidAmmoSequence?Array(5).fill(resolvedTechniqueIds[0]):resolvedTechniqueIds;
+  try{const evaluated=pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:targetData.monsterId,hitZoneKey:targetData.partId},conditions:pipelineConditions,evaluation:{mode:'combo',kind:'combo',signature:'current-selection-reference-combo',techniqueIds:executedComboIds}});
    if(darkCbActive&&Object.entries(evaluated.channels||{}).some(([channel,r])=>!darkCbResultValid(r,channel)))return fail('REAL_SLICE:DARK_ARTS_CB_PRODUCED_COMPONENT_CONTRACT_INVALID');
    if(darkGlActive&&Object.values(evaluated.channels||{}).some(r=>!darkGlResultValid(r)))return fail('REAL_SLICE:DARK_ARTS_GL_PRODUCED_COMPONENT_CONTRACT_INVALID');
    if(glOrdinaryActive&&Object.values(evaluated.channels||{}).some(r=>!glOrdinaryResultValid(r)))return fail('REAL_SLICE:GL_ORDINARY_PRODUCED_COMPONENT_CONTRACT_INVALID');
@@ -2941,6 +2946,70 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
     if(excludedEffectComponents.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics.attributeConversion.mixedComponentAdoption={...adoption,legacyEffectScope:conversionScope.scope,scopeInterpretation:'WEAPON_ELEMENT_EFFECT_ONLY;EXCLUDED_EFFECT_COMPONENTS_MAY_REMAIN_IN_VALID_TOTAL',excludedEffectComponents};
    }
    if(darkPeakScoped&&evaluated.channels?.maximum)evaluated.channels.maximum.diagnostics={...evaluated.channels.maximum.diagnostics,darkPeakScenario};
+   // Presentation provenance: this is the actual evaluated route, not the plan
+   // requested by the editor. Attach per completed channel so selection and
+   // skill-continuation branches carry their own route into the result.
+   const usedComboFor=result=>{
+    const diag=result.diagnostics||{},levelFromId=id=>Number(String(id).match(/_(\d+)$/)?.[1]||0);
+    const elementalNames={fire:'火炎弾',water:'水冷弾',thunder:'電撃弾',ice:'氷結弾',dragon:'滅龍弾'};
+    const shellNames={NORMAL:'通常砲撃',CHARGED:'溜め砲撃',FULL_BURST:'フルバースト（竜杭なし）'};
+    const first=executedComboIds[0],allSame=executedComboIds.every(id=>id===first);
+    const shotLabel=({count,contactCount,hitsPerShot,ordinalKey,scope,mode})=>{
+     const trace=(result.components||[]).filter(c=>c.techniqueId===first&&c.status==='available').flatMap(c=>c.details?.trace||[]);
+     if(trace.length!==contactCount||count*hitsPerShot!==contactCount)return null;
+     const segments=[];
+     const requiresSegment=referenceSkills.bladescaleLoading>0||trace.some(h=>h.bladescale!=null);
+     for(let i=0;i<count;i++){
+      const hits=trace.slice(i*hitsPerShot,(i+1)*hitsPerShot),segment=hits[0]?.bladescale?.segment;
+      if(hits.some((h,j)=>h[ordinalKey]!==i+1||h.hit!==j+1))return null;
+      if(requiresSegment&&(!['BLADESCALE','ORDINARY'].includes(segment)||hits.some(h=>h.bladescale?.scope!==scope||h.bladescale.segment!==segment)))return null;
+      segments.push(segment||'ORDINARY');
+     }
+     const ammo='通常弾 Lv'+levelFromId(first),enhanced=segments.filter(x=>x==='BLADESCALE').length;
+     if(enhanced){
+      if(enhanced!==3||segments.some((segment,index)=>segment!==(index<enhanced?'BLADESCALE':'ORDINARY')))return null;
+      return [ammo+'・刃鱗増装で強化された'+mode+enhanced+'回 → 通常の'+mode+(count-enhanced)+'回（計'+contactCount+'ヒット）'];
+     }
+     return [ammo+'・'+mode+count+'回（'+contactCount+'ヒット）'];
+    };
+    if(rapidAmmoSequence&&allSame&&diag.rapidAmmoSequence?.triggerCount===executedComboIds.length&&levelFromId(first)){
+     const {triggerCount,contactCount}=diag.rapidAmmoSequence;
+     if(triggerCount!==5||contactCount!==25)return null;
+     return shotLabel({count:triggerCount,contactCount,hitsPerShot:5,ordinalKey:'roundOrdinal',scope:'LBG_FIXED_FIVE_NORMAL_RAPID_ONLY',mode:'速射'});
+    }
+    if(normalAmmoSequence&&executedComboIds.length===1&&diag.normalAmmoSequence?.shotCount&&levelFromId(first)){
+     const {shotCount,contactCount}=diag.normalAmmoSequence;
+     if(weapon.kind==='heavy-bowgun'&&normalAmmoSequence===NORMAL_TEN_SHOT){
+      if(shotCount!==10||contactCount!==30)return null;
+      return shotLabel({count:shotCount,contactCount,hitsPerShot:3,ordinalKey:'shotOrdinal',scope:'HBG_FIXED_TEN_NORMAL_ONLY',mode:'単発射撃'});
+     }
+     return ['通常弾 Lv'+levelFromId(first)+'・単発射撃'+shotCount+'回（'+contactCount+'ヒット）'];
+    }
+    const names=executedComboIds.map(id=>{
+     const shell=String(id).match(/^reference:gl_(NORMAL|CHARGED|FULL_BURST)$/)?.[1];
+     if(shell)return shellNames[shell];
+     if(/^(?:LBG|HBG)_NORMAL_AMMO_[123]$/.test(id))return '通常弾 Lv'+levelFromId(id)+'・単発射撃';
+     if(/^LBG_NORMAL_RAPID_(?:NATIVE_)?[123]$/.test(id))return '通常弾 Lv'+levelFromId(id)+'・速射';
+     if(id==='LBG_ELEMENT_FIRST_HIT_REFERENCE'||id==='HBG_ELEMENT_FIRST_HIT_REFERENCE'){
+      const s=id.startsWith('LBG')?lightBowgunState:hbgState;
+      const element=elementalNames[String(id.startsWith('LBG')?s?.ammoType:s?.elementType||'').toLowerCase()];
+      if(element&&Number.isInteger(s.ammoLevel))return element+' Lv'+s.ammoLevel+(s.shotMode==='RAPID'?'・速射':'・射撃');
+     }
+     const n=techniques[id]?.techniqueName;
+     return typeof n==='string'&&/[\u3040-\u30ff\u3400-\u9fff]/.test(n)?n:null;
+    });
+    if(names.some(n=>!n))return null;
+    const runs=[];
+    for(const name of names){const prev=runs[runs.length-1];if(prev?.name===name)prev.count++;else runs.push({name,count:1});}
+    return runs.map(({name,count})=>name+(count>1?' ×'+count:''));
+   };
+   for(const result of Object.values(evaluated.channels||{})){
+    const total=result?.metrics?.comboTotalDamage;
+    if(result?.execution?.status==='complete'&&total?.status==='available'&&Number.isFinite(total.value)){
+     let usedCombo=null;try{usedCombo=usedComboFor(result);}catch{} // Display provenance must not block an evaluated result.
+     if(usedCombo?.length)usedComboByExecution.set(result.execution,Object.freeze(usedCombo));
+    }
+   }
    return evaluated;}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
  }
  // Shared detection for the existing health comparison and the narrower 168 scenario gate.
@@ -3073,5 +3142,5 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
   original.channels.maximum.diagnostics={...original.channels.maximum.diagnostics,healthBranchComparison:{policy:'WHOLE_ROUTE_TOTAL_NOT_COMPONENT_MAXIMA',status:ready?'RESOLVED':'PENDING',selectedState:selected?.state??null,branches:branches.map(b=>({state:b.state,value:b.value,execution:b.maximum?.execution,effectPlan:b.maximum?.effectPlan}))}};
   return original;
  }
- root.MHWRealOneHitBrowserAdapter=Object.freeze({evaluateCurrent,evaluateNormalTenShot,evaluateNormalFiveShot,evaluateRapidFiveShot,normalizeTechniqueIds,resolveTarget});
+ root.MHWRealOneHitBrowserAdapter=Object.freeze({evaluateCurrent,evaluateNormalTenShot,evaluateNormalFiveShot,evaluateRapidFiveShot,normalizeTechniqueIds,resolveTarget,usedComboSteps});
 })(typeof window!=='undefined'?window:globalThis);
