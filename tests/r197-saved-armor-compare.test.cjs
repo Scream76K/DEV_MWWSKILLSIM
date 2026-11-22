@@ -9,9 +9,9 @@ let uiTouches=0,refreshes=0;
 const ctx=vm.createContext({DB:{weapons:[{id:'w1'}],armor:[{id:'a1'}]},p0DamageSuspend:false,refreshP0DamageResults(){refreshes++;},$(){uiTouches++;throw Error('PREFLIGHT_PASSED_UI_SENTINEL');}});
 // Include the actual production dependency, not a fixture reimplementation.
 const hpBegin=html.indexOf('function normalizeSelectedHp(');
-const hpEnd=html.indexOf('function buildSnapshotComparable(',hpBegin);
+const hpEnd=html.indexOf('\n',hpBegin);
 assert.ok(hpBegin>0&&hpEnd>hpBegin);
-vm.runInContext(html.slice(hpBegin,hpEnd)+html.slice(begin,end),ctx);
+vm.runInContext(html.slice(hpBegin,hpEnd)+'\n'+html.slice(begin,end),ctx);
 test('missing saved head armor is rejected before mutating current build',()=>{
  assert.throws(()=>vm.runInContext("applyBuildSnapshot({weaponId:'w1',armor:{head:'missing'}})",ctx),/防具がDBに見つかりません：head/);assert.equal(uiTouches,0);
 });
@@ -26,7 +26,8 @@ test('comparison handles bad saved build and restores both states',()=>{
  const start=html.indexOf('function runBuildCompare('),end=html.indexOf('function aiBuildData(',start);
  const source=html.slice(start,end);
  assert.match(source,/catch\(e\)\{compareError=e;\}/);
- assert.match(source,/try\{applyBuildSnapshot\(current,\{preserveCombo:true,restoreExact:true\}\);\}/);
+ assert.match(source,/const restoreEditor=\(\)=>\{\s*applyBuildSnapshot\(current,\{preserveCombo:true,restoreExact:true,emptyEditor\}\);/);
+ assert.match(source,/finally\{[\s\S]*?try\{restoreEditor\(\);\}/);
  assert.match(source,/try\{restoreStep5Snapshot\(cond\);\}/);
 });
 

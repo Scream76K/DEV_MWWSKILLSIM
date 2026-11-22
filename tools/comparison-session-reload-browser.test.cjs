@@ -144,8 +144,14 @@ test('selected HP has two choices, defaults FULL and retains explicit LOW throug
  await p.evaluate(input=>{const legacy={...input,selectedHp:'UNSELECTED'};localStorage.setItem('mh-wilds-builds-v625',JSON.stringify({legacy}));renderSavedBuilds();},input);
  const raw=await p.evaluate(()=>localStorage.getItem('mh-wilds-builds-v625'));
  await loadNamed(p,'legacy');assert.equal(await p.locator('#powerSelectedHp').inputValue(),'FULL_HP');
+ const toggle=p.locator('#powerHeroicsToggle');
+ await open(p,'#powerHeroicsToggle');assert.equal(await toggle.isVisible(),true);assert.equal(await toggle.isChecked(),false);
  for(const hp of ['AT_OR_BELOW_30_PERCENT','FULL_HP']){
-  await open(p,'#powerSelectedHp');await p.selectOption('#powerSelectedHp',hp);await click(p,'#calcBuild');assert.equal(await reload(p),true);
+  const low=hp==='AT_OR_BELOW_30_PERCENT';
+  await open(p,'#powerHeroicsToggle');await toggle.setChecked(low);
+  assert.equal(await p.locator('#powerSelectedHp').inputValue(),hp);
+  await click(p,'#calcBuild');assert.equal(await reload(p),true);
+  assert.equal(await toggle.isChecked(),low);
   assert.equal(await p.locator('#powerSelectedHp').inputValue(),hp);assert.equal((await state(p)).conditions.selectedHp,hp);assert.equal(await p.evaluate(()=>localStorage.getItem('mh-wilds-builds-v625')),raw);
  }
  assert.deepEqual(errors,[]);
