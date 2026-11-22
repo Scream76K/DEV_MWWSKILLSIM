@@ -54,13 +54,13 @@ test('charm controls retain accessible widths and the original editor', () => {
   assert.ok(html.includes('id="charmEditor"'));
   assert.ok(html.includes('function renderCharmDecos()'));
 });
-test('saved build names occupy the flexible middle column', () => {
+test('saved-build picker keeps one flexible accessible selector', () => {
   const css = extractStyle('flamme-ui-edit-controls-stage6');
-  assert.ok(css.includes('#savedBuilds .saved-build-item'));
-  assert.ok(css.includes('grid-template-columns:auto minmax(0,1fr) auto'));
-  assert.ok(css.includes('overflow-wrap:anywhere'));
-  assert.ok(html.includes('data-build-load'));
-  assert.ok(html.includes('data-build-del'));
+  assert.ok(css.includes('#savedBuilds .saved-build-picker'));
+  assert.ok(css.includes('grid-template-columns:minmax(0,1fr) auto auto'));
+  assert.ok(css.includes('#savedBuildSelect'));
+  assert.ok(html.includes('id="savedBuildLoad"'));
+  assert.ok(html.includes('id="savedBuildDelete"'));
 });
 
 test('skill entries remain readable in narrow build workspace', () => {

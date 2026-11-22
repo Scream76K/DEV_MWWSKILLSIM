@@ -59,6 +59,7 @@ function restore(s,legacy){
     if(!legacy)check(buildSnapshotMatches(s.currentBuild,buildSnapshot()),'BUILD_ROUNDTRIP');
     calcBuild();restoreConditions(s.conditions);
     renderSavedBuilds();document.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(e=>{e.checked=s.selectedNames.includes(e.dataset.compareName);});
+    if(typeof updateComparisonSelectedSummary==='function')updateComparisonSelectedSummary();
     if(s.comparisonRequested){runBuildCompare();check(lastBuildComparisonRows?.length===s.selectedNames.length,'COMPARISON');lastBuildComparisonBaselineIndex=s.baselineIndex;renderCachedBuildComparison();}
     // runBuildCompare already recalculates/restores the current build. A further calcBuild would invalidate its new table.
     check(equal(compareStep5Snapshot(),s.conditions),'FINAL_CONDITIONS');

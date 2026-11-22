@@ -28,6 +28,27 @@ on:
       - 'ui/local-mhdb-cache.js'
       - 'tests/local-mhdb-cache.test.cjs'
       - 'tools/comparison-session-reload-browser.test.cjs'
+      - 'tools/armor-skill-layout-dom.test.cjs'
+      - 'tools/artia-stage-parity.test.cjs'
+      - 'tools/artia-craft-parity.test.cjs'
+      - 'tools/charm-public-shortcut-dom.test.cjs'
+      - 'tools/comparison-fixed-damage-dom.test.cjs'
+      - 'tools/comparison-self-maximum-dom.test.cjs'
+      - 'tools/comparison-settings-parity-dom.test.cjs'
+      - 'tools/maximum-skills-dom.test.cjs'
+      - 'tests/dark-arts-auto-target.test.cjs'
+      - 'tools/comparison-used-combo-dom.test.cjs'
+      - 'tests/used-combo-adapter.test.cjs'
+      - 'tools/consumer-form-parity-dom.test.cjs'
+      - 'tools/king-target-parity-dom.test.cjs'
+      - 'tools/rounded-font-contract.test.cjs'
+      - 'tests/lbg-native-saved-parity.test.cjs'
+      - 'tests/r250-ocr-confirmation.test.cjs'
+      - 'tests/r250-ocr-confirmation-ui.test.cjs'
+      - 'tests/r250-ocr-decoration-review.test.cjs'
+      - 'lbg-standard-ballistic.js'
+      - 'ui/decoration-ocr-confirmation.js'
+      - 'assets/fonts/**'
       - 'tests/fixtures/comparison-session-inputs.json'
       - 'tests/r206-charm-skill-integrity.test.cjs'
       - 'tests/r250-snapshot-ownership.test.cjs'
@@ -132,6 +153,25 @@ jobs:
           tests/r250-snapshot-ownership.test.cjs
           tests/legacy-comparison-report-contract.test.cjs
           tools/consumer-ai-comparison-dom.test.cjs
+      - name: Verify release UI and OCR parity without private data
+        run: >-
+          node --test
+          tools/armor-skill-layout-dom.test.cjs
+          tools/artia-stage-parity.test.cjs
+          tools/artia-craft-parity.test.cjs
+          tools/charm-public-shortcut-dom.test.cjs
+          tools/comparison-fixed-damage-dom.test.cjs
+          tools/comparison-self-maximum-dom.test.cjs
+          tools/comparison-settings-parity-dom.test.cjs
+          tools/comparison-used-combo-dom.test.cjs
+          tests/used-combo-adapter.test.cjs
+          tools/consumer-form-parity-dom.test.cjs
+          tools/king-target-parity-dom.test.cjs
+          tools/rounded-font-contract.test.cjs
+          tests/lbg-native-saved-parity.test.cjs
+          tests/r250-ocr-confirmation.test.cjs
+          tests/r250-ocr-confirmation-ui.test.cjs
+          tests/r250-ocr-decoration-review.test.cjs
   comparison-session-reload:
     runs-on: ubuntu-latest
     timeout-minutes: 10

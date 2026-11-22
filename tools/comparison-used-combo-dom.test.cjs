@@ -15,13 +15,16 @@ const row=(name,n,m=n)=>({name,kind:'great-sword',power:{},oneHitPipeline:{chann
 const out=w=>w.document.getElementById('compareOut');
 const panel=w=>out(w).querySelector('[data-used-combo]');
 function render(w,rows){out(w).innerHTML=w.renderCompareTable(rows);assert.ok(panel(w),'the combo panel is present');return panel(w);}
-test('show the executed sequence once, visibly before the comparison table, when all results match',t=>{
+test('label both executed channels above the table, even when their sequences match',t=>{
   const w=setup(t),c=channel(['技A','技B']),p=render(w,[row('A',c),row('B',c)]);
   assert.ok(p.compareDocumentPosition(out(w).querySelector('table'))&w.Node.DOCUMENT_POSITION_FOLLOWING);
   assert.equal(p.querySelector('h4').textContent,'計算に使用したコンボ');
-  assert.equal(p.querySelectorAll('.used-combo-entry').length,1);
-  assert.match(p.textContent,/技A → 技B/);
-  assert.doesNotMatch(p.textContent,/通常：|最大：/);
+  const entries=[...p.querySelectorAll('.used-combo-entry')];
+  assert.equal(entries.length,2);
+  for(const [i,entry] of entries.entries()){
+    assert.equal(entry.querySelector('.used-combo-group').textContent,['A','B'][i]);
+    assert.deepEqual([...entry.querySelectorAll(':scope > div')].map(x=>x.textContent),['通常：技A → 技B','最大：技A → 技B']);
+  }
 });
 test('escape names and techniques, split different normal/maximum channels, and distinguish unconfirmed from uncalculated',t=>{
   const w=setup(t),p=render(w,[row('<img src=x>',channel(['<b>技</b>']),channel(['強化技'])),row('B',channel(null),{execution:{status:'pending'}})]);

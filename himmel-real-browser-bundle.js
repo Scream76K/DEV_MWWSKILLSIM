@@ -894,7 +894,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    return Object.freeze({...adapted,events});
   }
   const shelling=Array.isArray(record.specialComponents)&&record.specialComponents.some(x=>String(x).includes('SHELL'));
-  const reference=record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='light-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound'||record.referenceKind==='heavy-bowgun-wyvern';
+  const reference=record.referenceKind==='light-bowgun-ballistic'||record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='light-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound'||record.referenceKind==='heavy-bowgun-wyvern';
   if(shelling){
    const resource=record.shellingResource;
    if(resource&&(!(['NORMAL','CHARGED'].includes(record.shellingAction)&&resource.id==='GL_'+record.shellingAction+'_ROUNDS')||!Number.isInteger(resource.amount)||resource.amount<=0||!resource.source))throw Error('REAL_SLICE:GL_RESOURCE_CONTRACT_INVALID');
@@ -923,7 +923,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
     events.push({type:'consume',contract:'LBG_RAPID_ROUND',resourcePath:['lightBowgun','loadedRounds'],amount:rule.consumedRounds,source});
     return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events});
    }
-   return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':reference:0',kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:['physical','element'],effectStages:['attack','affinity','element'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),referenceKind:record.referenceKind,referenceInput:record.referenceInput})}]}]});
+   return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':reference:0',kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:record.referenceKind==='light-bowgun-ballistic'?['physical']:['physical','element'],effectStages:record.referenceKind==='light-bowgun-ballistic'?['attack','affinity']:['attack','affinity','element'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),referenceKind:record.referenceKind,referenceInput:record.referenceInput})}]}]});
   }
   const cbHPrefix=weaponType==='charge-blade'&&['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)&&record.resourceContract?.id==='CB_H_PREFIX_RESOURCE'&&record.adoption?.approval==='Sentinel_b0338f54b160819183484aed19d41354'&&record.verificationStatus==='OWNER_APPROVED_PROVISIONAL';
   if(!['VERIFIED','PARTIALLY_VERIFIED'].includes(record.verificationStatus)&&!cbHPrefix)throw Error('REAL_SLICE:VERIFICATION_PENDING');
@@ -1033,7 +1033,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    return Object.freeze({...adapted,events});
   }
   const shelling=Array.isArray(record.specialComponents)&&record.specialComponents.some(x=>String(x).includes('SHELL'));
-  const reference=record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='light-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound'||record.referenceKind==='heavy-bowgun-wyvern';
+  const reference=record.referenceKind==='light-bowgun-ballistic'||record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='light-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound'||record.referenceKind==='heavy-bowgun-wyvern';
   if(shelling){
    const resource=record.shellingResource;
    if(resource&&(!(['NORMAL','CHARGED'].includes(record.shellingAction)&&resource.id==='GL_'+record.shellingAction+'_ROUNDS')||!Number.isInteger(resource.amount)||resource.amount<=0||!resource.source))throw Error('REAL_SLICE:GL_RESOURCE_CONTRACT_INVALID');
@@ -1062,7 +1062,7 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
     events.push({type:'consume',contract:'LBG_RAPID_ROUND',resourcePath:['lightBowgun','loadedRounds'],amount:rule.consumedRounds,source});
     return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events});
    }
-   return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':reference:0',kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:['physical','element'],effectStages:['attack','affinity','element'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),referenceKind:record.referenceKind,referenceInput:record.referenceInput})}]}]});
+   return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':reference:0',kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:record.referenceKind==='light-bowgun-ballistic'?['physical']:['physical','element'],effectStages:record.referenceKind==='light-bowgun-ballistic'?['attack','affinity']:['attack','affinity','element'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),referenceKind:record.referenceKind,referenceInput:record.referenceInput})}]}]});
   }
   const cbHPrefix=weaponType==='charge-blade'&&['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)&&record.resourceContract?.id==='CB_H_PREFIX_RESOURCE'&&record.adoption?.approval==='Sentinel_b0338f54b160819183484aed19d41354'&&record.verificationStatus==='OWNER_APPROVED_PROVISIONAL';
   if(!['VERIFIED','PARTIALLY_VERIFIED'].includes(record.verificationStatus)&&!cbHPrefix)throw Error('REAL_SLICE:VERIFICATION_PENDING');

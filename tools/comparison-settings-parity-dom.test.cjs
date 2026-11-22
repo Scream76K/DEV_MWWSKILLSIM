@@ -1,0 +1,73 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const {JSDOM,VirtualConsole}=require('jsdom');
+const {readSimulatorHtml}=require('./dom-test-setup.cjs');
+
+function setup(t){
+  const d=new JSDOM(readSimulatorHtml(),{url:'https://settings-parity.invalid/',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){w.fetch=()=>Promise.reject(new Error('OFFLINE'));}});
+  t.after(()=>d.window.close());
+  return d.window;
+}
+const el=(w,id)=>w.document.getElementById(id);
+const change=(w,node)=>node.dispatchEvent(new w.Event('change',{bubbles:true}));
+test('one intro precedes the build picker and the target and advanced settings start collapsed',t=>{
+  const w=setup(t);
+  const form=el(w,'comparisonForm'), builds=el(w,'comparisonBuildPicker'), target=el(w,'comparisonTargetFields');
+  assert.ok(form,'settings container exists');
+  assert.match(form.parentElement.firstElementChild.textContent,/⑥ ビルド火力比較/);
+  assert.equal(el(w,'comparisonSettingsHeading'),null);
+  assert.equal(el(w,'damageComparisonHeading').textContent,'ビルド火力比較結果');
+  const guide=el(w,'comparisonInputGuide');
+  assert.equal(form.firstElementChild,guide);
+  assert.match(guide.textContent,/⑤で保存した同じ武器種.*最大3件.*通常・最大火力/);
+  assert.equal(guide.nextElementSibling,builds);
+  assert.equal(builds.nextElementSibling,target);
+  assert.ok(builds.contains(el(w,'compareBuilds')));
+  assert.equal(target.open,false);
+  assert.ok(target.contains(el(w,'monster'))&&target.contains(el(w,'monsterPart')));
+  const options=el(w,'comparisonOptionalConditions');
+  assert.equal(options.open,false);
+  assert.ok(options.contains(el(w,'powerDragonHz')));
+  assert.ok(el(w,'powerDragonHz').closest('[hidden]'));
+  assert.ok(el(w,'powerGutsState').hidden);
+  assert.doesNotMatch(options.textContent,/根性【果敢】が発動するビルドだけに適用します/);
+  assert.equal(el(w,'powerGutsState').closest('details').open,false);
+  assert.equal(el(w,'powerFortifyCount').closest('details').open,false);
+  assert.ok(el(w,'selectAllCompare').parentElement.hidden);
+  assert.ok(el(w,'clearAllCompare').parentElement.hidden);
+  assert.equal(el(w,'damageComparisonHeading').previousElementSibling,el(w,'runCompare'));
+  assert.equal(el(w,'damageComparisonHeading').nextElementSibling,el(w,'compareOut'));
+});
+test('Training defaults, fold toggles preserve condition, and change still invalidates through the existing handler',t=>{
+  const w=setup(t);
+  const target=el(w,'comparisonTargetFields'),monster=el(w,'monster'),part=el(w,'monsterPart'),summary=el(w,'comparisonTargetCurrent');
+  assert.equal(monster.value,'training-room');
+  assert.equal(part.value,'training-front');
+  assert.match(summary.textContent,/トレーニングルーム.*正面/);
+  const stable=JSON.stringify(w.compareStep5Snapshot());
+  target.open=true;target.open=false;
+  assert.equal(JSON.stringify(w.compareStep5Snapshot()),stable);
+  w.eval('lastBuildComparisonRows=[{}]');
+  const alternate=[...part.options].find(o=>o.value&&o.value!=='training-front');
+  assert.ok(alternate,'choose a nondefault training target part');
+  part.value=alternate.value;change(w,part);
+  assert.ok(summary.textContent.includes(alternate.textContent));
+  assert.equal(w.eval('lastBuildComparisonRows'),null);
+  assert.match(el(w,'compareOut').textContent,/もう一度比較/);
+  target.open=true;
+  assert.equal(part.value,alternate.value);
+});
+test('saved build selection summary mirrors real inputs and non-user diagnostic quick controls',t=>{
+  const w=setup(t), box=el(w,'compareBuilds'), summary=el(w,'comparisonSelectedSummary');
+  assert.equal(summary.textContent,'未選択');
+  assert.equal(summary.getAttribute('aria-live'),'polite');
+  assert.equal(w.getComputedStyle(summary).position,'absolute');
+  assert.equal(w.getComputedStyle(summary).width,'1px');
+  box.innerHTML='<input type="checkbox" data-compare-name="A&amp;B"><input type="checkbox" data-compare-name="C">';
+  box.firstElementChild.checked=true;change(w,box.firstElementChild);
+  assert.equal(summary.textContent,'1件：A&B');
+  el(w,'selectAllCompare').click();
+  assert.equal(summary.textContent,'2件：A&B / C');
+  el(w,'clearAllCompare').click();
+  assert.equal(summary.textContent,'未選択');
+});
