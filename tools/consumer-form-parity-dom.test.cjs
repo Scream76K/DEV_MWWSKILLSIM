@@ -65,3 +65,46 @@ test('heroics checkbox restores its displayed state without changing the shared 
  w.applyBuildSnapshot({...build,selectedHp:'UNSELECTED'});assert.equal(check.checked,false);assert.equal(hp.value,'FULL_HP');
  assert.deepEqual(errors,[]);
 });
+
+test('ordinary page startup resets only transient HP; named HP and comparison selection remain intact',async t=>{
+ const globals=w=>{
+  w.fetch=()=>Promise.reject(Error('OFFLINE'));w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));w.confirm=()=>true;
+ };
+ const fixture=require('../tests/fixtures/comparison-session-inputs.json').cases[0].inputSnapshots[0];
+ const data=require('../docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json').data;
+ async function page(storage={}){
+  const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
+  const dom=new JSDOM(readSimulatorHtml(),{url:'https://consumer-hp.test/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){globals(w);for(const [key,value] of Object.entries(storage))w.localStorage.setItem(key,value);}});
+  t.after(()=>dom.window.close());
+  const w=dom.window;await w.__comparisonSessionReady;
+  w.fixtureDb=JSON.stringify(data);
+  w.eval(`DB=normalizeDB(JSON.parse(fixtureDb));weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters();dispatchEvent(new Event('mhwilds-data-ready'));`);
+  assert.deepEqual(errors,[]);
+  return w;
+ }
+ const KEY='mhwilds-comparison-session-v2',BUILDS='mh-wilds-builds-v625';
+ const first=await page();
+ first.applyBuildSnapshot({...fixture,selectedHp:'FULL_HP'});
+ first.eval(`buildName.value='Full';saveNamedBuild();powerHeroicsToggle.checked=true;powerHeroicsToggle.dispatchEvent(new Event('change',{bubbles:true}));buildName.value='Low';saveNamedBuild();
+ selectAllCompare.click();runBuildCompare();document.getElementById('comparisonBaseline').value='1';document.getElementById('comparisonBaseline').dispatchEvent(new Event('change',{bubbles:true}));dispatchEvent(new Event('pagehide'));`);
+ const raw=first.localStorage.getItem(KEY),named=first.localStorage.getItem(BUILDS),saved=JSON.parse(raw);
+ assert.equal(saved.currentBuild.selectedHp,'AT_OR_BELOW_30_PERCENT');
+ assert.equal(saved.conditions.selectedHp,'AT_OR_BELOW_30_PERCENT');
+ assert.equal(saved.comparisonRequested,true);
+ assert.equal(saved.baselineIndex,1);
+ const reopened=await page({[KEY]:raw,[BUILDS]:named});
+ const get=(w,script)=>JSON.parse(w.eval('JSON.stringify('+script+')'));
+ assert.equal(reopened.document.getElementById('powerHeroicsToggle').checked,false);
+ assert.deepEqual(get(reopened,'buildSnapshotComparable(buildSnapshot())'),get(first,"buildSnapshotComparable({...buildSnapshot(),selectedHp:'FULL_HP'})"));
+ assert.deepEqual(get(reopened,'compareStep5Snapshot()'),{...saved.conditions,selectedHp:'FULL_HP'});
+ assert.deepEqual(get(reopened,'compareSelectedNames()'),saved.selectedNames);
+ assert.equal(reopened.eval('lastBuildComparisonBaselineIndex'),1);
+ assert.equal(reopened.createBuildComparisonReport().context.conditions.selectedHp,'FULL_HP');
+ assert.equal(reopened.localStorage.getItem(BUILDS),named);
+ for(const [name,hp] of [['Low','AT_OR_BELOW_30_PERCENT'],['Full','FULL_HP']]){
+  const select=reopened.document.getElementById('savedBuildSelect');select.value=name;select.dispatchEvent(new reopened.Event('change',{bubbles:true}));reopened.document.getElementById('savedBuildLoad').click();
+  assert.equal(reopened.compareStep5Snapshot().selectedHp,hp);
+  assert.equal(reopened.document.getElementById('powerHeroicsToggle').checked,name==='Low');
+  assert.equal(reopened.localStorage.getItem(BUILDS),named);
+ }
+});

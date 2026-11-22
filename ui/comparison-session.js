@@ -48,6 +48,12 @@ function fillAbsent(value,defaults){
 }
 function restore(s,legacy){
   validate(s,legacy);
+  const buildHp=normalizeSelectedHp(s.currentBuild.selectedHp),conditionHp=normalizeSelectedHp(s.conditions.selectedHp);
+  check(buildHp&&conditionHp,'SELECTED_HP_INVALID');
+  if(!legacy)check(buildHp===conditionHp,'SELECTED_HP_MISMATCH');
+  // An ordinary reopen restores the editing session, not its temporary Heroics choice.
+  // Named builds bypass this routine and still restore their explicitly saved HP.
+  s={...s,currentBuild:{...s.currentBuild,selectedHp:'FULL_HP'},conditions:{...s.conditions,selectedHp:'FULL_HP'}};
   const before={model:copy(build),calc:copy(calcState),combo:copy(App.state.combo),controls:captureDataControls(),kind:$('weaponKind').value,rows:lastBuildComparisonRows,context:lastBuildComparisonContext,baseline:lastBuildComparisonBaselineIndex,output:$('compareOut').innerHTML};
   const defaults=compareStep5Snapshot();restoring=true;
   try{

@@ -136,23 +136,29 @@ test('concurrent native current and legacy cache commits never replace a success
  let casConflicts=0;for(const row of results.results){if(row.out[0].status==='fulfilled')assert.equal(row.apiVersion,results.version);for(const r of row.out){if(r.status==='rejected'){assert.equal(r.reason,'CACHE_CHANGED_IN_OTHER_TAB');casConflicts++;}assert.notEqual(r.unknown,true);assert.notEqual(r.memory,true);}}assert.ok(casConflicts>0,'native overlap must actually exercise the CAS rejection path');assert.deepEqual(errors,[]);t.diagnostic(casConflicts+' native CAS conflicts rejected without memory fallback');
 });
 
-test('selected HP has two choices, defaults FULL and retains explicit LOW through reload without rewriting named legacy data',async t=>{
+test('ordinary reload resets Heroics; explicit named load retains saved HP without rewriting named data',async t=>{
  const {page:p,errors}=await pageFor(t);await seedCurrent(p);assert.equal(await reload(p),true);
  assert.deepEqual(await p.locator('#powerSelectedHp option').evaluateAll(xs=>xs.map(x=>x.value)),['FULL_HP','AT_OR_BELOW_30_PERCENT']);
- assert.equal(await p.locator('#powerSelectedHp').inputValue(),'FULL_HP');
+ const toggle=p.locator('#powerHeroicsToggle'),hpField=p.locator('#powerSelectedHp');
+ assert.equal(await hpField.inputValue(),'FULL_HP');
  const input=fixture.cases[0].inputSnapshots[0];
- await p.evaluate(input=>{const legacy={...input,selectedHp:'UNSELECTED'};localStorage.setItem('mh-wilds-builds-v625',JSON.stringify({legacy}));renderSavedBuilds();},input);
+ await p.evaluate(input=>{localStorage.setItem('mh-wilds-builds-v625',JSON.stringify({legacy:{...input,selectedHp:'UNSELECTED'},Low:{...input,selectedHp:'AT_OR_BELOW_30_PERCENT'},Full:{...input,selectedHp:'FULL_HP'}}));renderSavedBuilds();},input);
  const raw=await p.evaluate(()=>localStorage.getItem('mh-wilds-builds-v625'));
- await loadNamed(p,'legacy');assert.equal(await p.locator('#powerSelectedHp').inputValue(),'FULL_HP');
- const toggle=p.locator('#powerHeroicsToggle');
+ await loadNamed(p,'legacy');assert.equal(await hpField.inputValue(),'FULL_HP');
  await open(p,'#powerHeroicsToggle');assert.equal(await toggle.isVisible(),true);assert.equal(await toggle.isChecked(),false);
- for(const hp of ['AT_OR_BELOW_30_PERCENT','FULL_HP']){
-  const low=hp==='AT_OR_BELOW_30_PERCENT';
-  await open(p,'#powerHeroicsToggle');await toggle.setChecked(low);
-  assert.equal(await p.locator('#powerSelectedHp').inputValue(),hp);
-  await click(p,'#calcBuild');assert.equal(await reload(p),true);
-  assert.equal(await toggle.isChecked(),low);
-  assert.equal(await p.locator('#powerSelectedHp').inputValue(),hp);assert.equal((await state(p)).conditions.selectedHp,hp);assert.equal(await p.evaluate(()=>localStorage.getItem('mh-wilds-builds-v625')),raw);
- }
- assert.deepEqual(errors,[]);
+ await toggle.setChecked(true);
+ assert.equal(await hpField.inputValue(),'AT_OR_BELOW_30_PERCENT');
+ await click(p,'#calcBuild');
+ const before=await state(p);
+ assert.equal(before.build.selectedHp,'AT_OR_BELOW_30_PERCENT');
+ assert.equal(await reload(p),true);
+ const after=await state(p);
+ assert.equal(await toggle.isChecked(),false);
+ assert.equal(await hpField.inputValue(),'FULL_HP');
+ assert.deepEqual(after.build,{...before.build,selectedHp:'FULL_HP'});
+ assert.deepEqual(after.conditions,{...before.conditions,selectedHp:'FULL_HP'});
+ assert.equal(after.saved,raw);
+ await loadNamed(p,'Low');assert.equal(await toggle.isChecked(),true);assert.equal(await hpField.inputValue(),'AT_OR_BELOW_30_PERCENT');
+ await loadNamed(p,'Full');assert.equal(await toggle.isChecked(),false);assert.equal(await hpField.inputValue(),'FULL_HP');
+ assert.equal((await state(p)).saved,raw);assert.deepEqual(errors,[]);
 });
