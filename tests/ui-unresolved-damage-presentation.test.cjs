@@ -109,7 +109,7 @@ test('armor icon legibility adjusts size only and retains all six original SVG c
     'retain the original embedded icons');
 });
 
-test('beta layout stacks full-width Build and Support, and only splits armor and skills on wide screens', () => {
+test('beta layout stacks full-width Build and Support, and has one consistent 6:4 armor and skills row', () => {
   const fs=require('node:fs'),path=require('node:path');
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
   const marker='<style id="flamme-ipad-build-skills-layout">';
@@ -117,9 +117,9 @@ test('beta layout stacks full-width Build and Support, and only splits armor and
   const from=html.indexOf(marker);
   const css=html.slice(from+marker.length,html.indexOf('</style>',from));
   assert.match(css,/main\.wrap > #betaWorkspaceGrid\s*\{[^}]*grid-template-columns:minmax\(0,1fr\)!important/);
-  assert.match(css,/#betaBuildPanel > #armorBuildWorkspace\s*\{[^}]*grid-template-columns:minmax\(0,1fr\)!important/);
-  assert.match(css,/#betaBuildPanel > #armorBuildWorkspace\s*\{grid-template-columns:minmax\(0,3fr\) minmax\(0,2fr\)!important/);
-  assert.ok(css.includes('(min-width:820px) and (min-height:500px) and (orientation:landscape)'));
+  const tracks=[...css.matchAll(/#betaBuildPanel > #armorBuildWorkspace\s*\{[^}]*?grid-template-columns\s*:\s*([^;]+)/g)].map(match=>match[1]);
+  assert.deepEqual(tracks,['minmax(0,3fr) minmax(0,2fr)!important'],
+    'only the 6:4 inner track declaration is permitted; rendered sizing is tested in the browser regression');
 });
 
 test('rendered summary preserves independent normal and maximum when overall status is pending', () => {
