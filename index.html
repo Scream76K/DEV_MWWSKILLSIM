@@ -5372,10 +5372,24 @@ function comboBlockedMessage(reason){
   if(message.startsWith('CANONICAL_COMBO_HANDLER_PENDING:'))return 'この技の専用計算処理はコンボへ未接続です。';
   if(message.startsWith('CANONICAL_COMBO_HANDLER_UNKNOWN:'))return 'この技の計算処理が未登録です。';
   if(message.startsWith('COMBO_TECHNIQUE_UNAVAILABLE:'))return '保存技が現在の技一覧にありません。';
+  if(message==='BOW_THOUSAND:SINGLE_SHOT_REQUIRED')return '竜の千々矢を含むこの技順は未対応です。';
+  if(message==='BOW_THOUSAND:STATE_NOT_ADOPTED')return '竜の千々矢を含むこの技順は、ビンなし・適正距離で計算できます。導ノ矢や騎乗中は対象外です。';
+  if(message==='BOW_THOUSAND:ELEMENT_NOT_ADOPTED')return '竜の千々矢を含むこの技順は、無属性の弓で計算できます。';
   if(message.includes('CB_COMBO_RAPID_MORPH_LEVEL'))return '高速変形のレベルを0〜3の整数で確認してください。';
   if(message.includes('PHIAL_ROUTE_PENDING'))return 'ビンを含む技全体のコンボ計算への接続は保留です。';
   if(message.includes('PHIAL_EXPLOSION_COUNT_UNVERIFIED'))return 'ビン爆発回数が未確認のため、この技全体の計算は保留です。';
   return message;
+}
+function mixedBowComboBlockedMessage(reason){
+  const code=String(reason||'');
+  if(code==='BOW_THOUSAND:STATE_NOT_ADOPTED')return '「詳細設定」の「個別技の検証用条件」で「ビンなし」と「適正距離」を選択してください。導ノ矢、騎乗・飛び降り攻撃、不意打ちは対象外です。';
+  if(code==='BOW_THOUSAND:UNVERIFIED_MIXED_RESOURCE')return '射順やビン消費に関わる装備スキルと、この技順を組み合わせた計算は未対応です。';
+  if(code==='BOW_THOUSAND:SOURCE_REQUIRED')return 'この技順の計算に必要な技データを確認できませんでした。';
+  if(code==='BOW_THOUSAND:ELEMENT_NOT_ADOPTED'||code==='REAL_SLICE:ELEMENT_NOT_ZERO_OR_UNKNOWN')return 'この技順は、無属性と確認できた弓で計算できます。';
+  if(code.includes('HITZONE')||code.includes('TARGET'))return '対象モンスター・部位を確認してください。この技順には弾肉質が必要です。';
+  if(code.startsWith('BOW_THOUSAND:')&&code!=='BOW_THOUSAND:SINGLE_SHOT_REQUIRED')return '装備中のスキルと、この技順を組み合わせた計算は未対応です。';
+  if(/^[A-Z][A-Z0-9_]*(?::|$)/.test(code)&&code!=='BOW_THOUSAND:SINGLE_SHOT_REQUIRED')return '現在の装備や計算条件では、この技順の火力を算出できません。';
+  return comboBlockedMessage(reason);
 }
 function comboMoveUnavailableReason(move){
   const kind=move.canonicalKind||comboKind();
@@ -5395,6 +5409,7 @@ function comboMoveLabel(move){
   if(move.canonicalTechniqueId==='LAN_COUNTER_DOUBLE_THRUST')return esc(move.name)+'（溜め3・当て身成功の明示条件／共通HP計算のみ）';
   if(move.referenceAction)return esc(move.name)+'（技DB・砲撃条件を参照／ダメージ限定）';
   if(move.calculationBlocked)return esc(move.name)+'（計算保留）';
+  if(move.handler==='RangedReferenceHandler')return esc(move.name)+'（技データ参照・時間未確認）';
   return esc(move.name)+'（'+(move.handler==='ChargeBladeHandler'?'本体MV ':'MV ')+move.motionValue+' / '+(move.time>0?move.time.toFixed(2)+'s':'時間未確認')+'）';
 }
 function canonicalComboTechnique(kind,move){
@@ -5630,7 +5645,7 @@ function validateP0EquipmentSupport(rows){
     if(w.phial!=='element')throw Error('P0_WEAPON_STATE_CONFLICT:選択武器は強属性ビンSAEDの対象ではありません。');
   }
 }
-function evaluateP0DamageRoute(rows){
+function evaluateP0DamageRoute(rows,{currentCustom=false}={}){
   let context=null,result;
   try{
     if(!rows.length)throw Error('COMBO_NOT_SELECTED');
@@ -5641,7 +5656,7 @@ function evaluateP0DamageRoute(rows){
       // GL reference IDs carry NORMAL/CHARGED/FULL_BURST execution semantics.
       // Their shared canonical record is a coefficient source, not the action ID.
       const moves=rows.map(r=>{const move=comboMove(r.techniqueId);return {techniqueId:move?.handler==='GunlanceShellReferenceHandler'&&move.referenceAction?move.id:move?.canonicalTechniqueId||r.techniqueId};});
-      const pipeline=evaluateConsumerCombat({kind:comboKind(),moves,conditions:compareStep5Snapshot(),target:{monster:$('monster')?.value,part:$('monsterPart')?.value}});
+      const pipeline=evaluateConsumerCombat({kind:comboKind(),moves,conditions:{...compareStep5Snapshot(),...(currentCustom?{currentCustomBowMixed:true}:{})},target:{monster:$('monster')?.value,part:$('monsterPart')?.value}});
       const metric=channel=>consumerDamageMetric({oneHitPipeline:pipeline},channel);
       const normal=metric('normal'),maximum=metric('maximum');
       const components=pipeline.channels?.normal?.components||[];
@@ -5666,7 +5681,7 @@ function calcP0Damage(mode,{remember=true}={}){
       rows=preset.moves.map(techniqueId=>({techniqueId}));
     }else{App.combo.syncFromDOM();rows=App.state.combo.moves;}
     if(!rows.length)throw Error('技を追加してください。');
-    result=evaluateP0DamageRoute(rows);context=result.context;
+    result=evaluateP0DamageRoute(rows,{currentCustom:mode==='user'});context=result.context;
   }catch(e){result={status:'BLOCKED',damage:null,stages:[],blocked:[{reason:String(e.message||e)}],context};}
   if(mode==='user')return {...result,scope:'DAMAGE_ONLY_PROVISIONAL_REFERENCE'};
   const label=mode==='single'?'選択技':'テンプレコンボ';
@@ -9790,9 +9805,17 @@ function consumerEvaluationPlan(kind,moves,conditions={},target=null){
   const profile=consumerStandardProfile(kind,resolvedConditions);
   const rawIds=explicit?moves.map(x=>resolveAdoptedLegacyPresetId(kind,x?.techniqueId||x?.canonicalTechniqueId||'')):[...(profile?.techniqueIds||[])];
   const normalized=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(rawIds)||{ids:rawIds.filter(Boolean),unresolved:[]};
+  // Honor the existing explicit Bow controls for only this current-build route.
+  // Never infer an uncoated state from standard automatic coating selection.
+  if(kind==='bow'&&explicit&&conditions.currentCustomBowMixed===true&&
+     JSON.stringify(normalized.ids)===JSON.stringify(['BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3','BOW_THOUSAND_DRAGONS'])){
+    resolvedConditions.bowState={...conditions.bowState};
+    delete resolvedConditions.standardBowReason;
+  }else delete resolvedConditions.currentCustomBowMixed;
 
   if(!explicit&&profile?.evaluationState)resolvedConditions[profile.stateKey]={...(resolvedConditions[profile.stateKey]||{}),...profile.evaluationState};
-  return {profileId:explicit?'SAVED_EXPLICIT_ROUTE':profile?.id||null,selection:explicit?'EXPLICIT':'STANDARD',scope:explicit?'SELECTED_ROUTE':profile?.scope||'OWNER_TARGET',standardAmmo:consumerAppliedAmmoPremise(kind,resolvedConditions),techniqueIds:normalized.ids,conditions:resolvedConditions,
+  const mixedBow=resolvedConditions.currentCustomBowMixed===true;
+  return {profileId:mixedBow?'CURRENT_CUSTOM_BOW_MIXED_REFERENCE':explicit?'SAVED_EXPLICIT_ROUTE':profile?.id||null,selection:explicit?'EXPLICIT':'STANDARD',scope:mixedBow?'PER_MOVE_OPTIMAL_DISTANCE_FULL_HIT_REFERENCE':explicit?'SELECTED_ROUTE':profile?.scope||'OWNER_TARGET',standardAmmo:consumerAppliedAmmoPremise(kind,resolvedConditions),techniqueIds:normalized.ids,conditions:resolvedConditions,
     reason:resolvedConditions.standardBowgunReason||resolvedConditions.standardBowReason||(!rawIds.length?'REAL_SLICE:STANDARD_PROFILE_UNREGISTERED':normalized.unresolved.length||normalized.ids.length!==rawIds.length?'REAL_SLICE:COMPARISON_TECHNIQUE_ID_UNRESOLVED':null)};
 }
 // Recovery applies only to source-valid public equipment skills. Strict adapter
@@ -9898,7 +9921,7 @@ function evaluateConsumerCombat({kind,moves=[],conditions={},target,plan=consume
     ...(plan.selection==='STANDARD'&&resolvedConditions.standardBowgunSequence?(kind==='light-bowgun'?(resolvedConditions.standardBowgunSequence.shotMode==='RAPID'?(resolvedConditions.standardBowgunSequence.ammoType&&resolvedConditions.standardBowgunSequence.ammoType!=='NORMAL'?{}:{rapidAmmoSequence:'LBG_FIVE_ROUNDS_25_HITS'}):{normalAmmoSequence:'LBG_NORMAL_FIVE_SHOT_NO_RELOAD'}):{normalAmmoSequence:'NORMAL_TEN_SHOT_NO_RELOAD'}):{}),
     retrievedAt:dataState?.weapons?.updatedAt||'UNKNOWN'};
     const original=adapter.evaluateCurrent(input);
-    let evaluated=continueConsumerSkillEffects(input,original);
+    let evaluated=resolvedConditions.currentCustomBowMixed===true&&String(original.reason||'').startsWith('BOW_THOUSAND:')?original:continueConsumerSkillEffects(input,original);
     if(kind==='charge-blade'&&plan.selection==='STANDARD'&&input.chargeBladeState?.mixMode==='R_H_INDEPENDENT'&&evaluated.scope==='CB_INDEPENDENT_R_H_SUM')evaluated=projectFixedCbDrawOmissions(evaluated);
     // The validated fixed R/H routes do not yet resolve ID24 for elemental
     // attacks in either channel. Reuse the source-validated omission from
@@ -10351,7 +10374,9 @@ function renderCurrentCustomResult(result){
   const row={oneHitPipeline:result.pipeline||{reason:result.blocked?.[0]?.reason}};
   const channels=['normal','maximum'],metrics=channels.map(ch=>consumerDamageMetric(row,ch)),parts=channels.map(ch=>consumerDamageParts(row,ch));
   let h='<h3 tabindex="-1" data-current-custom-heading>指定コンボ・現在のビルド</h3>';
+  const mixedBow=result.pipeline?.evaluationPlan?.scope==='PER_MOVE_OPTIMAL_DISTANCE_FULL_HIT_REFERENCE';
   const explain=reason=>{
+    if(mixedBow)return mixedBowComboBlockedMessage(reason);
     const message=comboBlockedMessage(reason);
     if(message!==reason)return message;
     if(/(?:TECHNIQUE_ID_UNRESOLVED|TECHNIQUE_NOT_FOUND)/.test(reason))return '指定した技が現在の技データにありません。';
@@ -10367,7 +10392,8 @@ function renderCurrentCustomResult(result){
     h+='<p class="small">暫定・参考。ゲーム内での実測値ではありません。</p>';
     const wyvern=ids.includes('HBG_WYVERN_AMMO')&&channels.some((ch,i)=>metrics[i].value!==null&&
       result.pipeline.channels?.[ch]?.diagnostics?.referenceScope==='STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL');
-    if(wyvern)h+='<p class="small">竜撃弾：2Hitの参考値。ゲーム版は未確定で、会心・斬れ味・物理肉質補正は対象外です。</p>';
+    if(mixedBow)h+='<p class="small">溜め3から開始し、各技がそれぞれの適正距離で全段命中する参考値です。同じ距離での実測ではありません。</p>';
+    else if(wyvern)h+='<p class="small">竜撃弾：2Hitの参考値。ゲーム版は未確定で、会心・斬れ味・物理肉質補正は対象外です。</p>';
     else if(ids.length&&ids.every(id=>id.startsWith('BOW_')))h+='<p class="small">弓：各技のビン・距離・命中条件に基づく参考値です。</p>';
     else if(ids.length&&ids.every(id=>id.startsWith('HBG_')))h+='<p class="small">ヘビィボウガン：指定した弾・命中条件の範囲で計算しています。</p>';
   }
@@ -11447,7 +11473,7 @@ window.MHWeaponEffectDB=Object.freeze({switchAxe:Object.freeze({powerPhialSword:
  const bow=document.createElement('div');bow.id='consumerBowConditions';bow.className='notice small';bow.hidden=true;
  bow.innerHTML='<b>弓の標準比較条件</b><p>対応する接撃・強撃・貫通ビンを武器データから自動決定し、全Hit適正距離・1射目から計算します。通常／最大は同じビンと射順です。入力は不要です。</p>';
  const bowExplicit=document.createElement('details');bowExplicit.innerHTML='<summary>個別技の検証用条件（標準比較には使用しません）</summary>';bow.append(bowExplicit);
- for(const id of ['powerBowCoating','powerBowRange','powerBowStartShot']){const e=document.getElementById(id),label=document.querySelector('label[for="'+id+'"]');if(label)bowExplicit.append(label);if(e)bowExplicit.append(e);}
+ for(const [id,title] of [['powerBowCoating','ビン'],['powerBowRange','距離'],['powerBowStartShot','開始射順']]){const e=document.getElementById(id),label=document.createElement('label');label.htmlFor=id;label.textContent=title;if(e)bowExplicit.append(label,e);}
  detail.append(bow);
  const hbg=document.createElement('details');hbg.id='consumerHbgConditions';hbg.className='notice small';hbg.hidden=true;hbg.open=true;
  hbg.innerHTML='<summary>ヘビィボウガンの計算条件</summary><p>標準比較は武器データと対象部位から採用済みの属性弾条件を自動設定し、適正距離で計算します。以下は個別検証用です。容量など未確認の条件を必要とする経路は理由を表示します。</p>';

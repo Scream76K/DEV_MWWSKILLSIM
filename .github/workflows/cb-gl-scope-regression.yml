@@ -40,6 +40,8 @@ on:
       - 'tests/dark-arts-auto-target.test.cjs'
       - 'tools/comparison-used-combo-dom.test.cjs'
       - 'tools/custom-combo-result-dom.test.cjs'
+      - 'tools/bow-mixed-custom-dom.test.cjs'
+      - 'tools/bow-mixed-custom-browser.test.cjs'
       - 'tests/used-combo-adapter.test.cjs'
       - 'tools/consumer-form-parity-dom.test.cjs'
       - 'tools/king-target-parity-dom.test.cjs'
@@ -167,6 +169,7 @@ jobs:
           tools/comparison-settings-parity-dom.test.cjs
           tools/comparison-used-combo-dom.test.cjs
           tools/custom-combo-result-dom.test.cjs
+          tools/bow-mixed-custom-dom.test.cjs
           tests/used-combo-adapter.test.cjs
           tools/consumer-form-parity-dom.test.cjs
           tools/king-target-parity-dom.test.cjs
@@ -191,6 +194,6 @@ jobs:
       - name: Install the locked Playwright Chromium runtime
         run: npx --no-install playwright install --with-deps --only-shell chromium
       - name: Verify narrow armor and skill columns in Chromium
-        run: node --test tools/armor-portrait-layout-browser.test.cjs
+        run: node --test tools/armor-portrait-layout-browser.test.cjs tools/bow-mixed-custom-browser.test.cjs
       - name: Verify session and legacy-cache restoration without external API access
         run: node --test tools/comparison-session-reload-browser.test.cjs

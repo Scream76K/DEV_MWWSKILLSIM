@@ -944,7 +944,17 @@
   const thousandPierceEntries=allSkills.filter(x=>Number(x.skillId)===94||x.name==='貫通弾・竜の矢強化');
   if(thousandRequested){
    if(thousandPierceEntries.some(x=>Number(x.skillId)!==thousandRule?.pierceUp?.skillId||x.name!==thousandRule.pierceUp.name||x.level!==thousandRule.pierceUp.level))return fail('BOW_THOUSAND:PIERCE_SKILL_CONTRACT_INVALID');
-   if(resolvedTechniqueIds.length!==1)return fail('BOW_THOUSAND:SINGLE_SHOT_REQUIRED');
+   const mixedCurrent=conditions.currentCustomBowMixed===true&&conditions.standardEvaluation===false&&
+    JSON.stringify(resolvedTechniqueIds)===JSON.stringify(['BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3','BOW_THOUSAND_DRAGONS']);
+   if(resolvedTechniqueIds.length!==1&&!mixedCurrent)return fail('BOW_THOUSAND:SINGLE_SHOT_REQUIRED');
+   if(mixedCurrent){
+    if(bowState?.chargeLevel!==3||conditions.dismountAttack===true||conditions.sneakAttack===true)return fail('BOW_THOUSAND:STATE_NOT_ADOPTED');
+    if(allSkills.some(x=>[137,140,160].includes(Number(x.skillId))||['forceShot','firstShot','bladescaleLoading'].includes(x.skillKey)))return fail('BOW_THOUSAND:UNVERIFIED_MIXED_RESOURCE');
+    if(resolvedTechniqueIds.some(id=>{
+     const t=techniqueDb?.get?.('bow',id),canonical=root.TechniqueDBEngine?.get?.('bow',id);
+     return !t||!canonical||JSON.stringify(t)!==JSON.stringify(canonical);
+    }))return fail('BOW_THOUSAND:SOURCE_REQUIRED');
+   }
    if(thousandRule?.status!=='OWNER_APPROVED_PROVISIONAL'||specialAmmoEntries.some(x=>Number(x.skillId)!==thousandRule.skillId||x.name!==thousandRule.skillName||!Number.isInteger(x.level)||x.level<1||x.level>=thousandRule.specialAmmoMultipliers.length))return fail('BOW_THOUSAND:SKILL_CONTRACT_INVALID');
    if(bowState?.coating!=='NONE'||bowState?.range!=='CRITICAL'||bowState?.guided===true||conditions.mounted===true)return fail('BOW_THOUSAND:STATE_NOT_ADOPTED');
    const unsupported=allSkills.filter(x=>!fixedEntrySkill(x)&&![69,94].includes(Number(x.skillId))&&!['attack','affinity','criticalBoost'].includes(x.skillKey)&&Number(x.skillId)!==144);
