@@ -23,7 +23,8 @@ test('mobile selects a Bow technique sequence and calculates both columns in the
  },bow);
  const click=s=>page.locator(s).first().tap({timeout:6500});
  const ids=['BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3','BOW_THOUSAND_DRAGONS'];
- await click('summary.card-summary:has-text("⑥")');
+ const comparison='summary.card-summary:has-text("⑥")';
+ if(!(await page.locator(comparison).first().evaluate(el=>el.parentElement.open)))await click(comparison);
  await click('#comparisonOptionalConditions > summary');
  await click('#consumerWeaponConditions > summary');
  await click('#consumerCustomCombo > summary');
