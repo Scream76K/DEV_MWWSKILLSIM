@@ -11397,8 +11397,10 @@ window.MHWeaponEffectDB=Object.freeze({switchAxe:Object.freeze({powerPhialSword:
  cb.append(document.getElementById('comboCBStatePanel'));detail.append(cb);
  const routes=document.createElement('details');routes.id='consumerWeaponConditions';routes.className='notice small';routes.innerHTML='<summary>武器の技構成・開始条件</summary><p>技を追加しなければ基準コンボを使用します。個別の技構成や開始状態を調整する場合に開いてください。</p><label for="comboPreset">技構成</label>';routes.append(document.getElementById('comboPreset'));
  for(const id of ['comboHHStatePanel','comboGLStatePanel','comboIGStatePanel','comboLSStatePanel','comboDBStatePanel','comboSAStatePanel','comboLANStatePanel','comboLBGStatePanel']){const panel=document.getElementById(id);if(panel)routes.append(panel);}detail.append(routes);
- const custom=document.createElement('details');custom.id='consumerCustomCombo';custom.innerHTML='<summary>個別の技を指定する</summary><p>技を追加しない場合は基準コンボを使います。個別に指定した技列は基準コンボと区別して計算します。</p><label for="comboMovePicker">追加する技</label>';
- custom.append(document.getElementById('comboMovePicker'),document.getElementById('addCombo'),document.getElementById('combo'));routes.append(custom);
+ const custom=document.createElement('details');custom.id='consumerCustomCombo';custom.innerHTML='<summary>個別の技を指定する</summary><p>現在の装備セットと選択中の対象・部位で、追加した技の通常・最大ダメージを計算します。下のビルド火力比較とは別の結果です。</p><label for="comboMovePicker">追加する技</label>';
+ const calculateCustom=document.getElementById('calcUserComboDamage'),customResult=document.getElementById('userComboDamageOut');
+ calculateCustom.textContent='指定コンボの火力を計算';
+ custom.append(document.getElementById('comboMovePicker'),document.getElementById('addCombo'),document.getElementById('combo'),calculateCustom,customResult);routes.append(custom);
  function sync(){const kind=document.getElementById('weaponKind')?.value;const names=compareSelectedNames(),map=savedBuildMap();const comparingBow=names.some(n=>map[n]?.weaponKind==='bow');bow.hidden=kind!=='bow'&&!comparingBow;cb.hidden=kind!=='charge-blade';hbg.hidden=kind!=='heavy-bowgun'&&!names.some(n=>map[n]?.weaponKind==='heavy-bowgun');}
  document.addEventListener('change',sync);document.addEventListener('click',()=>queueMicrotask(sync));sync();
 })();
