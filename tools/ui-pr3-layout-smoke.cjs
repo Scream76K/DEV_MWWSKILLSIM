@@ -48,7 +48,7 @@ async function main() {
           build:{x:a.x,y:a.y,width:a.width,height:a.height},
           support:{x:b.x,y:b.y,width:b.width,height:b.height},
           horizontal, fullWidth:Math.abs(a.width-grid.clientWidth)<=3 && Math.abs(b.width-grid.clientWidth)<=3,
-          armorHorizontal,armorRatio,wideArmor:window.matchMedia('(min-width:640px) and (hover:hover) and (pointer:fine), (min-width:820px) and (min-height:500px) and (orientation:landscape)').matches,
+          armorHorizontal,armorRatio,
           documentWidth:document.documentElement.scrollWidth,
           viewportWidth:window.innerWidth,
           title:document.title,
@@ -64,8 +64,8 @@ async function main() {
       });
       await page.screenshot({path:path.join(OUTPUT,'layout-'+width+'.png'),fullPage:true,timeout:20000});
       const arrangementOk=metrics.found && !metrics.horizontal && metrics.fullWidth;
-      const armorArrangementOk=metrics.found && metrics.armorHorizontal===metrics.wideArmor;
-      const ratioOk=!metrics.wideArmor || (Number.isFinite(metrics.armorRatio)&&Math.abs(metrics.armorRatio-1.5)<=0.07);
+      const armorArrangementOk=metrics.found && metrics.armorHorizontal;
+      const ratioOk=metrics.found && Number.isFinite(metrics.armorRatio)&&Math.abs(metrics.armorRatio-1.5)<=0.07;
       const overflowOk=metrics.found && metrics.documentWidth<=width+3;
       const referencesHidden=metrics.found && metrics.hiddenReferencePanels?.every(p=>p.exists&&p.hidden);
       const verdict={width,arrangementOk,armorArrangementOk,ratioOk,overflowOk,referencesHidden,metrics,errors};

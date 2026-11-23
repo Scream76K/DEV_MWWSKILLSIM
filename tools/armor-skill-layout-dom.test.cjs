@@ -13,7 +13,7 @@ const children = element => [...element.children].map(node => node.id);
 const oneColumn = 'minmax(0,1fr)';
 const wideColumns = 'minmax(0,3fr)minmax(0,2fr)';
 
-test('only Armor/Charm and Skills use the wide 6:4 row; build and support otherwise stack', () => {
+test('only Armor/Charm and Skills use the 6:4 row at every viewport; build and support otherwise stack', () => {
   const { window } = new JSDOM(html);
   try {
     const { document } = window;
@@ -35,16 +35,15 @@ test('only Armor/Charm and Skills use the wide 6:4 row; build and support otherw
       assert.equal(rule.style.getPropertyPriority('grid-template-columns'), 'important');
     };
     grid(rules, 'main.wrap > #betaWorkspaceGrid', oneColumn);
-    grid(rules, '#betaBuildPanel > #armorBuildWorkspace', oneColumn);
+    grid(rules, '#betaBuildPanel > #armorBuildWorkspace', wideColumns);
     const support = rules.find(x => x.selectorText === '#betaSupportPanel');
     assert.equal(compact(support.style.getPropertyValue('grid-column')), '1/-1');
-    const media = rules.filter(x => x.type === 4);
-    assert.equal(media.length, 1);
-    assert.deepEqual(compact(media[0].media.mediaText).split(','), [
-      '(min-width:640px)and(hover:hover)and(pointer:fine)',
-      '(min-width:820px)and(min-height:500px)and(orientation:landscape)',
-    ]);
-    grid([...media[0].cssRules], '#betaBuildPanel > #armorBuildWorkspace', wideColumns);
+    // No orientation, hover or touch exception may override the inner split.
+    for (const media of rules.filter(x=>x.type===4)) {
+      for (const rule of media.cssRules) {
+        assert.ok(!rule.style?.getPropertyValue('grid-template-columns')||!rule.selectorText?.includes('#armorBuildWorkspace'));
+      }
+    }
   } finally {
     window.close();
   }

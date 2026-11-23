@@ -945,18 +945,25 @@ main.wrap > #betaWorkspaceGrid {
 #betaWorkspaceGrid > * {min-width:0;max-width:100%;}
 #betaSupportPanel {grid-column:1/-1;}
 #betaBuildPanel > #armorBuildWorkspace {
-  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-columns:minmax(0,3fr) minmax(0,2fr)!important;
   gap:12px!important;
   align-items:start;
 }
 #armorWorkspaceLeft,#skillWorkspaceRight {
   min-width:0;max-height:none!important;overflow:visible!important;overscroll-behavior:auto!important;
 }
-/* A desktop preview pane can be narrower than the old desktop breakpoint or
-   taller than it is wide. Preserve the narrow/touch portrait stack. */
-@media (min-width:640px) and (hover:hover) and (pointer:fine),
-       (min-width:820px) and (min-height:500px) and (orientation:landscape) {
-  #betaBuildPanel > #armorBuildWorkspace {grid-template-columns:minmax(0,3fr) minmax(0,2fr)!important;}
+@media (max-width:760px) {
+  #betaBuildPanel > #armorBuildWorkspace {gap:6px!important;}
+  #armorWorkspaceLeft, #skillWorkspaceRight {overflow-wrap:anywhere;}
+  #armorWorkspaceLeft #armorSelectors select[data-armor] {min-height:44px!important;height:auto!important;}
+  #skillWorkspaceRight > .card {padding:4px!important;}
+  #skillWorkspaceRight #skillOutput {padding:4px;}
+  #skillWorkspaceRight #skillOutput .skill-game {padding:4px;}
+  #skillWorkspaceRight #skillOutput .skill-info-toggle {min-height:44px;padding-inline-end:12px;}
+  #skillWorkspaceRight #skillOutput .skill-game-name {flex-direction:column;gap:2px;}
+  #skillWorkspaceRight #skillOutput .skill-game-name > span:first-child {max-width:100%;}
+  #skillWorkspaceRight #skillOutput .skill-blocks {flex-wrap:wrap;}
+  #skillWorkspaceRight #skillOutput .skill-ranks ul {padding-inline-start:14px;}
 }
 </style>
 <style id="owner-skill-disclosure-style">
