@@ -32,7 +32,13 @@ test('mobile selects a Bow technique sequence and calculates both columns in the
  if(!(await page.locator(comparison).first().evaluate(e=>e.parentElement.open)))await click(comparison);
  await click('#consumerCustomCombo > summary');
  assert.equal(await optional.evaluate(e=>e.open),false);
- for(const id of ids){await page.locator('#comboMovePicker').selectOption('canonical:'+id);await click('#addCombo');}
+ const names=['剛射3','剛連射3','竜の千々矢'];
+ for(const [i,id] of ids.entries()){
+  await page.locator('#comboMovePicker').selectOption('canonical:'+id);
+  assert.equal(await page.locator('#comboMovePicker option:checked').textContent(),names[i]);
+  await click('#addCombo');
+  assert.equal(await page.locator('#combo .cmove').last().locator('option:checked').textContent(),names[i]);
+ }
  await click('#calcUserComboDamage');
  const out=page.locator('#compareOut');
  assert.equal(await optional.evaluate(e=>e.open),false);

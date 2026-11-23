@@ -5425,6 +5425,17 @@ function comboMoveUnavailableReason(move){
   if(!canonical||!techniqueDbGet(kind,canonical))return move.custom?'登録技と正規技DBの対応が未登録':'旧参考技と正規技DBの対応が未登録';
   return null;
 }
+const COMBO_PICKER_NAMES=Object.freeze({
+ HBG_ELEMENT_FIRST_HIT_REFERENCE:'属性弾（初段）',
+ LBG_ELEMENT_FIRST_HIT_REFERENCE:'属性弾・非速射（初段）',
+ LBG_NORMAL_RAPID_1:'Lv1通常弾速射',
+ LBG_NORMAL_RAPID_3:'Lv3通常弾速射（強化火薬）'
+});
+function comboPickerMoveLabel(move){
+ const shortName=move.referenceAction?GL_P0_ACTIONS[move.referenceAction]:
+   move.custom?null:COMBO_PICKER_NAMES[move.canonicalTechniqueId];
+ return esc(shortName??move.name);
+}
 function comboMoveLabel(move){
   const unavailable=comboMoveUnavailableReason(move);
   if(unavailable)return esc(move.name)+'（計算未対応：'+esc(unavailable)+'）';
@@ -5509,7 +5520,7 @@ function renderComboForWeapon(){
     status.innerHTML='<span class="bad">この武器種の技データはまだ登録されていません。下の「技データを登録・管理」から登録できます。</span>'; $('addCombo').disabled=true; return;
   }
   picker.disabled=false; preset.disabled=false; $('addCombo').disabled=false;
-  const old=picker.value; picker.innerHTML=data.moves.map(m=>`<option value="${m.id}">${comboMoveLabel(m)}</option>`).join('');
+  const old=picker.value; picker.innerHTML=data.moves.map(m=>`<option value="${esc(m.id)}">${comboPickerMoveLabel(m)}</option>`).join('');
   if(data.moves.some(m=>m.id===old))picker.value=old;
   const previousPreset=preset.value;
   preset.innerHTML='<option value="">なし（自分で組む）</option>'+data.presets.map(p=>`<option value="${esc(p.id)}">${p.origin==='CANONICAL_DB'?'技DB採用：':'旧参考：'}${esc(p.name)}${p.moves.some(id=>{const m=data.moves.find(m=>m.id===id);return !m||comboMoveUnavailableReason(m);})?'（計算未対応の技を含む）':''}</option>`).join('');
@@ -5523,7 +5534,7 @@ function addCombo(moveId=null,{allowMissing=false}={}){
   const id=moveId||$('comboMovePicker')?.value||data.moves[0]?.id||'';
   const available=data.moves.some(m=>m.id===id);if(!available&&!allowMissing)return;
   const div=document.createElement('div');div.className='equip comboRow';
-  let opts=data.moves.map(m=>`<option value="${esc(m.id)}">${comboMoveLabel(m)}</option>`).join('');
+  let opts=data.moves.map(m=>`<option value="${esc(m.id)}">${comboPickerMoveLabel(m)}</option>`).join('');
   if(!available)opts=`<option value="${esc(id)}">未登録の保存技：${esc(id)}</option>`+opts;
   div.innerHTML=`<label>技</label><select class="cmove">${opts}</select><div class="muted small comboMeta" style="margin-top:7px"></div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:7px"><button class="combo-up" type="button" style="flex:1;min-height:44px" aria-label="この技を上へ移動">上へ</button><button class="combo-down" type="button" style="flex:1;min-height:44px" aria-label="この技を下へ移動">下へ</button><button class="danger del" type="button" style="flex:1;min-height:44px">削除</button></div>`;
   const sel=div.querySelector('.cmove');sel.value=id;
