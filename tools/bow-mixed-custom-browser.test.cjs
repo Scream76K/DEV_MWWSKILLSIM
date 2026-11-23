@@ -23,15 +23,21 @@ test('mobile selects a Bow technique sequence and calculates both columns in the
  },bow);
  const click=s=>page.locator(s).first().tap({timeout:6500});
  const ids=['BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3','BOW_THOUSAND_DRAGONS'];
+ const comboFold=page.locator('#consumerCustomCombo'),optional=page.locator('#comparisonOptionalConditions');
+ assert.equal(await page.locator('#currentComboCard').count(),0);
+ assert.equal(await comboFold.evaluate(e=>e.open),false);
+ assert.equal(await optional.evaluate(e=>e.open),false);
+ assert.equal(await comboFold.evaluate(e=>e.parentElement===document.getElementById('comparisonOptionalConditions').parentElement),true);
  const comparison='summary.card-summary:has-text("⑥")';
- if(!(await page.locator(comparison).first().evaluate(el=>el.parentElement.open)))await click(comparison);
- await click('#comparisonOptionalConditions > summary');
- await click('#consumerWeaponConditions > summary');
+ if(!(await page.locator(comparison).first().evaluate(e=>e.parentElement.open)))await click(comparison);
  await click('#consumerCustomCombo > summary');
+ assert.equal(await optional.evaluate(e=>e.open),false);
  for(const id of ids){await page.locator('#comboMovePicker').selectOption('canonical:'+id);await click('#addCombo');}
  await click('#calcUserComboDamage');
  const out=page.locator('#compareOut');
+ assert.equal(await optional.evaluate(e=>e.open),false);
  assert.match(await out.innerText(),/「個別技の検証用条件」で「ビンなし」と「適正距離」/);
+ await click('#comparisonOptionalConditions > summary');
  await click('#consumerBowConditions details > summary');
  await page.locator('#powerBowCoating').selectOption('NONE');
  await page.locator('#powerBowRange').selectOption('CRITICAL');

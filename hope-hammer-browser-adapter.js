@@ -1256,7 +1256,8 @@
     }
     if(e.bonusSkillId===115){
      const rule=root.MHNamedBonusFlatRules?.series?.[e.name],burst=allSkills.filter(x=>Number(x.skillId)===95),level=burst.length?Math.max(...burst.map(x=>x.level)):0;
-     return !!rule&&rule.parent===e.bonusName&&rule.rankLevel===e.rankLevel&&rule.required===e.required&&a.parent===e.bonusName&&a.attackAdd===(level?rule.attackAdd:0)&&a.condition===(level?rule.condition:'BURST_INACTIVE_OR_UNRESOLVED');
+     const enabled=level>0&&root.MHMaximumSkillEnabled?.(conditions,'burst')!==false;
+     return !!rule&&rule.parent===e.bonusName&&rule.rankLevel===e.rankLevel&&rule.required===e.required&&a.parent===e.bonusName&&a.attackAdd===(enabled?rule.attackAdd:0)&&a.condition===(enabled?rule.condition:'BURST_INACTIVE_OR_UNRESOLVED');
     }
     return false;
    };
@@ -1663,12 +1664,13 @@
    if(e.bonusSkillId===167){
     const rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===167)||[],a=rows[0],rush=allSkills.filter(x=>Number(x.skillId)===120),level=rush.length?Math.max(...rush.map(x=>x.level)):0;
     if(e.source!=='series'||e.rankLevel!==2||e.required!==4||!Number.isInteger(e.count)||e.count<4||rows.length!==1||!a?.seregiosActivation||rush.some(x=>!Number.isInteger(x.level)||x.level<1||x.level>5))return false;
-    return ['bonusSkillId','name','bonusName','source','rankLevel','required','count'].every(k=>a.seregiosActivation[k]===e[k])&&a.skill===e.name&&a.parent===e.bonusName&&a.rank===2&&a.condition==='ADRENALINE_RUSH_REPEAT_EVADE_PREACTIVATED'&&a.appliesToNormal===false&&a.attackAdd===0&&a.attackMultiplier===1&&a.adrenalineRushLevel===level&&a.seregiosEnabled===(level>0)&&Number.isFinite(a.maximumAttackMultiplier)&&(level>0?a.maximumAttackMultiplier>1:a.maximumAttackMultiplier===1);
+    const enabled=level>0&&root.MHMaximumSkillEnabled?.(conditions,'adrenalineRush')!==false;
+    return ['bonusSkillId','name','bonusName','source','rankLevel','required','count'].every(k=>a.seregiosActivation[k]===e[k])&&a.skill===e.name&&a.parent===e.bonusName&&a.rank===2&&a.condition==='ADRENALINE_RUSH_REPEAT_EVADE_PREACTIVATED'&&a.appliesToNormal===false&&a.attackAdd===0&&a.attackMultiplier===1&&a.adrenalineRushLevel===level&&a.seregiosEnabled===enabled&&Number.isFinite(a.maximumAttackMultiplier)&&(enabled?a.maximumAttackMultiplier>1:a.maximumAttackMultiplier===1);
    }
    if([10,155,115].includes(e.bonusSkillId)){
     const series=e.bonusSkillId===115,rule=root.MHNamedBonusFlatRules?.[series?'series':'group']?.[e.name],rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===e.bonusSkillId)||[],a=rows[0],burst=allSkills.filter(x=>Number(x.skillId)===95),level=burst.length?Math.max(...burst.map(x=>x.level)):0;
     if(!rule||(!series&&rule.skillId!==e.bonusSkillId)||e.bonusName!==rule.parent||e.source!==(series?'series':'group')||e.rankLevel!==(rule.rankLevel||1)||e.required!==(rule.required||3)||!Number.isInteger(e.count)||e.count<e.required||(series&&e.rankLevel===1&&e.count>=4)||rows.length!==1||(series&&burst.some(x=>!Number.isInteger(x.level)||x.level<1||x.level>5)))return false;
-    const enabled=!series||level>0;
+    const enabled=!series||level>0&&root.MHMaximumSkillEnabled?.(conditions,'burst')!==false;
     return a.skill===e.name&&a.parent===e.bonusName&&a.rank===e.rankLevel&&a.attackAdd===(enabled?rule.attackAdd:0)&&a.attackMultiplier===1&&a.appliesToNormal===false&&a.condition===(enabled?rule.condition:'BURST_INACTIVE_OR_UNRESOLVED');
    }
    if(e.bonusSkillId===162){

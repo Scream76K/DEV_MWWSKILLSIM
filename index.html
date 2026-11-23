@@ -320,7 +320,7 @@ header h1{font-family:var(--mhw-ui-font);letter-spacing:.035em;text-shadow:0 2px
 #maximumSkillConditions{min-inline-size:0;margin:0 0 8px;padding:0 8px 4px;}
 #maximumSkillConditions>legend{padding:0 6px;font-weight:700;}
 .maximum-skill-rows{display:flex;flex-wrap:wrap;align-items:center;}
-.maximum-skill-rows>label:not([hidden]){display:inline-flex;align-items:center;gap:8px;box-sizing:border-box;min-height:44px;max-width:100%;margin:0;padding:4px 10px;cursor:pointer;white-space:nowrap;}
+.maximum-skill-rows>label{display:inline-flex;align-items:center;gap:8px;box-sizing:border-box;min-height:44px;max-width:100%;margin:0;padding:4px 10px;cursor:pointer;white-space:nowrap;}
 .maximum-skill-rows>label[hidden]{display:none!important;}
 #maximumSkillConditions>.comparison-fortify-note{margin:0 10px 5px;}
 #powerFortifyCount{width:auto;min-width:0;max-width:100%;min-height:30px;padding:3px 9px;font-size:inherit;}
@@ -1033,20 +1033,30 @@ main.wrap > #betaWorkspaceGrid {
 <label for="monster">モンスター</label><select id="monster"><option value="">モンスターを選択</option></select><label for="monsterPart" id="comparisonPartLabel">部位</label><select id="monsterPart"><option value="">部位を選択</option></select><div class="notice" id="monsterInfo">未選択</div></details>
 <details id="powerCoverageDetails" class="notice small"><summary>武器ごとの火力指数対応状況</summary><div id="powerCoverageOut"></div><button id="powerCoverageDownload" type="button">対応状況をJSON保存</button></details><p class="developer-only-evidence-link"><a href="evidence-review.html" style="color:#77b8ee">実測A/B成分診断を開く（ガンランス・チャージアックス／正式DPSではありません） →</a></p>
 <details class="comparison-setting-fold" id="comparisonOptionalConditions"><summary>詳細設定</summary>
-<fieldset id="maximumSkillConditions" class="notice small"><legend>最大火力に反映するスキル</legend>
+<fieldset id="maximumSkillConditions" class="notice small" hidden><legend>最大火力に反映するスキル</legend>
 <div class="maximum-skill-rows">
 <label hidden><input type="checkbox" data-maximum-skill="agitator" checked> 挑戦者</label>
 <label hidden><input type="checkbox" data-maximum-skill="weaknessExploit" checked> 弱点特効</label>
 <label hidden><input type="checkbox" data-maximum-skill="frenzy" checked> 狂竜症</label>
-<label for="powerFortifyCount" class="comparison-fortify-row">不屈<select id="powerFortifyCount"><option value="0">未発動（攻撃補正なし）</option><option value="1">1回力尽きた後（攻撃×1.1）</option><option value="2" selected>2回力尽きた後（攻撃×1.21）</option></select></label>
+<label hidden><input type="checkbox" data-maximum-skill="maximumMight" checked> 渾身</label>
+<label hidden><input type="checkbox" data-maximum-skill="latentPower" checked> 力の解放</label>
+<label hidden><input type="checkbox" data-maximum-skill="adrenalineRush" checked> 巧撃</label>
+<label hidden><input type="checkbox" data-maximum-skill="counterstrike" checked> 逆襲</label>
+<label hidden><input type="checkbox" data-maximum-skill="burst" checked> 連撃</label>
+<label hidden><input type="checkbox" data-maximum-skill="wetBladeMark" checked> 濡れ刃紋</label>
+<label hidden><input type="checkbox" data-maximum-skill="offensiveGuard" checked> 攻めの守勢</label>
+<label hidden><input type="checkbox" data-maximum-skill="coalescence" checked> 災禍転福</label>
+<label for="powerFortifyCount" class="comparison-fortify-row" hidden>不屈<select id="powerFortifyCount"><option value="0">未発動（攻撃補正なし）</option><option value="1">1回力尽きた後（攻撃×1.1）</option><option value="2" selected>2回力尽きた後（攻撃×1.21）</option></select></label>
 </div>
-<p class="muted small comparison-fortify-note">毛皮の昂揚3部位のビルドだけに適用します。通常側は未発動、最大側は選択した条件の参考値です。実際の力尽きた回数は読み取りません。</p>
+<p class="muted small comparison-fortify-note" hidden>不屈は力尽きた回数を最大火力に反映します。</p>
 </fieldset>
 <div class="notice small" id="comparisonSkillInputs" hidden style="display:none"><label for="powerDragonHz">大剣ダークアーツの龍肉質（%・比較共通条件）<input id="powerDragonHz" type="number" min="0" max="100" step="any" inputmode="decimal" placeholder="大剣の衝撃波込み通常指数に必要"></label><button id="useTargetDragonHz" type="button">選択部位の龍肉質を取得</button><div id="powerDragonHzSource" class="muted small" role="status">未入力：部位から取得、または手入力してください。</div></div>
 <select id="powerGutsState" hidden aria-hidden="true"><option value="BEFORE">根性の消費前（攻撃補正あり）</option><option value="AFTER">根性の消費後（攻撃補正なし）</option></select><details class="notice small" id="hbgComparisonSettings"><summary>ヘビィの通常弾・追加参考比較</summary><p>通常弾1発分の3連射、全3Hit命中を比較します。同じ弾Lv・距離・通常モード補正を比較用の共通条件として指定してください。武器ごとの装填可否・カスタマイズからは自動取得しません。通常弾強化Lv1に対応。ファーストショット・フォースショット装備時は、下の装填条件も指定してください。1発分の3Hitは同じ射撃位置として扱います。属性弾STANDARD・竜熱特殊弾・DPSとは別の参考計算です。</p><label for="powerHbgElementType">属性弾先頭1Hit参考の属性（通常弾は未選択）</label><select id="powerHbgElementType"><option value="">未選択</option><option value="fire">火</option><option value="water">水</option><option value="thunder">雷</option><option value="ice">氷</option><option value="dragon">龍（滅龍Lv1・1接触・適正距離限定、暫定）</option></select><label for="powerHbgAmmoLevel">選択した通常弾／属性弾のLv</label><select id="powerHbgAmmoLevel"><option value="">未選択（属性弾STANDARDは保留中）</option><option value="1">通常弾Lv1</option><option value="2">通常弾Lv2</option><option value="3">通常弾Lv3</option></select><label hidden for="powerHbgRange">距離</label><select hidden id="powerHbgRange"><option value="">未選択</option><option value="CRITICAL">適正距離</option><option value="NEAR">近距離</option><option value="FAR">遠距離</option></select><label for="powerHbgNormalMode">比較上の通常モード補正</label><select id="powerHbgNormalMode"><option value="">未選択</option><option value="0">補正なし</option><option value="1">通常モード特化Ⅰ</option><option value="2">通常モード特化Ⅱ</option></select><label for="powerHbgCapacity">比較に使う装填数（1〜99）</label><input id="powerHbgCapacity" type="number" min="1" max="99" step="1" inputmode="numeric" placeholder="射撃順スキル装備時に入力"><label for="powerHbgShotOrdinal">装填後の何発目か（1〜装填数）</label><input id="powerHbgShotOrdinal" type="number" min="1" max="99" step="1" inputmode="numeric" placeholder="例：4"><label for="powerHbgFullMagazine">この装填は満装填で開始したか</label><select id="powerHbgFullMagazine"><option value="">未選択</option><option value="YES">満装填で開始</option><option value="NO">部分装填で開始</option></select><p>装填後、再装填を挟まない射撃順を指定します。武器ごとの装填数は自動取得しません。満装填開始の1発目だけファーストショット、4・6発目だけフォースショットの攻撃加算、4発目以降に会心率加算を反映します。通常・最大で同じ射撃位置を使い、平均発動率やDPSへは変換しません。</p></details><details class="notice small" id="bowComparisonSettings"><summary>弓の計算条件（自動）</summary><p>使用可能な接撃・強撃・貫通ビンを武器データから自動選択します。標準・自由コンボとも適正距離、1射目から計算し、射順は内部で進みます。ビン・距離・開始射数の入力は不要です。刃鱗増装は通常・最大とも火力効果を含めません。</p><div hidden aria-hidden="true"><select id="powerBowCoating"><option value="">選択してください</option><option value="NONE">ビンなし</option><option value="POWER">強撃ビン</option><option value="CLOSE_RANGE">接撃ビン</option><option value="PIERCE">貫通ビン</option></select><select id="powerBowRange"><option value="">選択してください</option><option value="CRITICAL">適正距離</option><option value="NEAR">近距離</option><option value="FAR">遠距離</option></select><select id="powerBowStartShot"><option value="">未選択（装備時・ビンありは保留）</option><option value="1">1発目から（1→2→3）</option><option value="2">2発目から（2→3→4）</option><option value="3">3発目から（3→4→5）</option><option value="4">4発目から（4→5→6）</option><option value="5">5発目から（5→6→7）</option><option value="6">6発目から（6→7→8）</option><option value="7">7発目から（7→8→9）</option><option value="8">8発目から（8→9→10）</option></select></div></details></details>
+<details class="comparison-setting-fold" id="consumerCustomCombo"><summary>コンボを自分で組む</summary><p class="small">現在の装備セットで、追加した技を順番に計算します。通常・最大ダメージは下のビルド火力比較結果に表示します。</p><label for="comboMovePicker">追加する技</label></details>
 <button class="primary" id="runCompare" style="margin-top:7px">📊 選択したビルドを比較</button>
 <h3 id="damageComparisonHeading" class="section-title">ビルド火力比較結果</h3>
-<div class="notice" id="compareOut">比較するビルドを選択してください。</div></div></details></section><section class="card support-card" id="legacyComboCard"><details class="card-details"><summary class="card-summary">⑦ コンボ火力</summary><div class="card-details-body"><div class="muted">③ 装備登録で選択した武器をそのまま使用します。武器をここで再選択する必要はありません。その武器に対応する技を選び、コンボの順番を決めます。コンボ火力は各技のダメージを単純加算する方針です。DPS開発は中止しています。未対応の計算や条件は保留理由を確認してください。同じ技を複数回使う場合は、同じ技をその回数だけ追加します。</div><div class="notice" id="comboWeaponInfo"><b>使用武器：</b>③ 装備登録で武器を選択してください。</div><div class="two"><div><label>技を選択</label><select id="comboMovePicker"></select></div><div><label>プリセット</label><select id="comboPreset"><option value="">なし（自分で組む）</option></select></div></div><div class="notice small" id="comboDataStatus">③ 装備登録の武器を確認しています…</div>
+<div class="notice" id="compareOut">比較するビルドを選択してください。</div></div></details></section>
+<section class="card support-card" id="legacyComboCard"><details class="card-details"><summary class="card-summary">⑦ コンボ火力</summary><div class="card-details-body"><div class="muted">③ 装備登録で選択した武器をそのまま使用します。武器をここで再選択する必要はありません。その武器に対応する技を選び、コンボの順番を決めます。コンボ火力は各技のダメージを単純加算する方針です。DPS開発は中止しています。未対応の計算や条件は保留理由を確認してください。同じ技を複数回使う場合は、同じ技をその回数だけ追加します。</div><div class="notice" id="comboWeaponInfo"><b>使用武器：</b>③ 装備登録で武器を選択してください。</div><div class="two"><div><label>技を選択</label><select id="comboMovePicker"></select></div><div><label>プリセット</label><select id="comboPreset"><option value="">なし（自分で組む）</option></select></div></div><div class="notice small" id="comboDataStatus">③ 装備登録の武器を確認しています…</div>
 <details class="notice small" id="techniqueEditor" style="margin-top:8px">
 <summary><b>技データを登録・管理</b></summary>
 <div class="muted" style="margin:6px 0">現在選択中の武器種に技を登録できます。モーション値は公式API値ではなく、検証値として扱います。</div>
@@ -2898,6 +2908,21 @@ window.MHWWeaknessExploitForHit=function(level,part,damageType){
 };
 window.MHWExplicitAffinityRules=Object.freeze({draw:[0,50,75,100],wet:[0,3,6,9],bubble:[0,7,14,21],source:'https://kuroyonhon.com/mhwilds/program/skill.php'});
 // No condition packet outside public ⑥: keep the existing calculation assumptions.
+const GUARDING_DAMAGE_KINDS=Object.freeze(['great-sword','sword-and-shield','lance','gunlance','charge-blade','heavy-bowgun']);
+const MAXIMUM_SCENARIO_SKILLS=Object.freeze({
+ maximumMight:{names:['渾身','Maximum Might'],max:3,component:'affinity'},
+ latentPower:{names:['力の解放','Latent Power'],max:5,component:'affinity'},
+ adrenalineRush:{names:['巧撃','Adrenaline Rush'],max:5,component:'attack'},
+ counterstrike:{names:['逆襲','Counterstrike'],max:3,component:'attack'},
+ burst:{names:['連撃','Burst'],max:5,component:'attack'},
+ wetBladeMark:{names:['濡れ刃紋','Wet Blade Mark'],max:3,component:'affinity'},
+ offensiveGuard:{names:['攻めの守勢','Offensive Guard'],max:3,component:'attack'},
+ coalescence:{names:['災禍転福','Coalescence'],max:3,component:'element'}
+});
+function maximumScenarioSkillLevel(total,key){
+ const rule=MAXIMUM_SCENARIO_SKILLS[key];
+ return rule?validCombatSkillLevel(total,rule.names,rule.max):0;
+}
 function maximumSkillEnabled(conditions,key){return conditions?.maximumSkillConditions?.[key]!==false;}
 window.MHMaximumSkillEnabled=maximumSkillEnabled;
 function resolveFrenzyAffinity(total,state,standard=false,conditions){
@@ -2916,15 +2941,15 @@ function calcMaxAffinity(total, baseAffinity, w, part,conditions={blackEclipseSt
   if(wex&&maximumSkillEnabled(conditions,'weaknessExploit')){const i=Math.min(5,wex);v += WEAKNESS_EXPLOIT_RULE.base[i] + WEAKNESS_EXPLOIT_RULE.wound[i];}
 
   const ch=validCombatSkillLevel(total,['挑戦者','Agitator'],5); if(ch&&maximumSkillEnabled(conditions,'agitator')) v += [0,3,5,7,10,15][Math.min(5,ch)];
-  const hm=validCombatSkillLevel(total,['渾身','Maximum Might'],3); if(hm) v += [0,10,20,30][Math.min(3,hm)];
-  const rel=validCombatSkillLevel(total,['力の解放','Latent Power'],5); if(rel) v += [0,10,20,30,40,50][Math.min(5,rel)];
+  const hm=maximumScenarioSkillLevel(total,'maximumMight'); if(hm&&maximumSkillEnabled(conditions,'maximumMight')) v += [0,10,20,30][Math.min(3,hm)];
+  const rel=maximumScenarioSkillLevel(total,'latentPower'); if(rel&&maximumSkillEnabled(conditions,'latentPower')) v += [0,10,20,30,40,50][Math.min(5,rel)];
   const op=validCombatSkillLevel(total,['攻勢','Foray'],5); if(op&&!window.MHIsOwnerExcludedCalculationSkill({skillId:75,name:'攻勢',level:op})) v += [0,0,5,10,15,20][Math.min(5,op)];
 
   // 抜刀術【技】の既存係数は保持。現リリースのユーザー指定対象外は表示最大にも加算しない。
   // Draw affinity is Hit-scoped in the adapter; never add it to every maximum Hit.
 
   // 濡れ刃紋：濡れ状態＋泡状態を同時成立させるとLv3で+9%+21%=30%。
-  const wet=validCombatSkillLevel(total,['濡れ刃紋','Wet Blade Mark'],3); if(wet){const i=Math.min(3,wet);v += window.MHWExplicitAffinityRules.wet[i]+window.MHWExplicitAffinityRules.bubble[i];}
+  const wet=maximumScenarioSkillLevel(total,'wetBladeMark'); if(wet&&maximumSkillEnabled(conditions,'wetBladeMark')){const i=Math.min(3,wet);v += window.MHWExplicitAffinityRules.wet[i]+window.MHWExplicitAffinityRules.bubble[i];}
 
   // Explicit infection state; no enemy-name inference. The common resolver also supplies L3.
   const frenzy=resolveFrenzyAffinity(total,conditions.blackEclipseState,conditions.standardEvaluation===true||conditions.fixedActivationConditions===true,conditions);
@@ -6503,10 +6528,35 @@ function selectedBuildMaximumSkills(names){
       const id=snap.decos?.[slot.key],deco=id&&DB.decorations.find(x=>String(x.id)===String(id));
       if(deco&&decorationCompatibleWithSlot(deco,slot.kind)&&validDecorationSlotFit(deco,slot.level))addSkillEntries(total,deco.skills);
     }
-    calcSetSkills(total,{armor,w,artiaModel:snap.artia||{},recordBonus:()=>{}});
+    calcSetSkills(total,{armor,w,artiaModel:snap.artia||{},recordBonus:e=>{
+      if(e.source==='group'&&e.bonusName==='毛皮の昂揚'&&e.name==='不屈'&&e.rankLevel===1&&e.required===3&&e.count>=3)found.add('fortify');
+    }});
     if(validCombatSkillLevel(total,['挑戦者','Agitator'],5))found.add('agitator');
     if(validCombatSkillLevel(total,['弱点特効','Weakness Exploit'],5))found.add('weaknessExploit');
     if(resolveFrenzyAffinity(total,'BEFORE',true).active)found.add('frenzy');
+    const kind=canonicalWeaponKind(w);
+    // LBG comparison always uses its ballistic baseline rather than saved moves.
+    const moves=kind==='light-bowgun'?[]:snap.combo?.moves||[];
+    const raw=moves.length?moves.map(x=>resolveAdoptedLegacyPresetId(kind,x?.techniqueId||x?.canonicalTechniqueId||'')):consumerStandardProfile(kind)?.techniqueIds||[];
+    const ids=window.MHWRealOneHitBrowserAdapter?.normalizeTechniqueIds?.(raw);
+    if(!ids||ids.unresolved.length||!ids.ids.length)continue;
+    const pureWyvern=ids.ids.every(id=>id==='HBG_WYVERN_AMMO');
+    for(const [key,rule] of Object.entries(MAXIMUM_SCENARIO_SKILLS)){
+      if(!maximumScenarioSkillLevel(total,key)||pureWyvern&&rule.component==='affinity')continue;
+      if(key==='burst'&&!STANDARD_BURST_SOURCE.groups.some(x=>x.kinds.includes(kind)))continue;
+      if(key==='offensiveGuard'&&!GUARDING_DAMAGE_KINDS.includes(kind))continue;
+      if(key==='coalescence'){
+        // This switch covers real weapon element. Do not infer it from an
+        // unrelated ammunition type, status weapon or unresolved Artia state.
+        if(['heavy-bowgun','light-bowgun'].includes(kind)||pureWyvern)continue;
+        const normalElement=['fire','water','thunder','ice','dragon'];
+        const a=snap.artia||{},item=w.artiaFixedVariants?.[a.production||'element'];
+        const source=item?.elementKnown===true&&item.elementType===a.element?item:
+          isArtiaWeapon(w)?artiaSourceElement(w,a):window.MHWElementState?.fromWeaponDamage(w);
+        if(!source?.elementKnown||!(source.element>0)||!normalElement.includes(source.elementType))continue;
+      }
+      found.add(key);
+    }
   }
   return found;
 }
@@ -6517,6 +6567,10 @@ function updateMaximumSkillControls(names){
     control.closest('label').hidden=!visible;
     if(!visible)control.checked=true;
   }
+  const fortify=found.has('fortify');
+  group.querySelector('.comparison-fortify-row').hidden=!fortify;
+  group.querySelector('.comparison-fortify-note').hidden=!fortify;
+  group.hidden=found.size===0;
 }
 function selectedMaximumSkillConditions(){
   return Object.fromEntries([...$('maximumSkillConditions').querySelectorAll('[data-maximum-skill]')]
@@ -8562,7 +8616,7 @@ function standardGroupPowerPlan(st={},gutsState='BEFORE',total={},kind=null,cond
       seen.add(e.bonusSkillId);
       const festival=e.bonusSkillId!==167;
       if(festival&&![0,34,161,170,180].includes(cond.festivalId)){unresolved.push('FESTIVAL_STATE_REQUIRED');continue;}
-      const enabled=festival?cond.festivalId===e.bonusSkillId:skillLevel(total,['巧撃','Adrenaline Rush'])>0;
+      const enabled=festival?cond.festivalId===e.bonusSkillId:skillLevel(total,['巧撃','Adrenaline Rush'])>0&&maximumSkillEnabled(cond,'adrenalineRush');
       const multiplier=enabled?(festival?1.09:1.05):1;
       if(festival)attackMultiplier*=multiplier;
       applied.push({...(festival?{festivalActivation:{...e},festivalId:cond.festivalId,festivalEnabled:enabled}:{seregiosActivation:{...e},adrenalineRushLevel:skillLevel(total,['巧撃','Adrenaline Rush']),seregiosEnabled:enabled}),skill:e.name,skillId:e.bonusSkillId,parent:e.bonusName,rank:2,attackAdd:0,attackMultiplier:festival?multiplier:1,maximumAttackMultiplier:festival?1:multiplier,bonusSource:true,appliesToNormal:festival,condition:festival?'EXPLICIT_SHARED_FESTIVAL':'ADRENALINE_RUSH_REPEAT_EVADE_PREACTIVATED',numericOrigin:'OWNER_APPROVED_PROVISIONAL',evidenceRef:'https://kuroyonhon.com/mhwilds/program/skill.php',sourceGameVersion:'UNVERIFIED'});continue;
@@ -8630,7 +8684,7 @@ function standardGroupPowerPlan(st={},gutsState='BEFORE',total={},kind=null,cond
     let mult=1;
     if(rule.attackMultiplier){if(!['BEFORE','AFTER'].includes(gutsState))throw Error('BONUS_DAMAGE_EFFECT_PENDING:GUTS_STATE_INVALID');mult=gutsState==='BEFORE'?rule.attackMultiplier:1;attackMultiplier*=mult;}
     const burstLevel=skillLevel(total,['連撃','Burst']);
-    const burstReady=Number.isInteger(burstLevel)&&burstLevel>0&&STANDARD_BURST_SOURCE.groups.some(x=>x.kinds.includes(kind));
+    const burstReady=Number.isInteger(burstLevel)&&burstLevel>0&&maximumSkillEnabled(cond,'burst')&&STANDARD_BURST_SOURCE.groups.some(x=>x.kinds.includes(kind));
     applied.push({skill:e.name,skillId:e.bonusSkillId,parent:e.bonusName,rank:e.rankLevel,attackAdd:series?(burstReady?rule.attackAdd:0):(rule.attackAdd||0),attackMultiplier:mult,...(rule.maximumAttackMultiplier?{maximumAttackMultiplier:rule.maximumAttackMultiplier,maximumDeathCount:rule.maximumDeathCount,stackingScope:'PURE_MULTIPLIERS_WITHOUT_ATTACK_FLATS'}:{}),condition:series?(burstReady?rule.condition:'BURST_INACTIVE_OR_UNRESOLVED'):rule.attackMultiplier?(gutsState==='BEFORE'?rule.condition:'GUTS_CONSUMED'):rule.condition,bonusSource:true,appliesToNormal:Boolean(rule.attackMultiplier),evidenceRef:series?'MHDB_JA_SKILL_115_20261007':'https://kuroyonhon.com/mhwilds/program/skill.php',numericOrigin:'SOURCE_CONFIRMED_NOT_LIVE_VERIFIED'});
   }
   const unresolvedEffects=unresolved.map(name=>({id:'bonus:'+name,reason:'BONUS_DAMAGE_EFFECT_PENDING:'+name,target:'all',source:'index.html:standardGroupPowerPlan',activation:original.filter(e=>e?.name===name)}));
@@ -9210,11 +9264,11 @@ function dpsForStats(st,cond,{includeStatus=false}={}){
 }
 
 const STANDARD_CONDITIONAL_ATTACK_RULES=Object.freeze([
-  {skill:'挑戦者',aliases:['Agitator'],values:[0,4,8,12,16,20],condition:'MONSTER_ENRAGED',sourceId:144},
+  {skill:'挑戦者',aliases:['Agitator'],values:[0,4,8,12,16,20],condition:'MONSTER_ENRAGED',sourceId:144,scenario:'agitator'},
   {skill:'フルチャージ',aliases:['Peak Performance'],values:[0,3,6,10,15,20],condition:'FULL_HEALTH',exclusiveGroup:'HEALTH',sourceId:154},
   {skill:'逆恨み',aliases:['Resentment'],values:[0,5,10,15,20,25],condition:'RECOVERABLE_DAMAGE',exclusiveGroup:'HEALTH',sourceId:123},
-  {skill:'巧撃',aliases:['Adrenaline Rush'],values:[0,10,15,20,25,30],condition:'PERFECT_EVADE_BUFF',sourceId:120},
-  {skill:'逆襲',aliases:['Counterstrike'],values:[0,10,15,25],condition:'KNOCKBACK_BUFF',sourceId:81},
+  {skill:'巧撃',aliases:['Adrenaline Rush'],values:[0,10,15,20,25,30],condition:'PERFECT_EVADE_BUFF',sourceId:120,scenario:'adrenalineRush'},
+  {skill:'逆襲',aliases:['Counterstrike'],values:[0,10,15,25],condition:'KNOCKBACK_BUFF',sourceId:81,scenario:'counterstrike'},
   {skill:'攻勢',aliases:['Foray'],values:[0,6,8,10,12,15],condition:'MONSTER_POISON_OR_PARALYSIS',sourceId:75}
 ]);
 const STANDARD_UNRESOLVED_CONDITIONAL_SKILLS=Object.freeze([
@@ -9293,11 +9347,10 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={},sourceWeapon=n
     else{conditionalMultiplier*=STANDARD_DARK_SOURCE.attackMultiplier;applied.push({skill:'暗黒',level:darkLevel,attackAdd:0,attackMultiplier:STANDARD_DARK_SOURCE.attackMultiplier,condition:'DARK_30_SECOND_BUFF_PREACTIVATED',durationSeconds:STANDARD_DARK_SOURCE.durationSeconds,healthCost:STANDARD_DARK_SOURCE.healthCost,evidenceRef:STANDARD_DARK_SOURCE.url,numericOrigin:STANDARD_DARK_SOURCE.status,scope:STANDARD_DARK_SOURCE.scope});}
     if(skillLevel(total,['フルチャージ','Peak Performance'])>0)pending.push('暗黒:DARK_STANDARD_SEQUENCE_REQUIRED');
   }
-  if(guard){
-    const guardingKinds=['great-sword','sword-and-shield','lance','gunlance','charge-blade','heavy-bowgun'];
+  if(guard&&maximumSkillEnabled(cond,'offensiveGuard')){
     if(!Number.isInteger(guard)||guard<0)pending.push('攻めの守勢:LEVEL_INVALID');
     else if(['long-sword','dual-blades','hammer','hunting-horn','switch-axe','insect-glaive','light-bowgun','bow'].includes(kind)){ /* Known non-guard weapon: inactive only; continue resolving other skills. */ }
-    else if(!guardingKinds.includes(kind))pending.push('攻めの守勢:GUARDING_WEAPON_REQUIRED');
+    else if(!GUARDING_DAMAGE_KINDS.includes(kind))pending.push('攻めの守勢:GUARDING_WEAPON_REQUIRED');
     else if(!componentsValid)pending.push('攻めの守勢:ATTACK_COMPONENTS_UNRESOLVED');
     else{const level=Math.min(3,guard),multiplier=[1,1.05,1.1,1.15][level];conditionalMultiplier*=multiplier;applied.push({skill:'攻めの守勢',level,attackAdd:0,attackMultiplier:multiplier,condition:'TIMED_GUARD_PREACTIVATED',exclusiveGroup:null,evidenceRef:'MHDB_JA_SKILL_66_20261007'});}
   }
@@ -9311,7 +9364,7 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={},sourceWeapon=n
     const raw=skillLevel(total,[rule.skill,...rule.aliases]);if(!raw)continue;
     if(window.MHIsOwnerExcludedCalculationSkill({skillId:rule.sourceId,name:rule.skill,level:raw}))continue;
     if(!Number.isInteger(raw)||raw<0){pending.push(rule.skill+':LEVEL_INVALID');continue;}
-    if(rule.sourceId===144&&!maximumSkillEnabled(cond,'agitator'))continue;
+    if(rule.scenario&&!maximumSkillEnabled(cond,rule.scenario))continue;
     const level=Math.min(raw,rule.values.length-1);
     const item={skill:rule.skill,level,attackAdd:(rule.sourceId===154&&selectedHp!=='FULL_HP')||(rule.sourceId===123&&selectedHp==='FULL_HP')?0:rule.values[level],...(rule.sourceId===154&&selectedHp?{selectedHp,appliesToNormal:true}:{}),condition:rule.condition,exclusiveGroup:rule.exclusiveGroup||null,evidenceRef:'MHDB_JA_SKILL_'+rule.sourceId+'_20261007'};
     if(darkLevel===STANDARD_DARK_SOURCE.level&&kind===STANDARD_DARK_SOURCE.supportedKind&&darkApplicable&&rule.sourceId===154){excluded.push({...item,reason:'DARK_BELOW_FULL_NO_HEALING_MAXIMUM',scenario:STANDARD_DARK_PEAK_SCENARIO});continue;}
@@ -9320,7 +9373,7 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={},sourceWeapon=n
     applied.push(item);if(rule.sourceId===154&&selectedHp)selectedHpNormalFlat=item.attackAdd;
   }
   const burstLevel=skillLevel(total,['連撃','Burst']);
-  if(burstLevel){
+  if(burstLevel&&maximumSkillEnabled(cond,'burst')){
     const group=STANDARD_BURST_SOURCE.groups.find(x=>x.kinds.includes(kind));
     if(!group||!Number.isInteger(burstLevel)||burstLevel<0)pending.push('連撃:WEAPON_OR_LEVEL_UNRESOLVED');
     else{
@@ -9353,7 +9406,7 @@ function standardPowerConditionPlan(st,total={},kind=null,cond={},sourceWeapon=n
 
     }
   }
-  const coalescence=skillLevel(total,['災禍転福','Coalescence']);
+  const coalescence=maximumSkillEnabled(cond,'coalescence')?skillLevel(total,['災禍転福','Coalescence']):0;
   if(coalescence){
     const group=STANDARD_COALESCENCE_SOURCE.groups.find(x=>x.kinds.includes(kind)),trueElement=['fire','water','thunder','ice','dragon'].includes(st.elementType)&&Number(st.element)>0;
     if(!Number.isInteger(coalescence)||coalescence<1||coalescence>3||!group)pending.push('災禍転福:COALESCENCE_LEVEL_OR_WEAPON_UNRESOLVED');
@@ -9686,6 +9739,7 @@ function consumerAdoptedSkillConditions(conditions){
  const fill=(key,values)=>{const state={...(c[key]||{})};for(const [k,v] of Object.entries(values))if(missing(state[k]))state[k]=v;c[key]=state;};
  // Standard skill scenarios: inactive normal / maximum wet+bubble; explicit channel objects win.
  fill('wetState',{normal:{wet:false,bubble:false},maximum:{wet:true,bubble:true}});
+ if(!maximumSkillEnabled(c,'wetBladeMark'))c.wetState={...c.wetState,maximum:{wet:false,bubble:false}};
  // Standard Power Stone scenario is preactivated to the adopted cap, not an inventory/time estimate.
  // Use only the existing accepted additions; malformed explicit JSON/arrays remain consumer errors.
  const oreRule=ADOPTED_SELF_STATE_RULE,oreUnit=Math.max(...oreRule.oreAdds);
@@ -11486,10 +11540,9 @@ window.MHWeaponEffectDB=Object.freeze({switchAxe:Object.freeze({powerPhialSword:
  cb.append(document.getElementById('comboCBStatePanel'));detail.append(cb);
  const routes=document.createElement('details');routes.id='consumerWeaponConditions';routes.className='notice small';routes.innerHTML='<summary>武器の技構成・開始条件</summary><p>技を追加しなければ基準コンボを使用します。個別の技構成や開始状態を調整する場合に開いてください。</p><label for="comboPreset">技構成</label>';routes.append(document.getElementById('comboPreset'));
  for(const id of ['comboHHStatePanel','comboGLStatePanel','comboIGStatePanel','comboLSStatePanel','comboDBStatePanel','comboSAStatePanel','comboLANStatePanel','comboLBGStatePanel']){const panel=document.getElementById(id);if(panel)routes.append(panel);}detail.append(routes);
- const custom=document.createElement('details');custom.id='consumerCustomCombo';custom.innerHTML='<summary>個別の技を指定する</summary><p>現在の装備セットと選択中の対象・部位で、追加した技の通常・最大ダメージを計算します。結果は下のビルド火力比較結果欄に「指定コンボ・現在のビルド」と表示します。</p><label for="comboMovePicker">追加する技</label>';
- const calculateCustom=document.getElementById('calcUserComboDamage');
+ const custom=document.getElementById('consumerCustomCombo'),calculateCustom=document.getElementById('calcUserComboDamage');
  calculateCustom.textContent='指定コンボの火力を計算';
- custom.append(document.getElementById('comboMovePicker'),document.getElementById('addCombo'),document.getElementById('combo'),calculateCustom);routes.append(custom);
+ custom.append(document.getElementById('comboMovePicker'),document.getElementById('addCombo'),document.getElementById('combo'),calculateCustom);
  function sync(){const kind=document.getElementById('weaponKind')?.value;const names=compareSelectedNames(),map=savedBuildMap();const comparingBow=names.some(n=>map[n]?.weaponKind==='bow');bow.hidden=kind!=='bow'&&!comparingBow;cb.hidden=kind!=='charge-blade';hbg.hidden=kind!=='heavy-bowgun'&&!names.some(n=>map[n]?.weaponKind==='heavy-bowgun');}
  document.addEventListener('change',sync);document.addEventListener('click',()=>queueMicrotask(sync));sync();
 })();

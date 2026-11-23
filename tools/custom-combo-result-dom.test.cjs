@@ -8,6 +8,21 @@ test('current build custom route is actionable from its editor, repeats and inva
  w.__db=JSON.stringify(data);w.__build=JSON.stringify(profiles.find(p=>p.kind==='great-sword').input);
  w.eval('const src=JSON.parse(__db);DB=normalizeDB({...src,weapons:consolidateArtiaFixedVariantRows(src.weapons)});weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters(); const snap=JSON.parse(__build);applyBuildSnapshot({...snap,armor:{},decos:{},combo:{moves:[]}});');
  const button=e('calcUserComboDamage'),out=e('compareOut'),custom=e('consumerCustomCombo');
+ const compareFold=out.closest('details'),optional=e('comparisonOptionalConditions');
+ assert.ok(compareFold.contains(custom),'combo editor stays inside the existing comparison');
+ assert.equal(custom.parentElement,optional.parentElement,'custom and advanced folds are siblings');
+ assert.equal(e('currentComboCard'),null,'no extra top-level card');
+ assert.equal(custom.tagName,'DETAILS');
+ assert.equal(custom.querySelector(':scope > summary').textContent.trim(),'コンボを自分で組む');
+ assert.equal(custom.open,false,'the inline section is folded initially');
+ assert.equal(optional.open,false,'advanced settings still start folded');
+ custom.querySelector(':scope > summary').click();
+ assert.equal(custom.open,true);
+ assert.equal(optional.open,false,'opening the combo does not open advanced settings');
+ for(const id of ['comboMovePicker','addCombo','combo','calcUserComboDamage']){
+  assert.equal(d.querySelectorAll('#'+id).length,1,id+' must not be cloned');
+  assert.ok(custom.contains(e(id)),id+' remains actionable inside comparison');
+ }
  assert.ok(custom.contains(button),'action remains in the editor');
  for(let ancestor=button;ancestor;ancestor=ancestor.parentElement){
   assert.equal(ancestor.hidden,false);assert.notEqual(w.getComputedStyle(ancestor).display,'none');
@@ -27,7 +42,12 @@ test('current build custom route is actionable from its editor, repeats and inva
   assert.deepEqual([...table.querySelectorAll('thead th')].map(x=>x.textContent),['項目','通常','最大','増減']);
   return values('total').slice(0,2).map(Number);
  };
- add();button.click();const first=numbers();assert.ok(first.every(n=>n>0));
+ add();assert.equal(optional.open,false);
+ button.click();
+ const first=numbers();assert.ok(first.every(n=>n>0));
+ assert.equal(optional.open,false,'calculating a combo does not open advanced settings');
+ assert.equal(custom.open,true,'calculation leaves the editor open');
+ assert.equal(d.activeElement,out.querySelector('[data-current-custom-heading]'));
  assert.deepEqual(values('element'),['24.8','24.8','0.0%']);
  add();assert.equal(out.querySelector('.compare-table'),null);button.click();const repeated=numbers();assert.ok(repeated.every((n,i)=>n>first[i]));
  t.diagnostic(JSON.stringify({first,repeated}));
