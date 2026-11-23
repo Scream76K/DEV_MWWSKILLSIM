@@ -3024,7 +3024,7 @@ function equipmentThunderResistanceInput(base,total,active=[],cond={},element="t
   return {...result,status:'KNOWN_LIMITED',total:value,reason:null};
 }
 window.MHWEquipmentThunderResistanceInput=equipmentThunderResistanceInput;
-function calcBuild(){normalizeArtiaProduction();renderCharmLegality();
+function calcBuild(){clearCurrentCustomResult();normalizeArtiaProduction();renderCharmLegality();
   let total={},w=selectedWeapon(),kind=canonicalWeaponKind(w),coef=weaponCoefficient(kind),fixed=isArtiaWeapon(w)?calculatedArtiaStats(w):null;
   if(isArtiaWeapon(w)&&!fixed){
     calcState.fixedValueError='巨戟アーティアの激化タイプ別完成固定値がMHDBから3種類揃っていません。旧値へのフォールバックを停止しました。';
@@ -5504,7 +5504,7 @@ function moveComboRow(row,direction){
 function invalidateComboResults(message='コンボの条件が変わりました。',{syncCombo=true}={}){
   if(syncCombo)App.combo.syncFromDOM();lastBuildComparisonRows=null;lastBuildComparisonBaselineIndex=0;lastBuildComparisonContext=null;
   if($('dpsOut'))$('dpsOut').textContent='未計算';
-  if($('compareOut'))$('compareOut').textContent=message+'もう一度比較してください。';
+  if(!clearCurrentCustomResult()&&$('compareOut'))$('compareOut').textContent=message+'もう一度比較してください。';
   if($('groupProposalOut'))$('groupProposalOut').textContent=message+'候補をもう一度作成してください。';
   if($('aiPayload'))$('aiPayload').textContent='';
   if($('aiOut'))$('aiOut').textContent='';
@@ -5648,7 +5648,7 @@ function evaluateP0DamageRoute(rows){
 function calcP0Damage(mode,{remember=true}={}){
   const outputs={single:'singleTechniqueDamageOut',template:'templateComboDamageOut',user:'userComboDamageOut'};
   const out=$(outputs[mode]);if(!out)return null;
-  if(remember)p0DamageRequests[mode]=comboKind();
+  if(remember&&mode!=='user')p0DamageRequests[mode]=comboKind();
   let rows=[],context=null,result;
   try{
     if(!selectedWeapon())throw Error('武器を選択してください。');
@@ -5661,7 +5661,8 @@ function calcP0Damage(mode,{remember=true}={}){
     if(!rows.length)throw Error('技を追加してください。');
     result=evaluateP0DamageRoute(rows);context=result.context;
   }catch(e){result={status:'BLOCKED',damage:null,stages:[],blocked:[{reason:String(e.message||e)}],context};}
-  const label=mode==='single'?'選択技':mode==='template'?'テンプレコンボ':'指定コンボ';
+  if(mode==='user')return {...result,scope:'DAMAGE_ONLY_PROVISIONAL_REFERENCE'};
+  const label=mode==='single'?'選択技':'テンプレコンボ';
   const normalPartial=result.pipeline?.channels?.normal?.diagnostics;
   const partialLabel=normalPartial?.ignoredSkillEffects?.length||normalPartial?.unappliedEffects?.length?'（一部スキル未反映）':'';
   if(result.damage==null||!Number.isFinite(result.damage))out.innerHTML='<b>'+label+'：未算出</b><div class="small">'+(result.blocked||[]).map(x=>esc((x.name?x.name+'：':'')+comboBlockedMessage(x.reason))).join('<br>')+'</div>';
@@ -5679,7 +5680,14 @@ function calcP0Damage(mode,{remember=true}={}){
 }
 function calcSelectedTechniqueDamage(){return calcP0Damage('single');}
 function calcTemplateComboDamage(){return calcP0Damage('template');}
-function calcUserComboDamage(){return calcP0Damage('user');}
+function calcUserComboDamage(){
+  const result=calcP0Damage('user');
+  const out=$('compareOut');if(!out||!result)return result;
+  out.dataset.resultMode='current-custom';
+  out.innerHTML=renderCurrentCustomResult(result);
+  out.querySelector('[data-current-custom-heading]')?.focus();
+  return result;
+}
 function refreshP0DamageResults(){
   if(p0DamageSuspend)return;
   for(const [mode,kind] of Object.entries(p0DamageRequests)){
@@ -6495,7 +6503,7 @@ function selectedMaximumSkillConditions(){
 $('maximumSkillConditions')?.addEventListener('change',event=>{
   if(!event.target?.matches('[data-maximum-skill]'))return;
   lastBuildComparisonRows=null;lastBuildComparisonBaselineIndex=0;lastBuildComparisonContext=null;
-  $('compareOut').textContent='最大火力のスキル条件が変わりました。もう一度比較してください。';
+  if($('compareOut').dataset.resultMode!=='current-custom')$('compareOut').textContent='最大火力のスキル条件が変わりました。もう一度比較してください。';
   invalidateAIComparisonData();
 });
 function updateComparisonSelectedSummary(){
@@ -10106,14 +10114,18 @@ function comparisonDpsIndex(row,baseline){
   if(base===null||base<=0||value===null)return null;
   const index=value/base*100;return Number.isFinite(index)?{index,change:index-100}:null;
 }
+function comparisonTableStart(headings,{fit=false}={}){
+  const itemWidth=112,buildWidth=120,totalWidth=itemWidth+(headings.length-1)*buildWidth;
+  const width=fit?'100%':totalWidth+'px';
+  return '<div class="compare-table"><table style="table-layout:fixed;width:'+width+';min-width:'+width+';max-width:'+width+'"><colgroup><col class="compare-item-col" style="width:'+(fit?'31%':itemWidth+'px')+'">'+headings.slice(1).map(()=>'<col class="compare-build-col" style="width:'+(fit?'23%':buildWidth+'px')+'">').join('')+'</colgroup><thead><tr>'+headings.map(name=>`<th>${esc(name)}</th>`).join('')+'</tr></thead><tbody>';
+}
 function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
   if(!rows.length)return '<span class="muted small">比較結果はありません。</span>';
   const max=key=>Math.max(...allRows.map(r=>Number(r[key])||0));
   const ma=max('attack'),mta=max('attackTrue'),mf=max('affinity'),mmf=max('maxAffinity'),me=max('element'),mx=Math.max(...allRows.map(r=>Number(r.damage)||0)),mp=Math.max(...allRows.map(r=>comparisonDpsValue(r)??0));
   const cell=(v,b)=>`<td class="${b?'compare-best':''}">${v==null?'—':esc(v)}</td>`;
   const rounded=v=>v==null?'—':Math.round(v),percent=v=>v==null?'—':Math.round(v)+'%';
-  const itemWidth=112,buildWidth=120,totalWidth=itemWidth+rows.length*buildWidth;
-  let h='<div class="compare-table"><table style="table-layout:fixed;width:'+totalWidth+'px;min-width:'+totalWidth+'px;max-width:'+totalWidth+'px"><colgroup><col class="compare-item-col" style="width:'+itemWidth+'px">'+rows.map(()=>'<col class="compare-build-col" style="width:'+buildWidth+'px">').join('')+'</colgroup><thead><tr><th>項目</th>'+rows.map(r=>`<th>${esc(r.name)}</th>`).join('')+'</tr></thead><tbody>';
+  let h=comparisonTableStart(['項目',...rows.map(r=>r.name)]);
   h+='<tr><th>表示攻撃力</th>'+rows.map(r=>cell(rounded(r.attack),r.attack===ma)).join('')+'</tr>';
   h+='<tr><th>真攻撃力</th>'+rows.map(r=>cell(rounded(r.attackTrue),r.attackTrue===mta)).join('')+'</tr>';
   h+='<tr><th>会心率</th>'+rows.map(r=>cell(percent(r.affinity),r.affinity===mf)).join('')+'</tr>';
@@ -10242,9 +10254,10 @@ function consumerRelativeReason(row,baseline){
  const value=consumerDamageMetric(baseline,'normal').value;
  return value===null||value<=0?'BASELINE_NORMAL_POWER_UNAVAILABLE':null;
 }
-function selfMaximumChangeSuffix(maximum,normal){
+function selfMaximumChangeSuffix(maximum,normal){return '（'+comparisonDamageChange(maximum,normal)+'）';}
+function comparisonDamageChange(maximum,normal){
  const change=Number.isFinite(maximum)&&maximum>=0&&Number.isFinite(normal)&&normal>0?(maximum-normal)/normal*100:null;
- return '（'+(Number.isFinite(change)?signedDamageDisplayNumber(change)+'%':'—')+'）';
+ return Number.isFinite(change)?signedDamageDisplayNumber(change)+'%':'—';
 }
 function consumerChangeRows(rows,baseline,channel,{selfMaximum=false,allRows=rows}={}){
  if(selfMaximum){
@@ -10327,6 +10340,48 @@ function renderUsedComparisonCombo(rows){
   return '<section class="used-combo-panel" data-used-combo aria-label="計算に使用したコンボ"><h4>計算に使用したコンボ</h4>'+lines.join('')+'</section>';
 }
 
+function renderCurrentCustomResult(result){
+  const row={oneHitPipeline:result.pipeline||{reason:result.blocked?.[0]?.reason}};
+  const channels=['normal','maximum'],metrics=channels.map(ch=>consumerDamageMetric(row,ch)),parts=channels.map(ch=>consumerDamageParts(row,ch));
+  let h='<h3 tabindex="-1" data-current-custom-heading>指定コンボ・現在のビルド</h3>';
+  const explain=reason=>{
+    const message=comboBlockedMessage(reason);
+    if(message!==reason)return message;
+    if(/(?:TECHNIQUE_ID_UNRESOLVED|TECHNIQUE_NOT_FOUND)/.test(reason))return '指定した技が現在の技データにありません。';
+    return /^[A-Z][A-Z0-9_]+(?::|$)/.test(message)?comparisonReasonText(reason):message;
+  };
+  h+=metrics.map(({value,reason},i)=>value===null?'<p class="small">'+(i?'最大':'通常')+'：'+esc(explain(reason))+'</p>':'').join('');
+  for(const ch of channels){
+    const d=result.pipeline?.channels?.[ch]?.diagnostics,notes=ignoredSkillEffectsDisplay(d)+excludedSkillDamageDisplay(d);
+    if(notes)h+='<div class="small" data-combo-skill-channel="'+ch+'">'+(ch==='normal'?'通常':'最大')+notes+'</div>';
+  }
+  const plan=result.pipeline?.evaluationPlan,ids=plan?.techniqueIds||[];
+  if(metrics.some(m=>m.value!==null)){
+    h+='<p class="small">暫定・参考。ゲーム内での実測値ではありません。</p>';
+    const wyvern=ids.includes('HBG_WYVERN_AMMO')&&channels.some((ch,i)=>metrics[i].value!==null&&
+      result.pipeline.channels?.[ch]?.diagnostics?.referenceScope==='STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL');
+    if(wyvern)h+='<p class="small">竜撃弾：2Hitの参考値。ゲーム版は未確定で、会心・斬れ味・物理肉質補正は対象外です。</p>';
+    else if(ids.length&&ids.every(id=>id.startsWith('BOW_')))h+='<p class="small">弓：各技のビン・距離・命中条件に基づく参考値です。</p>';
+    else if(ids.length&&ids.every(id=>id.startsWith('HBG_')))h+='<p class="small">ヘビィボウガン：指定した弾・命中条件の範囲で計算しています。</p>';
+  }
+  h+=renderUsedComparisonCombo([row])+comparisonTableStart(['項目','通常','最大','増減'],{fit:true});
+  const field=(label,key,values)=>'<tr data-custom-damage="'+key+'"><th>'+label+'</th>'+values.map(value=>'<td>'+(!Number.isFinite(value)?'未算出':key==='total'?'<strong class="compare-damage-value">'+esc(comparisonDisplayNumber(value))+'</strong>':esc(comparisonDisplayNumber(value)))+'</td>').join('')+'<td>'+esc(comparisonDamageChange(values[1],values[0]))+'</td></tr>';
+  h+=field('合計','total',metrics.map(m=>m.value));
+  for(const [key,label] of [['physical','物理'],['element','属性'],['special','武器固有成分（ビン・固定等）']]){
+    const values=parts.map(p=>p[key]);
+    if(key!=='special'||values.some(value=>Number.isFinite(value)&&value!==0))h+=field(label,key,values);
+  }
+  const fixed=comparisonFixedDamageCell(row);
+  if(fixed!=='—')h+='<tr><th>固定ダメージ<br><small>発動1回あたり・合計に含めない</small></th><td colspan="3">'+fixed+'</td></tr>';
+  return h+'</tbody></table></div>';
+}
+function clearCurrentCustomResult(){
+  const out=$('compareOut');
+  if(out?.dataset?.resultMode!=='current-custom')return false;
+  delete out.dataset.resultMode;
+  out.textContent='条件が変わりました。指定コンボの火力をもう一度計算してください。';
+  return true;
+}
 let lastBuildComparisonRows=null,lastBuildComparisonBaselineIndex=0,lastBuildComparisonContext=null;
 function renderCompareTable(rows,{baselineIndex=0}={}){
   if(!rows.length)return '<span class="muted small">比較結果はありません。</span>';
@@ -10374,7 +10429,7 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   if(rows.some(r=>r.oneHitPipeline))return h+'</div>';
   return h+'</div><details class="compare-note comparison-explanation comparison-legacy-dps"><summary>参考DPSの補足</summary><div>基準：'+esc(baseline.name)+'。DPSは非正規化の計算値です。DPS指数・増減率は補助情報です。'+(ready?'':'基準DPSが未算出・0以下の場合、指数と増減率は算出しません。')+'太字は各項目で数値が最大のセットです。1ヒット期待値とDPSは現在Step 5の攻撃条件を共通条件として計算します。DPSは最大会心率を使用します。所要時間は参考値のためDPSも参考値です。</div></details>';
 }
-function renderCachedBuildComparison(){if(lastBuildComparisonRows)$('compareOut').innerHTML=renderCompareTable(lastBuildComparisonRows,{baselineIndex:lastBuildComparisonBaselineIndex});}
+function renderCachedBuildComparison(){if(lastBuildComparisonRows&&$('compareOut').dataset.resultMode!=='current-custom')$('compareOut').innerHTML=renderCompareTable(lastBuildComparisonRows,{baselineIndex:lastBuildComparisonBaselineIndex});}
 function referenceComboChange(row,baseline){
   const a=baseline?.referenceCombo,b=row?.referenceCombo;
   if(row?.kind!==baseline?.kind||a?.status!=='PROVISIONAL_REFERENCE'||b?.status!=='PROVISIONAL_REFERENCE'||!Number.isFinite(a.damage)||a.damage<=0||!Number.isFinite(b.damage)||b.damage<0)return null;
@@ -10483,6 +10538,7 @@ function invalidateAIComparisonData(){
   if($('aiOut'))$('aiOut').textContent='比較条件が変わりました。相談データを作成し直してください。';
 }
 function runBuildCompare(){
+  delete $('compareOut')?.dataset?.resultMode;
 // Compare only calculation outputs used by build evaluation, not transient UI state.
 function buildCalculationFingerprint(){
   const state=typeof calcState==='undefined'?{}:calcState;
@@ -11397,10 +11453,10 @@ window.MHWeaponEffectDB=Object.freeze({switchAxe:Object.freeze({powerPhialSword:
  cb.append(document.getElementById('comboCBStatePanel'));detail.append(cb);
  const routes=document.createElement('details');routes.id='consumerWeaponConditions';routes.className='notice small';routes.innerHTML='<summary>武器の技構成・開始条件</summary><p>技を追加しなければ基準コンボを使用します。個別の技構成や開始状態を調整する場合に開いてください。</p><label for="comboPreset">技構成</label>';routes.append(document.getElementById('comboPreset'));
  for(const id of ['comboHHStatePanel','comboGLStatePanel','comboIGStatePanel','comboLSStatePanel','comboDBStatePanel','comboSAStatePanel','comboLANStatePanel','comboLBGStatePanel']){const panel=document.getElementById(id);if(panel)routes.append(panel);}detail.append(routes);
- const custom=document.createElement('details');custom.id='consumerCustomCombo';custom.innerHTML='<summary>個別の技を指定する</summary><p>現在の装備セットと選択中の対象・部位で、追加した技の通常・最大ダメージを計算します。下のビルド火力比較とは別の結果です。</p><label for="comboMovePicker">追加する技</label>';
- const calculateCustom=document.getElementById('calcUserComboDamage'),customResult=document.getElementById('userComboDamageOut');
+ const custom=document.createElement('details');custom.id='consumerCustomCombo';custom.innerHTML='<summary>個別の技を指定する</summary><p>現在の装備セットと選択中の対象・部位で、追加した技の通常・最大ダメージを計算します。結果は下のビルド火力比較結果欄に「指定コンボ・現在のビルド」と表示します。</p><label for="comboMovePicker">追加する技</label>';
+ const calculateCustom=document.getElementById('calcUserComboDamage');
  calculateCustom.textContent='指定コンボの火力を計算';
- custom.append(document.getElementById('comboMovePicker'),document.getElementById('addCombo'),document.getElementById('combo'),calculateCustom,customResult);routes.append(custom);
+ custom.append(document.getElementById('comboMovePicker'),document.getElementById('addCombo'),document.getElementById('combo'),calculateCustom);routes.append(custom);
  function sync(){const kind=document.getElementById('weaponKind')?.value;const names=compareSelectedNames(),map=savedBuildMap();const comparingBow=names.some(n=>map[n]?.weaponKind==='bow');bow.hidden=kind!=='bow'&&!comparingBow;cb.hidden=kind!=='charge-blade';hbg.hidden=kind!=='heavy-bowgun'&&!names.some(n=>map[n]?.weaponKind==='heavy-bowgun');}
  document.addEventListener('change',sync);document.addEventListener('click',()=>queueMicrotask(sync));sync();
 })();

@@ -54,7 +54,7 @@ function restore(s,legacy){
   // An ordinary reopen restores the editing session, not its temporary Heroics choice.
   // Named builds bypass this routine and still restore their explicitly saved HP.
   s={...s,currentBuild:{...s.currentBuild,selectedHp:'FULL_HP'},conditions:{...s.conditions,selectedHp:'FULL_HP'}};
-  const before={model:copy(build),calc:copy(calcState),combo:copy(App.state.combo),controls:captureDataControls(),kind:$('weaponKind').value,rows:lastBuildComparisonRows,context:lastBuildComparisonContext,baseline:lastBuildComparisonBaselineIndex,output:$('compareOut').innerHTML};
+  const before={model:copy(build),calc:copy(calcState),combo:copy(App.state.combo),controls:captureDataControls(),kind:$('weaponKind').value,rows:lastBuildComparisonRows,context:lastBuildComparisonContext,baseline:lastBuildComparisonBaselineIndex,output:$('compareOut').innerHTML,resultMode:$('compareOut').dataset.resultMode};
   const defaults=compareStep5Snapshot();restoring=true;
   try{
     if(legacy){s.conditions=fillAbsent(s.conditions,defaults);s.conditions.cb=s.conditions.cb==null?'':String(s.conditions.cb);if(!s.currentBuild.target)s.currentBuild.target={monsterId:s.target.monster,partId:s.target.part};}
@@ -75,6 +75,7 @@ function restore(s,legacy){
     build=copy(before.model);calcState=copy(before.calc);App.state.build=build;App.state.calc=calcState;App.state.combo=copy(before.combo);
     $('weaponKind').value=before.kind;refreshWeaponListForCurrentKind();renderAll();restoreDataControls(before.controls,{restoreOptions:true});App.state.combo=copy(before.combo);restoreComboRows();
     build=before.model;App.state.build=build;App.state.combo=before.combo;calcState=before.calc;App.state.calc=calcState;lastBuildComparisonRows=before.rows;lastBuildComparisonContext=before.context;lastBuildComparisonBaselineIndex=before.baseline;$('compareOut').innerHTML=before.output;
+    if(before.resultMode===undefined)delete $('compareOut').dataset.resultMode;else $('compareOut').dataset.resultMode=before.resultMode;
     throw error;
   }finally{restoring=false;}
 }
