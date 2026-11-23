@@ -48,9 +48,27 @@ test('only the armor/skill panels are 6:4 on phones, tablets, and desktop withou
     const toggle=$('skillOutput').querySelector('.skill-info-toggle');toggle.click();toggle.parentElement.querySelector('.skill-ranks-toggle')?.click();
     const g=e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom,w:r.width,h:r.height};};
     const full=[inner.previousElementSibling,inner.nextElementSibling].map(g);
+    const outside=pane=>{
+     const bounds=pane.getBoundingClientRect();
+     const crosses=r=>r.width>0&&r.height>0&&(r.left<bounds.left-1||r.right>bounds.right+1);
+     const bad=[];
+     for(const el of pane.querySelectorAll('*')){
+      if(!el.getClientRects().length||getComputedStyle(el).visibility!=='visible')continue;
+      if(Array.from(el.getClientRects()).some(crosses))bad.push({tag:el.tagName,id:el.id,classes:el.getAttribute('class'),kind:'visible box'});
+      // A native picker lays out its own option text; measure its visible control box above.
+      if(el.closest('select,textarea'))continue;
+      for(const node of el.childNodes){
+       if(node.nodeType!==Node.TEXT_NODE||!node.textContent.trim())continue;
+       const range=document.createRange();range.selectNodeContents(node);
+       if(Array.from(range.getClientRects()).some(crosses))bad.push({tag:el.tagName,id:el.id,text:node.textContent.trim(),kind:'rendered text'});
+      }
+     }
+     return bad;
+    };
     return {media:{w:innerWidth,touch:matchMedia('(pointer:coarse)').matches},doc:document.documentElement.scrollWidth,left:g(left),right:g(right),inner:g(inner),support:g(support),build:g(build),full,armor:armor&&g(armor),armorSelected:armor?.value,open:toggle.parentElement.open,
       fonts:Array.from(document.fonts).filter(f=>f.family.replaceAll('"','')==='M PLUS Rounded 1c'&&f.status==='loaded').map(f=>f.weight).sort(),
-      spill:[left,right,$('skillOutput')].map(e=>e.scrollWidth-e.clientWidth)};
+      outside:[outside(left),outside(right)],
+      skillOutputSpill:$('skillOutput').scrollWidth-$('skillOutput').clientWidth};
    });
    t.diagnostic(JSON.stringify({width,height,x}));
    assert.equal(x.media.touch,touch);
@@ -58,7 +76,9 @@ test('only the armor/skill panels are 6:4 on phones, tablets, and desktop withou
    assert.ok(Math.abs(x.left.y-x.right.y)<=1&&x.left.right<x.right.x,'armor and skills must share one row');
    assert.ok(Math.abs(x.left.w/(x.left.w+x.right.w)-.6)<.012,'left track must take 60% of available track widths');
    assert.ok(x.doc<=width+1&&x.media.w<=width+1,'page must not scroll horizontally');
-   assert.ok(x.spill.every(n=>n<=1),'neither track nor skill details can clip overflowing content');
+   // Pane scrollWidth includes the decorative card ::before rule, not just controls/text.
+   assert.deepEqual(x.outside,[[],[]],'rendered controls and text must stay in their own columns');
+   assert.ok(x.skillOutputSpill<=1,'skill detail content must not overflow its own box');
    assert.ok(x.armor&&x.armorSelected==='99002'&&x.armor.right<=x.left.right+1,'main armor picker stays inside its column');
    if(width<=760)assert.ok(x.armor.h>=43.5,'narrow main picker stays tappable');
    assert.ok(x.open,'production skill details remain usable');
