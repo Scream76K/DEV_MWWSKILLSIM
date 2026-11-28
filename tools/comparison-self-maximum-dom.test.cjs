@@ -32,7 +32,7 @@ test('maximum total and its parts use each column’s own normal; picker does no
   assert.ok(metric(w,'consumer-relative-normal').hidden);
   assert.equal(metric(w,'consumer-normal-special'),null);
   assert.equal(metric(w,'consumer-maximum-special'),null);
-  assert.match(metric(w,'max-power-index').querySelector('th').textContent,/最大火力（実ダメージ）/);
+  assert.match(metric(w,'max-power-index').querySelector('th').textContent,/最大火力（通常火力比）/);
  };
  check();
  const picker=w.document.getElementById('comparisonBaseline');picker.value='1';picker.dispatchEvent(new w.Event('change',{bubbles:true}));

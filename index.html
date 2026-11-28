@@ -12007,7 +12007,7 @@ function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
     const rawValue=r=>consumerDamageMetric(r,key).value;
     const valid=allRows.map(rawValue).filter(v=>Number.isFinite(v)&&v>=0);
     const best=comparablePower&&valid.length?Math.max(...valid):null;
-    const heading=selfMaximum?(key==='maximum'?'最大火力（実ダメージ）':'通常火力'):label;
+    const heading=selfMaximum?(key==='maximum'?'最大火力（通常火力比）':'通常火力'):label;
     h+='<tr data-comparison-metric="'+metric+'"><th>'+heading+'</th>'+rows.map(r=>{
       const value=rawValue(r);
       const isBest=best!==null&&value===best;
