@@ -2121,7 +2121,7 @@ function calcSetSkills(total){
 
   return total;
 }
-const PART_JP={'left-wing-legs':'左翼脚','right-wing-legs':'右翼脚','head':'頭','head-neck':'頭/首','body':'胴','torso':'胴','chest':'胸','abdomen':'腹','stomach':'腹','back':'背中','left-wing':'左翼','right-wing':'右翼','wing':'翼','front-leg':'前脚','left-front-leg':'左前脚','right-front-leg':'右前脚','hind-leg':'後脚','left-hind-leg':'左後脚','right-hind-leg':'右後脚','left-foreleg':'左前脚','right-foreleg':'右前脚','foreleg':'前脚','left-hindleg':'左後脚','right-hindleg':'右後脚','hindleg':'後脚','leg':'脚','legs':'脚','tail':'尻尾','tail-tip':'尻尾先端','neck':'首','horn':'角','horns':'角','beak':'嘴','snout':'鼻先','face':'顔','eye':'目','mouth':'口','throat':'喉','shoulder':'肩','arm':'腕','claw':'爪','carapace':'甲羅','shell':'甲殻','tentacle':'触手','tentacles':'触手','fin':'ヒレ','left-fin':'左ヒレ','right-fin':'右ヒレ','wing-arm':'翼腕','core':'核','body-core':'胴体・核','left-leg':'左脚','right-leg':'右脚','left-arm':'左腕','right-arm':'右腕','left-chain-blade-wing':'左鎖翼刃','right-chain-blade-wing':'右鎖翼刃','chain-blade-wing':'鎖翼刃','left-chain-wing':'左鎖翼','right-chain-wing':'右鎖翼','chain-wing':'鎖翼','left-chain':'左鎖','right-chain':'右鎖','chain':'鎖'};
+const PART_JP={'neck':'首','frozen-bigcore-before':'大凍成殻（露出前）','frozen-bigcore-after':'大凍成殻（露出後）','frozen-core-waist':'凍成殻（腰部）','left-wing-legs':'左翼脚','right-wing-legs':'右翼脚','head':'頭','head-neck':'頭/首','body':'胴','torso':'胴','chest':'胸','abdomen':'腹','stomach':'腹','back':'背中','left-wing':'左翼','right-wing':'右翼','wing':'翼','front-leg':'前脚','left-front-leg':'左前脚','right-front-leg':'右前脚','hind-leg':'後脚','left-hind-leg':'左後脚','right-hind-leg':'右後脚','left-foreleg':'左前脚','right-foreleg':'右前脚','foreleg':'前脚','left-hindleg':'左後脚','right-hindleg':'右後脚','hindleg':'後脚','leg':'脚','legs':'脚','tail':'尻尾','tail-tip':'尻尾先端','neck':'首','horn':'角','horns':'角','beak':'嘴','snout':'鼻先','face':'顔','eye':'目','mouth':'口','throat':'喉','shoulder':'肩','arm':'腕','claw':'爪','carapace':'甲羅','shell':'甲殻','tentacle':'触手','tentacles':'触手','fin':'ヒレ','left-fin':'左ヒレ','right-fin':'右ヒレ','wing-arm':'翼腕','core':'核','body-core':'胴体・核','left-leg':'左脚','right-leg':'右脚','left-arm':'左腕','right-arm':'右腕','left-chain-blade-wing':'左鎖翼刃','right-chain-blade-wing':'右鎖翼刃','chain-blade-wing':'鎖翼刃','left-chain-wing':'左鎖翼','right-chain-wing':'右鎖翼','chain-wing':'鎖翼','left-chain':'左鎖','right-chain':'右鎖','chain':'鎖'};
 function veilPartName(raw){
   const hit=/^waterfilm-(?:(left|right)-)?(head|body|front-leg|tail)$/.exec(raw);
   if(!hit)return '';
@@ -2148,8 +2148,15 @@ function partNameJP(p){
   if(x.includes('fin'))return x.includes('left')?'左ヒレ':x.includes('right')?'右ヒレ':'ヒレ';
   return 'その他部位';
 }
-function monsterPartDisplayName(p,parts=[]){
+const XU_WU_PART_LABELS=Object.freeze({
+  'umbrella':'傘膜','tentacle':'触腕','mouth':'口',
+  'left-front-arm':'左第1腕','right-front-arm':'右第1腕',
+  'left-side-arm':'左第2腕','right-side-arm':'右第2腕',
+  'left-hind-arm':'左第3腕','right-hind-arm':'右第3腕'
+});
+function monsterPartDisplayName(p,parts=[],monster=null){
   const label=partNameJP(p),raw=String(p?.name??p?.part??p?.kind??'').trim();
+  if(/^シーウー(?:（|$)/.test(monster?.name||'')&&Object.hasOwn(XU_WU_PART_LABELS,raw))return XU_WU_PART_LABELS[raw];
   const ambiguous=parts.filter(q=>partNameJP(q)===label).length>1;
   const exact=raw&&(/[\u3040-\u30ff\u3400-\u9fff]/.test(raw)||Object.hasOwn(PART_JP,raw)||!!veilPartName(raw));
   if(exact&&!ambiguous)return label;
@@ -2429,7 +2436,7 @@ function renderMonsterParts(){
   if(partLabel){partLabel.htmlFor=groups?'kingTargetPicker':'monsterPart';partLabel.hidden=legacy;}
   const partOptions=list=>list.map(p=>{
     const unidentified=/^(?:アジャラカン|ゴグマジオス)(?:（|$)/.test(m?.name||'')&&String(p.name??p.kind??'')==='hide';
-    return `<option value="${esc(p.id)}"${unidentified?' hidden':''}>${esc(monsterPartDisplayName(p,parts))}</option>`;
+    return `<option value="${esc(p.id)}"${unidentified?' hidden':''}>${esc(monsterPartDisplayName(p,parts,m))}</option>`;
   }).join('');
   const waterfilm=parts.filter(p=>/^waterfilm-/.test(String(p.name??p.kind??'')));
   s.innerHTML='<option value="">部位を選択</option>'+(waterfilm.length
@@ -2456,7 +2463,7 @@ function renderMonsterParts(){
         const option=new Option(target.label,key);
         option.hidden=!!target.legacy;option.disabled=!!target.unavailable;picker.add(option);
       }
-      else if(!combinations.some(([,target])=>target.parts.includes(id)))picker.add(new Option(monsterPartDisplayName(p,m.parts||[]),id));
+      else if(!combinations.some(([,target])=>target.parts.includes(id)))picker.add(new Option(monsterPartDisplayName(p,m.parts||[],m),id));
     }
     host.insertBefore(picker,s);
     picker.onchange=()=>{
@@ -2490,14 +2497,14 @@ function renderMonsterInfo(){
   if(picker)picker.value=arkveldTargetDisplayValue($('monsterPart')?.value||'',selectedKingChainState(),arkveldTargetGroups(m));
   syncComparisonTargetSummary();
   if(m&&variantTargetNotAdopted(m.id)){
-    const label=picker?.selectedOptions[0]?.textContent||(p?(m.legacyKingAlias?legacyKingPartDisplayName(partNameJP(p)):monsterPartDisplayName(p,m.parts||[])):'');
+    const label=picker?.selectedOptions[0]?.textContent||(p?(m.legacyKingAlias?legacyKingPartDisplayName(partNameJP(p)):monsterPartDisplayName(p,m.parts||[],m)):'');
     $('monsterInfo').textContent=m.name+(label&&p?' / '+label:'')+'。'+VARIANT_TARGET_UNAVAILABLE_HINT;
     return;
   }
   if(!m||!p){$('monsterInfo').textContent='未選択';return}
   const w=selectedWeapon(),hz=partPhysHz(p,w),element=w&&weaponElementInfo(w).type;
   const ehz=w&&element?partElemHz(p,element):0;
-  const label=picker?.selectedOptions[0]?.textContent||monsterPartDisplayName(p,m.parts||[]);
+  const label=picker?.selectedOptions[0]?.textContent||monsterPartDisplayName(p,m.parts||[],m);
   $('monsterInfo').innerHTML=`<b>${esc(m.name)} / ${esc(label)}</b><br>物理肉質 ${hz}% / 属性肉質 ${ehz}%`;
 }
 function normalizeWeaponKindValue(v){

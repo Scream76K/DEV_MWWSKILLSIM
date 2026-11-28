@@ -163,3 +163,22 @@ test('Gogmazios only offers named locations; unknown hide targets retain their s
  assert.deepEqual([...part.options].filter(o=>!o.hidden).map(x=>x.textContent),['部位を選択','頭']);
  change(w,part,'2723');assert.equal(part.value,'2723');
 });
+
+test('Xu Wu and Jin Dahaad show source-backed Japanese labels without losing their targets',t=>{
+ const w=setup(t);
+ w.eval(`DB.monsters.push(
+  {id:23,name:'シーウー',kind:'large',variants:[{id:29,kind:'tempered',name:'シーウー（歴戦の個体）'}],
+   parts:['umbrella','tentacle','mouth','left-front-arm','right-hind-arm','left-side-arm'].map((kind,i)=>({id:2813+i,kind,name:kind}))},
+  {id:26,name:'ジン・ダハド',kind:'large',
+   parts:['neck','frozen-core-waist','frozen-bigcore-before','frozen-bigcore-after'].map((kind,i)=>({id:2848+i,kind,name:kind}))});
+ renderMonsters();`);
+ const mon=el(w,'monster'),part=el(w,'monsterPart'),names=()=>[...part.options].slice(1).map(x=>x.textContent).sort();
+ for(const id of ['23','23:v29']){
+  change(w,mon,id);
+  assert.deepEqual(names(),['傘膜','触腕','口','左第1腕','右第3腕','左第2腕'].sort());
+ }
+ change(w,mon,'26');
+ assert.deepEqual(names(),['首','凍成殻（腰部）','大凍成殻（露出前）','大凍成殻（露出後）'].sort());
+ const after=[...part.options].find(x=>x.textContent==='大凍成殻（露出後）');
+ change(w,part,after.value);assert.equal(w.selectedPart().name,'frozen-bigcore-after');
+});
