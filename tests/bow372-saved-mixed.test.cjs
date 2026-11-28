@@ -56,7 +56,12 @@ try{
  compare(names).forEach(equivalent);
  for(const n of names)assert.deepEqual(prior[n].combo.bowState,{chargeLevel:3,coating:'NONE',range:'CRITICAL',startShot:1});
  assert.equal($('compareOut').querySelector('[data-comparison-metric="reference-combo-damage"]'),null);
- for(const c of ['normal','maximum'])assert.deepEqual([...$('compareOut').querySelectorAll('[data-comparison-metric="consumer-'+c+'-element"] td')].map(e=>Number(e.textContent.split('（')[0])),c==='normal'?[145.1,145.1]:[160.7,160.7]);
+ for(const c of ['normal','maximum']){
+   const cells=[...$('compareOut').querySelectorAll('[data-comparison-metric="consumer-'+c+'-element"] td')];
+   assert.deepEqual(cells.map(e=>Number(e.firstChild.textContent.trim())),c==='normal'?[145.1,145.1]:[160.7,160.7]);
+   assert.deepEqual(cells.map(e=>e.querySelector('.compare-damage-delta')?.textContent),
+     c==='normal'?[undefined,undefined]:['+10.8%','+10.8%']);
+ }
  assert.match(paste('[data-used-combo]'),/通常：剛射3 → 剛連射3 → 竜の千々矢.*最大：剛射3 → 剛連射3 → 竜の千々矢/);
  for(const [key,expected] of [['power-index',['982.0','981.9']],['max-power-index',['1228.7','1220.7']]]){
    const tr=$('compareOut').querySelector('[data-comparison-metric="'+key+'"]');
