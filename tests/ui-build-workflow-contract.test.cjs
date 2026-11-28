@@ -12,8 +12,8 @@ const extractStyle = id => {
 };
 test('Build before Support, without duplicated weapon selector', () => {
   const main = html.slice(html.indexOf('<main class="wrap">'), html.indexOf('</main>') + 7);
-  assert.ok(main.indexOf('③ 装備登録') > 0);
-  assert.ok(main.indexOf('③ 装備登録') < main.indexOf('ここからサポート機能'));
+  assert.ok(main.indexOf('③ 武器登録') > 0);
+  assert.ok(main.indexOf('③ 武器登録') < main.indexOf('ここからサポート機能'));
   assert.equal((main.match(/id="weaponKindSelectionBlock"/g) || []).length, 1);
 });
 test('responsive breakpoints stack tablet portrait and retain landscape columns', () => {
@@ -54,13 +54,13 @@ test('charm controls retain accessible widths and the original editor', () => {
   assert.ok(html.includes('id="charmEditor"'));
   assert.ok(html.includes('function renderCharmDecos()'));
 });
-test('saved build names occupy the flexible middle column', () => {
+test('saved-build picker keeps one flexible accessible selector', () => {
   const css = extractStyle('flamme-ui-edit-controls-stage6');
-  assert.ok(css.includes('#savedBuilds .saved-build-item'));
-  assert.ok(css.includes('grid-template-columns:auto minmax(0,1fr) auto'));
-  assert.ok(css.includes('overflow-wrap:anywhere'));
-  assert.ok(html.includes('data-build-load'));
-  assert.ok(html.includes('data-build-del'));
+  assert.ok(css.includes('#savedBuilds .saved-build-picker'));
+  assert.ok(css.includes('grid-template-columns:minmax(0,1fr) auto auto'));
+  assert.ok(css.includes('#savedBuildSelect'));
+  assert.ok(html.includes('id="savedBuildLoad"'));
+  assert.ok(html.includes('id="savedBuildDelete"'));
 });
 
 test('skill entries remain readable in narrow build workspace', () => {
@@ -127,8 +127,8 @@ test('owner review: concise one-hit values with opt-in diagnostic text', () => {
 test('owner review: comparison explanations collapse without deleting the computation', () => {
   const css = extractStyle('flamme-ui-one-hit-diagnostics-stage10');
   assert.ok(css.includes('.comparison-explanation'));
-  assert.ok(html.includes('火力計算条件の詳細'));
-  assert.ok(html.includes('参考DPSの補足'));
+  assert.ok(html.includes('火力計算の注釈'));
+  assert.ok(html.includes('参考DPS：'));
   assert.ok(html.includes('renderCompareTableChunk('));
   assert.ok(html.includes("['normal','火力指数（計算値）［非正規化］','power-index']"));
 });

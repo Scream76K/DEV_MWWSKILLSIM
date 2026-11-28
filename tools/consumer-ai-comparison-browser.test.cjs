@@ -32,7 +32,7 @@ for(const width of [390,1440])test(`public AI preparation matches visible saved 
   assert.equal(r.schemaVersion,3);close(r.results[0].powerIndex,371.712);close(r.results[1].powerIndex,408.8832);close(r.results[1].maxPowerIndex,408.8832);
   assert.equal(r.results[0].legacyReference.power.normal.comparisonPower,1049.664);
   assert.equal(await p.evaluate(()=>JSON.stringify({snapshot:buildSnapshotComparable(buildSnapshot()),conditions:compareStep5Snapshot(),stored:savedBuildMap()})),before);
-  await p.locator('#comparisonBaseline').selectOption('1');assert.equal(await p.locator('#aiPayload').textContent(),'');await p.locator('#aiPrepare').click();
+  assert.equal(await p.locator('#comparisonBaseline').isVisible(),false);await p.locator('#comparisonBaseline').selectOption('1',{force:true});assert.equal(await p.locator('#aiPayload').textContent(),'');await p.locator('#aiPrepare').click();
   const changed=JSON.parse(await p.locator('#aiPayload').textContent()).currentBuild;close(changed.buildComparison.baseline.damage,408.8832);close(changed.buildComparison.results[0].powerIndex,371.712);
   await p.locator('#combo .cmove').selectOption('gs_strong3');await p.locator('#aiPrepare').click();
   const stale=JSON.parse(await p.locator('#aiPayload').textContent()).currentBuild;assert.equal(stale.buildComparison,null);assert.equal(stale.currentCalculation.reason,'REAL_SLICE:CURRENT_CALCULATION_STALE');

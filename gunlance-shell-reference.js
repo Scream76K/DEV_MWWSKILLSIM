@@ -1,10 +1,13 @@
 (function(root){
  'use strict';
  const finite=(x,min,max)=>typeof x==='number'&&Number.isFinite(x)&&x>=min&&x<=max;
+ const ordinaryArtiaShellByElement=Object.freeze({fire:'normal',ice:'normal',sleep:'normal',water:'long',thunder:'long',dragon:'long',poison:'wide',paralysis:'wide',blast:'wide'});
+ const ordinaryArtiaHigh=(weaponId,shell,e)=>weaponId===380&&e?.sourceId===weaponId&&e.scope==='R8_ARGENESIS_CRAFTED_THREE_MATCHING_PARTS'&&e.status==='SOURCE_CONFIRMED_PROVISIONAL'&&e.source==='https://kuroyonhon.com/mhwilds/memo/38.php'&&e.matchingParts===3&&e.shellType===shell&&e.shellPower==='HIGH'&&Object.hasOwn(ordinaryArtiaShellByElement,e.elementType)&&ordinaryArtiaShellByElement[e.elementType]===shell;
  // Completed Artia metadata can name a sourced power tier without inventing
  // an MHDB numeric level for mutation-specific records.
  function resolveWeaponPower(weapon,rules){
   const e=weapon?.artiaShellEvidence;
+  if(ordinaryArtiaHigh(weapon?.id,weapon?.shell,e))return 'HIGH';
   if(e?.status==='SOURCE_CONFIRMED_PROVISIONAL'&&e.source==='https://kuroyonhon.com/mhwilds/memo/38.php'&&e.scope==='GOGMA_ELEMENT_VALUE_AND_MUTATION_SHELL_METADATA'&&e.shellType===weapon.shell&&e.shellByMutation?.[e.mutation]===weapon.shell&&e.shellPower==='HIGH')return e.shellPower;
   return rules?.mhdbShellLevelToPowerByType?.[String(weapon?.shell).toUpperCase()]?.[weapon?.shellLevel]??rules?.mhdbShellLevelToPower?.[weapon?.shellLevel];
  }
@@ -19,15 +22,20 @@
   const rulesRecord=engine?.get('gunlance','GL_SHELL_NORMAL_MEDIUM'),rules=rulesRecord?.specialSourceValues?.p0ReferenceRules,s=o?.state;
   if(!rules||rules.adoptionStatus!=='PROVISIONALLY_ADOPTED'||typeof generic!=='function')throw Error('GL_SHELL:DB_RULES_PENDING');
   const id='GL_SHELL_'+s?.shellingType+'_'+s?.shellingPower,source=engine.get('gunlance',id),value=source?.specialSourceValues;
-  const candidate=source?.normalHighCandidate;
+  const candidate=source?.normalHighCandidate,metadata=o.weaponShellMetadata;
+  const expectedArtiaRow={NORMAL:[9,80],LONG:[12,160]}[s?.shellingType];
+  const craftedArtiaHigh=ordinaryArtiaHigh(metadata?.weaponId,metadata?.type,metadata?.artiaEvidence);
+  const artiaHighReference=craftedArtiaHigh&&!!expectedArtiaRow&&s?.shellingPower==='HIGH'&&
+    ['NORMAL','CHARGED'].includes(o.action)&&expectedArtiaRow?.[0]===value?.unparenthesizedValue&&expectedArtiaRow?.[1]===value?.parenthesizedValue
+    &&rules.chargedPhysicalMultiplier===1.8&&source?.evidenceRefs?.includes('https://kuroyonhon.com/mhwilds/memo/10.php');
   const normalHighCandidate=id==='GL_SHELL_NORMAL_HIGH'&&o.action==='NORMAL'&&
     candidate?.status==='SOURCE_BACKED_PROVISIONAL_CANDIDATE'&&candidate.sourceId===id&&candidate.action==='NORMAL'&&
     candidate.source==='https://kuroyonhon.com/mhwilds/memo/10.php'&&candidate.ownerApproval===false&&candidate.liveGameVerification==='PENDING'&&
     value?.unparenthesizedValue===9&&value?.parenthesizedValue===80;
-  if((!rules.supportedSourceIds.includes(id)&&!normalHighCandidate)||source?.numericStatus!=='SOURCE_CONFIRMED'||!finite(value?.unparenthesizedValue,0,1000)||!finite(value?.parenthesizedValue,0,10000))throw Error('GL_SHELL:SOURCE_VERSION_OR_POWER_PENDING');
-  if(s.shellingPower==='HIGH'&&!normalHighCandidate&&(!rules.highScope||rules.highScope.sourceId!==id||!rules.highScope.supportedActions.includes(o.action)))throw Error('GL_SHELL:HIGH_ACTION_NOT_ADOPTED');
-  const metadata=o.weaponShellMetadata;
+  if((!rules.supportedSourceIds.includes(id)&&!normalHighCandidate&&!artiaHighReference)||source?.numericStatus!=='SOURCE_CONFIRMED'||!finite(value?.unparenthesizedValue,0,1000)||!finite(value?.parenthesizedValue,0,10000))throw Error('GL_SHELL:SOURCE_VERSION_OR_POWER_PENDING');
+  if(s.shellingPower==='HIGH'&&!normalHighCandidate&&!artiaHighReference&&(!rules.highScope||rules.highScope.sourceId!==id||!rules.highScope.supportedActions.includes(o.action)))throw Error('GL_SHELL:HIGH_ACTION_NOT_ADOPTED');
   if(metadata?.type!=null&&String(metadata.type).toUpperCase()!==s.shellingType)throw Error('GL_SHELL:WEAPON_TYPE_CONFLICT');
+  if(craftedArtiaHigh&&s.shellingPower!=='HIGH')throw Error('GL_SHELL:WEAPON_POWER_CONFLICT');
   if(metadata?.level!=null){const mapped=Number.isInteger(metadata.level)?(rules.mhdbShellLevelToPowerByType?.[s.shellingType]?.[metadata.level]??rules.mhdbShellLevelToPower?.[metadata.level]):null;if(!mapped||mapped!==s.shellingPower)throw Error('GL_SHELL:WEAPON_POWER_CONFLICT');}
   const guardLevel=o.offensiveGuardLevel??0,guardActive=o.offensiveGuardActive??false;
   if(!Number.isInteger(guardLevel)||guardLevel<0||guardLevel>3||typeof guardActive!=='boolean'||(guardActive&&guardLevel===0))throw Error('GL_SHELL:OFFENSIVE_GUARD_LEVEL_INVALID');
@@ -69,7 +77,7 @@
   if(!finite(multiplier,0,10))throw Error('GL_SHELL:MODIFIER_SOURCE_PENDING');
   const hit={mv:value.unparenthesizedValue,elementModifier:rules.fireElementModifier,physicalAttackModifier:{multiplier:multiplier,adoptionStatus:'ADOPTED',evidenceRef:level>0?artillery.evidenceRef:rules.evidenceRef}};
   const r=generic({status:'ADOPTED',hits:Array.from({length:count},()=>({...hit}))},{baseAttack:resolvedPhysicalAttack,displayedElement:value.parenthesizedValue+fireAdd+cornFireAdd,elementType:'fire',elementKnown:true,typeKnown:true,physicalHitzone:100,elementalHitzone:s.fireHitzone,sharpnessPhysical:1,sharpnessElement:1,affinity:0,maxAffinity:0});
-  return {...r,cornpopperPhysicalMultiplier:cornMultiplier,cornpopperFireDisplayAdd:cornFireAdd,cornpopperScenario:cornLevel?{active:cornActive,normalState:corn.normalState,maximumState:corn.maximumState,adoptionStatus:corn.adoptionStatus,sourceVersion:corn.sourceVersion,liveGameVerification:corn.liveGameVerification,scopeWarning:corn.scopeWarning}:null,resolvedPhysicalAttack,artilleryPhysicalMultiplier:artilleryMultiplier,artilleryFireDisplayAdd:fireAdd,artilleryFireUnit:level>0?artillery.fireUnit:null,artilleryActionAdoption:level>0?(artillery.actionExtensionAdoption||artillery.attackOrderAdoption):null,attackOrder:level>0?artillery.attackOrder:null,attackOrderAdoption:level>0?artillery.attackOrderAdoption:null,total:r.comparisonPower,hits:r.trace.map(h=>({p:h.physical,e:h.element,total:h.physical+h.element,component:'SHELL_RAW_AND_FIRE'})),consumedRounds:count,remainingRounds:s.loadedRounds-count,sourceTechniqueId:id,action:o.action,weaponApplicability:'UNVERIFIED',verificationStatus:'UNVERIFIED',adoptionStatus:normalHighCandidate?candidate.status:rules.adoptionStatus,sourceCandidate:normalHighCandidate?{...candidate}:null,evidenceRefs:[...source.evidenceRefs,rules.evidenceRef,...(level>0?[artillery.evidenceRef]:[]),...(loadLevel>0?[loadRule.evidenceRef]:[]),...(cornLevel?[corn.evidenceRef]:[])],loadShellsLevel:loadLevel,capacity,artilleryLevel:level,state:{...s},scope:'EXPLICIT_COMMON_SHELL_REFERENCE'};
+  return {...r,cornpopperPhysicalMultiplier:cornMultiplier,cornpopperFireDisplayAdd:cornFireAdd,cornpopperScenario:cornLevel?{active:cornActive,normalState:corn.normalState,maximumState:corn.maximumState,adoptionStatus:corn.adoptionStatus,sourceVersion:corn.sourceVersion,liveGameVerification:corn.liveGameVerification,scopeWarning:corn.scopeWarning}:null,resolvedPhysicalAttack,artilleryPhysicalMultiplier:artilleryMultiplier,artilleryFireDisplayAdd:fireAdd,artilleryFireUnit:level>0?artillery.fireUnit:null,artilleryActionAdoption:level>0?(artillery.actionExtensionAdoption||artillery.attackOrderAdoption):null,attackOrder:level>0?artillery.attackOrder:null,attackOrderAdoption:level>0?artillery.attackOrderAdoption:null,total:r.comparisonPower,hits:r.trace.map(h=>({p:h.physical,e:h.element,total:h.physical+h.element,component:'SHELL_RAW_AND_FIRE'})),consumedRounds:count,remainingRounds:s.loadedRounds-count,sourceTechniqueId:id,action:o.action,weaponApplicability:'UNVERIFIED',verificationStatus:'UNVERIFIED',adoptionStatus:artiaHighReference?'SOURCE_CONFIRMED_PROVISIONAL':normalHighCandidate?candidate.status:rules.adoptionStatus,sourceCandidate:artiaHighReference?{source:metadata.artiaEvidence.source,action:o.action,sourceId:id,liveGameVerification:'PENDING'}:normalHighCandidate?{...candidate}:null,evidenceRefs:[...source.evidenceRefs,rules.evidenceRef,...(level>0?[artillery.evidenceRef]:[]),...(loadLevel>0?[loadRule.evidenceRef]:[]),...(cornLevel?[corn.evidenceRef]:[])],loadShellsLevel:loadLevel,capacity,artilleryLevel:level,state:{...s},scope:'EXPLICIT_COMMON_SHELL_REFERENCE'};
  }
  // Exact owner target: fixed shell/fire components only. Cutting hits stay in
  // the common physical/element engine, including affinity and weapon element.

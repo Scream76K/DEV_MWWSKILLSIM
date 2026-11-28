@@ -8,7 +8,7 @@
   if(rule?.status!=='SOURCE_CONFIRMED'||rule.hitCountPolicy!=='MAXIMUM_PER_ARROW_ALL_HITS'||rule.practicalHitCountPolicy!=='PRACTICAL_THREE_HITS_PER_ARROW'||rule.practicalTicksPerArrow!==3||rule.rangeCorrectionOwnedByState!==true||!t||!Number.isInteger(t.arrowCount)||t.arrowCount<1||!Number.isInteger(t.maxTicks)||t.maxTicks<rule.practicalTicksPerArrow||!Array.isArray(t.elementModifiers)||t.elementModifiers.length!==t.maxTicks||!Array.isArray(rule.physicalTickMultipliers)||rule.physicalTickMultipliers.length<t.maxTicks)throw Error('BOW_REFERENCE:PIERCE_SOURCE_UNAVAILABLE');
   return Array.from({length:t.arrowCount},(_,arrowIndex)=>Array.from({length:rule.practicalTicksPerArrow},(_,i)=>({mv:valid(t.baseMv,0,10000)*valid(rule.physicalTickMultipliers[i],0,2),elementModifier:valid(t.elementModifiers[i],0,10),component:'ARROW',arrowIndex:arrowIndex+1,pierceTick:i+1,techniqueId:id}))).flat();
  }
- function calculate(o,engine,techniqueIds){
+ function calculate(o,engine,techniqueIds,explicit=false){
   if(!o||!engine||typeof engine.get!=='function'||typeof engine.hits!=='function'||!Array.isArray(techniqueIds)||techniqueIds.length<1)throw Error('BOW_REFERENCE:TECHNIQUE_DB_REQUIRED');
   const rule=engine.get('bow','BOW_STATE_MODIFIERS')?.specialSourceValues;
   if(rule?.status!=='SOURCE_CONFIRMED'||rule.scope!=='FIXED_BOW_STANDARD_SOURCE_REFERENCE')throw Error('BOW_REFERENCE:STATE_RULE_UNVERIFIED');
@@ -44,9 +44,9 @@
   }
   let physical=0,elementTotal=0;const trace=[];
   for(const [stageIndex,id] of techniqueIds.entries()){
-   const r=engine.get('bow',id);
-   if(r?.sourceFormula?.scope!=='FIXED_BOW_STANDARD_SOURCE_REFERENCE'||r.sourceFormula.physicalShotCorrectionOwnedByStateRecord!==true)throw Error('BOW_REFERENCE:TECHNIQUE_SOURCE_UNVERIFIED');
-   const hits=hitsForState(engine,id,state);if(!hits.length)throw Error('BOW_REFERENCE:HITS_UNAVAILABLE');
+   const r=explicit?engine.getExplicitBowCharge(id):engine.get('bow',id);
+   if(r?.sourceFormula?.scope!==(explicit?'EXPLICIT_BOW_CHARGE_UNCOATED_REFERENCE':'FIXED_BOW_STANDARD_SOURCE_REFERENCE')||r.sourceFormula.physicalShotCorrectionOwnedByStateRecord!==true)throw Error('BOW_REFERENCE:TECHNIQUE_SOURCE_UNVERIFIED');
+   const hits=explicit?r.hits:hitsForState(engine,id,state);if(!hits.length)throw Error('BOW_REFERENCE:HITS_UNAVAILABLE');
    if(bladeActive){const cost=bladeRule.shotCosts[id];if(!Number.isInteger(cost)||cost<1||remainingShots<cost)throw Error('BOW_REFERENCE:BLADESCALE_ROUTE_UNRESOLVED');remainingShots-=cost;bladescaleLoading.stages.push({techniqueId:id,shotCost:cost,remainingShots});}
    const ordinal=forceActive?state.startShot+stageIndex:null,forceAttackAdd=forceActive&&forceRule.attackOrdinals.includes(ordinal)?valid(forceRule.attackAdds[forceLevel],0,100):0,forceAffinityAdd=forceActive&&ordinal>=forceRule.affinityFrom?valid(forceRule.affinityAdds[forceLevel],0,100):0;
    const shotAffinity=Math.min(100,affinity+forceAffinityAdd),shotAttack=attack+forceAttackAdd;
@@ -65,17 +65,47 @@
  }
  function standard(o,engine,ids){if(!Array.isArray(ids)||ids.length!==3)throw Error('BOW_REFERENCE:TECHNIQUE_DB_REQUIRED');return calculate(o,engine,ids);}
  function technique(o,engine,id){return calculate(o,engine,[id]);}
+ const isExplicitChargeId=id=>/^BOW_(?:SHOT|POWER_SHOT|POWER_VOLLEY)_[12]$/.test(id);
+ function explicitCharge(o,engine,id){
+  const source=engine?.getExplicitBowCharge?.(id)?.sourceFormula;
+  if(!isExplicitChargeId(id)||source?.gameVersion!=='1.041'||source.chargeLevel!==Number(id.at(-1)))throw Error('BOW_REFERENCE:EXPLICIT_CHARGE_SOURCE');
+  if(o?.state?.coating!=='NONE'||o.state.range!=='CRITICAL'||o.state.guided||o.bladescaleLoadingActive||
+     ['chargeMaster','normalUp','spreadUp','forceShot','bladescaleLoading'].some(k=>o.skills?.[k])||
+     o.hitAttackAdds||o.hitAffinityAdds)throw Error('BOW_REFERENCE:EXPLICIT_CHARGE_SCOPE');
+  const result=calculate(o,engine,[id],true);
+  return {...result,state:{...result.state,chargeLevel:source.chargeLevel},scope:source.scope,sourceGameVersion:source.gameVersion,chargeLevel:source.chargeLevel};
+ }
  function thousandDragons(o,engine){
   const record=engine.get('bow','BOW_THOUSAND_DRAGONS'),r=record?.sourceFormula;
   if(r?.scope!=='THOUSAND_DRAGONS_SINGLE_SHOT_HP_REFERENCE'||r.status!=='OWNER_APPROVED_PROVISIONAL'||!Array.isArray(record.hits)||!record.hits.length)throw Error('BOW_THOUSAND:SOURCE_REQUIRED');
-  if(o.state?.range!=='CRITICAL'||o.state?.coating!=='NONE'||o.state?.guided===true||o.element!==0)throw Error('BOW_THOUSAND:STATE_NOT_ADOPTED');
+  if(o.state?.range!=='CRITICAL'||o.state?.coating!=='NONE'||o.state?.guided===true)throw Error('BOW_THOUSAND:STATE_NOT_ADOPTED');
   const level=o.specialAmmoLevel;if(!Number.isInteger(level)||!Object.hasOwn(r.specialAmmoMultipliers,level))throw Error('BOW_THOUSAND:SKILL_LEVEL_INVALID');
   const pierceLevel=o.pierceUpLevel??0;if(!Number.isInteger(pierceLevel)||![0,r.pierceUp?.level].includes(pierceLevel))throw Error('BOW_THOUSAND:PIERCE_SKILL_LEVEL_INVALID');
   const pierceMultiplier=pierceLevel?r.pierceUp.multiplier:1;
   const attack=valid(o.attack,0,10000),affinity=valid(o.affinity,-100,100),critical=valid(o.criticalMultiplier,1,2),hz=valid(o.physicalHitzone,0,100);
   const expectation=affinity>=0?1+affinity/100*(critical-1):1+affinity/100*.25;
-  const trace=record.hits.map((h,hitIndex)=>({hitIndex,mv:h.mv,attack,affinity,criticalExpectation:expectation,physical:attack*valid(h.mv,0,10000)/100*hz/100*expectation*r.shotPhysical*r.rangePhysical*r.coatingPhysical*r.specialAmmoMultipliers[level]*pierceMultiplier,element:0}));
-  return {total:trace.reduce((n,h)=>n+h.physical,0),trace,shotCount:1,hitCount:record.hits.length,physicalShotMultiplier:r.shotPhysical,rangeMultiplier:r.rangePhysical,specialAmmoMultiplier:r.specialAmmoMultipliers[level],pierceUpMultiplier:pierceMultiplier,scope:r.scope,adoption:r,chargeLevelApplied:false,partDamageCalculated:false,liveGameVerification:'PENDING'};
+  const displayedElement=valid(o.element,0,100000),elementRule=r.elementReference;
+  if(displayedElement>0&&(elementRule?.status!=='SOURCE_BACKED_PROVISIONAL'||elementRule.scope!=='NATIVE_HP_ELEMENT_NO_COATING_NO_GUIDED'||record.hits.length!==elementRule.hitCount||record.hits.some(h=>h.mv!==elementRule.perHitMv||h.elementModifier!==elementRule.perHitElementModifier)))throw Error('BOW_THOUSAND:ELEMENT_NOT_ADOPTED');
+  const ehz=displayedElement>0?valid(o.elementalHitzone,0,100):0;
+  const elementCritical=displayedElement>0?valid(o.criticalElementMultiplier??1,1,2):1;
+  const elementCriticalExpectation=1+Math.max(0,affinity)/100*(elementCritical-1);
+  const trace=record.hits.map((h,hitIndex)=>({hitIndex,mv:h.mv,elementModifier:h.elementModifier,attack,affinity,criticalExpectation:expectation,physical:attack*valid(h.mv,0,10000)/100*hz/100*expectation*r.shotPhysical*r.rangePhysical*r.coatingPhysical*r.specialAmmoMultipliers[level]*pierceMultiplier,element:displayedElement>0?displayedElement/10*ehz/100*h.elementModifier*elementCriticalExpectation:0}));
+  const physical=trace.reduce((n,h)=>n+h.physical,0),element=trace.reduce((n,h)=>n+h.element,0);
+  return {total:physical+element,physical,element,trace,shotCount:1,hitCount:record.hits.length,physicalShotMultiplier:r.shotPhysical,rangeMultiplier:r.rangePhysical,specialAmmoMultiplier:r.specialAmmoMultipliers[level],pierceUpMultiplier:pierceMultiplier,scope:r.scope,adoption:r,chargeLevelApplied:false,partDamageCalculated:false,liveGameVerification:'PENDING'};
  }
- const api=Object.freeze({standard,technique,thousandDragons,hitsForState});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowReference=api;
+ function dragonPiercer(o,engine){
+  const source=engine.get('bow','BOW_DRAGON_PIERCER')?.variableHitSource;
+  if(source?.mvPerHit!==25||source.elementModifier!==0.3||source.hitCount!==null)throw Error('BOW_PIERCER:SOURCE_PENDING');
+  const affinity=valid(o.affinity,-100,100)/100;
+  const critical=1+affinity*(affinity<0?0.25:valid(o.criticalMultiplier,1,2)-1);
+  const base=valid(o.attack,0,10000)*source.mvPerHit/100*valid(o.slash,0,1)*critical*1.1;
+  const element=valid(o.element,0,100000)/10*valid(o.elementZone,0,1)*source.elementModifier*(1+Math.max(0,affinity)*(valid(o.criticalElementMultiplier??1,1,2)-1));
+  const trace=Array.from({length:13},(_,i)=>{
+   const decay=i<2?1:i<10?0.75:i<12?0.35:0.1;
+   return {hitIndex:i,physical:base*decay,element,partModifier:1.2,physicalDecay:decay};
+  });
+  const physical=trace.reduce((n,h)=>n+h.physical,0);
+  return {total:physical+13*element,physical,element:13*element,trace,shotCount:1,hitCount:13,liveGameVerification:'PENDING'};
+ }
+ const api=Object.freeze({dragonPiercer,standard,technique,explicitCharge,isExplicitChargeId,thousandDragons,hitsForState});if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BowReference=api;
 })(typeof window!=='undefined'?window:globalThis);

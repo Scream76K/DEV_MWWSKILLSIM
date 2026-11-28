@@ -13,3 +13,28 @@ test('refined band still wins over an icon grid band',()=>{
  assert.deepEqual([crop.x,crop.y,crop.width,crop.height],[75,138,280,20]);
  assert.equal(crop.source,'v4.5.1-refined-name-band');
 });
+
+test('failed decoration grid recovers one corroborated interior boundary without changing strong grids',()=>{
+ const rules=source.functionSource(html,'recoverDecorationBoundaries');
+ const boundaries=Array.from({length:25},(_,i)=>80+25*i);
+ const narrow={best:{meanPitch:25,pitchSD:1.75,boundaries}};
+ let called=0;
+ const rescue=vm.runInNewContext('('+rules+')',{
+  detectDecorationBoundariesFromImage:(_canvas,_area,left,right)=>{
+   assert.deepEqual([left,right],[.100,.193]);called++;return narrow;
+  }
+ });
+ const wide={expectedPitch:25,candidates:boundaries.filter((_,i)=>i!==14).map(y=>({y}))};
+ assert.equal(rescue({}, {}, {...wide,best:{}}),null);
+ assert.equal(called,0);
+ assert.equal(rescue({}, {}, wide),narrow);
+ assert.equal(rescue({}, {}, {...wide,candidates:wide.candidates.slice(1)}),null);
+ assert.equal(rescue({}, {}, {...wide,candidates:wide.candidates.map((p,i)=>i===6?{y:p.y+5}:p)}),null);
+ narrow.best.pitchSD=4;
+ assert.equal(rescue({}, {}, wide),null);
+});
+
+test('decoration-grid rescue abstains unless all eight physical groups verify',()=>{
+ const pipeline=source.functionSource(html,'calculateDecorationSlots');
+ assert.match(pipeline,/recovered && \(grouped\.groups\.length!==DECORATION_GROUP_ORDER\.length \|\|\s*grouped\.groups\.some\(g=>!g\.physicalMappingVerified\)\)/);
+});

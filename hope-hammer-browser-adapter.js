@@ -1,4 +1,14 @@
 (function(root){'use strict';
+ // Keep display provenance outside serialized calculation results. Channel
+ // projections retain the identity of their executed event record.
+ const usedComboByExecution=new WeakMap();
+ function usedComboSteps(channel){return usedComboByExecution.get(channel?.execution)||null;}
+ const hhOpeningFamilies=Object.freeze({ATTACK_SMALL:{effectId:11,label:'攻撃力UP【小】'},ATTACK_LARGE:{effectId:12,label:'攻撃力UP【大】'},ATTACK_DEFENSE_SMALL:{effectId:42,label:'攻撃＆防御強化【小】'}});
+ const hhOpeningBodyIds=Object.freeze(['HH_LEFT_SWING','HH_FORWARD_ATTACK','HH_RIGHT_SWING','HH_BACKWARD_ATTACK']);
+ function hhAvailableOpeningFamilies(weapon){
+  const songs=weapon?.melody?.songs;
+  return weapon?.kind==='hunting-horn'&&Array.isArray(songs)?Object.keys(hhOpeningFamilies).filter(id=>songs.some(song=>song?.effectId===hhOpeningFamilies[id].effectId)):[];
+ }
  const darkCbRouteToken=Symbol('private independent CB route');
  let darkCbContractCache;
  function getDarkCbContract(){
@@ -619,6 +629,19 @@
   'Runner':{requiredSkillId:43,maxLevel:3,effectDisposition:'non_damage',reason:'Runner changes stamina consumption, not HP damage',evidenceRef:'RELEASE_r213.md:4'},
   'Constitution':{requiredSkillId:14,maxLevel:5,effectDisposition:'non_damage',reason:'Constitution changes stamina consumption, not HP damage',evidenceRef:'RELEASE_r213.md:4'}
  });
+ // ID 38: damage per confirmed proc only. Quest rank is not part of the
+ // comparison input; carry both measured reference values, not an assumed rank.
+ const FLAYER_FIXED_REFERENCE=Object.freeze({
+  skillId:38,referenceVersion:'TITLE_UPDATE_4_POST_1.040',targetVersion:'1.042.00.02',
+  gameVerification:'NOT_RETESTED_IN_TARGET_VERSION',status:'SOURCE_BACKED_PROVISIONAL',
+  urls:Object.freeze(['https://gamewith.jp/mhwilds/486373','https://kuroyonhon.com/mhwilds/program/skill.php']),
+  lower:Object.freeze([100,120,160,200,250]),upper:Object.freeze([140,160,220,300,400])
+ });
+ function flayerFixedReference(entry){
+  if(entry?.skillId!==FLAYER_FIXED_REFERENCE.skillId||entry.skill!=='鎖刃刺撃'||!Number.isInteger(entry.level)||entry.level<1||entry.level>5||entry.additionalDamage?.includedInPower!==false)return null;
+  const {lower,upper,...evidence}=FLAYER_FIXED_REFERENCE,i=entry.level-1;
+  return {scope:'PER_PROC_NOT_COMBO',fixedByRank:{lower:lower[i],upper:upper[i]},evidence};
+ }
  function annotationPolicy(entry){const p=root.MHSkillExtraDamagePolicies?.[entry.skillId];return p&&entry.name===p.name&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=p.maxLevel?p:null;}
  function confirmedNonDamage(entry){const rule=INTERNAL_SKILL_ADOPTION[entry.name];return !!rule&&rule.effectDisposition==='non_damage'&&rule.requiredSkillId!==undefined&&Number(entry.skillId)===rule.requiredSkillId&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=rule.maxLevel;}
  // Only aliases already consumed by this adapter are eligible for MHDB identity
@@ -655,6 +678,19 @@
   }).filter(Boolean);
   return {ids:normalized,unresolved};
  }
+ // Owner-approved provisional mapping from the base Arkveld table (Ver.1.040).
+ // Not a live measurement of the Arch-tempered quest.
+ const KING_ARKVELD_SOURCE='https://mhwilds.kiranico.com/data/monsters/arkveld';
+ function kingArkveldMultipliers(partId,state){
+   const match=/^king-alsh:([0-8])$/.exec(String(partId||''));
+   if(!match)return null;
+   const i=Number(match[1]),chain=i===4||i===5;
+   if(chain&&!['released','releasedOff'].includes(state))return null;
+   const head=[45,48,45,5,5,5,5,5],body=[28,30,20,1,1,1,1,5],wing=[42,40,38,2,2,2,2,4],
+    leg=[26,25,20,2,2,2,2,4],tail=[45,40,42,5,5,5,5,5];
+   const row=chain?(state==='released'?[52,52,48,20,20,20,20,25]:[50,50,45,0,0,0,0,0]):[head,body,wing,wing,null,null,leg,leg,tail][i];
+   return Object.fromEntries(['slash','blunt','pierce','fire','water','thunder','ice','dragon'].map((key,n)=>[key,row[n]/100]));
+ }
  function resolveTarget(target,trainingRoom){
   if(!target||typeof target!=='object'||Array.isArray(target))return {reason:'REAL_SLICE:TARGET_ID_INVALID'};
    const validId=id=>(typeof id==='number'&&Number.isSafeInteger(id)&&id>0)||(typeof id==='string'&&/^[1-9][0-9]*$/.test(id)&&Number.isSafeInteger(Number(id)));
@@ -667,6 +703,11 @@
     const matches=monster.parts.filter(p=>p?.id===target.part);
     if(matches.length!==1)return {reason:'REAL_SLICE:TARGET_PART_ID_UNRESOLVED'};
     part=matches[0];sourceRef='index.html:trainingRoomMonster:'+target.part;status='PRODUCT_REFERENCE';
+   }else if(target.monster==='20:king'){
+    const multipliers=kingArkveldMultipliers(target.part,target.state);
+    if(!multipliers)return {reason:/^king-alsh:[45]$/.test(String(target.part))?'REAL_SLICE:KING_ARKVELD_CHAIN_STATE_REQUIRED':'REAL_SLICE:TARGET_PART_ID_UNRESOLVED'};
+    return {part:{id:target.part,multipliers},sourceRef:KING_ARKVELD_SOURCE,monsterId:target.monster,partId:target.part,
+      state:target.state??null,status:'PROVISIONAL',sourceGameVersion:'1.040',scope:'OWNER_APPROVED_BASE_TABLE_AS_ARCH_TEMPERED_ARKVELD_REFERENCE_NOT_LIVE_VERIFIED'};
    }else{
     if(typeof target.monster==='string'&&/^[1-9][0-9]*:(?:v[1-9][0-9]*|king)$/.test(target.monster))return {reason:'REAL_SLICE:TARGET_VARIANT_HITZONE_SOURCE_NOT_ADOPTED'};
     if(!validId(target.monster)||!validId(target.part))return {reason:'REAL_SLICE:TARGET_ID_INVALID'};
@@ -684,6 +725,20 @@
    }
    if(!part.multipliers||keys.some(k=>typeof part.multipliers[k]!=='number'||!Number.isFinite(part.multipliers[k])||part.multipliers[k]<0||part.multipliers[k]>1))return {reason:'REAL_SLICE:TARGET_HITZONE_INVALID'};
    return {part,sourceRef,status,monsterId:String(target.monster),partId:String(target.part),sourceGameVersion:'NOT_ESTABLISHED_BY_API_IMPORT_VERSION',scope:'UNCHANGED_MHDB_BASE_PART_OR_PRODUCT_TRAINING_REFERENCE_NO_VARIANT_WOUND_OR_RAGE_REINTERPRETATION'};
+ }
+ function heavyPierceStateAllowed(state){
+    const allowed={ammoType:'NORMAL',range:'CRITICAL',ammoLevel:2,contactTargetPolicy:'CURRENT_TARGET',normalModeLevel:0,
+      magazineCapacity:4,shotOrdinal:1,fullMagazine:true};
+  return state===undefined||(state!==null&&typeof state==='object'&&!Array.isArray(state)&&
+   Object.entries(state).every(([key,value])=>Object.hasOwn(allowed,key)?value==null||value===allowed[key]:
+    ['contactPolicy','contactCount','elementType'].includes(key)&&value==null));
+ }
+ function pierceSevenStateAllowed(state){
+  const allowed={ammoType:'PIERCE',ammoLevel:2,range:'CRITICAL',shotMode:'NORMAL',contactTargetPolicy:'CURRENT_TARGET',
+     contactCount:7,loadedRounds:4,shotOrdinal:1,fullMagazine:true,rapidReady:false,
+     normalModeLevel:0,normalPowder:'NONE',elementPowder:'NONE',specialMagazine:'NONE',rapidMagazine:'NONE'};
+  return state===undefined||(state!==null&&typeof state==='object'&&!Array.isArray(state)&&
+   Object.entries(state).every(([k,v])=>v==null||Object.hasOwn(allowed,k)&&v===allowed[k]));
  }
  function evaluateCurrentSingleHealth({weapon,stats,target,skills=[],equipmentSkillsResolved=false,conditions={},gunlanceState=null,bowState=null,hbgState=null,lightBowgunState=null,chargeBladeState=null,huntingHornState=null,insectGlaiveState=null,dualBladesState=null,longSwordState=null,lanceState=null,switchAxeState=null,techniqueDb,trainingRoom,techniqueId,techniqueIds,normalAmmoSequence=null,rapidAmmoSequence=null,retrievedAt='UNKNOWN'}={}){
   if(typeof root.damageFromParams!=='function'||!root.MHWWeaponMaxSharpness||typeof root.HimmelRealOneHitPipeline!=='function')return fail('REAL_SLICE:BROWSER_DEPENDENCIES_UNAVAILABLE');
@@ -707,6 +762,11 @@
    if(p?.applied?.some(x=>['暗黒','Dark'].includes(x.skill)||Number(x.skillId)===168)||p?.excluded?.some(x=>x.reason==='DARK_BELOW_FULL_NO_HEALING_MAXIMUM'))return fail('DARK_SOURCE:CONDITION_PLAN_WEAPON_MISMATCH');
   }
   if(!Array.isArray(skills)||skills.some(x=>!Array.isArray(x)||x.length!==2||typeof x[0]!=='string'||!x[0]))return fail('REAL_SLICE:BUILD_SKILL_INPUT_INVALID');
+  // stats.maxAffinity belongs to the unmodified build editor. Validate that
+  // provenance separately from the optional maximum-only comparison plan.
+  const maxAffinityWithoutScenario=(skillMap)=>root.MHWMaxAffinityResolver(skillMap,stats.affinity,weapon,part,{...conditions,maximumSkillConditions:undefined});
+  const blackEclipseMaximumState=root.MHMaximumSkillEnabled?.(conditions,'frenzy')===false?'BEFORE':'OVERCOME';
+  const blackEclipseMaximumCondition=blackEclipseMaximumState==='OVERCOME'?'MAXIMUM_OVERCOME':'MAXIMUM_FRENZY_INACTIVE';
   const targetData=resolveTarget(target,trainingRoom);
   if(targetData.reason)return fail(targetData.reason);
   const part=targetData.part;
@@ -881,7 +941,17 @@
   })();
   const drawFixedExcluded=x=>(drawFixedNormalNoEvent||drawFixedGLGroundNoEvent)&&Number.isInteger(x.level)&&x.level>=1&&x.level<=3&&((Number(x.skillId)===8&&x.name==='抜刀術【力】')||(Number(x.skillId)===103&&x.name==='抜刀術【技】'));
   const darkFixedExcluded=x=>Number(x.skillId)===168&&['暗黒','Dark'].includes(x.name)&&x.level===1&&root.MHDarkFixedArtiaSourceNotApplicable?.(weapon,conditions);
-  const excludedCalculationPolicy=x=>darkFixedExcluded(x)?{reason:'DARK_FIXED_ARTIA_SOURCE_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:drawFixedExcluded(x)?{reason:drawFixedGLGroundNoEvent?'DRAW_FIXED_GL_GROUND_SEQUENCE_HAS_NO_DRAW_EVENT':'DRAW_FIXED_NORMAL_SEQUENCE_HAS_NO_DRAW_EVENT',status:'NOT_APPLICABLE'}:cornpopperArtiaStandard&&Number(x.skillId)===159&&x.name==='焼き砲モロコシ'&&x.level===1?{reason:'CORNPOPPER_ARTIA_STANDARD_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:resonanceExcludedEntry(x)?{reason:'RESONANCE_FIXED_STANDARD_OWNER_EXCLUDED',status:'NOT_APPLICABLE'}:weapon.kind==='great-sword'&&Number(x.skillId)===168&&['暗黒','Dark'].includes(x.name)&&typeof root.MHDarkSourceWeaponApplicable==='function'&&!root.MHDarkSourceWeaponApplicable(weapon)?{reason:'DARK_SOURCE_WEAPON_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:root.MHIsOwnerExcludedCalculationSkill?.({...x,weaponKind:weapon.kind})?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.({...x,weaponKind:weapon.kind},conditions)?root.MHStandardCalculationExclusion:null;
+  // November 6 owner adoption supersedes the old exclusion only for these native dragon contacts.
+  const lanceConversion=weapon.kind==='lance'&&conditions.standardEvaluation===false&&
+   techniqueIds?.length===1&&techniqueIds[0]==='LAN_COUNTER_DOUBLE_THRUST'&&
+   lanceState?.counter==='CHARGE3_COUNTER_SUCCESS_ALL_HITS'&&conditions.lanceState?.counter===lanceState.counter&&
+   elementSpecials.length===1&&elementSpecials[0].element==='dragon'&&Number.isFinite(elementSpecials[0].damage?.display)&&
+   elementSpecials[0].damage.display>0&&conditions.attributeConversionState?.normal===false&&conditions.attributeConversionState?.maximum===true&&
+   Object.keys(conditions.attributeConversionState).every(k=>k==='normal'||k==='maximum')&&
+   ['mounted','airborne','jumpAttack','dismountAttack','sneakAttack'].every(k=>conditions[k]==null||conditions[k]===false);
+  if(lanceConversion&&skills.some(([name,level])=>['属性変換','Convert Element'].includes(name)&&
+     (!Number.isInteger(level)||level<1||level>3)))return fail('REAL_SLICE:ATTRIBUTE_CONVERSION_RULE_UNRESOLVED');
+  const excludedCalculationPolicy=x=>lanceConversion&&x.skillId===152?null:darkFixedExcluded(x)?{reason:'DARK_FIXED_ARTIA_SOURCE_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:drawFixedExcluded(x)?{reason:drawFixedGLGroundNoEvent?'DRAW_FIXED_GL_GROUND_SEQUENCE_HAS_NO_DRAW_EVENT':'DRAW_FIXED_NORMAL_SEQUENCE_HAS_NO_DRAW_EVENT',status:'NOT_APPLICABLE'}:cornpopperArtiaStandard&&Number(x.skillId)===159&&x.name==='焼き砲モロコシ'&&x.level===1?{reason:'CORNPOPPER_ARTIA_STANDARD_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:resonanceExcludedEntry(x)?{reason:'RESONANCE_FIXED_STANDARD_OWNER_EXCLUDED',status:'NOT_APPLICABLE'}:weapon.kind==='great-sword'&&Number(x.skillId)===168&&['暗黒','Dark'].includes(x.name)&&typeof root.MHDarkSourceWeaponApplicable==='function'&&!root.MHDarkSourceWeaponApplicable(weapon)?{reason:'DARK_SOURCE_WEAPON_NOT_APPLICABLE',status:'NOT_APPLICABLE'}:root.MHIsOwnerExcludedCalculationSkill?.({...x,weaponKind:weapon.kind})?root.MHOwnerCalculationExclusion:root.MHIsStandardExcludedCalculationSkill?.({...x,weaponKind:weapon.kind},conditions)?root.MHStandardCalculationExclusion:null;
   const excludedCalculationSkills=equippedSkills.filter(x=>excludedCalculationPolicy(x)).map(x=>({skillId:resonanceExcludedEntry(x)?173:x.skillId,name:x.name,level:x.level,reason:excludedCalculationPolicy(x).reason,status:excludedCalculationPolicy(x).status}));
   for(const e of activeBonusEffects.filter(ownerExcludedBonus))excludedCalculationSkills.push({skillId:e.bonusSkillId,name:e.name,level:e.level,reason:entryGroupPlan.applied.find(x=>x.skillId===e.bonusSkillId).reason,status:'OWNER_EXCLUDED_CURRENT_COMPARISON'});
   // Source-confirmed STANDARD starts; later three-second coverage is not inferred.
@@ -906,6 +976,149 @@
   if(allSkills.some(x=>Number(x.skillId)===133&&(!Number.isInteger(x.level)||x.level<1||x.level>3)))return fail('REAL_SLICE:ABSORPTION_LEVEL_INVALID');
   const normalized=normalizeTechniqueIds(Array.isArray(techniqueIds)?techniqueIds:null,{fallback:techniqueId});
   const resolvedTechniqueIds=normalized.ids;
+  const saGroundTrialId='SA_GROUND_ELEMENT_DISCHARGE_FULL_TRIAL';
+  const saGroundTrial=resolvedTechniqueIds.includes(saGroundTrialId);
+  if(saGroundTrial&&(
+   conditions.saGroundDischargeTrial!==true||conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||
+   weapon.kind!=='switch-axe'||weapon.id!==914||weapon.gameId!==1||weapon.phial?.kind!=='power'||
+   weapon.damage?.raw!==90||stats.attackTrue!==90||weapon.affinity!==0||stats.affinity!==0||stats.maxAffinity!==0||
+   weapon.skills.length||weapon.specials.length||equippedSkills.length||activeBonusEffects.length||
+   !weapon.sharpness?.green||weapon.sharpness.blue||weapon.sharpness.white||weapon.sharpness.purple||
+   target.monster!=='training-room'||target.part!=='training-front'||part.multipliers?.slash!==.8||part.wounded===true||
+   [switchAxeState,conditions.switchAxeState].some(x=>!inputRecord(x)||x.mode!=='SWORD'||x.awakened!==false||Object.keys(x).some(k=>!['mode','awakened'].includes(k)))||
+   ![null,undefined,'NONE'].includes(conditions.combatBuffs?.meal)||![null,undefined,'NO'].includes(conditions.combatBuffs?.charm)||
+   ![null,undefined,'NONE'].includes(conditions.combatBuffs?.otherBuffs)||
+   ['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','drawAttack','focusAttack','focusStrike','previousAction','damageStatsState','stateStatsByState','nextAction','followUp','mantleActive','mantle','mantleState','corruptedMantle','evasionMantle'].some(k=>![null,undefined,false,'','NONE'].includes(conditions[k]))
+  ))return fail(saGroundTrialId+':MEASUREMENT_SCOPE_REQUIRED');
+  const snsGroundShield=weapon.kind==='sword-shield'&&resolvedTechniqueIds.includes('SNS_SHIELD_ATTACK');
+  const fallingBash=weapon.kind==='sword-shield'&&resolvedTechniqueIds.includes('SNS_FALLING_BASH');
+  if(snsGroundShield||fallingBash){
+   if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1)return fail('SNS_SHIELD_ATTACK:SINGLE_GROUND_REQUIRED');
+   const inactive=x=>x==null||x===false||x===''||x==='NONE';
+   const emptyDraw=map=>map==null||(inputRecord(map)&&Object.keys(map).every(ch=>['normal','maximum'].includes(ch)&&map[ch]==null));
+   if(!['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','drawAttack','sheathed','mantleState',
+      'mantle','mantleActive','corruptedMantle','evasionMantle','focusAttack','focusStrike','powerClash','powerClashWin',
+      'powerClashState','previousAction','damageStatsState','stateStatsByState'].every(key=>inactive(conditions[key]))||
+      (conditions.weaponDrawState!=null&&conditions.weaponDrawState!=='DRAWN')||
+      !['criticalDrawHits','punishingDrawHits'].every(key=>emptyDraw(conditions[key])))
+    return fail('SNS_SHIELD_ATTACK:CONTEXT_UNSUPPORTED');
+  }
+  const dbPlainDouble=weapon.kind==='dual-blades'&&resolvedTechniqueIds.includes('DB_DOUBLE_SLASH');
+  const advancing=weapon.kind==='dual-blades'&&resolvedTechniqueIds.includes('DB_DEMON_ADVANCING_SLASH');
+  const flurryIds=['DB_DEMON_FLURRY_I','DB_DEMON_FLURRY_II'];
+  const flurry=weapon.kind==='dual-blades'&&resolvedTechniqueIds.some(id=>flurryIds.includes(id));
+  if(dbPlainDouble||advancing||flurry){
+   const prefix=flurry?'DB_FLURRY':advancing?'DB_DEMON_ADVANCING_SLASH':'DB_DOUBLE_SLASH';
+   if(conditions.standardEvaluation!==false||(flurry?![1,2].includes(resolvedTechniqueIds.length)||!resolvedTechniqueIds.every((id,i)=>id===flurryIds[i]):resolvedTechniqueIds.length!==1))return fail(prefix+':SINGLE_NEUTRAL_GROUND_REQUIRED');
+   const inactive=x=>x==null||x===false||x===''||x==='NONE';
+   const emptyDraw=map=>map==null||(inputRecord(map)&&Object.keys(map).every(ch=>['normal','maximum'].includes(ch)&&map[ch]==null));
+   if(!['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','drawAttack','mantleState','mantle','mantleActive','corruptedMantle','evasionMantle','focusAttack','focusStrike'].every(key=>inactive(conditions[key]))||
+      !inactive(conditions.sheathed)||(conditions.weaponDrawState!=null&&conditions.weaponDrawState!=='DRAWN')||
+      !['criticalDrawHits','punishingDrawHits'].every(key=>emptyDraw(conditions[key])))return fail(prefix+':CONTEXT_UNSUPPORTED');
+   const handFields=['bladeElements','handElements','leftElement','rightElement','offHandElement','dualElements','elementByHand','specialsByHand','leftHandSpecials','rightHandSpecials'];
+   if([weapon,stats,conditions,dualBladesState,...weapon.specials].some(scope=>scope&&handFields.some(k=>scope[k]!=null))||
+      weapon.specials.length>1||weapon.specials.some(entry=>entry?.hand!=null||entry?.blade!=null))
+      return fail(prefix+':HAND_ELEMENT_UNSUPPORTED');
+   const state=dualBladesState,neutral=['demonMode','requiresDemonGauge','demonBoost','archdemonMode'];
+   if(!inputRecord(state)||JSON.stringify(state)!==JSON.stringify(conditions.dualBladesState)||
+      neutral.some(key=>{const expected=flurry?['archdemonMode','requiresDemonGauge'].includes(key):!!advancing&&key==='demonMode';return state[key]!==expected||conditions[key]!=null&&conditions[key]!==expected;})||
+      ['demonForm','demonBoostMode','demonGauge','previousAction','damageStatsState','stateStatsByState'].some(key=>conditions[key]!=null)||
+      Object.keys(state).some(key=>!neutral.includes(key)&&state[key]!=null))
+     return fail(prefix+':STATE_UNSUPPORTED');
+  }
+  const igGroundTornado=weapon.kind==='insect-glaive'&&resolvedTechniqueIds.includes('IG_TORNADO_SLASH');
+  const igGroundEnhancedRising=weapon.kind==='insect-glaive'&&resolvedTechniqueIds.includes('IG_ENHANCED_RISING_COMBO');
+  const igSweep=weapon.kind==='insect-glaive'&&resolvedTechniqueIds.includes('IG_ENHANCED_SWEEP');
+  const igHeldGroundBody=igSweep?'IG_ENHANCED_SWEEP':igGroundTornado?'IG_TORNADO_SLASH':igGroundEnhancedRising?'IG_ENHANCED_RISING_COMBO':null;
+  if(igHeldGroundBody){
+   if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1)return fail(igHeldGroundBody+':SINGLE_GROUND_REQUIRED');
+   const inactive=x=>x==null||x===false||x===''||x==='NONE';
+   const emptyDraw=map=>map==null||(inputRecord(map)&&Object.keys(map).every(ch=>['normal','maximum'].includes(ch)&&map[ch]==null));
+   if(!['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','drawAttack','mantleState','mantle','mantleActive','corruptedMantle','evasionMantle','focusAttack','focusStrike','kinsectAttack','kinsectAssist','extractPickup','extractConsumption'].every(key=>inactive(conditions[key]))||
+      !['criticalDrawHits','punishingDrawHits'].every(key=>emptyDraw(conditions[key]))||
+      ['previousAction','damageStatsState','stateStatsByState','chargeLevel'].some(key=>conditions[key]!=null))
+    return fail(igHeldGroundBody+':CONTEXT_UNSUPPORTED');
+   const state=insectGlaiveState;
+   if(!inputRecord(state)||JSON.stringify(state)!==JSON.stringify(conditions.insectGlaiveState)||
+      state.extractState!=='TRIPLE_EXTRACT'||state.kinsectState!=='STOWED'||Object.keys(state).some(k=>!['extractState','kinsectState'].includes(k))||
+      (conditions.tripleExtract!=null&&conditions.tripleExtract!==true)||
+      ['extractState','kinsectState'].some(k=>conditions[k]!=null&&conditions[k]!==state[k]))
+    return fail(igHeldGroundBody+':STATE_UNSUPPORTED');
+  }
+  const lsPlainThrust=weapon.kind==='long-sword'&&resolvedTechniqueIds.includes('LS_THRUST');
+  const lsPlainRisingSlash=weapon.kind==='long-sword'&&resolvedTechniqueIds.includes('LS_RISING_SLASH');
+  const lsPlainForesight=weapon.kind==='long-sword'&&resolvedTechniqueIds.includes('LS_FORESIGHT_SLASH');
+  const helmId='LS_HELM_BREAKER_RED';
+  // Local measurement candidate only; no picker, saved route or standard plan supplies this token.
+  const lsReleaseId='LS_SPIRIT_RELEASE',lsRelease=weapon.kind==='long-sword'&&resolvedTechniqueIds.includes(lsReleaseId)&&conditions.lsSpiritReleaseTrial==='AFTER_RED_HELM_14_HIT';
+  if(lsRelease&&(
+    conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||
+    weapon.id!==836||weapon.gameId!==1||weapon.damage?.raw!==90||weapon.affinity!==0||weapon.specials.length||weapon.skills.length||equippedSkills.length||activeBonusEffects.length||
+    stats.attackTrue!==90||stats.affinity!==0||stats.maxAffinity!==0||
+    !weapon.sharpness?.green||weapon.sharpness.blue||weapon.sharpness.white||weapon.sharpness.purple||
+    target.monster!=='training-room'||target.part!=='training-front'||part.multipliers?.slash!==.8||part.wounded===true||
+    [longSwordState,conditions.longSwordState].some(g=>!g||g.spiritGauge!=='YELLOW'||Object.keys(g).some(k=>k!=='spiritGauge'))||
+    ![null,undefined,'','YELLOW'].includes(conditions.spiritGauge)||
+    ['mantle','mantleState','corruptedMantle','evasionMantle'].some(k=>![null,undefined,false,'','NONE'].includes(conditions[k]))||
+    ['criticalDrawHits','punishingDrawHits'].some(k=>conditions[k]!=null&&(!inputRecord(conditions[k])||Object.keys(conditions[k]).some(ch=>!['normal','maximum'].includes(ch)||conditions[k][ch]!=null)))||
+    ['mounted','dismountAttack','sneakAttack','drawAttack','jumpAttack','airborne','jumping','focusAttack','focusStrike','counterSuccess','mantleActive'].some(k=>conditions[k]!=null&&conditions[k]!==false)||
+    ![null,undefined,'NONE'].includes(conditions.combatBuffs?.meal)||![null,undefined,'NO'].includes(conditions.combatBuffs?.charm)||![null,undefined,'NONE'].includes(conditions.combatBuffs?.otherBuffs)||
+    ['previousAction','damageStatsState','stateStatsByState','gaugeTransition','spiritGaugeTransition','damageStateTransition','nextAction','followUp'].some(k=>conditions[k]!=null)
+  ))return fail(lsReleaseId+':MEASUREMENT_SCOPE_REQUIRED');
+  const lsHelm=weapon.kind==='long-sword'&&resolvedTechniqueIds.includes(helmId);
+  const lsSpin=weapon.kind==='long-sword'&&resolvedTechniqueIds.includes('LS_FORESIGHT_SPIN_SLASH');
+  const lsVertical=weapon.kind==='long-sword'&&resolvedTechniqueIds.find(id=>['LS_VERTICAL_SLASH','LS_VERTICAL_SLASH_2'].includes(id));
+  if(lsVertical||lsPlainThrust||lsPlainRisingSlash||lsPlainForesight||lsSpin||lsHelm){
+   const lsPrefix=(lsHelm&&helmId)||lsVertical||(lsSpin?'LS_FORESIGHT_SPIN_SLASH':lsPlainRisingSlash?'LS_RISING_SLASH':lsPlainThrust?'LS_THRUST':'LS_FORESIGHT_SLASH');
+   const groundFlags=['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping'];
+   if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||
+      groundFlags.some(key=>conditions[key]!=null&&conditions[key]!==false))return fail(lsPrefix+(lsHelm?':SINGLE_ACTION_REQUIRED':':SINGLE_GROUND'));
+   const requiredGauge=lsSpin||lsHelm?'RED':'NONE';
+   const knownGauge=value=>value==null||value===''||value===requiredGauge;
+   if(longSwordState?.spiritGauge!==requiredGauge||conditions.longSwordState?.spiritGauge!==requiredGauge||
+      ![conditions.spiritGauge,longSwordState?.spiritGauge,conditions.longSwordState?.spiritGauge].every(knownGauge))
+     return fail(lsPrefix+':GAUGE_NOT_ADOPTED');
+   if((lsSpin||lsHelm)&&['nextAction','followUp','gaugeTransition','spiritGaugeTransition','damageStateTransition'].some(key=>conditions[key]!=null))
+    return fail(lsPrefix+':INPUT_STATE_PENDING');
+   if(((lsPlainForesight||lsSpin||lsHelm)&&(['counterSuccess','parrySuccess','offsetSuccess','foresightCounterSuccess','foresightSuccess','focusAttack','focusStrike'].some(key=>conditions[key]!=null&&conditions[key]!==false)||
+       ['spiritGaugeAmount','spiritAmount','spiritMeter','foresightState'].some(key=>conditions[key]!=null)))||
+      ((lsVertical||lsPlainRisingSlash||lsPlainForesight||lsSpin||lsHelm)&&['drawAttack','mantleState','mantle','mantleActive','corruptedMantle','evasionMantle']
+        .some(key=>![null,undefined,false,'','NONE'].includes(conditions[key])))||
+      [longSwordState,conditions.longSwordState].some(state=>!state||Object.keys(state).some(key=>key!=='spiritGauge'))||
+      ['previousAction','damageStatsState','stateStatsByState'].some(key=>conditions[key]!=null)||
+      ['criticalDrawHits','punishingDrawHits'].some(key=>{
+       const map=conditions[key];return map!=null&&(!inputRecord(map)||Object.keys(map).some(ch=>!['normal','maximum'].includes(ch)||map[ch]!=null));
+      }))return fail(lsPrefix+':INPUT_STATE_PENDING');
+  }
+  const gsOffsetThree=weapon.kind==='great-sword'&&resolvedTechniqueIds.includes('GS_OFFSET_RISING_SLASH_3');
+  if(gsOffsetThree){
+   if(conditions.standardEvaluation!==false||JSON.stringify(resolvedTechniqueIds)!=='["GS_OFFSET_RISING_SLASH_3"]'||
+      ['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping'].some(key=>conditions[key]!=null&&conditions[key]!==false))
+     return fail('GS_OFFSET_3:SINGLE_GROUNDED_BODY_REQUIRED');
+   if(['offsetSuccess','counterSuccess','parrySuccess','drawAttack'].some(key=>conditions[key]!=null&&conditions[key]!==false)||
+      ![null,undefined,'','DRAWN'].includes(conditions.greatSwordDrawOpening)||
+      ['mantleState','previousAction','damageStatsState','stateStatsByState'].some(key=>conditions[key]!=null)||
+      ['criticalDrawHits','punishingDrawHits'].some(key=>{
+       const map=conditions[key];return map!=null&&(!inputRecord(map)||Object.keys(map).some(ch=>!['normal','maximum'].includes(ch)||map[ch]!=null));
+      }))return fail('GS_OFFSET_3:STATE_UNSUPPORTED');
+   if(drawEquipped.length)return fail('GS_OFFSET_3:DRAW_SKILL_UNRESOLVED');
+  }
+  const gsGroundDraw=weapon.kind==='great-sword'&&resolvedTechniqueIds.includes('GS_DRAW_VERTICAL_SLASH');
+  if(gsGroundDraw){
+   if(conditions.standardEvaluation!==false||JSON.stringify(resolvedTechniqueIds)!=='["GS_DRAW_VERTICAL_SLASH"]'||
+      [conditions.mounted,conditions.dismountAttack,conditions.sneakAttack,conditions.jumpAttack,conditions.airborne,conditions.jumping].some(x=>x!=null&&x!==false))return fail('GS_DRAW_BODY:SINGLE_ACTION_REQUIRED');
+   if(conditions.greatSwordDrawOpening!=='SHEATHED'||conditions.greatSwordDrawOrigin!=='EXACT_LEGACY_PICKER')return fail('GS_DRAW_BODY:SHEATHED_OPENING_REQUIRED');
+   if(['criticalDrawHits','punishingDrawHits'].some(key=>{
+     const map=conditions[key];return map!=null&&(!inputRecord(map)||Object.keys(map).some(ch=>!['normal','maximum'].includes(ch)||map[ch]!=null));
+   }))return fail('GS_DRAW_BODY:EXPLICIT_DRAW_MAP_CONFLICT');
+   const maps={normal:{GS_DRAW_VERTICAL_SLASH:[false]},maximum:{GS_DRAW_VERTICAL_SLASH:[true]}};
+   conditions={...conditions,criticalDrawHits:maps,punishingDrawHits:maps};
+  }
+  const nativeSelection=conditions.standardEvaluation===true&&conditions.lbgStandardComparison===true&&weapon.kind==='light-bowgun'?root.LBGStandardBallistic?.select(weapon):null;
+  const ballisticSelection=nativeSelection&&!nativeSelection.reason&&['PIERCE','SPREAD'].includes(nativeSelection.ammoType)&&resolvedTechniqueIds.length===1&&resolvedTechniqueIds[0]===nativeSelection.techniqueId?nativeSelection:null;
+  if(resolvedTechniqueIds.some(id=>/^LBG_STANDARD_(PIERCE|SPREAD)_/.test(id))&&!ballisticSelection)return fail('LBG_STANDARD:ROUTE_CONTRACT_INVALID');
+  if(ballisticSelection&&(lightBowgunState?.ammoType!==ballisticSelection.ammoType||lightBowgunState.ammoLevel!==ballisticSelection.ammoLevel||lightBowgunState.shotMode!=='RAPID'||lightBowgunState.range!=='CRITICAL'||lightBowgunState.normalModeLevel!==0||conditions.mounted===true))return fail('LBG_STANDARD:STATE_CONTRACT_INVALID');
+
   if(normalized.unresolved.length)return fail('REAL_SLICE:TECHNIQUE_ID_UNRESOLVED:'+normalized.unresolved.join(','));
   if(!resolvedTechniqueIds.length)return fail('REAL_SLICE:TECHNIQUE_NOT_SELECTED');
   if(weapon.kind==='light-bowgun'&&allSkills.some(x=>Number(x.skillId)===160)&&!rapidAmmoSequence)return fail('LBG_BLADESCALE:FIXED_FIVE_RAPID_SCOPE_PENDING');
@@ -915,13 +1128,33 @@
   const thousandRule=thousandRequested?techniqueDb?.get?.('bow','BOW_THOUSAND_DRAGONS')?.sourceFormula:null;
   const specialAmmoEntries=allSkills.filter(x=>Number(x.skillId)===69||x.name==='特殊射撃強化');
   const thousandPierceEntries=allSkills.filter(x=>Number(x.skillId)===94||x.name==='貫通弾・竜の矢強化');
+  // Force Shot modifies coated shots only, irrespective of the shot ordinal.
+  // Validate the exact MHDB skill and canonical coating rule before classifying it.
+  const bowForceRule=root.TechniqueDBEngine?.get?.('bow','BOW_STATE_MODIFIERS')?.specialSourceValues?.skillRules?.forceShot;
+  const uncoatedThousandForce=x=>thousandRequested&&bowState?.coating==='NONE'&&Number(x.skillId)===137&&x.name==='フォースショット'&&x.skillKey==='forceShot'&&Number.isInteger(x.level)&&x.level>=1&&Object.hasOwn(bowForceRule?.attackAdds||{},x.level)&&Object.hasOwn(bowForceRule?.affinityAdds||{},x.level)&&Array.isArray(bowForceRule?.coatings)&&!bowForceRule.coatings.includes('NONE');
   if(thousandRequested){
    if(thousandPierceEntries.some(x=>Number(x.skillId)!==thousandRule?.pierceUp?.skillId||x.name!==thousandRule.pierceUp.name||x.level!==thousandRule.pierceUp.level))return fail('BOW_THOUSAND:PIERCE_SKILL_CONTRACT_INVALID');
-   if(resolvedTechniqueIds.length!==1)return fail('BOW_THOUSAND:SINGLE_SHOT_REQUIRED');
+   const mixedCurrent=conditions.currentCustomBowMixed===true&&conditions.standardEvaluation===false&&
+    JSON.stringify(resolvedTechniqueIds)===JSON.stringify(['BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3','BOW_THOUSAND_DRAGONS']);
+   if(resolvedTechniqueIds.length!==1&&!mixedCurrent)return fail('BOW_THOUSAND:SINGLE_SHOT_REQUIRED');
+   if(resolvedTechniqueIds.some(id=>{
+    const t=techniqueDb?.get?.('bow',id),canonical=root.TechniqueDBEngine?.get?.('bow',id);
+    return !t||!canonical||JSON.stringify(t)!==JSON.stringify(canonical);
+   }))return fail('BOW_THOUSAND:SOURCE_REQUIRED');
+   if(mixedCurrent){
+    if(bowState?.chargeLevel!==3||conditions.dismountAttack===true||conditions.sneakAttack===true)return fail('BOW_THOUSAND:STATE_NOT_ADOPTED');
+    if(allSkills.some(x=>!uncoatedThousandForce(x)&&([137,140,160].includes(Number(x.skillId))||['forceShot','firstShot','bladescaleLoading'].includes(x.skillKey))))return fail('BOW_THOUSAND:UNVERIFIED_MIXED_RESOURCE');
+   }
    if(thousandRule?.status!=='OWNER_APPROVED_PROVISIONAL'||specialAmmoEntries.some(x=>Number(x.skillId)!==thousandRule.skillId||x.name!==thousandRule.skillName||!Number.isInteger(x.level)||x.level<1||x.level>=thousandRule.specialAmmoMultipliers.length))return fail('BOW_THOUSAND:SKILL_CONTRACT_INVALID');
    if(bowState?.coating!=='NONE'||bowState?.range!=='CRITICAL'||bowState?.guided===true||conditions.mounted===true)return fail('BOW_THOUSAND:STATE_NOT_ADOPTED');
-   const unsupported=allSkills.filter(x=>!fixedEntrySkill(x)&&![69,94].includes(Number(x.skillId))&&!['attack','affinity','criticalBoost'].includes(x.skillKey)&&Number(x.skillId)!==144);
-   if(unsupported.length||activeBonusEffects.some(e=>!fixedEntryBonus(e)))return fail('BOW_THOUSAND:SKILL_COMBINATION_NOT_ADOPTED:'+unsupported.map(x=>x.name).join(','));
+   // These effects enter the existing channel plan or the exact native arrow
+   // producer. Admission does not remove their skill entries or their effects.
+   const shared={2:['散弾・剛射強化',1,'spreadUp'],18:['無我の境地',3],41:['龍属性攻撃強化',3,'dragon'],53:['弾導強化',3,'ballistics'],57:['弱点特効',5,'conditionalAffinity'],95:['連撃',5,'conditionalAttack'],120:['巧撃',5,'conditionalAttack'],154:['フルチャージ',5,'conditionalAttack']};
+   const sharedSkill=x=>{const r=shared[Number(x.skillId)];return !!r&&x.name===r[0]&&Number.isInteger(x.level)&&x.level>=1&&x.level<=r[1]&&(!r[2]||x.skillKey===r[2]);};
+   const channelBonus=e=>[106,131].includes(e.bonusSkillId)&&entryGroupPlan?.unresolvedEffects?.length===0&&entryGroupPlan?.applied?.filter(a=>a.skillId===e.bonusSkillId&&a.skill===e.name&&a.bonusSource===true).length===1;
+   const sharedBonus=x=>x.level===1&&activeBonusEffects.some(e=>e.name===x.name&&channelBonus(e));
+   const unsupported=allSkills.filter(x=>!fixedEntrySkill(x)&&!sharedSkill(x)&&!sharedBonus(x)&&!uncoatedThousandForce(x)&&![69,94].includes(Number(x.skillId))&&!['attack','affinity','criticalBoost'].includes(x.skillKey)&&Number(x.skillId)!==144);
+   if(unsupported.length||activeBonusEffects.some(e=>!fixedEntryBonus(e)&&!channelBonus(e)))return fail('BOW_THOUSAND:SKILL_COMBINATION_NOT_ADOPTED:'+unsupported.map(x=>x.name).join(','));
   }
   const artilleryEntries=allSkills.filter(x=>['砲術','Artillery'].includes(x.name)),loadShellEntries=allSkills.filter(x=>['砲弾装填','Load Shells'].includes(x.name));
   const officialPhialType=weapon.kind==='charge-blade'?(weapon.phial==='impact'?'IMPACT':weapon.phial==='element'?'POWER_ELEMENT':null):null;
@@ -1045,9 +1278,11 @@
    const validRow=a=>!!a&&Object.keys(a).length===16&&a.skillId===162&&a.skill===x.name&&a.parent===policy.name&&a.rank===rank&&a.attackAdd===0&&a.attackMultiplier===1&&a.bonusSource===true&&a.appliesToNormal===true&&a.annotationOnly===true&&a.bodyEffect===true&&a.policy==='FIXED_DAMAGE_SKILL_ANNOTATION_ONLY'&&a.condition==='EXTRA_DAMAGE_EXCLUDED_BODY_EFFECT_RETAINED'&&a.evidenceRef==='MHDB_JA_SKILLS_20261026:162'&&a.numericOrigin==='ANNOTATION_FORMULA_NOT_ADOPTED'&&Array.isArray(a.excludedComponents)&&a.excludedComponents.length===2&&a.excludedComponents.every((v,i)=>v===policy.components[i])&&['bonusSkillId','name','level','bonusName','source','displayType','rankLevel','required','count'].every(k=>a.annotationActivation?.[k]===e[k]);
    if(![group.applied,plan.applied].every(list=>Array.isArray(list)&&list.filter(related).length===1&&validRow(list.find(related))))return false;
    if(stats.affinityKnown!==true||!Number.isFinite(stats.affinity)||!Number.isFinite(stats.maxAffinity)||Math.abs(stats.affinity)>100||Math.abs(stats.maxAffinity)>100||typeof root.MHWMaxAffinityResolver!=='function')return false;
-   if(!['normal','maximum'].every(ch=>plan[ch]?.affinity===stats.affinity&&plan[ch]?.maxAffinity===stats.maxAffinity))return false;
-   // Revalidate the existing display-affinity producer; add no coefficient here.
-   try{return stats.maxAffinity===root.MHWMaxAffinityResolver(Object.fromEntries(skills),stats.affinity,weapon,part,conditions);}catch(_){return false;}
+   if(!['normal','maximum'].every(ch=>plan[ch]?.affinity===stats.affinity)||plan.normal.maxAffinity!==stats.maxAffinity)return false;
+   // Revalidate both the editor and the maximum-only premise; add no coefficient here.
+   try{const skillMap=Object.fromEntries(skills);
+    return stats.maxAffinity===maxAffinityWithoutScenario(skillMap)&&plan.maximum.maxAffinity===root.MHWMaxAffinityResolver(skillMap,stats.affinity,weapon,part,conditions);
+   }catch(_){return false;}
   };
   const unresolvedShellThunderBonusNames=new Set(allSkills.filter(x=>shellThunderBonusRelated(x)&&!shellThunderBonusResolved(x)).map(x=>x.name));
   const shellingInput={shellingState:gunlanceState,loadShellsLevel:loadShellEntries.length?Math.max(...loadShellEntries.map(x=>x.level)):0,artilleryLevel:artilleryEntries.length?Math.max(...artilleryEntries.map(x=>x.level)):0,normalAttackComponents:stats.attackComponents?{weaponBase:Number(stats.attackComponents.weaponBase),normalMultiplier:1,normalFlat:0}:null,unreviewedSkills:allSkills.filter(x=>shellThunderBonusRelated(x)?!shellThunderBonusResolved(x):!shellMightResolved(x)&&!shellAffinityOnlyResolved(x)&&!shellDefensiveOnlyResolved(x)&&!shellStateAffinityOnlyResolved(x)&&!shellSelfStateBonusResolved(x)&&![85,136].includes(Number(x.skillId))&&!(cornpopperEntries.length&&Number(x.skillId)===159)&&!(bladescaleEntries.length&&Number(x.skillId)===163)&&!fixedEntrySkill(x)&&!(x.skillKey==='selfState'&&![89,153].includes(Number(x.skillId)))&&!['handicraft','ballistics','attack','affinity','criticalBoost','conditionalAttack','shelling','slugger','fire','water','thunder','ice','dragon','normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].includes(x.skillKey)).map(x=>x.name)};
@@ -1197,7 +1432,7 @@
      if(expected.length!==1||JSON.stringify(a)!==JSON.stringify(expected[0]))return false;
      if(e.bonusSkillId===162){
       const policy=root.MHSkillExtraDamagePolicies?.[162];
-      return !!policy&&policy.bodyEffect===true&&a.annotationOnly===true&&a.bodyEffect===true&&a.attackAdd===0&&a.attackMultiplier===1&&a.condition==='EXTRA_DAMAGE_EXCLUDED_BODY_EFFECT_RETAINED'&&JSON.stringify(a.excludedComponents)===JSON.stringify(policy.components)&&stats.maxAffinity===root.MHWMaxAffinityResolver(Object.fromEntries(skills),stats.affinity,weapon,part,conditions);
+      return !!policy&&policy.bodyEffect===true&&a.annotationOnly===true&&a.bodyEffect===true&&a.attackAdd===0&&a.attackMultiplier===1&&a.condition==='EXTRA_DAMAGE_EXCLUDED_BODY_EFFECT_RETAINED'&&JSON.stringify(a.excludedComponents)===JSON.stringify(policy.components)&&stats.maxAffinity===maxAffinityWithoutScenario(Object.fromEntries(skills));
      }
      if(e.rankLevel===1)return a.effectDisposition==='non_damage'&&a.condition==='NO_DIRECT_HP_EFFECT'&&a.scope==='DURATION_ONLY_EXISTING_ADRENALINE_RUSH_VALUE_UNCHANGED';
      return a.numericOrigin==='OWNER_APPROVED_PROVISIONAL'&&a.condition==='ADRENALINE_RUSH_REPEAT_EVADE_PREACTIVATED'&&a.appliesToNormal===false&&a.attackAdd===0&&a.attackMultiplier===1;
@@ -1209,7 +1444,7 @@
     }
     if(e.bonusSkillId===106){
      const rule=root.MHBlackEclipseRule,b=rapidPlan.blackEclipse;
-     return !!rule&&!!b&&b.rank===e.rankLevel&&Number.isInteger(b.antivirusLevel)&&Object.hasOwn(rule.antivirusAdds,b.antivirusLevel)&&conditions.blackEclipseState==='BEFORE'&&b.normalState==='BEFORE'&&b.normalAttackAdd===0&&b.normalAffinityAdd===0&&b.maximumState==='OVERCOME'&&a.condition==='MAXIMUM_OVERCOME'&&a.attackAdd===rule.attackByRank[e.rankLevel].OVERCOME&&b.maximumAttackAdd===a.attackAdd&&b.maximumAffinityAdd===rule.overcomeAffinity+rule.antivirusAdds[b.antivirusLevel];
+     return !!rule&&!!b&&b.rank===e.rankLevel&&Number.isInteger(b.antivirusLevel)&&Object.hasOwn(rule.antivirusAdds,b.antivirusLevel)&&conditions.blackEclipseState==='BEFORE'&&b.normalState==='BEFORE'&&b.normalAttackAdd===0&&b.normalAffinityAdd===0&&b.maximumState===blackEclipseMaximumState&&a.condition===blackEclipseMaximumCondition&&a.attackAdd===rule.attackByRank[e.rankLevel][blackEclipseMaximumState]&&b.maximumAttackAdd===a.attackAdd&&b.maximumAffinityAdd===(blackEclipseMaximumState==='OVERCOME'?rule.overcomeAffinity+rule.antivirusAdds[b.antivirusLevel]:0);
     }
     if(e.bonusSkillId===155){
      const rule=root.MHNamedBonusFlatRules?.group?.[e.name];
@@ -1217,7 +1452,8 @@
     }
     if(e.bonusSkillId===115){
      const rule=root.MHNamedBonusFlatRules?.series?.[e.name],burst=allSkills.filter(x=>Number(x.skillId)===95),level=burst.length?Math.max(...burst.map(x=>x.level)):0;
-     return !!rule&&rule.parent===e.bonusName&&rule.rankLevel===e.rankLevel&&rule.required===e.required&&a.parent===e.bonusName&&a.attackAdd===(level?rule.attackAdd:0)&&a.condition===(level?rule.condition:'BURST_INACTIVE_OR_UNRESOLVED');
+     const enabled=level>0&&root.MHMaximumSkillEnabled?.(conditions,'burst')!==false;
+     return !!rule&&rule.parent===e.bonusName&&rule.rankLevel===e.rankLevel&&rule.required===e.required&&a.parent===e.bonusName&&a.attackAdd===(enabled?rule.attackAdd:0)&&a.condition===(enabled?rule.condition:'BURST_INACTIVE_OR_UNRESOLVED');
     }
     return false;
    };
@@ -1252,11 +1488,36 @@
    if(!equipmentSkillsResolved)return fail('HBG_WYVERN:EQUIPMENT_SKILLS_UNRESOLVED');
   }
   const referenceSkills=Object.fromEntries(['normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].map(key=>[key,Math.max(...allSkills.filter(x=>x.skillKey===key).map(x=>x.level),0)]));
-  if(weapon.kind==='light-bowgun'&&(referenceSkills.firstShot>0||referenceSkills.forceShot>0)&&resolvedTechniqueIds.length!==1)return fail('REAL_SLICE:LBG_SHOT_SKILL_SINGLE_SHOT_REQUIRED');
-  if(!normalAmmoSequence&&!rapidAmmoSequence&&weapon.kind==='light-bowgun'&&(referenceSkills.firstShot>0||referenceSkills.forceShot>0)&&(!Number.isInteger(lightBowgunState?.shotOrdinal)||lightBowgunState.shotOrdinal<1||typeof lightBowgunState?.fullMagazine!=='boolean'))return fail('REAL_SLICE:LBG_SHOT_POSITION_PENDING');
+  // A user-designed pair takes two triggers from one known magazine, not six contacts.
+  let explicitNormalPair=null;
+  const sameNormalPair=weapon.kind==='light-bowgun'&&!normalAmmoSequence&&!rapidAmmoSequence&&!ballisticSelection&&conditions.standardEvaluation!==true&&resolvedTechniqueIds.length===2&&resolvedTechniqueIds[0]===resolvedTechniqueIds[1]&&/^LBG_NORMAL_AMMO_[12]$/.test(resolvedTechniqueIds[0]);
+  if(sameNormalPair){
+   const state=lightBowgunState||{},level=Number(resolvedTechniqueIds[0].slice(-1));
+   if(state.shotMode==='NORMAL'&&state.ammoType==='NORMAL'&&state.ammoLevel===level&&[null,undefined,'NONE'].includes(state.normalPowder)&&[null,undefined,'NONE'].includes(state.rapidMagazine)&&[null,undefined,'NONE'].includes(state.specialMagazine)){
+    const native=(weapon.ammo||[]).filter(x=>x.kind==='normal'&&x.level===level);
+    const capacity=native.length===1?native[0].capacity:null;
+    const startOrdinal=state.shotOrdinal,full=state.fullMagazine===true;
+    const knownOrdinal=Number.isInteger(startOrdinal)&&startOrdinal>=1;
+    const remaining=state.loadedRounds??(full&&knownOrdinal&&Number.isInteger(capacity)?capacity-startOrdinal+1:null);
+    if(!Number.isInteger(capacity)||capacity<1||capacity>99)return fail('LBG_NORMAL_PAIR:NATIVE_CAPACITY_UNRESOLVED');
+    if((startOrdinal!=null&&!knownOrdinal)||(knownOrdinal&&startOrdinal+1>capacity)||(remaining!=null&&(!Number.isInteger(remaining)||remaining<2||remaining>capacity||(knownOrdinal&&(startOrdinal+remaining-1>capacity||(full&&remaining!==capacity-startOrdinal+1))))))return fail('LBG_NORMAL_PAIR:MAGAZINE_INSUFFICIENT_OR_CONFLICTING');
+    if(knownOrdinal&&Number.isInteger(remaining))explicitNormalPair={startOrdinal,remaining,full};
+   }
+  }
+  if(weapon.kind==='light-bowgun'&&(referenceSkills.firstShot>0||referenceSkills.forceShot>0)&&resolvedTechniqueIds.length!==1&&!explicitNormalPair)return fail('REAL_SLICE:LBG_SHOT_SKILL_SINGLE_SHOT_REQUIRED');
+  if(!explicitNormalPair&&!normalAmmoSequence&&!rapidAmmoSequence&&!ballisticSelection&&weapon.kind==='light-bowgun'&&(referenceSkills.firstShot>0||referenceSkills.forceShot>0)&&(!Number.isInteger(lightBowgunState?.shotOrdinal)||lightBowgunState.shotOrdinal<1||typeof lightBowgunState?.fullMagazine!=='boolean'))return fail('REAL_SLICE:LBG_SHOT_POSITION_PENDING');
   const referenceCriticalBoostLevel=Math.max(...allSkills.filter(x=>x.skillKey==='criticalBoost').map(x=>x.level),0),criticalElementLevel=Math.max(...allSkills.filter(x=>x.skillKey==='criticalElement').map(x=>x.level),0);
   const chargeScope=root.MHMeleeChargeMasterScope,chargeExtension=chargeScope?.weapons?.[weapon.kind];
-  const gsCharge=chargeExtension?{...root.MHGreatSwordChargeMasterDB,...chargeScope,...chargeExtension,weaponType:weapon.kind}:root.MHGreatSwordChargeMasterDB;
+  const ordinaryHammerMv={HAM_VERTICAL_I:41,HAM_CHARGED_SWING:25,HAM_CHARGED_RETURN_SWING:55};
+  const spinEndMotions={HAM_SPIN_SIDE_SWING:30,HAM_SPIN_RETURN_SWING:55,HAM_SPIN_STRONG_UPPERCUT:100};
+  const singleSpinEnd=weapon.kind==='hammer'&&conditions.standardEvaluation===false&&resolvedTechniqueIds.length===1&&Object.hasOwn(spinEndMotions,resolvedTechniqueIds[0]);
+  const chargedSwing=weapon.kind==='hammer'&&conditions.standardEvaluation===false&&resolvedTechniqueIds.length===1&&['HAM_CHARGED_SWING','HAM_CHARGED_UPPERCUT'].includes(resolvedTechniqueIds[0]);
+  const offsetChargeSource=gsOffsetThree?techniqueDb?.get?.('great-sword','GS_OFFSET_RISING_SLASH_3')?.groundOffsetThreeReference?.chargeMasterSource:null;
+  const baseGsCharge=root.MHGreatSwordChargeMasterDB;
+  const gsCharge=gsOffsetThree&&offsetChargeSource===baseGsCharge?.source?{...baseGsCharge,
+    status:'SOURCE_BACKED_PROVISIONAL',techniqueIds:['GS_OFFSET_RISING_SLASH_3'],
+    scope:'OFFSET_LEVEL3_ELEMENT_BASE_MULTIPLY_BEFORE_FLAT_ONLY',baseApprovalRef:baseGsCharge.approvalRef,
+    approvalRef:undefined,approvedAt:undefined}:chargeExtension?{...root.MHGreatSwordChargeMasterDB,...chargeScope,...chargeExtension,...(chargedSwing?{techniqueIds:resolvedTechniqueIds,allowedTechniqueIds:resolvedTechniqueIds}:singleSpinEnd?{techniqueIds:[],allowedTechniqueIds:resolvedTechniqueIds}:{}),weaponType:weapon.kind}:root.MHGreatSwordChargeMasterDB;
   const gsChargeActive=(weapon.kind==='great-sword'||!!chargeExtension)&&referenceSkills.chargeMaster>0;
   if(gsChargeActive){
    const entries=allSkills.filter(x=>x.skillKey==='chargeMaster');
@@ -1269,14 +1530,39 @@
   }
   const capacityIndependentHbgRestore=weapon.kind==='heavy-bowgun'&&resolvedTechniqueIds.length===1&&resolvedTechniqueIds[0]==='HBG_ELEMENT_FIRST_HIT_REFERENCE'&&weapon.ammo?.some(a=>root.MHBaseHbgCapacityIndependentAmmo?.(weapon,a)===true);
   if(weapon.artiaCalculationEvidence?.capacityEvidence?.bonus>0&&!capacityIndependentHbgRestore&&resolvedTechniqueIds.some(id=>!(id==='LBG_ELEMENT_FIRST_HIT_REFERENCE'&&weapon.artiaCalculationEvidence.capacityEvidence.scope==='NORMAL_AND_COMPLETED_ELEMENT_AMMO')&&! /^(HBG|LBG)_NORMAL_AMMO_[123]$/.test(id)&&!(id==='LBG_NORMAL_RAPID_3'&&rapidRequested&&rapidShotRule?.effectiveAmmoLevel===3)))return fail('REAL_SLICE:ARTIA_CAPACITY_AMMO_SCOPE_PENDING');
+  const cbPlainSwordRound=weapon.kind==='charge-blade'&&resolvedTechniqueIds.includes('CB_SWORD_ROUND_SLASH');
+  const cbPlainSwordWeak=weapon.kind==='charge-blade'&&resolvedTechniqueIds.includes('CB_SWORD_WEAK_SLASH');
+  const cbSinglePrefix=weapon.kind==='charge-blade'&&conditions.standardEvaluation===false&&resolvedTechniqueIds.length===1&&
+    ['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(conditions.singleUnboostedBody)&&resolvedTechniqueIds[0]===conditions.singleUnboostedBody?resolvedTechniqueIds[0]:null;
+  const cbPlainSwordBody=cbPlainSwordRound?'CB_ROUND_SLASH':cbPlainSwordWeak?'CB_WEAK_SLASH':null;
+  if(cbPlainSwordBody||cbSinglePrefix){
+   if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1)return fail((cbPlainSwordBody||cbSinglePrefix)+':SINGLE_LANDED_HIT_REQUIRED');
+   const inactive=x=>x==null||x===false||x===''||x==='NONE';
+   const emptyDraw=map=>map==null||(inputRecord(map)&&Object.keys(map).every(ch=>['normal','maximum'].includes(ch)&&map[ch]==null));
+   if(!['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','drawAttack','mantleState','mantle','mantleActive','corruptedMantle','evasionMantle'].every(key=>inactive(conditions[key]))||
+      !['criticalDrawHits','punishingDrawHits'].every(key=>emptyDraw(conditions[key])))return fail((cbPlainSwordBody||cbSinglePrefix)+':CONTEXT_UNSUPPORTED');
+   if(cbSinglePrefix&&['counterSuccess','guardPoint','nextAction','followUp','damageStateTransition','damageStatsState','stateStatsByState'].some(key=>conditions[key]!=null&&conditions[key]!==false))
+    return fail(cbSinglePrefix+':CONTEXT_UNSUPPORTED');
+   const state=chargeBladeState,keys=['mode','swordBoosted','shieldBoosted','axeBoosted','enhancedPhial','enhancedPhials','normalPhials','phialType','mixMode','mixH','previousAction'];
+   if(!inputRecord(state)||JSON.stringify(state)!==JSON.stringify(conditions.chargeBladeState)||
+      Object.keys(state).some(key=>!keys.includes(key)&&state[key]!=null)||
+      keys.some(key=>conditions[key]!=null&&JSON.stringify(conditions[key])!==JSON.stringify(state[key]))||state.mode!==(cbSinglePrefix==='CB_AXE_TO_SWORD_MORPH'?'AXE':'SWORD')||
+      !['swordBoosted','shieldBoosted','axeBoosted','enhancedPhial'].every(key=>state[key]===false)||
+      (state.enhancedPhials!=null&&state.enhancedPhials!==0)||
+      (state.normalPhials!=null&&(!Number.isSafeInteger(state.normalPhials*2)||state.normalPhials<0||state.normalPhials>6||typeof state.normalPhials!=='number'))||
+      (state.phialType!=null&&state.phialType!==''&&state.phialType!==officialPhialType)||
+      (state.previousAction!=null&&state.previousAction!=='')||(state.mixMode!=null&&state.mixMode!=='')||
+      (state.mixH!=null&&(!inputRecord(state.mixH)||Object.values(state.mixH).some(v=>v!=null&&v!==''))))
+      return fail((cbPlainSwordBody||cbSinglePrefix)+':STATE_UNSUPPORTED');
+  }
   const rapidRule=root.MHRapidMorphAttackRule;
   const rapidMorphEntries=allSkills.filter(x=>x.skillKey==='rapidMorph'&&!nonTargetRapidMorph(x)),rapidMorphLevel=Math.max(0,...rapidMorphEntries.map(x=>x.level));
   if(rapidMorphEntries.length&&(!['charge-blade','switch-axe'].includes(weapon.kind)||rapidMorphEntries.some(x=>Number(x.skillId)!==7||!Number.isInteger(x.level)||x.level<1||x.level>3)))return fail('REAL_SLICE:RAPID_MORPH_SCOPE_OR_LEVEL_UNRESOLVED');
-  if(rapidMorphEntries.length&&(!rapidRule||rapidRule.status!=='OWNER_APPROVED_PROVISIONAL'||resolvedTechniqueIds.some(id=>weapon.kind==='charge-blade'?(!root.ChargeBladeEngine?.techniques?.[id]&&!(Object.hasOwn(root.MHSaedGuardRapidMorphRule?.predecessors||{},id)&&root.TechniqueDBEngine.get('charge-blade',id)?.phialReference?.status==='PROVISIONALLY_ADOPTED')):!['SA_SWORD_VERTICAL','SA_SWORD_RIGHT_RISING','SA_SWORD_LEFT_RISING','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'].includes(id))))return fail('REAL_SLICE:RAPID_MORPH_TECHNIQUE_SCOPE_UNRESOLVED');
+  if(rapidMorphEntries.length&&(!rapidRule||rapidRule.status!=='OWNER_APPROVED_PROVISIONAL'||resolvedTechniqueIds.some(id=>weapon.kind==='charge-blade'?(!cbPlainSwordBody&&!root.ChargeBladeEngine?.techniques?.[id]&&!(Object.hasOwn(root.MHSaedGuardRapidMorphRule?.predecessors||{},id)&&root.TechniqueDBEngine.get('charge-blade',id)?.phialReference?.status==='PROVISIONALLY_ADOPTED')):!['SA_SWORD_VERTICAL','SA_SWORD_RIGHT_RISING','SA_SWORD_LEFT_RISING','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'].includes(id))))return fail('REAL_SLICE:RAPID_MORPH_TECHNIQUE_SCOPE_UNRESOLVED');
   let ed1Rule=root.MHCBED1ResourceRule;
   const dischargeRules=root.MHCBDischargeResourceRules,resourcePlans={};
   const hRule=root.MHCBHRouteRule;
-  const hRequested=weapon.kind==='charge-blade'&&resolvedTechniqueIds.some(id=>hRule?.prefixIds.includes(id));
+  const hRequested=!cbSinglePrefix&&weapon.kind==='charge-blade'&&resolvedTechniqueIds.some(id=>hRule?.prefixIds.includes(id));
   if(hRequested){
    if(hRule?.status!=='OWNER_APPROVED_PROVISIONAL'||JSON.stringify(resolvedTechniqueIds)!==JSON.stringify(hRule.techniqueIds))return fail('REAL_SLICE:CB_H_EXACT_SINGLE_ROUTE_REQUIRED');
    if(chargeBladeState?.mode!=='AXE'||chargeBladeState.previousAction!=='AXE_NEUTRAL'||chargeBladeState.shieldBoosted!==true||chargeBladeState.swordBoosted!==false||typeof chargeBladeState.axeBoosted!=='boolean')return fail('REAL_SLICE:CB_H_EXPLICIT_MODE_SHIELD_SWORD_REQUIRED');
@@ -1346,6 +1632,16 @@
    }else if(referenceKind==='light-bowgun'){
     const level=Number(String(id).match(/^LBG_NORMAL_(?:AMMO|RAPID(?:_NATIVE)?)_([123])$/)?.[1]||0);
     if(!Number.isInteger(level)||level<1)return state;
+    if(id==='LBG_NORMAL_AMMO_3'){
+     if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||normalAmmoSequence||rapidAmmoSequence||
+        weapon.ammo?.filter(a=>a.kind==='normal'&&a.level===3&&Number.isInteger(a.capacity)&&a.capacity>0).length!==1||
+        ['normalPowder','elementPowder','specialMagazine','rapidMagazine'].some(k=>state[k]!=null&&state[k]!==''&&state[k]!=='NONE')||
+        (state.loadedRounds!=null&&(!Number.isInteger(state.loadedRounds)||state.loadedRounds<1||state.loadedRounds>weapon.ammo.find(a=>a.kind==='normal'&&a.level===3).capacity))||
+        (state.shotOrdinal!=null&&state.shotOrdinal!==1)||(state.contactCount!=null&&state.contactCount!==3)||
+        referenceSkills.firstShot||referenceSkills.forceShot||referenceSkills.bladescaleLoading)
+      throw Error('LBG_NORMAL:NATIVE_THREE_SCOPE_UNRESOLVED');
+     state.nativeSingleNormalThree=true;
+    }
     state.ammoLevel=state.ammoLevel??level;
     state.weaponAmmoEntry=Array.isArray(weapon?.ammo)?weapon.ammo.find(x=>x?.kind==='normal'&&x.level===(technique.rapidRule?.baseAmmoLevel||level))||null:null;
     state.magazineCapacity=state.weaponAmmoEntry?.capacity??null;
@@ -1365,7 +1661,43 @@
    }
    return state;
   };
+  const hhPlainSlam=weapon.kind==='hunting-horn'&&resolvedTechniqueIds.includes('HH_SLAM');
+  const hhSingleContact=weapon.kind==='hunting-horn'&&conditions.hhSingleContact===true&&
+   resolvedTechniqueIds.length===1&&['HH_RIGHT_SWING','HH_BACKWARD_ATTACK'].includes(resolvedTechniqueIds[0]);
+  if(hhPlainSlam||hhSingleContact){
+   const prefix=hhPlainSlam?'HH_SLAM':'HH_SINGLE_CONTACT';
+   if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1)return fail(prefix+':SINGLE_ACTION_REQUIRED');
+   const inactive=value=>value==null||value===false||value===''||value==='NONE';
+   const noManualDrawMap=key=>conditions[key]==null||(inputRecord(conditions[key])&&
+     Object.keys(conditions[key]).every(ch=>['normal','maximum'].includes(ch)&&conditions[key][ch]==null));
+   if(!['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','drawAttack','mantleState','mantle','mantleActive','corruptedMantle','evasionMantle'].every(key=>inactive(conditions[key]))||
+      !['criticalDrawHits','punishingDrawHits'].every(noManualDrawMap))return fail(prefix+':BODY_CONTEXT_UNSUPPORTED');
+   if(!inputRecord(huntingHornState)||JSON.stringify(huntingHornState)!==JSON.stringify(conditions.huntingHornState)||
+      huntingHornState.echoState!=='NONE'||huntingHornState.melodyState!=='NONE'||
+      Object.keys(huntingHornState).some(key=>!['echoState','melodyState'].includes(key)&&(hhSingleContact||huntingHornState[key]!=null)))
+      return fail(prefix+':BODY_STATE_UNSUPPORTED');
+  }
   const hhModel=weapon.kind==='hunting-horn'&&huntingHornState?.model===root.TechniqueDBEngine?.eventModels?.hhNormalMelody?.id?root.TechniqueDBEngine?.eventModels?.hhNormalMelody:null;
+  let hhOpening=null;
+  const hhOpeningInput=conditions.hhOpeningMelody;
+  if(weapon.kind==='hunting-horn'&&conditions.standardEvaluation===false&&hhOpeningInput!=null){
+   const model=root.TechniqueDBEngine?.eventModels?.hhNormalMelody;
+   if(!inputRecord(hhOpeningInput)||Object.keys(hhOpeningInput).some(key=>!['family','rank'].includes(key))||
+      !Object.hasOwn(hhOpeningFamilies,hhOpeningInput.family)||!Number.isInteger(hhOpeningInput.rank)||
+      hhOpeningInput.rank<0||hhOpeningInput.rank>model?.attackMelodyCap)return fail('HH_OPENING:INPUT_UNSUPPORTED');
+   if(hhOpeningInput.rank>0){
+    const ordinaryBody=resolvedTechniqueIds.every(id=>hhOpeningBodyIds.includes(id));
+    if(hhModel||(!hhPlainSlam&&!ordinaryBody)||
+       !inputRecord(huntingHornState)||huntingHornState.echoState!=='NONE'||huntingHornState.melodyState!=='NONE'||
+       Object.keys(huntingHornState).some(k=>!['echoState','melodyState'].includes(k)&&huntingHornState[k]!=null)||
+       ['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','drawAttack','mantleState','mantle','mantleActive','corruptedMantle','evasionMantle'].some(k=>![null,undefined,false,'','NONE'].includes(conditions[k])))
+     return fail('HH_OPENING:BODY_ONLY');
+    if(!hhAvailableOpeningFamilies(weapon).includes(hhOpeningInput.family))return fail('HH_OPENING:WEAPON_MELODY_UNCONFIRMED');
+    const multiplier=model?.attackMelodies?.[hhOpeningInput.family]?.[hhOpeningInput.rank],adoption=model?.attackMelodyAdoption;
+    if(!Number.isFinite(multiplier)||adoption?.status!=='OWNER_APPROVED_PROVISIONAL')return fail('HH_OPENING:SOURCE_PENDING');
+    hhOpening={...adoption,...hhOpeningInput,multiplier,scope:'PREACTIVATED_GROUND_BODY_ONLY',weaponMelodyEffectId:hhOpeningFamilies[hhOpeningInput.family].effectId};
+   }
+  }
   if(weapon.kind==='hunting-horn'&&huntingHornState?.model&&!hhModel)return fail('REAL_SLICE:HH_MODEL_UNKNOWN');
   // Status/exhaust buildup is outside HP damage; only non-awakened ordinary body Hits.
   // Source: https://kuroyonhon.com/mhwilds/memo/11.php (phial effects); no proc damage model.
@@ -1403,8 +1735,40 @@
    if(!Number.isInteger(capacity)||!Number.isInteger(gunlanceState.loadedRounds)||gunlanceState.loadedRounds<1||gunlanceState.loadedRounds>capacity)return fail('GL_TARGET:INITIAL_ROUNDS_INVALID');
    glTargetContext={rules,row,capacity,input:shellingInput};
   }
+  const gsLowerCharged=id=>/^GS_(?:STRONG_)?CHARGED_SLASH_[12]$/.test(id);
+  if(weapon.kind==='great-sword'&&resolvedTechniqueIds.some(id=>gsLowerCharged(id)||/^GS_TRUE_CHARGED_SLASH_3(?:_STRONG)?$/.test(id))){
+   const inactive=value=>value==null||value===false||value===''||value==='NONE';
+   const noManualHitMap=key=>conditions[key]==null||inputRecord(conditions[key])&&
+      Object.keys(conditions[key]).every(ch=>['normal','maximum'].includes(ch)&&conditions[key][ch]==null);
+   if(conditions.standardEvaluation!==false||![null,undefined,'','DRAWN'].includes(conditions.greatSwordDrawOpening)||
+      !['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','drawAttack','mantleState','mantle','mantleActive','corruptedMantle','evasionMantle','offsetSuccess','parrySuccess'].every(key=>inactive(conditions[key]))||
+      !['criticalDrawHits','punishingDrawHits'].every(noManualHitMap))return fail('GS_CHARGE_LEVEL:GROUND_DRAWN_BODY_REQUIRED');
+  }
+  const bowLowerCharged=id=>weapon.kind==='bow'&&root.BowReference?.isExplicitChargeId(id);
+  if(resolvedTechniqueIds.some(bowLowerCharged)&&
+     (conditions.standardEvaluation!==false||bowState?.coating!=='NONE'||bowState.range!=='CRITICAL'||bowState.guided||
+      ['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping'].some(key=>conditions[key])||
+      resolvedTechniqueIds.some(id=>!bowLowerCharged(id)&&!/^BOW_(?:SHOT|POWER_SHOT|POWER_VOLLEY)_3$/.test(id))))
+   return fail('BOW_REFERENCE:EXPLICIT_CHARGE_SCOPE');
   for(const id of [...new Set(resolvedTechniqueIds)]){
    let technique=techniqueDb?.get?.(techniqueKind,id);
+   if(weapon.kind==='bow'&&id==='BOW_DRAGON_PIERCER'){
+    if(conditions.standardEvaluation!==false||conditions.piercerSingle!==true||conditions.mounted===true||resolvedTechniqueIds.length!==1||bowState?.coating!=='NONE'||bowState.range!=='CRITICAL'||bowState.guided!==false)return fail('BOW_PIERCER:SINGLE_UNCOATED_CRITICAL_REQUIRED');
+   }
+   if(bowLowerCharged(id)){
+    technique=techniqueDb?.getExplicitBowCharge?.(id);
+    const canonical=root.TechniqueDBEngine?.getExplicitBowCharge?.(id);
+    if(!canonical||JSON.stringify(technique)!==JSON.stringify(canonical))return fail('BOW_REFERENCE:EXPLICIT_CHARGE_SOURCE');
+   }
+   if(weapon.kind==='great-sword'&&gsLowerCharged(id)){
+    technique=techniqueDb?.getExplicitGroundCharge?.(id);
+    const canonical=root.TechniqueDBEngine?.getExplicitGroundCharge?.(id),ref=technique?.groundChargeReference,h=technique?.hits?.[0];
+    if(!canonical||JSON.stringify(technique)!==JSON.stringify(canonical)||ref?.status!=='SOURCE_BACKED_PROVISIONAL'||
+       ref.scope!=='LANDED_DRAWN_GROUND_CHARGE_BODY_HP'||ref.chargeLevel!==Number(id.at(-1))||technique.hits.length!==1||
+       h?.damageType!=='slash'||!Number.isFinite(h.mv)||!Number.isFinite(h.elementModifier)||h.partModifier!==1)
+     return fail('GS_CHARGE_LEVEL:SOURCE_PENDING');
+    technique={...technique,adoption:ref};
+   }
    if(weapon.kind==='gunlance'&&String(id).startsWith('reference:gl_')){
     const action=String(id).slice('reference:gl_'.length).toUpperCase(),canonical='GL_SHELL_NORMAL_MEDIUM';
     const base=techniqueDb?.get?.(techniqueKind,canonical);
@@ -1424,13 +1788,579 @@
     if(!technique.hits?.length)return fail('REAL_SLICE:IG_KINSECT_ONLY_OUT_OF_SCOPE');
     technique={...technique,specialComponents:(technique.specialComponents||[]).filter(x=>x!=='KINSECT')};
    }
-   const referenceKind=weapon.kind==='heavy-bowgun'&&id==='HBG_WYVERN_AMMO'?'heavy-bowgun-wyvern':weapon.kind==='light-bowgun'&&id==='LBG_ELEMENT_FIRST_HIT_REFERENCE'?'light-bowgun-element':weapon.kind==='heavy-bowgun'&&id==='HBG_ELEMENT_FIRST_HIT_REFERENCE'?'heavy-bowgun-element':weapon.kind==='bow'&&['BOW_SHOT_3','BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3','BOW_THOUSAND_DRAGONS'].includes(id)?'bow':weapon.kind==='heavy-bowgun'&&/^HBG_NORMAL_AMMO_[123]$/.test(id)?'heavy-bowgun':weapon.kind==='light-bowgun'&&/^LBG_NORMAL_(?:AMMO_[12]|RAPID_[123]|RAPID_NATIVE_3)$/.test(id)?'light-bowgun':weapon.kind==='charge-blade'&&['CB_SAED','CB_SAED_AED_DERIVED'].includes(id)?'charge-blade-saed':weapon.kind==='hunting-horn'&&['HH_PERFORMANCE_SHOCKWAVE','HH_ECHO_BUBBLE_FOLLOWUP','HH_ECHO_BUBBLE_MELODY_EVENT','HH_MELODY_COMPLETION_FIXED_10'].includes(id)?'hunting-horn-sound':null;
-   if(referenceKind){const rawState=referenceKind==='heavy-bowgun-wyvern'?{...conditions.hbgWyvernState,...conditions.combatBuffs}:referenceKind==='bow'?bowState:['heavy-bowgun','heavy-bowgun-element'].includes(referenceKind)?hbgState:['light-bowgun','light-bowgun-element'].includes(referenceKind)?lightBowgunState:referenceKind==='charge-blade-saed'?{...chargeBladeState,ammoLoadingLevel:Math.max(0,...loadShellEntries.map(x=>x.level))}:huntingHornState;technique={...technique,referenceKind,referenceInput:{state:resolveReferenceState(referenceKind,id,technique,rawState),skills:referenceKind==='heavy-bowgun-wyvern'?{firstShot:referenceSkills.firstShot,forceShot:referenceSkills.forceShot,artilleryLevel:Math.max(0,...artilleryEntries.map(x=>x.level)),fireLevel:Math.max(0,...allSkills.filter(x=>['火属性攻撃強化','Fire Attack'].includes(x.name)).map(x=>x.level))}:referenceSkills,criticalBoostLevel:referenceCriticalBoostLevel,sourceTechniqueId:id}};}
+   if(ballisticSelection&&id===ballisticSelection.techniqueId){
+    technique={weaponType:'light-bowgun',techniqueId:id, revision:1,techniqueName:ballisticSelection.ammoType+' fixed five triggers',numericStatus:'SOURCE_CONFIRMED',verificationStatus:'OWNER_APPROVED_PROVISIONAL',calculationStatus:'READY_HP_REFERENCE',hits:[],specialComponents:['AMMO_PHYSICAL'],stateRequirement:{},referenceKind:'light-bowgun-ballistic',referenceInput:{state:{...lightBowgunState},skills:referenceSkills,criticalBoostLevel:referenceCriticalBoostLevel,sourceTechniqueId:id},evidenceRefs:[ballisticSelection.source],recordRole:'SPECIAL_REFERENCE'};
+   }
+   if(id==='HBG_STICKY_AMMO_1'&&weapon.kind==='heavy-bowgun'){
+    const ammo=weapon.ammo?.filter(a=>a.kind==='sticky');
+    const defaults={ammoType:'NORMAL',contactTargetPolicy:'CURRENT_TARGET',ammoLevel:1,range:'CRITICAL',normalModeLevel:0};
+    if(![null,undefined,'NONE'].includes(conditions.combatBuffs?.meal)||
+       ![null,undefined,'NO'].includes(conditions.combatBuffs?.charm)||![null,undefined,'NONE'].includes(conditions.combatBuffs?.otherBuffs)||
+       conditions.standardEvaluation!==false||conditions.stickySingle!==true||resolvedTechniqueIds.length!==1||
+       weapon.id!==464||weapon.gameId!==1||weapon.damage?.raw!==90||weapon.affinity!==0||weapon.skills?.length!==0||
+       ammo?.length!==1||ammo[0].level!==1||ammo[0].capacity!==2||equippedSkills.length||activeBonusEffects.length||
+       conditions.mounted||conditions.drawAttack||part.wounded===true||normalAmmoSequence||rapidAmmoSequence||
+       Object.entries(hbgState||{}).some(([k,v])=>v!=null&&(!Object.hasOwn(defaults,k)||v!==defaults[k]))||
+       Object.values(conditions.hbgWyvernState||{}).some(v=>v!=null)||
+       ![part.multipliers?.pierce,part.multipliers?.fire].every(h=>Number.isFinite(h)&&h>=0&&h<=1)||
+       technique?.sourceVersion!=='1.041'||JSON.stringify(technique)!==JSON.stringify(root.TechniqueDBEngine?.get(weapon.kind,id)))
+     return fail('HBG_STICKY_AMMO_1:NATIVE_SINGLE_SHOT_REQUIRED');
+    technique={...technique,referenceKind:'hbg-sticky',referenceInput:{state:{ammoLevel:1,range:'CRITICAL'}}};
+   }
+   if(weapon.kind==='bow'&&['BOW_ARC_1_IMPACT_ONLY','BOW_ARC_1_FULL_TRIAL'].includes(id)){
+    const hz=part.multipliers,full=id==='BOW_ARC_1_FULL_TRIAL',baseId='BOW_ARC_1_IMPACT_ONLY';
+    if(full){
+     if(conditions.bowArcFullTrial!==true||target.monster!=='training-room'||
+        !['training-front','training-back'].includes(target.part)||hz?.pierce!==(target.part==='training-front'?.8:.2)||
+        ['dismountAttack','sneakAttack','jumpAttack','airborne','jumping','focusAttack','focusStrike','previousAction','followUp','nextAction','mantle','mantleState','mantleActive','corruptedMantle','evasionMantle'].some(k=>![null,undefined,false,'','NONE'].includes(conditions[k])))
+      return fail('BOW_ARC:FULL_TRIAL_SCOPE_REQUIRED');
+     technique=techniqueDb?.get?.('bow',baseId);
+    }
+    if(conditions.standardEvaluation!==false||(!full&&conditions.arcContactSingle!==true)||resolvedTechniqueIds.length!==1||
+       weapon.id!==1||weapon.damage?.raw!==90||weapon.affinity!==0||weapon.skills?.length!==0||equippedSkills.length||activeBonusEffects.length||
+       conditions.mounted||conditions.drawAttack||part.wounded===true||!Number.isFinite(hz?.pierce)||hz.pierce<0||hz.pierce>1||hz.slash!==hz.pierce||
+       bowState?.chargeLevel!==1||bowState.coating!=='NONE'||bowState.range!=='CRITICAL'||bowState.guided!==false||
+       ![null,undefined,'NONE'].includes(conditions.combatBuffs?.meal)||![null,undefined,'NO'].includes(conditions.combatBuffs?.charm)||
+       ![null,undefined,'NONE'].includes(conditions.combatBuffs?.otherBuffs)||
+       !technique?.arcImpactValues||JSON.stringify(technique)!==JSON.stringify(root.TechniqueDBEngine?.get(weapon.kind,baseId)))
+     return fail('BOW_ARC:IMPACT_SCOPE_REQUIRED');
+    const arcBlastTrial=full?{base:13,contacts:2,source:'https://github.com/dtlnor/mhws-rcol-record/blob/90ed7dd76b11a165f1d8ed5685e4dd82999d4f13/Player/Wp11.csv#L120',
+      status:'OWNER_MEASURED_NATURAL_BLAST_VALUES',liveGameTotalVerification:'PENDING'}:null;
+    technique={...technique,...(full?{techniqueId:id,techniqueName:'曲射（溜め1・自然炸裂込み検証）',
+     arcBlastTrial,calculationScope:'ARC_6_IMPACTS_2_NATURAL_BLASTS_TRIAL'}:{}),referenceKind:'bow-arc-impacts',referenceInput:{state:bowState}};
+   }
+   if(weapon.kind==='gunlance'&&id==='GL_WYVERN_FIRE_NORMAL_MEDIUM'){
+    const allowed={shellingType:'NORMAL',shellingPower:'MEDIUM',fireHitzone:part.multipliers?.fire*100};
+    const ordinary=['mantle','mantleState','mantleActive','corruptedMantle','evasionMantle','offsetSuccess','parrySuccess','powerClash','jumpAttack','airborne','focusStrike']
+      .every(k=>[null,undefined,false,'','NONE'].includes(conditions[k]));
+    const sharpnessSafe=[1.05,1.2,1.32,1.39].includes(Number(conditions.sharp));
+    if(!ordinary||!sharpnessSafe||conditions.wyvernFive!==true||conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||
+       weapon.id!==315||weapon.gameId!==1||weapon.damage?.raw!==90||weapon.affinity!==0||weapon.shell!=='normal'||weapon.shellLevel!==2||
+       weapon.skills?.length!==0||equippedSkills.length||activeBonusEffects.length||conditions.mounted||conditions.drawAttack||part.wounded===true||
+       ![null,undefined,'NONE'].includes(conditions.combatBuffs?.meal)||![null,undefined,'NO'].includes(conditions.combatBuffs?.charm)||
+       ![null,undefined,'NONE'].includes(conditions.combatBuffs?.otherBuffs)||
+       !Number.isFinite(part.multipliers?.fire)||part.multipliers.fire<0||part.multipliers.fire>1||
+       Object.entries(gunlanceState||{}).some(([k,v])=>v!=null&&(k==='loadedRounds'?(!Number.isInteger(v)||v<0||v>6):v!==allowed[k]))||
+       technique?.specialSourceValues?.unparenthesizedValue!==43||technique.specialSourceValues.parenthesizedValue!==240||
+       !technique.wyvernFiveReference||JSON.stringify(technique)!==JSON.stringify(root.TechniqueDBEngine?.get(weapon.kind,id)))
+     return fail('GL_WYVERN_FIRE:READY_SINGLE_FIVE_REQUIRED');
+    if(part.multipliers.fire>0.05)return fail('GL_WYVERN_FIRE:LATER_FIRE_HITZONE_UNCONFIRMED');
+    technique={...technique,referenceKind:'gl-wyvern-five',referenceInput:{state:{gauge:1}},evidenceRefs:[technique.wyvernFiveReference.source]};
+   }
+   if(weapon.kind==='heavy-bowgun'&&id==='HBG_PIERCE_AMMO_2'){
+    const ammo=weapon.ammo?.filter(a=>a.kind==='pierce');
+    if(conditions.standardEvaluation!==false||conditions.pierceSeven!==true||resolvedTechniqueIds.length!==1||
+       weapon.id!==480||weapon.gameId!==17||weapon.damage?.raw!==140||weapon.affinity!==0||
+       weapon.skills?.length!==1||weapon.skills[0]?.skill?.id!==16||weapon.skills[0].level!==2||
+       ammo?.length!==1||ammo[0].level!==2||ammo[0].capacity!==4||part.wounded===true||conditions.mounted||conditions.drawAttack||
+       activeBonusEffects.length||equippedSkills.some(s=>Number(s.skillId)!==16||s.level!==2)||
+       ![null,undefined,'NONE'].includes(conditions.combatBuffs?.meal)||![null,undefined,'NO'].includes(conditions.combatBuffs?.charm)||
+       ![null,undefined,'NONE'].includes(conditions.combatBuffs?.otherBuffs)||
+       !heavyPierceStateAllowed(hbgState)||
+       Object.values(conditions.hbgWyvernState||{}).some(v=>v!=null)||
+       !Number.isFinite(part.multipliers?.pierce)||part.multipliers.pierce<0||part.multipliers.pierce>1||
+       technique?.variableHitSource?.mvPerHit!==12||!technique.sevenContactReference||
+       JSON.stringify(technique)!==JSON.stringify(root.TechniqueDBEngine?.get(weapon.kind,id)))return fail('HBG_PIERCE_AMMO_2:BASE_FIRST_SEVEN_REQUIRED');
+    technique={...technique,referenceKind:'hbg-pierce-seven',referenceInput:{state:{shotOrdinal:1}},evidenceRefs:[technique.sevenContactReference.source]};
+   }
+   if(weapon.kind==='light-bowgun'&&id==='LBG_PIERCE_AMMO_2'){
+    const ammo=weapon.ammo?.filter(a=>a.kind==='pierce');
+    if(conditions.pierceSeven!==true||conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||
+       normalAmmoSequence||rapidAmmoSequence||part.wounded===true||conditions.mounted||conditions.drawAttack||
+       weapon.id!==783||weapon.gameId!==23||weapon.damage?.raw!==120||weapon.affinity!==0||
+       ammo?.length!==1||ammo[0].level!==2||ammo[0].capacity!==4||
+       weapon.skills?.length!==1||weapon.skills[0]?.skill?.id!==137||weapon.skills[0].level!==1||
+       equippedSkills.some(s=>Number(s.skillId)!==137||s.level!==1)||activeBonusEffects.length||
+       ![null,undefined,'NONE'].includes(conditions.combatBuffs?.meal)||![null,undefined,'NO'].includes(conditions.combatBuffs?.charm)||
+       ![null,undefined,'NONE'].includes(conditions.combatBuffs?.otherBuffs)||
+       !pierceSevenStateAllowed(lightBowgunState)||
+       !Number.isFinite(part.multipliers?.pierce)||part.multipliers.pierce<0||part.multipliers.pierce>1||
+       technique?.variableHitSource?.mvPerHit!==12||!technique.sevenContactReference||
+       JSON.stringify(technique)!==JSON.stringify(root.TechniqueDBEngine?.get(weapon.kind,id)))
+      return fail('LBG_PIERCE_AMMO_2:EXPLICIT_FIRST_NORMAL_SEVEN_REQUIRED');
+    technique={...technique,referenceKind:'lbg-pierce-seven',referenceInput:{state:{shotOrdinal:1,loadedRounds:4}},evidenceRefs:[technique.sevenContactReference.source]};
+   }
+   if(['HBG_IGNITION_MACHINE','HBG_IGNITION_COUNTER','HBG_IGNITION_GRENADE'].includes(id)&&weapon.kind==='heavy-bowgun'){
+    const counter=id==='HBG_IGNITION_COUNTER',grenade=id==='HBG_IGNITION_GRENADE';
+    const rule=technique?.ignitionReference;
+    const neutralAmmo={ammoType:'NORMAL',contactTargetPolicy:'CURRENT_TARGET'};
+    const unusedAmmo=['ammoLevel','contactPolicy','contactCount','elementType','normalModeLevel','magazineCapacity','shotOrdinal','fullMagazine'];
+    const conflictingAmmo=Object.entries(hbgState||{}).some(([key,value])=>{
+     if(key==='range')return grenade&&value!=null; // The split profile owns the grenade's distance premise.
+     if(Object.hasOwn(neutralAmmo,key))return value!=null&&value!==neutralAmmo[key];
+     return !unusedAmmo.includes(key)||value!=null;
+    });
+    if(conflictingAmmo||Object.values(conditions.hbgWyvernState||{}).some(v=>v!=null)||
+       ![null,undefined,'NONE'].includes(conditions.combatBuffs?.meal)||![null,undefined,'NO'].includes(conditions.combatBuffs?.charm)||
+       ![null,undefined,'NONE'].includes(conditions.combatBuffs?.otherBuffs)||weapon.specialAmmo!=null||
+       technique?.techniqueId!==id||technique.weaponType!==weapon.kind||technique.calculationStatus!=='EVIDENCE_GATED'||
+       JSON.stringify(technique)!==JSON.stringify(root.TechniqueDBEngine?.get(weapon.kind,id))||
+       !rule||conditions.ignitionProfile!==rule.profile||weapon.id!==rule.weaponId||weapon.gameId!==rule.gameId||
+       conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||normalAmmoSequence||rapidAmmoSequence||part.wounded===true||
+       weapon.damage?.raw!==90||weapon.affinity!==0||weapon.skills?.length!==0||equippedSkills.length||activeBonusEffects.length||
+       conditions.mounted||conditions.drawAttack||
+       (grenade&&(!Number.isFinite(part.multipliers?.fire)||part.multipliers.fire<0||part.multipliers.fire>1))||
+       (counter||grenade?(rule.startGauge<rule.minimumGauge||conditions.offsetSuccess||conditions.counterSuccess||conditions.followUp||conditions.chargeLevel>0):
+        (technique.specialSourceValues?.sourceMotionValues?.length!==40||!Number.isFinite(part.multipliers?.pierce)||part.multipliers.pierce<0||part.multipliers.pierce>1)))
+     return fail(grenade?'HBG_IGNITION_GRENADE:SWAPPED_SPLIT_SIX_REQUIRED':counter?'HBG_IGNITION_COUNTER:BASE_NO_OFFSET_REQUIRED':'HBG_IGNITION_MACHINE:HOPE_BASE_FULL_40_REQUIRED');
+    technique={...technique,referenceKind:grenade?'hbg-grenade':counter?'hbg-counter':'hbg-ignition',referenceInput:{state:{profile:rule.profile}}};
+   }
+   const referenceKind=weapon.kind==='heavy-bowgun'&&id==='HBG_WYVERN_AMMO'?'heavy-bowgun-wyvern':weapon.kind==='light-bowgun'&&id==='LBG_ELEMENT_FIRST_HIT_REFERENCE'?'light-bowgun-element':weapon.kind==='heavy-bowgun'&&id==='HBG_ELEMENT_FIRST_HIT_REFERENCE'?'heavy-bowgun-element':weapon.kind==='bow'&&(bowLowerCharged(id)||id==='BOW_DRAGON_PIERCER'||['BOW_SHOT_3','BOW_POWER_SHOT_3','BOW_POWER_VOLLEY_3','BOW_THOUSAND_DRAGONS'].includes(id))?'bow':weapon.kind==='heavy-bowgun'&&/^HBG_NORMAL_AMMO_[123]$/.test(id)?'heavy-bowgun':weapon.kind==='light-bowgun'&&/^LBG_NORMAL_(?:AMMO_[123]|RAPID_[123]|RAPID_NATIVE_3)$/.test(id)?'light-bowgun':weapon.kind==='charge-blade'&&['CB_SAED','CB_SAED_AED_DERIVED'].includes(id)?'charge-blade-saed':weapon.kind==='hunting-horn'&&['HH_PERFORMANCE_SHOCKWAVE','HH_ECHO_BUBBLE_FOLLOWUP','HH_ECHO_BUBBLE_MELODY_EVENT','HH_MELODY_COMPLETION_FIXED_10'].includes(id)?'hunting-horn-sound':null;
+   if(referenceKind==='light-bowgun'&&id==='LBG_NORMAL_AMMO_3'){
+    const profile=technique?.nativeNormalShot;
+    if(profile?.status!=='SOURCE_BACKED_PROVISIONAL'||!profile.evidenceRefs?.length)
+     return fail('LBG_NORMAL:NATIVE_THREE_SOURCE_UNRESOLVED');
+    technique={...technique,evidenceRefs:profile.evidenceRefs};
+   }
+   if(referenceKind){const rawState=referenceKind==='heavy-bowgun-wyvern'?{...conditions.hbgWyvernState,...conditions.combatBuffs}:referenceKind==='bow'?bowState:['heavy-bowgun','heavy-bowgun-element'].includes(referenceKind)?hbgState:['light-bowgun','light-bowgun-element'].includes(referenceKind)?lightBowgunState:referenceKind==='charge-blade-saed'?{...chargeBladeState,ammoLoadingLevel:Math.max(0,...loadShellEntries.map(x=>x.level))}:huntingHornState;technique={...technique,referenceKind,referenceInput:{state:resolveReferenceState(referenceKind,id,technique,rawState),skills:referenceKind==='heavy-bowgun-wyvern'?{firstShot:referenceSkills.firstShot,forceShot:referenceSkills.forceShot,artilleryLevel:Math.max(0,...artilleryEntries.map(x=>x.level)),fireLevel:Math.max(0,...allSkills.filter(x=>['火属性攻撃強化','Fire Attack'].includes(x.name)).map(x=>x.level))}:referenceSkills,criticalBoostLevel:referenceCriticalBoostLevel,sourceTechniqueId:id,...(explicitNormalPair?{explicitNormalPair}: {})}};}
+   if(saGroundTrial&&id===saGroundTrialId){
+    const baseId='SA_ELEMENT_DISCHARGE_FIRST_CONTACT';
+    const base=techniqueDb?.get?.('switch-axe',baseId), hit=base?.hits?.[0];
+    if(!base||JSON.stringify(base)!==JSON.stringify(root.TechniqueDBEngine?.get('switch-axe',baseId))||
+       base.sourceLocator!=='Wp08 RSID38'||base.hits.length!==1||hit.mv!==25||hit.damageType!=='slash'||hit.partModifier!==1)
+     return fail(id+':MEASUREMENT_SOURCE_REQUIRED');
+    const source='https://github.com/dtlnor/mhws-rcol-record/blob/90ed7dd76b11a165f1d8ed5685e4dd82999d4f13/Player/Wp08.csv';
+    technique={weaponType:'switch-axe',techniqueId:id,techniqueName:'剣：属性解放突き（地上完走・検証用）',
+     revision:1,numericStatus:'SOURCE_CONFIRMED',verificationStatus:'PARTIALLY_VERIFIED',calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:id,stateRequirement:{mode:'SWORD'},
+     hits:[hit.mv,...Array(8).fill(12),160].map(mv=>({mv,damageType:'slash',elementModifier:1,partModifier:1,damageTypeSource:source,partModifierSource:source})),
+     specialComponents:[],evidenceRefs:[source],
+     adoption:{status:'SOURCE_BACKED_PROVISIONAL',scope:'UNAWAKENED_HOPE_AXE_I_GROUNDED_FULL_DISCHARGE_TEN_HP_CONTACTS',
+      source,sourceGameVersion:'1.041',relativeLiveGameVerification:'OWNER_OBSERVED_TEN_HIT_SHAPE',absoluteLiveGameVerification:'PENDING',hitCount:10}};
+   }
    if(!technique)return fail('REAL_SLICE:TECHNIQUE_NOT_FOUND:'+id);
+   if(hhOpening&&!hhPlainSlam){
+    const canonical=root.TechniqueDBEngine?.get('hunting-horn',id);
+    if(!canonical||JSON.stringify(technique)!==JSON.stringify(canonical)||!canonical.hits?.length||
+       canonical.hits.some(h=>h.componentSource||h.damageStatsState!=null)||canonical.specialComponents?.length||
+       canonical.excludedComponents?.length||canonical.damageStateTransition!=null||Object.keys(canonical.stateRequirement||{}).length)
+     return fail('HH_OPENING:SOURCE_PENDING');
+   }
    if(hhModel)technique={...technique,hhModel:{...hhModel,action:hhModel.techniques[id],input:huntingHornState,specialRecords:Object.fromEntries(['HH_PERFORMANCE_SHOCKWAVE','HH_ECHO_BUBBLE_FOLLOWUP','HH_ECHO_BUBBLE_MELODY_EVENT','HH_MELODY_COMPLETION_FIXED_10'].map(key=>[key,techniqueDb.get('hunting-horn',key)]))}};
    const normalContract=STANDARD_NORMAL_HIT_CONTRACT[id];
    if(normalContract&&!technique.referenceKind&&!Array.isArray(technique.specialComponents)){
     technique={...technique,stateRequirement:technique.stateRequirement&&Object.keys(technique.stateRequirement).length?technique.stateRequirement:(normalContract.stateRequirement||{}),hits:(technique.hits||[]).map(hit=>({...hit,damageType:hit.damageType??normalContract.damageType,partModifier:hit.partModifier??normalContract.partModifier,partModifierSource:hit.partModifierSource??normalContract.source}))};
+   }
+   if(weapon.kind==='great-sword'&&/^GS_TRUE_CHARGED_SLASH_3(?:_STRONG)?$/.test(id)){
+    const strong=id.endsWith('_STRONG');
+    if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||
+       (conditions.strongHit!=null&&conditions.strongHit!==strong))return fail(id+':SINGLE_GROUND_BODY_REQUIRED');
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id);
+    if(!raw||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.weaponType!=='great-sword'||raw.techniqueId!==id||
+       raw.calculationStatus!=='EVIDENCE_GATED'||raw.numericStatus!=='SOURCE_CONFIRMED'||raw.currentVersionAudit!=='PENDING'||
+       raw.unresolvedReasons?.join()!=='OFFICIAL_BASELINE_VERSION_AUDIT_PENDING'||raw.evidenceRefs?.join()!=='MACARONGAMEMO_GS_R47_SOURCE'||
+       raw.stateRequirement?.strongHit!==strong||Object.keys(raw.stateRequirement).length!==1||
+       raw.hits?.length!==2||raw.hits.some((h,i)=>h.mv!==(i?(strong?267:209):16)||h.elementModifier!==(i?2.5:1)||
+         h.partModifier!==(i?1.5:0)||Object.keys(h).some(k=>!['mv','elementModifier','partModifier'].includes(k)))||
+       raw.specialComponents?.length||raw.excludedComponents?.length||raw.damageStateTransition||raw.referenceKind)return fail(id+':SOURCE_PENDING');
+    const source='https://github.com/dtlnor/mhws-rcol-record/blob/90ed7dd76b11a165f1d8ed5685e4dd82999d4f13/Player/Wp00.csv';
+    // The chosen ID specifies the strong-hit outcome. PartsBreakRate affects durability only.
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:id,stateRequirement:{},
+      hits:raw.hits.map(h=>({...h,damageType:'slash',damageTypeSource:source,partModifier:1,partModifierSource:source}))};
+   }
+   if(id==='GL_ADVANCING_RISING'&&weapon.kind==='gunlance'){
+    const plan=stats.conditionalConditionPlan;
+    if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||part.wounded===true||
+       ['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','evade','evading','drawAttack','previousAction','followUp','focusAttack','woundEvent','woundDestruction'].some(k=>conditions[k]!=null&&conditions[k]!==false))
+     return fail(id+':SINGLE_GROUND_BODY_REQUIRED');
+    const states=[stats,plan?.normal,plan?.maximum],special=weapon.specials?.[0],amount=special?.damage?.display;
+    const nativeElement=weapon.specials?.length===1&&special.kind==='element'&&special.hidden!==true&&
+      ['fire','water','ice','thunder','dragon'].includes(special.element)&&Number.isFinite(amount)&&amount>0&&
+      states.every(x=>x?.elementKnown===true&&x.typeKnown===true&&x.elementStatus==='KNOWN'&&
+       x.elementType===special.element&&x.element===amount&&x.elementComponents?.weaponBase===amount&&
+       x.elementComponents.normalMultiplier===1&&x.elementComponents.normalFlat===0&&
+       Array.isArray(x.activeBonusEffects)&&x.activeBonusEffects.length===0)&&
+      plan.maximumElementComponents?.weaponBase===amount&&plan.maximumElementComponents.normalMultiplier===1&&
+      plan.maximumElementComponents.normalFlat===0&&plan.maximumElementComponents.conditionalFlat===0;
+    if(!Array.isArray(weapon.specials)||weapon.phial!=null||!equippedSkills.every(zeroConversionPhysical)||
+       !(nativeElement||(weapon.specials.length===0&&states.every(zeroBodyState))))
+     return fail(id+':ZERO_BODY_REQUIRED');
+    const canonical=root.TechniqueDBEngine?.get(weapon.kind,id),hit=technique?.hits?.[0];
+    if(!canonical||JSON.stringify(technique)!==JSON.stringify(canonical)||technique.weaponType!==weapon.kind||
+       technique.techniqueId!==id||technique.numericStatus!=='SOURCE_CONFIRMED'||technique.calculationStatus!=='EVIDENCE_GATED'||
+       technique.sourceLocator!=='踏み込み突き上げ'||technique.hits.length!==1||!Number.isFinite(hit.mv)||
+       technique.specialComponents?.length||Object.keys(technique.stateRequirement||{}).length)
+     return fail(id+':SOURCE_PENDING');
+
+    technique={...technique,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:id,
+     hits:[{...hit,elementModifier:nativeElement?hit.elementModifier:0}]};
+   }
+   const uppercut=id==='HAM_CHARGED_UPPERCUT'&&weapon.kind==='hammer';
+   const risingSlash=id==='GL_RISING_SLASH'&&weapon.kind==='gunlance';
+   const unchargedCounter=id==='LAN_CHARGED_COUNTER'&&weapon.kind==='lance';
+   if(unchargedCounter&&((lanceState!=null&&(!inputRecord(lanceState)||Object.keys(lanceState).some(k=>k!=='counter')||
+      (lanceState.counter!=null&&lanceState.counter!=='')))||
+      ['powerGuard','justGuard','powerClash','receivedHit','chargeLevel'].some(k=>conditions[k]!=null&&conditions[k]!==false&&conditions[k]!==0)))
+    return fail(id+':UNCHARGED_REQUIRED');
+   if(uppercut||risingSlash||unchargedCounter){
+    if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||
+       ['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','counterSuccess','offsetSuccess','offsetFollowUp','parrySuccess','drawAttack','previousAction','followUp','hammerState'].some(k=>conditions[k]!=null&&conditions[k]!==false))
+     return fail(id+':SINGLE_GROUND_BODY_REQUIRED');
+    const raw=technique,hit=raw?.hits?.[0],canonical=root.TechniqueDBEngine?.get(weapon.kind,id);
+    if(!raw||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.techniqueId!==id||raw.weaponType!==weapon.kind||
+       raw.calculationStatus!=='EVIDENCE_GATED'||raw.numericStatus!=='SOURCE_CONFIRMED'||raw.currentVersionAudit!=='PENDING'||
+       raw.calculationScope!==(unchargedCounter?'UNCHARGED_SINGLE_GROUND_BODY_HP':'SINGLE_GROUND_BODY_HP')||raw.sourceVersion!=='1.041'||raw.hits?.length!==1||!hit||
+       ![hit.mv,hit.elementModifier,hit.partModifier].every(Number.isFinite)||!raw.evidenceRefs?.[0]||
+       hit.damageTypeSource!==raw.evidenceRefs[0]||hit.partModifierSource!==raw.evidenceRefs[0]||
+       Object.keys(raw.stateRequirement||{}).length||raw.specialComponents?.length||raw.damageStateTransition||raw.referenceKind)
+     return fail(id+':SOURCE_PENDING');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:id+'_V1041'};
+   }
+   const returnSwing=id==='HAM_CHARGED_RETURN_SWING';
+   if(weapon.kind==='hammer'&&(Object.hasOwn(ordinaryHammerMv,id)||Object.hasOwn(spinEndMotions,id))){
+    const swing=id==='HAM_CHARGED_SWING';
+    const ending=Object.hasOwn(spinEndMotions,id);
+    if((ending||returnSwing)&&(['offsetSuccess','offsetFollowUp','parrySuccess'].some(k=>conditions[k]!=null&&conditions[k]!==false)||conditions.followUp!=null))
+     return fail(id+':CONTEXT_UNSUPPORTED');
+    if((swing||ending||returnSwing)&&['previousAction','hammerState','damageStatsState','stateStatsByState'].some(k=>conditions[k]!=null))return fail(id+':CONTEXT_UNSUPPORTED');
+    if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||
+       ['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','counterSuccess'].some(k=>conditions[k]!=null&&conditions[k]!==false))
+     return fail(id+':SINGLE_GROUND_BODY_REQUIRED');
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),hit=raw?.hits?.[0];
+    if(!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.weaponType!=='hammer'||raw.techniqueId!==id||
+       raw.numericStatus!=='SOURCE_CONFIRMED'||raw.verificationStatus!=='PARTIALLY_VERIFIED'||raw.calculationStatus!=='EVIDENCE_GATED'||
+       raw.currentVersionAudit!=='PENDING'||raw.unresolvedReasons?.join()!=='OFFICIAL_BASELINE_VERSION_AUDIT_PENDING'||
+       raw.evidenceRefs?.join()!=='MACARONGAMEMO_HAM_R48_SOURCE'||raw.hits?.length!==1||!hit||
+       Object.keys(hit).some(k=>!['mv','elementModifier','partModifier'].includes(k))||hit.mv!==(ending?spinEndMotions[id]:ordinaryHammerMv[id])||hit.elementModifier!==(ending?1.5:swing?1.1:1)||hit.partModifier!==1||
+       raw.specialComponents?.length||raw.excludedComponents?.length||raw.damageStateTransition||raw.referenceKind||Object.keys(raw.stateRequirement||{}).length)
+     return fail(id+':SOURCE_PENDING');
+    const source=returnSwing?'https://kuroyonhon.com/mhwilds/memo/7.php':'https://github.com/dtlnor/mhws-rcol-record/blob/238121acdddc5668bef186b81fbad6927a3cef34/Player/Wp04.csv'+(ending?'#L14-L19':swing?'#L9':'#L5-L7');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:returnSwing?id+'_SOURCE_REFERENCE':id+'_V1040',
+     hits:[{...hit,damageType:'blunt',damageTypeSource:source,partModifierSource:source}]};
+   }
+   const ordinaryReturn=id==='LAN_RETURN_THRUST';
+   const dashContact=id==='LAN_DASH_SINGLE_CONTACT';
+   if(weapon.kind==='lance'&&(ordinaryReturn||dashContact||/^LAN_HIGH_THRUST_(I|II|III)$/.test(id))){
+    if(ordinaryReturn&&((lanceState!=null&&(!inputRecord(lanceState)||Object.keys(lanceState).some(k=>k!=='counter')||(lanceState.counter!=null&&lanceState.counter!=='')))||['justGuard','powerGuard','powerClash','mantleActive'].some(k=>conditions[k]!=null&&conditions[k]!==false)))return fail(id+':ORDINARY_GUARD_REQUIRED');
+    if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||lanceState?.counter||
+       ['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','counterSuccess'].some(k=>conditions[k]!=null&&conditions[k]!==false))
+     return fail((dashContact||ordinaryReturn?id:'LANCE_HIGH_THRUST')+':SINGLE_GROUND_BODY_REQUIRED');
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),hit=raw?.hits?.[0];
+    if(!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.numericStatus!=='SOURCE_CONFIRMED'||
+       raw.verificationStatus!=='PARTIALLY_VERIFIED'||raw.calculationStatus!=='EVIDENCE_GATED'||
+       raw.currentVersionAudit!=='PENDING'||raw.unresolvedReasons?.join()!=='OFFICIAL_BASELINE_VERSION_AUDIT_PENDING'||
+       raw.hits?.length!==1||!hit||Object.keys(hit).some(k=>!['mv','elementModifier','partModifier'].includes(k))||
+       hit.mv!==(ordinaryReturn?24:dashContact?17:id==='LAN_HIGH_THRUST_III'?42:31)||hit.elementModifier!==(ordinaryReturn?1.2:dashContact?0.5:1)||hit.partModifier!==1||
+       raw.specialComponents?.length||raw.excludedComponents?.length||raw.damageStateTransition||Object.keys(raw.stateRequirement||{}).length)
+     return fail((dashContact||ordinaryReturn?id:'LANCE_HIGH_THRUST')+':SOURCE_PENDING');
+    const source=ordinaryReturn?'https://kuroyonhon.com/mhwilds/memo/9.php':dashContact?'https://github.com/dtlnor/mhws-rcol-record/blob/90ed7dd76b11a165f1d8ed5685e4dd82999d4f13/Player/Wp06.csv#L13':'https://github.com/dtlnor/mhws-rcol-record/blob/238121acdddc5668bef186b81fbad6927a3cef34/Player/Wp06.csv#L5-L6';
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:ordinaryReturn?'LAN_ORDINARY_GUARD_RETURN':dashContact?'LANCE_DASH_CONTACT_V1041':'LANCE_HIGH_THRUST_V1040',
+     hits:[{...hit,damageType:'slash',damageTypeSource:source,partModifierSource:source}]};
+   }
+   const axeSlash=weapon.kind==='switch-axe'&&['SA_AXE_VERTICAL','SA_AXE_HORIZONTAL'].includes(id);
+   if(axeSlash||lsVertical===id){
+    if(axeSlash&&(!inputRecord(switchAxeState)||Object.keys(switchAxeState).some(k=>!['mode','awakened','axeBoosted'].includes(k))||
+       switchAxeState.awakened!==false))return fail(id+':AXE_OPENING_REQUIRED');
+    if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||
+       ['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','counterSuccess','drawAttack'].some(k=>conditions[k]!=null&&conditions[k]!==false)||
+       conditions.previousAction!=null)return fail(id+':SINGLE_GROUND_BODY_REQUIRED');
+    const raw=techniqueDb.get(techniqueKind,id),hit=raw?.hits?.[0];
+    const mv={LS_VERTICAL_SLASH:24,LS_VERTICAL_SLASH_2:18,SA_AXE_VERTICAL:45,SA_AXE_HORIZONTAL:23}[id];
+    if(!raw||JSON.stringify(raw)!==JSON.stringify(root.TechniqueDBEngine?.get(techniqueKind,id))||raw.techniqueId!==id||raw.weaponType!==weapon.kind||
+       raw.numericStatus!=='SOURCE_CONFIRMED'||raw.calculationStatus!=='EVIDENCE_GATED'||raw.currentVersionAudit!=='PENDING'||
+       raw.unresolvedReasons?.join()!=='OFFICIAL_BASELINE_VERSION_AUDIT_PENDING'||raw.hits?.length!==1||!hit||hit.mv!==mv||
+       hit.elementModifier!==1||hit.partModifier!==1||Object.keys(hit).some(k=>!['mv','elementModifier','partModifier'].includes(k))||
+       raw.specialComponents?.length||raw.excludedComponents?.length||raw.referenceKind||raw.damageStateTransition||Object.keys(raw.stateRequirement||{}).length)
+     return fail(id+':SOURCE_PENDING');
+    const source='https://github.com/dtlnor/mhws-rcol-record/blob/90ed7dd76b11a165f1d8ed5685e4dd82999d4f13/Player/'+(axeSlash?'Wp08':'Wp03')+'.csv#L3-L4';
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:id,stateRequirement:axeSlash?{mode:'AXE'}:{spiritGauge:'NONE'},
+     hits:[{...hit,damageType:'slash',damageTypeSource:source,partModifierSource:source}]};
+   }
+   if(lsPlainThrust&&id==='LS_THRUST'){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),thrust=raw?.groundThrustReference;
+    if(!raw||!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.techniqueName!=='突き'||
+       thrust?.status!=='SOURCE_BACKED_PROVISIONAL'||thrust.scope!=='SINGLE_COLORLESS_GROUND_THRUST_HP'||
+       thrust.damageType!=='slash'||raw.numericStatus!=='SOURCE_CONFIRMED'||raw.hits?.length!==1||
+       raw.hits[0].mv!==18||raw.hits[0].elementModifier!==1||raw.hits[0].partModifier!==1||
+       raw.hits[0].componentSource||raw.specialComponents?.length||Object.keys(raw.stateRequirement||{}).length)
+     return fail('LS_THRUST:SOURCE_PENDING');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',adoption:thrust,
+      stateRequirement:{spiritGauge:'NONE'},
+      hits:raw.hits.map(hit=>({...hit,damageType:thrust.damageType,damageTypeSource:thrust.motionAndColorSource,partModifierSource:thrust.coefficientSource}))};
+   }
+   if(lsRelease&&id===lsReleaseId){
+    const raw=technique, canonical=root.TechniqueDBEngine?.get(techniqueKind,id);
+    const mv=[5,5,5,10,10,10,15,15,15,22,22,22,35,35,35];
+    if(!raw||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.numericStatus!=='SOURCE_CONFIRMED'||
+       raw.calculationStatus!=='EVIDENCE_GATED'||raw.specialComponents?.length||raw.hits?.length!==mv.length||
+       raw.hits.some((h,i)=>h.mv!==mv[i]||h.partModifier!==1))
+     return fail(id+':MEASUREMENT_SOURCE_REQUIRED');
+    const source='https://github.com/dtlnor/mhws-rcol-record/blob/90ed7dd76b11a165f1d8ed5685e4dd82999d4f13/Player/Wp03.csv';
+    const repeatSource='https://tarotaro-game-lab.pages.dev/article/2026-06-17-mhwilds-ls-motion-values/';
+    const adoption={status:'OWNER_APPROVED_PROVISIONAL',scope:'UNBUFFED_HOPE_EDGE_I_AFTER_RED_HELM_14_HIT_HP_ONLY',sourceGameVersion:'1.041',liveGameVerification:'PENDING',observedHitCount:14,source,repeatSource};
+    technique={...raw,adoption,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:id,stateRequirement:{spiritGauge:'YELLOW'},
+     hits:raw.hits.slice(1).map((h,i)=>({...h,elementModifier:i<2?1:.1,damageType:'slash',damageTypeSource:source,partModifierSource:repeatSource}))};
+   }
+   if(lsHelm&&id===helmId){
+    const raw=techniqueDb.get(techniqueKind,id),ref=raw?.helmReference;
+    if(!ref||JSON.stringify(raw)!==JSON.stringify(root.TechniqueDBEngine?.get(techniqueKind,id))||
+       raw.calculationStatus!=='EVIDENCE_GATED'||raw.currentVersionAudit!=='PENDING'||raw.numericStatus!=='SOURCE_CONFIRMED'||
+       raw.stateRequirement?.spiritColor!=='RED'||raw.specialComponents?.length||raw.hits?.length!==7||
+       raw.hits.some(h=>h.mv!==23||h.elementModifier!==1||h.partModifier!==1))
+     return fail(id+':SOURCE_PENDING');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:id,stateRequirement:{spiritGauge:'RED'},
+     hits:raw.hits.map((h,i)=>({...h,elementModifier:ref.elementModifiers[i],damageType:'slash',damageTypeSource:ref.source,partModifierSource:ref.source}))};
+   }
+   if(lsSpin&&id==='LS_FORESIGHT_SPIN_SLASH'){
+    const raw=techniqueDb.get(techniqueKind,id),ref=raw?.groundSpinReference;
+    if(!raw||JSON.stringify(raw)!==JSON.stringify(root.TechniqueDBEngine?.get(techniqueKind,id))||
+       raw.techniqueName!=='見切り斬り・旋'||raw.calculationStatus!=='EVIDENCE_GATED'||raw.numericStatus!=='SOURCE_CONFIRMED'||
+       raw.currentVersionAudit!=='PENDING'||raw.unresolvedReasons?.join()!=='OFFICIAL_BASELINE_VERSION_AUDIT_PENDING'||
+       raw.verificationStatus!=='PARTIALLY_VERIFIED'||raw.techniqueId!==id||raw.weaponType!=='long-sword'||
+       ref?.sourceRows?.join()!=='49,50'||ref.motionValues?.join()!=='22,13'||ref.redPhysicalMultiplier!==1.1||
+       raw.hits?.length!==2||raw.hits.some((h,i)=>h.mv!==[20,12][i]||h.elementModifier!==1||h.partModifier!==1||
+         Object.keys(h).some(k=>!['mv','elementModifier','partModifier'].includes(k)))||
+       raw.specialComponents?.length||raw.excludedComponents?.length||raw.damageStateTransition||raw.referenceKind||raw.stateStatsByState||raw.damageStatsState||Object.keys(raw.stateRequirement||{}).length)
+     return fail(id+':SOURCE_PENDING');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:id,stateRequirement:{spiritGauge:'RED'},
+     hits:raw.hits.map((hit,i)=>({...hit,mv:ref.motionValues[i],damageType:'slash',damageTypeSource:ref.source,partModifierSource:ref.source}))};
+   }
+   if(lsPlainForesight&&id==='LS_FORESIGHT_SLASH'){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),r=raw?.groundForesightReference,hit=raw?.hits?.[0];
+    if(!raw||!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.techniqueName!=='見切り斬り'||
+       raw.calculationStatus!=='EVIDENCE_GATED'||r?.status!=='SOURCE_BACKED_PROVISIONAL'||r.scope!=='SINGLE_COLORLESS_GROUND_FORESIGHT_BODY_NO_COUNTER_SUCCESS'||
+       r.sourceRowId!==24||r.sourceTable!=='Wp03_Attack'||r.sourceBlob!=='1e28405b6098b31ca08929bd28f2a0a1e444ac9f'||
+       r.mv!==11||r.elementModifier!==1||r.partModifier!==1||r.damageType!=='slash'||r.targetVersionAudit!=='PENDING'||r.liveGameVerification!=='PENDING'||
+       raw.numericStatus!=='SOURCE_CONFIRMED'||raw.hits?.length!==1||hit?.mv!==r.mv||hit.elementModifier!==r.elementModifier||
+       hit.partModifier!==r.partModifier||Object.keys(hit).some(key=>!['mv','elementModifier','partModifier'].includes(key))||
+       raw.referenceKind||raw.specialComponents?.length||raw.excludedComponents?.length||raw.damageStateTransition||Object.keys(raw.stateRequirement||{}).length)
+     return fail('LS_FORESIGHT_SLASH:SOURCE_PENDING');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',adoption:r,stateRequirement:{spiritGauge:'NONE'},
+      hits:[{...hit,damageType:r.damageType,damageTypeSource:r.source,partModifierSource:r.source}]};
+   }
+   if(lsPlainRisingSlash&&id==='LS_RISING_SLASH'){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),r=raw?.groundRisingSlashReference,hit=raw?.hits?.[0];
+    if(!raw||!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.techniqueName!=='斬り上げ'||
+       r?.status!=='SOURCE_BACKED_PROVISIONAL'||r.scope!=='SINGLE_COLORLESS_GROUND_LANDED_RISING_SLASH_HP'||
+       r.sourceRowId!==3||r.sourceTable!=='Wp03_Attack'||r.sourceBlob!=='1e28405b6098b31ca08929bd28f2a0a1e444ac9f'||
+       r.mv!==18||r.elementModifier!==1||r.partModifier!==1||r.damageType!=='slash'||
+       raw.numericStatus!=='SOURCE_CONFIRMED'||raw.hits?.length!==1||hit?.mv!==r.mv||hit.elementModifier!==r.elementModifier||
+       hit.partModifier!==r.partModifier||Object.keys(hit).some(key=>!['mv','elementModifier','partModifier'].includes(key))||
+       raw.referenceKind||raw.specialComponents?.length||raw.excludedComponents?.length||raw.damageStateTransition||Object.keys(raw.stateRequirement||{}).length)
+     return fail('LS_RISING_SLASH:SOURCE_PENDING');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',adoption:r,stateRequirement:{spiritGauge:'NONE'},
+      hits:[{...hit,damageType:r.damageType,damageTypeSource:r.source,partModifierSource:r.source}]};
+   }
+   if(dbPlainDouble&&id==='DB_DOUBLE_SLASH'){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),r=raw?.plainDoubleSlashReference;
+    const expectedHands=['LEFT','RIGHT'],expectedSourceIds=[0,100],expectedRows=['二段斬りL','二段斬りR'];
+    if(!raw||!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.techniqueName!=='二段斬り'||
+       r?.status!=='SOURCE_BACKED_PROVISIONAL'||r.scope!=='DRAWN_GROUND_NEUTRAL_SINGLE_DOUBLE_SLASH_HP'||
+       r.sourceBlob!=='aa9d68e51568895659c5da0836861afea925ce56'||raw.numericStatus!=='SOURCE_CONFIRMED'||
+       r.targetVersionAudit!=='PENDING'||r.liveGameVerification!=='PENDING'||
+       raw.hits?.length!==2||raw.hits.some((h,i)=>h?.mv!==[8,10][i]||h.elementModifier!==.6||Object.keys(h).some(k=>!['mv','elementModifier'].includes(k)))||
+       r.contacts?.length!==2||r.contacts.some((h,i)=>h?.mv!==[8,11][i]||h.elementModifier!==.6||h.partModifier!==1||h.damageType!=='slash'||
+         h.hand!==expectedHands[i]||h.sourceId!==expectedSourceIds[i]||h.sourceName!==expectedRows[i]||h.source!==r.source+'#L'+[95,3][i])||
+       raw.referenceKind||raw.specialComponents?.length||raw.excludedComponents?.length||raw.damageStateTransition||Object.keys(raw.stateRequirement||{}).length)
+     return fail('DB_DOUBLE_SLASH:SOURCE_PENDING');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',adoption:r,stateRequirement:{demonMode:false,requiresDemonGauge:false},
+     hits:r.contacts.map(h=>({mv:h.mv,elementModifier:h.elementModifier,partModifier:h.partModifier,partModifierSource:h.source,damageType:h.damageType,damageTypeSource:h.source}))};
+   }
+   if(igSweep&&id==='IG_ENHANCED_SWEEP'){
+    const raw=techniqueDb.get(techniqueKind,id);
+    if(raw?.numericStatus!=='SOURCE_CONFIRMED'||raw.calculationStatus!=='EVIDENCE_GATED'||
+       raw.hits?.length!==2||raw.hits.some((h,i)=>h.mv!==[12,24][i]||h.elementModifier!==.8||Object.keys(h).some(k=>!['mv','elementModifier'].includes(k)))||
+       raw.specialComponents?.length||raw.damageStateTransition||Object.keys(raw.stateRequirement||{}).length)
+     return fail(id+':SOURCE_PENDING');
+    const source='https://github.com/dtlnor/mhws-rcol-record/blob/90ed7dd76b11a165f1d8ed5685e4dd82999d4f13/Player/Wp10.csv#L23-L24';
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',stateRequirement:{tripleExtract:true},hpOnlyProvisional:id,
+      hits:raw.hits.map(h=>({...h,damageType:'slash',damageStatsState:'TRIPLE_EXTRACT',partModifier:1,damageTypeSource:source,partModifierSource:source}))};
+   }
+   if(igGroundEnhancedRising&&id==='IG_ENHANCED_RISING_COMBO'){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),r=raw?.groundEnhancedRisingReference;
+    const mv=[24,12,24],stages=['一','二','三'];
+    if(!raw||!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.techniqueName!=='強化連続斬り上げ'||
+       r?.status!=='SOURCE_BACKED_PROVISIONAL'||r.scope!=='SINGLE_GROUND_HELD_TRIPLE_EXTRACT_STOWED_RISING_BODY_HP'||
+       r.sourceBlob!=='724f6275209cdd5d6dddf1bf48ee687147fde4ce'||r.liveGameVerification!=='PENDING'||r.targetVersionAudit!=='PENDING'||
+       r.elementModifier!==.8||r.partModifier!==1||r.damageType!=='slash'||raw.numericStatus!=='SOURCE_CONFIRMED'||
+       raw.hits?.length!==3||raw.hits.some((h,i)=>h?.mv!==mv[i]||h.elementModifier!==.8||Object.keys(h).some(k=>!['mv','elementModifier'].includes(k)))||
+       r.contacts?.length!==3||r.contacts.some((h,i)=>h?.mv!==mv[i]||h.sourceId!==8+i||
+         h.sourceName!=='強化連続斬り上げ（'+stages[i]+'段目）'||h.source!==r.source+'#L'+(11+i))||
+       raw.referenceKind||raw.specialComponents?.length||raw.excludedComponents?.length||raw.damageStateTransition||Object.keys(raw.stateRequirement||{}).length)
+     return fail('IG_ENHANCED_RISING_COMBO:SOURCE_PENDING');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',adoption:r,stateRequirement:{tripleExtract:true},
+     hits:raw.hits.map((h,i)=>({...h,damageStatsState:'TRIPLE_EXTRACT',partModifier:r.partModifier,partModifierSource:r.contacts[i].source,
+       damageType:r.damageType,damageTypeSource:r.contacts[i].source}))};
+   }
+   if(igGroundTornado&&id==='IG_TORNADO_SLASH'){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),r=raw?.groundTornadoReference;
+    if(!raw||!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.techniqueName!=='飛円斬り'||
+       r?.status!=='SOURCE_BACKED_PROVISIONAL'||r.scope!=='SINGLE_GROUND_HELD_TRIPLE_EXTRACT_STOWED_HP'||
+       r.sourceBlob!=='724f6275209cdd5d6dddf1bf48ee687147fde4ce'||r.liveGameVerification!=='PENDING'||r.targetVersionAudit!=='PENDING'||
+       r.elementModifier!==1||r.partModifier!==1||r.damageType!=='slash'||raw.numericStatus!=='SOURCE_CONFIRMED'||
+       raw.hits?.length!==2||raw.hits.some((h,i)=>h?.mv!==[22,48][i]||h.elementModifier!==1||Object.keys(h).some(k=>!['mv','elementModifier'].includes(k)))||
+       r.contacts?.length!==2||r.contacts.some((h,i)=>h?.mv!==[22,48][i]||h.sourceId!==[22,23][i]||
+         h.sourceName!==['飛円斬り（一段目）','飛円斬り（二段目）'][i]||h.source!==r.source+'#L'+[25,26][i])||
+       raw.referenceKind||raw.specialComponents?.length||raw.excludedComponents?.length||raw.damageStateTransition||Object.keys(raw.stateRequirement||{}).length)
+     return fail('IG_TORNADO_SLASH:SOURCE_PENDING');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',adoption:r,stateRequirement:{tripleExtract:true},
+     hits:raw.hits.map((h,i)=>({...h,damageStatsState:'TRIPLE_EXTRACT',partModifier:r.partModifier,partModifierSource:r.contacts[i].source,
+       damageType:r.damageType,damageTypeSource:r.contacts[i].source}))};
+   }
+   if(cbSinglePrefix&&id===cbSinglePrefix){
+    const record=techniqueDb.get(techniqueKind,id),mvs=id==='CB_SHIELD_THRUST'?[15,6]:[30];
+    if(record?.calculationScope!=='EXACT_H_ROUTE_ONLY'||record.adoption?.status!=='OWNER_APPROVED_PROVISIONAL'||
+       record.hits?.length!==mvs.length||record.hits.some((h,i)=>h.mv!==mvs[i]||h.elementModifier!==1||h.damageType!=='slash')||
+       record.specialComponents?.length||record.excludedComponents?.length||record.damageStateTransition)
+     return fail(id+':SOURCE_PENDING');
+    // With sword and shield unboosted there is no shield-thrust phial event.
+    const body=record.replacedRecord;
+    if(body?.techniqueId!==id||body.weaponType!=='charge-blade'||!['VERIFIED','PARTIALLY_VERIFIED'].includes(body.verificationStatus)||
+       body.hits?.length!==mvs.length||body.hits.some((h,i)=>h.mv!==mvs[i]||h.elementModifier!==1)||body.specialComponents?.length)
+     return fail(id+':BODY_SOURCE_PENDING');
+    technique={...body,hits:record.hits,calculationStatus:'READY_HP_REFERENCE',calculationScope:'SINGLE_UNBOOSTED_BODY',hpOnlyProvisional:id};
+   }
+   if(cbPlainSwordWeak&&id==='CB_SWORD_WEAK_SLASH'){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),r=raw?.plainSwordWeakSlashReference,hit=raw?.hits?.[0];
+    if(!raw||!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.techniqueName!=='牽制斬り'||
+       raw.calculationStatus!=='EVIDENCE_GATED'||raw.numericStatus!=='SOURCE_CONFLICT'||
+       r?.status!=='SOURCE_BACKED_PROVISIONAL'||r.scope!=='GROUND_UNBOOSTED_SWORD_SINGLE_LANDED_WEAK_SLASH_HP'||
+       r.sourceRowId!==1||r.sourceName!=='剣：けん制斬り'||r.sourceBlob!=='4be361d994c1c517b2ac209808047ddbe76a4c85'||
+       r.mv!==15||r.elementModifier!==1||r.partModifier!==1||r.damageType!=='slash'||r.historicalMv!==12||r.historyVersion!=='1.020.00'||
+       !raw.revisionHistory?.some(v=>v.sourceVersion==='1.020.00'&&v.beforeMv===12&&v.afterMv===15)||
+       r.targetVersionAudit!=='PENDING'||r.liveGameVerification!=='PENDING'||
+       raw.hits?.length!==1||hit?.mv!==r.mv||hit.elementModifier!==r.elementModifier||
+       Object.keys(hit).some(key=>!['mv','elementModifier'].includes(key))||raw.referenceKind||raw.specialComponents?.length||raw.excludedComponents?.length||
+       raw.phialReference||raw.phialState||raw.shieldBoostAxeBody||raw.damageStateTransition||Object.keys(raw.stateRequirement||{}).length)
+     return fail('CB_WEAK_SLASH:SOURCE_PENDING');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',numericStatus:'SOURCE_CONFIRMED',verificationStatus:'PARTIALLY_VERIFIED',adoption:r,stateRequirement:{mode:'SWORD'},
+      hits:[{...hit,damageType:r.damageType,damageTypeSource:r.source,partModifier:r.partModifier,partModifierSource:r.source}]};
+   }
+   if(cbPlainSwordRound&&id==='CB_SWORD_ROUND_SLASH'){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),r=raw?.plainSwordRoundSlashReference,hit=raw?.hits?.[0];
+    if(!raw||!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.techniqueName!=='回転斬り'||
+       r?.status!=='SOURCE_BACKED_PROVISIONAL'||r.scope!=='GROUND_UNBOOSTED_SWORD_SINGLE_LANDED_BODY_HP'||
+       r.sourceRowId!==3||r.sourceName!=='剣：回転斬り'||r.sourceBlob!=='4be361d994c1c517b2ac209808047ddbe76a4c85'||
+       r.mv!==30||r.elementModifier!==1||r.partModifier!==1||r.damageType!=='slash'||
+       raw.numericStatus!=='SOURCE_CONFIRMED'||raw.hits?.length!==1||hit?.mv!==r.mv||hit.elementModifier!==r.elementModifier||
+       Object.keys(hit).some(key=>!['mv','elementModifier'].includes(key))||raw.referenceKind||raw.specialComponents?.length||raw.excludedComponents?.length||
+       raw.phialReference||raw.phialState||raw.shieldBoostAxeBody||raw.damageStateTransition||Object.keys(raw.stateRequirement||{}).length)
+     return fail('CB_ROUND_SLASH:SOURCE_PENDING');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',adoption:r,stateRequirement:{mode:'SWORD'},
+      hits:[{...hit,damageType:r.damageType,damageTypeSource:r.source,partModifier:r.partModifier,partModifierSource:r.source}]};
+   }
+   if(id==='SA_ELEMENT_DISCHARGE_FIRST_CONTACT'){
+    if(weapon.kind!=='switch-axe'||weapon.phial?.kind!=='power'||conditions.standardEvaluation!==false||
+       resolvedTechniqueIds.length!==1||switchAxeState?.mode!=='SWORD'||switchAxeState.awakened!==false||
+       Object.keys(switchAxeState).some(k=>!['mode','awakened','axeBoosted'].includes(k))||
+       ['mounted','dismountAttack','sneakAttack','jumpAttack','airborne','jumping','drawAttack','previousAction'].some(k=>conditions[k]!=null&&conditions[k]!==false))
+     return fail(id+':SINGLE_UNAWAKENED_POWER_SWORD_REQUIRED');
+    const canonical=root.TechniqueDBEngine?.get('switch-axe',id);
+    if(!technique||JSON.stringify(technique)!==JSON.stringify(canonical)||technique.sourceLocator!=='Wp08 RSID38'||
+       technique.hits?.length!==1||technique.hits[0].mv!==25||technique.hits[0].elementModifier!==1||
+       technique.hits[0].partModifier!==1||technique.hits[0].damageType!=='slash')return fail(id+':SOURCE_PENDING');
+    technique={...technique,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:id};
+   }
+   const slam=weapon.kind==='switch-axe'&&id==='SA_AXE_POWER_SLAM';
+   if(slam){
+    if(conditions.standardEvaluation!==false||resolvedTechniqueIds.length!==1||
+       switchAxeState?.mode!=='AXE'||switchAxeState.awakened!==false||switchAxeState.axeBoosted!==true||
+       Object.keys(switchAxeState).some(k=>!['mode','awakened','axeBoosted'].includes(k))||
+       ['mounted','dismountAttack','jumpAttack','airborne','jumping','counterSuccess','offsetSuccess','drawAttack','previousAction'].some(k=>conditions[k]!=null&&conditions[k]!==false))
+     return fail(id+':PREACTIVATED_AXE_REQUIRED');
+   }
+   if(flurry){
+    const second=id===flurryIds[1],raw=technique,expected=second?[6,8,18,18]:[15,15,15,15];
+    if(raw?.techniqueId!==id||raw.weaponType!=='dual-blades'||raw.numericStatus!=='SOURCE_CONFIRMED'||raw.currentVersionAudit!=='PENDING'||raw.evidenceRefs?.join()!=='MACARONGAMEMO_DB_R48_SOURCE'||raw.damageStateTransition||raw.referenceKind||raw.excludedComponents?.length||raw.calculationStatus!=='EVIDENCE_GATED'||
+       raw.unresolvedReasons?.join()!=='OFFICIAL_BASELINE_VERSION_AUDIT_PENDING,PART_MODIFIER_NOT_REPORTED_IN_SOURCE'||
+       raw.hits?.length!==4||raw.specialComponents?.length||Object.keys(raw.stateRequirement||{}).length||
+       raw.hits.some((h,i)=>h.mv!==expected[i]||h.elementModifier!==(second?(i<2?.6:.8):1)||Object.keys(h).some(k=>!['mv','elementModifier'].includes(k))))
+     return fail(id+':SOURCE_PENDING');
+    const source='https://github.com/dtlnor/mhws-rcol-record/blob/90ed7dd76b11a165f1d8ed5685e4dd82999d4f13/Player/Wp02.csv';
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:id+'_V1041',
+     hits:raw.hits.map((h,i)=>({...h,elementModifier:second&&i<2?.6:1,partModifier:1,damageType:'slash',damageTypeSource:source,partModifierSource:source}))};
+   }
+   if(slam||(fallingBash&&id==='SNS_FALLING_BASH')||(advancing&&id==='DB_DEMON_ADVANCING_SLASH')){
+    const raw=techniqueDb.get(techniqueKind,id);
+    const mvs=slam?[15,72]:fallingBash?[52,47]:[5,5,4,4,11,11];
+    if(!raw||JSON.stringify(raw)!==JSON.stringify(root.TechniqueDBEngine?.get(techniqueKind,id))||
+       raw.techniqueId!==id||raw.weaponType!==techniqueKind||raw.calculationStatus!=='EVIDENCE_GATED'||
+       raw.numericStatus!=='SOURCE_CONFIRMED'||raw.currentVersionAudit!=='PENDING'||raw.verificationStatus!=='PARTIALLY_VERIFIED'||
+       raw.unresolvedReasons?.join()!==(slam?'OFFICIAL_BASELINE_VERSION_AUDIT_PENDING':fallingBash?'SHIELD_ELEMENT_AND_SHARPNESS_RULE_PENDING,OFFICIAL_BASELINE_VERSION_AUDIT_PENDING':'OFFICIAL_BASELINE_VERSION_AUDIT_PENDING,PART_MODIFIER_NOT_REPORTED_IN_SOURCE')||
+       raw.hits?.length!==mvs.length||raw.hits.some((h,i)=>h.mv!==mvs[i]||h.elementModifier!==(slam||fallingBash||i>=4?1:.6)||
+        h.partModifier!==(slam||fallingBash?1:undefined)||Object.keys(h).some(k=>!['mv','elementModifier','partModifier'].includes(k)))||
+       raw.specialComponents?.length||raw.excludedComponents?.length||raw.damageStateTransition||raw.referenceKind||Object.keys(raw.stateRequirement||{}).length)
+     return fail(id+':SOURCE_PENDING');
+    const source='https://github.com/dtlnor/mhws-rcol-record/blob/90ed7dd76b11a165f1d8ed5685e4dd82999d4f13/Player/'+(slam?'Wp08.csv#L11-L12':fallingBash?'Wp01.csv#L85-L86':'Wp02.csv');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:id,stateRequirement:slam?{mode:'AXE'}:fallingBash?{}:{demonMode:true},
+     hits:raw.hits.map(h=>({...h,damageType:fallingBash?'blunt':'slash',damageTypeSource:source,
+      elementModifier:fallingBash?0:h.elementModifier,partModifier:1,partModifierSource:source}))};
+   }
+   if(snsGroundShield&&id==='SNS_SHIELD_ATTACK'){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),r=raw?.groundShieldReference,hit=raw?.hits?.[0];
+    if(!raw||!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.techniqueName!=='盾攻撃'||
+       raw.calculationStatus!=='EVIDENCE_GATED'||raw.numericStatus!=='SOURCE_CONFLICT'||
+       r?.status!=='SOURCE_BACKED_PROVISIONAL'||r.scope!=='SINGLE_GROUND_ORDINARY_SHIELD_BODY_HP'||
+       r.sourceBlob!=='1a613c1fb58180c3726f96fbae5d87af48763810'||r.sourceRow!=='Wp01_SubAttack:RSID102'||
+       r.mv!==16||r.elementModifier!==0||r.partModifier!==1||r.damageType!=='blunt'||
+       r.sharpnessConsumption!==0||r.physicalSharpnessApplies!==true||r.liveGameVerification!=='PENDING'||r.targetVersionAudit!=='PENDING'||
+       raw.hits?.length!==1||hit?.mv!==16||hit.elementModifier!==1||hit.partModifier!==1||
+       Object.keys(hit).some(k=>!['mv','elementModifier','partModifier'].includes(k))||
+       raw.specialComponents?.length||raw.excludedComponents?.length||Object.keys(raw.stateRequirement||{}).length||raw.damageStateTransition!=null)
+     return fail('SNS_SHIELD_ATTACK:SOURCE_PENDING');
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',numericStatus:'SOURCE_CONFIRMED',verificationStatus:'PARTIALLY_VERIFIED',adoption:r,
+      hits:[{mv:r.mv,elementModifier:r.elementModifier,partModifier:r.partModifier,damageType:r.damageType,damageTypeSource:r.source}]};
+   }
+   if(hhSingleContact&&!hhOpening){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),hit=raw?.hits?.[0];
+    if(!raw||!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||raw.techniqueId!==id||
+       raw.numericStatus!=='SOURCE_CONFIRMED'||raw.verificationStatus!=='PARTIALLY_VERIFIED'||
+       raw.calculationStatus!=='EVIDENCE_GATED'||raw.currentVersionAudit!=='PENDING'||
+       raw.unresolvedReasons?.join()!=='OFFICIAL_BASELINE_VERSION_AUDIT_PENDING'||
+       raw.hits?.length!==1||!hit||hit.mv!==(id==='HH_RIGHT_SWING'?33:46)||hit.elementModifier!==1||hit.partModifier!==1||
+       Object.keys(hit).some(k=>!['mv','elementModifier','partModifier'].includes(k))||
+       !Array.isArray(raw.specialComponents)||raw.specialComponents.length||raw.excludedComponents?.length||
+       !inputRecord(raw.stateRequirement)||Object.keys(raw.stateRequirement).length||raw.damageStateTransition!=null)
+     return fail('HH_SINGLE_CONTACT:BODY_SOURCE_PENDING');
+    const source='https://github.com/dtlnor/mhws-rcol-record/blob/238121acdddc5668bef186b81fbad6927a3cef34/Player/Wp05.csv#L5-L6';
+    technique={...raw,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:'HH_SINGLE_CONTACT_V1040',
+     hits:[{...hit,damageType:'blunt',damageTypeSource:source,partModifierSource:source}]};
+   }
+   if(hhPlainSlam&&id==='HH_SLAM'){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),plain=raw?.plainSlamReference;
+    if(!raw||!canonical||JSON.stringify(canonical)!==JSON.stringify(raw)||
+       plain?.status!=='SOURCE_BACKED_PROVISIONAL'||plain.scope!=='GROUND_SINGLE_USE_TWO_BODY_HP_HITS'||
+       plain.damageType!=='blunt'||raw.numericStatus!=='SOURCE_CONFIRMED'||raw.hits?.length!==2||
+       raw.hits.some((h,i)=>h?.mv!==[14,42][i]||h.elementModifier!==1||h.partModifier!==1||
+         (h.damageType!=null&&h.damageType!==plain.damageType)||h.componentSource||h.damageStatsState!=null)||
+       raw.specialComponents?.length||raw.excludedComponents?.length||
+       Object.keys(raw.stateRequirement||{}).length||raw.damageStateTransition!=null)return fail('HH_SLAM:BODY_SOURCE_PENDING');
+    technique={...technique,calculationStatus:'READY_HP_REFERENCE',adoption:plain,
+     hits:raw.hits.map(hit=>({...hit,damageType:plain.damageType,damageTypeSource:plain.damageTypeSource}))};
+   }
+   if(gsOffsetThree&&id==='GS_OFFSET_RISING_SLASH_3'){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),body=raw?.groundOffsetThreeReference;
+    if(!raw||!canonical||JSON.stringify(canonical)!==JSON.stringify(raw)||body?.status!=='SOURCE_BACKED_PROVISIONAL'||
+       body.scope!=='SINGLE_LANDED_LEVEL3_GROUNDED_BODY_HP_NO_OFFSET_SUCCESS'||body.sourceVersion!=='1.041'||
+       body.sourceBlob!=='f8e63e11ad1b78a5011e28d11362896215c5abc1'||body.row!=='Wp00_Attack:RSID103'||
+       body.mv!==154||body.elementModifier!==1.3||body.partModifier!==1.2||body.damageType!=='slash'||
+       raw.hits?.length!==1||raw.hits[0]?.mv!==151||raw.hits[0]?.elementModifier!==body.elementModifier||
+       raw.hits[0]?.partModifier!==body.partModifier||raw.hits[0]?.componentSource||raw.hits[0]?.damageStatsState!=null||
+       raw.specialComponents?.length||raw.excludedComponents?.length||Object.keys(raw.stateRequirement||{}).length||
+       raw.damageStateTransition!=null)return fail('GS_OFFSET_3:SOURCE_PENDING');
+    technique={...technique,calculationStatus:'READY_HP_REFERENCE',verificationStatus:'PARTIALLY_VERIFIED',numericStatus:'SOURCE_CONFIRMED',evidenceRefs:[body.source,...raw.evidenceRefs],adoption:body,
+     hits:[{mv:body.mv,elementModifier:body.elementModifier,partModifier:body.partModifier,damageType:body.damageType,damageTypeSource:body.source}]};
+   }
+   if(gsGroundDraw&&id==='GS_DRAW_VERTICAL_SLASH'){
+    const raw=techniqueDb.get(techniqueKind,id),canonical=root.TechniqueDBEngine?.get(techniqueKind,id),draw=raw?.groundDrawReference;
+    if(!raw||!canonical||JSON.stringify(canonical)!==JSON.stringify(raw)||
+       draw?.status!=='SOURCE_BACKED_PROVISIONAL'||draw.scope!=='SINGLE_UNCHARGED_GROUND_DRAW_BODY_HP'||
+       draw.damageType!=='slash'||raw.numericStatus!=='SOURCE_CONFIRMED'||raw.hits?.length!==1||
+       raw.hits[0]?.componentSource||raw.specialComponents?.length||Object.keys(raw.stateRequirement||{}).length)return fail('GS_DRAW_BODY:SOURCE_PENDING');
+    technique={...technique,calculationStatus:'READY_HP_REFERENCE',adoption:draw,gsGroundDraw:draw,
+     hits:raw.hits.map(hit=>({...hit,damageType:draw.damageType,damageTypeSource:draw.damageTypeSource}))};
+   }
+   if(weapon.kind==='insect-glaive'&&id==='IG_DESCENDING_THRUST'){
+    if(resolvedTechniqueIds.length!==1||conditions.standardEvaluation!==false||part.wounded===true||
+       insectGlaiveState?.extractState!=='RED_ONLY'||insectGlaiveState.kinsectState!=='STOWED'||
+       Object.keys(insectGlaiveState).some(k=>!['extractState','kinsectState'].includes(k))||
+       ['mounted','dismountAttack','counterSuccess','offsetSuccess','followUp','previousAction','woundEvent','woundDestruction'].some(k=>conditions[k]!=null&&conditions[k]!==false)||
+       equippedSkills.some(skill=>!zeroConversionPhysical(skill)))return fail('IG_DESCENDING_THRUST:RED_SINGLE_BODY_REQUIRED');
+    if(JSON.stringify(technique)!==JSON.stringify(root.TechniqueDBEngine?.get(weapon.kind,id))||
+       technique.sourceVersion!=='1.041'||technique.singleBodyOpening?.chargeLevel!==2||technique.singleBodyOpening?.vaultCount!==0||
+       technique.numericStatus!=='SOURCE_CONFIRMED'||technique.calculationStatus!=='EVIDENCE_GATED'||
+       technique.hits?.length!==3||technique.specialComponents?.length||technique.excludedComponents?.length||
+       technique.damageStateTransition||Object.keys(technique.stateRequirement||{}).length)return fail(id+':SOURCE_PENDING');
+    technique={...technique,calculationStatus:'READY_HP_REFERENCE',hpOnlyProvisional:id};
    }
    // KAN-22: source-confirmed ordinary body HP reference, not a durability/official-version promotion.
    if(weapon.kind==='insect-glaive'&&['IG_DIAGONAL_SLASH','IG_SWEEP','IG_DOUBLE_SLASH'].includes(id)){
@@ -1444,6 +2374,11 @@
     const raw=techniqueDb.get('lance',id),rule=raw?.counterReference;
     if(resolvedTechniqueIds.length!==1)return fail('REAL_SLICE:LANCE_COUNTER_SINGLE_ACTION_REQUIRED');
     if(!rule||rule.status!=='OWNER_APPROVED_PROVISIONAL'||rule.stage!=='coefficient'||!Number.isFinite(rule.physicalMultiplier)||rule.physicalMultiplier<=0||raw.hits?.length!==2||raw.specialComponents?.length)return fail('REAL_SLICE:LANCE_COUNTER_SOURCE_PENDING');
+    if(lanceConversion&&allSkills.some(x=>x.skillKey==='attributeConversion')&&
+       (JSON.stringify(raw)!==JSON.stringify(root.TechniqueDBEngine?.get('lance',id))||
+        raw.numericStatus!=='SOURCE_CONFIRMED'||raw.hits.some(h=>h?.elementModifier!==1||h.partModifier!==1||h.componentSource)||
+        raw.referenceKind||raw.damageStateTransition||raw.excludedComponents?.length))
+     return fail('REAL_SLICE:LANCE_CONVERSION_SOURCE_PENDING');
     if(lanceState?.counter!==rule.input)return fail('REAL_SLICE:LANCE_COUNTER_EXPLICIT_CHARGE3_SUCCESS_REQUIRED');
     technique={...technique,calculationStatus:'READY_HP_REFERENCE',adoption:rule,hits:raw.hits.map(h=>({...h,damageType:rule.damageType}))};
    }
@@ -1485,7 +2420,7 @@
     const adoption={status:'EXISTING_ADOPTED_REFERENCE',verificationStatus:'UNVERIFIED',source:'TECHNIQUE_DB_SPEC_R72.md;index.html:CHARGE_BLADE_TECHNIQUES',scope:resourcePlans[id]?'ADOPTED_RELEASE_BODY_PHIAL_AND_AXE_FOLLOWUP':'SINGLE_MORPH_BODY_AND_AXE_FOLLOWUP_NO_PHIAL',rapidMorphSource:rapidRule.source};
     technique={...technique,adoption,hits:[...technique.hits,...Array.from({length:extra.count},()=>({mv:extra.mv,elementModifier:extra.elementModifier,shieldBoostAxeBody:false,componentSource:'index.html:CHARGE_BLADE_TECHNIQUES.'+id+'.axeBoostHits'}))]};
    }
-   const shelling=Array.isArray(technique.specialComponents)&&technique.specialComponents.some(x=>String(x).includes('SHELL')),reference=['bow','light-bowgun','heavy-bowgun','heavy-bowgun-element','light-bowgun-element','charge-blade-saed','hunting-horn-sound','heavy-bowgun-wyvern'].includes(technique.referenceKind);
+   const shelling=Array.isArray(technique.specialComponents)&&technique.specialComponents.some(x=>String(x).includes('SHELL')),reference=['bow-arc-impacts','gl-wyvern-five','hbg-pierce-seven','lbg-pierce-seven','hbg-grenade','hbg-counter','hbg-sticky','hbg-ignition','light-bowgun-ballistic','bow','light-bowgun','heavy-bowgun','heavy-bowgun-element','light-bowgun-element','charge-blade-saed','hunting-horn-sound','heavy-bowgun-wyvern'].includes(technique.referenceKind);
    if(!shelling&&!reference&&(!Array.isArray(technique.hits)||!technique.hits.length))return fail('REAL_SLICE:TECHNIQUE_HITS_NOT_FOUND:'+id);
    if(resourcePlans[id])technique={...technique,resourceContract:resourcePlans[id]};
    if(saAwakened){
@@ -1497,6 +2432,35 @@
   }
   techniqueId=resolvedTechniqueIds[0];
   const technique=techniques[techniqueId];
+  const saAxeBoostComponents=[];
+  const saAxeBoostRule={attackAdd:10,source:'https://kuroyonhon.com/mhwilds/memo/21.php',mechanismSource:'https://kuroyonhon.com/mhwilds/memo/11.php',status:'OWNER_APPROVED_PROVISIONAL',sourceGameVersion:'RETAIL_VERSION_UNSPECIFIED',liveGameVerification:'PENDING'};
+  if(weapon.kind==='switch-axe'){
+   const nested=conditions.switchAxeState;
+   if(conditions.standardEvaluation!==false){
+    if(switchAxeState&&Object.hasOwn(switchAxeState,'axeBoosted')){
+     const {axeBoosted,...standardState}=switchAxeState;switchAxeState=standardState;
+    }
+    if(nested&&Object.hasOwn(nested,'axeBoosted')){
+     const {axeBoosted,...standardState}=nested;conditions={...conditions,switchAxeState:standardState};
+    }
+   }else{
+    const supplied=!!switchAxeState&&Object.hasOwn(switchAxeState,'axeBoosted'),nestedSupplied=!!nested&&Object.hasOwn(nested,'axeBoosted');
+    if((supplied&&typeof switchAxeState.axeBoosted!=='boolean')||
+       (nestedSupplied&&(!supplied||nested.axeBoosted!==switchAxeState.axeBoosted)))return fail('SA_AXE_BOOST:STATE_INVALID');
+    if(supplied&&switchAxeState.axeBoosted){
+     const adopted=['SA_ELEMENT_DISCHARGE_FIRST_CONTACT','SA_AXE_POWER_SLAM','SA_AXE_VERTICAL','SA_AXE_HORIZONTAL','SA_SWORD_VERTICAL','SA_SWORD_RIGHT_RISING','SA_SWORD_MORPH_DOUBLE','SA_AXE_MORPH_SLASH'];
+     for(const id of new Set(resolvedTechniqueIds)){
+      const record=techniques[id],raw=techniqueDb?.get?.('switch-axe',id),canonical=root.TechniqueDBEngine?.get?.('switch-axe',id);
+      const modes=record?.modeContract?.hitModes??record?.hits?.map(()=>record.stateRequirement?.mode);
+      if(!adopted.includes(id)||!canonical||JSON.stringify(raw)!==JSON.stringify(canonical)||
+         !record?.hits?.length||record.referenceKind||record.specialComponents?.length||
+         record.hits.some(h=>h.componentSource||h.damageStatsState!=null)||
+         modes?.length!==record.hits.length||modes.some(m=>m!=='SWORD'&&m!=='AXE'))return fail('SA_AXE_BOOST:HIT_MODE_PENDING');
+      for(const [i,mode] of modes.entries())if(mode==='AXE')saAxeBoostComponents.push(id+':physical:'+i);
+     }
+    }
+   }
+  }
   if(weapon.kind==='switch-axe'){
    if(resolvedTechniqueIds.some(id=>!techniques[id]?.modeContract&&!techniques[id]?.stateRequirement?.mode&&!STANDARD_NORMAL_HIT_CONTRACT[id]?.stateRequirement?.mode))return fail('REAL_SLICE:SA_TECHNIQUE_MODE_UNRESOLVED');
    if(!switchAxeState||!['SWORD','AXE'].includes(switchAxeState.mode))return fail('REAL_SLICE:STATE_REQUIREMENT_UNRESOLVED:mode');
@@ -1508,8 +2472,8 @@
   const isShellingTechnique=id=>{const r=techniques[id];return Array.isArray(r?.specialComponents)&&r.specialComponents.some(x=>String(x).includes('SHELL'));};
   const isShellingOnly=resolvedTechniqueIds.every(isShellingTechnique);
   const hasShelling=!!glTargetContext||resolvedTechniqueIds.some(isShellingTechnique);
-  const isReferenceOnly=resolvedTechniqueIds.every(id=>['bow','heavy-bowgun','heavy-bowgun-element','light-bowgun-element','light-bowgun','charge-blade-saed','hunting-horn-sound','heavy-bowgun-wyvern'].includes(techniques[id]?.referenceKind));
-  const hasReference=!!hhModel||resolvedTechniqueIds.some(id=>['bow','heavy-bowgun','heavy-bowgun-element','light-bowgun-element','light-bowgun','charge-blade-saed','hunting-horn-sound','heavy-bowgun-wyvern'].includes(techniques[id]?.referenceKind));
+  const isReferenceOnly=resolvedTechniqueIds.every(id=>['bow-arc-impacts','gl-wyvern-five','hbg-pierce-seven','lbg-pierce-seven','hbg-grenade','hbg-counter','hbg-sticky','hbg-ignition','light-bowgun-ballistic','bow','heavy-bowgun','heavy-bowgun-element','light-bowgun-element','light-bowgun','charge-blade-saed','hunting-horn-sound','heavy-bowgun-wyvern'].includes(techniques[id]?.referenceKind));
+  const hasReference=!!hhModel||resolvedTechniqueIds.some(id=>['bow-arc-impacts','gl-wyvern-five','hbg-pierce-seven','lbg-pierce-seven','hbg-grenade','hbg-counter','hbg-sticky','hbg-ignition','light-bowgun-ballistic','bow','heavy-bowgun','heavy-bowgun-element','light-bowgun-element','light-bowgun','charge-blade-saed','hunting-horn-sound','heavy-bowgun-wyvern'].includes(techniques[id]?.referenceKind));
   // Validate every ordinary Hit before resolving its own hitzone. Special components do not enter this path.
   const ordinaryHitDamageType=(id,hit)=>{
    if(hit.damageType!==undefined&&hit.damageType!==null)return ['blunt','slash','pierce'].includes(hit.damageType)?hit.damageType:null;
@@ -1621,12 +2585,13 @@
    if(e.bonusSkillId===167){
     const rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===167)||[],a=rows[0],rush=allSkills.filter(x=>Number(x.skillId)===120),level=rush.length?Math.max(...rush.map(x=>x.level)):0;
     if(e.source!=='series'||e.rankLevel!==2||e.required!==4||!Number.isInteger(e.count)||e.count<4||rows.length!==1||!a?.seregiosActivation||rush.some(x=>!Number.isInteger(x.level)||x.level<1||x.level>5))return false;
-    return ['bonusSkillId','name','bonusName','source','rankLevel','required','count'].every(k=>a.seregiosActivation[k]===e[k])&&a.skill===e.name&&a.parent===e.bonusName&&a.rank===2&&a.condition==='ADRENALINE_RUSH_REPEAT_EVADE_PREACTIVATED'&&a.appliesToNormal===false&&a.attackAdd===0&&a.attackMultiplier===1&&a.adrenalineRushLevel===level&&a.seregiosEnabled===(level>0)&&Number.isFinite(a.maximumAttackMultiplier)&&(level>0?a.maximumAttackMultiplier>1:a.maximumAttackMultiplier===1);
+    const enabled=level>0&&root.MHMaximumSkillEnabled?.(conditions,'adrenalineRush')!==false;
+    return ['bonusSkillId','name','bonusName','source','rankLevel','required','count'].every(k=>a.seregiosActivation[k]===e[k])&&a.skill===e.name&&a.parent===e.bonusName&&a.rank===2&&a.condition==='ADRENALINE_RUSH_REPEAT_EVADE_PREACTIVATED'&&a.appliesToNormal===false&&a.attackAdd===0&&a.attackMultiplier===1&&a.adrenalineRushLevel===level&&a.seregiosEnabled===enabled&&Number.isFinite(a.maximumAttackMultiplier)&&(enabled?a.maximumAttackMultiplier>1:a.maximumAttackMultiplier===1);
    }
    if([10,155,115].includes(e.bonusSkillId)){
     const series=e.bonusSkillId===115,rule=root.MHNamedBonusFlatRules?.[series?'series':'group']?.[e.name],rows=conversionGroupPlan?.applied?.filter(a=>a.skillId===e.bonusSkillId)||[],a=rows[0],burst=allSkills.filter(x=>Number(x.skillId)===95),level=burst.length?Math.max(...burst.map(x=>x.level)):0;
     if(!rule||(!series&&rule.skillId!==e.bonusSkillId)||e.bonusName!==rule.parent||e.source!==(series?'series':'group')||e.rankLevel!==(rule.rankLevel||1)||e.required!==(rule.required||3)||!Number.isInteger(e.count)||e.count<e.required||(series&&e.rankLevel===1&&e.count>=4)||rows.length!==1||(series&&burst.some(x=>!Number.isInteger(x.level)||x.level<1||x.level>5)))return false;
-    const enabled=!series||level>0;
+    const enabled=!series||level>0&&root.MHMaximumSkillEnabled?.(conditions,'burst')!==false;
     return a.skill===e.name&&a.parent===e.bonusName&&a.rank===e.rankLevel&&a.attackAdd===(enabled?rule.attackAdd:0)&&a.attackMultiplier===1&&a.appliesToNormal===false&&a.condition===(enabled?rule.condition:'BURST_INACTIVE_OR_UNRESOLVED');
    }
    if(e.bonusSkillId===162){
@@ -1648,7 +2613,7 @@
     const rule=root.MHBlackEclipseRule,rank=e.rankLevel,required=rank===1?2:4,b=stats.conditionalConditionPlan?.blackEclipse;
     if(!rule||![1,2].includes(rank)||e.bonusName!=='黒蝕竜の力'||e.name!=='黒蝕一体'+(rank===1?'Ⅰ':'Ⅱ')||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4)||!b||b.rank!==rank||!Number.isInteger(b.antivirusLevel)||!Object.hasOwn(rule.antivirusAdds,b.antivirusLevel))return false;
     const applied=conversionGroupPlan?.applied?.filter(a=>a.skillId===106)||[],known=rule.states.includes(conditions.blackEclipseState),expectedAffinity=rule.overcomeAffinity+rule.antivirusAdds[b.antivirusLevel];
-    return applied.length===1&&applied[0].skill===e.name&&applied[0].rank===rank&&applied[0].attackAdd===rule.attackByRank[rank].OVERCOME&&applied[0].condition==='MAXIMUM_OVERCOME'&&b.maximumState==='OVERCOME'&&b.maximumAttackAdd===rule.attackByRank[rank].OVERCOME&&b.maximumAffinityAdd===expectedAffinity&&(known?b.normalState===conditions.blackEclipseState&&b.normalAttackAdd===rule.attackByRank[rank][b.normalState]&&b.normalAffinityAdd===(b.normalState==='OVERCOME'?expectedAffinity:0):b.normalState===null&&b.normalAttackAdd===null&&b.normalAffinityAdd===null);
+    return applied.length===1&&applied[0].skill===e.name&&applied[0].rank===rank&&applied[0].attackAdd===rule.attackByRank[rank][blackEclipseMaximumState]&&applied[0].condition===blackEclipseMaximumCondition&&b.maximumState===blackEclipseMaximumState&&b.maximumAttackAdd===rule.attackByRank[rank][blackEclipseMaximumState]&&b.maximumAffinityAdd===(blackEclipseMaximumState==='OVERCOME'?expectedAffinity:0)&&(known?b.normalState===conditions.blackEclipseState&&b.normalAttackAdd===rule.attackByRank[rank][b.normalState]&&b.normalAffinityAdd===(b.normalState==='OVERCOME'?expectedAffinity:0):b.normalState===null&&b.normalAttackAdd===null&&b.normalAffinityAdd===null);
    }
    const rule=root.MHSeriesActivationFlats?.[e.bonusSkillId],rank=e.rankLevel,required=rank===1?2:4;
    if(!rule||![1,2].includes(rank)||e.bonusName!==rule.parent||e.name!==rule.prefix+(rank===1?'Ⅰ':'Ⅱ')||e.source!=='series'||e.required!==required||!Number.isInteger(e.count)||e.count<required||(rank===1&&e.count>=4))return false;
@@ -1721,8 +2686,8 @@
    });
   };
   const emptyResistance=x=>x?.status==='KNOWN_LIMITED'&&x.armorBase===0&&x.total===0&&x.reason===null&&x.absorptionPlan==null&&Array.isArray(x.missing)&&x.missing.length===0&&Array.isArray(x.contributions)&&x.contributions.length===0&&Array.isArray(x.rows)&&x.rows.length===5&&['head','chest','arms','waist','legs'].every(slot=>x.rows.filter(r=>r.slot===slot&&r.equipped===false&&r.value===0&&r.id==null).length===1);
-  const zeroBodyState=x=>x?.element===0&&x.elementType==='none'&&x.elementKnown===true&&x.typeKnown===true&&x.elementStatus==='CONFIRMED_NONE'&&x.elementComponents?.weaponBase===0&&Number.isFinite(x.elementComponents.normalMultiplier)&&x.elementComponents.normalMultiplier>0&&x.elementComponents.normalFlat===0&&Array.isArray(x.activeBonusEffects)&&x.activeBonusEffects.length===0;
-  const zeroConversionPhysical=e=>[{id:72,names:['攻撃','Attack Boost'],key:'attack'},{id:3,names:['見切り','Critical Eye'],key:'affinity'},{id:22,names:['超会心','Critical Boost'],key:'criticalBoost'}].some(r=>Number(e.skillId)===r.id&&r.names.includes(e.name)&&e.skillKey===r.key&&Number.isInteger(e.level)&&e.level>=1&&e.level<=5);
+  function zeroConversionPhysical(e){return [{id:72,names:['攻撃','Attack Boost'],key:'attack'},{id:3,names:['見切り','Critical Eye'],key:'affinity'},{id:22,names:['超会心','Critical Boost'],key:'criticalBoost'}].some(r=>Number(e.skillId)===r.id&&r.names.includes(e.name)&&e.skillKey===r.key&&Number.isInteger(e.level)&&e.level>=1&&e.level<=5);}
+  function zeroBodyState(x){return x?.element===0&&x.elementType==='none'&&x.elementKnown===true&&x.typeKnown===true&&x.elementStatus==='CONFIRMED_NONE'&&x.elementComponents?.weaponBase===0&&Number.isFinite(x.elementComponents.normalMultiplier)&&x.elementComponents.normalMultiplier>0&&x.elementComponents.normalFlat===0&&Array.isArray(x.activeBonusEffects)&&x.activeBonusEffects.length===0;}
   // The fixed elemental 1172 route can also prove R * c = 0. This is
   // not a general wrong-element exemption, and does not create an element.
   const fixedElementalLsZeroBody=()=>{
@@ -2204,7 +3169,7 @@
    const unsupported=(['light-bowgun','heavy-bowgun'].includes(weapon.kind)&&!gogNormalAmmoResolved)||(hasShelling&&!glGogResolved)||(!!hhModel&&!hhGogResolved)||resolvedTechniqueIds.some(id=>{const t=techniques[id];return t.referenceKind?!['bow','charge-blade-saed'].includes(t.referenceKind)&&!gogNormalAmmoResolved:(t.hits||[]).some(h=>h.componentSource)&&!cbGogResolved;})||(weapon.kind==='switch-axe'&&switchAxeState?.awakened===true);
    if(unsupported)conditionPlan={...conditionPlan,pending:[...(conditionPlan.pending||[]),'GOG:DEDICATED_COMPONENT_NOT_ADOPTED']};
   }
-  if(thousandRequested&&(elementType!=='none'||elementRawValue!==0))return fail('BOW_THOUSAND:ELEMENT_NOT_ADOPTED');
+  if(thousandRequested&&((elementType==='none'&&elementRawValue!==0)||(elementType!=='none'&&(!['fire','water','thunder','ice','dragon'].includes(elementType)||!Number.isFinite(part?.multipliers?.[elementType])))))return fail('BOW_THOUSAND:ELEMENT_NOT_ADOPTED');
   const sustainedBladeRule=root.MHBladescaleSustainedRule;
   const sustainedBladeRequested=bladescaleEntries.length>0&&conditions.standardEvaluation===true&&Object.hasOwn(sustainedBladeRule?.techniqueSequences||{},techniqueKind);
   const sustainedBladeSequence=sustainedBladeRequested&&sustainedBladeRule.techniqueSequences[techniqueKind].some(ids=>JSON.stringify(ids)===JSON.stringify(resolvedTechniqueIds));
@@ -2263,7 +3228,8 @@
   const damageAffinitySkills={...skillTotal,'弱点特効':0,'Weakness Exploit':0,'抜刀術【技】':0,'抜刀術[技]':0,'Critical Draw':0,'濡れ刃紋':0,'Wet Blade Mark':0,'オメガレゾナンス':0,'レゾナンス':0};
   try{if(typeof root.MHWMaxAffinityResolver!=='function')throw Error('MAX_AFFINITY_RESOLVER_REQUIRED');maximumAffinity=Number(root.MHWMaxAffinityResolver(damageAffinitySkills,Number(stats.affinity),weapon,part,conditions));}catch(error){return fail(String(error.message));}
   const wexEffects=[];
-  const wexFor=(targetPart,type)=>root.MHWWeaknessExploitForHit(wexLevel,targetPart,type);
+  const wexOn=channel=>channel!=='maximum'||root.MHMaximumSkillEnabled?.(conditions,'weaknessExploit')!==false;
+  const wexFor=(targetPart,type,channel)=>wexOn(channel)?root.MHWWeaknessExploitForHit(wexLevel,targetPart,type):0;
   if(wexLevel)try{
    for(const id of resolvedTechniqueIds){
     const t=techniques[id];
@@ -2279,7 +3245,7 @@
    }
   }catch(error){return fail(String(error.message));}
   const blackEclipse=conditionPlan?.blackEclipse||null;
-  const frenzyAffinity=root.MHResolveFrenzyAffinity(skillTotal,conditions.blackEclipseState,conditions.standardEvaluation===true||conditions.fixedActivationConditions===true);
+  const frenzyAffinity=root.MHResolveFrenzyAffinity(skillTotal,conditions.blackEclipseState,conditions.standardEvaluation===true||conditions.fixedActivationConditions===true,conditions);
   const ballisticsLevel=Math.max(0,...allSkills.filter(x=>x.skillKey==='ballistics').map(x=>x.level));
   if(!Number.isInteger(ballisticsLevel)||ballisticsLevel>3)return fail('BALLISTICS_LEVEL_INVALID');
   const criticalRangeAttackAdd=root.MHCommonSkillDamageRules.ballistics.criticalRangeAttackAdds[ballisticsLevel];
@@ -2465,6 +3431,23 @@
   }
   // Physical MV multiplication is algebraically the same raw-physical factor,
   // including attack flat, and occurs BEFORE canonical Formula rounding. Never use post-damage here.
+  const spinRef=techniques.LS_FORESIGHT_SPIN_SLASH?.groundSpinReference;
+  const spiritGaugeEffects=lsSpin?[{id:'foresight-spin-red',target:'physical',stage:'coefficient',unit:'dimensionless',operation:'multiply',
+   amount:spinRef.redPhysicalMultiplier,order:90,componentIds:['LS_FORESIGHT_SPIN_SLASH:physical:0','LS_FORESIGHT_SPIN_SLASH:physical:1'],
+   source:spinRef.gaugeSource,condition:{type:'always'}}]:[];
+  if(lsHelm){
+   const {helmReference,hits}=techniques[helmId];
+   spiritGaugeEffects.push({id:'helm-breaker-spent-yellow',target:'physical',stage:'coefficient',unit:'dimensionless',operation:'multiply',
+    amount:helmReference.yellowPhysicalMultiplier,order:90,componentIds:hits.map((_,i)=>helmId+':physical:'+i),
+    source:helmReference.gaugeSource,condition:{type:'always'}});
+  }
+  if(lsRelease){
+   const source='https://note.com/tarotaro0_game/n/n5e516653b972';
+   for(const [label,start,end,amount] of [['yellow',0,2,1.075],['white',2,14,1.05]])
+    spiritGaugeEffects.push({id:'spirit-release-trial-'+label,target:'physical',stage:'coefficient',unit:'dimensionless',operation:'multiply',
+     amount,order:90,componentIds:Array.from({length:end-start},(_,i)=>lsReleaseId+':physical:'+(start+i)),
+     source,condition:{type:'always'}});
+  }
   const lanceCounterEffects=[];
   if(weapon.kind==='lance'&&resolvedTechniqueIds.includes('LAN_COUNTER_DOUBLE_THRUST')){
    const id='LAN_COUNTER_DOUBLE_THRUST',rule=techniqueDb.get('lance',id).counterReference;
@@ -2506,6 +3489,7 @@
       airborneEmptyComponents(t.specialComponents)&&airborneEmptyComponents(t.excludedComponents)&&Array.isArray(t.hits)&&t.hits.length===1&&t.hits.every(h=>airborneOrdinaryState(h)&&!h.componentSource&&(h.component===undefined||h.component==='BODY')&&h.damageType==='slash'&&Number.isFinite(h.mv)&&h.mv>=0&&Number.isFinite(h.elementModifier)&&h.elementModifier>=0);
     });
    for(const id of resolvedTechniqueIds){
+    if(id==='LS_FORESIGHT_SPIN_SLASH'&&lsSpin&&airborneBodyEntries.every(x=>Number(x.skillId)===86&&x.name==='飛燕'&&x.level===1))continue;
     if(!Object.hasOwn(rule.hitIndices,id)){
      const airborneHResolved=cbHOrdinaryResolved&&airborneBodyEntries.every(x=>Number(x.skillId)===86&&x.name==='飛燕'&&x.level===1)&&rawSkills.filter(airborneBodyIdentity).length<=1&&buildSkills.filter(airborneBodyIdentity).length<=1;
      if((airborneBodyResolved&&airborneBodyIds.includes(id))||(airborneHResolved&&hRule.prefixIds.includes(id))||(glOrdinaryAirborne&&glTargetIds.slice(2).includes(id)))continue;
@@ -2594,7 +3578,7 @@
   const pipeline=root.HimmelRealOneHitPipeline({versions,source,techniqueId,techniqueIds:resolvedTechniqueIds,weaponType:techniqueKind,
    resolveComponentIssue:({component:c,event,state,build,effects})=>{if(typeof darkGlActive!=='undefined'&&darkGlActive&&!darkGlComponentValid({component:c,event,state,build,effects}))return 'REAL_SLICE:DARK_ARTS_GL_COMPONENT_CONTRACT_INVALID';if(typeof hhChargeStandardDragonResolved!=='undefined'&&hhChargeStandardDragonResolved&&!hhChargeDragonComponentValid({component:c,event,build,effects}))return 'REAL_SLICE:HH_CHARGE_DRAGON_COMPONENT_CONTRACT_INVALID';if(typeof glOrdinaryActive!=='undefined'&&glOrdinaryActive&&!glOrdinaryComponentValid({component:c,event,state,build,effects}))return 'REAL_SLICE:GL_ORDINARY_COMPONENT_CONTRACT_INVALID';if(hhThunderZeroResolved&&!hhChargeComponentValid({component:c,event,build,effects}))return 'REAL_SLICE:HH_THUNDER_COMPONENT_CONTRACT_INVALID';if(hhChargeNoElementResolved&&!hhChargeComponentValid({component:c,event,build,effects}))return 'REAL_SLICE:HH_CHARGE_COMPONENT_CONTRACT_INVALID';if(!contextAttackEntries.length)return null;const t=techniques[event.techniqueId],special=!['physical','element'].includes(c.kind)||c.parameters?.saFollowup||t?.hits?.[c.parameters?.hitIndex]?.componentSource;if(!special)return null;const activeEntries=contextAttackEntries.filter(x=>Number(x.skillId)===136||root.MHContextAttackSkillRules.bludgeoner.colorsByLevel[x.level].includes(maxSharpness));if(!activeEntries.length)return null;const onlyMindsEye=activeEntries.every(x=>Number(x.skillId)===136);if(onlyMindsEye&&['phial','shelling'].includes(c.kind))return null;if(onlyMindsEye&&hhMindExcluded(t,c))return null;if(onlyMindsEye&&['physical','element'].includes(c.kind)&&cbMindEligible(t))return null;if(onlyMindsEye&&c.parameters?.saFollowup&&['physical','element'].includes(c.kind)&&saMindEligible(t))return null;if(onlyMindsEye&&t?.referenceKind==='charge-blade-saed'&&root.MHSaedMindsEyeRule.techniqueIds.includes(event.techniqueId))return null;/* Source-confirmed, not live verified: https://a-to-monhan.com/2025/03/31/wilds-donkitukai/ . Normal GL shell only; body effects remain component-scoped and CB phial guard stays. */if(c.kind==='shelling'&&weapon.kind==='gunlance'&&c.parameters?.shellingAction==='NORMAL'&&activeEntries.every(x=>[85,136].includes(Number(x.skillId))))return null;return 'REAL_SLICE:CONTEXT_ATTACK_COMPONENT_SCOPE_PENDING:'+c.id;},
    resolveBuild:(_raw,snapshot)=>({weaponType:techniqueKind,dbVersion:versions.equipment,source:'MHDB_API_CURRENT_SELECTION',equipment:{...snapshot,ids:[`api_id:${snapshot.apiId}`,`game_id:${snapshot.gameId}`],conditionalAttackMultiplier:Number(snapshot.conditionalAttackMultiplier??1),groupAttackMultiplier:Number(snapshot.groupAttackMultiplier??1),conditionalAttackFlat:Number(snapshot.conditionalAttackFlat??0),conditionalPlanStatus:snapshot.conditionalPlanStatus||'REFERENCE_ONLY',conditionalPending:Array.isArray(snapshot.conditionalPending)?snapshot.conditionalPending:[],trueAttack:{status:'known',value:snapshot.damage.raw},displayElement:{status:'known',value:snapshot.elementEvidence.confirmedNone?0:snapshot.elementCalculatedValue},baseAffinity:{status:'known',value:snapshot.affinity},elementType:snapshot.elementType,sourceGameVersion:snapshot.provenance.sourceGameVersion},skills:{entries:allSkills},issues:[{code:'MHDB_SOURCE',apiId:snapshot.apiId,gameId:snapshot.gameId,sourceEndpoint:snapshot.provenance.sourceUrl,apiVersion:snapshot.provenance.apiVersion,retrievedAt:snapshot.provenance.retrievedAt,sourceGameVersion:snapshot.provenance.sourceGameVersion}]}),
-   resolveEffects:(build,conditions,channel)=>{if(channel==='maximum'&&conversionMaximumIssue)throw Error(conversionMaximumIssue);if(!blackEclipse&&frenzyAffinity.active&&frenzyAffinity[channel==='normal'?'normalAdd':'maximumAdd']===null)throw Error('FRENZY_STATE_REQUIRED');if(channel==='maximum'&&absorptionConversionPlan?.status==='UNRESOLVED')throw Error(absorptionConversionPlan.reason);if(attributeConversionLevel&&typeof attributeState?.[channel]!=='boolean')throw Error('REAL_SLICE:ATTRIBUTE_CONVERSION_STATE_REQUIRED');if(attributeConversionLevel&&attributeState[channel]===true&&attributeScopeIssue)throw Error(attributeScopeIssue);const entries=build.skills.entries||[],effects=[...lanceCounterEffects,...chargeStrikeEffects,...airborneEffects,...contextAttackEffects.filter(e=>!(bladescaleEligible&&channel==='maximum'&&e.id.startsWith('context-attack:85:'))),...wexEffects,...explicitAffinityEffects(channel)].map(x=>({...x})),attack=entries.filter(x=>x.skillKey==='attack'),affinity=entries.filter(x=>x.skillKey==='affinity'),criticalBoost=entries.filter(x=>x.skillKey==='criticalBoost'),elementEntries=entries.filter(x=>['fire','water','thunder','ice','dragon'].includes(x.skillKey));if(channel==='normal'&&conditionPlan?.selectedHp){
+   resolveEffects:(build,conditions,channel)=>{if(channel==='maximum'&&conversionMaximumIssue)throw Error(conversionMaximumIssue);if(!blackEclipse&&frenzyAffinity.active&&frenzyAffinity[channel==='normal'?'normalAdd':'maximumAdd']===null)throw Error('FRENZY_STATE_REQUIRED');if(channel==='maximum'&&absorptionConversionPlan?.status==='UNRESOLVED')throw Error(absorptionConversionPlan.reason);if(attributeConversionLevel&&typeof attributeState?.[channel]!=='boolean')throw Error('REAL_SLICE:ATTRIBUTE_CONVERSION_STATE_REQUIRED');if(attributeConversionLevel&&attributeState[channel]===true&&attributeScopeIssue)throw Error(attributeScopeIssue);const entries=build.skills.entries||[],effects=[...spiritGaugeEffects,...lanceCounterEffects,...chargeStrikeEffects,...airborneEffects,...contextAttackEffects.filter(e=>!(bladescaleEligible&&channel==='maximum'&&e.id.startsWith('context-attack:85:'))),...(wexOn(channel)?wexEffects:[]),...explicitAffinityEffects(channel)].map(x=>({...x})),attack=entries.filter(x=>x.skillKey==='attack'),affinity=entries.filter(x=>x.skillKey==='affinity'),criticalBoost=entries.filter(x=>x.skillKey==='criticalBoost'),elementEntries=entries.filter(x=>['fire','water','thunder','ice','dragon'].includes(x.skillKey));if(channel==='normal'&&conditionPlan?.selectedHp){
  if(conditionPlan.selectedHpNormalMultiplier!==1)effects.push({id:'selected-hp-heroics-normal',target:'physical',stage:'attack',unit:'dimensionless',operation:'multiply',amount:conditionPlan.selectedHpNormalMultiplier,order:30,source:'USER_SELECTED_HP_ID87',condition:{type:'always'}});
  if(conditionPlan.selectedHpNormalFlat)effects.push({id:'selected-hp-peak-normal',target:'physical',stage:'attack',unit:'true-attack',operation:'add',amount:conditionPlan.selectedHpNormalFlat,order:50,source:'USER_SELECTED_HP_ID154',condition:{type:'always'}});
 }
@@ -2618,6 +3602,10 @@ if(build.equipment.rapidMorphLevel>1){
   effects.push({id:'rapid-morph-attack:'+id,target:'physical',stage:'attack',unit:'dimensionless',operation:'multiply',amount:rapidRule.multipliers[build.equipment.rapidMorphLevel],order:10,source:rapidRule.source,status:rapidRule.status,sourceVersion:rapidRule.sourceVersion,liveGameVerification:rapidRule.liveGameVerification,condition:{type:'event-equals',key:'techniqueId',value:id}});
  }
 }if(hhModel)effects.push({id:'hh-self-improvement',target:'physical',stage:'attack',unit:'dimensionless',operation:'multiply',amount:hhModel.selfImprovementMultiplier,order:10,source:hhModel.source,status:hhModel.status,condition:{type:'state-equals',path:['huntingHorn','selfImprovementLevel'],value:hhModel.selfImprovementCap}});if(hhModel&&huntingHornState.attackMelody)for(let rank=1;rank<=hhModel.attackMelodyCap;rank++)effects.push({id:'hh-attack-melody-rank:'+rank,target:'physical',stage:'attack',unit:'dimensionless',operation:'multiply',amount:hhModel.attackMelodies[huntingHornState.attackMelody][rank],order:11,source:hhModel.attackMelodyAdoption.source,status:hhModel.status,condition:{type:'state-equals',path:['huntingHorn','attackMelodyLevel'],value:rank}});
+if(saAxeBoostComponents.length)effects.push({id:'sa-preactivated-axe-raw',target:'physical',stage:'attack',unit:'true-attack',operation:'add',
+ amount:saAxeBoostRule.attackAdd,order:90,componentIds:saAxeBoostComponents,source:saAxeBoostRule.source,status:saAxeBoostRule.status,condition:{type:'state-equals',path:['switchAxe','mode'],value:'AXE'}});
+if(hhOpening)effects.push({id:'hh-opening-attack-melody',target:'physical',stage:'attack',unit:'dimensionless',
+ operation:'multiply',amount:hhOpening.multiplier,order:11,source:hhOpening.source,status:hhOpening.status,condition:{type:'always'}});
 if(saAwakened)effects.push({id:saAwakened.elementEffectId,elementCapBaseScaling:true,target:'element',stage:'element',unit:'dimensionless',operation:'multiply',amount:saAwakened.explosionElementMultiplier[saStatusAwakened?saAwakened.statusPhialExtension.coefficientKey:saDragonEligible?saAwakened.dragonPhialExtension.coefficientKey:weapon.phial.kind],order:25,source:saAwakened.source,status:saAwakened.status,condition:{type:'always'}});
 const powerPhial=root.MHWeaponEffectDB?.switchAxe?.powerPhialSword,elementPhial=root.MHWeaponEffectDB?.switchAxe?.powerElementPhialSword;if(build.weaponType==='switch-axe'){const phialKind=build.equipment?.phial?.kind;if(phialKind==='power'){if(!powerPhial)throw Error('REAL_SLICE:SA_POWER_PHIAL_DEFINITION_UNRESOLVED');effects.push({...powerPhial,condition:{type:'state-equals',path:['switchAxe','mode'],value:'SWORD'}});}else if(phialKind==='element'){if(!elementPhial)throw Error('REAL_SLICE:SA_POWER_ELEMENT_PHIAL_DEFINITION_UNRESOLVED');if(elementPhial.status!=='OWNER_APPROVED_PROVISIONAL')throw Error('REAL_SLICE:SA_POWER_ELEMENT_PHIAL_APPROVAL_PENDING');effects.push({...elementPhial,elementCapBaseScaling:true,condition:{type:'state-equals',path:['switchAxe','mode'],value:'SWORD'}});}else if(!saStatusBodyOnly&&!saStatusAwakened&&!saDragonEligible)throw Error('REAL_SLICE:SA_PHIAL_EFFECT_UNRESOLVED:'+String(phialKind||'missing')); }if(build.equipment.gsChargeMasterLevel>0){for(const id of gsCharge.techniqueIds)effects.push({id:'gs-charge-master:'+id,target:'element',stage:'element',unit:'dimensionless',operation:'multiply',amount:gsCharge.multipliers[build.equipment.gsChargeMasterLevel],order:25,source:gsCharge.source,status:gsCharge.status,sourceVersion:gsCharge.sourceVersion,liveGameVerification:gsCharge.liveGameVerification,condition:{type:'event-equals',key:'techniqueId',value:id}});}if(attack.length){if(!root.MHWAttackSkillResolver)throw Error('REAL_SLICE:ATTACK_RULE_UNAVAILABLE');const level=Math.max(...attack.map(x=>x.level)),rule=root.MHWAttackSkillResolver({攻撃:level});if(!Number.isFinite(Number(rule.flat))||!Number.isFinite(Number(rule.mult)))throw Error('REAL_SLICE:ATTACK_RULE_INVALID');effects.push({id:'attack-boost-multiply',target:'physical',stage:'attack',unit:'dimensionless',amount:Number(rule.mult),operation:'multiply',order:10,source:'index.html:calcAttackSkill',condition:{type:'always'}},{id:'attack-boost-flat',target:'physical',stage:'attack',unit:'true-attack',amount:Number(rule.flat),operation:'add',order:40,source:'index.html:calcAttackSkill',condition:{type:'always'}});}const punishingDraw=entries.find(x=>Number(x.skillId)===8);if(punishingDraw){if(!Number.isInteger(punishingDraw.level)||punishingDraw.level<1||punishingDraw.level>3)throw Error('REAL_SLICE:PUNISHING_DRAW_LEVEL_INVALID');const map=conditions.punishingDrawHits?.[channel];if(!map||typeof map!=='object'||Array.isArray(map)||Object.keys(map).some(id=>!resolvedTechniqueIds.includes(id)))throw Error('PUNISHING_DRAW_HIT_STATE_REQUIRED');for(const id of new Set(resolvedTechniqueIds)){const t=techniques[id],flags=map[id];if(!Array.isArray(flags)||flags.length!==(t.referenceKind?referenceDrawCount(id,t):t.hits.length)||flags.some(x=>typeof x!=='boolean'))throw Error('PUNISHING_DRAW_HIT_STATE_REQUIRED:'+id);for(const [i,on] of flags.entries())if(on){if(conditions.mounted===true||conditions.dismountAttack===true||conditions.sneakAttack===true)throw Error('PUNISHING_DRAW_TRIGGER_EXCLUDED');if(t.referenceKind){if(!['bow','heavy-bowgun','light-bowgun','heavy-bowgun-element','light-bowgun-element','charge-blade-saed'].includes(t.referenceKind))throw Error('PUNISHING_DRAW_REFERENCE_MAPPING_PENDING:'+id);continue;}effects.push({id:'punishing-draw-flat:'+id+':'+i,target:'physical',stage:'attack',unit:'true-attack',amount:[0,3,5,7][punishingDraw.level],operation:'add',order:40,componentIds:[id+':physical:'+i],source:'MACARONGAMEMO_DAMAGE_UP_2025-04-16;MACARONGAMEMO_SKILLS_LIST_2025-03-08',condition:{type:'always'}});}}}if(affinity.length){if(!root.MHWAffinitySkillResolver)throw Error('REAL_SLICE:AFFINITY_RULE_UNAVAILABLE');const level=Math.max(...affinity.map(x=>x.level)),amount=Number(root.MHWAffinitySkillResolver({'見切り':level}));if(!Number.isFinite(amount))throw Error('REAL_SLICE:AFFINITY_RULE_INVALID');if(amount)effects.push({id:'critical-eye-affinity',target:'physical',stage:'affinity',unit:'percent',amount,operation:'add',order:30,source:'index.html:calcAffinityBonus',condition:{type:'always'}},{id:'critical-eye-affinity-element',target:'element',stage:'affinity',unit:'percent',amount,operation:'add',order:30,source:'index.html:calcAffinityBonus',condition:{type:'always'}});}if(criticalBoost.length){const level=Math.max(...criticalBoost.map(x=>x.level));if(!Number.isInteger(level)||level<1||level>5)throw Error('REAL_SLICE:CRITICAL_BOOST_LEVEL_UNSUPPORTED');}if(Number(build.equipment.groupAttackMultiplier??1)!==1)effects.push({id:'set-group-attack-multiply',target:'physical',stage:'attack',unit:'dimensionless',amount:Number(build.equipment.groupAttackMultiplier),operation:'multiply',order:20,source:'index.html:standardGroupPowerPlan',condition:{type:'always'}});if(channel==='maximum'&&Number(build.equipment.conditionalAttackMultiplier??1)!==1){effects.push({id:'conditional-attack-multiply',target:'physical',stage:'attack',unit:'dimensionless',amount:Number(build.equipment.conditionalAttackMultiplier),operation:'multiply',order:30,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});}if(build.equipment.attributeConversionLevel&&build.equipment.attributeConversionState?.[channel]===true){effects.push({id:'attribute-conversion-element-add',target:'element',stage:'element',unit:'display-element',amount:attributeRule.adds[build.equipment.attributeConversionLevel],operation:'add',order:60,source:attributeRule.source,status:attributeRule.status,scope:conversionScope.scope,approval:conversionScope.approval,verificationStatus:conversionScope.verificationStatus,condition:{type:'always'}});}if(channel==='maximum'&&absorptionMaximumAdd)effects.push({id:'absorption-resistance-conversion-element-add',target:'element',stage:'element',unit:'display-element',amount:absorptionMaximumAdd,operation:'add',order:60,source:absorptionConversionPlan.sourceUrl,status:absorptionConversionPlan.adoptionStatus,scope:absorptionConversionPlan.condition,condition:{type:'always'}});if((!standardConversion||channel==='maximum')&&waterEntries.length&&waterConversionAdd!==0)effects.push({id:'water-resistance-conversion-element-add',target:'element',stage:'element',unit:'display-element',amount:waterConversionAdd,operation:'add',order:60,source:waterRule.source,status:waterRule.status,scope:waterRule.scope,condition:{type:'always'}});if((!standardConversion||channel==='maximum')&&Number(build.equipment.resistanceConversionAdd??0)!==0){effects.push({id:'thunder-resistance-conversion-element-add',target:'element',stage:'element',unit:'display-element',amount:Number(build.equipment.resistanceConversionAdd),operation:'add',order:60,source:'KUROYONHON_SKILL_TABLE_THUNDER_RESISTANCE_CONVERSION_20261025',status:'OWNER_APPROVED_PROVISIONAL',scope:conversionScope.scope,approval:conversionScope.approval,verificationStatus:conversionScope.verificationStatus,condition:{type:'always'}});}if(channel==='maximum'&&Number(build.equipment.conditionalAttackFlat??0)!==0){effects.push({id:'conditional-attack-flat',target:'physical',stage:'attack',unit:'true-attack',amount:Number(build.equipment.conditionalAttackFlat),operation:'add',order:50,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});}if(elementEntries.length){for(const entry of elementEntries)if(!Number.isInteger(entry.level)||entry.level<1||entry.level>3)throw Error('REAL_SLICE:ELEMENT_SKILL_LEVEL_UNSUPPORTED');}if(channel==='maximum'&&Number.isFinite(Number(build.equipment.maximumAffinity))&&Number(build.equipment.maximumAffinity)!==Number(build.affinity))effects.push({id:'conditional-affinity-maximum',target:'physical',stage:'affinity',unit:'percent',amount:Number(build.equipment.maximumAffinity)-Number(build.equipment.normalAffinity??build.affinity),operation:'add',order:80,source:'index.html:calcMaxAffinity',condition:{type:'always'}},{id:'conditional-affinity-maximum-element',target:'element',stage:'affinity',unit:'percent',amount:Number(build.equipment.maximumAffinity)-Number(build.equipment.normalAffinity??build.affinity),operation:'add',order:80,source:'index.html:calcMaxAffinity',condition:{type:'always'}});if(channel==='maximum'&&conditionPlan?.maximumElementComponents){const base=build.equipment.elementComponents,next=conditionPlan.maximumElementComponents;const dark=conditionPlan.groupPlan?.applied?.find(x=>x.skill==='ダークアーツ'),darkMultiplier=conditionPlan.selectedHp==='FULL_HP'?1:(dark?.elementMultiplier??1);const ratio=next.normalMultiplier/base.normalMultiplier/darkMultiplier;if(darkMultiplier!==1&&!darkBowResolved)effects.push({id:'dark-arts-body-element-multiplier',target:'element',stage:'element',unit:'dimensionless',operation:'multiply',amount:darkMultiplier,order:30,componentIds:resolvedTechniqueIds.flatMap(id=>[...(techniques[id].hits||[]).flatMap((h,i)=>h.componentSource&&!darkCbActive?[]:[id+':element:'+i]),...(darkHhResolved?hhChargeEvents[id].map((_,i)=>id+':reference:'+i):[])]),source:dark.evidenceRef,status:dark.numericOrigin,scope:darkCbActive?'FIXED_CB_INDEPENDENT_NATIVE_BODY_AND_AXE_ELEMENT_ONLY':darkHhResolved?'FIXED_HH_NATIVE_BODY_AND_NORMAL_MELODY_ELEMENT_ONLY':darkGlActive?'FIXED_GL_NATIVE_BODY_AND_STAKE_ELEMENT_ONLY':'ADOPTED_BODY_ONLY_NO_GENERATED_FOLLOWUP',condition:{type:'always'}});if(ratio!==1)effects.push({id:'conditional-element-multiplier',target:'element',stage:'element',unit:'dimensionless',operation:'multiply',amount:ratio,order:30,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});if(next.conditionalFlat)effects.push({id:'conditional-element-flat',flatComponent:'conditional',target:'element',stage:'element',unit:'display-element',operation:'add',amount:next.conditionalFlat,order:80,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});}else if(channel==='maximum'&&Number.isFinite(Number(build.equipment.maximumElement))&&Number(build.equipment.maximumElement)!==Number(build.element))effects.push({id:'conditional-element-maximum',flatComponent:'conditional',target:'element',stage:'element',unit:'display-element',amount:Number(build.equipment.maximumElement)-Number(build.element),operation:'add',order:80,source:'index.html:standardPowerConditionPlan',condition:{type:'always'}});for(const target of ['physical','element'])effects.push({id:'affinity-upper-cap'+(target==='element'?'-element':''),target,stage:'affinity',unit:'percent',operation:'cap',amount:100,order:100,source:'index.html:calcMaxAffinity;common critical probability upper bound',condition:{type:'always'}});const unresolved=(conditionPlan?.groupPlan?.unresolvedEffects||[]).map(x=>({...x}));if(channel==='maximum')for(const row of conditionPlan?.groupPlan?.applied||[])if(row.maximumUnresolvedReason)unresolved.push({id:'maximum-scope:'+row.skillId,reason:row.maximumUnresolvedReason,target:'all',source:'OWNER_MAXIMUM_WEAPON_SCOPE;standardGroupPowerPlan'});if(activeBonusEffects.length&&!conditionPlan?.groupPlan)unresolved.push({id:'bonus-plan',reason:'BONUS_CONDITION_PLAN_MISSING',target:'all',source:'index.html:standardPowerConditionPlan'});if(channel==='maximum')for(const reason of build.equipment.conditionalPending||[])if(!unresolved.some(x=>x.reason===reason))unresolved.push({id:'conditional:'+reason,reason,target:'all',source:'index.html:standardPowerConditionPlan'});return {effects,unresolved};},resolveSkillApplicability:entries=>entries.map(entry=>{
     if(entry.level===1&&activeBonusEffects.some(e=>e.name===entry.name&&ownerExcludedBonus(e)))return {...entry,effectDisposition:'non_damage',reason:'OWNER_EXCLUDED_CURRENT_COMPARISON',evidenceRef:'USER_DIRECTION_20261111'};
@@ -2647,7 +3635,9 @@ const powerPhial=root.MHWeaponEffectDB?.switchAxe?.powerPhialSword,elementPhial=
     // Scope to adopted normal-ammo IDs; leave target techniques and invalid states/levels unresolved.
     const normalAmmoOnly=resolvedTechniqueIds.length>0&&resolvedTechniqueIds.every(id=>weapon.kind==='light-bowgun'?/^LBG_NORMAL_AMMO_[12]$/.test(id):weapon.kind==='heavy-bowgun'&&/^HBG_NORMAL_AMMO_[123]$/.test(id));
     const normalAmmoState=weapon.kind==='light-bowgun'?lightBowgunState:hbgState;
+    if(uncoatedThousandForce(entry))return {...entry,effectDisposition:'non_damage',reason:'BOW_FORCE_SHOT_NO_COATING',evidenceRef:'https://kuroyonhon.com/mhwilds/program/skill.php'};
     if(thousandRequested&&[69,94].includes(Number(entry.skillId)))return {...entry,effectDisposition:'resolved',reason:thousandRule.scope,evidenceRef:thousandRule.skillSource};
+    if(ballisticSelection&&[2,6,23,94,137,140].includes(Number(entry.skillId))){const applicable=[23,137,140,ballisticSelection.ammoType==='PIERCE'?94:2].includes(Number(entry.skillId));return {...entry,effectDisposition:applicable?'resolved':'non_damage',reason:applicable?'LBG_STANDARD_TYPED_AMMO_REFERENCE':'NON_TARGET_SELECTED_STANDARD_AMMO',evidenceRef:ballisticSelection.source};}
     if(pierceNonTargetResolved&&Number(entry.skillId)===94)return {...entry,effectDisposition:'non_damage',reason:'PIERCE_NOT_APPLICABLE_TO_EXACT_ORDINARY_RANGED_ROUTE',evidenceRef:'MHDB_JA_SKILL_94;https://kuroyonhon.com/mhwilds/program/skill.php',status:'SOURCE_BACKED_NONAPPLICATION_CURRENT_GAME_UNVERIFIED'};
     // MHDB skill 69 targets special ammo / Dragon Piercer / Thousand Dragons / Tracer,
     // not the adopted ordinary shot, power shot, or power volley. Keep other routes gated.
@@ -2659,10 +3649,60 @@ const powerPhial=root.MHWeaponEffectDB?.switchAxe?.powerPhialSword,elementPhial=
     const normalAmmoExclusion={23:{name:'速射強化',max:1},69:{name:'特殊射撃強化',max:2},94:{name:'貫通弾・竜の矢強化',max:1}}[entry.skillId];
     if(normalAmmoOnly&&normalAmmoState?.ammoType==='NORMAL'&&(weapon.kind!=='light-bowgun'||normalAmmoState.shotMode==='NORMAL')&&normalAmmoExclusion&&entry.name===normalAmmoExclusion.name&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=normalAmmoExclusion.max)return {...entry,effectDisposition:'non_damage',reason:'NOT_APPLICABLE_TO_ADOPTED_NON_RAPID_NORMAL_AMMO',evidenceRef:'MHDB_JA_SKILLS_20261026:'+entry.skillId};
     if(Number(entry.skillId)===84&&!waterEntries.length&&entry.name==='水耐性'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'non_damage',reason:'NO_DIRECT_HP_EFFECT_WITHOUT_WATER_CONVERSION;RESISTANCE_INPUT_RETAINED',evidenceRef:'MHDB_SKILL_84;OWNER_FIXED_INDICATOR_SCOPE'};
-    if(Number(entry.skillId)===84&&entry.name==='水耐性'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3&&waterEntries.length&&waterInput?.status==='KNOWN_LIMITED')return {...entry,effectDisposition:'resolved',reason:'water resistance consumed once by validated conversion producer',evidenceRef:waterRule.source};if(Number(entry.skillId)===181)return {...entry,effectDisposition:'resolved',reason:waterRule.scope,evidenceRef:waterRule.source};if(Number(entry.skillId)===83)return {...entry,effectDisposition:'resolved',reason:root.MHChargeStrikeRule.scopeWarning,evidenceRef:root.MHChargeStrikeRule.source};if(Number(entry.skillId)===86)return {...entry,effectDisposition:'resolved',reason:'source-mapped physical attack stage for adopted dual-blades dance Hits only; other routes remain pending',evidenceRef:root.MHAirborneHitRule.source};if(nonTargetRapidMorph(entry))return {...entry,effectDisposition:'non_damage',reason:'RAPID_MORPH_NON_TARGET_WEAPON',evidenceRef:'MHDB_JA_SKILLS:7'};if(unusedNonBowCoating(entry))return {...entry,effectDisposition:'non_damage',reason:'BOW_ONLY_COATING_CAPABILITY_NOT_APPLICABLE',evidenceRef:'MHDB_JA_SKILLS:'+entry.skillId};const capability=coatingCapabilities[entry.skillId];if(capability&&entry.name===capability[0]&&entry.level===1&&weapon.kind==='bow'&&['NONE','POWER','CLOSE_RANGE','PIERCE'].includes(bowState?.coating))return {...entry,effectDisposition:'non_damage',reason:'UNUSED_COATING_CAPABILITY_ONLY',evidenceRef:'MHDB_JA_SKILLS_20261026:'+entry.skillId};if(entry.skillKey==='explicitAffinity')return {...entry,effectDisposition:'resolved',reason:'explicit channel state and per-Hit affinity; display maximum excluded',evidenceRef:root.MHWExplicitAffinityRules.source};if(entry.skillKey==='contextAttack')return {...entry,effectDisposition:'resolved',reason:'validated per-component attack multiplier',evidenceRef:root.MHContextAttackSkillRules.source};if(entry.skillKey==='ballistics')return {...entry,effectDisposition:'resolved',reason:'explicit reference shot physical attack only at critical range; Lv1/2 range is an input',evidenceRef:root.MHCommonSkillDamageRules.source};if(frenzyAffinity.active&&Number(entry.skillId)===18&&['無我の境地','Antivirus'].includes(entry.name)&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'resolved',reason:'explicit frenzy affinity supplied once by shared normal/maximum resolver',evidenceRef:frenzyAffinity.source};const extra=annotationPolicy(entry);if(extra&&!extra.bodyEffect)return {...entry,effectDisposition:'resolved',reason:'owner-defined indicator excludes skill extra damage; annotation only',evidenceRef:'MHDB_JA_SKILLS_20261026:'+entry.skillId};const internal=INTERNAL_SKILL_ADOPTION[entry.name];if(internal){if(entry.skillId==null)throw Error('REAL_SLICE:SKILL_ID_UNRESOLVED:'+entry.name);if(internal.requiredSkillId!==undefined&&(Number(entry.skillId)!==internal.requiredSkillId||!Number.isInteger(entry.level)||entry.level<1||entry.level>internal.maxLevel))throw Error('REAL_SLICE:NON_DAMAGE_SKILL_CONTRACT_MISMATCH:'+entry.name);return {...entry,...internal,evidenceRef:`${internal.evidenceRef}:skillId=${entry.skillId}:level=${entry.level}`};}if(activeBonusEffectNames.has(String(entry.name)))return {...entry,effectDisposition:conditionPlan?.groupPlan?.unresolvedEffects?.some(x=>x.id==='bonus:'+entry.name)?'unresolved':'resolved',reason:'active series/group effect is accounted by the shared plan; unresolved entries prevent channel execution',evidenceRef:'index.html:standardGroupPowerPlan'};if(entry.damageRelated===false||['defense','utility','survival','non_damage'].includes(String(entry.effectCategory||'').toLowerCase()))return {...entry,effectDisposition:'non_damage',reason:'DB effect classification excludes direct HP damage',evidenceRef:entry.source+':skillId='+entry.skillId+':effectCategory='+entry.effectCategory};if(entry.skillKey==='slugger'&&String(entry.skillId)==='36'&&Number.isInteger(entry.level)&&entry.level===1)return {...entry,effectDisposition:'non_damage',reason:'stun accumulation only; no HP-damage modifier',evidenceRef:`MHDB skill.id=36;level=1;${entry.source}`};if(entry.skillKey==='focus'&&(String(entry.skillId)==='60'||entry.skillId==null)&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'non_damage',reason:'charge/gauge timing only; no direct HP-damage modifier',evidenceRef:`MHDB skill.id=60;level=${entry.level};${entry.source}`};if((entry.name==='強化持続'||entry.name==='Power Prolonger')&&(String(entry.skillId)==='104'||entry.skillId==null)&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'non_damage',reason:'enhanced-state duration only; no direct HP-damage modifier',evidenceRef:`MHDB skill.id=104;level=${entry.level};${entry.source}`};if((entry.name==='弾導強化'||entry.name==='Ballistics')&&(String(entry.skillId)==='53'||entry.skillId==null)&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'non_damage',reason:'range-extension state only; explicit range input controls reference damage',evidenceRef:`MHDB skill.id=53;level=${entry.level};${entry.source}`};if(entry.skillKey==='attack'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'HP attack effect is resolved by the shared L3 effect list',evidenceRef:'index.html:calcAttackSkill'};if(entry.skillKey==='affinity'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'critical-eye affinity is resolved by the shared L3 effect list',evidenceRef:'index.html:calcAffinityBonus'};if(entry.skillKey==='rapidMorph')return {...entry,effectDisposition:'resolved',reason:'owner-approved CB/SA attack-stage rule; attribute and explosion components excluded; conditional follow-up routes remain gated',evidenceRef:rapidRule.source,status:rapidRule.status};if(entry.skillKey==='conditionalAffinity'){const rule=CONDITIONAL_AFFINITY_SKILLS[entry.name];if(!rule||Number(entry.skillId)!==rule.id||!Number.isInteger(entry.level)||entry.level<1||entry.level>rule.max)throw Error('REAL_SLICE:CONDITIONAL_AFFINITY_ID_OR_LEVEL_INVALID:'+entry.name);return {...entry,effectDisposition:'resolved',reason:'maximum-only affinity is already supplied by calcMaxAffinity to both physical and elemental L3 effects',evidenceRef:'index.html:calcMaxAffinity;MHDB:skill:'+rule.id};}if(entry.skillKey==='selfState'&&conditionPlan?.selfStatePlan?.ids.includes(Number(entry.skillId)))return {...entry,effectDisposition:'resolved',reason:'explicit self-state effects; missing conditions remain channel issues',evidenceRef:'https://kuroyonhon.com/mhwilds/program/skill.php'};if(entry.skillKey==='handicraft'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'MHDB highest attained color shared by both channels; fixed owner Artia premise preserved; ranged not applicable',evidenceRef:'https://docs.wilds.mhdb.io/#handicraft'};if(entry.skillKey==='thunderResistance'&&entry.skillId===156&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'resolved',reason:'MHDB rank contributes once to equipment thunder resistance',evidenceRef:'MHDB_SKILL_156'};if(entry.skillKey==='criticalBoost'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'critical multiplier is supplied to the canonical Formula',evidenceRef:'index.html:criticalMultiplierForState'};if(entry.skillKey==='conditionalAttack'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'conditional attack effect is resolved by the shared condition plan or explicit hit condition',evidenceRef:'index.html:standardPowerConditionPlan'};if(entry.skillKey==='attributeConversion'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'resolved',reason:'龍属性武器への明示バフ加算のみ。追撃は別イベントとして未接続',evidenceRef:'KUROYONHON_SKILL_TABLE_ATTRIBUTE_CONVERSION_20261025'};if(entry.skillKey==='resistanceConversionThunder'&&Number.isInteger(entry.level)&&entry.level===1)return {...entry,effectDisposition:'resolved',reason:'雷属性かつ有限非負の総雷耐性を明示した場合だけ属性加算',evidenceRef:'KUROYONHON_SKILL_TABLE_THUNDER_RESISTANCE_CONVERSION_20261025'};if(entry.skillKey==='shelling'&&Number.isInteger(entry.level)&&entry.level>=0&&entry.level<=3)return {...entry,effectDisposition:'resolved',reason:'shelling formula consumes the explicit artillery/load-shells state',evidenceRef:'gunlance-shell-reference.js'};if(['normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].includes(entry.skillKey)&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'resolved',reason:'dedicated ranged Formula consumes the explicit skill level and Technique DB rule',evidenceRef:({normalUp:'index.html:TECHNIQUE_DB_R113_BOW_STATE:BOW_R113_SKILL_SOURCE',spreadUp:'index.html:TECHNIQUE_DB_R113_BOW_STATE:BOW_R113_SKILL_SOURCE',chargeMaster:'index.html:TECHNIQUE_DB_R113_BOW_STATE:BOW_R113_CHARGE_SOURCE',criticalElement:'index.html:TECHNIQUE_DB_R114_BOW_STATE:BOW_R114_CRITICAL_ELEMENT_SOURCE',bladescaleLoading:'index.html:BOW_R115_BLADESCALE_SOURCE',firstShot:'index.html:BOW_R116_FIRST_SHOT_SOURCE',forceShot:'index.html:BOW_R117_FORCE_SOURCE'})[entry.skillKey]};if(['fire','water','thunder','ice','dragon'].includes(entry.skillKey)&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'resolved',reason:'element value is resolved by the shared L3 effect list',evidenceRef:'index.html:calcElementSkill'};throw Error('REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:'+entry.name);}),initialState:(_build,channel)=>{const state=rapidRequested?{lightBowgun:{loadedRounds:rapidAmmoSequence?5:lightBowgunState.loadedRounds}}:hhModel?{huntingHorn:{selfImprovementLevel:huntingHornState.selfImprovementLevel,attackMelodyLevel:huntingHornState.attackMelodyLevel}}:weapon.kind==='switch-axe'?{switchAxe:{mode:switchAxeState.mode}}:ed1Requested?{chargeBlade:{...(hRequested?{mode:chargeBladeState.mode}:{}),previousAction:chargeBladeState.previousAction,normalPhials:chargeBladeState.normalPhials,...(chargeBladeState.enhancedPhials!=null?{enhancedPhials:chargeBladeState.enhancedPhials}:{})}}:hasShelling?{gunlance:{loadedRounds:gunlanceState?.loadedRounds,...(glTargetContext?{stakeLoaded:gunlanceState.stakeLoaded}:{})}}:{};if(bladescaleEntries.length){state.bladescaleFirstHit=bladescaleEligible&&channel==='maximum';state.bladescaleSustained=sustainedBladeEligible&&channel==='maximum';}return state;},
-   shellingFormula:hasShelling?({coefficient,parameters,build,stats,state,channel})=>{if(parameters.glTarget){try{const r=root.GunlanceShellReference.calculateTargetComponent({parameters,stats,state,channel,cornpopperActive:cornpopperEntries.length>0&&channel==='maximum',unreviewedSkills:parameters.glTarget.model.input.unreviewedSkills.filter(name=>!(typeof darkGlActive!=='undefined'&&darkGlActive&&name==='ダークアーツ')&&!(typeof glOrdinaryAirborne!=='undefined'&&glOrdinaryAirborne&&name==='飛燕')&&!(typeof glOrdinaryPartbreaker!=='undefined'&&glOrdinaryPartbreaker&&name==='破壊王')&&!(typeof glOrdinaryActive!=='undefined'&&glOrdinaryActive&&glOrdinaryOmegaInactive&&activeBonusEffects.some(x=>x.name===name))&&(unresolvedShellThunderBonusNames.has(name)||!((channel==='normal'||glGogResolved)&&gogPlan&&name===gogPlan.skill)&&!adoptedBonusAttackName(name)&&!(blackEclipse&&(['黒蝕一体Ⅰ','黒蝕一体Ⅱ','無我の境地','Antivirus'].includes(name)))))},root.TechniqueDBEngine,root.MHWGenericProfileDamage);return {status:'available',value:r.total,details:r};}catch(error){return {status:'unavailable',reason:String(error?.message||error)}}}if(resolvedTechniqueIds.length!==1&&!parameters.shellingResource)return {status:'unavailable',reason:'REAL_SLICE:GL_SEQUENCE_STATE_TRANSITION_UNRESOLVED'};if(typeof root.GunlanceShellReference?.calculate!=='function'||typeof root.MHWGenericProfileDamage!=='function')return {status:'unavailable',reason:'REAL_SLICE:SHELLING_FORMULA_UNAVAILABLE'};try{const input=parameters.shellingInput||{},r=root.GunlanceShellReference.calculate({action:parameters.shellingAction,weaponShellMetadata:{type:weapon.shell,level:weapon.shellLevel},offensiveGuardLevel:guardEntries.length?Math.max(...guardEntries.map(x=>x.level)):0,offensiveGuardActive:guardEntries.length>0&&channel==='maximum',cornpopperLevel:cornpopperEntries.length?cornpopperRule.level:0,cornpopperActive:cornpopperEntries.length>0&&channel==='maximum',state:parameters.shellingResource?{...input.shellingState,loadedRounds:state?.gunlance?.loadedRounds}:input.shellingState,weaponBaseAttack:stats.attack,loadShellsLevel:input.loadShellsLevel,artilleryLevel:input.artilleryLevel,normalAttackComponents:stats.attackComponents,unreviewedSkills:input.unreviewedSkills.filter(name=>unresolvedShellThunderBonusNames.has(name)||!(channel==='normal'&&gogPlan&&name===gogPlan.skill)&&!adoptedBonusAttackName(name)&&!(blackEclipse&&(['黒蝕一体Ⅰ','黒蝕一体Ⅱ','無我の境地','Antivirus'].includes(name))))},root.TechniqueDBEngine,root.MHWGenericProfileDamage);return r&&Number.isFinite(r.total)?{status:'available',value:r.total,...(r.sourceCandidate?{details:r}:{})}:{status:'unavailable',reason:'REAL_SLICE:SHELLING_RESULT_UNRESOLVED'};}catch(error){return {status:'unavailable',reason:String(error?.message||error)}}}:null,
+    if(Number(entry.skillId)===84&&entry.name==='水耐性'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3&&waterEntries.length&&waterInput?.status==='KNOWN_LIMITED')return {...entry,effectDisposition:'resolved',reason:'water resistance consumed once by validated conversion producer',evidenceRef:waterRule.source};if(Number(entry.skillId)===181)return {...entry,effectDisposition:'resolved',reason:waterRule.scope,evidenceRef:waterRule.source};if(Number(entry.skillId)===83)return {...entry,effectDisposition:'resolved',reason:root.MHChargeStrikeRule.scopeWarning,evidenceRef:root.MHChargeStrikeRule.source};if(Number(entry.skillId)===86)return {...entry,effectDisposition:'resolved',reason:'source-mapped physical attack stage for adopted dual-blades dance Hits only; other routes remain pending',evidenceRef:root.MHAirborneHitRule.source};if(nonTargetRapidMorph(entry))return {...entry,effectDisposition:'non_damage',reason:'RAPID_MORPH_NON_TARGET_WEAPON',evidenceRef:'MHDB_JA_SKILLS:7'};if(unusedNonBowCoating(entry))return {...entry,effectDisposition:'non_damage',reason:'BOW_ONLY_COATING_CAPABILITY_NOT_APPLICABLE',evidenceRef:'MHDB_JA_SKILLS:'+entry.skillId};const capability=coatingCapabilities[entry.skillId];if(capability&&entry.name===capability[0]&&entry.level===1&&weapon.kind==='bow'&&['NONE','POWER','CLOSE_RANGE','PIERCE'].includes(bowState?.coating))return {...entry,effectDisposition:'non_damage',reason:'UNUSED_COATING_CAPABILITY_ONLY',evidenceRef:'MHDB_JA_SKILLS_20261026:'+entry.skillId};if(entry.skillKey==='explicitAffinity')return {...entry,effectDisposition:'resolved',reason:'explicit channel state and per-Hit affinity; display maximum excluded',evidenceRef:root.MHWExplicitAffinityRules.source};if(entry.skillKey==='contextAttack')return {...entry,effectDisposition:'resolved',reason:'validated per-component attack multiplier',evidenceRef:root.MHContextAttackSkillRules.source};if(entry.skillKey==='ballistics')return {...entry,effectDisposition:'resolved',reason:'explicit reference shot physical attack only at critical range; Lv1/2 range is an input',evidenceRef:root.MHCommonSkillDamageRules.source};if(frenzyAffinity.active&&Number(entry.skillId)===18&&['無我の境地','Antivirus'].includes(entry.name)&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'resolved',reason:'explicit frenzy affinity supplied once by shared normal/maximum resolver',evidenceRef:frenzyAffinity.source};const extra=annotationPolicy(entry);if(extra&&!extra.bodyEffect)return {...entry,effectDisposition:'resolved',reason:'owner-defined indicator excludes skill extra damage; annotation only',evidenceRef:'MHDB_JA_SKILLS_20261026:'+entry.skillId};const internal=INTERNAL_SKILL_ADOPTION[entry.name];if(internal){if(entry.skillId==null)throw Error('REAL_SLICE:SKILL_ID_UNRESOLVED:'+entry.name);if(internal.requiredSkillId!==undefined&&(Number(entry.skillId)!==internal.requiredSkillId||!Number.isInteger(entry.level)||entry.level<1||entry.level>internal.maxLevel))throw Error('REAL_SLICE:NON_DAMAGE_SKILL_CONTRACT_MISMATCH:'+entry.name);return {...entry,...internal,evidenceRef:`${internal.evidenceRef}:skillId=${entry.skillId}:level=${entry.level}`};}if(activeBonusEffectNames.has(String(entry.name)))return {...entry,effectDisposition:conditionPlan?.groupPlan?.unresolvedEffects?.some(x=>x.id==='bonus:'+entry.name)?'unresolved':'resolved',reason:'active series/group effect is accounted by the shared plan; unresolved entries prevent channel execution',evidenceRef:'index.html:standardGroupPowerPlan'};if(entry.damageRelated===false||['defense','utility','survival','non_damage'].includes(String(entry.effectCategory||'').toLowerCase()))return {...entry,effectDisposition:'non_damage',reason:'DB effect classification excludes direct HP damage',evidenceRef:entry.source+':skillId='+entry.skillId+':effectCategory='+entry.effectCategory};if(entry.skillKey==='slugger'&&String(entry.skillId)==='36'&&Number.isInteger(entry.level)&&entry.level===1)return {...entry,effectDisposition:'non_damage',reason:'stun accumulation only; no HP-damage modifier',evidenceRef:`MHDB skill.id=36;level=1;${entry.source}`};if(entry.skillKey==='focus'&&(String(entry.skillId)==='60'||entry.skillId==null)&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'non_damage',reason:'charge/gauge timing only; no direct HP-damage modifier',evidenceRef:`MHDB skill.id=60;level=${entry.level};${entry.source}`};if((entry.name==='強化持続'||entry.name==='Power Prolonger')&&(String(entry.skillId)==='104'||entry.skillId==null)&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'non_damage',reason:'enhanced-state duration only; no direct HP-damage modifier',evidenceRef:`MHDB skill.id=104;level=${entry.level};${entry.source}`};if((entry.name==='弾導強化'||entry.name==='Ballistics')&&(String(entry.skillId)==='53'||entry.skillId==null)&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'non_damage',reason:'range-extension state only; explicit range input controls reference damage',evidenceRef:`MHDB skill.id=53;level=${entry.level};${entry.source}`};if(entry.skillKey==='attack'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'HP attack effect is resolved by the shared L3 effect list',evidenceRef:'index.html:calcAttackSkill'};if(entry.skillKey==='affinity'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'critical-eye affinity is resolved by the shared L3 effect list',evidenceRef:'index.html:calcAffinityBonus'};if(entry.skillKey==='rapidMorph')return {...entry,effectDisposition:'resolved',reason:'owner-approved CB/SA attack-stage rule; attribute and explosion components excluded; conditional follow-up routes remain gated',evidenceRef:rapidRule.source,status:rapidRule.status};if(entry.skillKey==='conditionalAffinity'){const rule=CONDITIONAL_AFFINITY_SKILLS[entry.name];if(!rule||Number(entry.skillId)!==rule.id||!Number.isInteger(entry.level)||entry.level<1||entry.level>rule.max)throw Error('REAL_SLICE:CONDITIONAL_AFFINITY_ID_OR_LEVEL_INVALID:'+entry.name);return {...entry,effectDisposition:'resolved',reason:'maximum-only affinity is already supplied by calcMaxAffinity to both physical and elemental L3 effects',evidenceRef:'index.html:calcMaxAffinity;MHDB:skill:'+rule.id};}if(entry.skillKey==='selfState'&&conditionPlan?.selfStatePlan?.ids.includes(Number(entry.skillId)))return {...entry,effectDisposition:'resolved',reason:'explicit self-state effects; missing conditions remain channel issues',evidenceRef:'https://kuroyonhon.com/mhwilds/program/skill.php'};if(entry.skillKey==='handicraft'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'MHDB highest attained color shared by both channels; fixed owner Artia premise preserved; ranged not applicable',evidenceRef:'https://docs.wilds.mhdb.io/#handicraft'};if(entry.skillKey==='thunderResistance'&&entry.skillId===156&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'resolved',reason:'MHDB rank contributes once to equipment thunder resistance',evidenceRef:'MHDB_SKILL_156'};if(entry.skillKey==='criticalBoost'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'critical multiplier is supplied to the canonical Formula',evidenceRef:'index.html:criticalMultiplierForState'};if(entry.skillKey==='conditionalAttack'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=5)return {...entry,effectDisposition:'resolved',reason:'conditional attack effect is resolved by the shared condition plan or explicit hit condition',evidenceRef:'index.html:standardPowerConditionPlan'};if(entry.skillKey==='attributeConversion'&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'resolved',reason:'龍属性武器への明示バフ加算のみ。追撃は別イベントとして未接続',evidenceRef:'KUROYONHON_SKILL_TABLE_ATTRIBUTE_CONVERSION_20261025'};if(entry.skillKey==='resistanceConversionThunder'&&Number.isInteger(entry.level)&&entry.level===1)return {...entry,effectDisposition:'resolved',reason:'雷属性かつ有限非負の総雷耐性を明示した場合だけ属性加算',evidenceRef:'KUROYONHON_SKILL_TABLE_THUNDER_RESISTANCE_CONVERSION_20261025'};if(entry.skillKey==='shelling'&&Number.isInteger(entry.level)&&entry.level>=0&&entry.level<=3)return {...entry,effectDisposition:'resolved',reason:'shelling formula consumes the explicit artillery/load-shells state',evidenceRef:'gunlance-shell-reference.js'};if(['normalUp','spreadUp','chargeMaster','criticalElement','bladescaleLoading','firstShot','forceShot'].includes(entry.skillKey)&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'resolved',reason:'dedicated ranged Formula consumes the explicit skill level and Technique DB rule',evidenceRef:({normalUp:'index.html:TECHNIQUE_DB_R113_BOW_STATE:BOW_R113_SKILL_SOURCE',spreadUp:'index.html:TECHNIQUE_DB_R113_BOW_STATE:BOW_R113_SKILL_SOURCE',chargeMaster:'index.html:TECHNIQUE_DB_R113_BOW_STATE:BOW_R113_CHARGE_SOURCE',criticalElement:'index.html:TECHNIQUE_DB_R114_BOW_STATE:BOW_R114_CRITICAL_ELEMENT_SOURCE',bladescaleLoading:'index.html:BOW_R115_BLADESCALE_SOURCE',firstShot:'index.html:BOW_R116_FIRST_SHOT_SOURCE',forceShot:'index.html:BOW_R117_FORCE_SOURCE'})[entry.skillKey]};if(['fire','water','thunder','ice','dragon'].includes(entry.skillKey)&&Number.isInteger(entry.level)&&entry.level>=1&&entry.level<=3)return {...entry,effectDisposition:'resolved',reason:'element value is resolved by the shared L3 effect list',evidenceRef:'index.html:calcElementSkill'};throw Error('REAL_SLICE:SKILL_EFFECT_NOT_PROVEN:'+entry.name);}),initialState:(_build,channel)=>{const state=techniques.GL_WYVERN_FIRE_NORMAL_MEDIUM?.referenceKind==='gl-wyvern-five'?{gunlance:{wyvernGauge:1}}:techniques.HBG_PIERCE_AMMO_2?.referenceKind==='hbg-pierce-seven'?{heavyBowgun:{loadedRounds:4}}:techniques.LBG_PIERCE_AMMO_2?.referenceKind==='lbg-pierce-seven'?{lightBowgun:{loadedRounds:4}}:techniques.HBG_STICKY_AMMO_1?.referenceKind==='hbg-sticky'?{heavyBowgun:{stickyRoundBudget:1}}:techniques.HBG_IGNITION_MACHINE?.referenceKind==='hbg-ignition'?{heavyBowgun:{ignitionGauge:techniques.HBG_IGNITION_MACHINE.ignitionReference.gauge}}:gsGroundDraw?{greatSword:{weaponDrawState:conditions.greatSwordDrawOpening}}:explicitNormalPair?{lightBowgun:{loadedRounds:explicitNormalPair.remaining}}:rapidRequested?{lightBowgun:{loadedRounds:rapidAmmoSequence?5:lightBowgunState.loadedRounds}}:hhModel?{huntingHorn:{selfImprovementLevel:huntingHornState.selfImprovementLevel,attackMelodyLevel:huntingHornState.attackMelodyLevel}}:weapon.kind==='switch-axe'?{switchAxe:{mode:switchAxeState.mode}}:ed1Requested?{chargeBlade:{...(hRequested?{mode:chargeBladeState.mode}:{}),previousAction:chargeBladeState.previousAction,normalPhials:chargeBladeState.normalPhials,...(chargeBladeState.enhancedPhials!=null?{enhancedPhials:chargeBladeState.enhancedPhials}:{})}}:hasShelling?{gunlance:{loadedRounds:gunlanceState?.loadedRounds,...(glTargetContext?{stakeLoaded:gunlanceState.stakeLoaded}:{})}}:{};if(bladescaleEntries.length){state.bladescaleFirstHit=bladescaleEligible&&channel==='maximum';state.bladescaleSustained=sustainedBladeEligible&&channel==='maximum';}return state;},
+   shellingFormula:hasShelling?({coefficient,parameters,build,stats,state,channel})=>{if(parameters.glTarget){try{const r=root.GunlanceShellReference.calculateTargetComponent({parameters,stats,state,channel,cornpopperActive:cornpopperEntries.length>0&&channel==='maximum',unreviewedSkills:parameters.glTarget.model.input.unreviewedSkills.filter(name=>!(typeof darkGlActive!=='undefined'&&darkGlActive&&name==='ダークアーツ')&&!(typeof glOrdinaryAirborne!=='undefined'&&glOrdinaryAirborne&&name==='飛燕')&&!(typeof glOrdinaryPartbreaker!=='undefined'&&glOrdinaryPartbreaker&&name==='破壊王')&&!(typeof glOrdinaryActive!=='undefined'&&glOrdinaryActive&&glOrdinaryOmegaInactive&&activeBonusEffects.some(x=>x.name===name))&&(unresolvedShellThunderBonusNames.has(name)||!((channel==='normal'||glGogResolved)&&gogPlan&&name===gogPlan.skill)&&!adoptedBonusAttackName(name)&&!(blackEclipse&&(['黒蝕一体Ⅰ','黒蝕一体Ⅱ','無我の境地','Antivirus'].includes(name)))))},root.TechniqueDBEngine,root.MHWGenericProfileDamage);return {status:'available',value:r.total,details:r};}catch(error){return {status:'unavailable',reason:String(error?.message||error)}}}if(resolvedTechniqueIds.length!==1&&!parameters.shellingResource)return {status:'unavailable',reason:'REAL_SLICE:GL_SEQUENCE_STATE_TRANSITION_UNRESOLVED'};if(typeof root.GunlanceShellReference?.calculate!=='function'||typeof root.MHWGenericProfileDamage!=='function')return {status:'unavailable',reason:'REAL_SLICE:SHELLING_FORMULA_UNAVAILABLE'};try{const input=parameters.shellingInput||{},r=root.GunlanceShellReference.calculate({action:parameters.shellingAction,weaponShellMetadata:{type:weapon.shell,level:weapon.shellLevel,weaponId:weapon.id,artiaEvidence:weapon.artiaShellEvidence},offensiveGuardLevel:guardEntries.length?Math.max(...guardEntries.map(x=>x.level)):0,offensiveGuardActive:guardEntries.length>0&&channel==='maximum',cornpopperLevel:cornpopperEntries.length?cornpopperRule.level:0,cornpopperActive:cornpopperEntries.length>0&&channel==='maximum',state:parameters.shellingResource?{...input.shellingState,loadedRounds:state?.gunlance?.loadedRounds}:input.shellingState,weaponBaseAttack:stats.attack,loadShellsLevel:input.loadShellsLevel,artilleryLevel:input.artilleryLevel,normalAttackComponents:stats.attackComponents,unreviewedSkills:input.unreviewedSkills.filter(name=>unresolvedShellThunderBonusNames.has(name)||!(channel==='normal'&&gogPlan&&name===gogPlan.skill)&&!adoptedBonusAttackName(name)&&!(blackEclipse&&(['黒蝕一体Ⅰ','黒蝕一体Ⅱ','無我の境地','Antivirus'].includes(name))))},root.TechniqueDBEngine,root.MHWGenericProfileDamage);return r&&Number.isFinite(r.total)?{status:'available',value:r.total,...(r.sourceCandidate?{details:r}:{})}:{status:'unavailable',reason:'REAL_SLICE:SHELLING_RESULT_UNRESOLVED'};}catch(error){return {status:'unavailable',reason:String(error?.message||error)}}}:null,
    phialFormula:({parameters,stats,build,channel})=>{const state=parameters?.phialState;if(!state||typeof state!=='object')return {status:'unavailable',reason:'REAL_SLICE:CB_PHIAL_STATE_REQUIRED'};if(typeof state.shieldBoosted!=='boolean'||typeof state.enhancedPhial!=='boolean')return {status:'unavailable',reason:'REAL_SLICE:CB_PHIAL_STATE_INCOMPLETE'};if(!Number.isInteger(state.artilleryLevel)||state.artilleryLevel<0||state.artilleryLevel>3)return {status:'unavailable',reason:'REAL_SLICE:CB_ARTILLERY_LEVEL_UNRESOLVED'};if(!Number.isInteger(parameters.phialCount)||parameters.phialCount<1)return {status:'unavailable',reason:'REAL_SLICE:CB_PHIAL_COUNT_UNRESOLVED'};const type=state.phialType;if(type!=='IMPACT'&&type!=='POWER_ELEMENT')return {status:'unavailable',reason:'REAL_SLICE:CB_PHIAL_TYPE_REQUIRED'};const t=root.ChargeBladeEngine?.techniques?.[parameters.sourceTechniqueId],f=root.ChargeBladeEngine?.formulas,coef=typeof root.ChargeBladeEngine?.phialCoefficient==='function'?root.ChargeBladeEngine.phialCoefficient(t,type,state.enhancedPhial):null;if(!t?.phial||!f||!Number.isFinite(coef))return {status:'unavailable',reason:'REAL_SLICE:CB_PHIAL_COEFFICIENT_UNRESOLVED'};const artilleryLevel=state.artilleryLevel,attackComponents=stats.attackComponents||state.attackComponents;if(type==='IMPACT'&&artilleryLevel>0){if(!Number.isFinite(Number(state.artilleryMultiplier))||!Number.isFinite(Number(state.baseAttack)))return {status:'unavailable',reason:'REAL_SLICE:CB_ARTILLERY_MULTIPLIER_UNRESOLVED'};if(!attackComponents||!Number.isFinite(attackComponents.normalMultiplier)||!Number.isFinite(attackComponents.normalFlat))return {status:'unavailable',reason:'REAL_SLICE:CB_ARTILLERY_ATTACK_ORDER_PENDING'};}try{const elementalHitzone=state.elementalHitzone??(build?.elementType?part?.multipliers?.[build.elementType]*100:null);let value;if(type==='IMPACT'){const mult=Number(attackComponents?.normalMultiplier??1),flat=Number(attackComponents?.normalFlat??0),base=Number(attackComponents?.weaponBase??stats.attack);if(!Number.isFinite(mult)||!Number.isFinite(flat)||!Number.isFinite(base))return {status:'unavailable',reason:'REAL_SLICE:CB_ARTILLERY_ATTACK_ORDER_PENDING'};value=f.IMPACT_PHIAL.evaluate({baseAttack:base,coefficient:coef,shieldBoosted:state.shieldBoosted,artilleryMultiplier:type==='IMPACT'?Number(state.artilleryMultiplier??1):1,attackMultiplier:mult,attackFlat:flat});}else value=f.POWER_ELEMENT_PHIAL.evaluate({displayedElement:Number(stats.element),coefficient:coef,elementalHitzone,shieldBoosted:state.shieldBoosted,elementKnown:true,typeKnown:true,elementType:build?.elementType,elementStatus:build?.equipment?.elementStatus,elementReason:build?.equipment?.elementReason});const total=value*parameters.phialCount;return Number.isFinite(total)?{status:'available',value:total,...(parameters.consumption?{details:{consumption:parameters.consumption,phialType:type,enhancedPhial:state.enhancedPhial,coefficient:coef,explosionHitCount:parameters.phialCount,source:'index.html:CHARGE_BLADE_TECHNIQUES.'+parameters.sourceTechniqueId+'.phial'}}:{})}:{status:'unavailable',reason:'REAL_SLICE:CB_PHIAL_RESULT_UNRESOLVED'};}catch(error){return {status:'unavailable',reason:String(error?.message||error)}}},
-   referenceFormula:hasReference?(({parameters,build,stats,channel,state:executionState})=>{const kind=parameters.referenceKind,input=parameters.referenceInput||{},state=input.state;if(kind!=='hunting-horn-model-event'&&(!state||typeof state!=='object'))return {status:'unavailable',reason:'REAL_SLICE:REFERENCE_STATE_REQUIRED'};const criticalMultiplier=1.25+[0,.03,.06,.09,.12,.15][Number(input.criticalBoostLevel)||0];try{let r;if(kind==='heavy-bowgun-wyvern'){
+   referenceFormula:hasReference?(({parameters,build,stats,channel,state:executionState})=>{const kind=parameters.referenceKind,input=parameters.referenceInput||{},state=input.state;if(kind!=='hunting-horn-model-event'&&(!state||typeof state!=='object'))return {status:'unavailable',reason:'REAL_SLICE:REFERENCE_STATE_REQUIRED'};const criticalMultiplier=1.25+[0,.03,.06,.09,.12,.15][Number(input.criticalBoostLevel)||0];try{let r;if(kind==='hbg-sticky'){
+ const rule=parameters.sourceRecord.specialSourceValues;
+ if(stats.attack!==90||stats.affinity!==0)return {status:'unavailable',reason:'HBG_STICKY_AMMO_1:UNMODIFIED_STATS_REQUIRED'};
+ const value=parameters.stickyPart==='impact'?stats.attack*rule.impactValue/100*part.multipliers.pierce:
+  parameters.stickyPart==='explosion'?stats.attack*rule.explosionValue/100:parameters.stickyPart==='fire'?rule.fireValue*part.multipliers.fire:NaN;
+ if(!Number.isFinite(value))return {status:'unavailable',reason:'HBG_STICKY_AMMO_1:COMPONENT_UNRESOLVED'};
+ return {status:'available',value,details:{part:parameters.stickyPart}};
+}else if(kind==='lbg-pierce-seven'||kind==='hbg-pierce-seven'){
+ const heavy=kind==='hbg-pierce-seven';
+ const record=parameters.sourceRecord,rule=record.sevenContactReference,rate=rule.rates[parameters.hitIndex];
+ if(stats.attack!==(heavy?140:120)||stats.affinity!==0)return {status:'unavailable',reason:record.techniqueId+':UNMODIFIED_STATS_REQUIRED'};
+ return {status:'available',value:stats.attack*record.variableHitSource.mvPerHit/100*rule.physicalModifier*rate*part.multipliers.pierce,
+  details:{contact:parameters.hitIndex+1,rate,shotOrdinal:state.shotOrdinal,remainingRounds:executionState[heavy?'heavyBowgun':'lightBowgun'].loadedRounds}};
+}else if(kind==='bow-arc-impacts'){
+ if(stats.attack!==90||stats.affinity!==0)return {status:'unavailable',reason:'BOW_ARC:UNMODIFIED_STATS_REQUIRED'};
+ const record=parameters.sourceRecord,index=parameters.hitIndex;
+ if(index>=record.arcImpactValues.length&&record.techniqueId==='BOW_ARC_1_FULL_TRIAL'){
+  if(!record.arcBlastTrial||index>=record.arcImpactValues.length+record.arcBlastTrial.contacts)return {status:'unavailable',reason:'BOW_ARC:BLAST_INDEX_UNRESOLVED'};
+  return {status:'available',value:record.arcBlastTrial.base*part.multipliers.pierce,details:{phase:'natural-blast',source:record.arcBlastTrial.source}};
+ }
+ return {status:'available',value:stats.attack*record.arcImpactValues[index]/100*part.multipliers.pierce};
+}else if(kind==='gl-wyvern-five'){
+ const record=parameters.sourceRecord,values=record.specialSourceValues;
+ if(stats.attack!==90||stats.affinity!==0)return {status:'unavailable',reason:'GL_WYVERN_FIRE:UNMODIFIED_STATS_REQUIRED'};
+ const physical=stats.attack*values.unparenthesizedValue/100,fire=values.parenthesizedValue/record.wyvernFiveReference.fireDivisor*part.multipliers.fire;
+ return {status:'available',value:physical+fire,details:{physical,fire,contact:parameters.hitIndex+1}};
+}else if(kind==='hbg-grenade'){
+ const record=parameters.sourceRecord,values=record.specialSourceValues;
+ if(stats.attack!==90||stats.affinity!==0)return {status:'unavailable',reason:'HBG_IGNITION_GRENADE:UNMODIFIED_STATS_REQUIRED'};
+ const physical=stats.attack*values.motionValuePerHit/100,fire=values.fireValuePerHit*part.multipliers.fire;
+ return {status:'available',value:physical+fire,details:{physical,fire,explosion:parameters.hitIndex+1,
+  startGauge:record.ignitionReference.startGauge,endingGauge:record.ignitionReference.endingGauge}};
+}else if(kind==='hbg-counter'){
+ const record=parameters.sourceRecord,rule=record.ignitionReference;
+ if(stats.attack!==90||stats.affinity!==0)return {status:'unavailable',reason:'HBG_IGNITION_COUNTER:UNMODIFIED_STATS_REQUIRED'};
+ return {status:'available',value:stats.attack*record.specialSourceValues.fixedPhysicalMV/100,
+  details:{startGauge:rule.startGauge,endingGauge:rule.endingGauge,scope:'UNCHARGED_NO_OFFSET_SINGLE_FIXED_HP'}};
+}else if(kind==='hbg-ignition'){
+ const record=parameters.sourceRecord,rule=record.ignitionReference,i=parameters.hitIndex;
+ if(stats.attack!==90||stats.affinity!==0||executionState?.heavyBowgun?.ignitionGauge!==rule.gauge)
+  return {status:'unavailable',reason:'HBG_IGNITION_MACHINE:UNMODIFIED_STATS_REQUIRED'};
+ const mv=record.specialSourceValues.sourceMotionValues[i],rate=rule.hitRates[Math.min(i,rule.hitRates.length-1)];
+ return {status:'available',value:stats.attack*mv/100*rate*part.multipliers.pierce,details:{hit:i+1,mv,rate}};
+}else if(kind==='light-bowgun-ballistic'){
+ if(!ballisticSelection||parameters.sourceTechniqueId!==ballisticSelection.techniqueId)return {status:'unavailable',reason:'LBG_STANDARD:REFERENCE_ID_MISMATCH'};
+ const level=id=>Math.max(0,...allSkills.filter(x=>Number(x.skillId)===id).map(x=>x.level));
+ const shotRules=root.TechniqueDBEngine.get('heavy-bowgun','HBG_NORMAL_REFERENCE_RULES')?.specialSourceValues?.shotSkills;
+ if(!shotRules)return {status:'unavailable',reason:'LBG_STANDARD:SHOT_SKILL_SOURCE_UNRESOLVED'};
+ const value=root.LBGStandardBallistic.calculate(ballisticSelection,{attack:Number(stats.attack)+criticalRangeAttackAdd,affinity:Math.min(100,Number(stats.affinity)+wexFor(part,'pierce',channel)),criticalMultiplier,hitzone:part?.multipliers?.pierce*100,ammoUp:level(ballisticSelection.ammoType==='SPREAD'?2:94),rapidUp:level(23)},ordinal=>root.BowgunNormalReference.shotSkillBonuses({firstShot:level(140),forceShot:level(137)},{shotOrdinal:ordinal,magazineCapacity:5,fullMagazine:true},shotRules));
+ return {status:'available',value:value.total,details:value};
+}else if(kind==='heavy-bowgun-wyvern'){
  if(typeof root.HBGWyvernReference?.calculate!=='function')return {status:'unavailable',reason:'HBG_WYVERN:FORMULA_UNAVAILABLE'};
  const fireHitzone=part?.multipliers?.fire;
  if(!Number.isFinite(fireHitzone))return {status:'unavailable',reason:'HBG_WYVERN:FIRE_HITZONE_UNRESOLVED'};
@@ -2701,8 +3741,8 @@ const powerPhial=root.MHWeaponEffectDB?.switchAxe?.powerPhialSword,elementPhial=
  const shotRules=root.TechniqueDBEngine.get(build.weaponType,build.weaponType==='light-bowgun'?'LBG_NORMAL_REFERENCE_RULES':'HBG_NORMAL_REFERENCE_RULES')?.specialSourceValues?.shotSkills;
  const shotBonus=root.BowgunNormalReference.shotSkillBonuses({firstShot:input.skills.firstShot,forceShot:input.skills.forceShot},state,shotRules);
  const drawAdds=referenceDrawAdds(channel,parameters.sourceTechniqueId),punishingAdds=referencePunishingAdds(channel,parameters.sourceTechniqueId);
- const ammoContacts=state.contacts?.map((c,i)=>({...c,hitAttackAdd:punishingAdds?.[i]??0,resolvedAffinity:Math.min(100,Number(stats.affinity)+shotBonus.shotAffinityAdd+(drawAdds?.[i]??0)+wexFor({multipliers:{pierce:c.physicalHitzone/100},...(c.originalPhysicalHitzone!==undefined?{originalMultipliers:{pierce:c.originalPhysicalHitzone/100}}:{}),wounded:c.wounded??false},'pierce'))}));
- const ammoAffinity=Math.min(100,Number(stats.affinity)+shotBonus.shotAffinityAdd+(state.contactPolicy==='EXPLICIT_CONTACTS'?0:(drawAdds?.[0]??0)+wexFor(part,'pierce')));
+ const ammoContacts=state.contacts?.map((c,i)=>({...c,hitAttackAdd:punishingAdds?.[i]??0,resolvedAffinity:Math.min(100,Number(stats.affinity)+shotBonus.shotAffinityAdd+(drawAdds?.[i]??0)+wexFor({multipliers:{pierce:c.physicalHitzone/100},...(c.originalPhysicalHitzone!==undefined?{originalMultipliers:{pierce:c.originalPhysicalHitzone/100}}:{}),wounded:c.wounded??false},'pierce',channel))}));
+ const ammoAffinity=Math.min(100,Number(stats.affinity)+shotBonus.shotAffinityAdd+(state.contactPolicy==='EXPLICIT_CONTACTS'?0:(drawAdds?.[0]??0)+wexFor(part,'pierce',channel)));
  r=root.BowgunElementReference[elementRapid?'rapidTrigger':state.contactPolicy==='EXPLICIT_CONTACTS'?'contactSequence':'firstHit']({shotMode:state.shotMode,rapidUp:rapidEntries.length?1:0,contacts:ammoContacts,weaponKind:build.weaponType,elementType:state.elementType,ammoLevel:state.ammoLevel,range:state.range,attack:Number(stats.attack),shotAttackAdd:shotBonus.shotAttackAdd,hitAttackAdd:state.contactPolicy==='EXPLICIT_CONTACTS'?0:(punishingAdds?.[0]??0),criticalRangeAttackAdd,elementCriticalMultiplier:build.equipment.criticalElementMultiplier,affinity:ammoAffinity,criticalMultiplier,physicalHitzone:hz*100,elementalHitzone:ehz*100,elementMultiplier:rule.mult*shotBonus.shotElementMultiplier,elementFlat:rule.add},root.TechniqueDBEngine);
  r={...r,shotSkills:shotBonus,bladescaleLoading};
  return {status:'available',value:r.total,details:{...r,state,elementRule:rule,ammoElementCondition:conditionPlan?.ammoElementCondition??null,elementCapStatus:state.elementType==='dragon'?'OWNER_APPROVED_PROVISIONAL_CURRENT_GAME_UNVERIFIED':'OWNER_APPROVED_VER_1_04',attackInput:stats.attack,attackComponents:{...attackParts},attackScope:'RESOLVED_ATTACK_FOR_PHYSICAL_AND_ATTACK_DEPENDENT_ELEMENT;RANGE_ADD_PHYSICAL_ONLY;ELEMENT_FLAT_OUTSIDE'}};
@@ -2722,12 +3762,16 @@ if(rapidMorphLevel>1){
  if(!Object.hasOwn(rule?.predecessors||{},parameters.sourceTechniqueId)||state.previousAction!==rule.predecessors[parameters.sourceTechniqueId]||resolvedTechniqueIds.length!==rule.count)return {status:'unavailable',reason:'REAL_SLICE:CB_RAPID_MORPH_ORIGIN_UNRESOLVED'};
  bodyMind={...bodyMind,bodyAttackBasis:{...stats.attackComponents},bodyAttackMultiplier:(bodyMind.bodyAttackMultiplier??1)*rule.multiplierRule.multipliers[rapidMorphLevel],bodyAttackAdoption:{...bodyMind.bodyAttackAdoption,rapidMorph:{...rule,level:rapidMorphLevel}}};
 }
-r=root.ChargeBladeEngine.resolveTechniqueDamage(parameters.sourceTechniqueId,{...bodyMind,bodyHitAttackAdds:referencePunishingAdds(channel,parameters.sourceTechniqueId),bodyHitAffinityAdds:referenceDrawAdds(channel,parameters.sourceTechniqueId),baseAttack:Number(stats.attack),displayedElement:Number(stats.element||0),physicalHitzone:Number(part?.multipliers?.slash||0)*100,elementalHitzone:Number(build.elementType?part?.multipliers?.[build.elementType]||0:0)*100,sharpnessPhysical:sharp.sharpnessPhysicalMultiplier,sharpnessElement:sharp.sharpnessElementMultiplier,affinity:Number(stats.affinity),criticalMultiplier,negativeCriticalMultiplier:.75,elementCriticalMultiplier:build.equipment.criticalElementMultiplier,elementType:build.elementType||build.equipment?.elementType,elementKnown:true,typeKnown:true},state);}else if(kind==='bow'&&parameters.sourceTechniqueId==='BOW_THOUSAND_DRAGONS'){
- const result=root.BowReference.thousandDragons({attack:Number(stats.attack),affinity:Number(stats.affinity),criticalMultiplier,element:Number(stats.element),specialAmmoLevel:Math.max(0,...specialAmmoEntries.map(x=>x.level)),pierceUpLevel:Math.max(0,...thousandPierceEntries.map(x=>x.level)),state,physicalHitzone:Number(part?.multipliers?.pierce)*100},root.TechniqueDBEngine);
+r=root.ChargeBladeEngine.resolveTechniqueDamage(parameters.sourceTechniqueId,{...bodyMind,bodyHitAttackAdds:referencePunishingAdds(channel,parameters.sourceTechniqueId),bodyHitAffinityAdds:referenceDrawAdds(channel,parameters.sourceTechniqueId),baseAttack:Number(stats.attack),displayedElement:Number(stats.element||0),physicalHitzone:Number(part?.multipliers?.slash||0)*100,elementalHitzone:Number(build.elementType?part?.multipliers?.[build.elementType]||0:0)*100,sharpnessPhysical:sharp.sharpnessPhysicalMultiplier,sharpnessElement:sharp.sharpnessElementMultiplier,affinity:Number(stats.affinity),criticalMultiplier,negativeCriticalMultiplier:.75,elementCriticalMultiplier:build.equipment.criticalElementMultiplier,elementType:build.elementType||build.equipment?.elementType,elementKnown:true,typeKnown:true},state);}else if(kind==='bow'&&parameters.sourceTechniqueId==='BOW_DRAGON_PIERCER'){
+ const result=root.BowReference.dragonPiercer({attack:Number(stats.attack)+criticalRangeAttackAdd,affinity:stats.affinity,criticalMultiplier,element:stats.element,criticalElementMultiplier:build.equipment.criticalElementMultiplier,slash:part?.multipliers?.slash,elementZone:build.elementType==='none'?0:part?.multipliers?.[build.elementType]},root.TechniqueDBEngine);
+ return {status:'available',value:result.total,details:result};
+}else if(kind==='bow'&&parameters.sourceTechniqueId==='BOW_THOUSAND_DRAGONS'){
+ const ehz=build.elementType==='none'?0:part?.multipliers?.[build.elementType];
+ const result=root.BowReference.thousandDragons({attack:Number(stats.attack)+criticalRangeAttackAdd,affinity:Number(stats.affinity),criticalMultiplier,element:Number(stats.element),elementalHitzone:typeof ehz==='number'?ehz*100:undefined,criticalElementMultiplier:build.equipment.criticalElementMultiplier,specialAmmoLevel:Math.max(0,...specialAmmoEntries.map(x=>x.level)),pierceUpLevel:Math.max(0,...thousandPierceEntries.map(x=>x.level)),state,physicalHitzone:Number(part?.multipliers?.pierce)*100},root.TechniqueDBEngine);
  return {status:'available',value:result.total,details:result};
 }else if(kind==='bow'){if(typeof root.BowReference?.technique!=='function')return {status:'unavailable',reason:'REAL_SLICE:BOW_REFERENCE_UNAVAILABLE'};const hz=part?.multipliers?.pierce,ehz=build.elementType?part?.multipliers?.[build.elementType]:0;if(!Number.isFinite(hz)||Number(build.element||0)>0&&!Number.isFinite(ehz))return {status:'unavailable',reason:'REAL_SLICE:RANGED_HITZONE_UNRESOLVED'};const bowSkills=input.skills||{},fixedIds=root.TechniqueDBEngine.get('bow','BOW_STATE_MODIFIERS')?.specialSourceValues?.skillRules?.bladescaleLoading?.techniqueIds;
 const singleFirstShot=resolvedTechniqueIds.length===1&&state.startShot===1&&Array.isArray(fixedIds)&&fixedIds.includes(resolvedTechniqueIds[0])&&Number(bowSkills.bladescaleLoading)===0;
-const sequenceRequired=Number(bowSkills.bladescaleLoading)>0||Number(bowSkills.forceShot)>0;
+const sequenceRequired=Number(bowSkills.bladescaleLoading)>0||(Number(bowSkills.forceShot)>0&&!(thousandRequested&&state.coating==='NONE'&&allSkills.filter(x=>x.skillKey==='forceShot').every(uncoatedThousandForce)));
 if(sequenceRequired&&!singleFirstShot&&(!Array.isArray(fixedIds)||resolvedTechniqueIds.length!==fixedIds.length||resolvedTechniqueIds.some((id,i)=>id!==fixedIds[i])))return {status:'unavailable',reason:'REAL_SLICE:BOW_FIXED_THREE_SHOT_ROUTE_REQUIRED'};
 // Match the existing maximum-condition policy; no uptime or arbitrary-shot assumption.
 const active=channel==='maximum'&&Number(bowSkills.bladescaleLoading)>0;
@@ -2750,13 +3794,13 @@ if(sequenceRequired){
  const value=trace.reduce((sum,hit)=>sum+hit.physical+hit.element,0);
  return Number.isFinite(value)?{status:'available',value,details:{scope:singleFirstShot?'ADOPTED_BOW_SINGLE_FIRST_SHOT':'FIXED_THREE_SHOT_SOURCE_REFERENCE',effectiveDisplayedElement:sequence.effectiveDisplayedElement,elementBasis:sequence.elementBasis,physical:trace.reduce((n,h)=>n+h.physical,0),trace,forceShotStage:sequence.forceShot.stages[stage],bladescaleStage:sequence.bladescaleLoading.stages[stage]||null,bladescaleStatus:sequence.bladescaleLoading.status}}:{status:'unavailable',reason:'REAL_SLICE:BOW_STAGE_NON_FINITE'};
 }
-r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTechniqueId);
+r=root.BowReference[bowLowerCharged(parameters.sourceTechniqueId)?'explicitCharge':'technique'](options,root.TechniqueDBEngine,parameters.sourceTechniqueId);
 }else if(['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_2','LBG_NORMAL_RAPID_3','LBG_NORMAL_RAPID_NATIVE_3'].includes(parameters.sourceTechniqueId)){
  // The internal five-round budget advances after all five Hits. It is not the
  // weapon magazine or a user-maintained ordinal; each channel starts afresh.
  const sequenceOrdinal=rapidAmmoSequence?6-executionState?.lightBowgun?.loadedRounds:undefined;
- r=root.BowgunNormalReference.rapidHit({techniqueId:parameters.sourceTechniqueId,state,hitIndex:parameters.hitIndex,...(rapidAmmoSequence?{sequenceOrdinal,firstShot:input.skills.firstShot,forceShot:input.skills.forceShot,bladescaleLoading:input.skills.bladescaleLoading,bladescaleLoadingActive:channel==='maximum'&&input.skills.bladescaleLoading===1}:{}),normalUp:Number(input.skills?.normalUp||0),attack:Number(stats.attack)+criticalRangeAttackAdd,affinity:Math.min(100,Number(stats.affinity)+wexFor(part,'pierce')),criticalMultiplier,physicalHitzone:part?.multipliers?.pierce*100,rapidUp:rapidEntries.length?rapidShotRule.skillLevel:0},rapidAmmoSequence?techniqueDb:root.TechniqueDBEngine);
-}else{if(typeof root.BowgunNormalReference?.shot!=='function')return {status:'unavailable',reason:'REAL_SLICE:BOWGUN_REFERENCE_UNAVAILABLE'};const hz=part?.multipliers?.pierce,expected=Number(String(parameters.sourceTechniqueId).match(/^(?:HBG|LBG)_NORMAL_AMMO_([0-9]+)$/)?.[1]||0);if(!Number.isFinite(hz)||!Number.isInteger(state.ammoLevel)||state.ammoLevel!==expected)return {status:'unavailable',reason:'REAL_SLICE:BOWGUN_STATE_UNRESOLVED'};if(kind==='heavy-bowgun'&&(!state.weaponAmmoEntry||String(state.weaponAmmoEntry.kind).toLowerCase()!=='normal'||Number(state.weaponAmmoEntry.level)!==expected))return {status:'unavailable',reason:'REAL_SLICE:HBG_AMMO_NOT_SUPPORTED_BY_WEAPON'};if(state.ammoType!=='NORMAL'||state.range!=='CRITICAL'||state.contactPolicy!=='ALL_THREE'||!Number.isInteger(state.normalModeLevel)||state.normalModeLevel<0||state.normalModeLevel>2)return {status:'unavailable',reason:'REAL_SLICE:BOWGUN_STATE_UNRESOLVED'};r=root.BowgunNormalReference[normalAmmoSequence===NORMAL_FIVE_SHOT?'fiveShot':normalAmmoSequence?'tenShot':'shot']({hitAttackAdds:referencePunishingAdds(channel,parameters.sourceTechniqueId),hitAffinityAdds:referenceDrawAdds(channel,parameters.sourceTechniqueId),weaponKind:kind,attack:Number(stats.attack)+(state.range==='CRITICAL'?criticalRangeAttackAdd:0),affinity:Math.min(100,Number(stats.affinity)+wexFor(part,'pierce')),criticalMultiplier,physicalHitzone:hz*100,normalUp:Number(input.skills?.normalUp||0),firstShot:Number(input.skills?.firstShot||0),forceShot:Number(input.skills?.forceShot||0),...(kind==='heavy-bowgun'&&normalAmmoSequence?{bladescaleLoading:Number(input.skills?.bladescaleLoading||0),bladescaleLoadingActive:channel==='maximum'&&Number(input.skills?.bladescaleLoading)===1}:{}),state},root.TechniqueDBEngine);}const value=Number(r?.total??r?.comparisonPower);return Number.isFinite(value)?{status:'available',value,...(kind==='charge-blade-saed'?{details:{status:r.status,verificationStatus:r.verificationStatus,dps:r.dps,components:r.components,trace:r.trace}}:['bow','heavy-bowgun','light-bowgun'].includes(kind)?{details:{state:r.state,scope:r.scope||'FIXED_BOW_STANDARD_SOURCE_REFERENCE',trace:r.trace,...(r.sequence?{sequence:r.sequence,physical:r.physical,element:r.element}:{}),...(kind==='bow'?{effectiveDisplayedElement:r.effectiveDisplayedElement,elementBasis:r.elementBasis,physical:r.physical,element:r.element}:{})}}:{})}:{status:'unavailable',reason:'REAL_SLICE:REFERENCE_RESULT_UNRESOLVED'};}catch(error){return {status:'unavailable',reason:String(error?.message||error)}}}):null,
+ r=root.BowgunNormalReference.rapidHit({techniqueId:parameters.sourceTechniqueId,state,hitIndex:parameters.hitIndex,...(rapidAmmoSequence?{sequenceOrdinal,firstShot:input.skills.firstShot,forceShot:input.skills.forceShot,bladescaleLoading:input.skills.bladescaleLoading,bladescaleLoadingActive:channel==='maximum'&&input.skills.bladescaleLoading===1}:{}),normalUp:Number(input.skills?.normalUp||0),attack:Number(stats.attack)+criticalRangeAttackAdd,affinity:Math.min(100,Number(stats.affinity)+wexFor(part,'pierce',channel)),criticalMultiplier,physicalHitzone:part?.multipliers?.pierce*100,rapidUp:rapidEntries.length?rapidShotRule.skillLevel:0},rapidAmmoSequence?techniqueDb:root.TechniqueDBEngine);
+}else{if(typeof root.BowgunNormalReference?.shot!=='function')return {status:'unavailable',reason:'REAL_SLICE:BOWGUN_REFERENCE_UNAVAILABLE'};const hz=part?.multipliers?.pierce,expected=Number(String(parameters.sourceTechniqueId).match(/^(?:HBG|LBG)_NORMAL_AMMO_([0-9]+)$/)?.[1]||0);if(!Number.isFinite(hz)||!Number.isInteger(state.ammoLevel)||state.ammoLevel!==expected)return {status:'unavailable',reason:'REAL_SLICE:BOWGUN_STATE_UNRESOLVED'};if(kind==='heavy-bowgun'&&(!state.weaponAmmoEntry||String(state.weaponAmmoEntry.kind).toLowerCase()!=='normal'||Number(state.weaponAmmoEntry.level)!==expected))return {status:'unavailable',reason:'REAL_SLICE:HBG_AMMO_NOT_SUPPORTED_BY_WEAPON'};if(state.ammoType!=='NORMAL'||state.range!=='CRITICAL'||state.contactPolicy!=='ALL_THREE'||!Number.isInteger(state.normalModeLevel)||state.normalModeLevel<0||state.normalModeLevel>2)return {status:'unavailable',reason:'REAL_SLICE:BOWGUN_STATE_UNRESOLVED'};r=root.BowgunNormalReference[normalAmmoSequence===NORMAL_FIVE_SHOT?'fiveShot':normalAmmoSequence?'tenShot':'shot']({hitAttackAdds:referencePunishingAdds(channel,parameters.sourceTechniqueId),hitAffinityAdds:referenceDrawAdds(channel,parameters.sourceTechniqueId),weaponKind:kind,attack:Number(stats.attack)+(state.range==='CRITICAL'?criticalRangeAttackAdd:0),affinity:Math.min(100,Number(stats.affinity)+wexFor(part,'pierce',channel)),criticalMultiplier,physicalHitzone:hz*100,normalUp:Number(input.skills?.normalUp||0),firstShot:Number(input.skills?.firstShot||0),forceShot:Number(input.skills?.forceShot||0),...(kind==='heavy-bowgun'&&normalAmmoSequence?{bladescaleLoading:Number(input.skills?.bladescaleLoading||0),bladescaleLoadingActive:channel==='maximum'&&Number(input.skills?.bladescaleLoading)===1}:{}),state:explicitNormalPair?{...state,shotOrdinal:explicitNormalPair.startOrdinal+explicitNormalPair.remaining-executionState.lightBowgun.loadedRounds,fullMagazine:explicitNormalPair.full,loadedRounds:executionState.lightBowgun.loadedRounds}:state},root.TechniqueDBEngine);}const value=Number(r?.total??r?.comparisonPower);return Number.isFinite(value)?{status:'available',value,...(kind==='charge-blade-saed'?{details:{status:r.status,verificationStatus:r.verificationStatus,dps:r.dps,components:r.components,trace:r.trace}}:['bow','heavy-bowgun','light-bowgun'].includes(kind)?{details:{state:r.state,scope:r.scope||'FIXED_BOW_STANDARD_SOURCE_REFERENCE',trace:r.trace,...(r.sequence?{sequence:r.sequence,physical:r.physical,element:r.element}:explicitNormalPair?{physical:r.physical,element:r.element}:{}),...(kind==='bow'?{effectiveDisplayedElement:r.effectiveDisplayedElement,elementBasis:r.elementBasis,physical:r.physical,element:r.element}:{})}}:{})}:{status:'unavailable',reason:'REAL_SLICE:REFERENCE_RESULT_UNRESOLVED'};}catch(error){return {status:'unavailable',reason:String(error?.message||error)}}}):null,
    canonicalPhysical:{expectedGameVersion:versions.game,
     resolveElementApplicability:saDragonEligible?({state,parameters})=>{const mode=parameters?.saHitMode;if(!['SWORD','AXE'].includes(mode)||state?.switchAxe?.mode!==mode)throw Error('SA_DRAGON_HIT_MODE_UNRESOLVED');return {applies:mode==='SWORD',reason:mode==='SWORD'?'SA_DRAGON_SWORD_PHIAL':'SA_DRAGON_AXE_NO_ELEMENT',evidenceRef:'https://kuroyonhon.com/mhwilds/memo/11.php'};}:undefined,
     resolveSharpness:({build,state,parameters})=>{if(parameters?.glSharpnessOverride)return {value:parameters.glSharpnessOverride.value,gameVersion:versions.game,evidenceRef:parameters.glSharpnessOverride.source,status:'PROVISIONAL'};if(state?.bladescaleSustained===true&&!parameters?.saFollowup)return {value:sustainedBladeRule.physicalSharpness,gameVersion:versions.game,evidenceRef:sustainedBladeRule.source,sourceGameVersion:sustainedBladeRule.sourceGameVersion,status:sustainedBladeRule.status};if(!sustainedBladeEligible&&bladescaleEligible&&state?.bladescaleFirstHit===true)return {value:bladescaleRule.physicalSharpness,gameVersion:versions.game,evidenceRef:bladescaleRule.coefficientSource,sourceGameVersion:bladescaleRule.sourceVersion,status:bladescaleRule.status};const r=root.MHWWeaponMaxSharpness.resolve(build.equipment,{rows:[{status:'ENGINE_CONTEXT_DOCUMENTED_UNVERIFIED'}]});if(!r.options)throw Error('REAL_SLICE:SHARPNESS_UNRESOLVED');return {value:r.options.sharpnessPhysicalMultiplier,gameVersion:versions.game,evidenceRef:r.options.sharpnessEvidenceRef,sourceGameVersion:build.equipment.provenance.sourceGameVersion,status:'PROVISIONAL'};},
@@ -2805,7 +3849,8 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
    }
   }
   if(stateStatsByState){pipelineConditions.stateStatsByState=stateStatsByState;pipelineConditions.stateStatsSource='MACARONGAMEMO_DAMAGE_UP_2025-04-16_PROVISIONAL';}
-  try{const evaluated=pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:targetData.monsterId,hitZoneKey:targetData.partId},conditions:pipelineConditions,evaluation:{mode:'combo',kind:'combo',signature:'current-selection-reference-combo',techniqueIds:rapidAmmoSequence?Array(5).fill(resolvedTechniqueIds[0]):resolvedTechniqueIds}});
+  const executedComboIds=rapidAmmoSequence?Array(5).fill(resolvedTechniqueIds[0]):resolvedTechniqueIds;
+  try{const evaluated=pipeline.evaluate({schemaVersion:'v10-min2',build:{weapon:'current-selection'},target:{id:targetData.monsterId,hitZoneKey:targetData.partId},conditions:pipelineConditions,evaluation:{mode:'combo',kind:'combo',signature:'current-selection-reference-combo',techniqueIds:executedComboIds}});
    if(darkCbActive&&Object.entries(evaluated.channels||{}).some(([channel,r])=>!darkCbResultValid(r,channel)))return fail('REAL_SLICE:DARK_ARTS_CB_PRODUCED_COMPONENT_CONTRACT_INVALID');
    if(darkGlActive&&Object.values(evaluated.channels||{}).some(r=>!darkGlResultValid(r)))return fail('REAL_SLICE:DARK_ARTS_GL_PRODUCED_COMPONENT_CONTRACT_INVALID');
    if(glOrdinaryActive&&Object.values(evaluated.channels||{}).some(r=>!glOrdinaryResultValid(r)))return fail('REAL_SLICE:GL_ORDINARY_PRODUCED_COMPONENT_CONTRACT_INVALID');
@@ -2854,6 +3899,58 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
     result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',glTarget:{rules:glTargetContext.rules,initialRounds:gunlanceState.loadedRounds,initialStakeLoaded:gunlanceState.stakeLoaded,capacity:glTargetContext.capacity,sourcePower:gunlanceState.shellingType+'_'+gunlanceState.shellingPower}};
    }
 
+   if(lsPlainThrust)for(const result of Object.values(evaluated.channels||{}))if(result.execution?.status==='complete'){
+    result.diagnostics={...result.diagnostics,lsGroundThrust:{...techniques.LS_THRUST.adoption,spiritGauge:'NONE',
+     gaugeAmountAndRecovery:'NOT_CALCULATED',moveSequence:'SINGLE_ALREADY_DRAWN_GROUND_ACTION'}};
+   }
+   if(lsPlainForesight)for(const result of Object.values(evaluated.channels||{}))if(result.execution?.status==='complete'){
+    result.diagnostics={...result.diagnostics,lsGroundForesightSlash:{...techniques.LS_FORESIGHT_SLASH.adoption,
+     spiritGauge:'NONE',counterSuccess:false,gaugeAmountAndRecovery:'NOT_CALCULATED',precedingAction:'NOT_INCLUDED',followUp:'NOT_INCLUDED'}};
+   }
+   if(lsPlainRisingSlash)for(const result of Object.values(evaluated.channels||{}))if(result.execution?.status==='complete'){
+    result.diagnostics={...result.diagnostics,lsGroundRisingSlash:{...techniques.LS_RISING_SLASH.adoption,
+     spiritGauge:'NONE',gaugeAmountAndRecovery:'NOT_CALCULATED',precedingAction:'NOT_INCLUDED'}};
+   }
+   if(dbPlainDouble)for(const result of Object.values(evaluated.channels||{})){
+    if(result.execution?.status==='complete'){
+     const adoption=techniques.DB_DOUBLE_SLASH.adoption;
+     result.diagnostics={...result.diagnostics,dbPlainDoubleSlash:{...adoption,
+      demonMode:false,archdemonMode:false,demonBoost:false,requiresDemonGauge:false,elementPolicy:'SINGLE_NATIVE_EQUIPMENT_ATTRIBUTE_PER_CONTACT',
+      contacts:adoption.contacts.map((h,i)=>({...h,eventId:'0:'+i,physicalComponentId:'DB_DOUBLE_SLASH:physical:'+i,elementComponentId:'DB_DOUBLE_SLASH:element:'+i}))}};
+    }
+   }
+   if(igGroundEnhancedRising)for(const result of Object.values(evaluated.channels||{})){
+    if(result.execution?.status==='complete')result.diagnostics={...result.diagnostics,igGroundEnhancedRising:{...techniques.IG_ENHANCED_RISING_COMBO.adoption,
+     extractState:'TRIPLE_EXTRACT',kinsectState:'STOWED',hitCount:3,precedingAction:'NOT_INCLUDED',extractMutation:'NONE',kinsectDamage:'EXCLUDED'}};
+   }
+   if(igGroundTornado)for(const result of Object.values(evaluated.channels||{})){
+    if(result.execution?.status==='complete')result.diagnostics={...result.diagnostics,igGroundTornado:{...techniques.IG_TORNADO_SLASH.adoption,
+     extractState:'TRIPLE_EXTRACT',kinsectState:'STOWED',hitCount:2,precedingAction:'NOT_INCLUDED',extractMutation:'NONE',kinsectDamage:'EXCLUDED'}};
+   }
+   if(cbPlainSwordWeak)for(const result of Object.values(evaluated.channels||{})){
+    if(result.execution?.status==='complete')result.diagnostics={...result.diagnostics,cbPlainSwordWeakSlash:{...techniques.CB_SWORD_WEAK_SLASH.adoption,
+     mode:'SWORD',swordBoosted:false,shieldBoosted:false,axeBoosted:false,hitCount:1,phialHitCount:0,
+     scopeNote:'LANDED_BODY_ONLY_PRECEDING_ACTION_NOT_EVALUATED'}};
+   }
+   if(cbPlainSwordRound)for(const result of Object.values(evaluated.channels||{})){
+    if(result.execution?.status==='complete')result.diagnostics={...result.diagnostics,cbPlainSwordRoundSlash:{...techniques.CB_SWORD_ROUND_SLASH.adoption,
+     mode:'SWORD',swordBoosted:false,shieldBoosted:false,axeBoosted:false,hitCount:1,phialHitCount:0,
+     scopeNote:'LANDED_BODY_ONLY_PRECEDING_ACTION_NOT_EVALUATED'}};
+   }
+   if(hhPlainSlam)for(const result of Object.values(evaluated.channels||{})){
+    if(result.execution?.status==='complete')result.diagnostics={...result.diagnostics,hhPlainSlam:{...techniques.HH_SLAM.adoption,
+     echoState:'NONE',melodyState:'NONE',hitCount:2,excluded:['FOLLOW_UP','ECHO','MELODY','MANTLE','STUN_AND_DURABILITY']}};
+   }
+   if(gsOffsetThree)for(const [channel,result] of Object.entries(evaluated.channels||{}))if(result.execution?.status==='complete'){
+    const preactivatedCounterstrike=channel==='maximum'&&(conditionPlan?.applied||[]).some(x=>x.skill==='逆襲'&&x.condition==='KNOCKBACK_BUFF'&&x.attackAdd>0);
+    result.diagnostics={...result.diagnostics,gsOffsetRisingSlash3:{...techniques.GS_OFFSET_RISING_SLASH_3.adoption,
+      offsetSuccess:'NOT_ASSUMED',followUp:'NOT_CALCULATED',preactivatedCounterstrike,hitCount:1}};
+   }
+   if(gsGroundDraw)for(const [channel,result] of Object.entries(evaluated.channels||{})){
+    if(result.execution?.status==='complete'&&result.finalState?.greatSword?.weaponDrawState!=='DRAWN')return fail('GS_DRAW_BODY:STATE_TRANSITION_MISSING');
+    if(result.execution?.status==='complete')result.diagnostics={...result.diagnostics,gsGroundDraw:{...techniques.GS_DRAW_VERTICAL_SLASH.gsGroundDraw,
+     opening:'SHEATHED',ending:'DRAWN',openingSource:conditions.greatSwordDrawOrigin,hitIndex:0,drawSkillsActiveInPower:channel==='maximum'&&drawEquipped.length>0,laterAffinityWindow:'NOT_EVALUATED'}};
+   }
    for(const [channel,result] of Object.entries(evaluated.channels||{}))if(drawMapDiagnostics[channel].length){
     const ignored=drawMapDiagnostics[channel].filter(x=>x.status==='IGNORED_UNSUPPORTED_EFFECT');
     result.diagnostics={...result.diagnostics,drawHitPolicy:drawMapDiagnostics[channel],...(ignored.length?{calculationCompleteness:'PARTIAL_SKILL_EFFECTS',ignoredSkillEffects:[...(result.diagnostics?.ignoredSkillEffects||[]),...ignored]}:{})};
@@ -2891,6 +3988,24 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
    if(excludedConditionalBuffs.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,excludedConditionalBuffs};
    if(excludedCalculationSkills.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,excludedCalculationSkills};
    if(excludedSkillDamage.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,excludedSkillDamage};
+   if(saGroundTrial)for(const lane of Object.values(evaluated.channels||{})){
+    lane.diagnostics={...lane.diagnostics,formalStatus:'PROVISIONAL',saGroundDischargeTrial:{...techniques[saGroundTrialId].adoption}};
+   }
+   if(lsRelease)for(const lane of Object.values(evaluated.channels||{})){
+    lane.diagnostics={...lane.diagnostics,formalStatus:'PROVISIONAL',lsSpiritReleaseTrial:{...techniques[lsReleaseId].adoption,hitCount:14,helmIncluded:false}};
+   }
+   if(techniques.BOW_ARC_1_FULL_TRIAL?.arcBlastTrial)for(const lane of Object.values(evaluated.channels||{})){
+    lane.metrics.comboDps={status:'unavailable',value:null,reason:'BOW_ARC:NATURAL_BLAST_TIMING_UNVERIFIED'};
+    lane.diagnostics={...lane.diagnostics,formalStatus:'PROVISIONAL',bowArcFullTrial:{...techniques.BOW_ARC_1_FULL_TRIAL.arcBlastTrial}};
+   }
+   if(techniques.BOW_ARC_1_IMPACT_ONLY?.referenceKind==='bow-arc-impacts')for(const lane of Object.values(evaluated.channels||{})){
+    if(lane.metrics?.comboTotalDamage){
+     lane.metrics.arcImpactReference={...lane.metrics.comboTotalDamage,scope:'ARC_IMPACTS_ONLY'};
+     lane.metrics.comboTotalDamage={status:'unavailable',value:null,reason:'BOW_ARC:IMPACTS_ONLY'};
+     lane.metrics.comboDps={...lane.metrics.comboTotalDamage};
+     lane.diagnostics={...lane.diagnostics,referenceOnly:true,referenceScope:'ARC_IMPACTS_ONLY'};
+    }
+   }
    if(resolvedTechniqueIds.some(id=>['heavy-bowgun-element','light-bowgun-element'].includes(techniques[id]?.referenceKind)))for(const result of Object.values(evaluated.channels||{})){
     const contactState=weapon.kind==='light-bowgun'?lightBowgunState:hbgState;
     const sequence=contactState?.contactPolicy==='EXPLICIT_CONTACTS';
@@ -2901,7 +4016,10 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
     if(!sequence&&result.metrics){result.metrics.firstHitReference={...result.metrics.comboTotalDamage,scope};result.metrics.comboTotalDamage={status:'unavailable',value:null,reason:scope};}
    }
    if(weapon.kind==='insect-glaive'){evaluated.conditionKey=String(evaluated.conditionKey||'')+'|IG_BODY_ONLY_KINSECT_EXCLUDED';for(const result of Object.values(evaluated.channels||{})){result.diagnostics={...result.diagnostics,calculationScope:'IG_BODY_ONLY_KINSECT_EXCLUDED',excludedComponents:[{id:'KINSECT_DAMAGE',reason:'OWNER_SCOPE_EXCLUDED'}]};if(result.metrics?.comboTotalDamage)result.metrics.comboTotalDamage.scope='IG_BODY_ONLY_KINSECT_EXCLUDED';}}
+   if(hhOpening)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',hhOpeningMelody:hhOpening};
    if(hhModel)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',hhEventModel:{...hhModel,input:huntingHornState},scope:hhModel.scope};
+   if(saAxeBoostComponents.length)for(const result of Object.values(evaluated.channels||{}))
+    result.diagnostics={...result.diagnostics,saAxeBoost:{...saAxeBoostRule,scope:'PREACTIVATED_AXE_BODY_PHYSICAL',componentIds:saAxeBoostComponents}};
    if(weapon.kind==='switch-axe')for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',referenceOnly:!saAwakened,referenceScope:saAwakened?saAwakened.scope:'NON_AWAKENED_BODY_PHIAL_MODIFIERS_MODE_ONLY_GAUGE_UNMODELED',awakenedModel:saAwakened,modeContracts:resolvedTechniqueIds.map(id=>({techniqueId:id,contract:techniques[id]?.modeContract||null}))};
    if(wyvernRequested)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',referenceOnly:true,referenceScope:'STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL',liveGameVerification:'PENDING'};
    if(resolvedTechniqueIds.some(id=>techniques[id]?.referenceKind==='charge-blade-saed'))for(const result of Object.values(evaluated.channels||{})){
@@ -2909,7 +4027,10 @@ r=root.BowReference.technique(options,root.TechniqueDBEngine,parameters.sourceTe
    }
 if(ed1Requested)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,resourceContracts:resourcePlans,resourceScope:hRequested?'OWNER_PROVISIONAL_H_EXPLICIT_STATE_ZERO_PREFIX_CONSUMPTION':'ADOPTED_RELEASE_ROUTE_ENHANCED_FIRST_EXPLICIT_STOCK'};
 if(weapon.kind==='charge-blade'&&chargeBladeState?.axeBoosted===true&&techniques.CB_SWORD_TO_AXE_MORPH)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',techniqueAdoption:techniques.CB_SWORD_TO_AXE_MORPH.adoption};
-if(rapidMorphLevel>1)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',rapidMorphAdoption:rapidRule};
+if(rapidMorphLevel>1&&!cbPlainSwordBody)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',rapidMorphAdoption:rapidRule};
+if(snsGroundShield)for(const result of Object.values(evaluated.channels||{})){
+ if(result.execution?.status==='complete')result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',snsGroundShield:techniques.SNS_SHIELD_ATTACK.adoption};
+}
 if(resolvedTechniqueIds.includes('SNS_BASH_UPPERCUT'))for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,formalStatus:'PROVISIONAL',techniqueAdoption:techniques.SNS_BASH_UPPERCUT.adoption};
 if(thunderAmmoScope&&resistanceConversionLevel)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,thunderAmmoConversion:{status:'SOURCE_BACKED_PROVISIONAL',source:'https://kuroyonhon.com/mhwilds/program/skill.php',orderSource:'https://kuroyonhon.com/mhwilds/memo/25.php',input:resistanceInput,coefficient:resistanceConversionCoefficient,scope:'THUNDER_AMMO_ONLY_FLAT_AFTER_ATTACK_DEPENDENT_TERM;OTHER_ADOPTED_ELEMENTS_NO_EFFECT',liveGameVerification:'PENDING'}};
 if(fixedNormalChargeResolved)for(const result of Object.values(evaluated.channels||{}))result.diagnostics={...result.diagnostics,chargeMasterFixedAmmoApplicability:{skillId:24,level:fixedAmmoCMEntries[0].level,status:'NOT_APPLICABLE',reason:'STANDARD_FIXED_NORMAL_AMMO_CM_NOT_APPLICABLE',techniqueId:fixedAmmoCMId,shotCount:fixedAmmoCMSelection.shotCount,contactCount:fixedAmmoCMSelection.contactCount}};
@@ -2941,6 +4062,80 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
     if(excludedEffectComponents.length)for(const result of Object.values(evaluated.channels||{}))result.diagnostics.attributeConversion.mixedComponentAdoption={...adoption,legacyEffectScope:conversionScope.scope,scopeInterpretation:'WEAPON_ELEMENT_EFFECT_ONLY;EXCLUDED_EFFECT_COMPONENTS_MAY_REMAIN_IN_VALID_TOTAL',excludedEffectComponents};
    }
    if(darkPeakScoped&&evaluated.channels?.maximum)evaluated.channels.maximum.diagnostics={...evaluated.channels.maximum.diagnostics,darkPeakScenario};
+   // Presentation provenance: this is the actual evaluated route, not the plan
+   // requested by the editor. Attach per completed channel so selection and
+   // skill-continuation branches carry their own route into the result.
+   const usedComboFor=result=>{
+    const diag=result.diagnostics||{},levelFromId=id=>Number(String(id).match(/_(\d+)$/)?.[1]||0);
+    const elementalNames={fire:'火炎弾',water:'水冷弾',thunder:'電撃弾',ice:'氷結弾',dragon:'滅龍弾'};
+    const shellNames={NORMAL:'通常砲撃',CHARGED:'溜め砲撃',FULL_BURST:'フルバースト（竜杭なし）'};
+    const first=executedComboIds[0],allSame=executedComboIds.every(id=>id===first);
+    const shotLabel=({count,contactCount,hitsPerShot,ordinalKey,scope,mode})=>{
+     const trace=(result.components||[]).filter(c=>c.techniqueId===first&&c.status==='available').flatMap(c=>c.details?.trace||[]);
+     if(trace.length!==contactCount||count*hitsPerShot!==contactCount)return null;
+     const segments=[];
+     const requiresSegment=referenceSkills.bladescaleLoading>0||trace.some(h=>h.bladescale!=null);
+     for(let i=0;i<count;i++){
+      const hits=trace.slice(i*hitsPerShot,(i+1)*hitsPerShot),segment=hits[0]?.bladescale?.segment;
+      if(hits.some((h,j)=>h[ordinalKey]!==i+1||h.hit!==j+1))return null;
+      if(requiresSegment&&(!['BLADESCALE','ORDINARY'].includes(segment)||hits.some(h=>h.bladescale?.scope!==scope||h.bladescale.segment!==segment)))return null;
+      segments.push(segment||'ORDINARY');
+     }
+     const ammo='通常弾 Lv'+levelFromId(first),enhanced=segments.filter(x=>x==='BLADESCALE').length;
+     if(enhanced){
+      if(enhanced!==3||segments.some((segment,index)=>segment!==(index<enhanced?'BLADESCALE':'ORDINARY')))return null;
+      return [ammo+'・刃鱗増装で強化された'+mode+enhanced+'回 → 通常の'+mode+(count-enhanced)+'回（計'+contactCount+'ヒット）'];
+     }
+     return [ammo+'・'+mode+count+'回（'+contactCount+'ヒット）'];
+    };
+    if(ballisticSelection&&allSame&&first===ballisticSelection.techniqueId){
+     // This single pipeline event runs the adopted five-trigger ballistic producer.
+     const trace=result.components?.find(c=>c.techniqueId===first&&c.status==='available'&&c.details?.scope==='LBG_STANDARD_NATIVE_RAPID_FIVE_TRIGGER_REFERENCE')?.details?.trace;
+     if(Array.isArray(trace)&&trace.length===ballisticSelection.contactCount&&new Set(trace.map(hit=>hit.triggerOrdinal)).size===ballisticSelection.triggerCount)
+      return [({PIERCE:'貫通弾',SPREAD:'散弾'})[ballisticSelection.ammoType]+' Lv'+ballisticSelection.ammoLevel+'・速射'+ballisticSelection.triggerCount+'回（'+trace.length+'ヒット）'];
+     return null;
+    }
+    if(rapidAmmoSequence&&allSame&&diag.rapidAmmoSequence?.triggerCount===executedComboIds.length&&levelFromId(first)){
+     const {triggerCount,contactCount}=diag.rapidAmmoSequence;
+     if(triggerCount!==5||contactCount!==25)return null;
+     return shotLabel({count:triggerCount,contactCount,hitsPerShot:5,ordinalKey:'roundOrdinal',scope:'LBG_FIXED_FIVE_NORMAL_RAPID_ONLY',mode:'速射'});
+    }
+    if(normalAmmoSequence&&executedComboIds.length===1&&diag.normalAmmoSequence?.shotCount&&levelFromId(first)){
+     const {shotCount,contactCount}=diag.normalAmmoSequence;
+     if(weapon.kind==='heavy-bowgun'&&normalAmmoSequence===NORMAL_TEN_SHOT){
+      if(shotCount!==10||contactCount!==30)return null;
+      return shotLabel({count:shotCount,contactCount,hitsPerShot:3,ordinalKey:'shotOrdinal',scope:'HBG_FIXED_TEN_NORMAL_ONLY',mode:'単発射撃'});
+     }
+     return ['通常弾 Lv'+levelFromId(first)+'・単発射撃'+shotCount+'回（'+contactCount+'ヒット）'];
+    }
+    const names=executedComboIds.map(id=>{
+     // The canonical record is shared by draw and vertical slash. Name the
+     // narrower action only when execution proved the exact picker premise.
+     if(id==='GS_DRAW_VERTICAL_SLASH'&&diag.gsGroundDraw?.openingSource==='EXACT_LEGACY_PICKER'&&diag.gsGroundDraw.ending==='DRAWN')return '抜刀斬り';
+     const shell=String(id).match(/^reference:gl_(NORMAL|CHARGED|FULL_BURST)$/)?.[1];
+     if(shell)return shellNames[shell];
+     if(/^(?:LBG|HBG)_NORMAL_AMMO_[123]$/.test(id))return '通常弾 Lv'+levelFromId(id)+'・単発射撃';
+     if(/^LBG_NORMAL_RAPID_(?:NATIVE_)?[123]$/.test(id))return '通常弾 Lv'+levelFromId(id)+'・速射';
+     if(id==='LBG_ELEMENT_FIRST_HIT_REFERENCE'||id==='HBG_ELEMENT_FIRST_HIT_REFERENCE'){
+      const s=id.startsWith('LBG')?lightBowgunState:hbgState;
+      const element=elementalNames[String(id.startsWith('LBG')?s?.ammoType:s?.elementType||'').toLowerCase()];
+      if(element&&Number.isInteger(s.ammoLevel))return element+' Lv'+s.ammoLevel+(s.shotMode==='RAPID'?'・速射':'・射撃');
+     }
+     const n=techniques[id]?.techniqueName;
+     return typeof n==='string'&&/[\u3040-\u30ff\u3400-\u9fff]/.test(n)?n:null;
+    });
+    if(names.some(n=>!n))return null;
+    const runs=[];
+    for(const name of names){const prev=runs[runs.length-1];if(prev?.name===name)prev.count++;else runs.push({name,count:1});}
+    return runs.map(({name,count})=>name+(count>1?' ×'+count:''));
+   };
+   for(const result of Object.values(evaluated.channels||{})){
+    const total=result?.metrics?.comboTotalDamage;
+    if(result?.execution?.status==='complete'&&total?.status==='available'&&Number.isFinite(total.value)){
+     let usedCombo=null;try{usedCombo=usedComboFor(result);}catch{} // Display provenance must not block an evaluated result.
+     if(usedCombo?.length)usedComboByExecution.set(result.execution,Object.freeze(usedCombo));
+    }
+   }
    return evaluated;}catch(e){return fail(e?.message||'REAL_SLICE:EVALUATION_FAILED');}
  }
  // Shared detection for the existing health comparison and the narrower 168 scenario gate.
@@ -3046,7 +4241,12 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
    next.selectedHpPolicy={...next.selectedHpPolicy,reconciliation:hpInvalid?'INVALID_SELECTED_HP_IGNORED':'SELECTED_HP_PLAN_REBUILT',description:next.selectedHpPolicy.description+(hpInvalid?'（不正なHP指定のためHP効果を未適用）':'（現在のHP選択から計画を再構成）')};
    input={...input,conditions,stats:{...input.stats,conditionalConditionPlan:next}};
   }
-  if(input.weapon?.kind==='charge-blade'&&input.chargeBladeState?.mixMode)return evaluateIndependentCBMix(input);
+  if(input.weapon?.kind==='charge-blade'&&input.chargeBladeState?.mixMode){
+   const ids=normalizeTechniqueIds(input.techniqueIds||[],{fallback:input.techniqueId}).ids;
+   if(ids.includes('CB_SWORD_ROUND_SLASH'))return fail('CB_ROUND_SLASH:STATE_UNSUPPORTED');
+   if(ids.includes('CB_SWORD_WEAK_SLASH'))return fail('CB_WEAK_SLASH:STATE_UNSUPPORTED');
+   return evaluateIndependentCBMix(input);
+  }
   if(input.weapon.kind==='charge-blade'&&!input.conditions?.[darkCbRouteToken]&&input.stats.conditionalConditionPlan?.groupPlan?.applied?.some(a=>a.skill==='ダークアーツ'))input=withoutDarkCbAdoption(input);
   const original=evaluateCurrentSingleHealth(input);
   if(!original.channels)return original;
@@ -3073,5 +4273,5 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
   original.channels.maximum.diagnostics={...original.channels.maximum.diagnostics,healthBranchComparison:{policy:'WHOLE_ROUTE_TOTAL_NOT_COMPONENT_MAXIMA',status:ready?'RESOLVED':'PENDING',selectedState:selected?.state??null,branches:branches.map(b=>({state:b.state,value:b.value,execution:b.maximum?.execution,effectPlan:b.maximum?.effectPlan}))}};
   return original;
  }
- root.MHWRealOneHitBrowserAdapter=Object.freeze({evaluateCurrent,evaluateNormalTenShot,evaluateNormalFiveShot,evaluateRapidFiveShot,normalizeTechniqueIds,resolveTarget});
+ root.MHWRealOneHitBrowserAdapter=Object.freeze({heavyPierceStateAllowed,pierceSevenStateAllowed,swordVerticalOpeningMode:STANDARD_NORMAL_HIT_CONTRACT.SA_SWORD_VERTICAL.stateRequirement.mode,evaluateCurrent,evaluateNormalTenShot,evaluateNormalFiveShot,evaluateRapidFiveShot,normalizeTechniqueIds,resolveTarget,kingArkveldMultipliers,usedComboSteps,flayerFixedReference,hhAvailableOpeningFamilies,hhOpeningFamilies,hhOpeningBodyIds});
 })(typeof window!=='undefined'?window:globalThis);

@@ -25,9 +25,78 @@ on:
       - 'tests/charm-saved-level-integrity.test.cjs'
       - 'tests/saved-decoration-identity.test.cjs'
       - 'ui/comparison-session.js'
+      - 'ui/custom-weapon-settings.js'
+      - 'tests/custom-weapon-settings-isolation.test.cjs'
+      - 'tests/gs-per-move-charge.test.cjs'
+      - 'tools/gs-per-move-charge-browser.test.cjs'
+      - 'bow-reference.js'
+      - 'tests/bow-explicit-charge.test.cjs'
+      - 'tools/bow-explicit-charge-dom.test.cjs'
+      - 'tests/hh-opening-melody.test.cjs'
+      - 'tests/hh-single-blunt-body.test.cjs'
+      - 'tests/sa-axe-boost.test.cjs'
+      - 'tests/cb-custom-settings-parity.test.cjs'
+      - 'tests/r196-missing-saved-weapon.test.cjs'
+      - 'tools/bow-explicit-charge-browser.test.cjs'
+      - 'docs/reports/r252-generic-states/evidence/mhdb-hunting-horn-hope.api.json'
+      - 'tools/custom-weapon-settings-browser.test.cjs'
       - 'ui/local-mhdb-cache.js'
       - 'tests/local-mhdb-cache.test.cjs'
       - 'tools/comparison-session-reload-browser.test.cjs'
+      - 'tools/armor-skill-layout-dom.test.cjs'
+      - 'tools/armor-portrait-layout-browser.test.cjs'
+      - 'tools/comparison-portrait-layout-browser.test.cjs'
+      - 'tools/skill-comparison-browser.test.cjs'
+      - 'tools/artia-stage-parity.test.cjs'
+      - 'tools/artia-craft-parity.test.cjs'
+      - 'tools/charm-public-shortcut-dom.test.cjs'
+      - 'tools/comparison-fixed-damage-dom.test.cjs'
+      - 'tools/comparison-self-maximum-dom.test.cjs'
+      - 'tools/comparison-settings-parity-dom.test.cjs'
+      - 'tools/maximum-skills-dom.test.cjs'
+      - 'tools/maximum-common-skills-dom.test.cjs'
+      - 'tools/maximum-coupled-series-dom.test.cjs'
+      - 'tests/dark-arts-auto-target.test.cjs'
+      - 'tools/comparison-used-combo-dom.test.cjs'
+      - 'tools/custom-combo-result-dom.test.cjs'
+      - 'tools/bow-mixed-custom-dom.test.cjs'
+      - 'tests/lance-mid-thrust-picker.test.cjs'
+      - 'tests/hammer-vertical-picker.test.cjs'
+      - 'tests/hammer-charged-swing.test.cjs'
+      - 'tests/hammer-spin-endings.test.cjs'
+      - 'tests/gs-true-charge-picker.test.cjs'
+      - 'tests/basic-slash-picker.test.cjs'
+      - 'tests/typed-move-contacts.test.cjs'
+      - 'tests/lance-dash-contact.test.cjs'
+      - 'tests/ls-helm-breaker-red.test.cjs'
+      - 'tests/gunlance-shell-opening.test.cjs'
+      - 'tests/cb-ig-ordinary-contacts.test.cjs'
+      - 'tests/hbg-wyvern-capacity.test.cjs'
+      - 'tests/hh-performance-comparison.test.cjs'
+      - 'tests/ls-foresight-spin-picker.test.cjs'
+      - 'tests/lance-high-thrust-picker.test.cjs'
+      - 'tests/lance-counter-conversion.test.cjs'
+      - 'tests/ig-enhanced-single-opening.test.cjs'
+      - 'tests/sa-sword-vertical-opening.test.cjs'
+      - 'tests/saved-single-opening.test.cjs'
+      - 'tools/combo-simple-names-dom.test.cjs'
+      - 'tools/bow-mixed-custom-browser.test.cjs'
+      - 'tests/used-combo-adapter.test.cjs'
+      - 'tools/consumer-form-parity-dom.test.cjs'
+      - 'tools/king-target-parity-dom.test.cjs'
+      - 'tools/rounded-font-contract.test.cjs'
+      - 'tests/lbg-native-saved-parity.test.cjs'
+      - 'tests/lbg-normal-two-current.test.cjs'
+      - 'tests/explicit-opening-defaults.test.cjs'
+      - 'tests/bow372-thousand.test.cjs'
+      - 'tests/bow372-saved-mixed.test.cjs'
+      - 'tests/bow372-saved-heterogeneous.test.cjs'
+      - 'tests/r250-ocr-confirmation.test.cjs'
+      - 'tests/r250-ocr-confirmation-ui.test.cjs'
+      - 'tests/r250-ocr-decoration-review.test.cjs'
+      - 'lbg-standard-ballistic.js'
+      - 'ui/decoration-ocr-confirmation.js'
+      - 'assets/fonts/**'
       - 'tests/fixtures/comparison-session-inputs.json'
       - 'tests/r206-charm-skill-integrity.test.cjs'
       - 'tests/r250-snapshot-ownership.test.cjs'
@@ -36,6 +105,10 @@ on:
       - 'tools/consumer-ai-comparison-source-skill.json'
       - 'tools/legacy-comparison-report-test-helper.cjs'
       - 'tools/dom-test-setup.cjs'
+      - 'tools/browser-test-setup.cjs'
+      - 'tests/fixtures/charge24-sa-input.json'
+      - 'tests/fixtures/offset-maximum-inputs.json'
+      - 'tests/fixtures/selected-hp-inputs.json'
       - 'tools/legacy-page-test-context.cjs'
       - 'tools/synthetic-combat-fixture.cjs'
       - 'tools/synthetic-combat-source-skills.cjs'
@@ -132,6 +205,63 @@ jobs:
           tests/r250-snapshot-ownership.test.cjs
           tests/legacy-comparison-report-contract.test.cjs
           tools/consumer-ai-comparison-dom.test.cjs
+      - name: Verify release UI and OCR parity without private data
+        run: >-
+          node --test
+          tools/armor-skill-layout-dom.test.cjs
+          tools/artia-stage-parity.test.cjs
+          tools/artia-craft-parity.test.cjs
+          tools/charm-public-shortcut-dom.test.cjs
+          tools/comparison-fixed-damage-dom.test.cjs
+          tools/comparison-self-maximum-dom.test.cjs
+          tools/comparison-settings-parity-dom.test.cjs
+          tools/maximum-common-skills-dom.test.cjs
+          tools/maximum-coupled-series-dom.test.cjs
+          tools/comparison-used-combo-dom.test.cjs
+          tools/custom-combo-result-dom.test.cjs
+          tests/custom-weapon-settings-isolation.test.cjs
+          tests/gs-per-move-charge.test.cjs
+          tests/bow-explicit-charge.test.cjs
+          tools/bow-explicit-charge-dom.test.cjs
+          tests/hh-opening-melody.test.cjs
+          tests/hh-single-blunt-body.test.cjs
+          tests/sa-axe-boost.test.cjs
+          tests/cb-custom-settings-parity.test.cjs
+          tests/r196-missing-saved-weapon.test.cjs
+          tools/bow-mixed-custom-dom.test.cjs
+          tests/lance-mid-thrust-picker.test.cjs
+          tests/hammer-vertical-picker.test.cjs
+          tests/hammer-charged-swing.test.cjs
+          tests/hammer-spin-endings.test.cjs
+          tests/gs-true-charge-picker.test.cjs
+          tests/basic-slash-picker.test.cjs
+          tests/typed-move-contacts.test.cjs
+          tests/lance-dash-contact.test.cjs
+          tests/ls-helm-breaker-red.test.cjs
+          tests/gunlance-shell-opening.test.cjs
+          tests/cb-ig-ordinary-contacts.test.cjs
+          tests/hbg-wyvern-capacity.test.cjs
+          tests/hh-performance-comparison.test.cjs
+          tests/ls-foresight-spin-picker.test.cjs
+          tests/lance-high-thrust-picker.test.cjs
+          tests/lance-counter-conversion.test.cjs
+          tests/ig-enhanced-single-opening.test.cjs
+          tests/sa-sword-vertical-opening.test.cjs
+          tests/saved-single-opening.test.cjs
+          tools/combo-simple-names-dom.test.cjs
+          tests/used-combo-adapter.test.cjs
+          tools/consumer-form-parity-dom.test.cjs
+          tools/king-target-parity-dom.test.cjs
+          tools/rounded-font-contract.test.cjs
+          tests/lbg-native-saved-parity.test.cjs
+          tests/lbg-normal-two-current.test.cjs
+          tests/explicit-opening-defaults.test.cjs
+          tests/bow372-thousand.test.cjs
+          tests/bow372-saved-mixed.test.cjs
+          tests/bow372-saved-heterogeneous.test.cjs
+          tests/r250-ocr-confirmation.test.cjs
+          tests/r250-ocr-confirmation-ui.test.cjs
+          tests/r250-ocr-decoration-review.test.cjs
   comparison-session-reload:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -147,5 +277,7 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Install the locked Playwright Chromium runtime
         run: npx --no-install playwright install --with-deps --only-shell chromium
+      - name: Verify narrow armor and skill columns in Chromium
+        run: node --test tools/skill-comparison-browser.test.cjs tools/armor-portrait-layout-browser.test.cjs tools/bow-mixed-custom-browser.test.cjs tools/comparison-portrait-layout-browser.test.cjs tools/custom-weapon-settings-browser.test.cjs tools/gs-per-move-charge-browser.test.cjs tools/bow-explicit-charge-browser.test.cjs
       - name: Verify session and legacy-cache restoration without external API access
         run: node --test tools/comparison-session-reload-browser.test.cjs

@@ -14,11 +14,14 @@ const end = source.indexOf('  const shellingInput=', start);
 const formulaStart = source.indexOf('   shellingFormula:hasShelling?');
 const formulaEnd = source.indexOf(',\n   phialFormula:', formulaStart);
 const available = start >= 0 && end > start && formulaStart >= 0 && formulaEnd > formulaStart;
-const body = available ? source.slice(start, end) : '';
+// Use the production resolver closure as well as the predicate. The closure
+// distinguishes the raw editor affinity from the effective maximum premise.
+const affinityResolver = source.match(/^  const maxAffinityWithoutScenario=.*;$/m)?.[0];
+const body = available && affinityResolver ? affinityResolver + '\n' + source.slice(start, end) : '';
 const formula = available ? source.slice(formulaStart + '   shellingFormula:'.length, formulaEnd) : '';
 test('GL Thunder: synthetic production predicate boundary checks', t => {
   let assertions = 0;
-    assert.ok(available, 'GL Thunder predicate or shell formula boundaries missing from the selected adapter');
+    assert.ok(available && affinityResolver, 'GL Thunder predicate, affinity closure or shell formula boundaries missing from the selected adapter');
   assertions++;
 
   const slots = ['head', 'chest', 'arms', 'waist', 'legs'];
@@ -86,6 +89,17 @@ test('GL Thunder: synthetic production predicate boundary checks', t => {
   }
   for (const [rank, count] of [[1, 2], [1, 3], [2, 4], [2, 5]])
     check(`accepts rank ${rank} with ${count} corroborated armor pieces`, () => {}, true, rank, count);
+  const maximumScenario = f => {
+    f.conditions.maximumSkillConditions = {weaknessExploit: false};
+    f.root.MHWMaxAffinityResolver = (_total,_affinity,_weapon,part,conditions) =>
+      part === f.part ? (conditions.maximumSkillConditions?.weaknessExploit === false ? 15 : 20) : NaN;
+    f.stats.conditionalConditionPlan.maximum.maxAffinity = 15;
+  };
+  check('accepts independently resolved effective maximum affinity', maximumScenario, true);
+  check('rejects all-on affinity reused for a changed maximum premise', f => {
+    maximumScenario(f);
+    f.stats.conditionalConditionPlan.maximum.maxAffinity = f.stats.maxAffinity;
+  });
   check('allows missing aggregate ID with exact rank name', f => delete f.entry.skillId, true);
   check('accepts fallback set bonus provenance', f => {
     for (const armor of f.db.armor) {

@@ -6,8 +6,12 @@ const html=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),
 const begin=html.indexOf('function normalizeSelectedHp(');
 const end=html.indexOf('function savedBuildMap()',begin);
 assert.ok(begin>0&&end>begin);
+// Run the pure HP normalizer, not the following browser-only listeners.
+const hpEnd=html.indexOf('\n',begin);
+const snapshotBegin=html.indexOf('function buildSnapshotComparable(',hpEnd);
+assert.ok(hpEnd>begin&&snapshotBegin>hpEnd&&end>snapshotBegin);
 const ctx=vm.createContext({JSON});
-vm.runInContext(html.slice(begin,end),ctx);
+vm.runInContext(html.slice(begin,hpEnd)+'\n'+html.slice(snapshotBegin,end),ctx);
 const same=(a,b)=>vm.runInContext('buildSnapshotMatches(a,b)',vm.createContext({...ctx,a,b}));
 const base={version:'r194',savedAt:'old',weaponId:'weapon1',weaponKind:'bow',armor:{head:'a'},charmCustom:{skills:[1]},artia:{bonus:'x'},decos:{head:['gem']},combo:{moves:[{techniqueId:'shot'}]}};
 test('save roundtrip retains combat-relevant fields',()=>assert.equal(same(base,JSON.parse(JSON.stringify(base))),true));

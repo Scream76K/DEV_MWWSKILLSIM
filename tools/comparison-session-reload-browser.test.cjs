@@ -14,6 +14,11 @@ async function ready(p){return p.evaluate(()=>window.__comparisonSessionReady||w
 async function reload(p){await p.reload();return ready(p);}
 async function open(p,s){await p.locator(s).first().evaluate(e=>{for(let n=e;n;n=n.parentElement)if(n.tagName==='DETAILS')n.open=true;});}
 async function click(p,s){await open(p,s);await p.locator(s).first().click();}
+async function selectEveryComparisonBuild(p){
+ await open(p,'#compareBuilds');
+ for(const input of await p.locator('#compareBuilds input[data-compare-name]').all())await input.check();
+}
+async function loadNamed(p,name){await open(p,'#savedBuildSelect');await p.selectOption('#savedBuildSelect',name);await click(p,'#savedBuildLoad');}
 async function seedCurrent(p){await p.evaluate(async source=>{const data=normalizeDB(source.data);const pack=await MHWLocalDBCache.create(data,null,{legacy:true,savedAt:source.exportedAt});await MHWLocalDBCache.commit(pack);},cacheSource);}
 async function seedOld(p,mutation=null){const record={schemaVersion:1,pack:{version:'historical-fixture',savedAt:cacheSource.exportedAt,data:cacheSource.data}};if(mutation==='schema')record.schemaVersion=999;if(mutation==='date')delete record.pack.savedAt;if(mutation==='dataset')record.pack.data={...record.pack.data,skills:[]};await p.evaluate(record=>new Promise((resolve,reject)=>{const r=indexedDB.open('mhwilds-db-cache-v1',1);r.onupgradeneeded=()=>r.result.createObjectStore('records');r.onerror=()=>reject(r.error);r.onsuccess=()=>{const db=r.result,tx=db.transaction('records','readwrite');tx.objectStore('records').put(record,'data');tx.oncomplete=()=>{db.close();resolve();};tx.onabort=()=>{db.close();reject(tx.error);};};}),record);return record;}
 async function oldRecord(p){return p.evaluate(()=>MHWLocalDBCache.readLegacyCache());}
@@ -24,9 +29,9 @@ async function saveNamed(p,name){await open(p,'#buildName');await p.fill('#build
 async function representative(p,c=fixture.cases[0]){
  await p.evaluate(()=>{localStorage.removeItem('mh-wilds-builds-v625');renderSavedBuilds();});
  const named=[];for(const [i,s]of c.inputSnapshots.entries()){await p.evaluate(s=>applyBuildSnapshot(s),s);await click(p,'#calcBuild');await saveNamed(p,['A','B'][i]);named.push(await p.evaluate(()=>buildSnapshotComparable(buildSnapshot())));}
- await click(p,'[data-build-load="A"]');await open(p,'[data-armor="legs"]');await p.selectOption('[data-armor="legs"]','');
+ await loadNamed(p,'A');await open(p,'[data-armor="legs"]');await p.selectOption('[data-armor="legs"]','');
  await p.evaluate(()=>{const e=document.getElementById('powerDragonHz');e.value='17';e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));});
- await click(p,'#selectAllCompare');await click(p,'#runCompare');await p.selectOption('#comparisonBaseline','1');
+ await selectEveryComparisonBuild(p);await click(p,'#runCompare');assert.equal(await p.locator('#comparisonBaseline').isVisible(),false);await p.selectOption('#comparisonBaseline','1',{force:true});
  const before=await state(p);assert.notDeepEqual(before.build,named[0]);assert.deepEqual(before.selected,['A','B']);assert.equal(before.baseline,1);assert.equal(before.comparison.schemaVersion,3);return {before,named};
 }
 
@@ -35,7 +40,7 @@ test('all14 reload preserves unsaved input, named A/B bytes, selection and B bas
  for(const c of fixture.cases){const {before,named}=await representative(p,c);assert.equal(await reload(p),true);const after=await state(p);
   assert.deepEqual(after.build,before.build,c.kind+' unsaved current');assert.deepEqual(after.conditions,before.conditions,c.kind+' conditions');assert.equal(after.saved,before.saved);assert.deepEqual(after.selected,['A','B']);assert.deepEqual(after.rows,['A','B']);assert.equal(after.baseline,1);assert.equal(after.comparison.schemaVersion,3);
   assert.notEqual(after.current.reason,'REAL_SLICE:CURRENT_CALCULATION_STALE');assert.deepEqual(after.current.channels,before.current.channels,c.kind+' current channel values');
-  for(const [i,n]of ['A','B'].entries()){await click(p,'[data-build-load="'+n+'"]');assert.deepEqual((await state(p)).build,named[i],c.kind+' named '+n);}
+  for(const [i,n]of ['A','B'].entries()){await loadNamed(p,n);assert.deepEqual((await state(p)).build,named[i],c.kind+' named '+n);}
   t.diagnostic(c.kind+' restored');
  }assert.deepEqual(api,[]);assert.deepEqual(errors,[]);
 });
@@ -68,7 +73,7 @@ test('current valid session wins over legacy, keeps numeric-string charm levels 
 });
 
 test('selection exceeding comparison limit is retained without inventing a completed comparison',async t=>{
- const {page:p,errors}=await pageFor(t);await seedCurrent(p);await reload(p);await p.evaluate(s=>applyBuildSnapshot(s),fixture.cases[0].inputSnapshots[0]);for(const name of ['A','B','C','D'])await saveNamed(p,name);await click(p,'#selectAllCompare');await p.evaluate(()=>dispatchEvent(new Event('pagehide')));assert.equal(await reload(p),true);const after=await state(p);assert.deepEqual(after.selected,['A','B','C','D']);assert.equal(after.rows,null);assert.deepEqual(errors,[]);
+ const {page:p,errors}=await pageFor(t);await seedCurrent(p);await reload(p);await p.evaluate(s=>applyBuildSnapshot(s),fixture.cases[0].inputSnapshots[0]);for(const name of ['A','B','C','D'])await saveNamed(p,name);await selectEveryComparisonBuild(p);await p.evaluate(()=>dispatchEvent(new Event('pagehide')));assert.equal(await reload(p),true);const after=await state(p);assert.deepEqual(after.selected,['A','B','C','D']);assert.equal(after.rows,null);assert.deepEqual(errors,[]);
 });
 
 test('invalid legacy envelope/date/dataset cannot be adopted and never creates a successful current cache',async t=>{
@@ -131,17 +136,29 @@ test('concurrent native current and legacy cache commits never replace a success
  let casConflicts=0;for(const row of results.results){if(row.out[0].status==='fulfilled')assert.equal(row.apiVersion,results.version);for(const r of row.out){if(r.status==='rejected'){assert.equal(r.reason,'CACHE_CHANGED_IN_OTHER_TAB');casConflicts++;}assert.notEqual(r.unknown,true);assert.notEqual(r.memory,true);}}assert.ok(casConflicts>0,'native overlap must actually exercise the CAS rejection path');assert.deepEqual(errors,[]);t.diagnostic(casConflicts+' native CAS conflicts rejected without memory fallback');
 });
 
-test('selected HP has two choices, defaults FULL and retains explicit LOW through reload without rewriting named legacy data',async t=>{
+test('ordinary reload resets Heroics; explicit named load retains saved HP without rewriting named data',async t=>{
  const {page:p,errors}=await pageFor(t);await seedCurrent(p);assert.equal(await reload(p),true);
  assert.deepEqual(await p.locator('#powerSelectedHp option').evaluateAll(xs=>xs.map(x=>x.value)),['FULL_HP','AT_OR_BELOW_30_PERCENT']);
- assert.equal(await p.locator('#powerSelectedHp').inputValue(),'FULL_HP');
+ const toggle=p.locator('#powerHeroicsToggle'),hpField=p.locator('#powerSelectedHp');
+ assert.equal(await hpField.inputValue(),'FULL_HP');
  const input=fixture.cases[0].inputSnapshots[0];
- await p.evaluate(input=>{const legacy={...input,selectedHp:'UNSELECTED'};localStorage.setItem('mh-wilds-builds-v625',JSON.stringify({legacy}));renderSavedBuilds();},input);
+ await p.evaluate(input=>{localStorage.setItem('mh-wilds-builds-v625',JSON.stringify({legacy:{...input,selectedHp:'UNSELECTED'},Low:{...input,selectedHp:'AT_OR_BELOW_30_PERCENT'},Full:{...input,selectedHp:'FULL_HP'}}));renderSavedBuilds();},input);
  const raw=await p.evaluate(()=>localStorage.getItem('mh-wilds-builds-v625'));
- await click(p,'[data-build-load="legacy"]');assert.equal(await p.locator('#powerSelectedHp').inputValue(),'FULL_HP');
- for(const hp of ['AT_OR_BELOW_30_PERCENT','FULL_HP']){
-  await open(p,'#powerSelectedHp');await p.selectOption('#powerSelectedHp',hp);await click(p,'#calcBuild');assert.equal(await reload(p),true);
-  assert.equal(await p.locator('#powerSelectedHp').inputValue(),hp);assert.equal((await state(p)).conditions.selectedHp,hp);assert.equal(await p.evaluate(()=>localStorage.getItem('mh-wilds-builds-v625')),raw);
- }
- assert.deepEqual(errors,[]);
+ await loadNamed(p,'legacy');assert.equal(await hpField.inputValue(),'FULL_HP');
+ await open(p,'#powerHeroicsToggle');assert.equal(await toggle.isVisible(),true);assert.equal(await toggle.isChecked(),false);
+ await toggle.setChecked(true);
+ assert.equal(await hpField.inputValue(),'AT_OR_BELOW_30_PERCENT');
+ await click(p,'#calcBuild');
+ const before=await state(p);
+ assert.equal(before.build.selectedHp,'AT_OR_BELOW_30_PERCENT');
+ assert.equal(await reload(p),true);
+ const after=await state(p);
+ assert.equal(await toggle.isChecked(),false);
+ assert.equal(await hpField.inputValue(),'FULL_HP');
+ assert.deepEqual(after.build,{...before.build,selectedHp:'FULL_HP'});
+ assert.deepEqual(after.conditions,{...before.conditions,selectedHp:'FULL_HP'});
+ assert.equal(after.saved,raw);
+ await loadNamed(p,'Low');assert.equal(await toggle.isChecked(),true);assert.equal(await hpField.inputValue(),'AT_OR_BELOW_30_PERCENT');
+ await loadNamed(p,'Full');assert.equal(await toggle.isChecked(),false);assert.equal(await hpField.inputValue(),'FULL_HP');
+ assert.equal((await state(p)).saved,raw);assert.deepEqual(errors,[]);
 });

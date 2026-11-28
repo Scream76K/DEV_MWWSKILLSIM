@@ -84,11 +84,14 @@ test('index.html loads browser presentation before the build-summary rendering c
   assert.ok(html.includes('<details class="one-hit-diagnostics">'));
 });
 
-test('preview labels avoid obsolete release/DPS completion claims', () => {
+test('beta labels preserve the game version and avoid obsolete release/DPS completion claims', () => {
   const fs=require('node:fs'),path=require('node:path');
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
   assert.ok(html.includes('id="developmentPreviewNotice"'));
-  assert.ok(html.includes('開発プレビュー / 基準ゲーム Ver.1.042.00.02'));
+  assert.ok(html.includes('<title>MH Wilds 装備セット＆火力シミュレーター｜ベータ版</title>'));
+  assert.ok(html.includes('id="developmentPreviewNotice"><b>ベータ版</b>：'));
+  assert.ok(html.includes('ベータ版 / 基準ゲーム Ver.1.042.00.02'));
+  assert.ok(!html.includes('開発プレビュー'));
   assert.ok(!html.includes('r120 HBG Shot Skill Conditions'));
   assert.ok(!html.includes('全14武器種のコンボDPSエンジンを搭載したテストリリース'));
 });
@@ -109,21 +112,17 @@ test('armor icon legibility adjusts size only and retains all six original SVG c
     'retain the original embedded icons');
 });
 
-test('landscape tablet balances Build and Support at 981–1120 without changing phone stacking', () => {
+test('beta layout stacks full-width Build and Support, and has one consistent 6:4 armor and skills row', () => {
   const fs=require('node:fs'),path=require('node:path');
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-  const start='<style id="flamme-ui-landscape-balanced-chapters-20261104">';
-  assert.equal(html.split(start).length,2,'layout override must be unique');
-  const from=html.indexOf(start);
-  const css=html.slice(from+start.length,html.indexOf('</style>',from));
-  assert.ok(css.includes('@media (min-width:981px) and (max-width:1120px)'));
-  assert.ok(css.includes('grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important'));
-  assert.ok(css.includes('#armorBuildWorkspace'));
-  assert.ok(css.includes('grid-template-columns:minmax(0,1fr)!important'));
-  assert.ok(html.indexOf(start)>html.indexOf('<style id="flamme-ui-workspace-stage4">'));
-  assert.ok(html.indexOf(start)>html.indexOf('<style id="flamme-ui-owner-review-stage9">'));
-  assert.ok(html.includes('@media (max-width: 980px)'));
-  assert.ok(html.includes('@media (min-width:1121px)'));
+  const marker='<style id="flamme-ipad-build-skills-layout">';
+  assert.equal(html.split(marker).length,2,'beta layout override must be unique');
+  const from=html.indexOf(marker);
+  const css=html.slice(from+marker.length,html.indexOf('</style>',from));
+  assert.match(css,/main\.wrap > #betaWorkspaceGrid\s*\{[^}]*grid-template-columns:minmax\(0,1fr\)!important/);
+  const tracks=[...css.matchAll(/#betaBuildPanel > #armorBuildWorkspace\s*\{[^}]*?grid-template-columns\s*:\s*([^;]+)/g)].map(match=>match[1]);
+  assert.deepEqual(tracks,['minmax(0,3fr) minmax(0,2fr)!important'],
+    'only the 6:4 inner track declaration is permitted; rendered sizing is tested in the browser regression');
 });
 
 test('rendered summary preserves independent normal and maximum when overall status is pending', () => {
@@ -169,8 +168,12 @@ test('diagnostic reference panels retain DOM IDs but do not occupy consumer spac
 test('comparison guidance is concise and does not promise DPS or all-weapons readiness', () => {
   const fs=require('node:fs'),path=require('node:path');
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-  assert.ok(html.includes('同じ武器種・共通条件で通常／最大の火力計算値を比較します。'));
-  assert.ok(html.includes('未算出の項目は理由を表示します。'));
+  const guide=[...html.matchAll(/<[^>]+id="comparisonInputGuide"[^>]*>([^<]+)<\/[^>]+>/g)];
+  assert.equal(guide.length,1,'one comparison guide');
+  assert.match(guide[0][1],/⑥で保存した同じ武器種.*最大3件.*通常・最大火力.*⑥で保存し直/);
+  assert.ok(guide[0].index<html.indexOf('id="comparisonBuildPicker"'),'guide precedes build selection');
+  assert.doesNotMatch(guide[0][1],/DPS|共通条件/);
+  assert.ok(html.includes('未算出の結果は推測で補完しません。'));
   assert.ok(!html.includes('全14武器種のコンボDPSエンジンを搭載'));
   assert.ok(!html.includes('武器種間の比較は検証済みDPSのみ対応予定です。'));
   assert.ok(html.includes('id="compareBuilds"'),'comparison entry remains present');

@@ -1,6 +1,6 @@
 'use strict';
 /**
- * PR #3 browser acceptance probe. Execute against the checked-out repository:
+ * Beta browser acceptance probe. Execute against the checked-out repository:
  *   node tools/ui-pr3-layout-smoke.cjs
  * Requires npm ci and npx playwright install chromium.
  * This is a read-only page/layout probe: no build saves or product mutations.
@@ -29,20 +29,26 @@ async function main() {
       await page.goto(pathToFileURL(path.join(ROOT,'index.html')).href,{waitUntil:'domcontentloaded',timeout:30000});
       await page.locator('main.wrap > .grid').waitFor({state:'attached',timeout:15000});
       const metrics=await page.evaluate(()=>{
-        const grid=document.querySelector('main.wrap > .grid');
-        const build=grid?.querySelector(':scope > aside');
-        const support=grid?.querySelector(':scope > section');
-        if(!grid||!build||!support)return {found:false};
+        const grid=document.querySelector('main.wrap > #betaWorkspaceGrid');
+        const build=grid?.querySelector(':scope > #betaBuildPanel');
+        const support=grid?.querySelector(':scope > #betaSupportPanel');
+        const row=build?.querySelector(':scope > #armorBuildWorkspace');
+        const armor=row?.querySelector(':scope > #armorWorkspaceLeft');
+        const skills=row?.querySelector(':scope > #skillWorkspaceRight');
+        if(!grid||!build||!support||!row||!armor||!skills)return {found:false};
         const a=build.getBoundingClientRect(),b=support.getBoundingClientRect();
         const style=getComputedStyle(grid);
         const horizontal=Math.abs(a.top-b.top)<=5 && b.left>a.left;
-        const ratio=a.width/b.width;
+        const c=armor.getBoundingClientRect(),d=skills.getBoundingClientRect();
+        const armorHorizontal=Math.abs(c.top-d.top)<=5 && d.left>c.left;
+        const armorRatio=c.width/d.width;
         return {
           found:true,
           columns:style.gridTemplateColumns,
           build:{x:a.x,y:a.y,width:a.width,height:a.height},
           support:{x:b.x,y:b.y,width:b.width,height:b.height},
-          horizontal,ratio,
+          horizontal, fullWidth:Math.abs(a.width-grid.clientWidth)<=3 && Math.abs(b.width-grid.clientWidth)<=3,
+          armorHorizontal,armorRatio,
           documentWidth:document.documentElement.scrollWidth,
           viewportWidth:window.innerWidth,
           title:document.title,
@@ -57,19 +63,19 @@ async function main() {
         };
       });
       await page.screenshot({path:path.join(OUTPUT,'layout-'+width+'.png'),fullPage:true,timeout:20000});
-      const horizontalExpected=width>=981;
-      const arrangementOk=metrics.found && metrics.horizontal===horizontalExpected;
-      const ratioOk=!horizontalExpected || (Number.isFinite(metrics.ratio)&&Math.abs(metrics.ratio-1)<=0.07);
+      const arrangementOk=metrics.found && !metrics.horizontal && metrics.fullWidth;
+      const armorArrangementOk=metrics.found && metrics.armorHorizontal;
+      const ratioOk=metrics.found && Number.isFinite(metrics.armorRatio)&&Math.abs(metrics.armorRatio-1.5)<=0.07;
       const overflowOk=metrics.found && metrics.documentWidth<=width+3;
       const referencesHidden=metrics.found && metrics.hiddenReferencePanels?.every(p=>p.exists&&p.hidden);
-      const verdict={width,arrangementOk,ratioOk,overflowOk,referencesHidden,metrics,errors};
+      const verdict={width,arrangementOk,armorArrangementOk,ratioOk,overflowOk,referencesHidden,metrics,errors};
       results.push(verdict);
       await page.close();
     }
   } finally {await browser.close();}
-  const output={scope:'PR3_STATIC_LAYOUT_CHROMIUM_NOT_SAFARI',time:new Date().toISOString(),results};
+  const output={scope:'BETA_STATIC_LAYOUT_CHROMIUM_NOT_SAFARI',time:new Date().toISOString(),results};
   fs.writeFileSync(path.join(OUTPUT,'result.json'),JSON.stringify(output,null,2)+'\n');
-  for(const r of results)console.log([r.width,r.arrangementOk?'layout:OK':'layout:FAIL',r.ratioOk?'ratio:OK':'ratio:FAIL',r.overflowOk?'overflow:OK':'overflow:FAIL','build/support ratio='+Number(r.metrics.ratio).toFixed(3)].join(' '));
-  if(results.some(r=>!r.arrangementOk||!r.ratioOk||!r.overflowOk||!r.referencesHidden))process.exitCode=1;
+  for(const r of results)console.log([r.width,r.arrangementOk?'layout:OK':'layout:FAIL',r.armorArrangementOk&&r.ratioOk?'armor/skills:OK':'armor/skills:FAIL',r.overflowOk?'overflow:OK':'overflow:FAIL','armor/skills ratio='+Number(r.metrics.armorRatio).toFixed(3)].join(' '));
+  if(results.some(r=>!r.arrangementOk||!r.armorArrangementOk||!r.ratioOk||!r.overflowOk||!r.referencesHidden))process.exitCode=1;
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

@@ -6,13 +6,13 @@ const html=fs.readFileSync(require('node:path').join(__dirname,'../index.html'),
 const start=html.indexOf('function runBuildCompare('),end=html.indexOf('function aiBuildData(',start);
 const source=html.slice(start,end);
 function scenario({compareFails=false,restoreFails=false,names=['A'],compareFailsFor=[]}={}){
- const calls=[];const output={textContent:'',innerHTML:''};
+ const calls=[];const output={textContent:'',innerHTML:''},guts={value:'AFTER'};
  const context=vm.createContext({
-  invalidateAIComparisonData(){},compareSelectedNames(){return names},savedBuildMap(){return Object.fromEntries(names.map(name=>[name,{weaponKind:'great-sword'}]))},
-  $(){return output},buildSnapshot(){if(!calls.includes('snapshot'))calls.push('snapshot');return {weaponId:'original'}},compareStep5Snapshot(){if(!calls.includes('conditions'))calls.push('conditions');return {original:true}},
-  compareSnapshot(name){calls.push('compare');if(compareFails||compareFailsFor.includes(name))throw Error('compare failed');return {name,oneHitPipeline:{status:'UNAVAILABLE',reason:'PIPELINE_PENDING'}}},
+  invalidateAIComparisonData(){},selectedMaximumSkillConditions(){return {}},compareSelectedNames(){return names},savedBuildMap(){return Object.fromEntries(names.map(name=>[name,{weaponKind:'great-sword'}]))},
+  $(id){return id==='powerGutsState'?guts:output},buildSnapshot(){if(!calls.includes('snapshot'))calls.push('snapshot');return {weaponId:'original'}},compareStep5Snapshot(){if(!calls.includes('conditions'))calls.push('conditions');return {original:true,gutsState:guts.value}},
+  compareSnapshot(name,_snapshot,conditions){calls.push('compare');assert.equal(conditions.gutsState,'BEFORE');assert.equal(guts.value,'BEFORE');if(compareFails||compareFailsFor.includes(name))throw Error('compare failed');return {name,oneHitPipeline:{status:'UNAVAILABLE',reason:'PIPELINE_PENDING'}}},
   applyBuildSnapshot(x){calls.push('restore');assert.equal(x.weaponId,'original');if(restoreFails)throw Error('restore failed')},
-  restoreStep5Snapshot(x){calls.push('restore conditions');assert.equal(x.original,true)},buildSnapshotMatches(a,b){return a.weaponId===b.weaponId},renderCompareTable(){calls.push('render');return 'table'},JSON,Date
+  restoreStep5Snapshot(x){calls.push('restore conditions');assert.equal(x.original,true);assert.equal(x.gutsState,'AFTER');assert.equal(guts.value,'AFTER')},buildSnapshotMatches(a,b){return a.weaponId===b.weaponId},renderCompareTable(){calls.push('render');return 'table'},JSON,Date
  });vm.runInContext(source,context);
  let error=null;try{vm.runInContext('runBuildCompare()',context)}catch(e){error=e}
  return {calls,output,error};
