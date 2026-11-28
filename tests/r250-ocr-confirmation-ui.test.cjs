@@ -107,7 +107,7 @@ test('missing dakuten in verified armor crops prefer the evidenced type and pres
  const {ctx,out}=setup([]);
  ctx.armorDB=[...records,{id:469,kind:'head',name:'エグゾルスヘルム'},{id:900,kind:'chest',name:'エグゾルスヘルムγ'}];
  ctx.CATEGORY_ANCHORS={head:['ヘルム'],chest:['メイル']};
- for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentEvidenceCandidates']){
+ for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentArmorRescueEvidence','equipmentEvidenceCandidates']){
   const helper=source.functionSource(html,name);if(helper)vm.runInContext(helper,ctx);
  }
  const candidates=ctx.equipmentEvidenceCandidates(row,[]);
@@ -142,7 +142,7 @@ test('a highly ranked OCR result without name evidence still needs a rescue pass
 });
 test('observed OCR error in Greaves suffix recovers only the same leg family with the first candidate selected',()=>{
  const {ctx}=setup([]);
- for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentEvidenceCandidates']){
+ for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentArmorRescueEvidence','equipmentEvidenceCandidates']){
   vm.runInContext(source.functionSource(html,name),ctx);
  }
  ctx.CATEGORY_ANCHORS={legs:['グリーヴ'],waist:['コイル']};
@@ -183,4 +183,31 @@ test('clicking apply can accept a prefilled type without requiring another click
  assert.equal(ctx.acceptVisibleEquipmentChoices(),true);
  assert.equal(gog.resolutionStatus,'candidate_confirmed');
  assert.equal(gog.best.name,'ゴグメイルα');
+});
+test('same-part OCR rescue recovers a unique supported family and stays closed on missing or conflicting evidence',()=>{
+ const {ctx}=setup([]);
+ for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentArmorRescueEvidence','equipmentEvidenceCandidates']){
+  vm.runInContext(source.functionSource(html,name),ctx);
+ }
+ ctx.CATEGORY_ANCHORS={chest:['メイル'],waist:['コイル']};
+ const crop={cropEvidence:{valid:true}};
+ const row=(key,reads)=>({key,region:crop,rows:reads.map(([raw,conf])=>({raw,conf}))});
+ ctx.armorDB=[
+  {id:1,kind:'waist',name:'ラギアコイルα'},{id:2,kind:'waist',name:'ラギアコイルβ'},
+  {id:3,kind:'waist',name:'ゴグコイルβ'},{id:4,kind:'chest',name:'シュバルカメイルα'},
+  {id:5,kind:'chest',name:'シュバルカメイルγ'}
+ ];
+ const expected=(r,ids)=>assert.deepEqual(Array.from(ctx.equipmentEvidenceCandidates(r,[]),c=>c.id),ids);
+ expected(row('waist',[['フキアコイル86',86]]),[2,1]);
+ expected(row('waist',[['フキアコイル86',60]]),[]);
+ expected(row('waist',[['フキアコイル',86]]),[]);
+ expected(row('waist',[['フキアメイル86',86]]),[]);
+ expected(row('chest',[['コハルカメイルy',67],['人ググハルカメイルッ',39]]),[5,4]);
+ expected(row('chest',[['コハルカメイルy',67]]),[]);
+ expected(row('chest',[['メイルγ',98],['メイルγ',98]]),[]);
+ const noCrop=row('waist',[['フキアコイル86',86]]);noCrop.region={cropEvidence:{valid:false}};expected(noCrop,[]);
+ ctx.armorDB.push({id:6,kind:'waist',name:'トキアコイルβ'});
+ expected(row('waist',[['フキアコイル86',86]]),[]);
+ const grounded=ctx.armorDB.find(x=>x.id===2);
+ assert.deepEqual(Array.from(ctx.equipmentEvidenceCandidates(row('waist',[['ラギアコイルβ',88],['フキアコイル86',86]]),[grounded]),c=>c.id),[2]);
 });
