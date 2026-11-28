@@ -11377,8 +11377,20 @@ function consumerExplicitOpeningState(kind,ids,c,target,{mixedBow=false,swordVer
   fill('longSwordState',{spiritGauge:'NONE'},{spiritGauge:'練気色なし'});
  if(kind==='long-sword'&&['LS_RED_BLADE_I','LS_RED_BLADE_II','LS_RED_BLADE_III'].includes(id))
   fill('longSwordState',GENERIC_STANDARD_PROFILE_CATALOG[kind].startState,{spiritGauge:'赤ゲージ'});
- if(kind==='dual-blades'&&ids.some(id=>dbFlurryIds.includes(id))&&c.dualBladesState?.archdemonMode===true)
-  fill('dualBladesState',{requiresDemonGauge:true,demonBoost:false});
+ if(kind==='long-sword'&&ids.length===1&&['LS_HELM_BREAKER_RED','LS_FORESIGHT_SPIN_SLASH'].includes(id)&&
+    (c.longSwordState==null||(Object.getPrototypeOf(c.longSwordState)===Object.prototype&&
+      Object.keys(c.longSwordState).every(key=>key==='spiritGauge'))))
+  fill('longSwordState',{spiritGauge:'RED'},{spiritGauge:'赤ゲージ'});
+ if(kind==='dual-blades'&&ids.length<=dbFlurryIds.length&&ids.every((key,i)=>key===dbFlurryIds[i])){
+  const state=c.dualBladesState;
+  if(state==null||(Object.getPrototypeOf(state)===Object.prototype&&
+     Object.keys(state).every(key=>['archdemonMode','demonMode','requiresDemonGauge','demonBoost'].includes(key)))){
+   const unspecified=[state?.archdemonMode,state?.demonMode].every(v=>v==null||v==='');
+   if(unspecified||state?.archdemonMode===true)
+    fill('dualBladesState',{archdemonMode:true,demonMode:false,requiresDemonGauge:true,demonBoost:false},
+     {archdemonMode:'鬼人強化',requiresDemonGauge:'鬼人ゲージあり'});
+  }
+ }
  if(kind==='dual-blades'&&ids.length===1&&['DB_DOUBLE_SLASH','DB_DEMON_ADVANCING_SLASH'].includes(id)){
   const state=c.dualBladesState;
   if(state==null||(typeof state==='object'&&!Array.isArray(state)))
@@ -11390,6 +11402,10 @@ function consumerExplicitOpeningState(kind,ids,c,target,{mixedBow=false,swordVer
   const state=c.switchAxeState;
   const validOpening=state==null||(typeof state==='object'&&!Array.isArray(state)&&
    Object.keys(state).every(k=>['mode','awakened','axeBoosted'].includes(k)));
+  if(validOpening&&ids.length===1&&id==='SA_AXE_POWER_SLAM'&&
+     [state?.mode,state?.awakened,state?.axeBoosted].every(v=>v==null||v===''))
+   fill('switchAxeState',{mode:'AXE',awakened:false,axeBoosted:true},
+    {mode:'斧モード',awakened:'高出力なし',axeBoosted:'斧強化'});
   const fallback=swordVertical&&validOpening&&ids.length===1&&id==='SA_SWORD_VERTICAL'
    ?window.MHWRealOneHitBrowserAdapter?.swordVerticalOpeningMode:null;
   const axeOpening=swordVertical&&validOpening&&ids.length===1&&saAxeSlashIds.includes(id);
