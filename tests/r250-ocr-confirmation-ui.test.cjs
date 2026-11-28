@@ -107,7 +107,7 @@ test('missing dakuten in verified armor crops prefer the evidenced type and pres
  const {ctx,out}=setup([]);
  ctx.armorDB=[...records,{id:469,kind:'head',name:'エグゾルスヘルム'},{id:900,kind:'chest',name:'エグゾルスヘルムγ'}];
  ctx.CATEGORY_ANCHORS={head:['ヘルム'],chest:['メイル']};
- for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentArmorRescueEvidence','equipmentEvidenceCandidates']){
+ for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentArmorRescueEvidence','equipmentRescoreArmorType','equipmentEvidenceCandidates']){
   const helper=source.functionSource(html,name);if(helper)vm.runInContext(helper,ctx);
  }
  const candidates=ctx.equipmentEvidenceCandidates(row,[]);
@@ -131,7 +131,7 @@ test('a highly ranked OCR result without name evidence still needs a rescue pass
  const {ctx}=setup([]);
  const helper=source.functionSource(html,'equipmentNeedsOCRRescue');vm.runInContext(helper,ctx);
  ctx.armorDB=[];ctx.charmDB=[];
- vm.runInContext(source.functionSource(html,'equipmentEvidenceCandidates'),ctx);
+ for(const name of ['equipmentRescoreArmorType','equipmentEvidenceCandidates'])vm.runInContext(source.functionSource(html,name),ctx);
  const candidate={kind:'chest',name:'ゴグメイルβ',avgSeriesScore:.92};
  const crop={cropEvidence:{valid:true}};
  assert.equal(ctx.equipmentNeedsOCRRescue({key:'chest',rows:[{raw:'シーウーメイルβ',conf:94}],region:crop},[candidate]),true);
@@ -142,7 +142,7 @@ test('a highly ranked OCR result without name evidence still needs a rescue pass
 });
 test('observed OCR error in Greaves suffix recovers only the same leg family with the first candidate selected',()=>{
  const {ctx}=setup([]);
- for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentArmorRescueEvidence','equipmentEvidenceCandidates']){
+ for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentArmorRescueEvidence','equipmentRescoreArmorType','equipmentEvidenceCandidates']){
   vm.runInContext(source.functionSource(html,name),ctx);
  }
  ctx.CATEGORY_ANCHORS={legs:['グリーヴ'],waist:['コイル']};
@@ -159,7 +159,7 @@ test('observed OCR error in Greaves suffix recovers only the same leg family wit
 });
 test('observed charm glyph confusion preselects the grounded name without confirming charm',()=>{
  const {ctx}=setup([]);
- const fn=['equipmentEvidenceCandidates','parseTalismanLevel','parseTalismanStructure','equipmentCharmGlyphMatch'];
+ const fn=['equipmentRescoreArmorType','equipmentEvidenceCandidates','parseTalismanLevel','parseTalismanStructure','equipmentCharmGlyphMatch'];
  for(const name of fn)vm.runInContext(source.functionSource(html,name),ctx);
  ctx.charmDB=[{id:64,name:'栄世の護石',kind:'charm'},{id:63,name:'秘歴の護石',kind:'charm'}];
  const row={key:'charm',region:{cropEvidence:{valid:true}},rows:[{raw:'宋世の ビ',conf:66}]};
@@ -186,7 +186,7 @@ test('clicking apply can accept a prefilled type without requiring another click
 });
 test('same-part OCR rescue recovers a unique supported family and stays closed on missing or conflicting evidence',()=>{
  const {ctx}=setup([]);
- for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentArmorRescueEvidence','equipmentEvidenceCandidates']){
+ for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentArmorRescueEvidence','equipmentRescoreArmorType','equipmentEvidenceCandidates']){
   vm.runInContext(source.functionSource(html,name),ctx);
  }
  ctx.CATEGORY_ANCHORS={chest:['メイル'],waist:['コイル']};
@@ -242,7 +242,7 @@ test('OCR background retry is confined to valid unresolved slots and restores th
 
 test('different Han OCR reads recover only a uniquely corroborated same-slot family and type',()=>{
  const {ctx}=setup([]);
- for(const n of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentArmorRescueEvidence','equipmentEvidenceCandidates','equipmentHanCorroboratedType','equipmentHanArmorChoices']){
+ for(const n of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentArmorRescueEvidence','equipmentRescoreArmorType','equipmentEvidenceCandidates','equipmentHanCorroboratedType','equipmentHanArmorChoices']){
    vm.runInContext(source.functionSource(html,n),ctx);
  }
  ctx.CATEGORY_ANCHORS={head:['ヘルム'],waist:['コイル']};
@@ -265,4 +265,25 @@ test('different Han OCR reads recover only a uniquely corroborated same-slot fam
  const bad=row(actual);bad.region.cropEvidence.valid=false;assert.deepEqual(result(bad),[]);
  ctx.armorDB.push({id:4,kind:'head',name:'護獣爪竜ヘルムβ'});
  assert.deepEqual(result(row(actual)),[]);
+});
+test('grounded armor uses a corroborated terminal variant without replacing its confirmed family',()=>{
+ const {ctx}=setup([]);
+ ctx.CATEGORY_ANCHORS={legs:['グリーヴ'],head:['ヘルム']};
+ for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentRescoreArmorType']){
+   vm.runInContext(source.functionSource(html,name),ctx);
+ }
+ const grounded=(stem,kind)=>['α','β','γ'].map((s,i)=>({id:1+i,name:stem+s,kind,totalScore:0.65-i*.02}));
+ for(const [key,stem,raw,conf,type] of [
+   ['legs','シュバルカグリーヴ','シュハルカクリーウッy',88,'γ'],
+   ['legs','トゥナムルグリーヴ','ドゥナムルクリウyャ',81,'γ'],
+   ['legs','シーウーグリーヴ','シーウークリーウ8B',87,'β'],
+   ['head','シュバルカヘルム','シュハルカヘルムyY',85,'γ'],
+ ]){
+   const row={key,region:{cropEvidence:{valid:true}},rows:[{raw,conf}]};
+   const src=grounded(stem,key),res=ctx.equipmentRescoreArmorType(row,src);
+   assert.equal(res[0].name,stem+type);assert.equal(src[0].name,stem+'α');
+   assert.ok(res[0].totalScore>=src[0].totalScore);
+   assert.equal(ctx.equipmentRescoreArmorType({...row,rows:[{raw:'グリーヴβ',conf:99}]},src)[0].name,stem+'α');
+   assert.equal(ctx.equipmentRescoreArmorType({...row,region:{cropEvidence:{valid:false}}},src)[0].name,stem+'α');
+ }
 });

@@ -84,11 +84,14 @@ test('index.html loads browser presentation before the build-summary rendering c
   assert.ok(html.includes('<details class="one-hit-diagnostics">'));
 });
 
-test('preview labels avoid obsolete release/DPS completion claims', () => {
+test('beta labels preserve the game version and avoid obsolete release/DPS completion claims', () => {
   const fs=require('node:fs'),path=require('node:path');
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
   assert.ok(html.includes('id="developmentPreviewNotice"'));
-  assert.ok(html.includes('開発プレビュー / 基準ゲーム Ver.1.042.00.02'));
+  assert.ok(html.includes('<title>MH Wilds 装備セット＆火力シミュレーター｜ベータ版</title>'));
+  assert.ok(html.includes('id="developmentPreviewNotice"><b>ベータ版</b>：'));
+  assert.ok(html.includes('ベータ版 / 基準ゲーム Ver.1.042.00.02'));
+  assert.ok(!html.includes('開発プレビュー'));
   assert.ok(!html.includes('r120 HBG Shot Skill Conditions'));
   assert.ok(!html.includes('全14武器種のコンボDPSエンジンを搭載したテストリリース'));
 });
