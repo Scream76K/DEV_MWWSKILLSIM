@@ -22,7 +22,7 @@ test('user exposes independent channel skill omissions without changing numbers'
  const before=JSON.stringify(fixture),r=w.calcUserComboDamage(),out=d.getElementById('compareOut');
  const notes=out.querySelector('details[data-comparison-notes]');
  assert.ok(notes&&!notes.open);
- assert.deepEqual([...notes.querySelectorAll('[data-comparison-skill-omissions] li')].map(e=>e.textContent),['<Unimplemented>：（通常のみ）','Unapplied max：（最大のみ）']);
+ assert.deepEqual([...notes.querySelectorAll('[data-comparison-skill-omissions]')].map(e=>[e.parentElement.querySelector('strong').textContent,e.textContent]),[['（通常のみ）','未反映：<Unimplemented>'],['（最大のみ）','未反映：Unapplied max']]);
  const scoped=label=>[...notes.querySelectorAll('[data-comparison-note]')].filter(node=>node.firstElementChild?.textContent===label).map(node=>node.textContent).join(' ');
  assert.match(scoped('（通常のみ）'),/Owner excluded.*Explicitly excluded/);
  assert.doesNotMatch(scoped('（通常のみ）'),/Annotation only|Maximum/);
@@ -41,6 +41,6 @@ test('saved comparison groups independent annotations without mutating the calcu
  const before=JSON.stringify(c.result),row={name:'<Saved build>',oneHitPipeline:c.result.pipeline};
  const notes=c.createComparisonNotes();c.addComparisonChannelNotes([row],notes.add);
  const out=notes.render();
- for(const text of ['Owner excluded','Explicitly excluded','Annotation only','Maximum &lt;clash&gt; assumption; not equipment verified','&lt;Saved build&gt;（通常のみ）','&lt;Saved build&gt;（最大のみ）'])assert.ok(out.includes(text),text);
+ for(const text of ['Owner excluded','Explicitly excluded','Annotation only','Maximum &lt;clash&gt; assumption; not equipment verified','&lt;Saved build&gt;','（通常のみ）','（最大のみ）'])assert.ok(out.includes(text),text);
  assert.equal(JSON.stringify(c.result),before);
 });

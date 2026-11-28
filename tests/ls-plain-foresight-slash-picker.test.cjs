@@ -80,7 +80,8 @@ test('plain long-sword foresight slash without a successful counter calculates o
     assert.ok(values.every(x=>x.value===null&&x.reason===gaugeReason));
     const details=el('compareOut').querySelector('[data-comparison-pending]');
     const why=[...details.querySelectorAll('[data-comparison-note]')].find(x=>x.textContent.includes(gaugeText));
-    assert.equal(why.querySelector('strong').textContent,row.name+'（通常・最大）');
+    assert.equal(why.closest('[data-comparison-note-builds]').querySelector(':scope > strong').textContent,row.name);
+    assert.equal(why.querySelector('strong').textContent,'（通常・最大）');
     assert.equal(why.querySelector('p').textContent,gaugeText);
    }else assert.deepEqual(values,lanes(calc));
   }

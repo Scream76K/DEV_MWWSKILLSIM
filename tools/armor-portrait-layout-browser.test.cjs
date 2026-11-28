@@ -87,3 +87,25 @@ test('only the armor/skill panels are 6:4 on phones, tablets, and desktop withou
   }finally{await p.close();}
  }
 });
+
+test('native choice controls use readable dark text across Hunter’s Note and Hunter’s Support',async t=>{
+ const browser=await chromium.launch({headless:true});t.after(()=>browser.close());
+ const p=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,colorScheme:'dark'});
+ t.after(()=>p.close());
+ await p.route('**/*',r=>r.request().url()==='https://simulator.test/'?r.fulfill({contentType:'text/html',body:html}):r.abort());
+ await installLocalModules(p);
+ await p.goto('https://simulator.test/');
+ const result=await p.evaluate(()=>['monster','monsterPart','comboMovePicker','weapon','weaponKind'].map(id=>{
+  const control=document.getElementById(id);if(!(control instanceof HTMLSelectElement))throw Error('Missing select: '+id);
+  if(!control.options.length)control.add(new Option('確認用'));
+  const first=control.options[0];
+  const c=getComputedStyle(control),o=getComputedStyle(first);
+  return {id,scheme:c.colorScheme,ink:c.color,optionInk:o.color,optionBackground:o.backgroundColor};
+ }));
+ for(const x of result){
+  assert.equal(x.scheme,'light',x.id);
+  assert.equal(x.ink,'rgb(32, 43, 57)',x.id);
+  assert.equal(x.optionInk,'rgb(32, 43, 57)',x.id);
+  assert.equal(x.optionBackground,'rgb(255, 255, 255)',x.id);
+ }
+});
