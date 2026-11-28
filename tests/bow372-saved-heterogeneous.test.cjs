@@ -61,7 +61,7 @@ try{
     if(mixed){
       const peer=pair.filter(n=>n!==base)[0], peerIndex=pair.indexOf(peer);
       assert.deepEqual(channels['power-index'].map(c=>c.text),['982.0','441.7']);
-      assert.deepEqual(channels['max-power-index'].map(c=>c.text),['1228.7（+25.1%）','554.2（+25.5%）']);
+      assert.deepEqual(channels['max-power-index'].map(c=>c.text),['1228.7\n+25.1%','554.2\n+25.5%']);
       assert.match(paste('[data-used-combo]'),/KOTATU_BOW_01通常：剛射3 → 剛連射3 → 竜の千々矢.*SINGLE通常：竜の千々矢最大：竜の千々矢/);
       assert.deepEqual(channels['reference-combo-damage'].map(c=>c.text),['—','441.7']);
       assert.ok([...channels['power-index'],...channels['max-power-index']].every(c=>!c.class.includes('compare-best')));

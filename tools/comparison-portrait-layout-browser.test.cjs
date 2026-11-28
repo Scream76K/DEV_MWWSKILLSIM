@@ -50,18 +50,20 @@ test('primary comparison keeps every result column and its rendered text inside 
      }
      const vals=key=>[...table.querySelectorAll('[data-comparison-metric="'+key+'"] td')].map(e=>e.textContent.trim());
      const strong=table.querySelector('[data-comparison-metric="max-power-index"] td .compare-damage-value');
+     const delta=strong.parentElement.querySelector('.compare-damage-delta');
+     const stacked=!!delta&&delta.getBoundingClientRect().top>=strong.getBoundingClientRect().bottom-1&&getComputedStyle(delta).display==='block';
      const plain=table.querySelector('[data-comparison-metric="max-power-index"] td');
-     return {heads:[...table.querySelectorAll('thead th')].slice(1).map(e=>e.textContent.trim()),names:names.slice(0,count),
+     return {stacked,heads:[...table.querySelectorAll('thead th')].slice(1).map(e=>e.textContent.trim()),names:names.slice(0,count),
       element:vals('consumer-maximum-element'),fixed:vals('consumer-fixed'),normal:vals('power-index'),max:vals('max-power-index'),
       emphasis:Number.parseFloat(getComputedStyle(strong).fontSize)>Number.parseFloat(getComputedStyle(plain).fontSize),
       minWidth:getComputedStyle(table).minWidth,frameLeft:bounds.left,frameRight:bounds.right,frameClient:frame.clientWidth,frameScroll:frame.scrollWidth,
       tableWidth:tableBox.width,bad:[...new Set(bad)].slice(0,12)};
     },count);
     assert.deepEqual(result.heads,result.names);
-    assert.deepEqual(result.element,Array(count).fill('160.7（+10.8%）'));
+    assert.deepEqual(result.element,Array(count).fill('160.7\n+10.8%'));
     assert.ok(result.fixed.every(x=>x.includes('長い名前；160.0')));
     assert.deepEqual(result.normal,['982.0','981.9','981.9'].slice(0,count));
-    assert.equal(result.max.length,count);assert.ok(result.emphasis);
+    assert.equal(result.max.length,count);assert.ok(result.emphasis);assert.ok(result.stacked);
     if(!mobile)assert.equal(result.minWidth,(112+120*count)+'px','desktop keeps its original table sizing');
     audit.push({width,count,scroll:result.frameScroll-result.frameClient,frame:[result.frameLeft,result.frameRight],tableWidth:result.tableWidth,bad:result.bad});
    }

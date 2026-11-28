@@ -28,7 +28,7 @@ test('fixed skill reference is a single terminal row with shared values only onc
  assert.equal(out.querySelector('[data-comparison-metric="power-index"] th').textContent,'通常火力');
  assert.equal(out.querySelector('[data-comparison-metric="power-index"] td').textContent,'698.5');
  assert.equal(out.querySelector('[data-comparison-metric="max-power-index"] th').textContent,'最大火力（通常火力比）');
- assert.equal(out.querySelector('[data-comparison-metric="max-power-index"] td').textContent,'866.1（+24.0%）');
+ assert.equal(out.querySelector('[data-comparison-metric="max-power-index"] td').textContent,'866.1\n+24.0%');
  assert.equal(report(),saved);assert.equal(w.eval('JSON.stringify(lastBuildComparisonRows)'),before);
 });
 test('fixed row labels differing channels separately, keeps unknowns, and never takes count or total from a skill',t=>{

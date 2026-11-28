@@ -31,7 +31,7 @@ async function representative(p,c=fixture.cases[0]){
  const named=[];for(const [i,s]of c.inputSnapshots.entries()){await p.evaluate(s=>applyBuildSnapshot(s),s);await click(p,'#calcBuild');await saveNamed(p,['A','B'][i]);named.push(await p.evaluate(()=>buildSnapshotComparable(buildSnapshot())));}
  await loadNamed(p,'A');await open(p,'[data-armor="legs"]');await p.selectOption('[data-armor="legs"]','');
  await p.evaluate(()=>{const e=document.getElementById('powerDragonHz');e.value='17';e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));});
- await selectEveryComparisonBuild(p);await click(p,'#runCompare');await p.selectOption('#comparisonBaseline','1');
+ await selectEveryComparisonBuild(p);await click(p,'#runCompare');assert.equal(await p.locator('#comparisonBaseline').isVisible(),false);await p.selectOption('#comparisonBaseline','1',{force:true});
  const before=await state(p);assert.notDeepEqual(before.build,named[0]);assert.deepEqual(before.selected,['A','B']);assert.equal(before.baseline,1);assert.equal(before.comparison.schemaVersion,3);return {before,named};
 }
 

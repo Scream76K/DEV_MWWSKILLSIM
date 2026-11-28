@@ -23,19 +23,24 @@ test('maximum total and its parts use each column’s own normal; picker does no
  const before=JSON.stringify(rows);render(w,rows);
  const check=()=>{
   assert.deepEqual(vals(w,'power-index'),['100.0','200.0']);
-  assert.deepEqual(vals(w,'max-power-index'),['124.0（+24.0%）','180.0（−10.0%）']);
+  assert.deepEqual(vals(w,'max-power-index'),['124.0\n+24.0%','180.0\n−10.0%']);
   assert.equal(metric(w,'consumer-relative-maximum'),null);
   assert.deepEqual(vals(w,'consumer-normal-physical'),['80.0','140.0']);
   assert.deepEqual(vals(w,'consumer-normal-element'),['20.0','60.0']);
-  assert.deepEqual(vals(w,'consumer-maximum-physical'),['100.0（+25.0%）','140.0（0.0%）']);
-  assert.deepEqual(vals(w,'consumer-maximum-element'),['24.0（+20.0%）','40.0（−33.3%）']);
+  assert.deepEqual(vals(w,'consumer-maximum-physical'),['100.0\n+25.0%','140.0\n0.0%']);
+  assert.deepEqual(vals(w,'consumer-maximum-element'),['24.0\n+20.0%','40.0\n−33.3%']);
   assert.ok(metric(w,'consumer-relative-normal').hidden);
   assert.equal(metric(w,'consumer-normal-special'),null);
   assert.equal(metric(w,'consumer-maximum-special'),null);
   assert.match(metric(w,'max-power-index').querySelector('th').textContent,/最大火力（通常火力比）/);
  };
  check();
- const picker=w.document.getElementById('comparisonBaseline');picker.value='1';picker.dispatchEvent(new w.Event('change',{bubbles:true}));
+ const picker=w.document.getElementById('comparisonBaseline');assert.ok(picker.closest('[hidden]'),'export baseline is not a beta control');
+ for(const td of metric(w,'max-power-index').querySelectorAll('td')){
+  assert.ok(td.querySelector('.compare-damage-value'));
+  assert.match(td.querySelector('.compare-damage-delta').textContent,/^[+−]?[0-9.]+%$/);
+ }
+ picker.value='1';picker.dispatchEvent(new w.Event('change',{bubbles:true}));
  check();
  assert.deepEqual(vals(w,'consumer-relative-normal'),['50.0','100.0']);
  assert.equal(JSON.stringify(rows),before);
@@ -43,17 +48,17 @@ test('maximum total and its parts use each column’s own normal; picker does no
 test('missing and zero denominators show a dash without discarding raw values or nonzero special',t=>{
  const w=setup(t);
  render(w,[row('Zero',channel(0,0),channel(0,0,7)),row('Missing',undefined,channel(10,0)),row('Pending',channel(8,0),undefined)]);
- assert.deepEqual(vals(w,'max-power-index'),['7.0（—）','10.0（—）','—']);
- assert.deepEqual(vals(w,'consumer-maximum-element'),['0.0（—）','0.0（—）','未算出']);
+ assert.deepEqual(vals(w,'max-power-index'),['7.0\n—','10.0\n—','—']);
+ assert.deepEqual(vals(w,'consumer-maximum-element'),['0.0\n—','0.0\n—','未算出']);
  assert.deepEqual(vals(w,'consumer-normal-special'),['0.0','未算出','0.0']);
- assert.deepEqual(vals(w,'consumer-maximum-special'),['7.0（—）','0.0（—）','未算出']);
+ assert.deepEqual(vals(w,'consumer-maximum-special'),['7.0\n—','0.0\n—','未算出']);
  assert.doesNotMatch(w.document.getElementById('compareOut').textContent,/Infinity|NaN/);
 });
 test('calculate from unrounded inputs and retain positive normal-only special in both sections',t=>{
  const w=setup(t);
  render(w,[row('Precision',channel(1.026,0,0.01),channel(1.076,0)),row('Zero max',channel(12,0,2),channel(0,0))]);
  assert.deepEqual(vals(w,'power-index'),['1.0','14.0']);
- assert.deepEqual(vals(w,'max-power-index'),['1.1（+3.9%）','0.0（−100.0%）']);
- assert.deepEqual(vals(w,'consumer-maximum-physical'),['1.1（+4.9%）','0.0（−100.0%）']);
- assert.deepEqual(vals(w,'consumer-maximum-special'),['0.0（−100.0%）','0.0（−100.0%）']);
+ assert.deepEqual(vals(w,'max-power-index'),['1.1\n+3.9%','0.0\n−100.0%']);
+ assert.deepEqual(vals(w,'consumer-maximum-physical'),['1.1\n+4.9%','0.0\n−100.0%']);
+ assert.deepEqual(vals(w,'consumer-maximum-special'),['0.0\n−100.0%','0.0\n−100.0%']);
 });
