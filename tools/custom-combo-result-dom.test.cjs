@@ -99,3 +99,214 @@ test('comparison-session rollback restores output and its mode atomically',()=>{
  assert.equal(output.innerHTML,expected);assert.equal(output.dataset.resultMode,'current-custom');
  assert.equal(ctx.lastBuildComparisonRows[0].name,'previous');
 });
+
+test('legacy move diagnostics agree in the editor, comparison counts and individual lanes',t=>{
+ const w=new JSDOM(readSimulatorHtml(),{url:'https://legacy.invalid',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){
+  w.fetch=()=>Promise.reject(Error('offline'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));
+ }}).window;t.after(()=>w.close());
+ const el=id=>w.document.getElementById(id);
+ w.source=data;
+ w.eval('DB=normalizeDB({...source,weapons:consolidateArtiaFixedVariantRows(source.weapons)});weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters()');
+ for(const [kind,id,message,repeat=1] of [
+  ['heavy-bowgun','hbg_pierce2','「貫通弾 Lv2」は指定コンボの計算に未接続です。'],
+  ['gunlance','gl_thrust','踏み込み突き上げは傷のない部位への地上本体1打のみ算出します。',2],
+  ['hammer','hm_charge2','「溜め2攻撃」だけでは開始条件や技の種類を特定できません。'],
+  ['dual-blades','db_dance3','「鬼人連斬Ⅲ」に対応する技は未登録です。「乱舞Ⅲ」は別の技です。'],
+  ['long-sword','ls_release','「練気解放無双斬り（赤）」だけでは開始条件や技の種類を特定できません。'],
+  ['switch-axe','sa_element','「属性解放突き」だけでは開始条件や技の種類を特定できません。'],
+  ['bow','bow_arc','「曲射」だけでは開始条件や技の種類を特定できません。'],
+  ['hammer','retired-fixture','指定した技が現在の技データにありません。']
+ ]){
+  w.applyBuildSnapshot({...profiles.find(p=>p.kind===kind).input,combo:{moves:[{techniqueId:id,repeat}]}});
+  el('calcUserComboDamage').click();
+  assert.ok(el('compareOut').textContent.includes(message),el('compareOut').textContent);
+  if(['ls_release','sa_element','bow_arc'].includes(id)){
+   const output=el('compareOut');
+   assert.deepEqual([...output.querySelector('[data-custom-damage="total"]').querySelectorAll('td')].map(x=>x.textContent),['未算出','未算出','—']);
+   assert.doesNotMatch(output.textContent,/指定した技が現在の技データにありません/);
+  }
+  el('buildName').value='確認';el('saveBuild').click();
+  assert.equal(w.savedBuildMap()['確認'].combo.moves[0].techniqueId,id);
+  const bytes=w.eval('storageGet(BUILDS_KEY)');
+  el('compareBuilds').querySelector('[data-compare-name="確認"]').checked=true;
+  el('runCompare').click();
+  const reasons=el('compareOut').querySelector('[data-comparison-pending]').textContent;
+  assert.equal(reasons.split(message).length-1,3,reasons);
+  assert.ok(!reasons.includes(id),reasons);assert.equal(w.eval('storageGet(BUILDS_KEY)'),bytes);
+ }
+});
+
+for(const [prefix,kind,fixture,expected] of [
+ ['LBG','light-bowgun','r260-lbg-element-first-hit',7.812],
+ ['HBG','heavy-bowgun','r259-hbg-element-first-hit',11.16]
+])test(prefix+' presents only the selected elemental first contact in live and saved views',t=>{
+ const w=new JSDOM(readSimulatorHtml(),{url:'https://first.invalid',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){
+  w.fetch=()=>Promise.reject(Error('offline'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));
+ }}).window;t.after(()=>w.close());
+ const f=require('../docs/reports/'+fixture+'/fixture.json'),el=id=>w.document.getElementById(id);
+ const id=prefix+'_ELEMENT_FIRST_HIT_REFERENCE',move='canonical:'+id;
+ w.fixture=f;w.kind=kind;
+ w.eval('clearWeaponBuckets();DB.weapons=[fixture.weapon];DB.skills=fixture.skills;DB.decorations=[];weaponIndexByKind[kind]=DB.weapons;weaponKind.value=kind;weapon.replaceChildren(new Option(fixture.weapon.name,fixture.weapon.id));App.build.setWeapon(DB.weapons[0]);renderMonsters();monster.value="training-room";renderMonsterParts();monsterPart.value="training-front";renderComboForWeapon();App.state.combo.moves=[];restoreComboRows()');
+ el('comboMovePicker').value=move;el('addCombo').click();
+ const fields=prefix==='LBG'?{comboLBGMode:'NORMAL',comboLBGAmmoType:'THUNDER',comboLBGAmmoLevel:'1',comboLBGRange:'CRITICAL',comboLBGNormalMode:'0',comboLBGContactPolicy:'FIRST_HIT'}:
+ {powerHbgElementType:'thunder',powerHbgAmmoLevel:'1',powerHbgRange:'CRITICAL',powerHbgNormalMode:'0'};
+ for(const [field,value] of Object.entries(fields))el(field).value=value;
+ w.calcBuild();
+ el('calcUserComboDamage').click();
+ const reference=()=>el('compareOut').querySelector('[data-element-first-contact]')?.textContent;
+ const label='初段のみ（参考） 通常 '+expected.toFixed(1)+' ／ 最大 '+expected.toFixed(1);
+ assert.equal(reference(),label);
+ assert.match(el('compareOut').querySelector('[data-custom-damage="total"]').textContent,/未算出.*未算出/);
+ el('buildName').value='保存';el('saveBuild').click();
+ const bytes=w.eval('storageGet(BUILDS_KEY)');
+ const stateControl=el(prefix==='LBG'?'comboLBGRange':'powerHbgElementType');
+ stateControl.value=prefix==='LBG'?'NEAR':'fire';
+ stateControl.dispatchEvent(new w.Event('change',{bubbles:true}));
+ el('calcUserComboDamage').click();assert.equal(reference(),undefined);
+ el('compareBuilds').querySelector('[data-compare-name="保存"]').checked=true;el('runCompare').click();
+ assert.equal(reference(),label);
+ const row=w.eval('lastBuildComparisonRows[0]');
+ for(const lane of ['normal','maximum']){
+  const total=w.consumerDamageMetric(row,lane).value;
+  if(prefix==='LBG'){
+   assert.equal(total.toFixed(1),'299.9');
+   assert.match(el('compareOut').textContent,/速射5回/);
+  }else assert.equal(total,null);
+ }
+ const selection=w.elementFirstContactSelection(kind,[{techniqueId:move}]);
+ const valid={diagnostics:{referenceScope:'FIRST_HIT_ONLY_NOT_WHOLE_SHOT'},execution:{status:'complete'},metrics:{
+  firstHitReference:{status:'available',value:expected},comboTotalDamage:{status:'unavailable'}}};
+ const pipeline={evaluationPlan:{selection:'EXPLICIT',techniqueIds:[id]},channels:{maximum:valid}};
+ const render=()=>w.renderElementFirstContact({...selection,oneHitPipeline:pipeline});
+ assert.match(render(),/最大/);assert.doesNotMatch(render(),/通常/);
+ pipeline.channels={normal:valid};assert.match(render(),/通常/);assert.doesNotMatch(render(),/最大/);
+ pipeline.evaluationPlan.selection='STANDARD';assert.equal(render(),'');
+ pipeline.evaluationPlan.selection='EXPLICIT';valid.diagnostics.referenceScope=prefix+'_EXPLICIT_CONTACT_SEQUENCE';
+ valid.metrics.comboTotalDamage={status:'available',value:expected*2};assert.equal(render(),'');
+ for(const moves of [[{techniqueId:id}],[{techniqueId:move,repeat:2}],[{techniqueId:move},{techniqueId:move}]]){
+  assert.equal(w.elementFirstContactSelection(kind,moves).elementFirstContact,undefined);
+ }
+
+ assert.equal(w.eval('storageGet(BUILDS_KEY)'),bytes);
+});
+
+for(const [kind,weaponId,damage] of [['light-bowgun',763,35.8344],['heavy-bowgun',467,91.43808]])
+ for(const view of ['current','saved'])test(kind+' ordinary explicit contact label in '+view,t=>{
+  const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
+  const w=new JSDOM(readSimulatorHtml(),{virtualConsole:vc,url:'https://move-audit.invalid/',runScripts:'dangerously',beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}).window;
+  t.after(()=>{w.close();assert.deepEqual(errors,[]);});
+  const el=id=>w.document.getElementById(id);
+  w.__db=JSON.stringify(data);
+  w.eval('const src=JSON.parse(__db);DB=normalizeDB({...src,weapons:consolidateArtiaFixedVariantRows(src.weapons)});weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters();');
+  const count=5,element='thunder';
+  const light=kind==='light-bowgun', id='canonical:'+(light?'LBG':'HBG')+'_ELEMENT_FIRST_HIT_REFERENCE';
+  const base=profiles.find(p=>p.kind===kind).input;
+  const weapon=data.weapons.find(w=>String(w.id)===String(weaponId));
+  assert.ok(weapon);
+  const ammo=weapon.ammo.find(a=>a.kind===element);assert.ok(ammo);
+  const common={shotMode:'NORMAL',ammoLevel:ammo.level,range:'CRITICAL',normalModeLevel:0,shotOrdinal:1,fullMagazine:true,contactTargetPolicy:'CURRENT_TARGET',contactPolicy:'EXPLICIT_CONTACTS',contactCount:count};
+  const details=light?{lightBowgunState:{...common,ammoType:element.toUpperCase(),loadedRounds:ammo.capacity,elementPowder:'NONE'}}:{hbgReferenceState:{...common,elementType:element,ammoType:'ELEMENT',magazineCapacity:ammo.capacity}};
+  w.__snap=JSON.stringify({...base,weaponId:String(weaponId),armor:{},decos:{},charmCustom:{skills:[],slots:[0,0,0],weaponSlots:[]},combatBuffs:{meal:'NONE',charm:'NO',otherBuffs:'NONE'},selectedHp:'FULL_HP',target:{monsterId:'training-room',partId:'training-front'},combo:{moves:[],...details}});
+  w.eval('applyBuildSnapshot(JSON.parse(__snap))');
+  el('comboMovePicker').value=id;el('addCombo').click();
+
+  const current=w.calcUserComboDamage();
+  const output=()=>el('compareOut').querySelector('.used-combo-entry').textContent;
+  const label='電撃弾 Lv1・射撃 5命中（参考）';
+  const checkTotal=(pipeline,expected)=>{
+    for(const lane of ['normal','maximum'])
+      assert.ok(Math.abs(pipeline.channels[lane].metrics.comboTotalDamage.value-expected)<1e-8);
+  };
+  checkTotal(current.pipeline,damage);
+  if(view==='current'){
+    assert.ok(output().includes('通常：'+label+'最大：'+label),output());
+    const p=current.pipeline, selection={elementFirstContact:id.slice(10)};
+    const evaluate=(plan,channel)=>w.evaluatedElementContacts(selection,{evaluationPlan:plan,channels:{normal:channel}},'normal');
+    const plan=p.evaluationPlan,c=p.channels.normal;
+    for(const patch of [{projectileCount:2},{shotMode:'RAPID'},{contactCount:4}]){
+      assert.equal(evaluate({...plan,standardAmmo:{...plan.standardAmmo,...patch}},c),null);
+    }
+    assert.equal(evaluate(plan,{...c,components:[]}),null);
+    assert.equal(evaluate(plan,{...c,execution:{...c.execution}}),null); // No evaluated name for a copied execution.
+    assert.equal(evaluate(plan,{...c,diagnostics:{referenceScope:'FIRST_HIT_ONLY_NOT_WHOLE_SHOT'}}),null);
+    return;
+  }
+  el('buildName').value='保存';el('saveBuild').click();
+  const bytes=w.eval('storageGet(BUILDS_KEY)');
+  el('combo').querySelector('.del').click();
+  el('compareBuilds').querySelector('[data-compare-name="保存"]').checked=true;el('runCompare').click();
+  assert.equal(w.eval('storageGet(BUILDS_KEY)'),bytes);
+  const row=w.eval('lastBuildComparisonRows[0]');
+  checkTotal(row.oneHitPipeline,light?299.88:damage);
+  if(light){
+    assert.ok(output().includes('通常：通常弾 Lv2・速射5回（25ヒット）最大：通常弾 Lv2・速射5回（25ヒット）'));
+    assert.ok(output().includes('指定コンボ：通常 '+label+' 35.8 ／ 最大 '+label+' 35.8'),output());
+  }else assert.ok(output().includes('通常：'+label+'最大：'+label),output());
+});
+
+for(const [kind,weaponId,id,legacy,hits,total,state] of [
+ ['long-sword','836','LS_SPIRIT_RELEASE','ls_release',14,203.4018,{longSwordState:{spiritGauge:'YELLOW'}}],
+ ['switch-axe','914','SA_GROUND_ELEMENT_DISCHARGE_FULL_TRIAL','sa_element',10,248.55012,{switchAxeState:{mode:'SWORD',awakened:false}}],
+ ['bow','1','BOW_ARC_1_FULL_TRIAL','bow_arc',8,44.64+2*require('../tests/fixtures/bow-arc-blast-measured.json').observations[0].reportedDamagePerBlast,{bowState:{chargeLevel:1,coating:'NONE',range:'CRITICAL',guided:false}}]
+])test('measurement picker and saved comparison: '+id,t=>{
+ const errors=[],vc=new VirtualConsole().on('jsdomError',e=>errors.push(e.message));
+ const w=new JSDOM(readSimulatorHtml(),{url:'https://measurement.invalid/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){
+  w.fetch=()=>Promise.reject(Error('offline'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));
+ }}).window;t.after(()=>{w.close();assert.deepEqual(errors,[]);});
+ const el=id=>w.document.getElementById(id),rowId='canonical:'+id;
+ const base={...profiles.find(p=>p.kind===kind).input,weaponId,armor:{},decos:{},charmCustom:{skills:[],slots:[0,0,0],weaponSlots:[]},selectedHp:'FULL_HP',target:{monsterId:'training-room',partId:'training-front'},combo:{moves:[],...state}};
+ w.fixtureData=data;w.fixtureSnapshot=base;
+ w.eval('DB=normalizeDB({...fixtureData,weapons:consolidateArtiaFixedVariantRows(fixtureData.weapons)});weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters();applyBuildSnapshot(fixtureSnapshot);');
+ const standard=()=>w.eval(`JSON.stringify((p=>[p.evaluationPlan.techniqueIds,...Object.values(p.channels||{}).map(c=>c.metrics.comboTotalDamage.value)])(evaluateConsumerCombat({kind:comboKind(),target:{monster:"training-room",part:"training-front"},conditions:compareStep5Snapshot()})))`);
+ const standardBefore=standard();
+ const picker=el('comboMovePicker');
+ picker.value=rowId;
+ assert.equal(picker.value,rowId,'explicit technique belongs in the picker');
+ el('addCombo').click();
+ let result;const calc=w.calcUserComboDamage;
+ w.calcUserComboDamage=()=>result=calc();
+ el('calcUserComboDamage').click();
+ const check=pipeline=>{
+  assert.ok(pipeline,result?.blocked?.[0]?.reason);
+  for(const lane of ['normal','maximum']){
+   const ch=pipeline.channels?.[lane];
+   assert.ok(Math.abs(ch?.metrics.comboTotalDamage.value-total)<1e-8,JSON.stringify([pipeline.reason,pipeline.evaluationPlan,ch?.execution,ch?.issues,ch?.metrics.comboTotalDamage]));
+   assert.equal(new Set(ch.components.filter(c=>c.status==='available').map(c=>c.eventId)).size,hits);
+  }
+ };
+ check(result.pipeline);
+ assert.match(el('compareOut').textContent,new RegExp(hits+'ヒット'));
+ for(const name of ['A','B']){
+  el('buildName').value=name;el('saveBuild').click();
+  assert.equal(w.savedBuildMap()[name].combo.moves[0].techniqueId,rowId);
+ }
+ const bytes=w.eval('storageGet(BUILDS_KEY)');
+ if(kind==='bow'){
+  el('powerBowCoating').value='POWER';
+  el('powerBowCoating').dispatchEvent(new w.Event('change',{bubbles:true}));
+  el('calcUserComboDamage').click();assert.equal(result.damage,null);
+ }
+ for(const e of el('compareBuilds').querySelectorAll('input[data-compare-name]'))e.checked=true;
+ el('runCompare').click();
+ const saved=w.eval('lastBuildComparisonRows');
+ assert.equal(saved.length,2);
+ for(const row of saved){
+  check(row.oneHitPipeline);
+  assert.ok(Math.abs(row.referenceCombo.damage-total)<1e-8);
+ }
+ assert.match(el('compareOut').textContent,new RegExp(hits+'ヒット'));
+ if(kind==='bow')assert.equal(el('powerBowCoating').value,'POWER');
+ w.applyBuildSnapshot({...base,combo:{...state,moves:[{techniqueId:rowId,repeat:2}]}});
+ el('calcUserComboDamage').click();assert.equal(result.damage,null);
+ assert.match(el('compareOut').textContent,/参考計算の条件外/);
+ const wrongState=kind==='bow'?{bowState:{...state.bowState,coating:'POWER'}}:kind==='switch-axe'?{switchAxeState:{mode:'AXE',awakened:false}}:{longSwordState:{spiritGauge:'RED'}};
+ w.applyBuildSnapshot({...base,combo:{...wrongState,moves:[{techniqueId:rowId}]}});
+ el('calcUserComboDamage').click();assert.equal(result.damage,null);
+ assert.equal(w.eval('storageGet(BUILDS_KEY)'),bytes);
+ w.applyBuildSnapshot(base);
+ assert.equal(standard(),standardBefore);
+ w.applyBuildSnapshot({...base,combo:{...state,moves:[{techniqueId:legacy}]}});
+ el('calcUserComboDamage').click();assert.equal(result.damage,null);
+ assert.equal(el('combo').querySelector('.cmove').value,legacy);
+ assert.equal(w.eval('storageGet(BUILDS_KEY)'),bytes);
+});

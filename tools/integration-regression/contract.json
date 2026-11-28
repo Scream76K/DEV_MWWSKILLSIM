@@ -10,11 +10,11 @@
   "files": [
     {
       "path": ".github/workflows/cb-gl-scope-regression.yml",
-      "sha256": "0b9c5a0485f93bc97228ea6d5be0fe261a380e807c1849af426d86a1290c6d07"
+      "sha256": "ae4af3578a847bd4883e3ecec28a2fdf08c4e717e590853891f9d104e83e4172"
     },
     {
       "path": "bow-reference.js",
-      "sha256": "f413e2038fda4f291cb3e015dad94a34734049cebb79f4140f927461a90e67e5"
+      "sha256": "b04767b594c0d3f7e59ab230b48ac512219ffead0f35cc3e3a4d431b4b434b3f"
     },
     {
       "path": "bowgun-element-reference.js",
@@ -22,7 +22,7 @@
     },
     {
       "path": "bowgun-normal-reference.js",
-      "sha256": "f2b6aa27a5d99ab6c92758595175c4fe238991e1fab5565bd3703af44490edd9"
+      "sha256": "63c0e9e1ea24c0f8ba106201d2ed8c8817850b858cb268a0c588a002c62c9d12"
     },
     {
       "path": "build-relative-comparison.js",
@@ -162,15 +162,15 @@
     },
     {
       "path": "himmel-real-browser-bundle.js",
-      "sha256": "847fb7a40cdc22dd9647a1a7ed6d1d26351f64b89eb95c28566a6a8a840ab781"
+      "sha256": "cc351ce4c2d6cd9f964b28be6402bc622803a8a50c3a55417b70a9cdd71d6c29"
     },
     {
       "path": "hope-hammer-browser-adapter.js",
-      "sha256": "f395910054dd53e1679e348624c9acdb455fffbd602d5bd7949ee46efbef2bff"
+      "sha256": "611e11a812cd3e751ac4a4d1ebc3b6edc1bed347a99ca6418a01617aa20993ab"
     },
     {
       "path": "index.html",
-      "sha256": "f9f6d882e3cec61cab5bce3ea42b49616fbd9e36aa4e5f5216d57d05fae919f5"
+      "sha256": "a86ac16c035a605de095a5870d85cc8783324ff966d8291d3bd977c4c4894ad2"
     },
     {
       "path": "lbg-standard-ballistic.js",
@@ -235,6 +235,18 @@
     {
       "path": "tests/bow160-fixed.test.cjs",
       "sha256": "9ffedc85b0db8bb32e8dd7b8301164012c91b4934feeb8e577cf8e45bedf0286"
+    },
+    {
+      "path": "tests/bow372-saved-heterogeneous.test.cjs",
+      "sha256": "c70e5564d1042b79573ed4dbce85c82961cc5ace2435384660095890ac0df854"
+    },
+    {
+      "path": "tests/bow372-saved-mixed.test.cjs",
+      "sha256": "3be29d54e72a472ffa322be93e686bd52db2ea92a62e15cdaef8cd6058ee92a2"
+    },
+    {
+      "path": "tests/bow372-thousand.test.cjs",
+      "sha256": "3bbd89241e128330f21187af216983284993b44b022e4991915544df97cef723"
     },
     {
       "path": "tests/bow94-close-range.test.cjs",
@@ -347,6 +359,10 @@
     {
       "path": "tests/draw-opening-fixed.test.cjs",
       "sha256": "b583aba86ef72c50dd460cdd8d55ff5cee39d33cfaf0e804a497b38f05456577"
+    },
+    {
+      "path": "tests/explicit-opening-defaults.test.cjs",
+      "sha256": "abbfd6105dccd3edc34d410ffdd09a4edb170c3c449e81d4f124df31e3843487"
     },
     {
       "path": "tests/fixtures/charge24-bowgun-inputs.json",
@@ -477,8 +493,16 @@
       "sha256": "eae1f096324c878984bd8ac7aa0f1c3e748c7384a2088496c8bf9a6a74129afe"
     },
     {
+      "path": "tests/hh-single-blunt-body.test.cjs",
+      "sha256": "ba48e3078f328be8e9ccea516737aa8cda3890227bb7baa9ace6f94a5a92c3b0"
+    },
+    {
       "path": "tests/id159-artia-source-scope.test.cjs",
       "sha256": "1d3f2c088d90503d7b8990bae73eb19fefaaa740f0e87385242a056ca0cd8102"
+    },
+    {
+      "path": "tests/ig-enhanced-single-opening.test.cjs",
+      "sha256": "2d89133f3a2ea1914a2f09754fbe77bf53e87c7a0697fd4b028fca5a41e24a1a"
     },
     {
       "path": "tests/integration-ci-dependency.test.cjs",
@@ -497,12 +521,76 @@
       "sha256": "63addbafbe6bd86074a3f990e5cd73beb4b132598c95f5f4e5b4434fe22a35fc"
     },
     {
+      "path": "tests/lance-counter-conversion.test.cjs",
+      "sha256": "d7df33a92c91a408c816bfda72f7ca2af630163eeeeb38773f1d8758ccf15b66"
+    },
+    {
+      "path": "tests/hammer-charged-swing.test.cjs",
+      "sha256": "922e3bc3f5d5fa3d851c83c76da1d8bf89b8fde182b4cbac52cadcdec517c6fb"
+    },
+    {
+      "path": "tests/hammer-spin-endings.test.cjs",
+      "sha256": "c1fa5b9b69f7a66a0f5d5a0f34502b826d87d25cdcfa7eaeabcd2b3356ae09db"
+    },
+    {
+      "path": "tests/hh-performance-comparison.test.cjs",
+      "sha256": "071b8fa8a7734b5d1379a0e47dd4888fafa444559a8b9b065dca00c6b722624e"
+    },
+    {
+      "path": "tests/hbg-wyvern-capacity.test.cjs",
+      "sha256": "2be8015b97bf0e583279f7362eb967ccb7e1a5cb02b7b769dc7720c46ff82761"
+    },
+    {
+      "path": "tests/cb-ig-ordinary-contacts.test.cjs",
+      "sha256": "ef428336a879c97a84c62f3411052051a21b91e7fde0e9e745d20d995ab400e3"
+    },
+    {
+      "path": "tests/gunlance-shell-opening.test.cjs",
+      "sha256": "cae3ffafdcee7c71535a6835fb40d41f62a6ed568b71588e4a17cc19dbac561d"
+    },
+    {
+      "path": "tests/ls-helm-breaker-red.test.cjs",
+      "sha256": "d9ec2d9acbe6e462b89cfd52bc3968f0d76d8a9683694c4a66124976f4980577"
+    },
+    {
+      "path": "tests/lance-dash-contact.test.cjs",
+      "sha256": "f64f2cf8be702ba5245bfeb564618694ee1aea02a867bfb4881be22d629b1136"
+    },
+    {
+      "path": "tests/typed-move-contacts.test.cjs",
+      "sha256": "bbc025b6f6cf68c1a45ec1764d76c0991f88b39358a686a1fc5ab8b108fb07ce"
+    },
+    {
+      "path": "tests/basic-slash-picker.test.cjs",
+      "sha256": "907da96bb69869bb6747a87c88bb6bab63c6e5a8b58e1f54996780ebcc315e16"
+    },
+    {
+      "path": "tests/gs-true-charge-picker.test.cjs",
+      "sha256": "7dce23fb6b31f3c3ba5526bc96d1fe4f8ecf74f1810534501cd0c3bb6e6df8ce"
+    },
+    {
+      "path": "tests/hammer-vertical-picker.test.cjs",
+      "sha256": "f9504f7c714f1ef587fbe3226bf73176c1494a31f7e172f4137cd0800a40fbf7"
+    },
+    {
+      "path": "tests/lance-high-thrust-picker.test.cjs",
+      "sha256": "34efbdde632b5c307307272f5c281a3874d0bc5154617fef19b9704862e8d263"
+    },
+    {
+      "path": "tests/lance-mid-thrust-picker.test.cjs",
+      "sha256": "ae51ae483702492603e12f65929d0b3c4ea1845bf76fc96d8b3b4e28a6dd7e11"
+    },
+    {
       "path": "tests/lbg-fixed-passive-nontarget.test.cjs",
       "sha256": "1832264d2d74eb15f314c3b761b6ab93ccd878b7711982cbb49c8e9b8c405063"
     },
     {
       "path": "tests/lbg-normal-five-shot.test.cjs",
       "sha256": "c3f589ca43ca5effe3d420a7619d12ebd9b3fe59bd9dd17f2806fa16f3642ac1"
+    },
+    {
+      "path": "tests/lbg-normal-two-current.test.cjs",
+      "sha256": "abb7ce602588f631520a6c3d1861953b648ea5b472943fdf8947020184a82f36"
     },
     {
       "path": "tests/lbg-owner-exclusions.test.cjs",
@@ -597,8 +685,16 @@
       "sha256": "d108dfb538b437b614a2982e656220f7e9fffac8ced666a354281567e390d9d3"
     },
     {
+      "path": "tests/sa-sword-vertical-opening.test.cjs",
+      "sha256": "65f3f5c8260e9b543b4eec666d641b13f67af02390577dadaedebb593daf27dd"
+    },
+    {
       "path": "tests/saved-decoration-identity.test.cjs",
       "sha256": "a6790fb56b8b4fb1d0d820d49d91a888d77584ed78781045fe66b2c02de8cf33"
+    },
+    {
+      "path": "tests/saved-single-opening.test.cjs",
+      "sha256": "7bd93cce49efd9abb562456a4f84f64d334bf49627bc357bc8b47c048b617b47"
     },
     {
       "path": "tests/selected-hp-review.test.cjs",
@@ -629,6 +725,14 @@
       "sha256": "7813c3e00311244019b9808bec23b0102852941605c571bfab3459566ae3f76d"
     },
     {
+      "path": "tools/bow-mixed-custom-browser.test.cjs",
+      "sha256": "ffd5d340a5d55c4b95fb7e8a0815e29d47933bc2154539a223178ce90b9550db"
+    },
+    {
+      "path": "tools/bow-mixed-custom-dom.test.cjs",
+      "sha256": "5965ed93460c95db1aff19bdf91efed9c958ba07ace15e48d9a6656357faf5d2"
+    },
+    {
       "path": "tools/bow-power-browser.test.cjs",
       "sha256": "4afbe703be19e8a2ad2b74eae38f7c29075ef67184c632c14ade081ee1e4cd9c"
     },
@@ -643,6 +747,10 @@
     {
       "path": "tools/browser-test-setup.cjs",
       "sha256": "2141a9c3fc947aa3f093c1b7919c534ea84e40245be085a821e08132311f08b3"
+    },
+    {
+      "path": "tools/combo-simple-names-dom.test.cjs",
+      "sha256": "2661be238ab86387276925628b7ab3d284c6bcfea536977fe17b75b5802c8cfb"
     },
     {
       "path": "tools/comparison-session-reload-browser.test.cjs",
@@ -669,6 +777,10 @@
       "sha256": "f3759dc6c0418176355e5b5efa42c4af35e4bfc91dcaf0eeafb5c608a40f06bd"
     },
     {
+      "path": "tools/custom-combo-result-dom.test.cjs",
+      "sha256": "c3aee2c191fc8defb162fd98a105333ea6698dbe98d8090c3ae265ec0ebbd7b5"
+    },
+    {
       "path": "tools/dark-arts-power-browser.test.cjs",
       "sha256": "4c83b129e8e6cb36fd55c401a552c518fe744fe938ff4fd4ce3fdaa74bbad405"
     },
@@ -686,7 +798,7 @@
     },
     {
       "path": "tools/gl-hh-scope-regression/public-contracts.cjs",
-      "sha256": "031a5e52d98da030dedb56445e12935cb89c30b2bfd5de4dfe0e65857411e58b"
+      "sha256": "d4a85f6f3989e6ffdf0c0959e5e4b1716caf15dddece5d3fbca9e3e44ce7fbca"
     },
     {
       "path": "tools/gl-hh-scope-regression/run.cjs",
@@ -829,22 +941,6 @@
       "sha256": "2050346e8f8c264492f082aa4465237eeb7fa06c65b15cc6509bbdd7192ff93d"
     },
     {
-      "path": "tools/bow-mixed-custom-browser.test.cjs",
-      "sha256": "4cce609300113973d6d6b37133c6d3bfe12025660c0055ea5b7ab034781a9c95"
-    },
-    {
-      "path": "tools/bow-mixed-custom-dom.test.cjs",
-      "sha256": "b98af365cab9b546386ccc7664a163de6f1aa5caaa709ed06a018786efddb6df"
-    },
-    {
-      "path": "tools/combo-simple-names-dom.test.cjs",
-      "sha256": "dcb51d24f62a6d07c9c3c62952cbb424bcae047135108ea88cf43e7d6e8386e0"
-    },
-    {
-      "path": "tools/custom-combo-result-dom.test.cjs",
-      "sha256": "f37d92f162e39f2faf499ea8bce3b58dfef306ce3a3ba438898bce0310b43949"
-    },
-    {
       "path": "tools/maximum-common-skills-dom.test.cjs",
       "sha256": "30dc11bdf679d18420f73580d96fea0e837cee271f89429c99bf997eddc53d9c"
     },
@@ -969,8 +1065,12 @@
       "sha256": "b6e78596690ef13a37f1247cc83d92065db14f7cc8103c8e0a87a5595e7742a2"
     },
     {
+      "path": "v10-six-layer-foundation/min8/real-one-hit-pipeline.cjs",
+      "sha256": "be5746ad27c3b5b2da22ba3f05c9544fc1a5b8eb63580c5260d38abbd88731e2"
+    },
+    {
       "path": "v10-six-layer-foundation/min8/real-technique-one-hit-adapter.cjs",
-      "sha256": "1b619e4ef1363316cf904d6c7bc51b11acd7decacd8d4fdf4a3be7d5a451343d"
+      "sha256": "1450742bcf06bd8725c9acf060384bd408783c20385970cd3c921fa97e694134"
     },
     {
       "path": "weapon-attack-skill-audit.js",
@@ -999,9 +1099,143 @@
     {
       "path": "weapon-sharpness-source-audit.js",
       "sha256": "843849ff1014002be9ffb74e43ae5b60bd2c3974dbdfdf5b1a6940d9dea95888"
+    },
+    {
+      "path": "tools/comparison-portrait-layout-browser.test.cjs",
+      "sha256": "ac21a60fd6cc89f17bd99dbd93907eb6f6f988bc14ee85207742579866a791f6"
+    },
+    {
+      "path": "tests/legacy-picker-route-parity.test.cjs",
+      "sha256": "2a135dff7956e616c379318ff3512f1e2cabe86b7c95b0f432b18ba54b13767c"
+    },
+    {
+      "path": "tests/gs-draw-picker-intent.test.cjs",
+      "sha256": "6c15e59437d8191bf21c474f387a35513d931208ca2819a5a0fe38cf189d4322"
+    },
+    {
+      "path": "tests/ls-plain-thrust-picker.test.cjs",
+      "sha256": "5c15f12e8678bb19d4ce0a94fada29ef0eef23a040bbdc1c3695636939a6d409"
+    },
+    {
+      "path": "tests/hh-slam-plain-body.test.cjs",
+      "sha256": "9d3b7f61ba7d4f5ea31ecab2239fd8e6af11da542ae7faa25ea75b52769ee8d5"
+    },
+    {
+      "path": "tests/cb-ordinary-sword-round-slash.test.cjs",
+      "sha256": "f2a6bc9c3c40f9223910d1c7f1746e0cc459232310c54323de3c0bc50703c8cb"
+    },
+    {
+      "path": "tests/ls-foresight-spin-picker.test.cjs",
+      "sha256": "6fad9f8e5295d1fa530a2c73850fe7386c6993172936e8aab42baf10e0e30723"
+    },
+    {
+      "path": "tests/ls-plain-foresight-slash-picker.test.cjs",
+      "sha256": "7948c41f2c78be3e2bbfd74be8bc3ca6af9d388f2a84c4a1a2534cdcb5eaf87f"
+    },
+    {
+      "path": "tests/ls-plain-rising-slash-picker.test.cjs",
+      "sha256": "47971f8fa81d64ad39e7e69a9c591e1de525cb138f1256c6742a17329f581456"
+    },
+    {
+      "path": "tests/db-ordinary-double-slash.test.cjs",
+      "sha256": "c17d64d3f77d234b8c4d29f81861bf2151775cc8d4ee658cf758c6dbbe603b57"
+    },
+    {
+      "path": "tests/ig-plain-tornado-slash.test.cjs",
+      "sha256": "f3d9c11c292ef338a0cc5b205acdd275d8200b4588fd7d33f2cd9552a00751e9"
+    },
+    {
+      "path": "tests/sns-ground-shield.test.cjs",
+      "sha256": "9ff978804f77b4ea945b026e517c0beaf1937f186490d946cdbd09fb891ef613"
+    },
+    {
+      "path": "tests/ig-enhanced-rising-body.test.cjs",
+      "sha256": "cd733bdbae5d8f4fb50c34ec9bf83e51ea9860c93f84dd1a4f81ac12375c874c"
+    },
+    {
+      "path": "tests/gs-offset-rising-slash-3.test.cjs",
+      "sha256": "bb4dc78ca5204a8c38a44cb59d064229ba099e3de2a573c6bf1d9b6caee11bb1"
+    },
+    {
+      "path": "ui/custom-weapon-settings.js",
+      "sha256": "db57cf13d94a2cc474c1b955bb0d2cf6357e28972d3ec7051111112e2ce1b1bf"
+    },
+    {
+      "path": "tests/custom-weapon-settings-isolation.test.cjs",
+      "sha256": "2d0a0401c45203ebef22e5361062915ad2c5ea95fc5056e1445a4f79b49394b5"
+    },
+    {
+      "path": "tools/custom-weapon-settings-browser.test.cjs",
+      "sha256": "cfaa74b3debb938e9d08b77686b8200f58f639d17a5f9e9e509f884a346b8a07"
+    },
+    {
+      "path": "tests/gs-per-move-charge.test.cjs",
+      "sha256": "cb9d43ed9f31edc1a971ce1ff77fc30da513dd3000da12a3bd461bf445dad1ca"
+    },
+    {
+      "path": "tools/gs-per-move-charge-browser.test.cjs",
+      "sha256": "3a162068e8097ba3ed51a1968b82451b110f7e0f6d8ab506c8ab1548ad865b2b"
+    },
+    {
+      "path": "tests/bow-explicit-charge.test.cjs",
+      "sha256": "bf04d85b2c8aed3d529063e4313c358e9b0e564755df0221e12ed1d412acd850"
+    },
+    {
+      "path": "tools/bow-explicit-charge-dom.test.cjs",
+      "sha256": "960a31a2a23efbadaedc9d0b7c43707edfb620545516aebc34f6fdcd142ab27c"
+    },
+    {
+      "path": "tests/hh-opening-melody.test.cjs",
+      "sha256": "d5a1ca056f407568b1962a1df7df56a6df138659cc622c213f57823e0f7f0840"
+    },
+    {
+      "path": "tests/sa-axe-boost.test.cjs",
+      "sha256": "057f937c06030788907d5793df9361e360ead741591122fa1bddedb58beb24ff"
+    },
+    {
+      "path": "tests/cb-custom-settings-parity.test.cjs",
+      "sha256": "c90d5ce8d372858ad67b88e46c873adce3d3cb0926e4c39308e63882d91709b4"
+    },
+    {
+      "path": "tests/r196-missing-saved-weapon.test.cjs",
+      "sha256": "12adb3ae7b65bc3bd699b18bf266ce321036cba6317749287202416a2488b7f0"
+    },
+    {
+      "path": "tools/bow-explicit-charge-browser.test.cjs",
+      "sha256": "e18bacaa6ff09f0b17a9248b5bbbba1d08a3e5a6244d44866905d3a54b6084b8"
+    },
+    {
+      "path": "docs/reports/r252-generic-states/evidence/mhdb-hunting-horn-hope.api.json",
+      "sha256": "2f7647e5a66a8b14568419cf2aa9a739b7b176461520d1d9a01e536a0c064f14"
+    },
+    {
+      "path": "tests/ls-spirit-release-trial.test.cjs",
+      "sha256": "235d5e58ab86d02ed7e038f28d8a6fb65d3fcb3eeca019ebc38fcbbc44e7a6e3"
+    },
+    {
+      "path": "tests/sa-ground-discharge-trial.test.cjs",
+      "sha256": "fe58f189ae625ec618252a7e71dae19903381f45556f1e28eaec7a600dd8fb38"
+    },
+    {
+      "path": "tests/fixtures/sa-ground-discharge-measured.json",
+      "sha256": "b98dc3e458640e4f32f92da17c0fab14f3f49ae7070b2e1a4b3f2d20163c1f55"
+    },
+    {
+      "path": "tests/bow-arc-full-trial.test.cjs",
+      "sha256": "dcc899714bbb3e58ba8b57b2df663f419fe9569ed2be11c5675680871e637019"
+    },
+    {
+      "path": "tests/fixtures/bow-arc-blast-measured.json",
+      "sha256": "bb6043bf4798a92107d19e12fd698fbc56d50bbed5bdba857cadb0bd08ba9f12"
     }
   ],
   "tests": [
+    "tests/db-ordinary-double-slash.test.cjs",
+    "tests/ls-plain-rising-slash-picker.test.cjs",
+    "tests/hh-slam-plain-body.test.cjs",
+    "tests/ls-plain-thrust-picker.test.cjs",
+    "tests/gs-draw-picker-intent.test.cjs",
+    "tests/legacy-picker-route-parity.test.cjs",
     "tests/cb-h-ordinary-scope.test.cjs",
     "tests/charge-master-gl-noncharged-scope.test.cjs",
     "tools/sa-hh-scope-regression/sa-zero.test.cjs",
@@ -1017,6 +1251,7 @@
     "tools/integration-regression/target-ingress.test.cjs",
     "tests/lbg-rapid-five-shot.test.cjs",
     "tests/lbg-normal-five-shot.test.cjs",
+    "tests/lbg-normal-two-current.test.cjs",
     "tests/monster-part-labels.test.cjs",
     "tests/combo-skill-disclosure.test.cjs",
     "tests/skill-audit-dispositions.test.cjs",
@@ -1080,9 +1315,13 @@
     "tests/ls-zero-resistance-elemental.test.cjs",
     "tests/body-zero-resistance-elemental.test.cjs",
     "tests/dark-arts-auto-target.test.cjs",
-    "tools/maximum-skills-dom.test.cjs"
+    "tools/maximum-skills-dom.test.cjs",
+    "tools/custom-combo-result-dom.test.cjs",
+    "tests/ls-spirit-release-trial.test.cjs",
+    "tests/sa-ground-discharge-trial.test.cjs",
+    "tests/bow-arc-full-trial.test.cjs"
   ],
-  "expectedTests": 1857,
+  "expectedTests": 1880,
   "productBaselineCommit": "8f6e759e0745618bb26b26c0962bc62735426616",
   "changeContracts": [
     "C04",

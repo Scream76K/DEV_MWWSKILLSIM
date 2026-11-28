@@ -42,7 +42,9 @@ test('mobile selects a Bow technique sequence and calculates both columns in the
  await click('#calcUserComboDamage');
  const out=page.locator('#compareOut');
  assert.equal(await optional.evaluate(e=>e.open),false);
- assert.match(await out.innerText(),/「個別技の検証用条件」で「ビンなし」と「適正距離」/);
+ assert.match(await out.locator('[data-automatic-opening]').innerText(),/ビンなし/);
+ assert.deepEqual((await out.locator('[data-custom-damage="total"] td').allTextContents()).slice(0,2),['237.6','237.6']);
+ assert.equal(await page.locator('#powerBowCoating').inputValue(),'');
  await click('#comparisonOptionalConditions > summary');
  await click('#consumerBowConditions details > summary');
  await page.locator('#powerBowCoating').selectOption('NONE');

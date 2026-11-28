@@ -1,0 +1,45 @@
+{
+  "weapon": "ホープボウⅤ",
+  "charge": 1,
+  "coating": "NONE",
+  "guided": false,
+  "trigger": "natural_without_followup",
+  "observations": [
+    {
+      "part": "training-front",
+      "reportedDamagePerBlast": 10.4,
+      "comparatorHitzone": 80,
+      "hitCountForThisPart": null
+    },
+    {
+      "part": "training-back",
+      "reportedDamagePerBlast": 2.6,
+      "comparatorHitzone": 20,
+      "hitCountForThisPart": 2
+    },
+    {
+      "part": "UNIDENTIFIED",
+      "reportedDamagePerBlast": 13,
+      "hitCountForThisPart": 2
+    }
+  ],
+  "provisional": {
+    "base": 13,
+    "formula": "base * shotHitzone / 100",
+    "attackerScalingEstablished": false,
+    "sameDamageWithinTheObservedPair": true,
+    "crossWeaponObservation": {
+      "comparison": "same_training_front",
+      "alternateWeaponReportedAttack": 200,
+      "alternateWeaponName": null,
+      "damagePerBlast": 10.4
+    }
+  },
+  "sources": [
+    "Sentinel_c6a64a4e481481918d5ffbda78a3bc64",
+    "Sentinel_efced97e37a881919087b7d669188136",
+    "Sentinel_c25ee8f4ee0481918f28d63d8b70a02b",
+    "Sentinel_0639d890e3dc81919736e48c002603ba",
+    "Sentinel_d3a8ef8dc8c88191aeeb64584221543d"
+  ]
+}

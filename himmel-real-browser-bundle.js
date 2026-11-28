@@ -894,7 +894,11 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    return Object.freeze({...adapted,events});
   }
   const shelling=Array.isArray(record.specialComponents)&&record.specialComponents.some(x=>String(x).includes('SHELL'));
-  const reference=record.referenceKind==='light-bowgun-ballistic'||record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='light-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound'||record.referenceKind==='heavy-bowgun-wyvern';
+  const heavyPierce=weaponType==='heavy-bowgun'&&techniqueId==='HBG_PIERCE_AMMO_2'&&record.referenceKind==='hbg-pierce-seven';
+  const wyvernFive=weaponType==='gunlance'&&techniqueId==='GL_WYVERN_FIRE_NORMAL_MEDIUM'&&record.referenceKind==='gl-wyvern-five';
+  const arc=weaponType==='bow'&&record.referenceKind==='bow-arc-impacts'&&(
+    techniqueId==='BOW_ARC_1_IMPACT_ONLY'||(techniqueId==='BOW_ARC_1_FULL_TRIAL'&&record.arcBlastTrial?.base===13&&record.arcBlastTrial?.contacts===2));
+  const reference=arc||wyvernFive||heavyPierce||(weaponType==='light-bowgun'&&techniqueId==='LBG_PIERCE_AMMO_2'&&record.referenceKind==='lbg-pierce-seven')||(weaponType==='heavy-bowgun'&&techniqueId==='HBG_IGNITION_GRENADE'&&record.referenceKind==='hbg-grenade')||(weaponType==='heavy-bowgun'&&techniqueId==='HBG_IGNITION_COUNTER'&&record.referenceKind==='hbg-counter')||record.referenceKind==='hbg-sticky'||record.referenceKind==='hbg-ignition'||record.referenceKind==='light-bowgun-ballistic'||record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='light-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound'||record.referenceKind==='heavy-bowgun-wyvern';
   if(shelling){
    const resource=record.shellingResource;
    if(resource&&(!(['NORMAL','CHARGED'].includes(record.shellingAction)&&resource.id==='GL_'+record.shellingAction+'_ROUNDS')||!Number.isInteger(resource.amount)||resource.amount<=0||!resource.source))throw Error('REAL_SLICE:GL_RESOURCE_CONTRACT_INVALID');
@@ -917,13 +921,39 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   const wyvern=weaponType==='heavy-bowgun'&&techniqueId==='HBG_WYVERN_AMMO'&&record.referenceKind==='heavy-bowgun-wyvern'&&record.wyvernRules?.adoptionStatus==='PROVISIONAL'&&record.sourceScope==='OWNER_FIXED_TWO_HIT_PROVISIONAL_MODEL'&&record.evidenceRefs?.includes('KAN23_OWNER_TWO_HIT_FIX_22_CONDITIONS')&&record.hits?.length===2;
   if(record.numericStatus&&record.numericStatus!=='SOURCE_CONFIRMED'&&!kan21&&!wyvern)throw Error('REAL_SLICE:REFERENCE_SOURCE_PENDING');
    const source=record.evidenceRefs?.[0];if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
+   if(record.referenceKind==='hbg-grenade'||record.referenceKind==='lbg-pierce-seven'||heavyPierce||wyvernFive||arc){
+    const events=Array.from({length:arc?record.arcImpactValues.length+(techniqueId==='BOW_ARC_1_FULL_TRIAL'?record.arcBlastTrial.contacts:0):wyvernFive?record.wyvernFiveReference.contacts:heavyPierce||record.referenceKind==='lbg-pierce-seven'?record.sevenContactReference.rates.length:record.specialSourceValues.hitCount},(_,hitIndex)=>({type:'hit',components:[{
+     id:techniqueId+':reference:'+hitIndex,kind:'reference',unit:'REFERENCE',source,coefficient:1,
+     parameters:{hitIndex,sourceTechniqueId:techniqueId,sourceRecord:record,referenceKind:record.referenceKind,referenceInput:record.referenceInput}
+    }]}));
+    if(wyvernFive)events.unshift({type:'consume',contract:'GL_WYVERN_GAUGE',resourcePath:['gunlance','wyvernGauge'],amount:1,source});
+    if(heavyPierce)events.unshift({type:'consume',contract:'HBG_PIERCE_ROUND',resourcePath:['heavyBowgun','loadedRounds'],amount:1,source});
+    if(record.referenceKind==='lbg-pierce-seven')events.unshift({type:'consume',contract:'LBG_NORMAL_ROUND',resourcePath:['lightBowgun','loadedRounds'],amount:1,source});
+    return {id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events};
+   }
+   if(weaponType==='heavy-bowgun'&&techniqueId==='HBG_STICKY_AMMO_1'&&record.referenceKind==='hbg-sticky'){
+    const component=(stickyPart,hitIndex)=>({id:techniqueId+':reference:'+hitIndex,kind:'reference',unit:'REFERENCE',source,coefficient:1,
+     parameters:{stickyPart,hitIndex,sourceTechniqueId:techniqueId,sourceRecord:record,referenceKind:record.referenceKind,referenceInput:record.referenceInput}});
+    const events=[{type:'consume',contract:'HBG_STICKY_ROUND',resourcePath:['heavyBowgun','stickyRoundBudget'],amount:1,source},
+     {type:'hit',components:[component('impact',0)]},{type:'hit',components:[component('explosion',1),component('fire',2)]}];
+    return {id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events};
+   }
+   if(weaponType==='heavy-bowgun'&&techniqueId==='HBG_IGNITION_MACHINE'&&record.referenceKind==='hbg-ignition'){
+    const events=record.specialSourceValues.sourceMotionValues.map((_,hitIndex)=>({type:'hit',components:[{
+     id:techniqueId+':reference:'+hitIndex,kind:'reference',unit:'REFERENCE',source,coefficient:1,
+     parameters:{hitIndex,sourceTechniqueId:techniqueId,sourceRecord:record,referenceKind:record.referenceKind,referenceInput:record.referenceInput}
+    }]}));
+    events.push({type:'consume',contract:'HBG_IGNITION_FULL',resourcePath:['heavyBowgun','ignitionGauge'],amount:record.ignitionReference.gauge,source});
+    return {id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events};
+   }
    if(weaponType==='light-bowgun'&&['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_2','LBG_NORMAL_RAPID_3','LBG_NORMAL_RAPID_NATIVE_3'].includes(techniqueId)){
     const rule=record.rapidRule;if(rule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isInteger(rule.hitCount)||rule.hitCount<1||!Number.isInteger(rule.consumedRounds)||rule.consumedRounds<1)throw Error('LBG_RAPID:RULE_INVALID');
     const events=Array.from({length:rule.hitCount},(_,i)=>({type:'hit',components:[{id:techniqueId+':reference:'+i,kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:{hitIndex:i,effectTargets:['physical'],effectStages:['attack','affinity'],sourceTechniqueId:techniqueId,sourceRecord:record,referenceKind:record.referenceKind,referenceInput:record.referenceInput,rapidResource:rule.consumedRounds}}]}));
     events.push({type:'consume',contract:'LBG_RAPID_ROUND',resourcePath:['lightBowgun','loadedRounds'],amount:rule.consumedRounds,source});
     return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events});
    }
-   return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':reference:0',kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:record.referenceKind==='light-bowgun-ballistic'?['physical']:['physical','element'],effectStages:record.referenceKind==='light-bowgun-ballistic'?['attack','affinity']:['attack','affinity','element'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),referenceKind:record.referenceKind,referenceInput:record.referenceInput})}]}]});
+   const normalPair=weaponType==='light-bowgun'&&record.referenceKind==='light-bowgun'&&/^LBG_NORMAL_AMMO_[12]$/.test(techniqueId)&&record.referenceInput?.explicitNormalPair!=null;
+   return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':reference:0',kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:record.referenceKind==='light-bowgun-ballistic'?['physical']:['physical','element'],effectStages:record.referenceKind==='light-bowgun-ballistic'?['attack','affinity']:['attack','affinity','element'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),referenceKind:record.referenceKind,referenceInput:record.referenceInput})}]},...(normalPair?[{type:'consume',contract:'LBG_NORMAL_ROUND',resourcePath:['lightBowgun','loadedRounds'],amount:1,source}]:[])]});
   }
   const cbHPrefix=weaponType==='charge-blade'&&['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)&&record.resourceContract?.id==='CB_H_PREFIX_RESOURCE'&&record.adoption?.approval==='Sentinel_b0338f54b160819183484aed19d41354'&&record.verificationStatus==='OWNER_APPROVED_PROVISIONAL';
   if(!['VERIFIED','PARTIALLY_VERIFIED'].includes(record.verificationStatus)&&!cbHPrefix)throw Error('REAL_SLICE:VERIFICATION_PENDING');
@@ -960,6 +990,11 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    }
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});
   });
+  if(record.gsGroundDraw){
+   if(weaponType!=='great-sword'||techniqueId!=='GS_DRAW_VERTICAL_SLASH'||events.length!==1||events[0].type!=='hit'||
+      record.gsGroundDraw.status!=='SOURCE_BACKED_PROVISIONAL'||record.gsGroundDraw.scope!=='SINGLE_UNCHARGED_GROUND_DRAW_BODY_HP')throw Error('GS_DRAW_BODY:TRANSITION_CONTRACT_INVALID');
+   events.unshift({type:'transition',contract:'GS_GROUND_DRAW_BEGIN',requiredOpening:'SHEATHED',endState:'DRAWN',source:record.gsGroundDraw.drawEligibilitySource,operations:[{op:'set',path:['greatSword','weaponDrawState'],value:'DRAWN'}]});
+  }
   if(saMode)events.push({type:'transition',contract:'SA_HIT_MODE',requiredMode:saMode.hitModes[saMode.hitModes.length-1],operations:[{op:'set',path:['switchAxe','mode'],value:saMode.endMode}]});
   if((record.phialReference?.status==='OBSERVED'||(techniqueId==='CB_SHIELD_THRUST'&&record.resourceContract?.id==='CB_H_PREFIX_RESOURCE'&&record.phialReference?.status==='OWNER_APPROVED_PROVISIONAL'))&&Number.isInteger(record.phialReference.hitCount)&&record.phialReference.hitCount>0){
    const phialTarget=record.phialState?.phialType==='POWER_ELEMENT'?'element':'physical';
@@ -1033,7 +1068,11 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    return Object.freeze({...adapted,events});
   }
   const shelling=Array.isArray(record.specialComponents)&&record.specialComponents.some(x=>String(x).includes('SHELL'));
-  const reference=record.referenceKind==='light-bowgun-ballistic'||record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='light-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound'||record.referenceKind==='heavy-bowgun-wyvern';
+  const heavyPierce=weaponType==='heavy-bowgun'&&techniqueId==='HBG_PIERCE_AMMO_2'&&record.referenceKind==='hbg-pierce-seven';
+  const wyvernFive=weaponType==='gunlance'&&techniqueId==='GL_WYVERN_FIRE_NORMAL_MEDIUM'&&record.referenceKind==='gl-wyvern-five';
+  const arc=weaponType==='bow'&&record.referenceKind==='bow-arc-impacts'&&(
+    techniqueId==='BOW_ARC_1_IMPACT_ONLY'||(techniqueId==='BOW_ARC_1_FULL_TRIAL'&&record.arcBlastTrial?.base===13&&record.arcBlastTrial?.contacts===2));
+  const reference=arc||wyvernFive||heavyPierce||(weaponType==='light-bowgun'&&techniqueId==='LBG_PIERCE_AMMO_2'&&record.referenceKind==='lbg-pierce-seven')||(weaponType==='heavy-bowgun'&&techniqueId==='HBG_IGNITION_GRENADE'&&record.referenceKind==='hbg-grenade')||(weaponType==='heavy-bowgun'&&techniqueId==='HBG_IGNITION_COUNTER'&&record.referenceKind==='hbg-counter')||record.referenceKind==='hbg-sticky'||record.referenceKind==='hbg-ignition'||record.referenceKind==='light-bowgun-ballistic'||record.referenceKind==='bow'||record.referenceKind==='light-bowgun'||record.referenceKind==='heavy-bowgun'||record.referenceKind==='heavy-bowgun-element'||record.referenceKind==='light-bowgun-element'||record.referenceKind==='charge-blade-saed'||record.referenceKind==='hunting-horn-sound'||record.referenceKind==='heavy-bowgun-wyvern';
   if(shelling){
    const resource=record.shellingResource;
    if(resource&&(!(['NORMAL','CHARGED'].includes(record.shellingAction)&&resource.id==='GL_'+record.shellingAction+'_ROUNDS')||!Number.isInteger(resource.amount)||resource.amount<=0||!resource.source))throw Error('REAL_SLICE:GL_RESOURCE_CONTRACT_INVALID');
@@ -1056,13 +1095,39 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
   const wyvern=weaponType==='heavy-bowgun'&&techniqueId==='HBG_WYVERN_AMMO'&&record.referenceKind==='heavy-bowgun-wyvern'&&record.wyvernRules?.adoptionStatus==='PROVISIONAL'&&record.sourceScope==='OWNER_FIXED_TWO_HIT_PROVISIONAL_MODEL'&&record.evidenceRefs?.includes('KAN23_OWNER_TWO_HIT_FIX_22_CONDITIONS')&&record.hits?.length===2;
   if(record.numericStatus&&record.numericStatus!=='SOURCE_CONFIRMED'&&!kan21&&!wyvern)throw Error('REAL_SLICE:REFERENCE_SOURCE_PENDING');
    const source=record.evidenceRefs?.[0];if(typeof source!=='string'||!source)throw Error('REAL_SLICE:EVIDENCE_REQUIRED');
+   if(record.referenceKind==='hbg-grenade'||record.referenceKind==='lbg-pierce-seven'||heavyPierce||wyvernFive||arc){
+    const events=Array.from({length:arc?record.arcImpactValues.length+(techniqueId==='BOW_ARC_1_FULL_TRIAL'?record.arcBlastTrial.contacts:0):wyvernFive?record.wyvernFiveReference.contacts:heavyPierce||record.referenceKind==='lbg-pierce-seven'?record.sevenContactReference.rates.length:record.specialSourceValues.hitCount},(_,hitIndex)=>({type:'hit',components:[{
+     id:techniqueId+':reference:'+hitIndex,kind:'reference',unit:'REFERENCE',source,coefficient:1,
+     parameters:{hitIndex,sourceTechniqueId:techniqueId,sourceRecord:record,referenceKind:record.referenceKind,referenceInput:record.referenceInput}
+    }]}));
+    if(wyvernFive)events.unshift({type:'consume',contract:'GL_WYVERN_GAUGE',resourcePath:['gunlance','wyvernGauge'],amount:1,source});
+    if(heavyPierce)events.unshift({type:'consume',contract:'HBG_PIERCE_ROUND',resourcePath:['heavyBowgun','loadedRounds'],amount:1,source});
+    if(record.referenceKind==='lbg-pierce-seven')events.unshift({type:'consume',contract:'LBG_NORMAL_ROUND',resourcePath:['lightBowgun','loadedRounds'],amount:1,source});
+    return {id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events};
+   }
+   if(weaponType==='heavy-bowgun'&&techniqueId==='HBG_STICKY_AMMO_1'&&record.referenceKind==='hbg-sticky'){
+    const component=(stickyPart,hitIndex)=>({id:techniqueId+':reference:'+hitIndex,kind:'reference',unit:'REFERENCE',source,coefficient:1,
+     parameters:{stickyPart,hitIndex,sourceTechniqueId:techniqueId,sourceRecord:record,referenceKind:record.referenceKind,referenceInput:record.referenceInput}});
+    const events=[{type:'consume',contract:'HBG_STICKY_ROUND',resourcePath:['heavyBowgun','stickyRoundBudget'],amount:1,source},
+     {type:'hit',components:[component('impact',0)]},{type:'hit',components:[component('explosion',1),component('fire',2)]}];
+    return {id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events};
+   }
+   if(weaponType==='heavy-bowgun'&&techniqueId==='HBG_IGNITION_MACHINE'&&record.referenceKind==='hbg-ignition'){
+    const events=record.specialSourceValues.sourceMotionValues.map((_,hitIndex)=>({type:'hit',components:[{
+     id:techniqueId+':reference:'+hitIndex,kind:'reference',unit:'REFERENCE',source,coefficient:1,
+     parameters:{hitIndex,sourceTechniqueId:techniqueId,sourceRecord:record,referenceKind:record.referenceKind,referenceInput:record.referenceInput}
+    }]}));
+    events.push({type:'consume',contract:'HBG_IGNITION_FULL',resourcePath:['heavyBowgun','ignitionGauge'],amount:record.ignitionReference.gauge,source});
+    return {id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events};
+   }
    if(weaponType==='light-bowgun'&&['LBG_NORMAL_RAPID_1','LBG_NORMAL_RAPID_2','LBG_NORMAL_RAPID_3','LBG_NORMAL_RAPID_NATIVE_3'].includes(techniqueId)){
     const rule=record.rapidRule;if(rule?.status!=='OWNER_APPROVED_PROVISIONAL'||!Number.isInteger(rule.hitCount)||rule.hitCount<1||!Number.isInteger(rule.consumedRounds)||rule.consumedRounds<1)throw Error('LBG_RAPID:RULE_INVALID');
     const events=Array.from({length:rule.hitCount},(_,i)=>({type:'hit',components:[{id:techniqueId+':reference:'+i,kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:{hitIndex:i,effectTargets:['physical'],effectStages:['attack','affinity'],sourceTechniqueId:techniqueId,sourceRecord:record,referenceKind:record.referenceKind,referenceInput:record.referenceInput,rapidResource:rule.consumedRounds}}]}));
     events.push({type:'consume',contract:'LBG_RAPID_ROUND',resourcePath:['lightBowgun','loadedRounds'],amount:rule.consumedRounds,source});
     return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events});
    }
-   return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':reference:0',kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:record.referenceKind==='light-bowgun-ballistic'?['physical']:['physical','element'],effectStages:record.referenceKind==='light-bowgun-ballistic'?['attack','affinity']:['attack','affinity','element'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),referenceKind:record.referenceKind,referenceInput:record.referenceInput})}]}]});
+   const normalPair=weaponType==='light-bowgun'&&record.referenceKind==='light-bowgun'&&/^LBG_NORMAL_AMMO_[12]$/.test(techniqueId)&&record.referenceInput?.explicitNormalPair!=null;
+   return Object.freeze({id:techniqueId,revision:String(record.revision),dataVersion:dbVersion,definitionStatus:'defined',events:[{type:'hit',components:[{id:techniqueId+':reference:0',kind:'reference',unit:'REFERENCE',source,coefficient:1,parameters:Object.freeze({hitIndex:0,effectTargets:record.referenceKind==='light-bowgun-ballistic'?['physical']:['physical','element'],effectStages:record.referenceKind==='light-bowgun-ballistic'?['attack','affinity']:['attack','affinity','element'],sourceTechniqueId:techniqueId,sourceRecord:Object.freeze({...record}),referenceKind:record.referenceKind,referenceInput:record.referenceInput})}]},...(normalPair?[{type:'consume',contract:'LBG_NORMAL_ROUND',resourcePath:['lightBowgun','loadedRounds'],amount:1,source}]:[])]});
   }
   const cbHPrefix=weaponType==='charge-blade'&&['CB_AXE_TO_SWORD_MORPH','CB_SHIELD_THRUST'].includes(techniqueId)&&record.resourceContract?.id==='CB_H_PREFIX_RESOURCE'&&record.adoption?.approval==='Sentinel_b0338f54b160819183484aed19d41354'&&record.verificationStatus==='OWNER_APPROVED_PROVISIONAL';
   if(!['VERIFIED','PARTIALLY_VERIFIED'].includes(record.verificationStatus)&&!cbHPrefix)throw Error('REAL_SLICE:VERIFICATION_PENDING');
@@ -1099,6 +1164,11 @@ function adaptOrdinaryPhysicalHit({weaponType,techniqueId,record,dbVersion,eleme
    }
    if(elementResolved&&hit.elementModifier!==0)excludedElements.push({coefficient:hit.elementModifier,source,reason:'CONFIRMED_ZERO_ELEMENT_NO_EFFECTS',hitIndex:index});
   });
+  if(record.gsGroundDraw){
+   if(weaponType!=='great-sword'||techniqueId!=='GS_DRAW_VERTICAL_SLASH'||events.length!==1||events[0].type!=='hit'||
+      record.gsGroundDraw.status!=='SOURCE_BACKED_PROVISIONAL'||record.gsGroundDraw.scope!=='SINGLE_UNCHARGED_GROUND_DRAW_BODY_HP')throw Error('GS_DRAW_BODY:TRANSITION_CONTRACT_INVALID');
+   events.unshift({type:'transition',contract:'GS_GROUND_DRAW_BEGIN',requiredOpening:'SHEATHED',endState:'DRAWN',source:record.gsGroundDraw.drawEligibilitySource,operations:[{op:'set',path:['greatSword','weaponDrawState'],value:'DRAWN'}]});
+  }
   if(saMode)events.push({type:'transition',contract:'SA_HIT_MODE',requiredMode:saMode.hitModes[saMode.hitModes.length-1],operations:[{op:'set',path:['switchAxe','mode'],value:saMode.endMode}]});
   if((record.phialReference?.status==='OBSERVED'||(techniqueId==='CB_SHIELD_THRUST'&&record.resourceContract?.id==='CB_H_PREFIX_RESOURCE'&&record.phialReference?.status==='OWNER_APPROVED_PROVISIONAL'))&&Number.isInteger(record.phialReference.hitCount)&&record.phialReference.hitCount>0){
    const phialTarget=record.phialState?.phialType==='POWER_ELEMENT'?'element':'physical';
@@ -1362,14 +1432,35 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||!['selfImprovementLevel','attackMelodyLevel'].includes(key)||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn',key]))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');
    return {nextState:{...state,huntingHorn:{...state.huntingHorn,[key]:Math.min(level+op.amount,op.cap)}}};
   }
+  if(event.type==='transition'&&event.contract==='GS_GROUND_DRAW_BEGIN'){
+   if(weaponType!=='great-sword'||event.techniqueId!=='GS_DRAW_VERTICAL_SLASH'||state?.greatSword?.weaponDrawState!=='SHEATHED'||
+      event.requiredOpening!=='SHEATHED'||event.endState!=='DRAWN')throw Error('GS_DRAW_BODY:INVALID_TRANSITION');
+   return {nextState:{...state,greatSword:{...state.greatSword,weaponDrawState:'DRAWN'}}};
+  }
   if(event.type==='transition'&&event.contract==='SA_HIT_MODE'&&weaponType==='switch-axe'){
    if(!['SWORD','AXE'].includes(state?.switchAxe?.mode))throw Error('REAL_SLICE:SA_START_MODE_UNRESOLVED');
    if(state.switchAxe.mode!==event.requiredMode)throw Error('REAL_SLICE:SA_MODE_TRANSITION_MISMATCH');
    const mode=event.operations?.[0]?.value;if(!['SWORD','AXE'].includes(mode))throw Error('REAL_SLICE:SA_HIT_MODE_UNRESOLVED');
    return {nextState:{...state,switchAxe:{...state.switchAxe,mode}}};
   }
-  if(event.type==='consume'&&event.contract==='LBG_RAPID_ROUND'&&weaponType==='light-bowgun'){
-   if(!Number.isInteger(event.amount)||event.amount<1||!Number.isInteger(state?.lightBowgun?.loadedRounds)||state.lightBowgun.loadedRounds<event.amount)throw Error('LBG_RAPID:RESOURCE_INVALID');
+  if(event.type==='consume'&&event.contract==='GL_WYVERN_GAUGE'&&weaponType==='gunlance'){
+   if(state.gunlance?.wyvernGauge!==1||event.amount!==1)throw Error('GL_WYVERN_FIRE:READY_GAUGE_REQUIRED');
+   return {nextState:{...state,gunlance:{...state.gunlance,wyvernGauge:0}}};
+  }
+  if(event.type==='consume'&&event.contract==='HBG_PIERCE_ROUND'&&weaponType==='heavy-bowgun'){
+   if(state.heavyBowgun?.loadedRounds!==4||event.amount!==1)throw Error('HBG_PIERCE_AMMO_2:FULL_FIRST_REQUIRED');
+   return {nextState:{...state,heavyBowgun:{...state.heavyBowgun,loadedRounds:state.heavyBowgun.loadedRounds-event.amount}}};
+  }
+  if(event.type==='consume'&&event.contract==='HBG_STICKY_ROUND'&&weaponType==='heavy-bowgun'){
+   if(state.heavyBowgun?.stickyRoundBudget!==1||event.amount!==1)throw Error('HBG_STICKY_AMMO_1:ROUND_REQUIRED');
+   return {nextState:{...state,heavyBowgun:{...state.heavyBowgun,stickyRoundBudget:0}}};
+  }
+  if(event.type==='consume'&&event.contract==='HBG_IGNITION_FULL'&&weaponType==='heavy-bowgun'){
+   if(state.heavyBowgun?.ignitionGauge!==event.amount)throw Error('HBG_IGNITION_MACHINE:FULL_GAUGE_REQUIRED');
+   return {nextState:{...state,heavyBowgun:{...state.heavyBowgun,ignitionGauge:0}}};
+  }
+  if(event.type==='consume'&&['LBG_RAPID_ROUND','LBG_NORMAL_ROUND'].includes(event.contract)&&weaponType==='light-bowgun'){
+   if(!Number.isInteger(event.amount)||event.amount<1||!Number.isInteger(state?.lightBowgun?.loadedRounds)||state.lightBowgun.loadedRounds<event.amount)throw Error(event.contract==='LBG_NORMAL_ROUND'?'LBG_NORMAL_PAIR:RESOURCE_INVALID':'LBG_RAPID:RESOURCE_INVALID');
    return {nextState:{...state,lightBowgun:{...state.lightBowgun,loadedRounds:state.lightBowgun.loadedRounds-event.amount}}};
   }
   if(event.type==='consume'&&['GL_NORMAL_ROUNDS','GL_CHARGED_ROUNDS'].includes(event.contract)&&weaponType==='gunlance'){const nextState=JSON.parse(JSON.stringify(state));nextState.gunlance.loadedRounds-=event.amount;return {nextState};}
@@ -1549,14 +1640,35 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||!['selfImprovementLevel','attackMelodyLevel'].includes(key)||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn',key]))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');
    return {nextState:{...state,huntingHorn:{...state.huntingHorn,[key]:Math.min(level+op.amount,op.cap)}}};
   }
+  if(event.type==='transition'&&event.contract==='GS_GROUND_DRAW_BEGIN'){
+   if(weaponType!=='great-sword'||event.techniqueId!=='GS_DRAW_VERTICAL_SLASH'||state?.greatSword?.weaponDrawState!=='SHEATHED'||
+      event.requiredOpening!=='SHEATHED'||event.endState!=='DRAWN')throw Error('GS_DRAW_BODY:INVALID_TRANSITION');
+   return {nextState:{...state,greatSword:{...state.greatSword,weaponDrawState:'DRAWN'}}};
+  }
   if(event.type==='transition'&&event.contract==='SA_HIT_MODE'&&weaponType==='switch-axe'){
    if(!['SWORD','AXE'].includes(state?.switchAxe?.mode))throw Error('REAL_SLICE:SA_START_MODE_UNRESOLVED');
    if(state.switchAxe.mode!==event.requiredMode)throw Error('REAL_SLICE:SA_MODE_TRANSITION_MISMATCH');
    const mode=event.operations?.[0]?.value;if(!['SWORD','AXE'].includes(mode))throw Error('REAL_SLICE:SA_HIT_MODE_UNRESOLVED');
    return {nextState:{...state,switchAxe:{...state.switchAxe,mode}}};
   }
-  if(event.type==='consume'&&event.contract==='LBG_RAPID_ROUND'&&weaponType==='light-bowgun'){
-   if(!Number.isInteger(event.amount)||event.amount<1||!Number.isInteger(state?.lightBowgun?.loadedRounds)||state.lightBowgun.loadedRounds<event.amount)throw Error('LBG_RAPID:RESOURCE_INVALID');
+  if(event.type==='consume'&&event.contract==='GL_WYVERN_GAUGE'&&weaponType==='gunlance'){
+   if(state.gunlance?.wyvernGauge!==1||event.amount!==1)throw Error('GL_WYVERN_FIRE:READY_GAUGE_REQUIRED');
+   return {nextState:{...state,gunlance:{...state.gunlance,wyvernGauge:0}}};
+  }
+  if(event.type==='consume'&&event.contract==='HBG_PIERCE_ROUND'&&weaponType==='heavy-bowgun'){
+   if(state.heavyBowgun?.loadedRounds!==4||event.amount!==1)throw Error('HBG_PIERCE_AMMO_2:FULL_FIRST_REQUIRED');
+   return {nextState:{...state,heavyBowgun:{...state.heavyBowgun,loadedRounds:state.heavyBowgun.loadedRounds-event.amount}}};
+  }
+  if(event.type==='consume'&&event.contract==='HBG_STICKY_ROUND'&&weaponType==='heavy-bowgun'){
+   if(state.heavyBowgun?.stickyRoundBudget!==1||event.amount!==1)throw Error('HBG_STICKY_AMMO_1:ROUND_REQUIRED');
+   return {nextState:{...state,heavyBowgun:{...state.heavyBowgun,stickyRoundBudget:0}}};
+  }
+  if(event.type==='consume'&&event.contract==='HBG_IGNITION_FULL'&&weaponType==='heavy-bowgun'){
+   if(state.heavyBowgun?.ignitionGauge!==event.amount)throw Error('HBG_IGNITION_MACHINE:FULL_GAUGE_REQUIRED');
+   return {nextState:{...state,heavyBowgun:{...state.heavyBowgun,ignitionGauge:0}}};
+  }
+  if(event.type==='consume'&&['LBG_RAPID_ROUND','LBG_NORMAL_ROUND'].includes(event.contract)&&weaponType==='light-bowgun'){
+   if(!Number.isInteger(event.amount)||event.amount<1||!Number.isInteger(state?.lightBowgun?.loadedRounds)||state.lightBowgun.loadedRounds<event.amount)throw Error(event.contract==='LBG_NORMAL_ROUND'?'LBG_NORMAL_PAIR:RESOURCE_INVALID':'LBG_RAPID:RESOURCE_INVALID');
    return {nextState:{...state,lightBowgun:{...state.lightBowgun,loadedRounds:state.lightBowgun.loadedRounds-event.amount}}};
   }
   if(event.type==='consume'&&['GL_NORMAL_ROUNDS','GL_CHARGED_ROUNDS'].includes(event.contract)&&weaponType==='gunlance'){const nextState=JSON.parse(JSON.stringify(state));nextState.gunlance.loadedRounds-=event.amount;return {nextState};}

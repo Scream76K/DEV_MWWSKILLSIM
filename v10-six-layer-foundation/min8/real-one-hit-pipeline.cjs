@@ -103,14 +103,35 @@ function createRealOneHitPipeline({versions,source,resolveBuild,resolveEffects,r
    if(!Number.isInteger(level)||level<0||event.operations?.length!==1||op.op!=='add'||op.amount!==1||!Number.isInteger(op.cap)||op.cap<1||!['selfImprovementLevel','attackMelodyLevel'].includes(key)||JSON.stringify(op.path)!==JSON.stringify(['huntingHorn',key]))throw Error('REAL_SLICE:HH_TRANSITION_INVALID');
    return {nextState:{...state,huntingHorn:{...state.huntingHorn,[key]:Math.min(level+op.amount,op.cap)}}};
   }
+  if(event.type==='transition'&&event.contract==='GS_GROUND_DRAW_BEGIN'){
+   if(weaponType!=='great-sword'||event.techniqueId!=='GS_DRAW_VERTICAL_SLASH'||state?.greatSword?.weaponDrawState!=='SHEATHED'||
+      event.requiredOpening!=='SHEATHED'||event.endState!=='DRAWN')throw Error('GS_DRAW_BODY:INVALID_TRANSITION');
+   return {nextState:{...state,greatSword:{...state.greatSword,weaponDrawState:'DRAWN'}}};
+  }
   if(event.type==='transition'&&event.contract==='SA_HIT_MODE'&&weaponType==='switch-axe'){
    if(!['SWORD','AXE'].includes(state?.switchAxe?.mode))throw Error('REAL_SLICE:SA_START_MODE_UNRESOLVED');
    if(state.switchAxe.mode!==event.requiredMode)throw Error('REAL_SLICE:SA_MODE_TRANSITION_MISMATCH');
    const mode=event.operations?.[0]?.value;if(!['SWORD','AXE'].includes(mode))throw Error('REAL_SLICE:SA_HIT_MODE_UNRESOLVED');
    return {nextState:{...state,switchAxe:{...state.switchAxe,mode}}};
   }
-  if(event.type==='consume'&&event.contract==='LBG_RAPID_ROUND'&&weaponType==='light-bowgun'){
-   if(!Number.isInteger(event.amount)||event.amount<1||!Number.isInteger(state?.lightBowgun?.loadedRounds)||state.lightBowgun.loadedRounds<event.amount)throw Error('LBG_RAPID:RESOURCE_INVALID');
+  if(event.type==='consume'&&event.contract==='GL_WYVERN_GAUGE'&&weaponType==='gunlance'){
+   if(state.gunlance?.wyvernGauge!==1||event.amount!==1)throw Error('GL_WYVERN_FIRE:READY_GAUGE_REQUIRED');
+   return {nextState:{...state,gunlance:{...state.gunlance,wyvernGauge:0}}};
+  }
+  if(event.type==='consume'&&event.contract==='HBG_PIERCE_ROUND'&&weaponType==='heavy-bowgun'){
+   if(state.heavyBowgun?.loadedRounds!==4||event.amount!==1)throw Error('HBG_PIERCE_AMMO_2:FULL_FIRST_REQUIRED');
+   return {nextState:{...state,heavyBowgun:{...state.heavyBowgun,loadedRounds:state.heavyBowgun.loadedRounds-event.amount}}};
+  }
+  if(event.type==='consume'&&event.contract==='HBG_STICKY_ROUND'&&weaponType==='heavy-bowgun'){
+   if(state.heavyBowgun?.stickyRoundBudget!==1||event.amount!==1)throw Error('HBG_STICKY_AMMO_1:ROUND_REQUIRED');
+   return {nextState:{...state,heavyBowgun:{...state.heavyBowgun,stickyRoundBudget:0}}};
+  }
+  if(event.type==='consume'&&event.contract==='HBG_IGNITION_FULL'&&weaponType==='heavy-bowgun'){
+   if(state.heavyBowgun?.ignitionGauge!==event.amount)throw Error('HBG_IGNITION_MACHINE:FULL_GAUGE_REQUIRED');
+   return {nextState:{...state,heavyBowgun:{...state.heavyBowgun,ignitionGauge:0}}};
+  }
+  if(event.type==='consume'&&['LBG_RAPID_ROUND','LBG_NORMAL_ROUND'].includes(event.contract)&&weaponType==='light-bowgun'){
+   if(!Number.isInteger(event.amount)||event.amount<1||!Number.isInteger(state?.lightBowgun?.loadedRounds)||state.lightBowgun.loadedRounds<event.amount)throw Error(event.contract==='LBG_NORMAL_ROUND'?'LBG_NORMAL_PAIR:RESOURCE_INVALID':'LBG_RAPID:RESOURCE_INVALID');
    return {nextState:{...state,lightBowgun:{...state.lightBowgun,loadedRounds:state.lightBowgun.loadedRounds-event.amount}}};
   }
   if(event.type==='consume'&&['GL_NORMAL_ROUNDS','GL_CHARGED_ROUNDS'].includes(event.contract)&&weaponType==='gunlance'){const nextState=JSON.parse(JSON.stringify(state));nextState.gunlance.loadedRounds-=event.amount;return {nextState};}

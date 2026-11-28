@@ -15,9 +15,9 @@ test('ordered current bow combo joins real consumers without widening saved rout
  const mount=w.document.createElement('input');mount.type='checkbox';mount.id='powerMounted';w.document.body.append(mount);
  const oracle=w.eval(`(()=>{
    const o={state:{coating:'NONE',range:'CRITICAL',chargeLevel:3},attack:calcState.stats.attackTrue,affinity:calcState.stats.affinity,element:0,criticalMultiplier:1.25,physicalHitzone:80,elementalHitzone:0};
-   return BowReference.technique(o,TechniqueDBEngine,'BOW_POWER_SHOT_3').comparisonPower+
-    BowReference.technique(o,TechniqueDBEngine,'BOW_POWER_VOLLEY_3').comparisonPower+
-    BowReference.thousandDragons({...o,specialAmmoLevel:0},TechniqueDBEngine).total;
+   const ordinary=BowReference.technique(o,TechniqueDBEngine,'BOW_POWER_SHOT_3').comparisonPower+
+    BowReference.technique(o,TechniqueDBEngine,'BOW_POWER_VOLLEY_3').comparisonPower;
+   return {ordinary,mixed:ordinary+BowReference.thousandDragons({...o,specialAmmoLevel:0},TechniqueDBEngine).total};
  })()`);
  const doc=w.document, calculate=doc.getElementById('calcUserComboDamage'), output=doc.getElementById('compareOut');
  const coating=doc.getElementById('powerBowCoating'), range=doc.getElementById('powerBowRange');
@@ -32,14 +32,16 @@ test('ordered current bow combo joins real consumers without widening saved rout
  choose(coating,'NONE');choose(range,'CRITICAL');
  conditions.querySelector('summary').click();assert.equal(conditions.open,false);
  set(ids.slice(0,2));
- for(const channel of ['normal','maximum'])assert.ok(Math.abs(total(calculation(),channel)-160.38)<.09);
+ // The ordinary explicit route must retain NONE rather than silently use
+ // the selected weapon's automatic standard coating.
+ for(const channel of ['normal','maximum'])assert.ok(Math.abs(total(calculation(),channel)-oracle.ordinary)<1e-8);
  set(ids);
  w.document.getElementById('calcUserComboDamage').click();
  const mixed=calculation();assert.equal(mixed.channels?.normal?.execution.status,'complete',JSON.stringify(mixed));
  for(const c of ['normal','maximum']){
   assert.equal(mixed.channels[c].execution.status,'complete');
   assert.deepEqual([...w.MHWRealOneHitBrowserAdapter.usedComboSteps(mixed.channels[c])],['剛射3','剛連射3','竜の千々矢']);
-  assert.ok(Math.abs(total(mixed,c)-oracle)<1e-8);
+  assert.ok(Math.abs(total(mixed,c)-oracle.mixed)<1e-8);
   assert.equal(mixed.channels[c].components.length,3);
  }
  t.diagnostic(JSON.stringify({normal:total(mixed,'normal'),maximum:total(mixed,'maximum')}));
@@ -67,9 +69,10 @@ test('ordered current bow combo joins real consumers without widening saved rout
 
  set([ids[1],ids[0],ids[2]]);check(calculation(),'BOW_THOUSAND:SINGLE_SHOT_REQUIRED');
  set(ids);
- w.eval("powerBowCoating.value=''");check(calculation(),'BOW_THOUSAND:STATE_NOT_ADOPTED');
+ w.eval("powerBowCoating.value=''");
  calculate.click();
- assert.match(output.textContent,/「個別技の検証用条件」で「ビンなし」と「適正距離」/);
+ assert.match(output.querySelector('[data-automatic-opening]').textContent,/ビンなし/);
+ assert.deepEqual(cells().slice(0,2),['237.6','250.0']);
  assert.doesNotMatch(output.textContent,/BOW_THOUSAND:/);
 
  w.eval("powerBowCoating.value='POWER'");check(calculation(),'BOW_THOUSAND:STATE_NOT_ADOPTED');

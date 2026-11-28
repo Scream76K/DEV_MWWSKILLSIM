@@ -1,0 +1,55 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict'),{JSDOM,VirtualConsole}=require('jsdom');
+const {readSimulatorHtml}=require('./dom-test-setup.cjs');
+test('explicit Bow rows keep separate charge IDs and totals through saving and loading',t=>{
+ const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
+ const w=new JSDOM(readSimulatorHtml(),{url:'https://bow-charge.invalid',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.fetch=()=>Promise.reject(Error('offline'));w.confirm=()=>true;w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}).window;
+ t.after(()=>w.close());
+ const {data}=require('../docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json');
+ const weapon=data.weapons.find(x=>x.id===1&&x.kind==='bow');
+ w.eval(`clearWeaponBuckets();DB.weapons=${JSON.stringify([weapon])};weaponIndexByKind.bow=DB.weapons;weaponKind.value='bow';weapon.innerHTML='<option value="1">ホープボウⅠ</option>';weapon.value='1';App.build.setWeapon(DB.weapons[0]);build.armor={head:null,chest:null,arms:null,waist:null,legs:null};build.decos={};renderComboForWeapon();renderMonsters();monster.value='training-room';renderMonsterParts();monsterPart.value='training-front';calcBuild();`);
+ const doc=w.document;
+ const get=id=>doc.getElementById(id);
+ const levels=()=>[...doc.querySelectorAll('#combo [data-bow-charge-level]')];
+ const choose=(select,value)=>{select.value=value;select.dispatchEvent(new w.Event('change',{bubbles:true}));};
+ for(const id of ['canonical:BOW_SHOT_3','canonical:BOW_POWER_SHOT_3','canonical:BOW_POWER_VOLLEY_3'])w.addCombo(id);
+ assert.deepEqual(levels().map(s=>s.value),['3','3','3']);
+ choose(levels()[0],'1');choose(levels()[1],'2');
+ const ids=['BOW_SHOT_1','BOW_POWER_SHOT_2','BOW_POWER_VOLLEY_3'];
+ const check=p=>{
+  for(const ch of ['normal','maximum']){
+   const channel=p.channels?.[ch];assert.equal(channel?.execution.status,'complete',JSON.stringify(p));
+   assert.deepEqual(Array.from(channel.components,c=>c.techniqueId),ids);
+   assert.deepEqual(Array.from(channel.components,c=>c.details.trace.length),[1,4,6]);
+   const attack=w.eval('calcState.stats.attackTrue');
+   const expected=attack*.8*1.1*(10+4*11+6*15)/100;
+   assert.ok(Math.abs(channel.metrics.comboTotalDamage.value-expected)<1e-8,JSON.stringify(channel.metrics));
+  }
+ };
+ check(w.calcP0Damage('user').pipeline);
+ get('buildName').value='bow charge';get('saveBuild').click();
+ assert.match(get('buildSaveStatus').textContent,/保存しました/);
+ const saved=JSON.parse(w.eval('localStorage.getItem(BUILDS_KEY)'))['bow charge'];
+ assert.deepEqual(saved.combo.moves.map(r=>r.techniqueId),ids.map(id=>'canonical:'+id));
+ choose(levels()[0],'3');choose(get('savedBuildSelect'),'bow charge');get('savedBuildLoad').click();
+ assert.deepEqual(levels().map(s=>s.value),['1','2','3']);
+ check(w.calcP0Damage('user').pipeline);
+ get('buildName').value='bow charge B';choose(levels()[0],'2');get('saveBuild').click();
+ choose(get('powerBowCoating'),'POWER');
+ doc.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=true);
+ w.runBuildCompare();
+ const compared=w.eval('lastBuildComparisonRows');
+ assert.equal(compared.length,2);
+ const a=compared.find(r=>r.name==='bow charge');
+ check(a.oneHitPipeline);
+ const b=compared.find(r=>r.name==='bow charge B');
+ assert.equal(b.oneHitPipeline.channels.normal.components[0].techniqueId,'BOW_SHOT_2');
+ assert.notEqual(b.oneHitPipeline.channels.normal.metrics.comboTotalDamage.value,a.oneHitPipeline.channels.normal.metrics.comboTotalDamage.value);
+ get('buildName').value='bow charge coated';get('saveBuild').click();
+ choose(get('powerBowCoating'),'NONE');
+ doc.querySelectorAll('#compareBuilds input[data-compare-name]').forEach(x=>x.checked=x.dataset.compareName==='bow charge coated'||x.dataset.compareName==='bow charge');
+ w.runBuildCompare();
+ const invalid=w.eval('lastBuildComparisonRows').find(r=>r.name==='bow charge coated');
+ assert.match(JSON.stringify(invalid.oneHitPipeline),/BOW_REFERENCE:EXPLICIT_CHARGE_SCOPE/);
+ assert.deepEqual(errors,[]);
+});

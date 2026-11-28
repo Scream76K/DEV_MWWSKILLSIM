@@ -18,12 +18,33 @@ test('combo picker and added rows use only the identifying move name for every w
   'canonical:LBG_NORMAL_RAPID_1':'Lv1通常弾速射',
   'canonical:LBG_NORMAL_RAPID_3':'Lv3通常弾速射（強化火薬）',
  };
+ // These IDs back the per-row charge control. They are intentionally
+ // hidden from the row's technique menu and absent from the add picker.
+ const rowOnly={
+  'great-sword':[
+   ['canonical:GS_CHARGED_SLASH_1','溜め斬りⅠ'],
+   ['canonical:GS_CHARGED_SLASH_2','溜め斬りⅡ'],
+   ['canonical:GS_STRONG_CHARGED_SLASH_1','強溜め斬りⅠ'],
+   ['canonical:GS_STRONG_CHARGED_SLASH_2','強溜め斬りⅡ'],
+  ],
+  bow:[
+   ['canonical:BOW_SHOT_1','射撃（溜め1）'],
+   ['canonical:BOW_SHOT_2','射撃（溜め2）'],
+   ['canonical:BOW_POWER_SHOT_1','剛射（溜め1）'],
+   ['canonical:BOW_POWER_SHOT_2','剛射（溜め2）'],
+   ['canonical:BOW_POWER_VOLLEY_1','剛連射（溜め1）'],
+   ['canonical:BOW_POWER_VOLLEY_2','剛連射（溜め2）'],
+  ],
+ };
+ const lowerIds=new Set(Object.values(rowOnly).flat().map(([id])=>id));
+ const describe=o=>[o.value,o.textContent,o.hidden];
  const kinds=w.eval('KINDS.map(x=>x[0])');assert.equal(kinds.length,14);
  for(const kind of kinds){
   const weapon={id:987,kind,name:'Test',specials:[],affinity:0,damage:{raw:200,display:200},skills:[],slots:[]};
   w.eval(`clearWeaponBuckets();const f=${JSON.stringify(weapon)};DB.weapons=[f];weaponIndexByKind[API_WEAPON_KIND[f.kind]||f.kind]=DB.weapons;weaponKind.value=f.kind;document.getElementById('weapon').innerHTML='<option value="987">Test</option>';document.getElementById('weapon').value='987';App.build.setWeapon(f);renderComboForWeapon();`);
   const opts=[...picker.options];assert.ok(opts.length&&!picker.disabled,'active picker: '+kind);
   for(const opt of opts){
+   assert.ok(!lowerIds.has(opt.value),kind+': unexpected lower charge in add picker: '+opt.value);
    assert.doesNotMatch(opt.textContent,/MV\s*\d|計算未対応：|計算保留|時間未確認|共通参考条件|参考計算|技データ参照/,kind+': '+opt.value);
    if(Object.hasOwn(exact,opt.value))assert.equal(opt.textContent,exact[opt.value]);
   }
@@ -31,6 +52,7 @@ test('combo picker and added rows use only the identifying move name for every w
   picker.value=opts[0].value;w.addCombo();
   const select=rows.querySelector('.cmove');
   assert.ok(select,'added row: '+kind);assert.equal(select.value,opts[0].value);
-  assert.deepEqual([...select.options].map(o=>[o.value,o.textContent]),opts.map(o=>[o.value,o.textContent]));
+  assert.deepEqual([...select.options].map(describe),
+    [...opts.map(describe),...(rowOnly[kind]||[]).map(([id,label])=>[id,label,true])],kind);
  }
 });
