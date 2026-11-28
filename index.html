@@ -1056,24 +1056,38 @@ main.wrap > #betaWorkspaceGrid {
 }
 </style>
 <style id="native-picker-contrast">
-select, .support-card select{
-  color-scheme:dark;
-  color:#f5f8fc!important;
-  background:#172638!important;
+/* Keep the Hunter's Note native picker and its original light option contrast. */
+select{
+  color-scheme:light;
+  color:#202b39!important;
+  -webkit-text-fill-color:#202b39;
 }
 select :is(option,optgroup){
+  color:#202b39!important;
+  -webkit-text-fill-color:#202b39;
+  background-color:#fff!important;
+}
+/* Only Hunter's Support uses white text on navy. */
+#betaSupportPanel select{
+  color-scheme:dark;
   color:#f5f8fc!important;
+  -webkit-text-fill-color:#f5f8fc;
+  background:#172638!important;
+}
+#betaSupportPanel select :is(option,optgroup){
+  color:#f5f8fc!important;
+  -webkit-text-fill-color:#f5f8fc;
   background-color:#172638!important;
 }
 #monster option[hidden],#monsterPart option[hidden],#kingTargetPicker option[hidden],#comboPreset option[hidden]{display:none!important;}
 /* Style the open picker itself where the accessible native select supports it. */
 @supports (appearance:base-select) and selector(select::picker(select)){
-  select:not([multiple]):not([size]),select:not([multiple]):not([size])::picker(select){appearance:base-select;}
-  select:not([multiple]):not([size])::picker(select){
+  #betaSupportPanel select:not([multiple]):not([size]),#betaSupportPanel select:not([multiple]):not([size])::picker(select){appearance:base-select;}
+  #betaSupportPanel select:not([multiple]):not([size])::picker(select){
     color-scheme:dark;color:#f5f8fc;background:#172638;border:1px solid #60738a;border-radius:7px;
     max-inline-size:calc(100vw - 16px);max-block-size:min(55dvh,26rem);overflow:auto;
   }
-  select:not([multiple]):not([size]) option:is(:hover,:focus-visible){background-color:#2c4965!important;}
+  #betaSupportPanel select:not([multiple]):not([size]) option:is(:hover,:focus-visible){background-color:#2c4965!important;}
 }
 </style>
 </head><body>

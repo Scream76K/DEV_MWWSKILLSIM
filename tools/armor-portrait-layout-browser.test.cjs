@@ -88,7 +88,7 @@ test('only the armor/skill panels are 6:4 on phones, tablets, and desktop withou
  }
 });
 
-test('native choice controls use a navy field and readable white text across Hunter’s Note and Hunter’s Support',async t=>{
+test('navy picker colors stay in Hunter’s Support and Hunter’s Note keeps its light options',async t=>{
  const browser=await chromium.launch({headless:true});t.after(()=>browser.close());
  const p=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,colorScheme:'light'});
  t.after(()=>p.close());
@@ -101,9 +101,19 @@ test('native choice controls use a navy field and readable white text across Hun
   const first=control.options[0];
   const c=getComputedStyle(control),o=getComputedStyle(first);
   const popup=CSS.supports('appearance','base-select')&&CSS.supports('selector(::picker(select))')?getComputedStyle(control,'::picker(select)'):null;
-  return {id,scheme:c.colorScheme,ink:c.color,field:c.backgroundColor,optionInk:o.color,optionBackground:o.backgroundColor,popup:popup?.backgroundColor};
+  return {id,support:!!control.closest('#betaSupportPanel'),appearance:c.appearance,scheme:c.colorScheme,ink:c.color,field:c.backgroundColor,optionInk:o.color,optionBackground:o.backgroundColor,popup:popup?.backgroundColor};
  }));
+ assert.deepEqual(result.map(x=>[x.id,x.support]),[['monster',true],['monsterPart',true],['comboMovePicker',true],['weapon',false],['weaponKind',false]]);
  for(const x of result){
+  if(!x.support){
+   assert.equal(x.scheme,'light',x.id);
+   assert.equal(x.ink,'rgb(32, 43, 57)',x.id);
+   assert.equal(x.optionInk,'rgb(32, 43, 57)',x.id);
+   assert.equal(x.optionBackground,'rgb(255, 255, 255)',x.id);
+   assert.notEqual(x.field,'rgb(23, 38, 56)',x.id);
+   assert.notEqual(x.appearance,'base-select',x.id);
+   continue;
+  }
   assert.equal(x.scheme,'dark',x.id);
   assert.equal(x.ink,'rgb(245, 248, 252)',x.id);
   assert.equal(x.optionInk,'rgb(245, 248, 252)',x.id);
