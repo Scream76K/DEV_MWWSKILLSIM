@@ -249,3 +249,22 @@ test('five monster families expose identified parts only and preserve hidden sav
    }
  }
 });
+
+test('Guardian Arkveld groups legs and chainblades without borrowing normal Arkveld target IDs',t=>{
+ const w=setup(t);
+ const guardian=require('../docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json').data.monsters.find(m=>m.id===9);
+ w.eval('DB.monsters.push('+JSON.stringify(guardian)+');renderMonsters()');
+ change(w,el(w,'monster'),'9');
+ const picker=el(w,'kingTargetPicker'),raw=el(w,'monsterPart');
+ assert.ok(picker);
+ assert.deepEqual([...picker.options].filter(o=>!o.hidden).map(o=>o.textContent).sort(),[
+   '部位を選択','脚','鎖刃（解放状態・火力計算未対応）','鎖刃（解除状態）','頭','胴','尻尾'
+ ].sort());
+ raw.value='2664';w.renderMonsterInfo();assert.equal(picker.value,'arkveld-legs');
+ change(w,picker,'arkveld-chain-retracted');assert.equal(raw.value,'2665');
+ assert.equal(w.selectedPart().multipliers.dragon,0);
+ assert.equal(picker.querySelector('[value=arkveld-chain-released]').disabled,true);
+ change(w,picker,'arkveld-chain-released');assert.equal(raw.value,'2665');
+ raw.value='2662';w.renderMonsterParts();assert.equal(raw.value,'2662');
+ assert.equal(picker.querySelector('[value="2662"]').hidden,true);
+});
