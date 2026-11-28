@@ -28,13 +28,13 @@ function variantRow({raw='銀峰竜グリーヴ',tail='Y',tailConfidence=0,best=
  rows.subtypeEvidence={raw:tail,subtype:'γ',confidence:tailConfidence};
  return {key:'legs',resolutionStatus:'candidate_pending',best:ranked[best],ranked,rows,region:{cropEvidence:{valid}}};
 }
-test('same-stem tie with a zero-confidence ASCII tail offers alternatives without opting in or accepting the stale α',()=>{
+test('same-stem tie shows the first candidate and allows correction before applying',()=>{
  const row=variantRow(),{ctx,out}=setup([row]);
  for(const suffix of ['α','β','γ'])assert.ok(out.innerHTML.includes('銀峰竜グリーヴ'+suffix));
  assert.match(out.innerHTML,/<img src="data:image\/png/);
- assert.doesNotMatch(out.innerHTML,/\bchecked\b/);
- assert.match(out.innerHTML,/型式を選択してください/);assert.doesNotMatch(out.innerHTML,/候補なし/);
- assert.equal(ctx.acceptVisibleEquipmentChoices(),false);
+ assert.match(out.innerHTML,/name="eq-legs" checked/);
+ assert.equal(ctx.equipmentVisibleChoice(row).id,10);
+ assert.equal(ctx.equipmentVisibleChoice(row,{allowProvisional:false}),null);
  assert.equal(row.resolutionStatus,'candidate_pending');
  ctx.selectEquipmentCandidate('legs',2);
  assert.equal(row.resolutionStatus,'candidate_confirmed');
@@ -55,11 +55,11 @@ test('preserve distinct winners supported by the current scorer even when the te
   assert.equal(ctx.equipmentVisibleChoice(row).id,10+winner);
  }
 });
-test('a two-sibling arm tie, nonfinite sibling score, and invalid crop never precheck a variant',()=>{
+test('a grounded arm tie is prefilled but an invalid score or crop is not',()=>{
  const arms=variantRow();arms.key='arms';arms.ranked.pop();arms.ranked.forEach(c=>c.totalScore=.754283);
  let {ctx,out}=setup([arms]);
- assert.match(out.innerHTML,/型式を選択してください/);assert.doesNotMatch(out.innerHTML,/\bchecked\b/);
- assert.equal(ctx.acceptVisibleEquipmentChoices(),false);
+ assert.match(out.innerHTML,/name="eq-arms" checked/);
+ assert.equal(ctx.equipmentVisibleChoice(arms,{allowProvisional:false}),null);
  const invalidScore=variantRow();invalidScore.ranked[0].totalScore=.8;invalidScore.ranked[1].totalScore=NaN;
  assert.doesNotMatch(render([invalidScore]),/\bchecked\b/);
  const badCrop=render([variantRow({valid:false})]);
@@ -101,24 +101,27 @@ test('unresolved variant exposes unknown decoration capacity, then explicit gamm
  assert.equal(slot.jewel.id,99);
  assert.equal(ctx.decorationRecognitionSlotCap({equipmentKey:'charm',expectedSlotLevels:[1]},0),1);
 });
-test('missing dakuten in verified armor crops offer exact same-part family, but require explicit selection',()=>{
+test('missing dakuten in verified armor crops prefer the evidenced type and preselect it for review',()=>{
  const row={key:'head',rows:[{raw:'エクソルスヘルムy',conf:87}],region:{cropEvidence:{valid:true}}};
  const records=['α','β','γ'].map((suffix,i)=>({id:648+i,kind:'head',name:'エグゾルスヘルム'+suffix}));
- const {ctx}=setup([]);
+ const {ctx,out}=setup([]);
  ctx.armorDB=[...records,{id:469,kind:'head',name:'エグゾルスヘルム'},{id:900,kind:'chest',name:'エグゾルスヘルムγ'}];
  ctx.CATEGORY_ANCHORS={head:['ヘルム'],chest:['メイル']};
- for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorVoicingMatch','equipmentEvidenceCandidates']){
+ for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentEvidenceCandidates']){
   const helper=source.functionSource(html,name);if(helper)vm.runInContext(helper,ctx);
  }
  const candidates=ctx.equipmentEvidenceCandidates(row,[]);
- assert.deepEqual(Array.from(candidates,c=>c.id),[648,649,650]);
+ assert.deepEqual(Array.from(candidates,c=>c.id),[650,648,649]);
  row.ranked=candidates;row.best=candidates[0];ctx.window.lastEquipmentOCR=[row];
- assert.equal(ctx.equipmentVisibleChoice(row),null);
- ctx.selectEquipmentCandidate('head',2);
  assert.equal(ctx.equipmentVisibleChoice(row).id,650);
+ ctx.renderProductionEquipment();
+ assert.match(out.innerHTML,/name="eq-head" checked[^>]*><span[^>]*>エグゾルスヘルムγ/);
+ assert.equal(row.resolutionStatus,undefined);
+ ctx.selectEquipmentCandidate('head',1);
+ assert.equal(ctx.equipmentVisibleChoice(row).id,648);
  const chest={key:'chest',rows:[{raw:'コクメイル86',conf:72}],region:{cropEvidence:{valid:true}}};
  ctx.armorDB=[{id:675,kind:'chest',name:'ゴグメイルα'},{id:676,kind:'chest',name:'ゴグメイルβ'}];
- assert.deepEqual(Array.from(ctx.equipmentEvidenceCandidates(chest,[]),x=>x.id),[675,676]);
+ assert.deepEqual(Array.from(ctx.equipmentEvidenceCandidates(chest,[]),x=>x.id),[676,675]);
  for(const bad of [{...chest,region:{cropEvidence:{valid:false}}},{...chest,rows:[{raw:'コクメイル86',conf:69}]},{...chest,rows:[{raw:'メイルβ',conf:99}]},{...chest,rows:[{raw:'コクコイルα',conf:99}]}]){
   assert.equal(ctx.equipmentEvidenceCandidates(bad,[]).length,0);
  }
@@ -137,9 +140,9 @@ test('a highly ranked OCR result without name evidence still needs a rescue pass
  assert.equal(ctx.equipmentNeedsOCRRescue({key:'mainWeapon',rows:[],region:crop},[]),false);
  assert.equal(ctx.equipmentNeedsOCRRescue({key:'chest',rows:[],region:{cropEvidence:{valid:false}}},[]),false);
 });
-test('observed OCR error in Greaves suffix recovers only the same leg family without preselection',()=>{
+test('observed OCR error in Greaves suffix recovers only the same leg family with the first candidate selected',()=>{
  const {ctx}=setup([]);
- for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorVoicingMatch','equipmentEvidenceCandidates']){
+ for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentEvidenceCandidates']){
   vm.runInContext(source.functionSource(html,name),ctx);
  }
  ctx.CATEGORY_ANCHORS={legs:['グリーヴ'],waist:['コイル']};
@@ -149,12 +152,12 @@ test('observed OCR error in Greaves suffix recovers only the same leg family wit
    row.rows=[{raw,conf:76}];
    row.ranked=ctx.equipmentEvidenceCandidates(row,[]);row.best=row.ranked[0];
    assert.deepEqual(Array.from(row.ranked,c=>c.id),[674,677]);
-   assert.equal(ctx.equipmentVisibleChoice(row),null);
+   assert.equal(ctx.equipmentVisibleChoice(row).id,674);
  }
  row.rows=[{raw:'クリーウツウaq',conf:90}];
  assert.equal(ctx.equipmentEvidenceCandidates(row,[]).length,0);
 });
-test('observed charm glyph confusion offers a name for review and never preselects charm',()=>{
+test('observed charm glyph confusion preselects the grounded name without confirming charm',()=>{
  const {ctx}=setup([]);
  const fn=['equipmentEvidenceCandidates','parseTalismanLevel','parseTalismanStructure','equipmentCharmGlyphMatch'];
  for(const name of fn)vm.runInContext(source.functionSource(html,name),ctx);
@@ -162,10 +165,22 @@ test('observed charm glyph confusion offers a name for review and never preselec
  const row={key:'charm',region:{cropEvidence:{valid:true}},rows:[{raw:'宋世の ビ',conf:66}]};
  row.ranked=ctx.equipmentEvidenceCandidates(row,[]);row.best=row.ranked[0];
  assert.deepEqual(Array.from(row.ranked,c=>c.id),[64]);
- assert.equal(ctx.equipmentVisibleChoice(row),null);
+ assert.equal(ctx.equipmentVisibleChoice(row).id,64);
+ assert.equal(row.resolutionStatus,undefined);
  ctx.window.lastEquipmentOCR=[row];ctx.selectEquipmentCandidate('charm',0);
  assert.equal(ctx.equipmentVisibleChoice(row).id,64);
  for(const raw of ['宋の ビ','宋世ビ','玉世の ビ']){
   row.rows=[{raw,conf:66}];assert.equal(ctx.equipmentEvidenceCandidates(row,[]).length,0);
  }
+});
+test('clicking apply can accept a prefilled type without requiring another click on its radio',()=>{
+ const gog=variantRow({raw:'ゴグメイル'});
+ gog.key='chest';
+ gog.ranked.forEach((c,i)=>{c.name='ゴグメイル'+['α','β','γ'][i];c.kind='chest';});
+ const {ctx,out}=setup([gog]);
+ assert.match(out.innerHTML,/name="eq-chest" checked/);
+ assert.equal(gog.resolutionStatus,'candidate_pending');
+ assert.equal(ctx.acceptVisibleEquipmentChoices(),true);
+ assert.equal(gog.resolutionStatus,'candidate_confirmed');
+ assert.equal(gog.best.name,'ゴグメイルα');
 });
