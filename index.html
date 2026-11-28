@@ -1055,6 +1055,20 @@ main.wrap > #betaWorkspaceGrid {
   #compareOut .compare-skill-panel .skill-rank-badge{margin-inline-start:0}
 }
 </style>
+<style id="compact-long-skill-names">
+@media (max-width:760px){
+  #skillWorkspaceRight #skillOutput .skill-game-name.is-long-skill,
+  #compareOut .compare-skill-panel .skill-game-name.is-long-skill {container-type:inline-size}
+  #skillWorkspaceRight #skillOutput .skill-info-toggle > .skill-game-name.is-long-skill,
+  #compareOut .compare-skill-panel .skill-info-toggle > .skill-game-name.is-long-skill {margin-inline-end:-12px}
+  #skillWorkspaceRight #skillOutput .skill-info-toggle:has(> .is-long-skill)::after,
+  #compareOut .compare-skill-panel .skill-info-toggle:has(> .is-long-skill)::after {top:auto;bottom:6px}
+  #skillWorkspaceRight #skillOutput .skill-game-name.is-long-skill > span:first-child,
+  #compareOut .compare-skill-panel .skill-game-name.is-long-skill > span:first-child {
+    font-size:clamp(.625rem,calc((100cqi - .5px) / var(--skill-name-chars)),1em);
+  }
+}
+</style>
 <style id="native-picker-contrast">
 /* Keep the Hunter's Note native picker and its original light option contrast. */
 select{
@@ -3501,7 +3515,9 @@ function renderSkillGameBlock(name,level,rawLevel=level){
   const levelHtml=binary?'':`<span class="skill-level${over?' over':''}">Lv${shown}</span>`;
   const on=binary?1:shown;
   const rank=binary?null:(sk?.ranks||[]).find(r=>Number(r?.level)===shown);
-  const heading=`<span class="skill-game-name"><span>${esc(name)}</span>${levelHtml}</span><span class="skill-blocks">${Array.from({length:max},(_,i)=>`<span class="skill-block ${i<on?'on':''}"></span>`).join('')}</span>`;
+  const nameLength=Array.from(String(name)).length;
+  const compact=nameLength>=7?` is-long-skill" style="--skill-name-chars:${nameLength}`:'';
+  const heading=`<span class="skill-game-name${compact}"><span>${esc(name)}</span>${levelHtml}</span><span class="skill-blocks">${Array.from({length:max},(_,i)=>`<span class="skill-block ${i<on?'on':''}"></span>`).join('')}</span>`;
   return renderSkillDisclosure(`skill-game${binary?' skill-game-binary':''}`,heading,sk?.description,rank?.description,`Lv${shown}の効果`,binary?'':renderSkillRankList(sk?.ranks,rank));
 }
 function renderSkillRankList(ranks,current,bonus=false){

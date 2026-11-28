@@ -55,6 +55,25 @@ test('saved skill comparison shares the editor UI, remains isolated, and fits al
     }
    };
    await assertSectionAlignment();
+   const labels=await p.evaluate(()=>{
+    const roots=[$('skillOutput'),document.querySelector('#compareOut .compare-skill-panel')];
+    return roots.map(root=>{
+     const probe=document.createElement('div');
+     probe.innerHTML=renderSkillGameBlock('属性やられ耐性',3)+renderSkillGameBlock('攻撃',1);
+     root.append(probe);
+     const [long,short]=probe.querySelectorAll('.skill-game-name > span:first-child');
+     const range=document.createRange();range.selectNodeContents(long);
+     const result={lines:range.getClientRects().length,longSize:parseFloat(getComputedStyle(long).fontSize),shortSize:parseFloat(getComputedStyle(short).fontSize),text:long.textContent,available:long.parentElement.clientWidth};
+     probe.remove();return result;
+    });
+   });
+   for(const label of labels){
+    assert.equal(label.text,'属性やられ耐性');
+    if(width>=390)assert.equal(label.lines,1,JSON.stringify({width,label}));
+    else assert.ok(label.lines<=2,JSON.stringify({width,label}));
+    assert.ok(label.longSize<=label.shortSize&&label.longSize>=10,JSON.stringify({width,label}));
+    if(width>760)assert.equal(label.longSize,label.shortSize);
+   }
 
    assert.deepEqual(await p.evaluate(()=>({build:buildSnapshotComparable(buildSnapshot()),payload:localStorage.getItem('mh-wilds-builds-v625'),live:$('skillOutput').innerHTML})),{build:before.build,payload:before.payload,live:before.live});
    const summary=columns.first().locator('.skill-info > summary').filter({hasText:'攻撃'}).first();
