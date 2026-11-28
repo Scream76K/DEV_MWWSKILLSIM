@@ -13091,16 +13091,21 @@ try{const v=document.getElementById('appVersionText');if(v)v.textContent=App.ver
 
 // OCR integration r1.1.15: OCR確定武器→ビルド反映を維持し、装備名ROIを6.6×icon幅へ微調整。
 // OCR integration bridge (β版内蔵)
+function ocrWeaponKindPair(w){
+  const officialKind=String(w?.kind||'').trim().toLowerCase();
+  const uiKind=KINDS.find(([ui])=>API_WEAPON_KIND[ui]===officialKind)?.[0]||'';
+  return uiKind?{officialKind,uiKind}:null;
+}
 function forceSelectWeaponRecord(w){
   // OCR確定レコードを、現在の武器UI状態に依存せず最後に確定させる。
   if(!w||!$('weaponKind')||!$('weapon')) return false;
-  const officialKind=canonicalWeaponKind(w);
-  const uiKind=KINDS.find(([ui])=>(API_WEAPON_KIND[ui]||ui)===officialKind)?.[0]||'';
-  if(!uiKind) return false;
+  const kind=ocrWeaponKindPair(w);
+  if(!kind)return false;
+  const {officialKind,uiKind}=kind;
   $('weaponKind').value=uiKind;
   if(App.state?.ui)App.state.ui.weaponKind=uiKind;
   syncWeaponKindIconGrid();
-  const rows=Array.isArray(weaponIndexByKind[API_WEAPON_KIND[uiKind]])?weaponIndexByKind[API_WEAPON_KIND[uiKind]]:[];
+  const rows=Array.isArray(weaponIndexByKind[officialKind])?weaponIndexByKind[officialKind]:[];
   const canonical=rows.find(x=>String(x.id)===String(w.id))||w;
   const sel=$('weapon');
   sel.innerHTML='<option value="">武器を選択</option>'+rows.map(x=>`<option value="${x.id}">${esc(x.name)}${isArtia(x)?' ★ 巨戟アーティア':''}</option>`).join('');
@@ -13186,9 +13191,9 @@ function applyOCRImportPayload(x){
     // v1.1.15: OCR確定武器をUI再同期に依存させない。
     // 巨戟アーティアは同名14種があるため、公式kind→UI kindを明示変換し、
     // 最後まで同じDBレコードを選択欄・Build Stateへ保持する。
-    const officialKind=canonicalWeaponKind(w);
-    const uiKind=KINDS.find(([ui])=>(API_WEAPON_KIND[ui]||ui)===officialKind)?.[0]||officialKind;
-    if(!officialKind || !uiKind) throw new Error(`DB確定武器の武器種を特定できません：${w.name||w.id}`);
+    const kind=ocrWeaponKindPair(w);
+    if(!kind)throw new Error(`DB確定武器の武器種を特定できません：${w.name||w.id}`);
+    const {officialKind,uiKind}=kind;
 
     weaponRows=Array.isArray(DB.weapons)?DB.weapons.slice():weaponRows;
     rebuildWeaponIndex(weaponRows);
