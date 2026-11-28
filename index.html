@@ -1025,6 +1025,12 @@ main.wrap > #betaWorkspaceGrid {
 #compareOut .compare-skill-columns{display:grid;grid-template-columns:repeat(var(--compare-skill-count),minmax(0,1fr));gap:8px;min-width:calc(var(--compare-skill-count) * 168px)}
 #compareOut [data-saved-skill-column]{min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px}
 #compareOut [data-saved-skill-column] h4{margin:0;overflow-wrap:anywhere}
+/* Share heading and skill-section rows without changing card markup or focus order. */
+@supports (grid-template-rows:subgrid){
+  #compareOut .compare-skill-columns{grid-template-rows:repeat(4,auto);row-gap:0}
+  #compareOut [data-saved-skill-column]{display:grid;grid-row:1 / span 4;grid-template-rows:subgrid}
+  #compareOut .compare-skill-panel{display:grid;grid-row:2 / span 3;grid-template-rows:subgrid;min-width:0}
+}
 #compareOut .compare-skill-panel .skill-blocks{flex-wrap:wrap}
 @media (max-width:760px){
   #compareOut [data-saved-skill-column]{padding:5px}
@@ -12318,6 +12324,31 @@ function renderSavedSkillComparison(rows){
       '</div></article>').join('')+'</div></div></section>';
 }
 let lastBuildComparisonRows=null,lastBuildComparisonBaselineIndex=0,lastBuildComparisonContext=null;
+function comparisonSkillOmissionsHtml(rows){
+  const effects=new Map();
+  for(const row of rows)for(const side of ['normal','maximum']){
+    const d=row.oneHitPipeline?.channels?.[side]?.diagnostics;
+    for(const effect of [...(d?.ignoredSkillEffects||[]),...(d?.unappliedEffects||[])]){
+      const name=String(effect.name||'スキル効果');
+      if(!effects.has(name))effects.set(name,new Map());
+      const builds=effects.get(name);
+      builds.set(row,(builds.get(row)||0)|(side==='normal'?1:2));
+    }
+  }
+  if(!effects.size)return '';
+  const names=[...effects.keys()];
+  const summary=names.slice(0,2).join('、')+(names.length>2?' ほか'+(names.length-2)+'件':'');
+  const sides=['','通常のみ','最大のみ','通常・最大'];
+  const items=[...effects].map(([name,builds])=>{
+    const grouped=new Map();
+    for(const [row,mask] of builds){
+      if(!grouped.has(mask))grouped.set(mask,[]);
+      grouped.get(mask).push(esc(row.name));
+    }
+    return '<li>'+esc(name)+'：'+[...grouped].map(([mask,labels])=>labels.join('・')+'（'+sides[mask]+'）').join('／')+'</li>';
+  }).join('');
+  return '<details class="compare-note small" data-comparison-skill-omissions><summary>火力に未反映の効果：'+esc(summary)+'</summary><p>対象ビルドの火力に、以下の効果の一部または全部が含まれていません。</p><ul>'+items+'</ul></details>';
+}
 function renderCompareTable(rows,{baselineIndex=0}={}){
   if(!rows.length)return '<span class="muted small">比較結果はありません。</span>';
   const selectedIndex=Number.isInteger(baselineIndex)&&baselineIndex>=0&&baselineIndex<rows.length?baselineIndex:0;
@@ -12327,7 +12358,7 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   const baseDamage=consumerDamageMetric(baseline,'normal').value;
   let h='<div class="compare-note"><b>'+(selfMaximum?'ビルド間比較の出力用基準：':'基準ダメージ：')+(Number.isFinite(baseDamage)&&baseDamage>0?comparisonDisplayNumber(baseDamage):'—')+'</b>（'+esc(baseline.name)+'・選択した通常側の比較条件、ゲーム表示の丸め前）</div><label for="comparisonBaseline">'+(selfMaximum?'出力用の基準ビルド（表の増減率には影響しません）':'比較の基準ビルド（通常側の期待ダメージ）')+'</label><select id="comparisonBaseline">'+rows.map((r,i)=>'<option value="'+i+'"'+(i===selectedIndex?' selected':'')+'>'+esc(r.name)+'</option>').join('')+'</select><div class="two" style="margin-top:8px"><button type="button" id="comparisonReportDownload">比較結果をJSON保存</button><button type="button" id="comparisonReportCopy">比較結果をコピー</button></div><button type="button" id="comparisonComboEvidence">コンボの技別・未検証項目を表示</button><button type="button" id="comparisonEvidenceChecklist">検証作業リストを表示</button><details><summary>実機検証の証拠参照を照合（JSON）</summary><textarea id="comparisonEvidenceInput" rows="4" style="width:100%" placeholder="JSON形式の証拠参照を入力"></textarea><button type="button" id="comparisonEvidenceIntake">証拠参照を照合</button></details><details><summary>実機ダメージ・Hit数・時間の記録を照合（JSON）</summary><textarea id="comparisonMeasurementInput" rows="4" style="width:100%" placeholder="[{&quot;stage&quot;:1,&quot;techniqueId&quot;:&quot;...&quot;,&quot;evidenceRef&quot;:&quot;video-1&quot;,&quot;gameVersion&quot;:&quot;1.042.00.02&quot;,&quot;hitCount&quot;:1,&quot;durationSeconds&quot;:1.2,&quot;damage&quot;:{&quot;physicalBody&quot;:100}}]"></textarea><button type="button" id="comparisonMeasurementReview">実機計測記録を照合</button><button type="button" id="comparisonTechniqueReconcile">Technique DBと計測値を照合（診断）</button><textarea id="comparisonDamageContextInput" rows="4" style="width:100%" placeholder="計算条件JSON：[{stage, techniqueId, evidenceRef, context:{weaponId, weaponAttack, weaponElement, sharpness, affinity, criticalBoostLevel, activeSkills, monsterId, hitZonePhysical, hitZoneElement, targetState, attackConditions, gameVersion}}]"></textarea><button type="button" id="comparisonDamageContextAudit">ダメージ計算条件を監査</button><textarea id="comparisonDamagePredictionInput" rows="4" style="width:100%" placeholder="予測値JSON：[{stage, techniqueId, evidenceRef, contextFingerprint, damage:{physicalBody:100}}]（監査結果のcontextFingerprintを使用）"></textarea><button type="button" id="comparisonDamageDifference">実測と計算値の成分別差異を診断</button><button type="button" id="comparisonTechniqueEngineBridge">Technique DBと計算エンジンの接続状況</button><button type="button" id="comparisonEngineContextHandoff">Technique DBと実機条件の受渡し診断</button><p class="small">斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。</p><button type="button" id="comparisonSharpnessSourceAudit">MHDB斬れ味データ構造を調査</button><button type="button" id="comparisonLiveContextAudit">選択装備と計算条件を照合</button><button type="button" id="comparisonAttackSkillAudit" type="button">攻撃スキル照合</button><button id="comparisonCriticalSkillAudit">会心・超会心・スキル条件を照合</button><button type="button" id="comparisonAttackTargetAudit">攻撃補正・モンスター肉質を照合</button><button type="button" id="comparisonPhysicalFormulaBridge">物理ダメージ参考計算（安全条件のみ）</button></details><button type="button" id="comparisonCaptureAudit">ガンランス自動連携の検証状況</button><button type="button" id="comparisonVerifiedTransfer">検証済みA/Bを自動登録</button><pre id="comparisonCaptureAuditOut" class="small" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre><pre id="comparisonReportOut" class="small" style="max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere"></pre><div class="compare-results">';
   const coverage=consumerCoverageSummary(rows);
-  for(const row of rows)for(const ch of ['normal','maximum'])if(row.oneHitPipeline?.channels?.[ch]?.diagnostics?.ignoredSkillEffects?.length||row.oneHitPipeline?.channels?.[ch]?.diagnostics?.unappliedEffects?.length)h+='<div class="compare-note small" data-ignored-skill-channel="'+ch+'">'+esc(row.name)+'／'+(ch==='normal'?'通常':'最大')+ignoredSkillEffectsDisplay(row.oneHitPipeline.channels[ch].diagnostics)+'</div>';
+  h+=comparisonSkillOmissionsHtml(rows);
   h+=comparisonExcludedNotesHtml(rows);
   if(coverage.pending.length){
     h+='<div class="compare-note small" data-comparison-coverage="r248">比較可能：通常 '+coverage.normal+'/'+coverage.total+'件 ／ 最大 '+coverage.maximum+'/'+coverage.total+'件。未算出の結果は推測で補完しません。</div>';

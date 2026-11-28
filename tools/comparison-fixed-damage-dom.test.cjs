@@ -44,3 +44,26 @@ test('combo panel is directly above the first comparison table after explanatory
  const out=render(w,[r]),p=out.querySelector('[data-used-combo]');
  assert.ok(p);assert.equal(p.nextElementSibling,out.querySelector('.compare-table'));
 });
+
+test('comparison collapses repeating skill omissions without hiding which results are partial',t=>{
+ const w=setup(t);
+ const dark={name:'ダークアーツ追加波',level:1,skillId:172,reason:'DARK_ARTS_WAVE:PER_HIT_BUFF_INTERACTIONS_PENDING'};
+ const other={name:'別の効果',level:1,skillId:999,reason:'INTERNAL_CODE'};
+ const make=(effects,unappliedEffects=[])=>({...channel(40,[]),diagnostics:{ignoredSkillEffects:effects,unappliedEffects}});
+ const rows=[row('A <一>',make([dark]),make([dark])),row('B',make([dark,dark]),make([dark],[other])),row('C',make([]),make([]))];
+ w.qa=rows;w.eval('lastBuildComparisonRows=qa;lastBuildComparisonContext={}');
+ const report=()=>w.eval('JSON.stringify(createBuildComparisonReport(), (key,value) => key === "createdAt" ? undefined : value)');
+ const saved=report(),out=render(w,rows);
+ const notes=out.querySelectorAll('details[data-comparison-skill-omissions]');
+ assert.equal(notes.length,1);
+ const d=notes[0];
+ assert.equal(d.open,false);
+ assert.equal(d.querySelector('summary').textContent,'火力に未反映の効果：ダークアーツ追加波、別の効果');
+ const items=[...d.querySelectorAll('li')].map(x=>x.textContent);
+ assert.deepEqual(items,['ダークアーツ追加波：A <一>・B（通常・最大）','別の効果：B（最大のみ）']);
+ assert.doesNotMatch(d.textContent,/INTERNAL_CODE|PER_HIT|\bID\b/);
+ assert.equal(out.querySelectorAll('[data-ignored-skill-channel]').length,0);
+ assert.match(saved,/DARK_ARTS_WAVE:PER_HIT_BUFF_INTERACTIONS_PENDING/);
+ assert.equal(report(),saved);
+ assert.equal(render(w,[rows[2]]).querySelector('[data-comparison-skill-omissions]'),null);
+});

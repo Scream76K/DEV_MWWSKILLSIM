@@ -46,6 +46,16 @@ test('saved skill comparison shares the editor UI, remains isolated, and scrolls
    assert.equal(await columns.count(),3,'one column per compared save');
    assert.deepEqual(await columns.locator('h4').allTextContents(),names);
    assert.deepEqual(await columns.locator('.compare-skill-panel').evaluateAll(nodes=>nodes.map(n=>n.innerHTML)),before.expected);
+
+   const assertSectionAlignment=async()=>{
+    for(const label of ['シリーズスキル','グループスキル']){
+     const tops=await columns.locator('.skill-bucket-title').filter({hasText:label}).evaluateAll(nodes=>nodes.map(n=>n.getBoundingClientRect().top));
+     assert.equal(tops.length,3,label);
+     assert.ok(tops.every(top=>Math.abs(top-tops[0])<1),JSON.stringify({width,label,tops}));
+    }
+   };
+   await assertSectionAlignment();
+
    assert.deepEqual(await p.evaluate(()=>({build:buildSnapshotComparable(buildSnapshot()),payload:localStorage.getItem('mh-wilds-builds-v625'),live:$('skillOutput').innerHTML})),{build:before.build,payload:before.payload,live:before.live});
    const summary=columns.first().locator('.skill-info > summary').filter({hasText:'攻撃'}).first();
    await summary.click();
@@ -54,6 +64,7 @@ test('saved skill comparison shares the editor UI, remains isolated, and scrolls
    await card.locator('.skill-ranks > summary').click();
    assert.equal(await card.locator('.skill-ranks[open] .skill-rank-current').count(),1);
    assert.equal(await columns.nth(1).locator('.skill-info[open]').count(),0,'opening one card never opens another build');
+   await assertSectionAlignment();
    const g=await p.locator('.compare-skill-scroll').evaluate((e,nominal)=>({
     visible:e.clientWidth,content:e.scrollWidth,doc:document.documentElement.scrollWidth,
     offenders:[...document.querySelectorAll('main *')].filter(n=>!n.closest('.compare-skill-scroll')&&n.getBoundingClientRect().right>nominal+1).slice(0,20).map(n=>[n.nodeName,n.id,n.className,n.getBoundingClientRect().right]),
