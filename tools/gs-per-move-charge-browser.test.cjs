@@ -24,6 +24,12 @@ test('portrait: great sword row controls select two different levels and preserv
  const section='summary.card-summary:has-text("⑥")';
  if(!(await q(section).first().evaluate(e=>e.parentElement.open)))await tap(section);
  await tap('#consumerCustomCombo > summary');
+ const preset=q('#consumerCustomCombo #comboPreset');
+ assert.equal(await preset.count(),1);
+ assert.equal(await q('#comparisonOptionalConditions #comboPreset').count(),0);
+ assert.doesNotMatch(await preset.textContent(),/旧参考|技DB採用|技DB参照/);
+ assert.ok((await preset.locator('option').count())>1);
+
  for(const id of ['gs_charge3','gs_strong3']){await q('#comboMovePicker').selectOption(id);await tap('#addCombo');}
  const levels=q('#combo [data-gs-charge-level]');
  assert.equal(await levels.count(),2);
