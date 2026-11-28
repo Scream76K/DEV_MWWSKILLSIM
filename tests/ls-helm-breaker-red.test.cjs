@@ -25,7 +25,11 @@ test('explicit red helm breaker applies spent yellow to seven contacts and isola
  pick(id);const plain=run().pipeline.channels;el('combo').querySelector('.del').click();
  change('comboMovePicker',move);assert.equal(el('comboMovePicker').selectedOptions[0]?.text,'兜割（赤）');pick(move);
  const blocked=()=>assert.ok(lanes(run()).every(x=>x.value===null));
- for(const gauge of ['','NONE','YELLOW']){change('comboLSSpiritGauge',gauge);blocked();}
+ for(const gauge of ['NONE','YELLOW']){change('comboLSSpiritGauge',gauge);blocked();}
+ change('comboLSSpiritGauge','');
+ const automatic=run();
+ assert.equal(el('comboLSSpiritGauge').value,'');
+ assert.match(el('compareOut').textContent,/自動設定：赤ゲージ/);
  change('comboLSSpiritGauge','RED');
  const red=run();assert.ok(red.damage>0,JSON.stringify(red.blocked));
  const verify=(pipeline,flight=1,elementScale=1)=>{
@@ -43,6 +47,9 @@ test('explicit red helm breaker applies spent yellow to seven contacts and isola
 
  };
  verify(red.pipeline);
+ assert.deepEqual(lanes(automatic),lanes(red));
+ for(const lane of ['normal','maximum'])
+  assert.deepEqual(automatic.pipeline.channels[lane].components,red.pipeline.channels[lane].components);
  const training=w.trainingRoomMonster;
  w.trainingRoomMonster=()=>{const target=training();target.parts[0].multipliers.thunder/=2;return target;};
  verify(run().pipeline,1,.5);w.trainingRoomMonster=training;

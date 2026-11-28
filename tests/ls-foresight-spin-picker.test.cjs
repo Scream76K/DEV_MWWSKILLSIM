@@ -22,7 +22,11 @@ test('explicit red foresight spin calculates two ground contacts and isolates th
  pick(id);const plain=run().pipeline.channels;el('combo').querySelector('.del').click();
  change('comboMovePicker',move);assert.equal(el('comboMovePicker').selectedOptions[0]?.text,'見切り斬り・旋');pick(move);
  const blocked=()=>assert.ok(lanes(run()).every(x=>x.value===null));
- for(const gauge of ['','NONE','YELLOW']){change('comboLSSpiritGauge',gauge);blocked();}
+ for(const gauge of ['NONE','YELLOW']){change('comboLSSpiritGauge',gauge);blocked();}
+ change('comboLSSpiritGauge','');
+ const automatic=run();
+ assert.equal(el('comboLSSpiritGauge').value,'');
+ assert.match(el('compareOut').textContent,/自動設定：赤ゲージ/);
  change('comboLSSpiritGauge','RED');
  const red=run();assert.ok(red.damage>0,JSON.stringify(red.blocked));
  const verify=pipeline=>{
@@ -39,6 +43,9 @@ test('explicit red foresight spin calculates two ground contacts and isolates th
   assert.match(el('compareOut').textContent,/当て身成功時の攻撃ボーナスは含めません/);
  };
  verify(red.pipeline);
+ assert.deepEqual(lanes(automatic),lanes(red));
+ for(const lane of ['normal','maximum'])
+  assert.deepEqual(automatic.pipeline.channels[lane].components,red.pipeline.channels[lane].components);
  change('customWeaponSpiritGauge','YELLOW');blocked();change('customWeaponSpiritGauge','');
  el('buildName').value='red spin';el('saveBuild').click();
  const bytes=w.eval('storageGet(BUILDS_KEY)');
