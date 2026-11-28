@@ -239,3 +239,30 @@ test('OCR background retry is confined to valid unresolved slots and restores th
  assert.equal(await run(),false);assert.equal(params.at(-1),'');assert.equal(row.rows.length,2);
  assert.equal(ctx.equipmentOCRRetryAlphabet([{name:Array.from({length:257},(_,i)=>String.fromCharCode(0x4e00+i)).join('')}]),'');
 });
+
+test('different Han OCR reads recover only a uniquely corroborated same-slot family and type',()=>{
+ const {ctx}=setup([]);
+ for(const n of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorFallbackStructure','equipmentArmorVoicingMatch','equipmentArmorRescueEvidence','equipmentEvidenceCandidates','equipmentHanCorroboratedType','equipmentHanArmorChoices']){
+   vm.runInContext(source.functionSource(html,n),ctx);
+ }
+ ctx.CATEGORY_ANCHORS={head:['ヘルム'],waist:['コイル']};
+ ctx.armorDB=[{id:1,kind:'head',name:'護兇爪竜ヘルムα'},{id:2,kind:'head',name:'護兇爪竜ヘルムβ'},{id:3,kind:'head',name:'護火竜ヘルムβ'}];
+ const row=(reads,key='head')=>({key,region:{cropEvidence:{valid:true}},rows:reads.map(([raw,conf])=>({raw,conf}))});
+ const actual=[['護免爪竜ヘルムB',65],['護喝爪竜ヘルムB',65],['護爪竜ヘルムB',62]];
+ const result=r=>Array.from(ctx.equipmentEvidenceCandidates(r,[],{afterRescue:true}),x=>x.id);
+ assert.deepEqual(result(row(actual)),[2,1]);
+ assert.deepEqual(Array.from(ctx.equipmentEvidenceCandidates(row(actual),[])),[]);
+ assert.deepEqual(result(row(actual.slice(0,1))),[]);
+ assert.deepEqual(result(row([actual[0],actual[0]])),[]);
+ assert.deepEqual(result(row([[actual[0][0],70],['護喝爪竜ヘルムα',80]])),[]);
+ assert.deepEqual(result(row([...actual,['護免爪竜ヘルムα',80]])),[]);
+ const accepted=row(actual);const choices=ctx.equipmentEvidenceCandidates(accepted,[],{afterRescue:true});
+ accepted.best=choices[0];accepted.ranked=choices;
+ assert.equal(ctx.equipmentVisibleChoice(accepted).id,2);
+ assert.equal(ctx.equipmentVisibleChoice(accepted,{allowProvisional:false}),null);
+ assert.deepEqual(result(row(actual,'waist')),[]);
+ assert.equal(result(row([['護免爪竜ヘルムB',64],['護喝爪竜ヘルムB',65]])).length,2);
+ const bad=row(actual);bad.region.cropEvidence.valid=false;assert.deepEqual(result(bad),[]);
+ ctx.armorDB.push({id:4,kind:'head',name:'護獣爪竜ヘルムβ'});
+ assert.deepEqual(result(row(actual)),[]);
+});
