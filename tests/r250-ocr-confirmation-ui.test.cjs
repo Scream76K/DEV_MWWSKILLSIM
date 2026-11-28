@@ -124,3 +124,48 @@ test('missing dakuten in verified armor crops offer exact same-part family, but 
  }
  assert.equal(ctx.equipmentEvidenceCandidates(chest,[{id:700,name:'他の候補'}]).length,2);
 });
+test('a highly ranked OCR result without name evidence still needs a rescue pass',()=>{
+ const {ctx}=setup([]);
+ const helper=source.functionSource(html,'equipmentNeedsOCRRescue');vm.runInContext(helper,ctx);
+ ctx.armorDB=[];ctx.charmDB=[];
+ vm.runInContext(source.functionSource(html,'equipmentEvidenceCandidates'),ctx);
+ const candidate={kind:'chest',name:'ゴグメイルβ',avgSeriesScore:.92};
+ const crop={cropEvidence:{valid:true}};
+ assert.equal(ctx.equipmentNeedsOCRRescue({key:'chest',rows:[{raw:'シーウーメイルβ',conf:94}],region:crop},[candidate]),true);
+ assert.equal(ctx.equipmentNeedsOCRRescue({key:'chest',rows:[{raw:'ゴグメイルβ',conf:94}],region:crop},[candidate]),false);
+ assert.equal(ctx.equipmentNeedsOCRRescue({key:'charm',rows:[{raw:'世の',conf:55}],region:crop},[{name:'栄世の護石'}]),true);
+ assert.equal(ctx.equipmentNeedsOCRRescue({key:'mainWeapon',rows:[],region:crop},[]),false);
+ assert.equal(ctx.equipmentNeedsOCRRescue({key:'chest',rows:[],region:{cropEvidence:{valid:false}}},[]),false);
+});
+test('observed OCR error in Greaves suffix recovers only the same leg family without preselection',()=>{
+ const {ctx}=setup([]);
+ for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorVoicingMatch','equipmentEvidenceCandidates']){
+  vm.runInContext(source.functionSource(html,name),ctx);
+ }
+ ctx.CATEGORY_ANCHORS={legs:['グリーヴ'],waist:['コイル']};
+ ctx.armorDB=[{id:674,kind:'legs',name:'ゴググリーヴα'},{id:677,kind:'legs',name:'ゴググリーヴβ'},{id:501,kind:'legs',name:'ゴアグリーヴα'}];
+ const row={key:'legs',region:{cropEvidence:{valid:true}},rows:[{raw:'コククリーウツウaq',conf:76}]};
+ for(const raw of ['コククリーウツウaq','コククリーウao']){
+   row.rows=[{raw,conf:76}];
+   row.ranked=ctx.equipmentEvidenceCandidates(row,[]);row.best=row.ranked[0];
+   assert.deepEqual(Array.from(row.ranked,c=>c.id),[674,677]);
+   assert.equal(ctx.equipmentVisibleChoice(row),null);
+ }
+ row.rows=[{raw:'クリーウツウaq',conf:90}];
+ assert.equal(ctx.equipmentEvidenceCandidates(row,[]).length,0);
+});
+test('observed charm glyph confusion offers a name for review and never preselects charm',()=>{
+ const {ctx}=setup([]);
+ const fn=['equipmentEvidenceCandidates','parseTalismanLevel','parseTalismanStructure','equipmentCharmGlyphMatch'];
+ for(const name of fn)vm.runInContext(source.functionSource(html,name),ctx);
+ ctx.charmDB=[{id:64,name:'栄世の護石',kind:'charm'},{id:63,name:'秘歴の護石',kind:'charm'}];
+ const row={key:'charm',region:{cropEvidence:{valid:true}},rows:[{raw:'宋世の ビ',conf:66}]};
+ row.ranked=ctx.equipmentEvidenceCandidates(row,[]);row.best=row.ranked[0];
+ assert.deepEqual(Array.from(row.ranked,c=>c.id),[64]);
+ assert.equal(ctx.equipmentVisibleChoice(row),null);
+ ctx.window.lastEquipmentOCR=[row];ctx.selectEquipmentCandidate('charm',0);
+ assert.equal(ctx.equipmentVisibleChoice(row).id,64);
+ for(const raw of ['宋の ビ','宋世ビ','玉世の ビ']){
+  row.rows=[{raw,conf:66}];assert.equal(ctx.equipmentEvidenceCandidates(row,[]).length,0);
+ }
+});
