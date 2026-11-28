@@ -63,6 +63,7 @@ test('unadopted variants warn before calculating and never present borrowed meat
  assert.ok(old.hidden);
  assert.match(old.textContent,/火力計算未対応/);
  assert.deepEqual([...monster.options].filter(o=>!o.hidden&&(/歴戦王/.test(o.textContent))).map(o=>o.value),['20:king']);
+ assert.equal(monster.querySelector('[value="20:king"]').textContent,'アルシュベルド（歴戦王）（火力計算未対応）');
  assert.doesNotMatch([...monster.options].find(o=>o.value==='20').textContent,/未対応/);
  change(w,monster,'20:v41');
  assert.match(info.textContent,/この個体の部位肉質は火力計算に未対応/);

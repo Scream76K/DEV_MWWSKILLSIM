@@ -2232,7 +2232,7 @@ function selectableMonsters(){
   let arr=expandMonsterVariants().filter(m=>m.kind==='large'||m.kind===undefined||m.kind===null||m.kind==='');
   const base=arr.find(m=>String(m.name)==='アルシュベルド');
   if(base&&!arr.some(m=>String(m.id)===String(base.id)+':king')){
-    arr.push({...base,id:`${base.id}:king`,name:'歴戦王アルシュベルド（★10）',parts:kingAlshubeldParts(),variant:{kind:'arch-tempered'}});
+    arr.push({...base,id:`${base.id}:king`,name:'アルシュベルド（歴戦王）',parts:kingAlshubeldParts(),variant:{kind:'arch-tempered'}});
   }
   arr.unshift(trainingRoomMonster());
   return arr;
