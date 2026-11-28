@@ -14,6 +14,8 @@ test('KOTATU lance counter replays maximum dragon conversion on both body hits',
  const set=(id,value)=>{el(id).value=value;el(id).dispatchEvent(new w.Event('change',{bubbles:true}));};
  w.source=data;
  w.eval('DB=normalizeDB(source);weaponRows=DB.weapons.slice();rebuildWeaponIndex(weaponRows);App.data.set(DB,emptyDataState());renderAll();renderMonsters();window.__renderBuildTemplateUI()');
+ w.fixture=require('./fixtures/lance-counter-conversion-armor-fixture.json');
+ w.eval("__buildTemplateDB.templates.find(g=>g.weapon_type_id==='lance').builds.push(fixture);__renderBuildTemplateUI()");
  set('buildTemplateWeaponKind','lance');set('buildTemplateSelect','KOTATU_LAN_01');el('loadBuildTemplate').click();
  assert.equal(String(w.selectedWeapon().id),'1166');
  w.eval('App.state.combo.moves=[];restoreComboRows()');
