@@ -35,3 +35,10 @@ test('owner screenshot equipment templates are registered without implying unsup
   assert.ok(!t.weaponSpecific,t.id);
  }
 });
+test('cross-checked research equipment extends the catalog without losing any weapon type',()=>{
+ const all=db.templates.flatMap(g=>g.builds);
+ assert.equal(all.length,54);
+ assert.equal(all.filter(t=>t.id.startsWith('RESEARCH_20261127_')).length,9);
+ assert.ok(db.templates.every(g=>g.builds.length));
+ assert.ok(db.templates.find(g=>g.weapon_type_id==='light-bowgun').builds.some(t=>t.build_name==='通常弾速射・黒蝕一体'));
+});

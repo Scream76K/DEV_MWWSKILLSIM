@@ -5,7 +5,7 @@ const extract=(start,end)=>html.slice(html.indexOf('function '+start+'('),html.i
 function setup(){
  const moves=Object.fromEntries(['NORMAL','CHARGED','FULL_BURST'].map(action=>['reference:gl_'+action,{id:'reference:gl_'+action,name:action,canonicalTechniqueId:'GL_SHELL_NORMAL_MEDIUM',handler:'GunlanceShellReferenceHandler',referenceAction:action}]));moves['canonical:GL_SLAM']={id:'canonical:GL_SLAM',name:'slam',canonicalTechniqueId:'GL_SLAM'};
  let received;const context={comboMove:id=>moves[id],comboKind:()=> 'gunlance',compareStep5Snapshot:()=>({}),$:()=>({value:'fixture'}),consumerDamageMetric:(row,ch)=>row.oneHitPipeline.channels[ch].metric,evaluateConsumerCombat(input){received=input;const components=input.moves.map((m,i)=>({status:'available',techniqueId:m.techniqueId,eventId:i+':event',value:10}));return {channels:Object.fromEntries(['normal','maximum'].map(c=>[c,{metric:{value:10*components.length,reason:null},components}]))};}};
- vm.createContext(context);vm.runInContext(extract('evaluateP0DamageRoute','calcP0Damage')+extract('referenceComboChange','createBuildComparisonReport'),context);return {context,get received(){return received;}};
+ vm.createContext(context);vm.runInContext(extract('isKingAlshubeld','selectableMonsters')+extract('evaluateP0DamageRoute','calcP0Damage')+extract('referenceComboChange','createBuildComparisonReport'),context);return {context,get received(){return received;}};
 }
 for(const action of ['NORMAL','CHARGED','FULL_BURST'])test('P0 ingress preserves GL '+action+' execution identity and saved stage identity',()=>{
  const x=setup(),id='reference:gl_'+action,rows=[{techniqueId:id}],before=JSON.stringify(rows),r=x.context.evaluateP0DamageRoute(rows);
