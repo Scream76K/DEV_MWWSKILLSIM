@@ -221,7 +221,7 @@ test('Doshaguma tail shows only the label, keeping its real part identity',t=>{
  assert.doesNotMatch(el(w,'comparisonTargetCurrent').textContent,/2677|tail-hair/);
 });
 
-test('five monster families expose identified parts only and preserve hidden saved target IDs',t=>{
+test('monster families expose identified parts only and preserve hidden saved target IDs',t=>{
  const w=setup(t);
  const source=require('../docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json').data.monsters;
  const cases=[
@@ -230,6 +230,7 @@ test('five monster families expose identified parts only and preserve hidden sav
    [31,{'2633':'後脚','2634':'前脚'}],
    [4,{'2595':'花弁状部','2599':'尻尾'}],
    [3,{'2580':'左翼','2589':'尻尾'}],
+   [16,{'2751':'鼻','2753':'頭'}],
  ];
  w.eval('DB.monsters.push(...'+JSON.stringify(source.filter(m=>cases.some(([id])=>id===m.id)))+');renderMonsters()');
  const mon=el(w,'monster'),part=el(w,'monsterPart');

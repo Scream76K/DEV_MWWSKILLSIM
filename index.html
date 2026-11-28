@@ -2121,7 +2121,7 @@ function calcSetSkills(total){
 
   return total;
 }
-const PART_JP={'front-legs':'前脚','hind-legs':'後脚','petal':'花弁状部','tail-hair':'尻尾','left-nail':'左爪','right-nail':'右爪','dorsal-fin':'背ビレ','ass':'尻','tongue':'舌','neck':'首','frozen-bigcore-before':'大凍成殻（露出前）','frozen-bigcore-after':'大凍成殻（露出後）','frozen-core-waist':'凍成殻（腰部）','left-wing-legs':'左翼脚','right-wing-legs':'右翼脚','head':'頭','head-neck':'頭/首','body':'胴','torso':'胴','chest':'胸','abdomen':'腹','stomach':'腹','back':'背中','left-wing':'左翼','right-wing':'右翼','wing':'翼','front-leg':'前脚','left-front-leg':'左前脚','right-front-leg':'右前脚','hind-leg':'後脚','left-hind-leg':'左後脚','right-hind-leg':'右後脚','left-foreleg':'左前脚','right-foreleg':'右前脚','foreleg':'前脚','left-hindleg':'左後脚','right-hindleg':'右後脚','hindleg':'後脚','leg':'脚','legs':'脚','tail':'尻尾','tail-tip':'尻尾先端','neck':'首','horn':'角','horns':'角','beak':'嘴','snout':'鼻先','face':'顔','eye':'目','mouth':'口','throat':'喉','shoulder':'肩','arm':'腕','claw':'爪','carapace':'甲羅','shell':'甲殻','tentacle':'触手','tentacles':'触手','fin':'ヒレ','left-fin':'左ヒレ','right-fin':'右ヒレ','wing-arm':'翼腕','core':'核','body-core':'胴体・核','left-leg':'左脚','right-leg':'右脚','left-arm':'左腕','right-arm':'右腕','left-chain-blade-wing':'左鎖翼刃','right-chain-blade-wing':'右鎖翼刃','chain-blade-wing':'鎖翼刃','left-chain-wing':'左鎖翼','right-chain-wing':'右鎖翼','chain-wing':'鎖翼','left-chain':'左鎖','right-chain':'右鎖','chain':'鎖'};
+const PART_JP={'nose':'鼻','front-legs':'前脚','hind-legs':'後脚','petal':'花弁状部','tail-hair':'尻尾','left-nail':'左爪','right-nail':'右爪','dorsal-fin':'背ビレ','ass':'尻','tongue':'舌','neck':'首','frozen-bigcore-before':'大凍成殻（露出前）','frozen-bigcore-after':'大凍成殻（露出後）','frozen-core-waist':'凍成殻（腰部）','left-wing-legs':'左翼脚','right-wing-legs':'右翼脚','head':'頭','head-neck':'頭/首','body':'胴','torso':'胴','chest':'胸','abdomen':'腹','stomach':'腹','back':'背中','left-wing':'左翼','right-wing':'右翼','wing':'翼','front-leg':'前脚','left-front-leg':'左前脚','right-front-leg':'右前脚','hind-leg':'後脚','left-hind-leg':'左後脚','right-hind-leg':'右後脚','left-foreleg':'左前脚','right-foreleg':'右前脚','foreleg':'前脚','left-hindleg':'左後脚','right-hindleg':'右後脚','hindleg':'後脚','leg':'脚','legs':'脚','tail':'尻尾','tail-tip':'尻尾先端','neck':'首','horn':'角','horns':'角','beak':'嘴','snout':'鼻先','face':'顔','eye':'目','mouth':'口','throat':'喉','shoulder':'肩','arm':'腕','claw':'爪','carapace':'甲羅','shell':'甲殻','tentacle':'触手','tentacles':'触手','fin':'ヒレ','left-fin':'左ヒレ','right-fin':'右ヒレ','wing-arm':'翼腕','core':'核','body-core':'胴体・核','left-leg':'左脚','right-leg':'右脚','left-arm':'左腕','right-arm':'右腕','left-chain-blade-wing':'左鎖翼刃','right-chain-blade-wing':'右鎖翼刃','chain-blade-wing':'鎖翼刃','left-chain-wing':'左鎖翼','right-chain-wing':'右鎖翼','chain-wing':'鎖翼','left-chain':'左鎖','right-chain':'右鎖','chain':'鎖'};
 function veilPartName(raw){
   const hit=/^waterfilm-(?:(left|right)-)?(head|body|front-leg|tail)$/.exec(raw);
   if(!hit)return '';
@@ -2167,7 +2167,7 @@ const NERSCYLLA_PART_LABELS=Object.freeze({mantle:'外套膜','poisonous-thorn':
 function unidentifiedMonsterPart(part,monster){
   const name=monster?.name||'';
   const raw=String(part?.name??part?.part??part?.kind??'').trim();
-  return raw==='hide'&&(/^(?:アジャラカン|ゴグマジオス|ヌ・エグドラ|ラギアクルス|レ・ダウ|護竜アルシュベルド)(?:（|$)/.test(name)||name.includes('ネルスキュラ'));
+  return raw==='hide'&&(/^(?:アジャラカン|ゴグマジオス|ヌ・エグドラ|ラギアクルス|レ・ダウ|護竜アルシュベルド|護竜アンジャナフ亜種)(?:（|$)/.test(name)||name.includes('ネルスキュラ'));
 }
 function monsterPartDisplayName(p,parts=[],monster=null){
   const label=partNameJP(p),raw=String(p?.name??p?.part??p?.kind??'').trim();
