@@ -211,3 +211,31 @@ test('same-part OCR rescue recovers a unique supported family and stays closed o
  const grounded=ctx.armorDB.find(x=>x.id===2);
  assert.deepEqual(Array.from(ctx.equipmentEvidenceCandidates(row('waist',[['ラギアコイルβ',88],['フキアコイル86',86]]),[grounded]),c=>c.id),[2]);
 });
+test('OCR background retry is confined to valid unresolved slots and restores the unconstrained worker',async()=>{
+ const {ctx}=setup([]);
+ for(const name of ['equipmentOCRRetryAlphabet','equipmentRetryWithNameAlphabet']){
+   vm.runInContext(source.functionSource(html,name),ctx);
+ }
+ let grounded=false,alive=true,reads=0;
+ ctx.CATEGORY_ANCHORS={arms:["アーム"]};
+ const params=[];
+ ctx.equipmentEvidenceCandidates=()=>grounded?[{}]:[];
+ ctx.equipmentRegionCanvas=(_,mode)=>mode;
+ ctx.cleanEquipmentOCRText=s=>String(s||'').trim();
+ ctx.equipmentOCRUsableText=s=>s.length>=2;
+ const row={key:'arms',region:{cropEvidence:{valid:true}},rows:[]};
+ const items=[{id:1,name:'護火竜アームβ',kind:'arms'}];
+ const worker={setParameters:async o=>params.push(o.tessedit_char_whitelist),recognize:async mode=>{reads++;return {data:{text:'護火竜B',confidence:mode==='outline'?66:55}}}};
+ const run=()=>ctx.equipmentRetryWithNameAlphabet(row,[],items,worker,()=>alive);
+ assert.equal(await run(),true);
+ assert.equal(reads,2);assert.match(params[0],/護火竜/);assert.equal(params.at(-1),'');
+ assert.equal(row.rows.length,2);
+ grounded=true;assert.equal(await run(),false);assert.equal(reads,2);grounded=false;
+ row.region.cropEvidence.valid=false;assert.equal(await run(),false);assert.equal(reads,2);
+ row.region.cropEvidence.valid=true;
+ worker.recognize=async()=>{alive=false;return {data:{text:'護火竜B',confidence:99}}};
+ assert.equal(await run(),false);assert.equal(params.at(-1),'');assert.equal(row.rows.length,2);
+ alive=true;worker.recognize=async()=>{throw Error('unavailable');};
+ assert.equal(await run(),false);assert.equal(params.at(-1),'');assert.equal(row.rows.length,2);
+ assert.equal(ctx.equipmentOCRRetryAlphabet([{name:Array.from({length:257},(_,i)=>String.fromCharCode(0x4e00+i)).join('')}]),'');
+});
