@@ -678,6 +678,19 @@
   }).filter(Boolean);
   return {ids:normalized,unresolved};
  }
+ // Owner-approved provisional mapping from the base Arkveld table (Ver.1.040).
+ // Not a live measurement of the Arch-tempered quest.
+ const KING_ARKVELD_SOURCE='https://mhwilds.kiranico.com/data/monsters/arkveld';
+ function kingArkveldMultipliers(partId,state){
+   const match=/^king-alsh:([0-8])$/.exec(String(partId||''));
+   if(!match)return null;
+   const i=Number(match[1]),chain=i===4||i===5;
+   if(chain&&!['released','releasedOff'].includes(state))return null;
+   const head=[45,48,45,5,5,5,5,5],body=[28,30,20,1,1,1,1,5],wing=[42,40,38,2,2,2,2,4],
+    leg=[26,25,20,2,2,2,2,4],tail=[45,40,42,5,5,5,5,5];
+   const row=chain?(state==='released'?[52,52,48,20,20,20,20,25]:[50,50,45,0,0,0,0,0]):[head,body,wing,wing,null,null,leg,leg,tail][i];
+   return Object.fromEntries(['slash','blunt','pierce','fire','water','thunder','ice','dragon'].map((key,n)=>[key,row[n]/100]));
+ }
  function resolveTarget(target,trainingRoom){
   if(!target||typeof target!=='object'||Array.isArray(target))return {reason:'REAL_SLICE:TARGET_ID_INVALID'};
    const validId=id=>(typeof id==='number'&&Number.isSafeInteger(id)&&id>0)||(typeof id==='string'&&/^[1-9][0-9]*$/.test(id)&&Number.isSafeInteger(Number(id)));
@@ -690,6 +703,11 @@
     const matches=monster.parts.filter(p=>p?.id===target.part);
     if(matches.length!==1)return {reason:'REAL_SLICE:TARGET_PART_ID_UNRESOLVED'};
     part=matches[0];sourceRef='index.html:trainingRoomMonster:'+target.part;status='PRODUCT_REFERENCE';
+   }else if(target.monster==='20:king'){
+    const multipliers=kingArkveldMultipliers(target.part,target.state);
+    if(!multipliers)return {reason:/^king-alsh:[45]$/.test(String(target.part))?'REAL_SLICE:KING_ARKVELD_CHAIN_STATE_REQUIRED':'REAL_SLICE:TARGET_PART_ID_UNRESOLVED'};
+    return {part:{id:target.part,multipliers},sourceRef:KING_ARKVELD_SOURCE,monsterId:target.monster,partId:target.part,
+      state:target.state??null,status:'PROVISIONAL',sourceGameVersion:'1.040',scope:'OWNER_APPROVED_BASE_TABLE_AS_ARCH_TEMPERED_ARKVELD_REFERENCE_NOT_LIVE_VERIFIED'};
    }else{
     if(typeof target.monster==='string'&&/^[1-9][0-9]*:(?:v[1-9][0-9]*|king)$/.test(target.monster))return {reason:'REAL_SLICE:TARGET_VARIANT_HITZONE_SOURCE_NOT_ADOPTED'};
     if(!validId(target.monster)||!validId(target.part))return {reason:'REAL_SLICE:TARGET_ID_INVALID'};
@@ -4255,5 +4273,5 @@ if(weapon.artiaCalculationEvidence)for(const result of Object.values(evaluated.c
   original.channels.maximum.diagnostics={...original.channels.maximum.diagnostics,healthBranchComparison:{policy:'WHOLE_ROUTE_TOTAL_NOT_COMPONENT_MAXIMA',status:ready?'RESOLVED':'PENDING',selectedState:selected?.state??null,branches:branches.map(b=>({state:b.state,value:b.value,execution:b.maximum?.execution,effectPlan:b.maximum?.effectPlan}))}};
   return original;
  }
- root.MHWRealOneHitBrowserAdapter=Object.freeze({heavyPierceStateAllowed,pierceSevenStateAllowed,swordVerticalOpeningMode:STANDARD_NORMAL_HIT_CONTRACT.SA_SWORD_VERTICAL.stateRequirement.mode,evaluateCurrent,evaluateNormalTenShot,evaluateNormalFiveShot,evaluateRapidFiveShot,normalizeTechniqueIds,resolveTarget,usedComboSteps,flayerFixedReference,hhAvailableOpeningFamilies,hhOpeningFamilies,hhOpeningBodyIds});
+ root.MHWRealOneHitBrowserAdapter=Object.freeze({heavyPierceStateAllowed,pierceSevenStateAllowed,swordVerticalOpeningMode:STANDARD_NORMAL_HIT_CONTRACT.SA_SWORD_VERTICAL.stateRequirement.mode,evaluateCurrent,evaluateNormalTenShot,evaluateNormalFiveShot,evaluateRapidFiveShot,normalizeTechniqueIds,resolveTarget,kingArkveldMultipliers,usedComboSteps,flayerFixedReference,hhAvailableOpeningFamilies,hhOpeningFamilies,hhOpeningBodyIds});
 })(typeof window!=='undefined'?window:globalThis);

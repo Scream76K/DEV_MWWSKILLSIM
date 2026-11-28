@@ -32,7 +32,12 @@ test('⑥ Dark Arts uses the selected body/wave target while preserving explicit
   select(99123,99124);$('powerDragonHz').value='77';const z=compare('wave');assert.equal(normal(z).metrics.comboTotalDamage.status,'available');assert.ok(body(z)>0);assert.equal(normal(z).diagnostics.darkArtsWave.includedInPower,false);assert.match(normal(z).diagnostics.darkArtsWave.reason,/龍肉質0/);
   for(const id of [99125,99126]){select(99123,id);$('powerDragonHz').value='77';const err=compare('wave');assert.equal(err.reason,'REAL_SLICE:TARGET_HITZONE_INVALID');assert.equal(err.channels?.normal?.metrics?.comboTotalDamage?.status==='available',false);}
   select('20:king','king-alsh:4');assert.ok($('monsterState'));$('monsterState').value='releasedOff';
-  const king=compare('wave');assert.equal(king.reason,'REAL_SLICE:TARGET_VARIANT_HITZONE_SOURCE_NOT_ADOPTED');assert.equal(king.evaluationPlan.target.monster,'20:king');assert.equal(king.evaluationPlan.automaticTargetState,'releasedOff');assert.equal($('monsterState').value,'releasedOff');
+  const king=compare('wave');assert.equal(king.channels?.normal?.metrics?.comboTotalDamage?.status,'available');assert.equal(king.evaluationPlan.target.monster,'20:king');assert.equal(king.evaluationPlan.automaticTargetState,'releasedOff');assert.equal($('monsterState').value,'releasedOff');
+  const off=normal(king).metrics.comboTotalDamage.value;
+  $('kingTargetPicker').value='king-chain-on';$('kingTargetPicker').dispatchEvent(new w.Event('change',{bubbles:true}));
+  const on=compare('wave');assert.equal(on.channels?.normal?.metrics?.comboTotalDamage?.status,'available');assert.equal(on.evaluationPlan.automaticTargetState,'released');assert.ok(normal(on).metrics.comboTotalDamage.value>off);assert.equal(on.targetEvidence.status,'PROVISIONAL');
+  const plainKing=compare('plain');assert.equal(plainKing.evaluationPlan.target.state,'released');for(const channel of ['normal','maximum'])assert.equal(plainKing.channels[channel].metrics.comboTotalDamage.status,'available');
+  const savedKing=read('buildSnapshot()');assert.equal(savedKing.target.state,'released');w.qKing={...savedKing,target:{...savedKing.target,state:'releasedOff'}};w.eval('applyBuildSnapshot(qKing)');assert.equal($('kingTargetPicker').value,'king-chain-off');
   assert.deepEqual(read('savedBuildMap()'),saves);assert.deepEqual(errors,[]);
  }finally{w.close();}
 });

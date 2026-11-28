@@ -2043,9 +2043,9 @@ class MonsterTarget {
     if(!this.monster)return null;
     const base=this.monster.parts?.find(x=>String(x.id)===this.partId)||null;
     if(!base)return null;
-    if(String(this.monster.id).endsWith(':king') && /鎖翼刃/.test(String(base.name))){
-      const chainElem=this.state==='released'?0.20:0.05;
-      return {...base,multipliers:{...base.multipliers,fire:chainElem,water:chainElem,thunder:chainElem,ice:chainElem,dragon:chainElem}};
+    if(String(this.monster.id).endsWith(':king')){
+      const multipliers=window.MHWRealOneHitBrowserAdapter?.kingArkveldMultipliers(base.id,this.state);
+      return multipliers?{...base,multipliers}:null;
     }
     return base;
   }
@@ -2255,14 +2255,9 @@ function expandMonsterVariants(){
   return out;
 }
 function kingAlshubeldParts(){
-  const rows=[['頭',45,48,45,5,5,5,5,5],['胴',28,30,20,1,1,1,1,5],['左翼',42,40,38,2,2,2,2,4],['右翼',42,40,38,2,2,2,2,4],['左鎖翼刃',50,50,45,20,20,20,20,20],['右鎖翼刃',50,50,45,20,20,20,20,20],['左脚',26,25,20,2,2,2,2,4],['右脚',26,25,20,2,2,2,2,4],['尻尾',45,40,42,5,5,5,5,5]];
-  return rows.map((x,i)=>({id:`king-alsh:${i}`,name:x[0],part:x[0],kind:x[0],multipliers:{slash:x[1]/100,blunt:x[2]/100,pierce:x[3]/100,fire:x[4]/100,water:x[5]/100,thunder:x[6]/100,ice:x[7]/100,dragon:x[8]/100}}));
-}
-function kingAlshubeldPartsForState(state){
-  const parts=kingAlshubeldParts().map(p=>({...p,multipliers:{...p.multipliers}}));
-  const chainElem=state==='released'?0.20:0.05;
-  for(const p of parts){if(/鎖翼刃/.test(String(p.name))){for(const e of ['fire','water','thunder','ice','dragon'])p.multipliers[e]=chainElem;}}
-  return parts;
+  return ['頭','胴','左翼','右翼','左鎖翼刃','右鎖翼刃','左脚','右脚','尻尾'].map((name,i)=>({
+    id:'king-alsh:'+i,name,part:name,kind:name,multipliers:window.MHWRealOneHitBrowserAdapter?.kingArkveldMultipliers('king-alsh:'+i,'releasedOff')
+  }));
 }
 function trainingRoomMonster(){
   const part=(id,name,slash,blunt,pierce,elem)=>({id,name,part:name,kind:name,multipliers:{slash,blunt,pierce,fire:elem,water:elem,thunder:elem,ice:elem,dragon:elem}});
@@ -2275,6 +2270,12 @@ function trainingRoomMonster(){
 function isTrainingRoom(){return String($('monster')?.value||'')==='training-room';}
 function isKingAlshubeld(){return String($('monster')?.value||'').endsWith(':king');}
 function selectedKingChainState(){return $('monsterState')?.value||'released';}
+function currentMonsterTarget(){
+  return {monsterId:$('monster')?.value||'',partId:$('monsterPart')?.value||'',...(isKingAlshubeld()?{state:selectedKingChainState()}:{})};
+}
+function combatMonsterTarget(target={}){
+  return {monster:target.monsterId,part:target.partId,...(String(target.monsterId).endsWith(':king')&&target.state?{state:target.state}:{})};
+}
 function selectableMonsters(){
   let arr=expandMonsterVariants().filter(m=>m.kind==='large'||m.kind===undefined||m.kind===null||m.kind==='');
   const base=arr.find(m=>String(m.name)==='アルシュベルド');
@@ -2447,8 +2448,9 @@ function renderCharmEditor(){
   preset.onchange=()=>{if(!preset.value)return;const [cid,rid]=preset.value.split('|'),c=charms.find(x=>String(x.id)===cid),r=c?.ranks?.find(x=>String(x.id)===rid);if(r?.skills){build.charmCustom.skills=[...r.skills].slice(0,3).map(x=>({name:x.skill?.name||x.name||'',level:x.level||1,type:x.skill?.kind==='weapon'?'weapon':'armor'}));while(build.charmCustom.skills.length<3)build.charmCustom.skills.push({name:'',level:1,type:'armor'});normalizeCharm();renderCharmEditor();calcBuild()}};renderCharmDecos();renderCharmLegality();
 }
 const VARIANT_TARGET_UNAVAILABLE_HINT='この個体の部位肉質は火力計算に未対応です。通常個体またはトレーニングルームを選んでください。';
-function variantTargetNotAdopted(id){return /^[1-9][0-9]*:(?:v[1-9][0-9]*|king)$/.test(String(id||''));}
+function variantTargetNotAdopted(id){return String(id)!=='20:king'&&/^[1-9][0-9]*:(?:v[1-9][0-9]*|king)$/.test(String(id||''));}
 function monsterOwnHitzoneTable(m){
+  if(String(m?.id)==='20:king')return !!window.MHWRealOneHitBrowserAdapter?.kingArkveldMultipliers('king-alsh:0');
   const parts=variantTargetNotAdopted(m?.id)?m?.variant?.parts:m?.parts;
   return Array.isArray(parts)&&parts.length>0;
 }
@@ -3399,7 +3401,7 @@ function calcBuild(){clearCurrentCustomResult();normalizeArtiaProduction();rende
   calcState.realOneHit=evaluateConsumerCombat({
     kind:canonicalWeaponKind(w),moves:currentMoves,
     conditions:currentExplicitBodyConditions(canonicalWeaponKind(w),currentMoves),
-    target:{monster:$('monster')?.value||'',part:$('monsterPart')?.value||''}
+    target:combatMonsterTarget(currentMonsterTarget())
   });
   renderSummary();renderDetail();syncDamage();renderMonsterInfo();refreshDecorationSelects();updateWeaponCoeffDisplay();
   calcState.currentCalculationInputKey=consumerCurrentInputKey(App.state.combo?.moves||[]);
@@ -6646,7 +6648,7 @@ function evaluateP0DamageRoute(rows,{currentCustom=false,evaluationConditions=nu
         const veto=openings.find(x=>![null,undefined,'','DRAWN'].includes(x));
         if(veto!==undefined)resolvedConditions.greatSwordDrawOpening=veto;
       }
-      const kind=comboKind(),target={monster:$('monster')?.value,part:$('monsterPart')?.value};
+      const kind=comboKind(),target=combatMonsterTarget(currentMonsterTarget());
       const swordVertical=currentCustom&&kind==='switch-axe'&&rows.length===1&&
        saSingleOpeningId(rows[0].techniqueId)&&(rows[0].repeat==null||rows[0].repeat===1)&&
        !saInvalidOpeningFields.get(App.state.combo)?.size;
@@ -7377,7 +7379,7 @@ function createComboVerificationReport(){
   const scorchPlan=techniqueScorchPlan(canonicalWeaponKind(weapon)||'',stages.map(x=>x.canonicalTechniqueId||'UNRESOLVED_TECHNIQUE'));
   const blocked=evaluation.status==='BLOCKED',timingPending=evaluation.status==='TIMING_PENDING';
   const {damage,time,theoreticalDps,practicalDps}=evaluation;
-  return {format:'MHWildsComboVerification',schemaVersion:1,release:'r139',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,observedGameVersion:observed||null,currentBuild:buildSnapshot(),weapon:weapon?{id:weapon.id,name:weapon.name,kind:canonicalWeaponKind(weapon)}:null,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null},context,contextError,externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT',rounding:'UNROUNDED_INTERNAL_DISPLAY_1_DECIMAL_NOT_GAME_DISPLAY',stages,scorchPlan,summary:{referenceDps:evaluation.referenceDps,referenceDpsStatus:evaluation.referenceDpsStatus,dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,status:blocked?'BLOCKED':timingPending?'TIMING_PENDING':'REFERENCE_ONLY',damage,time,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60},notes:['実機検証済みを意味しません。','未確認時間や特殊成分は推定で補完しません。','食事・アイテム・エキスなどゲーム側の追加状態を別途記録してください。']};
+  return {format:'MHWildsComboVerification',schemaVersion:1,release:'r139',createdAt:new Date().toISOString(),referenceGameVersion:TECHNIQUE_DB_SPEC.gameVersion,observedGameVersion:observed||null,currentBuild:buildSnapshot(),weapon:weapon?{id:weapon.id,name:weapon.name,kind:canonicalWeaponKind(weapon)}:null,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null,...(currentKingState?{state:currentKingState}:{})},context,contextError,externalBuffs:'NOT_CAPTURED_CHECK_FOOD_ITEMS_AND_EXTRACT',rounding:'UNROUNDED_INTERNAL_DISPLAY_1_DECIMAL_NOT_GAME_DISPLAY',stages,scorchPlan,summary:{referenceDps:evaluation.referenceDps,referenceDpsStatus:evaluation.referenceDpsStatus,dpsStatus:evaluation.dpsStatus,dpsReason:evaluation.dpsReason,status:blocked?'BLOCKED':timingPending?'TIMING_PENDING':'REFERENCE_ONLY',damage,time,theoreticalDps,practicalDps,oneMinute:practicalDps===null?null:practicalDps*60},notes:['実機検証済みを意味しません。','未確認時間や特殊成分は推定で補完しません。','食事・アイテム・エキスなどゲーム側の追加状態を別途記録してください。']};
 }
 function createScorchRouteReferenceReport(settings,hitTimes){
   const combo=createComboVerificationReport();
@@ -7411,7 +7413,7 @@ syncHeroicsToggle();
 
 function buildSnapshotComparable(x){
   if(!x||typeof x!=='object')return null;
-  return {selectedHp:normalizeSelectedHp(x.selectedHp),combatBuffs:{meal:x.combatBuffs?.meal??null,charm:x.combatBuffs?.charm??null,otherBuffs:x.combatBuffs?.otherBuffs??null},weaponId:x.weaponId||'',weaponKind:x.weaponKind||'',armor:x.armor||{},charmCustom:x.charmCustom||{},artia:x.artia||{},decos:x.decos||{},combo:x.combo||{},target:{monsterId:x.target?.monsterId||'',partId:x.target?.partId||''}};
+  return {selectedHp:normalizeSelectedHp(x.selectedHp),combatBuffs:{meal:x.combatBuffs?.meal??null,charm:x.combatBuffs?.charm??null,otherBuffs:x.combatBuffs?.otherBuffs??null},weaponId:x.weaponId||'',weaponKind:x.weaponKind||'',armor:x.armor||{},charmCustom:x.charmCustom||{},artia:x.artia||{},decos:x.decos||{},combo:x.combo||{},target:{monsterId:x.target?.monsterId||'',partId:x.target?.partId||'',...(x.target?.state?{state:x.target.state}:{})}};
 }
 function buildSnapshotMatches(a,b){
   return JSON.stringify(buildSnapshotComparable(a))===JSON.stringify(buildSnapshotComparable(b));
@@ -7423,7 +7425,7 @@ function buildSnapshot(){normalizeArtiaProduction();App.combo.syncFromDOM();
   const custom=window.MHCustomWeaponSettings?.captureChargeBlade();
   if(custom)combo.customChargeBladeSettings=custom;
  }
- return {version:App.version,selectedHp:normalizeSelectedHp($('powerSelectedHp')?.value),combatBuffs:combatBuffState(),weaponId:$('weapon')?.value||build.weapon?.id||'',weaponKind:canonicalWeaponKind(DB.weapons.find(w=>String(w.id)===String($('weapon')?.value||build.weapon?.id||''))),armor:Object.fromEntries(Object.entries(build.armor).map(([k,a])=>[k,a?.id||''])),charmCustom:JSON.parse(JSON.stringify(build.charmCustom)),artia:JSON.parse(JSON.stringify(build.artia)),decos:JSON.parse(JSON.stringify(build.decos)),combo,target:{monsterId:$('monster')?.value||'',partId:$('monsterPart')?.value||''},savedAt:new Date().toISOString()}}
+ return {version:App.version,selectedHp:normalizeSelectedHp($('powerSelectedHp')?.value),combatBuffs:combatBuffState(),weaponId:$('weapon')?.value||build.weapon?.id||'',weaponKind:canonicalWeaponKind(DB.weapons.find(w=>String(w.id)===String($('weapon')?.value||build.weapon?.id||''))),armor:Object.fromEntries(Object.entries(build.armor).map(([k,a])=>[k,a?.id||''])),charmCustom:JSON.parse(JSON.stringify(build.charmCustom)),artia:JSON.parse(JSON.stringify(build.artia)),decos:JSON.parse(JSON.stringify(build.decos)),combo,target:currentMonsterTarget(),savedAt:new Date().toISOString()}}
 function applyBuildSnapshot(x,{preserveCombo=false,restoreExact=false,emptyEditor=null}={}){
   if(!x)return;
   if(!normalizeSelectedHp(x.selectedHp))throw new Error('SELECTED_HP_INVALID');
@@ -7481,7 +7483,7 @@ function applyBuildSnapshot(x,{preserveCombo=false,restoreExact=false,emptyEdito
    window.MHCustomWeaponSettings?.restoreChargeBlade(x.weaponKind==='charge-blade'?x.combo?.customChargeBladeSettings:undefined);
   }
   if(!preserveCombo){restoreComboDBState(x.combo?.dualBladesState);restoreComboLSState(x.combo?.longSwordState);restoreComboLANState(x.combo?.lanceState);restoreComboSAState(x.combo?.switchAxeState);}
-  if(x.target?.monsterId&&$('monster')){$('monster').value=String(x.target.monsterId);renderMonsterParts();if($('monsterPart')&&x.target.partId)$('monsterPart').value=String(x.target.partId);renderMonsterInfo();}
+  if(x.target?.monsterId&&$('monster')){$('monster').value=String(x.target.monsterId);renderMonsterParts();if($('monsterPart')&&x.target.partId)$('monsterPart').value=String(x.target.partId);if($('monsterState'))$('monsterState').value=x.target.state==='releasedOff'?'releasedOff':'released';renderMonsterInfo();}
   if(!preserveCombo){
     const opening=x.combo?.greatSwordDrawOpening;
       App.state.combo={moves:restoreSavedComboMoves(x.combo?.moves||[],canonicalWeaponKind(weapon),opening,x.combo?.lightBowgunState,x.combo?.hbgReferenceState),uptime:x.combo?.uptime??85,uptimeMode:x.combo?.uptimeMode||'1'};
@@ -11717,7 +11719,7 @@ function projectFixedCbDrawOmissions(evaluated){
 }
 function evaluateConsumerCombat({kind,moves=[],conditions={},target,plan=consumerEvaluationPlan(kind,moves,conditions,target)}){
   const {conditions:resolvedConditions,...evidence}=plan;
-  evidence.target={monster:target?.monster||null,part:target?.part||null};
+  evidence.target={monster:target?.monster||null,part:target?.part||null,...(target?.state?{state:target.state}:{})};
   const unavailable=reason=>({status:'UNAVAILABLE',reason,evaluationPlan:evidence});
   const grantIssue=realPipelineSkillGrantIssue();if(grantIssue)return unavailable(grantIssue);
   if(plan.reason)return unavailable(plan.reason);
@@ -11865,8 +11867,8 @@ function evaluateSavedSnapshotOneHit(snapshot,expectedSnapshot=null,conditions=n
       criticalDrawHits:snapshot.combo.explicitAffinityState?.criticalDrawHits??null,
       punishingDrawHits:snapshot.combo.explicitAffinityState?.punishingDrawHits??null};
   }
-  const plan={...consumerEvaluationPlan(kind,moves,saved,{monster:target.monsterId,part:target.partId},opening),...(automaticTarget||{})};
-  return evaluateConsumerCombat({kind,moves,conditions:conditions||{},target:{monster:target.monsterId,part:target.partId},plan});
+  const plan={...consumerEvaluationPlan(kind,moves,saved,combatMonsterTarget(target),opening),...(automaticTarget||{})};
+  return evaluateConsumerCombat({kind,moves,conditions:conditions||{},target:combatMonsterTarget(target),plan});
 }
 function compareSnapshot(name,snapshot,cond,expectedSnapshot=null,comparisonTarget=undefined){
   const savedParts=snapshot?.combo?.lightBowgunState||{};
@@ -11877,7 +11879,7 @@ function compareSnapshot(name,snapshot,cond,expectedSnapshot=null,comparisonTarg
   // Exact saved Thousand routes use the comparison target, not a stored
   // training target from the time the build was authored.
   const savedArc=savedBowIds.length===1&&savedBowIds[0]==='BOW_ARC_1_IMPACT_ONLY';
-  if(savedArc||savedBowMixed||savedBowSingle||savedPiercer)snapshot={...snapshot,target:{...(comparisonTarget||{})}};
+  if(savedArc||savedBowMixed||savedBowSingle||savedPiercer||comparisonTarget?.monsterId==='20:king')snapshot={...snapshot,target:{...(comparisonTarget||{})}};
   if(savedBowMixed){
     const opening=snapshot.combo.bowState;
     cond={...cond,bowState:{chargeLevel:3,coating:opening?.coating??null,range:opening?.range??null,startShot:opening?.startShot??null},
@@ -11900,7 +11902,7 @@ function compareSnapshot(name,snapshot,cond,expectedSnapshot=null,comparisonTarg
     // The pipeline resolves both body and wave through one strict target.
     // A stored legacy manual value must not override automatic comparison.
     cond={...cond,dragonHz:'',dragonHitzoneSource:{kind:'UNSET'}};
-    if(comparisonTarget)autoPart=window.MHWRealOneHitBrowserAdapter?.resolveTarget({monster:target.monsterId,part:target.partId},trainingRoomMonster())?.part||null;
+    if(comparisonTarget)autoPart=window.MHWRealOneHitBrowserAdapter?.resolveTarget(combatMonsterTarget(target),trainingRoomMonster())?.part||null;
   }
   const savedMoves=snapshot?.combo?.moves||[];
   if(savedMoves.length){
@@ -12066,6 +12068,7 @@ function comparisonReasonText(reason){
   if(text.includes('DARK_ARTS_WAVE:'))return '大剣ダークアーツの追撃・技中スキル・最大側の属性併用条件が未対応・未確定です。';
   if(text.includes('DARK_ARTS:ELEMENT_COMPONENTS_UNRESOLVED'))return 'ダークアーツに必要な属性値の倍率・加算内訳が未確定です。';
   if(text.includes('DARK_ARTS:'))return 'ダークアーツと他の属性強化の併用計算が未対応・未確定です。';
+  if(text==='REAL_SLICE:KING_ARKVELD_CHAIN_STATE_REQUIRED')return '鎖刃の解放状態または解除状態を選んでください。';
   if(text==='REAL_SLICE:TARGET_VARIANT_HITZONE_SOURCE_NOT_ADOPTED')return VARIANT_TARGET_UNAVAILABLE_HINT;
   if(text==='REAL_SLICE:COMPARISON_TECHNIQUE_MISMATCH')return '技構成が異なるため相対指数と成分差分を保留します。各ビルドの実ダメージは表示します。';
   if(text==='REAL_SLICE:COMPARISON_TARGET_MISMATCH')return '対象部位が異なるため相対指数と成分差分を保留します。各ビルドの実ダメージは独立して計算します。';
@@ -12829,8 +12832,7 @@ function buildCalculationFingerprint(){
   const current=buildSnapshot(),cond=compareStep5Snapshot(),calculationBefore=buildCalculationFingerprint(),rows=[];
   const lbgStandard=kinds[0]==='light-bowgun';
   const emptyEditor=lbgStandard&&current.weaponId===''?{kind:$('weaponKind')?.value,rows:weaponRows}:null;
-  // The legacy build snapshot omits the King state. Keep its on-screen value
-  // for this comparison transaction only, without changing named save schema.
+  // Keep the exact live target through this comparison transaction.
   const currentKingState=String(current.target?.monsterId||'').endsWith(':king')?selectedKingChainState():null;
   const restoreEditor=()=>{
     applyBuildSnapshot(current,{preserveCombo:true,restoreExact:true,emptyEditor});
@@ -12946,7 +12948,7 @@ function buildCalculationFingerprint(){
   // The retained manual value is for legacy diagnostics, not a shared ⑦ input.
   const reportConditions=dragonHitzoneByBuild.length?{...comparisonConditions,dragonHz:null,
     dragonHitzoneSource:{kind:'PER_BUILD_AUTOMATIC_DARK_ARTS'}}:comparisonConditions;
-  lastBuildComparisonContext=JSON.parse(JSON.stringify({comparedAt:new Date().toISOString(),conditions:reportConditions,combo:current.combo,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null},...(dragonHitzoneByBuild.length?{dragonHitzoneByBuild}:{})}));
+  lastBuildComparisonContext=JSON.parse(JSON.stringify({comparedAt:new Date().toISOString(),conditions:reportConditions,combo:current.combo,target:{monster:$('monster')?.value||null,part:$('monsterPart')?.value||null,...(currentKingState?{state:currentKingState}:{})},...(dragonHitzoneByBuild.length?{dragonHitzoneByBuild}:{})}));
   $('compareOut').innerHTML=renderCompareTable(rows);
 }
 // Preparing consultation data must not recalculate equipment or invalidate a
@@ -12956,7 +12958,7 @@ function consumerCurrentInputKey(evaluatedMoves=null){
   const snapshot=buildSnapshotComparable({combatBuffs:combatBuffState(),weaponId:$('weapon')?.value||'',weaponKind:canonicalWeaponKind(selectedWeapon()),
     armor:Object.fromEntries(Object.entries(build.armor||{}).map(([slot,item])=>[slot,item?.id||''])),charmCustom:build.charmCustom,artia:build.artia,decos:build.decos,
     combo:{moves:moves.map(x=>arcPickerRow(x.techniqueId)||measuredPickerRow(x.techniqueId)?{...x}:({...comboStoredMove(x.techniqueId,x.greatSwordDrawIntent,x.greatSwordDrawOpening,x.count,x.repeat),...igTornadoStoredRepetition(x),...(x.techniqueId==='gl_wyvern'?{wyvernProfile:x.wyvernProfile}:{}),...(isPierceRow(x.techniqueId)?{pierceProfile:x.pierceProfile}:{}),...(isIgnitionRow(x.techniqueId)?{ignitionProfile:x.ignitionProfile}:{})})),
-      ...(comboKind()==='great-sword'&&moves.some(x=>gsGroundOpeningId(x.techniqueId))?{greatSwordDrawOpening:gsOffsetImportedOpenings.get(App.state.combo)}: {})},target:{monsterId:$('monster')?.value||'',partId:$('monsterPart')?.value||''}});
+      ...(comboKind()==='great-sword'&&moves.some(x=>gsGroundOpeningId(x.techniqueId))?{greatSwordDrawOpening:gsOffsetImportedOpenings.get(App.state.combo)}: {})},target:currentMonsterTarget()});
   return JSON.stringify({snapshot,conditions:currentExplicitBodyConditions(snapshot.weaponKind,moves),weaponSource:selectedWeapon(),armorSources:build.armor,targetSource:selectedPart(),
     techniqueSpec:window.TechniqueDBEngine?.spec,techniqueSources:window.TechniqueDBEngine?.db?.[canonicalWeaponKind(selectedWeapon())],
     decorationSources:Object.values(build.decos||{}).filter(Boolean).map(id=>DB.decorations.find(x=>String(x.id)===String(id))||null),skillSources:DB.skills});

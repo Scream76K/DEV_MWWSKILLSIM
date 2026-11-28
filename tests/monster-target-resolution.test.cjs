@@ -36,3 +36,14 @@ test('training parts remain explicit and retain their own values',()=>{
  const r=resolve({monster:'training-room',part:'training-back'},training);assert.equal(r.part.multipliers.slash,.2);assert.equal(r.status,'PRODUCT_REFERENCE');
  assert.ok(resolve({monster:'training-room',part:'missing'},training).reason);
 });
+
+test('only canonical Arch-tempered Arkveld resolves the approved provisional phase table',()=>{
+ const {resolve}=setup();
+ const get=(state,part='king-alsh:4')=>resolve({monster:'20:king',part,state});
+ assert.deepEqual({...get('released').part?.multipliers},{slash:.52,blunt:.52,pierce:.48,fire:.2,water:.2,thunder:.2,ice:.2,dragon:.25});
+ assert.deepEqual({...get('releasedOff','king-alsh:5').part?.multipliers},{slash:.50,blunt:.50,pierce:.45,fire:0,water:0,thunder:0,ice:0,dragon:0});
+ assert.equal(get('released').status,'PROVISIONAL');
+ assert.equal(get('released','king-alsh:6').part?.multipliers.slash,.26);
+ assert.ok(get(undefined).reason);assert.ok(get('unknown').reason);assert.ok(get('released','bad').reason);
+ assert.ok(resolve({monster:'20:v41',part:'king-alsh:4',state:'released'}).reason);
+});
