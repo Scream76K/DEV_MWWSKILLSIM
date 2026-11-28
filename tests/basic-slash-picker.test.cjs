@@ -84,7 +84,7 @@ for(const [kind,id,label,legacy,mv] of cases)test(label+' current, saved and leg
     const result=run();assert.deepEqual(parts(result),control);
     if(name==='チャージマスター'){
       assert.ok(result.pipeline.channels.maximum.diagnostics.ignoredSkillEffects.some(s=>s.skillId===24));
-      assert.match(el('compareOut').textContent,/一部スキル未反映：チャージマスター/);
+      assert.match(el('compareOut').querySelector('details[data-comparison-notes] [data-comparison-skill-omissions]').textContent,/未反映：チャージマスター/);
     }
   }
   for(const moves of [[row,row],[{...row,repeat:2}],[{...row,count:2}]]){

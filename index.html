@@ -1056,19 +1056,24 @@ main.wrap > #betaWorkspaceGrid {
 }
 </style>
 <style id="native-picker-contrast">
-/* Safari's native menu may take the select's ink but keep its own light surface. */
 select, .support-card select{
-  color-scheme:light;
-  color:#202b39!important;
-  -webkit-text-fill-color:#202b39;
-}
-.support-card select{
-  background:#f7f9fc!important;
+  color-scheme:dark;
+  color:#f5f8fc!important;
+  background:#172638!important;
 }
 select :is(option,optgroup){
-  color:#202b39!important;
-  -webkit-text-fill-color:#202b39;
-  background-color:#fff!important;
+  color:#f5f8fc!important;
+  background-color:#172638!important;
+}
+#monster option[hidden],#monsterPart option[hidden],#kingTargetPicker option[hidden],#comboPreset option[hidden]{display:none!important;}
+/* Style the open picker itself where the accessible native select supports it. */
+@supports (appearance:base-select) and selector(select::picker(select)){
+  select:not([multiple]):not([size]),select:not([multiple]):not([size])::picker(select){appearance:base-select;}
+  select:not([multiple]):not([size])::picker(select){
+    color-scheme:dark;color:#f5f8fc;background:#172638;border:1px solid #60738a;border-radius:7px;
+    max-inline-size:calc(100vw - 16px);max-block-size:min(55dvh,26rem);overflow:auto;
+  }
+  select:not([multiple]):not([size]) option:is(:hover,:focus-visible){background-color:#2c4965!important;}
 }
 </style>
 </head><body>
@@ -2116,10 +2121,17 @@ function calcSetSkills(total){
 
   return total;
 }
-const PART_JP={'head':'頭','head-neck':'頭/首','body':'胴','torso':'胴','chest':'胸','abdomen':'腹','stomach':'腹','back':'背中','left-wing':'左翼','right-wing':'右翼','wing':'翼','front-leg':'前脚','left-front-leg':'左前脚','right-front-leg':'右前脚','hind-leg':'後脚','left-hind-leg':'左後脚','right-hind-leg':'右後脚','left-foreleg':'左前脚','right-foreleg':'右前脚','foreleg':'前脚','left-hindleg':'左後脚','right-hindleg':'右後脚','hindleg':'後脚','leg':'脚','legs':'脚','tail':'尻尾','tail-tip':'尻尾先端','neck':'首','horn':'角','horns':'角','beak':'嘴','snout':'鼻先','face':'顔','eye':'目','mouth':'口','throat':'喉','shoulder':'肩','arm':'腕','claw':'爪','carapace':'甲羅','shell':'甲殻','tentacle':'触手','tentacles':'触手','fin':'ヒレ','left-fin':'左ヒレ','right-fin':'右ヒレ','wing-arm':'翼腕','core':'核','body-core':'胴体・核','left-leg':'左脚','right-leg':'右脚','left-arm':'左腕','right-arm':'右腕','left-chain-blade-wing':'左鎖翼刃','right-chain-blade-wing':'右鎖翼刃','chain-blade-wing':'鎖翼刃','left-chain-wing':'左鎖翼','right-chain-wing':'右鎖翼','chain-wing':'鎖翼','left-chain':'左鎖','right-chain':'右鎖','chain':'鎖'};
+const PART_JP={'left-wing-legs':'左翼脚','right-wing-legs':'右翼脚','head':'頭','head-neck':'頭/首','body':'胴','torso':'胴','chest':'胸','abdomen':'腹','stomach':'腹','back':'背中','left-wing':'左翼','right-wing':'右翼','wing':'翼','front-leg':'前脚','left-front-leg':'左前脚','right-front-leg':'右前脚','hind-leg':'後脚','left-hind-leg':'左後脚','right-hind-leg':'右後脚','left-foreleg':'左前脚','right-foreleg':'右前脚','foreleg':'前脚','left-hindleg':'左後脚','right-hindleg':'右後脚','hindleg':'後脚','leg':'脚','legs':'脚','tail':'尻尾','tail-tip':'尻尾先端','neck':'首','horn':'角','horns':'角','beak':'嘴','snout':'鼻先','face':'顔','eye':'目','mouth':'口','throat':'喉','shoulder':'肩','arm':'腕','claw':'爪','carapace':'甲羅','shell':'甲殻','tentacle':'触手','tentacles':'触手','fin':'ヒレ','left-fin':'左ヒレ','right-fin':'右ヒレ','wing-arm':'翼腕','core':'核','body-core':'胴体・核','left-leg':'左脚','right-leg':'右脚','left-arm':'左腕','right-arm':'右腕','left-chain-blade-wing':'左鎖翼刃','right-chain-blade-wing':'右鎖翼刃','chain-blade-wing':'鎖翼刃','left-chain-wing':'左鎖翼','right-chain-wing':'右鎖翼','chain-wing':'鎖翼','left-chain':'左鎖','right-chain':'右鎖','chain':'鎖'};
+function veilPartName(raw){
+  const hit=/^waterfilm-(?:(left|right)-)?(head|body|front-leg|tail)$/.exec(raw);
+  if(!hit)return '';
+  const names={head:'頭',body:'胴','front-leg':'前脚',tail:'尻尾'};
+  return 'ヴェール・'+names[hit[2]]+(hit[1]?'（'+(hit[1]==='left'?'左側':'右側')+'）':'');
+}
 function partNameJP(p){
   const raw=String(p?.name??p?.part??p?.kind??'').trim();
   if(!raw)return 'その他部位';
+  const veil=veilPartName(raw);if(veil)return veil;
   // Synthetic/explicit Japanese names must remain Japanese.
   if(/[\u3040-\u30ff\u3400-\u9fff]/.test(raw))return raw;
   if(PART_JP[raw])return PART_JP[raw];
@@ -2139,10 +2151,17 @@ function partNameJP(p){
 function monsterPartDisplayName(p,parts=[]){
   const label=partNameJP(p),raw=String(p?.name??p?.part??p?.kind??'').trim();
   const ambiguous=parts.filter(q=>partNameJP(q)===label).length>1;
-  const exact=raw&&(/[\u3040-\u30ff\u3400-\u9fff]/.test(raw)||Object.hasOwn(PART_JP,raw));
+  const exact=raw&&(/[\u3040-\u30ff\u3400-\u9fff]/.test(raw)||Object.hasOwn(PART_JP,raw)||!!veilPartName(raw));
   if(exact&&!ambiguous)return label;
   const identity=[raw,p?.id!=null?'ID '+String(p.id):null].filter(Boolean).join(' / ');
   return identity?label+'（'+identity+'）':label;
+}
+function equalMonsterDamageTables(base,variant){
+  if(!Array.isArray(base)||!Array.isArray(variant)||base.length!==variant.length)return false;
+  const keys=['slash','blunt','pierce','fire','water','thunder','ice','dragon'];
+  const projection=parts=>parts.map(p=>JSON.stringify([p.kind??p.name,...keys.map(k=>p.multipliers?.[k])])).sort();
+  const a=projection(base),b=projection(variant);
+  return a.every((x,i)=>x===b[i]);
 }
 function expandMonsterVariants(){
   const out=[];
@@ -2151,8 +2170,11 @@ function expandMonsterVariants(){
     for(const v of (m.variants||[])){
       // MHDB variants generally contain only variant metadata, not a second hitzone table.
       // Do not discard them: retain the base parts until a variant-specific part table exists.
-      const vp=Array.isArray(v.parts)&&v.parts.length?v.parts:m.parts;
-      if(vp?.length)out.push({...m,id:`${m.id}:v${v.id}`,name:v.name||`${m.name}（${v.kind||'特殊個体'}）`,parts:vp,variant:v});
+      const hasTable=Array.isArray(v.parts)&&v.parts.length>0,vp=hasTable?v.parts:m.parts;
+      const omega=m.name==='オメガ・プラネテス'&&v.kind==='tempered'&&v.name===m.name;
+      const distinctOmega=omega&&hasTable&&!equalMonsterDamageTables(m.parts,vp);
+      if(vp?.length)out.push({...m,id:`${m.id}:v${v.id}`,name:distinctOmega?'オメガ・プラネテス（零式）':v.name||`${m.name}（${v.kind||'特殊個体'}）`,parts:vp,variant:v,
+        legacyKingAlias:m.name==='アルシュベルド'&&v.kind==='arch-tempered',legacyDuplicateTarget:omega&&!distinctOmega});
     }
   }
   return out;
@@ -2181,7 +2203,7 @@ function selectedKingChainState(){return $('monsterState')?.value||'released';}
 function selectableMonsters(){
   let arr=expandMonsterVariants().filter(m=>m.kind==='large'||m.kind===undefined||m.kind===null||m.kind==='');
   const base=arr.find(m=>String(m.name)==='アルシュベルド');
-  if(base&&!arr.some(m=>String(m.name).includes('歴戦王アルシュベルド'))){
+  if(base&&!arr.some(m=>String(m.id)===String(base.id)+':king')){
     arr.push({...base,id:`${base.id}:king`,name:'歴戦王アルシュベルド（★10）',parts:kingAlshubeldParts(),variant:{kind:'arch-tempered'}});
   }
   arr.unshift(trainingRoomMonster());
@@ -2349,15 +2371,50 @@ function renderCharmEditor(){
   const ps=$('charmSlotPattern');if(ps)ps.onchange=()=>{const p=ps.value;build.charmCustom.slots=[0,0,0];build.charmCustom.weaponSlots=[];build.charmCustom.weaponSlot=false;if(p==='防1')build.charmCustom.slots=[1,0];if(p==='防2')build.charmCustom.slots=[2,0];if(p==='防3')build.charmCustom.slots=[3,0];if(p==='防1-防1')build.charmCustom.slots=[1,1,0];if(p==='防2-防1')build.charmCustom.slots=[2,1,0];if(p==='武1')build.charmCustom.weaponSlots=[1];if(p==='武1-防1'){build.charmCustom.weaponSlots=[1];build.charmCustom.slots=[1,0];}if(p==='武1-防1-防1'){build.charmCustom.weaponSlots=[1];build.charmCustom.slots=[1,1];}build.charmCustom.weaponSlot=build.charmCustom.weaponSlots.length>0;renderCharmEditor();calcBuild()};
   preset.onchange=()=>{if(!preset.value)return;const [cid,rid]=preset.value.split('|'),c=charms.find(x=>String(x.id)===cid),r=c?.ranks?.find(x=>String(x.id)===rid);if(r?.skills){build.charmCustom.skills=[...r.skills].slice(0,3).map(x=>({name:x.skill?.name||x.name||'',level:x.level||1,type:x.skill?.kind==='weapon'?'weapon':'armor'}));while(build.charmCustom.skills.length<3)build.charmCustom.skills.push({name:'',level:1,type:'armor'});normalizeCharm();renderCharmEditor();calcBuild()}};renderCharmDecos();renderCharmLegality();
 }
-function renderMonsters(){let s=$('monster');if(!s)return;let old=s.value;let arr=selectableMonsters();const training=arr.find(m=>m.id==='training-room');arr=arr.filter(m=>m.id!=='training-room').sort((a,b)=>jpSort(a.name,b.name));if(training)arr.unshift(training);s.innerHTML='<option value="">モンスターを選択</option>'+arr.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join('');if(old&&arr.some(m=>String(m.id)===old))s.value=old;else if(!old&&training)s.value='training-room';renderMonsterParts()}
+const VARIANT_TARGET_UNAVAILABLE_HINT='この個体の部位肉質は火力計算に未対応です。通常個体またはトレーニングルームを選んでください。';
+function variantTargetNotAdopted(id){return /^[1-9][0-9]*:(?:v[1-9][0-9]*|king)$/.test(String(id||''));}
+function renderMonsters(){
+  const s=$('monster');if(!s)return;
+  const old=s.value,arr=selectableMonsters(),training=arr.find(m=>m.id==='training-room');
+  const sorted=arr.filter(m=>m!==training).sort((a,b)=>jpSort(a.name,b.name));
+  if(training)sorted.unshift(training);
+  // Preserve an imported alias for exact saved-target restoration, not as a second visible choice.
+  s.innerHTML='<option value="">モンスターを選択</option>'+sorted.map(m=>`<option value="${esc(m.id)}"${(m.legacyKingAlias||m.legacyDuplicateTarget)?' hidden':''}>${esc(m.name)}${variantTargetNotAdopted(m.id)?'（火力計算未対応）':''}</option>`).join('');
+  if(old&&sorted.some(m=>String(m.id)===old))s.value=old;
+  else if(!old&&training)s.value='training-room';
+  renderMonsterParts();
+}
 const KING_COMBINED_TARGETS={
-  'king-alsh:2':{label:'翼',parts:['king-alsh:2','king-alsh:3']},
+  'king-alsh:2':{label:'翼（旧保存）',parts:['king-alsh:2','king-alsh:3'],legacy:true},
   'king-alsh:6':{label:'脚',parts:['king-alsh:6','king-alsh:7']},
   'king-chain-on':{label:'鎖刃（解放状態）',parts:['king-alsh:4','king-alsh:5'],state:'released'},
   'king-chain-off':{label:'鎖刃（解除状態）',parts:['king-alsh:4','king-alsh:5'],state:'releasedOff'}
 };
-function kingTargetDisplayValue(part,state){
-  return Object.entries(KING_COMBINED_TARGETS).find(([,target])=>target.parts.includes(part)&&(!target.state||target.state===state))?.[0]||part;
+function arkveldTargetGroups(monster){
+  if(String(monster?.id??'').endsWith(':king'))return KING_COMBINED_TARGETS;
+  if(!/^アルシュベルド(?:（|$)/.test(monster?.name||''))return null;
+  const keys=['slash','blunt','pierce','fire','water','thunder','ice','dragon'];
+  const localized={'left-wing':'左翼','right-wing':'右翼','left-leg':'左脚','right-leg':'右脚','left-wing-blade':'左鎖翼刃','right-wing-blade':'右鎖翼刃'};
+  const find=name=>monster.parts?.find(p=>(p.kind??p.name)===name||p.name===localized[name]);
+  const sourcePair=(base)=>{
+    const left=find('left-'+base),right=find('right-'+base);
+    return left&&right&&keys.every(k=>Number.isFinite(left.multipliers?.[k])&&left.multipliers[k]===right.multipliers?.[k])
+      ?[String(left.id),String(right.id)]:[];
+  };
+  const legs=sourcePair('leg'),chain=sourcePair('wing-blade');
+  if(!legs.length&&!chain.length)return null;
+  const wings=['left-wing','right-wing'].map(find).filter(Boolean).map(p=>String(p.id));
+  const groups={};
+  if(legs.length)groups['arkveld-legs']={label:'脚',parts:legs};
+  if(wings.length)groups['arkveld-wing-legacy']={label:'翼（旧保存）',parts:wings,legacy:true};
+  if(chain.length){
+    groups['arkveld-chain-released']={label:'鎖刃（解放状態・火力計算未対応）',parts:chain,unavailable:true};
+    groups['arkveld-chain-retracted']={label:'鎖刃（解除状態）',parts:chain};
+  }
+  return groups;
+}
+function arkveldTargetDisplayValue(part,state,groups){
+  return Object.entries(groups||{}).find(([,target])=>!target.unavailable&&target.parts.includes(part)&&(!target.state||target.state===state))?.[0]||part;
 }
 function renderMonsterParts(){
   const m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value),s=$('monsterPart');if(!s)return;
@@ -2365,54 +2422,78 @@ function renderMonsterParts(){
   const parts=(m?.parts||[]).slice().sort((a,b)=>jpSort(partNameJP(a),partNameJP(b)));
   const restorePart=old&&parts.some(p=>String(p.id)===old);
   $('kingTargetPicker')?.remove();$('monsterStateBox')?.remove();
-  s.hidden=isKing;
-  if(isKing)s.setAttribute('aria-hidden','true');else s.removeAttribute('aria-hidden');
-  const partLabel=$('comparisonPartLabel');if(partLabel)partLabel.htmlFor=isKing?'kingTargetPicker':'monsterPart';
-  s.innerHTML='<option value="">部位を選択</option>'+parts.map(p=>`<option value="${p.id}">${esc(monsterPartDisplayName(p,parts))}</option>`).join('');
+  const groups=arkveldTargetGroups(m),legacy=!!m?.legacyKingAlias&&!groups;
+  s.hidden=!!groups||legacy;
+  if(s.hidden)s.setAttribute('aria-hidden','true');else s.removeAttribute('aria-hidden');
+  const partLabel=$('comparisonPartLabel');
+  if(partLabel){partLabel.htmlFor=groups?'kingTargetPicker':'monsterPart';partLabel.hidden=legacy;}
+  const partOptions=list=>list.map(p=>{
+    const unidentified=/^(?:アジャラカン|ゴグマジオス)(?:（|$)/.test(m?.name||'')&&String(p.name??p.kind??'')==='hide';
+    return `<option value="${esc(p.id)}"${unidentified?' hidden':''}>${esc(monsterPartDisplayName(p,parts))}</option>`;
+  }).join('');
+  const waterfilm=parts.filter(p=>/^waterfilm-/.test(String(p.name??p.kind??'')));
+  s.innerHTML='<option value="">部位を選択</option>'+(waterfilm.length
+    ?'<optgroup label="本体">'+partOptions(parts.filter(p=>!waterfilm.includes(p)))+'</optgroup><optgroup label="ヴェール（水膜）">'+partOptions(waterfilm)+'</optgroup>'
+    :partOptions(parts));
   if(restorePart)s.value=old;else if(m?.id==='training-room')s.value='training-front';
-  if(isKing){
-    const host=s.parentElement,box=document.createElement('div');
-    box.id='monsterStateBox';box.hidden=true;box.setAttribute('aria-hidden','true');
-    box.innerHTML='<select id="monsterState"><option value="released">鎖刃解放状態</option><option value="releasedOff">鎖刃解除状態</option></select>';
-    host.insertBefore(box,s);
-    const state=$('monsterState');
-    if(restorePart&&previousState==='releasedOff')state.value=previousState;
-    state.onchange=()=>{renderMonsterInfo();syncDamage();calcBuild()};
+  if(groups){
+    const host=s.parentElement;
+    let state=null;
+    if(isKing){
+      const box=document.createElement('div');
+      box.id='monsterStateBox';box.hidden=true;box.setAttribute('aria-hidden','true');
+      box.innerHTML='<select id="monsterState"><option value="released">鎖刃解放状態</option><option value="releasedOff">鎖刃解除状態</option></select>';
+      host.insertBefore(box,s);state=$('monsterState');
+      if(restorePart&&previousState==='releasedOff')state.value=previousState;
+      state.onchange=()=>{renderMonsterInfo();syncDamage();calcBuild()};
+    }
     const picker=document.createElement('select');picker.id='kingTargetPicker';
     picker.innerHTML='<option value="">部位を選択</option>';
-    const combinations=Object.entries(KING_COMBINED_TARGETS);
+    const combinations=Object.entries(groups);
     for(const p of m.parts||[]){
-      const pair=combinations.filter(([,target])=>target.parts[0]===p.id);
-      if(pair.length)for(const [id,target] of pair)picker.add(new Option(target.label,id));
-      else if(!combinations.some(([,target])=>target.parts.includes(p.id)))picker.add(new Option(partNameJP(p),p.id));
+      const id=String(p.id),pair=combinations.filter(([,target])=>target.parts[0]===id);
+      if(pair.length)for(const [key,target] of pair){
+        const option=new Option(target.label,key);
+        option.hidden=!!target.legacy;option.disabled=!!target.unavailable;picker.add(option);
+      }
+      else if(!combinations.some(([,target])=>target.parts.includes(id)))picker.add(new Option(monsterPartDisplayName(p,m.parts||[]),id));
     }
     host.insertBefore(picker,s);
     picker.onchange=()=>{
-      const group=Object.hasOwn(KING_COMBINED_TARGETS,picker.value)?KING_COMBINED_TARGETS[picker.value]:null;
+      const group=Object.hasOwn(groups,picker.value)?groups[picker.value]:null;
+      if(group?.unavailable){renderMonsterInfo();return;}
       const nextPart=group?.parts.includes(s.value)?s.value:group?.parts[0]??picker.value;
-      const nextState=group?.state||'released';
-      const stateChanged=state.value!==nextState;
-      s.value=nextPart;state.value=nextState;
-      // The original edit handlers preserve hitzones, imported Dragon metadata,
-      // and comparison invalidation. The combined picker writes only those controls.
+      const nextState=group?.state||'released',stateChanged=!!state&&state.value!==nextState;
+      s.value=nextPart;if(state)state.value=nextState;
       (stateChanged?state:s).dispatchEvent(new Event('change',{bubbles:true}));
     };
   }
   renderMonsterInfo();
 }
+function legacyKingPartDisplayName(label){
+  return label.replace(/^[左右](?:前|後)?脚(?=$|（)/,'脚')
+    .replace(/^[左右]鎖翼刃(?=$|（)/,'鎖刃（旧保存・状態未指定）').replace(/^[左右]翼(?=$|（)/,'翼（旧保存）');
+}
 function syncComparisonTargetSummary(){
   const out=$('comparisonTargetCurrent'),monster=$('monster'),part=$('kingTargetPicker')||$('monsterPart');
   if(!out)return;
   const name=monster?.value?monster.selectedOptions[0]?.textContent:null;
-  const partName=part?.value?part.selectedOptions[0]?.textContent:null;
+  let partName=part?.value?part.selectedOptions[0]?.textContent:null;
+  if(monster?.selectedOptions[0]?.hidden&&monster.selectedOptions[0].textContent.includes('アルシュベルド')&&partName){
+    partName=legacyKingPartDisplayName(partName);
+  }
   const summary=name?name+' / '+(partName||'部位未選択'):'未選択';
   if(out.textContent!==summary)out.textContent=summary;
 }
 function renderMonsterInfo(){
-  const picker=$('kingTargetPicker');
-  if(picker)picker.value=kingTargetDisplayValue($('monsterPart')?.value||'',selectedKingChainState());
+  const picker=$('kingTargetPicker'),m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value)||null,p=selectedPart();
+  if(picker)picker.value=arkveldTargetDisplayValue($('monsterPart')?.value||'',selectedKingChainState(),arkveldTargetGroups(m));
   syncComparisonTargetSummary();
-  const m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value)||null,p=selectedPart();
+  if(m&&variantTargetNotAdopted(m.id)){
+    const label=picker?.selectedOptions[0]?.textContent||(p?(m.legacyKingAlias?legacyKingPartDisplayName(partNameJP(p)):monsterPartDisplayName(p,m.parts||[])):'');
+    $('monsterInfo').textContent=m.name+(label&&p?' / '+label:'')+'。'+VARIANT_TARGET_UNAVAILABLE_HINT;
+    return;
+  }
   if(!m||!p){$('monsterInfo').textContent='未選択';return}
   const w=selectedWeapon(),hz=partPhysHz(p,w),element=w&&weaponElementInfo(w).type;
   const ehz=w&&element?partElemHz(p,element):0;
@@ -6027,8 +6108,10 @@ function renderComboForWeapon(){
   if(choices.some(m=>m.id===old))picker.value=old;
   const previousPreset=preset.value;
   const presets=data.presets.filter(p=>p.origin==='CANONICAL_DB');
-  preset.innerHTML='<option value="">技構成を選択（任意）</option>'+presets.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}${p.moves.some(id=>{const m=data.moves.find(m=>m.id===id);return !m||comboMoveUnavailableReason(m);})?'（計算未対応の技を含む）':''}</option>`).join('');
-  if(presets.some(p=>p.id===previousPreset))preset.value=previousPreset;
+  // Legacy entries stay available to exact replay and diagnostics, but not in the public menu.
+  preset.innerHTML='<option value="">技構成を選択（任意）</option>'+data.presets.map(p=>
+    `<option value="${esc(p.id)}"${p.origin==='CANONICAL_DB'?'':' hidden'}>${esc(p.name)}${p.moves.some(id=>{const m=data.moves.find(m=>m.id===id);return !m||comboMoveUnavailableReason(m);})?'（計算未対応の技を含む）':''}</option>`).join('');
+  if(data.presets.some(p=>p.id===previousPreset))preset.value=previousPreset;
   preset.disabled=presets.length===0;
   const adopted=data.moves.filter(m=>m.numericOrigin==='CANONICAL_DB'&&!m.calculationBlocked).length;
   status.innerHTML=`<b>${esc(data.label)}</b>：${data.moves.length}技を登録。${adopted?`うち${adopted}技は技DBの採用値を使用。`:''}他の技は初期参考値または追加登録値です。時間未確認の技はダメージのみ計算します。所要時間がある技も時間は参考値です。`;
@@ -11893,6 +11976,7 @@ function comparisonReasonText(reason){
   if(text.includes('DARK_ARTS_WAVE:'))return '大剣ダークアーツの追撃・技中スキル・最大側の属性併用条件が未対応・未確定です。';
   if(text.includes('DARK_ARTS:ELEMENT_COMPONENTS_UNRESOLVED'))return 'ダークアーツに必要な属性値の倍率・加算内訳が未確定です。';
   if(text.includes('DARK_ARTS:'))return 'ダークアーツと他の属性強化の併用計算が未対応・未確定です。';
+  if(text==='REAL_SLICE:TARGET_VARIANT_HITZONE_SOURCE_NOT_ADOPTED')return VARIANT_TARGET_UNAVAILABLE_HINT;
   if(text==='REAL_SLICE:COMPARISON_TECHNIQUE_MISMATCH')return '技構成が異なるため相対指数と成分差分を保留します。各ビルドの実ダメージは表示します。';
   if(text==='REAL_SLICE:COMPARISON_TARGET_MISMATCH')return '対象部位が異なるため相対指数と成分差分を保留します。各ビルドの実ダメージは独立して計算します。';
   if(text==='STANDARD_PROFILE_MISMATCH')return '固定STANDARDの技構成が一致しないため比較できません。';

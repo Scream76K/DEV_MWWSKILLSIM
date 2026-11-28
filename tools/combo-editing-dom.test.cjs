@@ -69,7 +69,7 @@ test('the custom editor has one public preset picker and keeps legacy presets on
  assert.doesNotMatch(preset.textContent,/旧参考|技DB採用|技DB参照/);
  const records=w.comboData().presets;
  assert.ok(records.some(p=>p.id==='gs_tcs'),'legacy data is retained');
- const ids=[...preset.options].map(o=>o.value).filter(Boolean);
+ const ids=[...preset.options].filter(o=>!o.hidden).map(o=>o.value).filter(Boolean);
  assert.ok(ids.length>0);
  assert.ok(ids.every(id=>records.find(p=>p.id===id)?.origin==='CANONICAL_DB'));
  const selected=records.find(p=>p.id===ids[0]);

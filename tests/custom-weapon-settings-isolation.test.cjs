@@ -38,7 +38,8 @@ test('weapon-only settings are collapsed and change current custom conditions wi
  const accepted=run();assert.ok(amounts(accepted).every(n=>Math.abs(n-34.70004)<1e-8));
  const used=el('compareOut').querySelector('[data-used-weapon-settings]');
  assert.match(used.textContent,/練気ゲージ：なし/);
- assert.ok(used.previousElementSibling.matches('[data-used-combo]'));
+ const notes=used.closest('details[data-comparison-notes]');assert.ok(notes&&!notes.open);
+ assert.ok(notes.nextElementSibling.matches('[data-used-combo]'));
  el('buildName').value='look';el('saveBuild').click();
  const save=read('savedBuildMap().look');
  change(gauge,'RED');

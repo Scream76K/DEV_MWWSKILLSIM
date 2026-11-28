@@ -88,9 +88,9 @@ test('only the armor/skill panels are 6:4 on phones, tablets, and desktop withou
  }
 });
 
-test('native choice controls use readable dark text across Hunter’s Note and Hunter’s Support',async t=>{
+test('native choice controls use a navy field and readable white text across Hunter’s Note and Hunter’s Support',async t=>{
  const browser=await chromium.launch({headless:true});t.after(()=>browser.close());
- const p=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,colorScheme:'dark'});
+ const p=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,colorScheme:'light'});
  t.after(()=>p.close());
  await p.route('**/*',r=>r.request().url()==='https://simulator.test/'?r.fulfill({contentType:'text/html',body:html}):r.abort());
  await installLocalModules(p);
@@ -100,12 +100,15 @@ test('native choice controls use readable dark text across Hunter’s Note and H
   if(!control.options.length)control.add(new Option('確認用'));
   const first=control.options[0];
   const c=getComputedStyle(control),o=getComputedStyle(first);
-  return {id,scheme:c.colorScheme,ink:c.color,optionInk:o.color,optionBackground:o.backgroundColor};
+  const popup=CSS.supports('appearance','base-select')&&CSS.supports('selector(::picker(select))')?getComputedStyle(control,'::picker(select)'):null;
+  return {id,scheme:c.colorScheme,ink:c.color,field:c.backgroundColor,optionInk:o.color,optionBackground:o.backgroundColor,popup:popup?.backgroundColor};
  }));
  for(const x of result){
-  assert.equal(x.scheme,'light',x.id);
-  assert.equal(x.ink,'rgb(32, 43, 57)',x.id);
-  assert.equal(x.optionInk,'rgb(32, 43, 57)',x.id);
-  assert.equal(x.optionBackground,'rgb(255, 255, 255)',x.id);
+  assert.equal(x.scheme,'dark',x.id);
+  assert.equal(x.ink,'rgb(245, 248, 252)',x.id);
+  assert.equal(x.optionInk,'rgb(245, 248, 252)',x.id);
+  assert.equal(x.field,'rgb(23, 38, 56)',x.id);
+  assert.equal(x.optionBackground,'rgb(23, 38, 56)',x.id);
+  if(x.popup!==undefined)assert.equal(x.popup,'rgb(23, 38, 56)',x.id);
  }
 });
