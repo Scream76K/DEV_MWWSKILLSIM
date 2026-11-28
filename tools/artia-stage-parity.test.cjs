@@ -85,3 +85,31 @@ test('manual weapon changes scope dormant restorations per weapon without changi
  assert.equal(read('restoreStats(selectedWeapon())').capacity,1);
  assert.equal(w.eval('JSON.stringify(savedBuildMap())'),persisted);
 });
+test('restoration labels are Japanese and scoped to the selected weapon without rewriting saved codes',t=>{
+ const {w,d,read}=setup(t);
+ const label=()=>d.querySelector('#aRestore .aR option:checked')?.textContent;
+ for(const [id,expected,stat,amount] of [
+  [1148,/斬れ味強化EX \+50/,'sharp',50],
+  [1157,/装填数強化 EXMAX \+2/,'capacity',2],
+  [1169,/装填数強化 EXMAX \+2/,'capacity',2],
+ ]){
+  const restore=code=>[code,'none','none','none','none'];
+  for(const [code,valid] of [['sharp:EX',true],['sharp;EX',false]]){
+   load(w,id,{restores:restore(code)});
+   const storage=JSON.stringify({legacy:w.stateFixture});
+   w.localStorage.setItem('mh-wilds-builds-v625',storage);
+   w.eval("renderSavedBuilds(); document.getElementById('savedBuildSelect').value='legacy'; document.getElementById('savedBuildLoad').click();");
+   assert.equal(read('buildSnapshot().artia.restores[0]'),code);
+   assert.equal(w.localStorage.getItem('mh-wilds-builds-v625'),storage);
+   assert.equal(d.querySelector('#aRestore .aR').value,code);
+   assert.match(label(),valid?expected:/強化.*再選択/);
+   assert.doesNotMatch(label(),/sharp[:;]/);
+   assert.doesNotMatch(w.eval('artiaRestoreBreakdown(selectedWeapon())'),/sharp[:;]/);
+   if(valid) assert.equal(read('restoreStats(selectedWeapon())')[stat],amount);
+   else assert.match(read('restoreStats(selectedWeapon()).reason'),/^ARTIA_RESTORE_UNKNOWN:/);
+  }
+ }
+ load(w,1139,{restores:['sharp:EX','none','none','none','none']});
+ assert.match(label(),/対象外/);
+ assert.match(read('restoreStats(selectedWeapon()).reason'),/^ARTIA_SHARPNESS_RESTORE_NOT_APPLICABLE:/);
+});
