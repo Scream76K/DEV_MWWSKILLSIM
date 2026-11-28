@@ -11885,11 +11885,27 @@ function cbIndependentMixDisplay(pipeline){
  const val=(ch,r)=>{const c=pipeline.routes?.[r]?.channels?.[ch],m=c?.metrics?.comboTotalDamage;return c?.execution?.status==='complete'&&m?.status==='available'?damageDisplayNumber(m.value):'未算出：'+(c?.execution?.reason||m?.reason||pipeline.routes?.[r]?.reason||'ROUTE_UNAVAILABLE');};
  return 'R/H各1回の合計実ダメージ（独立開始・時間補正なし）／通常内訳 R '+val('normal','R')+' + H '+val('normal','H')+'／最大内訳 R '+val('maximum','R')+' + H '+val('maximum','H')+'。連続実行・DPSではありません。';
 }
-function comparisonExcludedNotesHtml(rows){
-  return rows.map(row=>['normal','maximum'].map(ch=>{
-      const note=excludedSkillDamageDisplay(row.oneHitPipeline?.channels?.[ch]?.diagnostics);
-      return note?'<div class="small" data-comparison-excluded-channel="'+ch+'">'+esc(row.name)+'／'+(ch==='normal'?'通常':'最大')+note+'</div>':'';
-  }).join('')).join('');
+function addComparisonChannelNotes(rows,add){
+  for(const row of rows)for(const side of ['normal','maximum']){
+    const d=row.oneHitPipeline?.channels?.[side]?.diagnostics;
+    if(!d)continue;
+    const note=text=>{if(text)add('<p>'+text.replace(/^［|］$/g,'')+'</p>',row,side);};
+    note(esc(attributeConversionDisplay(d)));
+    note(esc(thunderConversionDisplay(d)));
+    if(d.selectedHpPolicy?.affectedSkills?.length)note(esc(d.selectedHpPolicy.description));
+    for(const entry of d.maximumActivationAssumptions||[])note(esc(entry.description));
+    for(const entry of d.excludedConditionalBuffs||[])note(esc(entry.description));
+    for(const entry of d.excludedCalculationSkills||[]){
+      const reason=String(entry.reason||'');
+      note(esc(entry.name)+'：'+esc(/^[A-Z][A-Z0-9_]+(?::|$)/.test(reason)?'この火力には含めていません。':reason));
+    }
+    for(const entry of d.excludedSkillDamage||[]){
+      const effect=entry.additionalDamage;
+      if(!effect)continue;
+      if(effect.status==='available')note(excludedSkillDamageDisplay({excludedSkillDamage:[entry]}));
+      else note(esc(entry.skill)+'：追加ダメージは未算出。この火力には含めていません。');
+    }
+  }
 }
 function comparisonReadinessHtml(rows,baseline){
   if(rows.some(r=>r.oneHitPipeline)){
@@ -11991,7 +12007,7 @@ function renderCompareTableChunk(rows,allRows,baseline=allRows[0]){
     const rawValue=r=>consumerDamageMetric(r,key).value;
     const valid=allRows.map(rawValue).filter(v=>Number.isFinite(v)&&v>=0);
     const best=comparablePower&&valid.length?Math.max(...valid):null;
-    const heading=selfMaximum?(key==='maximum'?'最大火力（実ダメージ）':'通常火力（実ダメージ）'):label;
+    const heading=selfMaximum?(key==='maximum'?'最大火力（実ダメージ）':'通常火力'):label;
     h+='<tr data-comparison-metric="'+metric+'"><th>'+heading+'</th>'+rows.map(r=>{
       const value=rawValue(r);
       const isBest=best!==null&&value===best;
@@ -12227,21 +12243,26 @@ function renderElementFirstContact(row){
   const lanes=row.elementFirstContactNote||elementFirstContactValues(row,row.oneHitPipeline);
   return lanes.length?'<p class="small" data-element-first-contact>初段のみ（参考） '+lanes.map(esc).join(' ／ ')+'</p>':'';
 }
-function renderUsedComparisonCombo(rows){
+function renderUsedComparisonCombo(rows,addNote){
   const render=result=>{
     if(result.status==='pending')return '未算出';
     if(result.status!=='used')return 'コンボ未確認';
     const sequences=result.routes.map(({label,steps})=>(label?'<b>'+esc(label)+'：</b>':'')+steps.map(esc).join(' → '));
     return sequences.join('<br>')+(sequences.length>1?'<small class="used-combo-independence">各ルートを別々に計算し、ダメージを合算</small>':'');
   };
-  const lines=rows.map(row=>{
-    const n=usedComparisonCombo(row,'normal'),m=usedComparisonCombo(row,'maximum');
+  const executed=rows.map(row=>['normal','maximum'].map(side=>usedComparisonCombo(row,side)));
+  const signature=pair=>pair.every(result=>result.status==='used')
+    ?JSON.stringify(pair.map(result=>result.routes.map(({label,steps})=>[label,steps]))):null;
+  const first=executed.length?signature(executed[0]):null;
+  const common=rows.length>1&&first!==null&&executed.every(pair=>signature(pair)===first);
+  const lines=rows.map((row,index)=>{
+    const [n,m]=executed[index];
     const pipeline=row.oneHitPipeline;
     const trial=Object.values(measuredComboRoutes).find(route=>pipeline?.evaluationPlan?.techniqueIds?.join()===route.id);
     const trialNote=trial&&(n.status==='used'||m.status==='used')?'<p class="small">'+esc(trial.note)+' 検証候補の参考値。</p>':'';
     const basicOpening=row.oneHitPipeline?.evaluationPlan?.techniqueIds?.length===1&&[...igBasicOpeningIds,igDescendingRow].includes('canonical:'+row.oneHitPipeline.evaluationPlan.techniqueIds[0])&&row.oneHitPipeline.evaluationPlan.automaticOpening;
     const openingNote=basicOpening?.length?'<p class="small">自動設定：'+basicOpening.map(esc).join('、')+'</p>':'';
-    const heading=rows.length>1?'<b class="used-combo-group">'+esc(row.name)+'</b>':'';
+    const heading=rows.length>1?'<b class="used-combo-group">'+(common?'全ビルド共通':esc(row.name))+'</b>':'';
     const drawBody=row.oneHitPipeline?.channels?.normal?.diagnostics?.gsGroundDraw||row.oneHitPipeline?.channels?.maximum?.diagnostics?.gsGroundDraw;
     const shield=row.oneHitPipeline?.channels?.normal?.diagnostics?.snsGroundShield||row.oneHitPipeline?.channels?.maximum?.diagnostics?.snsGroundShield;
     const shieldNote=shield&&(n.status==='used'||m.status==='used')?'<p class="small" data-sns-ground-shield>通常の盾攻撃1ヒット。属性なし。斬れ味は消費しませんが、物理補正は適用します。資料暫定・実機未確認。</p>':'';
@@ -12269,7 +12290,12 @@ function renderUsedComparisonCombo(rows){
     const risingSlash=row.oneHitPipeline?.channels?.normal?.diagnostics?.lsGroundRisingSlash||row.oneHitPipeline?.channels?.maximum?.diagnostics?.lsGroundRisingSlash;
     const risingNote=risingSlash&&(n.status==='used'||m.status==='used')?'<p class="small" data-ls-rising-slash-provisional>地上・練気色なしの斬り上げ1Hitのみ。派生前の技は含めない参考値です。資料暫定・実機未確認です。</p>':'';
     const note=drawBody?'<p class="small" data-gs-draw-provisional>選択した「抜刀斬り」は納刀開始、地上・溜めなしの1Hitとして計算します。抜刀術の攻撃・会心補正は最大のみ。資料暫定・実機未確認です。</p>':plainThrust?'<p class="small" data-ls-thrust-provisional>「突き」は抜刀状態・練気色なしで地上の1Hitのみ。資料暫定・実機未確認です。</p>':'';
-    return '<div class="used-combo-entry">'+heading+(row.pierceSeven?'<p>通常射撃・同一部位に7ヒット（参考） 通常 '+(Number.isFinite(row.pierceSeven[0])?comparisonDisplayNumber(row.pierceSeven[0]):'未算出')+' ／ 最大 '+(Number.isFinite(row.pierceSeven[1])?comparisonDisplayNumber(row.pierceSeven[1]):'未算出')+'</p>':'')+(row.nativeNormalThree?'<p>指定の通常弾Lv3・1射3命中（資料暫定） 通常 '+(Number.isFinite(row.nativeNormalThree[0])?comparisonDisplayNumber(row.nativeNormalThree[0]):'未算出')+' ／ 最大 '+(Number.isFinite(row.nativeNormalThree[1])?comparisonDisplayNumber(row.nativeNormalThree[1]):'未算出')+'</p>':'')+renderElementFirstContact(row)+'<div>通常：'+render(n)+'</div><div>最大：'+render(m)+'</div>'+trialNote+note+hhNote+cbRoundNote+risingNote+dbNote+tornadoNote+gsOffsetNote+shieldNote+igRisingNote+cbWeakNote+piercerNote+spinNote+foresightNote+(row.name?openingNote:'')+'</div>';
+    const reference=(row.pierceSeven?'<p>通常射撃・同一部位に7ヒット（参考） 通常 '+(Number.isFinite(row.pierceSeven[0])?comparisonDisplayNumber(row.pierceSeven[0]):'未算出')+' ／ 最大 '+(Number.isFinite(row.pierceSeven[1])?comparisonDisplayNumber(row.pierceSeven[1]):'未算出')+'</p>':'')+(row.nativeNormalThree?'<p>指定の通常弾Lv3・1射3命中（資料暫定） 通常 '+(Number.isFinite(row.nativeNormalThree[0])?comparisonDisplayNumber(row.nativeNormalThree[0]):'未算出')+' ／ 最大 '+(Number.isFinite(row.nativeNormalThree[1])?comparisonDisplayNumber(row.nativeNormalThree[1]):'未算出')+'</p>':'')+renderElementFirstContact(row);
+    for(const text of [reference,trialNote,note,hhNote,cbRoundNote,risingNote,dbNote,tornadoNote,gsOffsetNote,shieldNote,igRisingNote,cbWeakNote,piercerNote,spinNote,foresightNote,row.name?openingNote:'']){
+      if(text)addNote(text,row);
+    }
+    if(common&&index>0)return '';
+    return '<div class="used-combo-entry">'+heading+'<div>通常：'+render(n)+'</div><div>最大：'+render(m)+'</div>'+'</div>';
   });
   return '<section class="used-combo-panel" data-used-combo aria-label="計算に使用したコンボ"><h4>計算に使用したコンボ</h4>'+lines.join('')+'</section>';
 }
@@ -12285,27 +12311,27 @@ function renderCurrentCustomResult(result,selection={}){
     if(message!==reason)return message;
     return /^[A-Z][A-Z0-9_]+(?::|$)/.test(message)?comparisonReasonText(reason):message;
   };
-  h+=metrics.map(({value,reason},i)=>value===null?'<p class="small">'+(i?'最大':'通常')+'：'+esc(explain(reason))+'</p>':'').join('');
-  for(const ch of channels){
-    const d=result.pipeline?.channels?.[ch]?.diagnostics,notes=ignoredSkillEffectsDisplay(d)+excludedSkillDamageDisplay(d);
-    if(notes)h+='<div class="small" data-combo-skill-channel="'+ch+'">'+(ch==='normal'?'通常':'最大')+notes+'</div>';
-  }
+  const notes=createComparisonNotes();
+  metrics.forEach(({value,reason},i)=>{if(value===null)notes.add('<p>'+esc(explain(reason))+'</p>',row,channels[i]);});
+  addComparisonChannelNotes([row],notes.add);
+  notes.add(comparisonSkillOmissionsHtml([row]));
   const plan=result.pipeline?.evaluationPlan,ids=plan?.techniqueIds||[];
   if(metrics.some(m=>m.value!==null)){
-    h+='<p class="small">暫定・参考。ゲーム内での実測値ではありません。</p>';
+    notes.add('<p class="small">暫定・参考。ゲーム内での実測値ではありません。</p>');
     const wyvern=ids.includes('HBG_WYVERN_AMMO')&&channels.some((ch,i)=>metrics[i].value!==null&&
       result.pipeline.channels?.[ch]?.diagnostics?.referenceScope==='STANDARD_MODE_FULL_TWO_HIT_PROVISIONAL');
-    if(mixedBow)h+='<p class="small">溜め3から開始し、各技がそれぞれの適正距離で全段命中する参考値です。同じ距離での実測ではありません。</p>';
-    else if(wyvern)h+='<p class="small">竜撃弾：2Hitの参考値。ゲーム版は未確定で、会心・斬れ味・物理肉質補正は対象外です。</p>';
-    else if(ids.length&&ids.every(id=>id.startsWith('BOW_')))h+='<p class="small">弓：各技のビン・距離・命中条件に基づく参考値です。</p>';
-    else if(ids.length&&ids.every(id=>id.startsWith('HBG_')))h+='<p class="small">ヘビィボウガン：指定した弾・命中条件の範囲で計算しています。</p>';
+    if(mixedBow)notes.add('<p class="small">溜め3から開始し、各技がそれぞれの適正距離で全段命中する参考値です。同じ距離での実測ではありません。</p>');
+    else if(wyvern)notes.add('<p class="small">竜撃弾：2Hitの参考値。ゲーム版は未確定で、会心・斬れ味・物理肉質補正は対象外です。</p>');
+    else if(ids.length&&ids.every(id=>id.startsWith('BOW_')))notes.add('<p class="small">弓：各技のビン・距離・命中条件に基づく参考値です。</p>');
+    else if(ids.length&&ids.every(id=>id.startsWith('HBG_')))notes.add('<p class="small">ヘビィボウガン：指定した弾・命中条件の範囲で計算しています。</p>');
   }
-  if(plan?.automaticOpening?.length)h+='<p class="small" data-automatic-opening>自動設定：'+plan.automaticOpening.map(esc).join('、')+'</p>';
-  h+=renderUsedComparisonCombo([row]);
+  if(plan?.automaticOpening?.length)notes.add('<p class="small" data-automatic-opening>自動設定：'+plan.automaticOpening.map(esc).join('、')+'</p>');
+  const combo=renderUsedComparisonCombo([row],notes.add);
   if(ids.some(gsLowerChargeId)&&metrics.some(m=>m.value!==null))
-    h+='<p class="small" data-gs-charge-premise>溜め段階ごとの地上の本体ダメージ。抜刀術の発動条件や派生の成立は判定しません。資料暫定・実機未確認。</p>';
+    notes.add('<p class="small" data-gs-charge-premise>溜め段階ごとの地上の本体ダメージ。抜刀術の発動条件や派生の成立は判定しません。資料暫定・実機未確認。</p>');
   if(result.weaponSettings?.length&&metrics.some(m=>m.value!==null))
-    h+='<p class="small" data-used-weapon-settings>指定した開始条件：'+result.weaponSettings.map(esc).join('、')+'</p>';
+    notes.add('<p class="small" data-used-weapon-settings>指定した開始条件：'+result.weaponSettings.map(esc).join('、')+'</p>');
+  h+=notes.render()+combo;
   h+=comparisonTableStart(['項目','通常','最大','増減'],{fit:true});
   const field=(label,key,values)=>'<tr data-custom-damage="'+key+'"><th>'+label+'</th>'+values.map(value=>'<td>'+(!Number.isFinite(value)?'未算出':key==='total'?'<strong class="compare-damage-value">'+esc(comparisonDisplayNumber(value))+'</strong>':esc(comparisonDisplayNumber(value)))+'</td>').join('')+'<td>'+esc(comparisonDamageChange(values[1],values[0]))+'</td></tr>';
   h+=field('合計','total',metrics.map(m=>m.value));
@@ -12336,6 +12362,29 @@ function renderSavedSkillComparison(rows){
       '</div></article>').join('')+'</div></div></section>';
 }
 let lastBuildComparisonRows=null,lastBuildComparisonBaselineIndex=0,lastBuildComparisonContext=null;
+function comparisonNoteScope(builds){
+  const groups=new Map(),labels=['','通常のみ','最大のみ','通常・最大',''];
+  for(const [row,mask] of builds){
+    if(!groups.has(mask))groups.set(mask,[]);
+    if(row.name)groups.get(mask).push(esc(row.name));
+  }
+  return [...groups].map(([mask,names])=>names.join('・')+(labels[mask]?'（'+labels[mask]+'）':'')).join('／');
+}
+function createComparisonNotes(){
+  const entries=new Map();
+  const add=(html,row=null,side='')=>{
+    if(!html)return;
+    if(!entries.has(html))entries.set(html,new Map());
+    const builds=entries.get(html);
+    if(row)builds.set(row,side?((builds.get(row)||0)|(side==='normal'?1:2)):4);
+  };
+  const content=()=>[...entries].map(([html,builds])=>{
+    const scope=comparisonNoteScope(builds);
+    return '<div data-comparison-note>'+(scope?'<strong>'+scope+'</strong>':'')+html+'</div>';
+  }).join('');
+  const render=()=>entries.size?'<details class="compare-note small comparison-explanation" data-comparison-notes><summary>火力計算の注釈</summary>'+content()+'</details>':'';
+  return {add,content,render};
+}
 function comparisonSkillOmissionsHtml(rows){
   const effects=new Map();
   for(const row of rows)for(const side of ['normal','maximum']){
@@ -12348,18 +12397,8 @@ function comparisonSkillOmissionsHtml(rows){
     }
   }
   if(!effects.size)return '';
-  const names=[...effects.keys()];
-  const summary=names.slice(0,2).join('、')+(names.length>2?' ほか'+(names.length-2)+'件':'');
-  const sides=['','通常のみ','最大のみ','通常・最大'];
-  const items=[...effects].map(([name,builds])=>{
-    const grouped=new Map();
-    for(const [row,mask] of builds){
-      if(!grouped.has(mask))grouped.set(mask,[]);
-      grouped.get(mask).push(esc(row.name));
-    }
-    return '<li>'+esc(name)+'：'+[...grouped].map(([mask,labels])=>labels.join('・')+'（'+sides[mask]+'）').join('／')+'</li>';
-  }).join('');
-  return '<details class="compare-note small" data-comparison-skill-omissions><summary>火力に未反映の効果：'+esc(summary)+'</summary><p>対象ビルドの火力に、以下の効果の一部または全部が含まれていません。</p><ul>'+items+'</ul></details>';
+  const items=[...effects].map(([name,builds])=>'<li>'+esc(name)+'：'+comparisonNoteScope(builds)+'</li>').join('');
+  return '<section data-comparison-skill-omissions><strong>火力に未反映の効果</strong><p>以下の効果の一部または全部は火力に含まれていません。</p><ul>'+items+'</ul></section>';
 }
 function renderCompareTable(rows,{baselineIndex=0}={}){
   if(!rows.length)return '<span class="muted small">比較結果はありません。</span>';
@@ -12370,43 +12409,50 @@ function renderCompareTable(rows,{baselineIndex=0}={}){
   const baseDamage=consumerDamageMetric(baseline,'normal').value;
   let h='<div class="compare-note"><b>'+(selfMaximum?'ビルド間比較の出力用基準：':'基準ダメージ：')+(Number.isFinite(baseDamage)&&baseDamage>0?comparisonDisplayNumber(baseDamage):'—')+'</b>（'+esc(baseline.name)+'・選択した通常側の比較条件、ゲーム表示の丸め前）</div><label for="comparisonBaseline">'+(selfMaximum?'出力用の基準ビルド（表の増減率には影響しません）':'比較の基準ビルド（通常側の期待ダメージ）')+'</label><select id="comparisonBaseline">'+rows.map((r,i)=>'<option value="'+i+'"'+(i===selectedIndex?' selected':'')+'>'+esc(r.name)+'</option>').join('')+'</select><div class="two" style="margin-top:8px"><button type="button" id="comparisonReportDownload">比較結果をJSON保存</button><button type="button" id="comparisonReportCopy">比較結果をコピー</button></div><button type="button" id="comparisonComboEvidence">コンボの技別・未検証項目を表示</button><button type="button" id="comparisonEvidenceChecklist">検証作業リストを表示</button><details><summary>実機検証の証拠参照を照合（JSON）</summary><textarea id="comparisonEvidenceInput" rows="4" style="width:100%" placeholder="JSON形式の証拠参照を入力"></textarea><button type="button" id="comparisonEvidenceIntake">証拠参照を照合</button></details><details><summary>実機ダメージ・Hit数・時間の記録を照合（JSON）</summary><textarea id="comparisonMeasurementInput" rows="4" style="width:100%" placeholder="[{&quot;stage&quot;:1,&quot;techniqueId&quot;:&quot;...&quot;,&quot;evidenceRef&quot;:&quot;video-1&quot;,&quot;gameVersion&quot;:&quot;1.042.00.02&quot;,&quot;hitCount&quot;:1,&quot;durationSeconds&quot;:1.2,&quot;damage&quot;:{&quot;physicalBody&quot;:100}}]"></textarea><button type="button" id="comparisonMeasurementReview">実機計測記録を照合</button><button type="button" id="comparisonTechniqueReconcile">Technique DBと計測値を照合（診断）</button><textarea id="comparisonDamageContextInput" rows="4" style="width:100%" placeholder="計算条件JSON：[{stage, techniqueId, evidenceRef, context:{weaponId, weaponAttack, weaponElement, sharpness, affinity, criticalBoostLevel, activeSkills, monsterId, hitZonePhysical, hitZoneElement, targetState, attackConditions, gameVersion}}]"></textarea><button type="button" id="comparisonDamageContextAudit">ダメージ計算条件を監査</button><textarea id="comparisonDamagePredictionInput" rows="4" style="width:100%" placeholder="予測値JSON：[{stage, techniqueId, evidenceRef, contextFingerprint, damage:{physicalBody:100}}]（監査結果のcontextFingerprintを使用）"></textarea><button type="button" id="comparisonDamageDifference">実測と計算値の成分別差異を診断</button><button type="button" id="comparisonTechniqueEngineBridge">Technique DBと計算エンジンの接続状況</button><button type="button" id="comparisonEngineContextHandoff">Technique DBと実機条件の受渡し診断</button><p class="small">斬れ味は選択武器の最大斬れ味のみ使用します。武器データに最大色と根拠がない場合は保留します（倍率の手入力なし）。</p><button type="button" id="comparisonSharpnessSourceAudit">MHDB斬れ味データ構造を調査</button><button type="button" id="comparisonLiveContextAudit">選択装備と計算条件を照合</button><button type="button" id="comparisonAttackSkillAudit" type="button">攻撃スキル照合</button><button id="comparisonCriticalSkillAudit">会心・超会心・スキル条件を照合</button><button type="button" id="comparisonAttackTargetAudit">攻撃補正・モンスター肉質を照合</button><button type="button" id="comparisonPhysicalFormulaBridge">物理ダメージ参考計算（安全条件のみ）</button></details><button type="button" id="comparisonCaptureAudit">ガンランス自動連携の検証状況</button><button type="button" id="comparisonVerifiedTransfer">検証済みA/Bを自動登録</button><pre id="comparisonCaptureAuditOut" class="small" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre><pre id="comparisonReportOut" class="small" style="max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere"></pre><div class="compare-results">';
   const coverage=consumerCoverageSummary(rows);
-  h+=comparisonSkillOmissionsHtml(rows);
-  h+=comparisonExcludedNotesHtml(rows);
+  const notes=createComparisonNotes();
+  notes.add(comparisonSkillOmissionsHtml(rows));
+  addComparisonChannelNotes(rows,notes.add);
   if(coverage.pending.length){
-    h+='<div class="compare-note small" data-comparison-coverage="r248">比較可能：通常 '+coverage.normal+'/'+coverage.total+'件 ／ 最大 '+coverage.maximum+'/'+coverage.total+'件。未算出の結果は推測で補完しません。</div>';
-    h+='<details class="compare-note" data-comparison-pending="r248"><summary>比較保留の原因を確認（'+coverage.pending.length+'項目）</summary><p class="small">通常・最大それぞれの実ダメージを独立して確認します。</p><strong>原因別集計</strong>'+coverage.causes.map(x=>'<p class="small">'+esc(comparisonReasonText(x.reason))+'：'+x.buildCount+'ビルド／'+x.metricCount+'項目（通常'+x.metrics.normal+'・最大'+x.metrics.maximum+'）</p>').join('')+'<strong>個別の保留内容</strong>'+coverage.pending.map(x=>'<p class="small">'+esc(x.name)+' ／ '+({normal:'通常',maximum:'最大',dps:'DPS'}[x.metric])+'：'+esc(comparisonReasonText(x.reason))+(legacyMoveDiagnostic(x.reason)?'':' <code>'+esc(x.reason)+'</code>')+'</p>').join('')+'</details>';
+    notes.add('<div class="compare-note small" data-comparison-coverage="r248">比較可能：通常 '+coverage.normal+'/'+coverage.total+'件 ／ 最大 '+coverage.maximum+'/'+coverage.total+'件。未算出の結果は推測で補完しません。</div>');
+    const pending=createComparisonNotes();
+    const builds=new Map(rows.map(row=>[row.name,row]));
+    for(const item of coverage.pending){
+      pending.add('<p>'+esc(comparisonReasonText(item.reason))+'</p>',builds.get(item.name),item.metric);
+    }
+    notes.add('<div data-comparison-pending="r248"><strong>未算出の理由</strong>'+pending.content()+'</div>');
   }
   if(rows.every(row=>isChargeBladeKind(row.kind))&&!rows.some(r=>r.oneHitPipeline)){
-    h+='<div class="compare-note"><b>超高出力属性解放斬り（参考ダメージ）</b> — 火力指数・DPSには加算しません。</div>';
+    notes.add('<div class="compare-note"><b>超高出力属性解放斬り（参考ダメージ）</b> — 火力指数・DPSには加算しません。</div>');
     for(const [mode,label] of [['NORMAL','通常条件'],['MAX','最大条件']]){
-      h+='<div class="compare-note small">'+label+'：'+rows.map(row=>{
+      notes.add('<div class="compare-note small">'+label+'：'+rows.map(row=>{
         const x=row.saedReference?.[mode];
         const value=x?.status==='REFERENCE_ONLY'&&typeof x.total==='number'&&Number.isFinite(x.total)?x.total.toFixed(1):'保留（'+esc(x?.reason||'未計算')+'）';
         return esc(row.name)+' '+value;
-      }).join(' ／ ')+'</div>';
+      }).join(' ／ ')+'</div>');
     }
   }
-  h+=comparisonReadinessHtml(rows,baseline);
-  if(rows.some(row=>row.oneHitPipeline))h+=renderUsedComparisonCombo(rows);
-  for(let i=0;i<rows.length;i+=perGroup)h+=renderCompareTableChunk(rows.slice(i,i+perGroup),rows,baseline);
-  h+=renderSavedSkillComparison(rows);
-  for(const row of rows)h+=bowBladescalePremiseDisplay(row.oneHitPipeline)+lbgBladescalePremiseDisplay(row.oneHitPipeline)+hbgBladescalePremiseDisplay(row.oneHitPipeline)+bladescaleHoningPremiseDisplay(row.oneHitPipeline);
-  for(const row of rows)if(row.oneHitPipeline?.scope==='CB_INDEPENDENT_R_H_SUM')h+='<details class="compare-note"><summary>'+esc(row.name)+'：R/Hルート内訳</summary>'+cbIndependentMixDisplay(row.oneHitPipeline)+'</details>';
-  h+=rows.filter(r=>r.power?.conditionPlan?.applied.length).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数の適用条件 '+esc(r.power.conditionPlan.applied.map(x=>x.skill+(x.level!=null?' Lv'+x.level:'')+' (攻撃'+(x.maximumAttackMultiplier?'×'+x.maximumAttackMultiplier+'：最大側のみ':x.attackMultiplier&&x.attackMultiplier!==1?'×'+x.attackMultiplier:'+'+x.attackAdd)+(x.elementAdd?' / 属性+'+x.elementAdd:'')+(x.elementMultiplier?' / 属性×'+x.elementMultiplier+'：'+esc(x.elementConditionLabel||'赤ゲージ時')+'・最大側のみ':'')+')').join(' / '))+'。'+(r.power.conditionPlan.excluded.length?'同時成立しないため除外：'+esc(r.power.conditionPlan.excluded.map(x=>x.skill).join(' / '))+'。':'')+'</div>').join('');
-  const ammoNotes=rows.map(r=>({name:r.name,html:consumerStandardAmmoNote(r.oneHitPipeline?.evaluationPlan)}));
-  const ammoDetails=new Set(ammoNotes.map(note=>note.html)).size>1
-    ? ammoNotes.filter(note=>note.html).map(note=>'<div class="small">'+esc(note.name)+'</div>'+note.html).join('')
-    : ammoNotes[0].html;
-  h+='<details class="compare-note comparison-explanation"><summary>火力計算条件の詳細</summary><div>基準：'+esc(baseline.name)+'。主結果は選択した技構成の丸め前実ダメージです。通常と最大はそれぞれ独立して計算します。'+(selfMaximum?'最大欄の増減率は同じビルドの通常火力（内訳は同じ成分）を使用し、通常値が0または未算出なら「—」と表示します。実ダメージはそのまま表示します。保存・コピー用のビルド間比較データでは従来どおり選択した基準を使用します。':'相対指数は基準ビルドの通常火力を100とし、物理・属性の括弧内は同じ基準の通常成分との差です。基準が未算出でも比較対象の実計算値は表示します。')+'未対応の技・スキル・未選択の条件は推測せず、該当する側に理由を表示します。所要時間は使用しません。</div>'+ammoDetails+'</details>';
-  if(rows.some(r=>r.oneHitPipeline)){
-   h+=rows.map(r=>{const reason=consumerRelativeReason(r,baseline);return reason?'<div class="compare-note" data-relative-pending>'+esc(r.name)+'：出力用のビルド間比較のみ保留（'+esc(comparisonReasonText(reason))+'）</div>':'';}).join('');
-  }else{
-  h+=rows.filter(r=>!Number.isFinite(r.power?.normal?.comparisonPower)).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数は保留（'+esc(comparisonReasonText(r.power?.reason||'NORMAL_POWER_UNAVAILABLE'))+'）</div>').join('');
-  h+=rows.filter(r=>Number.isFinite(r.power?.normal?.comparisonPower)&&!comparisonPowerChange(r,baseline)?.normal).map(r=>'<div class="compare-note">'+esc(r.name)+'：火力指数の計算値は表示しています。基準比のみ保留（'+esc(comparisonReasonText(!r.kind||r.kind!==baseline.kind?'SAME_WEAPON_REQUIRED':'BASELINE_NORMAL_POWER_UNAVAILABLE'))+'）</div>').join('');
-  h+=rows.filter(r=>r.power?.maximumReason).map(r=>'<div class="compare-note">'+esc(r.name)+'：最大火力は保留（'+esc(comparisonReasonText(r.power.maximumReason))+'）</div>').join('');
+  if(!selfMaximum)notes.add(comparisonReadinessHtml(rows,baseline));
+  const combo=selfMaximum?renderUsedComparisonCombo(rows,notes.add):'';
+  for(const row of rows){
+    const pipeline=row.oneHitPipeline;
+    for(const detail of [bowBladescalePremiseDisplay(pipeline),lbgBladescalePremiseDisplay(pipeline),hbgBladescalePremiseDisplay(pipeline),bladescaleHoningPremiseDisplay(pipeline),consumerStandardAmmoNote(pipeline?.evaluationPlan)]){
+      notes.add(detail,row);
+    }
+    if(pipeline?.scope==='CB_INDEPENDENT_R_H_SUM')notes.add('<p>'+esc(cbIndependentMixDisplay(pipeline))+'</p>',row);
   }
-  if(rows.some(r=>r.oneHitPipeline))return h+'</div>';
-  return h+'</div><details class="compare-note comparison-explanation comparison-legacy-dps"><summary>参考DPSの補足</summary><div>基準：'+esc(baseline.name)+'。DPSは非正規化の計算値です。DPS指数・増減率は補助情報です。'+(ready?'':'基準DPSが未算出・0以下の場合、指数と増減率は算出しません。')+'太字は各項目で数値が最大のセットです。1ヒット期待値とDPSは現在Step 5の攻撃条件を共通条件として計算します。DPSは最大会心率を使用します。所要時間は参考値のためDPSも参考値です。</div></details>';
+  for(const r of rows.filter(r=>r.power?.conditionPlan?.applied.length))notes.add('<p>火力指数の適用条件 '+esc(r.power.conditionPlan.applied.map(x=>x.skill+(x.level!=null?' Lv'+x.level:'')+' (攻撃'+(x.maximumAttackMultiplier?'×'+x.maximumAttackMultiplier+'：最大側のみ':x.attackMultiplier&&x.attackMultiplier!==1?'×'+x.attackMultiplier:'+'+x.attackAdd)+(x.elementAdd?' / 属性+'+x.elementAdd:'')+(x.elementMultiplier?' / 属性×'+x.elementMultiplier+'：'+esc(x.elementConditionLabel||'赤ゲージ時')+'・最大側のみ':'')+')').join(' / '))+'。'+(r.power.conditionPlan.excluded.length?'同時成立しないため除外：'+esc(r.power.conditionPlan.excluded.map(x=>x.skill).join(' / '))+'。':'')+'</p>',r);
+  notes.add('<p>基準：'+esc(baseline.name)+'。主結果は選択した技構成の丸め前実ダメージです。通常と最大はそれぞれ独立して計算します。'+(selfMaximum?'最大欄の増減率は同じビルドの通常火力（内訳は同じ成分）を使用し、通常値が0または未算出なら「—」と表示します。実ダメージはそのまま表示します。保存・コピー用のビルド間比較データでは従来どおり選択した基準を使用します。':'相対指数は基準ビルドの通常火力を100とし、物理・属性の括弧内は同じ基準の通常成分との差です。基準が未算出でも比較対象の実計算値は表示します。')+'未対応の技・スキル・未選択の条件は推測せず、該当する側に理由を表示します。所要時間は使用しません。</p>');
+  if(selfMaximum){
+    for(const row of rows){
+      const reason=consumerRelativeReason(row,baseline);
+      if(reason)notes.add('<p data-relative-pending>出力用のビルド間比較のみ保留：'+esc(comparisonReasonText(reason))+'</p>',row);
+    }
+  }else{
+    notes.add('<p>参考DPS：'+(ready?'':'基準DPSは未算出または0以下なので、指数と増減率は算出しません。')+'DPSの計算には、登録コンボと所要時間を使用します。</p>');
+  }
+  h+=notes.render()+combo;
+  for(let i=0;i<rows.length;i+=perGroup)h+=renderCompareTableChunk(rows.slice(i,i+perGroup),rows,baseline);
+  return h+renderSavedSkillComparison(rows)+'</div>';
 }
 function renderCachedBuildComparison(){if(lastBuildComparisonRows&&$('compareOut').dataset.resultMode!=='current-custom')$('compareOut').innerHTML=renderCompareTable(lastBuildComparisonRows,{baselineIndex:lastBuildComparisonBaselineIndex});}
 function referenceComboChange(row,baseline){

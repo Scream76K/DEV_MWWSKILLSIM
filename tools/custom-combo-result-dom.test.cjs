@@ -131,7 +131,8 @@ test('legacy move diagnostics agree in the editor, comparison counts and individ
   el('compareBuilds').querySelector('[data-compare-name="確認"]').checked=true;
   el('runCompare').click();
   const reasons=el('compareOut').querySelector('[data-comparison-pending]').textContent;
-  assert.equal(reasons.split(message).length-1,3,reasons);
+  assert.equal(reasons.split(message).length-1,1,reasons);
+  assert.match(reasons,/確認（通常・最大）/);
   assert.ok(!reasons.includes(id),reasons);assert.equal(w.eval('storageGet(BUILDS_KEY)'),bytes);
  }
 });
@@ -240,7 +241,9 @@ for(const [kind,weaponId,damage] of [['light-bowgun',763,35.8344],['heavy-bowgun
   checkTotal(row.oneHitPipeline,light?299.88:damage);
   if(light){
     assert.ok(output().includes('通常：通常弾 Lv2・速射5回（25ヒット）最大：通常弾 Lv2・速射5回（25ヒット）'));
-    assert.ok(output().includes('指定コンボ：通常 '+label+' 35.8 ／ 最大 '+label+' 35.8'),output());
+    const note=el('compareOut').querySelector('details[data-comparison-notes]');
+    assert.ok(note&&!note.open);
+    assert.ok(note.textContent.includes('指定コンボ：通常 '+label+' 35.8 ／ 最大 '+label+' 35.8'),note.textContent);
   }else assert.ok(output().includes('通常：'+label+'最大：'+label),output());
 });
 

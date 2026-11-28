@@ -39,6 +39,9 @@ test('mobile-width browser reveals only the chosen weapon settings, and a change
  const totals=q('#compareOut [data-custom-damage="total"] td'), used=q('[data-used-weapon-settings]');
  const before=(await totals.allTextContents()).slice(0,2);
  assert.ok(before.every(x=>Number(x)>0),JSON.stringify(before));
+ const notes=q('#compareOut details[data-comparison-notes]');
+ assert.equal(await notes.evaluate(el=>el.open),false);
+ await tap('#compareOut [data-comparison-notes] > summary');
  assert.match(await used.innerText(),/ビンなし/);
  assert.equal(await q('#powerBowCoating').inputValue(),'');
  await coating.selectOption('PIERCE');

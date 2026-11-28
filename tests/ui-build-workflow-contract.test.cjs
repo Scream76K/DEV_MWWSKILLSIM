@@ -127,8 +127,8 @@ test('owner review: concise one-hit values with opt-in diagnostic text', () => {
 test('owner review: comparison explanations collapse without deleting the computation', () => {
   const css = extractStyle('flamme-ui-one-hit-diagnostics-stage10');
   assert.ok(css.includes('.comparison-explanation'));
-  assert.ok(html.includes('火力計算条件の詳細'));
-  assert.ok(html.includes('参考DPSの補足'));
+  assert.ok(html.includes('火力計算の注釈'));
+  assert.ok(html.includes('参考DPS：'));
   assert.ok(html.includes('renderCompareTableChunk('));
   assert.ok(html.includes("['normal','火力指数（計算値）［非正規化］','power-index']"));
 });

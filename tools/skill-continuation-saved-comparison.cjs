@@ -24,9 +24,9 @@ try{
  assert.equal(rows.length,2);for(const key of ['snapshot','conditions','stored'])assert.deepEqual(after[key],before[key]);assert.deepEqual(after.result.channels,before.result.channels);
  const metadataDifferences=differences(before.result,after.result),known=new Set(['.conditionKey','.comparisonContext.damage','.comparisonContext.dps']);assert.ok(metadataDifferences.every(x=>known.has(x)),JSON.stringify(metadataDifferences));
  for(const row of rows){const a=saved.find(x=>x.name===row.name);assert.deepEqual(row.oneHitPipeline.channels,a.result.channels);for(const ch of ['normal','maximum']){const c=row.oneHitPipeline.channels[ch];assert.equal(c.execution.status,'complete');assert.equal(c.metrics.comboTotalDamage.status,'available');assert.deepEqual((c.diagnostics.ignoredSkillEffects||[]).map(x=>x.skillId),row.name==='A Artia'?(bodyMode?[162,86]:[86]):(bodyMode?[86]:[]));}}
- const note=w.document.querySelector('#compareOut details[data-comparison-skill-omissions]');
+ const note=w.document.querySelector('#compareOut details[data-comparison-notes]');
  assert.ok(note&&!note.open);
- assert.equal(note.querySelectorAll('li').length,bodyMode?2:1);
+ assert.equal(note.querySelectorAll('[data-comparison-skill-omissions] li').length,bodyMode?2:1);
  assert.doesNotMatch(note.textContent,/\bID\b|IGNORED_UNSUPPORTED_EFFECT/);
  const exported=read('createBuildComparisonReport()');for(const row of exported.results)assert.deepEqual(row.oneHitPipeline.channels,saved.find(x=>x.name===row.name).result.channels);
  for(const item of saved){[...w.document.querySelectorAll('[data-build-load]')].find(n=>n.dataset.buildLoad===item.name).click();assert.deepEqual(read('buildSnapshotComparable(buildSnapshot())'),read('buildSnapshotComparable(savedBuildMap()['+JSON.stringify(item.name)+'])'));assert.deepEqual(read('calcState.realOneHit').channels,item.result.channels);assert.deepEqual(read('savedBuildMap()'),before.stored);}

@@ -25,6 +25,7 @@ test('fixed skill reference is a single terminal row with shared values only onc
  assert.match(r.querySelector('th').textContent,/固定ダメージ.*発動1回.*合計に含めない/);
  assert.equal(r.cells[1].textContent,'①灼熱化Ⅰ；20.0②鎖刃刺撃 Lv3；下位160.0／上位220.0');
  assert.equal(r.cells[2].textContent,'—');
+ assert.equal(out.querySelector('[data-comparison-metric="power-index"] th').textContent,'通常火力');
  assert.equal(out.querySelector('[data-comparison-metric="power-index"] td').textContent,'698.5');
  assert.equal(out.querySelector('[data-comparison-metric="max-power-index"] td').textContent,'866.1（+24.0%）');
  assert.equal(report(),saved);assert.equal(w.eval('JSON.stringify(lastBuildComparisonRows)'),before);
@@ -54,16 +55,33 @@ test('comparison collapses repeating skill omissions without hiding which result
  w.qa=rows;w.eval('lastBuildComparisonRows=qa;lastBuildComparisonContext={}');
  const report=()=>w.eval('JSON.stringify(createBuildComparisonReport(), (key,value) => key === "createdAt" ? undefined : value)');
  const saved=report(),out=render(w,rows);
- const notes=out.querySelectorAll('details[data-comparison-skill-omissions]');
+ const notes=out.querySelectorAll('details[data-comparison-notes]');
  assert.equal(notes.length,1);
  const d=notes[0];
  assert.equal(d.open,false);
- assert.equal(d.querySelector('summary').textContent,'火力に未反映の効果：ダークアーツ追加波、別の効果');
- const items=[...d.querySelectorAll('li')].map(x=>x.textContent);
+ assert.equal(d.querySelector('summary').textContent,'火力計算の注釈');
+ const items=[...d.querySelectorAll('[data-comparison-skill-omissions] li')].map(x=>x.textContent);
  assert.deepEqual(items,['ダークアーツ追加波：A <一>・B（通常・最大）','別の効果：B（最大のみ）']);
  assert.doesNotMatch(d.textContent,/INTERNAL_CODE|PER_HIT|\bID\b/);
  assert.equal(out.querySelectorAll('[data-ignored-skill-channel]').length,0);
  assert.match(saved,/DARK_ARTS_WAVE:PER_HIT_BUFF_INTERACTIONS_PENDING/);
  assert.equal(report(),saved);
  assert.equal(render(w,[rows[2]]).querySelector('[data-comparison-skill-omissions]'),null);
+});
+
+test('all comparison annotations share one closed panel and deduplicate conversions by build and channel',t=>{
+ const w=setup(t);
+ const convert=(active,effectiveElement)=>({active,baseElement:320,effectiveElement});
+ const c=(base,conversion)=>({...base,diagnostics:{...base.diagnostics,attributeConversion:conversion,thunderResistanceConversion:{baseElement:100,effectiveElement:150}}});
+ const rows=[row('A',c(channel(40,[]),convert(false,320)),c(channel(60,[]),convert(true,400))),row('B',c(channel(45,[]),convert(false,320)),c(channel(65,[]),convert(true,400)))];
+ const out=render(w,rows),notes=out.querySelector('details[data-comparison-notes]');
+ assert.ok(notes&&!notes.open);
+ assert.equal(notes.querySelector('summary').textContent,'火力計算の注釈');
+ assert.equal(out.querySelectorAll('.compare-results details').length,1);
+ assert.equal(out.textContent.match(/耐性変換・雷100→150/g)?.length,1);
+ assert.equal(out.textContent.match(/属性変換非発動・龍320→320/g)?.length,1);
+ assert.equal(out.textContent.match(/属性変換発動・龍320→400/g)?.length,1);
+ assert.match(notes.textContent,/A・B（通常のみ）.*属性変換非発動/);
+ assert.match(notes.textContent,/A・B（最大のみ）.*属性変換発動/);
+ for(const e of out.querySelectorAll('[data-comparison-note]'))assert.ok(notes.contains(e));
 });

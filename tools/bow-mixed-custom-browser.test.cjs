@@ -42,7 +42,10 @@ test('mobile selects a Bow technique sequence and calculates both columns in the
  await click('#calcUserComboDamage');
  const out=page.locator('#compareOut');
  assert.equal(await optional.evaluate(e=>e.open),false);
- assert.match(await out.locator('[data-automatic-opening]').innerText(),/ビンなし/);
+ const notes=out.locator('details[data-comparison-notes]');
+ assert.equal(await notes.evaluate(el=>el.open),false);
+ await click('#compareOut [data-comparison-notes] > summary');
+ assert.match(await notes.locator('[data-automatic-opening]').innerText(),/ビンなし/);
  assert.deepEqual((await out.locator('[data-custom-damage="total"] td').allTextContents()).slice(0,2),['237.6','237.6']);
  assert.equal(await page.locator('#powerBowCoating').inputValue(),'');
  await click('#comparisonOptionalConditions > summary');
@@ -54,7 +57,10 @@ test('mobile selects a Bow technique sequence and calculates both columns in the
  const result=await out.locator('[data-custom-damage="total"] td').allTextContents();
  assert.deepEqual(result.slice(0,2),['237.6','237.6']);
  assert.match(await out.locator('[data-used-combo]').innerText(),/通常：剛射3 → 剛連射3 → 竜の千々矢\s+最大：剛射3 → 剛連射3 → 竜の千々矢/);
- assert.match(await out.innerText(),/各技がそれぞれの適正距離で全段命中/);
  assert.ok(await out.locator('[data-current-custom-heading]').evaluate(e=>e===document.activeElement));
+ assert.equal(await notes.evaluate(el=>el.open),false);
+ assert.doesNotMatch(await out.innerText(),/各技がそれぞれの適正距離で全段命中/);
+ await click('#compareOut [data-comparison-notes] > summary');
+ assert.match(await notes.innerText(),/各技がそれぞれの適正距離で全段命中/);
  assert.deepEqual(errors,[]);
 });

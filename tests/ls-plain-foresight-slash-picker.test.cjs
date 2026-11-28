@@ -56,7 +56,11 @@ test('plain long-sword foresight slash without a successful counter calculates o
   if(gauge==='NONE')assert.deepEqual(result,lanes(calc));
   else{
    assert.ok(result.every(x=>x.value===null&&x.reason===gaugeReason));
-   for(const label of ['通常','最大'])assert.ok(el('compareOut').textContent.includes(label+'：'+gaugeText));
+   const notes=el('compareOut').querySelector('details[data-comparison-notes]');
+   assert.ok(notes&&!notes.open);
+   const why=[...notes.querySelectorAll('[data-comparison-note]')].find(x=>x.textContent.includes(gaugeText));
+   assert.equal(why.querySelector('strong').textContent,'（通常・最大）');
+   assert.equal(why.querySelector('p').textContent,gaugeText);
   }
   el('buildName').value=gauge;el('saveBuild').click();
   assert.deepEqual(read('savedBuildMap()')[gauge].combo.longSwordState,{spiritGauge:gauge});
@@ -75,7 +79,9 @@ test('plain long-sword foresight slash without a successful counter calculates o
    if(row.name===colored){
     assert.ok(values.every(x=>x.value===null&&x.reason===gaugeReason));
     const details=el('compareOut').querySelector('[data-comparison-pending]');
-    for(const label of ['通常','最大'])assert.ok(details.textContent.includes(row.name+' ／ '+label+'：'+gaugeText));
+    const why=[...details.querySelectorAll('[data-comparison-note]')].find(x=>x.textContent.includes(gaugeText));
+    assert.equal(why.querySelector('strong').textContent,row.name+'（通常・最大）');
+    assert.equal(why.querySelector('p').textContent,gaugeText);
    }else assert.deepEqual(values,lanes(calc));
   }
  }
