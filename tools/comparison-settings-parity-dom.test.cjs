@@ -14,12 +14,12 @@ test('one intro precedes the build picker and the target and advanced settings s
   const w=setup(t);
   const form=el(w,'comparisonForm'), builds=el(w,'comparisonBuildPicker'), target=el(w,'comparisonTargetFields');
   assert.ok(form,'settings container exists');
-  assert.match(form.parentElement.firstElementChild.textContent,/⑥ ビルド火力比較/);
+  assert.match(form.parentElement.firstElementChild.textContent,/⑦ ビルド火力比較/);
   assert.equal(el(w,'comparisonSettingsHeading'),null);
   assert.equal(el(w,'damageComparisonHeading').textContent,'ビルド火力比較結果');
   const guide=el(w,'comparisonInputGuide');
   assert.equal(form.firstElementChild,guide);
-  assert.match(guide.textContent,/⑤で保存した同じ武器種.*最大3件.*通常・最大火力/);
+  assert.match(guide.textContent,/⑥で保存した同じ武器種.*最大3件.*通常・最大火力/);
   assert.equal(guide.nextElementSibling,builds);
   assert.equal(builds.nextElementSibling,target);
   assert.ok(builds.contains(el(w,'compareBuilds')));

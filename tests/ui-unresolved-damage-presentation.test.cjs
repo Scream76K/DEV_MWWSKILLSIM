@@ -167,7 +167,7 @@ test('comparison guidance is concise and does not promise DPS or all-weapons rea
   const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
   const guide=[...html.matchAll(/<[^>]+id="comparisonInputGuide"[^>]*>([^<]+)<\/[^>]+>/g)];
   assert.equal(guide.length,1,'one comparison guide');
-  assert.match(guide[0][1],/⑤で保存した同じ武器種.*最大3件.*通常・最大火力.*⑤で保存し直/);
+  assert.match(guide[0][1],/⑥で保存した同じ武器種.*最大3件.*通常・最大火力.*⑥で保存し直/);
   assert.ok(guide[0].index<html.indexOf('id="comparisonBuildPicker"'),'guide precedes build selection');
   assert.doesNotMatch(guide[0][1],/DPS|共通条件/);
   assert.ok(html.includes('未算出の結果は推測で補完しません。'));

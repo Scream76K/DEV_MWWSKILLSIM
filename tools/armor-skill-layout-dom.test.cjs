@@ -23,8 +23,8 @@ test('only Armor/Charm and Skills use the 6:4 row at every viewport; build and s
     const row = workspace.querySelector('#betaBuildPanel > #armorBuildWorkspace');
     assert.ok(row);
     assert.deepEqual(children(row), ['armorWorkspaceLeft', 'skillWorkspaceRight']);
-    assert.match(row.previousElementSibling.querySelector('summary').textContent.trim(), /^③\s*装備登録$/u);
-    assert.match(row.nextElementSibling.querySelector('summary').textContent.trim(), /^⑤\s*ビルド保存$/u);
+    assert.match(row.previousElementSibling.querySelector('summary').textContent.trim(), /^③\s*武器登録$/u);
+    assert.match(row.nextElementSibling.querySelector('summary').textContent.trim(), /^⑥\s*ビルド保存$/u);
     assert.ok(workspace.querySelector('#betaSupportPanel #comparisonForm'));
     const sheet = document.querySelector('#flamme-ipad-build-skills-layout').sheet;
     const rules = [...sheet.cssRules];
@@ -118,7 +118,7 @@ test('skill overview opens at current level; every level opens separately and de
   }
 });
 
-test('④ heroics checkbox defaults OFF and synchronizes the unchanged HP values', () => {
+test('⑤ heroics checkbox defaults OFF and synchronizes the unchanged HP values', () => {
   const { window, errors } = app();
   try {
     const d = window.document;

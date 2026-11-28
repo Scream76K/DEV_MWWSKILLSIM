@@ -46,6 +46,7 @@ on:
       - 'tools/armor-skill-layout-dom.test.cjs'
       - 'tools/armor-portrait-layout-browser.test.cjs'
       - 'tools/comparison-portrait-layout-browser.test.cjs'
+      - 'tools/skill-comparison-browser.test.cjs'
       - 'tools/artia-stage-parity.test.cjs'
       - 'tools/artia-craft-parity.test.cjs'
       - 'tools/charm-public-shortcut-dom.test.cjs'
@@ -277,6 +278,6 @@ jobs:
       - name: Install the locked Playwright Chromium runtime
         run: npx --no-install playwright install --with-deps --only-shell chromium
       - name: Verify narrow armor and skill columns in Chromium
-        run: node --test tools/armor-portrait-layout-browser.test.cjs tools/bow-mixed-custom-browser.test.cjs tools/comparison-portrait-layout-browser.test.cjs tools/custom-weapon-settings-browser.test.cjs tools/gs-per-move-charge-browser.test.cjs tools/bow-explicit-charge-browser.test.cjs
+        run: node --test tools/skill-comparison-browser.test.cjs tools/armor-portrait-layout-browser.test.cjs tools/bow-mixed-custom-browser.test.cjs tools/comparison-portrait-layout-browser.test.cjs tools/custom-weapon-settings-browser.test.cjs tools/gs-per-move-charge-browser.test.cjs tools/bow-explicit-charge-browser.test.cjs
       - name: Verify session and legacy-cache restoration without external API access
         run: node --test tools/comparison-session-reload-browser.test.cjs

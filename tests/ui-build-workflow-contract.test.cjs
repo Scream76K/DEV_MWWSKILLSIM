@@ -12,8 +12,8 @@ const extractStyle = id => {
 };
 test('Build before Support, without duplicated weapon selector', () => {
   const main = html.slice(html.indexOf('<main class="wrap">'), html.indexOf('</main>') + 7);
-  assert.ok(main.indexOf('③ 装備登録') > 0);
-  assert.ok(main.indexOf('③ 装備登録') < main.indexOf('ここからサポート機能'));
+  assert.ok(main.indexOf('③ 武器登録') > 0);
+  assert.ok(main.indexOf('③ 武器登録') < main.indexOf('ここからサポート機能'));
   assert.equal((main.match(/id="weaponKindSelectionBlock"/g) || []).length, 1);
 });
 test('responsive breakpoints stack tablet portrait and retain landscape columns', () => {

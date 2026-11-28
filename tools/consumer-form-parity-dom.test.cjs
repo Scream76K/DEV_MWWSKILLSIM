@@ -2,7 +2,7 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {JSDOM,VirtualConsole}=require('jsdom');
 const {readSimulatorHtml}=require('./dom-test-setup.cjs');
-test('approved ① ② ④ ⑤ controls remain compact without losing the usable inputs',t=>{
+test('approved ① ② ⑤ ⑥ controls remain compact without losing the usable inputs',t=>{
  const w=new JSDOM(readSimulatorHtml(),{url:'https://consumer-form.test/',runScripts:'dangerously',virtualConsole:new VirtualConsole(),beforeParse(w){w.fetch=()=>Promise.reject(Error('OFFLINE'));w.structuredClone=x=>w.JSON.parse(w.JSON.stringify(x));}}).window;
  t.after(()=>w.close());
  const doc=w.document,id=x=>doc.getElementById(x);
@@ -10,7 +10,7 @@ test('approved ① ② ④ ⑤ controls remain compact without losing the usable
  assert.ok(id('load'));
  assert.equal(w.eval("typeof clearDataCache+' '+typeof restorePreviousData"),'function function');
  assert.equal(id('buildLoadCard').querySelector('summary').textContent,'② ビルド読込');
- assert.ok([...doc.querySelectorAll('summary')].some(x=>x.textContent==='⑤ ビルド保存'));
+ assert.ok([...doc.querySelectorAll('summary')].some(x=>x.textContent==='⑥ ビルド保存'));
  assert.ok(id('useWeaponCoeff'));assert.ok(id('skillOutput'));assert.ok(id('buildName'));
  assert.ok(id('weaponCoeffState').hidden);
  assert.ok(id('weaponCoeffState').nextElementSibling.hidden);
