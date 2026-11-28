@@ -55,14 +55,14 @@ test('restoring a legacy right chain target preserves its ID and phase; both pic
  part.value='king-alsh:7';w.renderMonsterInfo();assert.equal(el(w,'kingTargetPicker').value,'king-alsh:6');assert.equal(part.value,'king-alsh:7');
 });
 
-test('unadopted variants warn before calculating and never present borrowed meat values as supported',t=>{
+test('unadopted variants are not offered and restored targets never calculate with borrowed hitzones',t=>{
  const w=setup(t);
  w.eval("DB.monsters[0].variants=[{id:41,kind:'arch-tempered',name:'アルシュベルド（歴戦王）'}];renderMonsters()");
  const monster=el(w,'monster'),info=el(w,'monsterInfo');
  const old=[...monster.options].find(o=>o.value==='20:v41');
  assert.ok(old.hidden);
  assert.match(old.textContent,/火力計算未対応/);
- assert.deepEqual([...monster.options].filter(o=>!o.hidden&&(/歴戦王/.test(o.textContent))).map(o=>o.value),['20:king']);
+ assert.deepEqual([...monster.options].filter(o=>!o.hidden&&(/歴戦王/.test(o.textContent))).map(o=>o.value),[]);
  assert.equal(monster.querySelector('[value="20:king"]').textContent,'アルシュベルド（歴戦王）（火力計算未対応）');
  assert.doesNotMatch([...monster.options].find(o=>o.value==='20').textContent,/未対応/);
  change(w,monster,'20:v41');
@@ -307,7 +307,22 @@ test('only explicitly matching complete variant tables share a visible monster c
  const option=v=>[...mon.options].find(o=>o.value===v);
  assert.equal(option('2').textContent,'アジャラカン（通常/歴戦個体）');
  assert.equal(option('2:v17').hidden,true);
- assert.equal(option('2:v18').hidden,false);assert.equal(option('2:v19').hidden,false);
+ assert.equal(option('2:v18').hidden,false);assert.equal(option('2:v19').hidden,true);
  change(w,mon,'2:v17');part.value='72';w.renderMonsterParts();
  assert.equal(mon.value,'2:v17');assert.equal(part.value,'72');
+});
+
+test('the loaded catalog only offers targets with their own tables, plus training',t=>{
+ const w=setup(t);
+ const source=require('../docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json').data.monsters;
+ w.eval('DB.monsters='+JSON.stringify(source)+';DB.monsters.push({id:9998,kind:"large",name:"表なし",parts:[]},{id:9999,kind:"large",name:"未取得"});renderMonsters()');
+ const mon=el(w,'monster');
+ const offered=()=>[...mon.options].filter(o=>!o.hidden&&o.value).map(o=>o.value);
+ assert.deepEqual(offered().sort(),['training-room',...source.filter(m=>m.kind==='large'&&m.parts?.length).map(m=>String(m.id))].sort());
+ assert.equal(mon.value,'training-room');
+ change(w,mon,'20:king');w.renderMonsters();
+ assert.equal(mon.value,'20:king','previous target stays selected without falling back to training');
+ assert.equal(mon.selectedOptions[0].hidden,true);
+ change(w,mon,'training-room');w.renderMonsters();
+ assert.ok(!offered().includes('20:king'),'the previous target is not offered again');
 });

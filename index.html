@@ -2448,13 +2448,17 @@ function renderCharmEditor(){
 }
 const VARIANT_TARGET_UNAVAILABLE_HINT='この個体の部位肉質は火力計算に未対応です。通常個体またはトレーニングルームを選んでください。';
 function variantTargetNotAdopted(id){return /^[1-9][0-9]*:(?:v[1-9][0-9]*|king)$/.test(String(id||''));}
+function monsterOwnHitzoneTable(m){
+  const parts=variantTargetNotAdopted(m?.id)?m?.variant?.parts:m?.parts;
+  return Array.isArray(parts)&&parts.length>0;
+}
 function renderMonsters(){
   const s=$('monster');if(!s)return;
   const old=s.value,arr=selectableMonsters(),training=arr.find(m=>m.id==='training-room');
   const sorted=arr.filter(m=>m!==training).sort((a,b)=>jpSort(a.name,b.name));
   if(training)sorted.unshift(training);
   // Preserve an imported alias for exact saved-target restoration, not as a second visible choice.
-  s.innerHTML='<option value="">モンスターを選択</option>'+sorted.map(m=>`<option value="${esc(m.id)}"${(m.legacyKingAlias||m.legacyDuplicateTarget)?' hidden':''}>${esc(m.displayName||m.name)}${variantTargetNotAdopted(m.id)?'（火力計算未対応）':''}</option>`).join('');
+  s.innerHTML='<option value="">モンスターを選択</option>'+sorted.map(m=>`<option value="${esc(m.id)}"${(m.legacyKingAlias||m.legacyDuplicateTarget||!monsterOwnHitzoneTable(m))?' hidden':''}>${esc(m.displayName||m.name)}${variantTargetNotAdopted(m.id)?'（火力計算未対応）':''}</option>`).join('');
   if(old&&sorted.some(m=>String(m.id)===old))s.value=old;
   else if(!old&&training)s.value='training-room';
   renderMonsterParts();
@@ -2572,7 +2576,7 @@ function renderMonsterInfo(){
   const picker=$('kingTargetPicker'),m=selectableMonsters().find(x=>String(x.id)===$('monster')?.value)||null,p=selectedPart();
   if(picker)picker.value=arkveldTargetDisplayValue($('monsterPart')?.value||'',selectedKingChainState(),arkveldTargetGroups(m));
   syncComparisonTargetSummary();
-  if(m&&variantTargetNotAdopted(m.id)){
+  if(m&&(variantTargetNotAdopted(m.id)||!monsterOwnHitzoneTable(m))){
     const label=m.legacyKingAlias&&p?legacyKingPartDisplayName(monsterPartDisplayName(p,m.parts||[],m)):(picker||$('monsterPart'))?.selectedOptions[0]?.textContent||'';
     $('monsterInfo').textContent=m.name+(label&&p?' / '+label:'')+'。'+VARIANT_TARGET_UNAVAILABLE_HINT;
     return;
