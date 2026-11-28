@@ -101,3 +101,26 @@ test('unresolved variant exposes unknown decoration capacity, then explicit gamm
  assert.equal(slot.jewel.id,99);
  assert.equal(ctx.decorationRecognitionSlotCap({equipmentKey:'charm',expectedSlotLevels:[1]},0),1);
 });
+test('missing dakuten in verified armor crops offer exact same-part family, but require explicit selection',()=>{
+ const row={key:'head',rows:[{raw:'エクソルスヘルムy',conf:87}],region:{cropEvidence:{valid:true}}};
+ const records=['α','β','γ'].map((suffix,i)=>({id:648+i,kind:'head',name:'エグゾルスヘルム'+suffix}));
+ const {ctx}=setup([]);
+ ctx.armorDB=[...records,{id:469,kind:'head',name:'エグゾルスヘルム'},{id:900,kind:'chest',name:'エグゾルスヘルムγ'}];
+ ctx.CATEGORY_ANCHORS={head:['ヘルム'],chest:['メイル']};
+ for(const name of ['armorCategoryKey','parseArmorStructure','parseSubtypeFromTail','equipmentArmorVoicingMatch','equipmentEvidenceCandidates']){
+  const helper=source.functionSource(html,name);if(helper)vm.runInContext(helper,ctx);
+ }
+ const candidates=ctx.equipmentEvidenceCandidates(row,[]);
+ assert.deepEqual(Array.from(candidates,c=>c.id),[648,649,650]);
+ row.ranked=candidates;row.best=candidates[0];ctx.window.lastEquipmentOCR=[row];
+ assert.equal(ctx.equipmentVisibleChoice(row),null);
+ ctx.selectEquipmentCandidate('head',2);
+ assert.equal(ctx.equipmentVisibleChoice(row).id,650);
+ const chest={key:'chest',rows:[{raw:'コクメイル86',conf:72}],region:{cropEvidence:{valid:true}}};
+ ctx.armorDB=[{id:675,kind:'chest',name:'ゴグメイルα'},{id:676,kind:'chest',name:'ゴグメイルβ'}];
+ assert.deepEqual(Array.from(ctx.equipmentEvidenceCandidates(chest,[]),x=>x.id),[675,676]);
+ for(const bad of [{...chest,region:{cropEvidence:{valid:false}}},{...chest,rows:[{raw:'コクメイル86',conf:69}]},{...chest,rows:[{raw:'メイルβ',conf:99}]},{...chest,rows:[{raw:'コクコイルα',conf:99}]}]){
+  assert.equal(ctx.equipmentEvidenceCandidates(bad,[]).length,0);
+ }
+ assert.equal(ctx.equipmentEvidenceCandidates(chest,[{id:700,name:'他の候補'}]).length,2);
+});
