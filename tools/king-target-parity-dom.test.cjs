@@ -16,7 +16,7 @@ test('King displays combined paired options only, and other monsters keep their 
  change(w,el(w,'monster'),'20:king');
  const picker=el(w,'kingTargetPicker');
  assert.ok(picker,'King combined target picker exists');
- assert.deepEqual([...picker.options].filter(o=>!o.hidden).map(o=>o.textContent),['部位を選択','頭','胴','鎖刃（解放状態）','鎖刃（解除状態）','脚','尻尾']);
+ assert.deepEqual([...picker.options].filter(o=>!o.hidden).map(o=>o.textContent),['部位を選択','頭','胴','鎖刃（解放状態）','鎖刃（解除状態）','右/左脚','尻尾']);
  assert.equal([...picker.options].find(o=>o.value==='king-alsh:2').hidden,true);
  assert.equal(el(w,'comparisonPartLabel').htmlFor,'kingTargetPicker');
  assert.ok(el(w,'monsterPart').hidden);
@@ -74,7 +74,7 @@ test('unadopted variants warn before calculating and never present borrowed meat
  assert.match(w.comparisonReasonText('REAL_SLICE:TARGET_VARIANT_HITZONE_SOURCE_NOT_ADOPTED'),/通常個体またはトレーニングルーム/);
  change(w,monster,'20:king');
  const king=el(w,'kingTargetPicker');
- assert.ok([...king.options].some(o=>o.textContent==='脚'));
+ assert.ok([...king.options].some(o=>o.textContent==='右/左脚'));
  assert.ok(![...king.options].some(o=>o.textContent==='右脚'));
  change(w,king,'king-alsh:6');
  assert.match(info.textContent,/脚.*火力計算に未対応/);
@@ -115,10 +115,10 @@ test('ordinary and tempered Arkveld group only equal source parts and do not use
   change(w,el(w,'monster'),id);
   const picker=el(w,'kingTargetPicker'),raw=el(w,'monsterPart');
   const labels=[...picker.options].filter(o=>!o.hidden).map(o=>o.textContent);
-  assert.ok(labels.includes('脚'));
+  assert.ok(labels.includes('右/左脚'));
   assert.ok(labels.includes('鎖刃（解除状態）'));
   assert.ok(labels.includes('鎖刃（解放状態・火力計算未対応）'));
-  assert.doesNotMatch(labels.join('/'),/左脚|右脚|左翼|右翼/);
+  assert.doesNotMatch(labels.filter(x=>x!=='右/左脚').join('/'),/左脚|右脚|左翼|右翼/);
   assert.equal(picker.querySelector('[value=arkveld-chain-released]').disabled,true);
   raw.value='2787';w.renderMonsterInfo();assert.equal(picker.value,'arkveld-legs');assert.equal(raw.value,'2787');
   change(w,picker,'arkveld-chain-released');assert.equal(raw.value,'2787');
@@ -129,7 +129,7 @@ test('ordinary and tempered Arkveld group only equal source parts and do not use
 
 test('Omega exposes one choice with one known target table, and distinguishes a genuinely different table',t=>{
  const w=setup(t);
- w.eval(`const baseParts=[{id:2733,name:'head',kind:'head',multipliers:{slash:.45}}];
+ w.eval(`const baseParts=[{id:2733,name:'head',kind:'head',multipliers:{slash:.45,blunt:.45,pierce:.45,fire:0,water:0,thunder:0,ice:0,dragon:0}}];
  DB.monsters.push({id:33,kind:'large',name:'オメガ・プラネテス',parts:baseParts,variants:[{id:38,name:'オメガ・プラネテス',kind:'tempered'}]});
  renderMonsters();`);
  const monster=el(w,'monster');
@@ -226,11 +226,11 @@ test('monster families expose identified parts only and preserve hidden saved ta
  const w=setup(t);
  const source=require('../docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json').data.monsters;
  const cases=[
-   [27,{'2862':'傘膜','2863':'口','2866':'触腕','2859':'右第1腕','2861':'左第2腕','2860':'左第3腕'}],
+   [27,{'2862':'傘膜','2863':'口','2866':'触腕','2859':'右/左第1腕','2861':'右/左第2腕','2860':'右/左第3腕'}],
    [6,{'2614':'外套膜','2607':'毒トゲ','2617':'腹部'}],
    [31,{'2633':'後脚','2634':'前脚'}],
    [4,{'2595':'花弁状部','2599':'尻尾'}],
-   [3,{'2580':'左翼','2589':'尻尾'}],
+   [3,{'2580':'右/左翼','2589':'尻尾'}],
    [16,{'2751':'鼻','2753':'頭'}],
  ];
  w.eval('DB.monsters.push(...'+JSON.stringify(source.filter(m=>cases.some(([id])=>id===m.id)))+');renderMonsters()');
@@ -241,7 +241,7 @@ test('monster families expose identified parts only and preserve hidden saved ta
      change(w,mon,key);
      const opts=[...part.options],visible=opts.filter(o=>!o.hidden);
      assert.doesNotMatch(visible.map(o=>o.textContent).join('/'),/その他部位|ID /,key);
-     for(const [value,label] of Object.entries(names))assert.equal(visible.find(o=>o.value===value)?.textContent,label,key);
+     for(const [value,label] of Object.entries(names))assert.equal(opts.find(o=>o.value===value)?.textContent,label,key);
      for(const row of fixture.parts.filter(p=>p.kind==='hide')){
        assert.equal(opts.find(o=>o.value===String(row.id))?.hidden,true,key);
        change(w,part,String(row.id));w.renderMonsterParts();
@@ -260,7 +260,7 @@ test('Guardian Arkveld groups legs and chainblades without borrowing normal Arkv
  const picker=el(w,'kingTargetPicker'),raw=el(w,'monsterPart');
  assert.ok(picker);
  assert.deepEqual([...picker.options].filter(o=>!o.hidden).map(o=>o.textContent).sort(),[
-   '部位を選択','脚','鎖刃（解放状態・火力計算未対応）','鎖刃（解除状態）','頭','胴','尻尾'
+   '部位を選択','右/左脚','鎖刃（解放状態・火力計算未対応）','鎖刃（解除状態）','頭','胴','尻尾'
  ].sort());
  raw.value='2664';w.renderMonsterInfo();assert.equal(picker.value,'arkveld-legs');
  change(w,picker,'arkveld-chain-retracted');assert.equal(raw.value,'2665');
@@ -269,4 +269,45 @@ test('Guardian Arkveld groups legs and chainblades without borrowing normal Arkv
  change(w,picker,'arkveld-chain-released');assert.equal(raw.value,'2665');
  raw.value='2662';w.renderMonsterParts();assert.equal(raw.value,'2662');
  assert.equal(picker.querySelector('[value="2662"]').hidden,true);
+});
+
+test('all source monsters hide unidentified parts, and mirror choices merge only on matching full records',t=>{
+ const w=setup(t);
+ const source=require('../docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json').data.monsters;
+ w.eval('DB.monsters='+JSON.stringify(source)+';renderMonsters()');
+ const mon=el(w,'monster'),part=el(w,'monsterPart');
+ for(const option of [...mon.options].filter(o=>!o.hidden&&o.value)){
+  change(w,mon,option.value);
+  const menu=el(w,'kingTargetPicker')||part;
+  const names=[...menu.options].filter(o=>!o.hidden).map(o=>o.textContent);
+  assert.doesNotMatch(names.join('/'),/その他部位|部位不明|ID \d|[a-z]+-[a-z]+/,option.textContent);
+  assert.equal(new Set(names).size,names.length,option.textContent);
+ }
+ change(w,mon,'3');
+ const combined=()=>[...part.options].filter(o=>!o.hidden).map(o=>o.textContent);
+ assert.ok(combined().includes('右/左脚'));assert.ok(combined().includes('右/左翼'));
+ part.value='2582';w.renderMonsterParts();assert.equal(w.selectedPart().id,2582);
+ assert.equal(part.selectedOptions[0].textContent,'右/左脚');
+ w.eval("DB.monsters.find(m=>m.id===3).parts.find(p=>p.id===2582).multipliers.ice=.99;renderMonsterParts()");
+ assert.ok(combined().includes('右脚'));assert.ok(combined().includes('左脚'));
+ assert.ok(!combined().includes('右/左脚'));
+});
+
+test('only explicitly matching complete variant tables share a visible monster choice',t=>{
+ const w=setup(t);
+ w.eval(`const table=[{id:71,kind:'head',name:'head',multipliers:{slash:.4,blunt:.4,pierce:.4,fire:.1,water:0,thunder:0,ice:.1,dragon:0},states:[{kind:'wound',slash:.6}]}];
+ const same=JSON.parse(JSON.stringify(table));same[0].id=72;
+ const distinct=JSON.parse(JSON.stringify(table));distinct[0].id=73;distinct[0].states[0].slash=.7;
+ DB.monsters.push({id:2,kind:'large',name:'アジャラカン',parts:table,variants:[
+ {id:17,kind:'tempered',name:'アジャラカン（歴戦の個体）',parts:same},
+ {id:18,kind:'arch-tempered',name:'アジャラカン（歴戦王）',parts:distinct},
+ {id:19,kind:'frenzied',name:'狂竜化アジャラカン'}]});
+ renderMonsters();`);
+ const mon=el(w,'monster'),part=el(w,'monsterPart');
+ const option=v=>[...mon.options].find(o=>o.value===v);
+ assert.equal(option('2').textContent,'アジャラカン（通常/歴戦個体）');
+ assert.equal(option('2:v17').hidden,true);
+ assert.equal(option('2:v18').hidden,false);assert.equal(option('2:v19').hidden,false);
+ change(w,mon,'2:v17');part.value='72';w.renderMonsterParts();
+ assert.equal(mon.value,'2:v17');assert.equal(part.value,'72');
 });

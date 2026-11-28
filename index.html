@@ -2121,7 +2121,7 @@ function calcSetSkills(total){
 
   return total;
 }
-const PART_JP={'nose':'鼻','front-legs':'前脚','hind-legs':'後脚','petal':'花弁状部','tail-hair':'尻尾','left-nail':'左爪','right-nail':'右爪','dorsal-fin':'背ビレ','ass':'尻','tongue':'舌','neck':'首','frozen-bigcore-before':'大凍成殻（露出前）','frozen-bigcore-after':'大凍成殻（露出後）','frozen-core-waist':'凍成殻（腰部）','left-wing-legs':'左翼脚','right-wing-legs':'右翼脚','head':'頭','head-neck':'頭/首','body':'胴','torso':'胴','chest':'胸','abdomen':'腹','stomach':'腹','back':'背中','left-wing':'左翼','right-wing':'右翼','wing':'翼','front-leg':'前脚','left-front-leg':'左前脚','right-front-leg':'右前脚','hind-leg':'後脚','left-hind-leg':'左後脚','right-hind-leg':'右後脚','left-foreleg':'左前脚','right-foreleg':'右前脚','foreleg':'前脚','left-hindleg':'左後脚','right-hindleg':'右後脚','hindleg':'後脚','leg':'脚','legs':'脚','tail':'尻尾','tail-tip':'尻尾先端','neck':'首','horn':'角','horns':'角','beak':'嘴','snout':'鼻先','face':'顔','eye':'目','mouth':'口','throat':'喉','shoulder':'肩','arm':'腕','claw':'爪','carapace':'甲羅','shell':'甲殻','tentacle':'触手','tentacles':'触手','fin':'ヒレ','left-fin':'左ヒレ','right-fin':'右ヒレ','wing-arm':'翼腕','core':'核','body-core':'胴体・核','left-leg':'左脚','right-leg':'右脚','left-arm':'左腕','right-arm':'右腕','left-chain-blade-wing':'左鎖翼刃','right-chain-blade-wing':'右鎖翼刃','chain-blade-wing':'鎖翼刃','left-chain-wing':'左鎖翼','right-chain-wing':'右鎖翼','chain-wing':'鎖翼','left-chain':'左鎖','right-chain':'右鎖','chain':'鎖'};
+const PART_JP={'antennae':'触角','periscope':'背中ユニット','left-wing-blade':'左鎖翼刃','right-wing-blade':'右鎖翼刃','nose':'鼻','front-legs':'前脚','hind-legs':'後脚','petal':'花弁状部','tail-hair':'尻尾','left-nail':'左爪','right-nail':'右爪','dorsal-fin':'背ビレ','ass':'尻','tongue':'舌','neck':'首','frozen-bigcore-before':'大凍成殻（露出前）','frozen-bigcore-after':'大凍成殻（露出後）','frozen-core-waist':'凍成殻（腰部）','left-wing-legs':'左翼脚','right-wing-legs':'右翼脚','head':'頭','head-neck':'頭/首','body':'胴','torso':'胴','chest':'胸','abdomen':'腹','stomach':'腹','back':'背中','left-wing':'左翼','right-wing':'右翼','wing':'翼','front-leg':'前脚','left-front-leg':'左前脚','right-front-leg':'右前脚','hind-leg':'後脚','left-hind-leg':'左後脚','right-hind-leg':'右後脚','left-foreleg':'左前脚','right-foreleg':'右前脚','foreleg':'前脚','left-hindleg':'左後脚','right-hindleg':'右後脚','hindleg':'後脚','leg':'脚','legs':'脚','tail':'尻尾','tail-tip':'尻尾先端','neck':'首','horn':'角','horns':'角','beak':'嘴','snout':'鼻先','face':'顔','eye':'目','mouth':'口','throat':'喉','shoulder':'肩','arm':'腕','claw':'爪','carapace':'甲羅','shell':'甲殻','tentacle':'触手','tentacles':'触手','fin':'ヒレ','left-fin':'左ヒレ','right-fin':'右ヒレ','wing-arm':'翼腕','core':'核','body-core':'胴体・核','left-leg':'左脚','right-leg':'右脚','left-arm':'左腕','right-arm':'右腕','left-chain-blade-wing':'左鎖翼刃','right-chain-blade-wing':'右鎖翼刃','chain-blade-wing':'鎖翼刃','left-chain-wing':'左鎖翼','right-chain-wing':'右鎖翼','chain-wing':'鎖翼','left-chain':'左鎖','right-chain':'右鎖','chain':'鎖'};
 function veilPartName(raw){
   const hit=/^waterfilm-(?:(left|right)-)?(head|body|front-leg|tail)$/.exec(raw);
   if(!hit)return '';
@@ -2164,45 +2164,78 @@ function zohShiaPartName(raw,slash){
   return part+'（本体'+(Number.isFinite(slash)?'・斬撃'+Math.round(slash*100):'')+'）';
 }
 const NERSCYLLA_PART_LABELS=Object.freeze({mantle:'外套膜','poisonous-thorn':'毒トゲ',stomach:'腹部'});
-function unidentifiedMonsterPart(part,monster){
-  const name=monster?.name||'';
-  const raw=String(part?.name??part?.part??part?.kind??'').trim();
-  return raw==='hide'&&(/^(?:アジャラカン|ゴグマジオス|ヌ・エグドラ|ラギアクルス|レ・ダウ|護竜アルシュベルド|護竜アンジャナフ亜種)(?:（|$)/.test(name)||name.includes('ネルスキュラ'));
-}
+function unidentifiedMonsterPart(part,monster){return monsterPartDisplayName(part,[],monster)==='部位不明（旧保存）';}
 function monsterPartDisplayName(p,parts=[],monster=null){
   const label=partNameJP(p),raw=String(p?.name??p?.part??p?.kind??'').trim();
-  if(unidentifiedMonsterPart(p,monster))return '部位不明（旧保存）';
   if((monster?.name||'').includes('ネルスキュラ')&&Object.hasOwn(NERSCYLLA_PART_LABELS,raw))return NERSCYLLA_PART_LABELS[raw];
   if(/^(?:シーウー|ヌ・エグドラ)(?:（|$)/.test(monster?.name||'')&&Object.hasOwn(CEPHALOPOD_PART_LABELS,raw))return CEPHALOPOD_PART_LABELS[raw];
   if(/^ゾ・シア(?:（|$)/.test(monster?.name||'')){
     const known=zohShiaPartName(raw,p?.multipliers?.slash);
     if(known)return known;
   }
-  const ambiguous=parts.filter(q=>partNameJP(q)===label).length>1;
-  const exact=raw&&(/[\u3040-\u30ff\u3400-\u9fff]/.test(raw)||Object.hasOwn(PART_JP,raw)||!!veilPartName(raw));
-  if(exact&&!ambiguous)return label;
-  const identity=[raw,p?.id!=null?'ID '+String(p.id):null].filter(Boolean).join(' / ');
-  return identity?label+'（'+identity+'）':label;
+  return label==='その他部位'||/^(?:その他(?:の)?部位|その他)(?:[（(]|$)/.test(label)?'部位不明（旧保存）':label;
+}
+const TARGET_DAMAGE_KEYS=['slash','blunt','pierce','fire','water','thunder','ice','dragon'];
+function targetPartContent(p){
+  const {id,monster,name,kind,part,...content}=p;
+  return content;
+}
+function canonicalTargetJson(value){
+  if(Array.isArray(value))return value.map(canonicalTargetJson);
+  if(value&&typeof value==='object')return Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonicalTargetJson(value[k])]));
+  return value;
+}
+function equalTargetPartRecords(a,b){
+  return [a,b].every(p=>TARGET_DAMAGE_KEYS.every(k=>Number.isFinite(p?.multipliers?.[k])))
+    &&JSON.stringify(canonicalTargetJson(targetPartContent(a)))===JSON.stringify(canonicalTargetJson(targetPartContent(b)));
+}
+function mirroredTargetParts(parts,monster,groups){
+  const grouped=new Set(Object.values(groups||{}).flatMap(g=>g.parts));
+  const records=new Map();
+  for(const p of parts){
+    if(grouped.has(String(p.id))||unidentifiedMonsterPart(p,monster))continue;
+    const raw=String(p.kind??p.name??p.part??'');
+    const name=monsterPartDisplayName(p,parts,monster);
+    const match=/^(waterfilm-)?(left|right)-(.+)$/.exec(raw);
+    if(!match)continue;
+    const [,film,side,kind]=match,sideLabel=side==='left'?'左':'右';
+    const label=film?name.replace('（'+sideLabel+'側）',''):name.startsWith(sideLabel)?name.slice(1):'';
+    if(!label||label===name)continue;
+    const key=(film||'')+kind,row=records.get(key)||{left:[],right:[]};
+    row[side].push({p,name:label,film});records.set(key,row);
+  }
+  const paired=new Map();
+  for(const {left,right} of records.values()){
+    if(left.length!==1||right.length!==1||left[0].name!==right[0].name||!equalTargetPartRecords(left[0].p,right[0].p))continue;
+    const ids=[String(left[0].p.id),String(right[0].p.id)],entry={ids,label:left[0].film?left[0].name.replace('ヴェール・','ヴェール・右/左'):'右/左'+left[0].name};
+    for(const id of ids)paired.set(id,entry);
+  }
+  return paired;
 }
 function equalMonsterDamageTables(base,variant){
-  if(!Array.isArray(base)||!Array.isArray(variant)||base.length!==variant.length)return false;
-  const keys=['slash','blunt','pierce','fire','water','thunder','ice','dragon'];
-  const projection=parts=>parts.map(p=>JSON.stringify([p.kind??p.name,...keys.map(k=>p.multipliers?.[k])])).sort();
+  if(!Array.isArray(base)||!Array.isArray(variant)||!base.length||base.length!==variant.length)return false;
+  if(![...base,...variant].every(p=>TARGET_DAMAGE_KEYS.every(k=>Number.isFinite(p?.multipliers?.[k]))))return false;
+  const projection=parts=>parts.map(p=>JSON.stringify(canonicalTargetJson([p.kind??p.name,targetPartContent(p)]))).sort();
   const a=projection(base),b=projection(variant);
   return a.every((x,i)=>x===b[i]);
 }
+const TARGET_VARIANT_LABELS=Object.freeze({tempered:'歴戦個体','arch-tempered':'歴戦王',frenzied:'狂竜化'});
 function expandMonsterVariants(){
   const out=[];
   for(const m of DB.monsters||[]){
-    out.push(m);
-    for(const v of (m.variants||[])){
+    const variants=m.variants||[],omegaBase=m.name==='オメガ・プラネテス';
+    const shared=new Set(variants.filter(v=>Object.hasOwn(TARGET_VARIANT_LABELS,v.kind)
+      &&!(m.name==='アルシュベルド'&&v.kind==='arch-tempered')&&equalMonsterDamageTables(m.parts,v.parts)));
+    const sharedLabels=[...new Set([...shared].map(v=>omegaBase&&v.kind==='tempered'&&v.name===m.name?'零式':TARGET_VARIANT_LABELS[v.kind]))];
+    out.push(sharedLabels.length?{...m,displayName:m.name+'（通常/'+sharedLabels.join('/')+'）'}:m);
+    for(const v of variants){
       // MHDB variants generally contain only variant metadata, not a second hitzone table.
       // Do not discard them: retain the base parts until a variant-specific part table exists.
       const hasTable=Array.isArray(v.parts)&&v.parts.length>0,vp=hasTable?v.parts:m.parts;
       const omega=m.name==='オメガ・プラネテス'&&v.kind==='tempered'&&v.name===m.name;
       const distinctOmega=omega&&hasTable&&!equalMonsterDamageTables(m.parts,vp);
       if(vp?.length)out.push({...m,id:`${m.id}:v${v.id}`,name:distinctOmega?'オメガ・プラネテス（零式）':v.name||`${m.name}（${v.kind||'特殊個体'}）`,parts:vp,variant:v,
-        legacyKingAlias:m.name==='アルシュベルド'&&v.kind==='arch-tempered',legacyDuplicateTarget:omega&&!distinctOmega});
+        legacyKingAlias:m.name==='アルシュベルド'&&v.kind==='arch-tempered',legacyDuplicateTarget:shared.has(v)||(omega&&!hasTable)});
     }
   }
   return out;
@@ -2407,33 +2440,32 @@ function renderMonsters(){
   const sorted=arr.filter(m=>m!==training).sort((a,b)=>jpSort(a.name,b.name));
   if(training)sorted.unshift(training);
   // Preserve an imported alias for exact saved-target restoration, not as a second visible choice.
-  s.innerHTML='<option value="">モンスターを選択</option>'+sorted.map(m=>`<option value="${esc(m.id)}"${(m.legacyKingAlias||m.legacyDuplicateTarget)?' hidden':''}>${esc(m.name)}${variantTargetNotAdopted(m.id)?'（火力計算未対応）':''}</option>`).join('');
+  s.innerHTML='<option value="">モンスターを選択</option>'+sorted.map(m=>`<option value="${esc(m.id)}"${(m.legacyKingAlias||m.legacyDuplicateTarget)?' hidden':''}>${esc(m.displayName||m.name)}${variantTargetNotAdopted(m.id)?'（火力計算未対応）':''}</option>`).join('');
   if(old&&sorted.some(m=>String(m.id)===old))s.value=old;
   else if(!old&&training)s.value='training-room';
   renderMonsterParts();
 }
 const KING_COMBINED_TARGETS={
   'king-alsh:2':{label:'翼（旧保存）',parts:['king-alsh:2','king-alsh:3'],legacy:true},
-  'king-alsh:6':{label:'脚',parts:['king-alsh:6','king-alsh:7']},
+  'king-alsh:6':{label:'右/左脚',parts:['king-alsh:6','king-alsh:7']},
   'king-chain-on':{label:'鎖刃（解放状態）',parts:['king-alsh:4','king-alsh:5'],state:'released'},
   'king-chain-off':{label:'鎖刃（解除状態）',parts:['king-alsh:4','king-alsh:5'],state:'releasedOff'}
 };
 function arkveldTargetGroups(monster){
   if(String(monster?.id??'').endsWith(':king'))return KING_COMBINED_TARGETS;
   if(!/^(?:護竜)?アルシュベルド(?:（|$)/.test(monster?.name||''))return null;
-  const keys=['slash','blunt','pierce','fire','water','thunder','ice','dragon'];
   const localized={'left-wing':'左翼','right-wing':'右翼','left-leg':'左脚','right-leg':'右脚','left-wing-blade':'左鎖翼刃','right-wing-blade':'右鎖翼刃'};
   const find=name=>monster.parts?.find(p=>(p.kind??p.name)===name||p.name===localized[name]);
   const sourcePair=(base)=>{
     const left=find('left-'+base),right=find('right-'+base);
-    return left&&right&&keys.every(k=>Number.isFinite(left.multipliers?.[k])&&left.multipliers[k]===right.multipliers?.[k])
+    return left&&right&&equalTargetPartRecords(left,right)
       ?[String(left.id),String(right.id)]:[];
   };
   const legs=sourcePair('leg'),chain=sourcePair('wing-blade');
   if(!legs.length&&!chain.length)return null;
   const wings=['left-wing','right-wing'].map(find).filter(Boolean).map(p=>String(p.id));
   const groups={};
-  if(legs.length)groups['arkveld-legs']={label:'脚',parts:legs};
+  if(legs.length)groups['arkveld-legs']={label:'右/左脚',parts:legs};
   if(wings.length)groups['arkveld-wing-legacy']={label:'翼（旧保存）',parts:wings,legacy:true};
   if(chain.length){
     groups['arkveld-chain-released']={label:'鎖刃（解放状態・火力計算未対応）',parts:chain,unavailable:true};
@@ -2455,9 +2487,15 @@ function renderMonsterParts(){
   if(s.hidden)s.setAttribute('aria-hidden','true');else s.removeAttribute('aria-hidden');
   const partLabel=$('comparisonPartLabel');
   if(partLabel){partLabel.htmlFor=groups?'kingTargetPicker':'monsterPart';partLabel.hidden=legacy;}
+  const mirrors=mirroredTargetParts(parts,m,groups);
+  const partOption=p=>{
+    const id=String(p.id),pair=mirrors.get(id);
+    const hidden=unidentifiedMonsterPart(p,m)||(pair&&id!==(pair.ids.includes(old)?old:pair.ids[0]));
+    return {label:pair?.label||monsterPartDisplayName(p,parts,m),hidden:!!hidden};
+  };
   const partOptions=list=>list.map(p=>{
-    const unidentified=unidentifiedMonsterPart(p,m);
-    return `<option value="${esc(p.id)}"${unidentified?' hidden':''}>${esc(monsterPartDisplayName(p,parts,m))}</option>`;
+    const item=partOption(p);
+    return `<option value="${esc(p.id)}"${item.hidden?' hidden':''}>${esc(item.label)}</option>`;
   }).join('');
   const waterfilm=parts.filter(p=>/^waterfilm-/.test(String(p.name??p.kind??'')));
   s.innerHTML='<option value="">部位を選択</option>'+(waterfilm.length
@@ -2485,8 +2523,8 @@ function renderMonsterParts(){
         option.hidden=!!target.legacy;option.disabled=!!target.unavailable;picker.add(option);
       }
       else if(!combinations.some(([,target])=>target.parts.includes(id))){
-        const option=new Option(monsterPartDisplayName(p,m.parts||[],m),id);
-        option.hidden=unidentifiedMonsterPart(p,m);picker.add(option);
+        const item=partOption(p),option=new Option(item.label,id);
+        option.hidden=item.hidden;picker.add(option);
       }
     }
     host.insertBefore(picker,s);
@@ -2521,7 +2559,7 @@ function renderMonsterInfo(){
   if(picker)picker.value=arkveldTargetDisplayValue($('monsterPart')?.value||'',selectedKingChainState(),arkveldTargetGroups(m));
   syncComparisonTargetSummary();
   if(m&&variantTargetNotAdopted(m.id)){
-    const label=picker?.selectedOptions[0]?.textContent||(p?(m.legacyKingAlias?legacyKingPartDisplayName(partNameJP(p)):monsterPartDisplayName(p,m.parts||[],m)):'');
+    const label=m.legacyKingAlias&&p?legacyKingPartDisplayName(monsterPartDisplayName(p,m.parts||[],m)):(picker||$('monsterPart'))?.selectedOptions[0]?.textContent||'';
     $('monsterInfo').textContent=m.name+(label&&p?' / '+label:'')+'。'+VARIANT_TARGET_UNAVAILABLE_HINT;
     return;
   }
@@ -2530,7 +2568,7 @@ function renderMonsterInfo(){
   if(!m||!p){$('monsterInfo').textContent=zoh?'部位を選択してください。':'未選択';showZohGuide();return}
   const w=selectedWeapon(),hz=partPhysHz(p,w),element=w&&weaponElementInfo(w).type;
   const ehz=w&&element?partElemHz(p,element):0;
-  const label=picker?.selectedOptions[0]?.textContent||monsterPartDisplayName(p,m.parts||[],m);
+  const label=(picker||$('monsterPart'))?.selectedOptions[0]?.textContent||monsterPartDisplayName(p,m.parts||[],m);
   $('monsterInfo').innerHTML=`<b>${esc(m.name)} / ${esc(label)}</b><br>物理肉質 ${hz}% / 属性肉質 ${ehz}%`;
   showZohGuide();
 }
