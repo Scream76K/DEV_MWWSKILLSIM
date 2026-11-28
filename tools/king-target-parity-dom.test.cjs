@@ -182,3 +182,70 @@ test('Xu Wu and Jin Dahaad show source-backed Japanese labels without losing the
  const after=[...part.options].find(x=>x.textContent==='大凍成殻（露出後）');
  change(w,part,after.value);assert.equal(w.selectedPart().name,'frozen-bigcore-after');
 });
+
+test('Zoh Shia distinguishes crystallized parts from both unlabeled body rows and explains the labels',t=>{
+ const w=setup(t);
+ w.eval(`DB.monsters.push({id:1,name:'ゾ・シア',kind:'large',parts:[
+  ['head-wear',.40],['head',.60],['head-hide',.65],['left-wing-arm-wear',.40],['left-wing-arm',.80],['left-wing-arm-hide',.85],
+  ['right-wing-arm-wear',.40],['right-wing-arm',.80],['right-wing-arm-hide',.85]
+ ].map(([kind,slash],i)=>({id:2557+i,kind,name:kind,multipliers:{slash}}))});renderMonsters();`);
+ change(w,el(w,'monster'),'1');
+ const part=el(w,'monsterPart'),info=el(w,'monsterInfo');
+ assert.match(info.textContent,/白纏晶.*本体.*斬撃肉質/);
+ const options=[...part.options].slice(1).map(o=>o.textContent);
+ for(const name of ['頭（白纏晶）','頭（本体・斬撃60）','頭（本体・斬撃65）','左翼腕（白纏晶）','左翼腕（本体・斬撃80）','左翼腕（本体・斬撃85）','右翼腕（白纏晶）','右翼腕（本体・斬撃80）','右翼腕（本体・斬撃85）'])assert.ok(options.includes(name),name);
+ const selected=[...part.options].find(o=>o.textContent==='頭（本体・斬撃65）');
+ change(w,part,selected.value);assert.equal(w.selectedPart().multipliers.slash,.65);
+ assert.match(info.textContent,/白纏晶.*本体.*斬撃肉質/);
+});
+
+test('Mizutsune and regular and tempered Chatacabra use identifiable Japanese part names',t=>{
+ const w=setup(t);
+ w.eval(`DB.monsters.push(
+  {id:15,name:'タマミツネ',kind:'large',parts:['dorsal-fin','left-nail','right-nail'].map((kind,i)=>({id:2742+i,kind,name:kind}))},
+  {id:14,name:'チャタカブラ',kind:'large',variants:[{id:14,name:'チャタカブラ（歴戦の個体）',kind:'tempered'}],parts:['ass','tongue'].map((kind,i)=>({id:2706+i,kind,name:kind}))});
+ renderMonsters();`);
+ const monster=el(w,'monster'),part=el(w,'monsterPart'),names=()=>[...part.options].slice(1).map(o=>o.textContent).sort();
+ change(w,monster,'15');assert.deepEqual(names(),['背ビレ','左爪','右爪'].sort());
+ for(const id of ['14','14:v14']){change(w,monster,id);assert.deepEqual(names(),['尻','舌'].sort());}
+});
+
+test('Doshaguma tail shows only the label, keeping its real part identity',t=>{
+ const w=setup(t);
+ w.eval(`DB.monsters.push({id:11,name:'ドシャグマ',kind:'large',parts:[{id:2677,name:'tail-hair',kind:'tail-hair'}]});renderMonsters();`);
+ change(w,el(w,'monster'),'11');
+ const part=el(w,'monsterPart');
+ assert.equal([...part.options].find(o=>o.value==='2677').textContent,'尻尾');
+ change(w,part,'2677');assert.equal(w.selectedPart().id,2677);
+ assert.match(el(w,'comparisonTargetCurrent').textContent,/尻尾$/);
+ assert.doesNotMatch(el(w,'comparisonTargetCurrent').textContent,/2677|tail-hair/);
+});
+
+test('five monster families expose identified parts only and preserve hidden saved target IDs',t=>{
+ const w=setup(t);
+ const source=require('../docs/reports/stage4-bow-representatives/mhdb-loaded-cache.json').data.monsters;
+ const cases=[
+   [27,{'2862':'傘膜','2863':'口','2866':'触腕','2859':'右第1腕','2861':'左第2腕','2860':'左第3腕'}],
+   [6,{'2614':'外套膜','2607':'毒トゲ','2617':'腹部'}],
+   [31,{'2633':'後脚','2634':'前脚'}],
+   [4,{'2595':'花弁状部','2599':'尻尾'}],
+   [3,{'2580':'左翼','2589':'尻尾'}],
+ ];
+ w.eval('DB.monsters.push(...'+JSON.stringify(source.filter(m=>cases.some(([id])=>id===m.id)))+');renderMonsters()');
+ const mon=el(w,'monster'),part=el(w,'monsterPart');
+ for(const [id,names] of cases){
+   const fixture=source.find(m=>m.id===id);
+   for(const key of [String(id),...fixture.variants.map(v=>id+':v'+v.id)]){
+     change(w,mon,key);
+     const opts=[...part.options],visible=opts.filter(o=>!o.hidden);
+     assert.doesNotMatch(visible.map(o=>o.textContent).join('/'),/その他部位|ID /,key);
+     for(const [value,label] of Object.entries(names))assert.equal(visible.find(o=>o.value===value)?.textContent,label,key);
+     for(const row of fixture.parts.filter(p=>p.kind==='hide')){
+       assert.equal(opts.find(o=>o.value===String(row.id))?.hidden,true,key);
+       change(w,part,String(row.id));w.renderMonsterParts();
+       assert.equal(part.value,String(row.id),key);
+       if(key===String(id))assert.equal(w.selectedPart().id,row.id,key);
+     }
+   }
+ }
+});
