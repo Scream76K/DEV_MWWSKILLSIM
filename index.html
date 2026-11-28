@@ -1038,6 +1038,18 @@ main.wrap > #betaWorkspaceGrid {
   #compareOut .compare-skill-panel .skill-info-toggle{min-height:44px;padding-inline-end:12px}
   #compareOut .compare-skill-panel .skill-game-name{flex-direction:column;gap:2px}
 }
+@media (max-width:560px){
+  #compareOut .compare-skill-columns{column-gap:4px;min-width:calc(var(--compare-skill-count) * 78px)}
+  #compareOut [data-saved-skill-column]{padding:3px}
+  #compareOut [data-saved-skill-column] h4{font-size:12px;line-height:1.35}
+  #compareOut .compare-skill-panel .skill-bucket-title{font-size:11px;padding-inline:3px}
+  #compareOut .compare-skill-panel .skill-game-grid{gap:4px}
+  #compareOut .compare-skill-panel .skill-game{padding:3px}
+  #compareOut .compare-skill-panel .skill-game-name{font-size:12px}
+  #compareOut .compare-skill-panel .skill-blocks{gap:2px}
+  #compareOut .compare-skill-panel .skill-block{flex-basis:9px;width:9px;height:9px}
+  #compareOut .compare-skill-panel .skill-rank-badge{margin-inline-start:0}
+}
 </style>
 </head><body>
 <div class="notice" id="developmentPreviewNotice"><b>開発プレビュー</b>：武器種・技・スキル・条件によって火力が未算出になる場合があります。通常・最大の実計算値と保留理由を確認してください。</div><div id="appVersionBadge" style="position:sticky;top:0;z-index:9999;text-align:right;padding:4px 8px;font-size:12px;font-weight:700;background:rgba(255,255,255,.92);border-bottom:1px solid #ddd">開発プレビュー / 基準ゲーム Ver.1.042.00.02</div>

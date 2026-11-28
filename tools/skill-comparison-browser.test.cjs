@@ -10,7 +10,7 @@ const data=require('../docs/reports/stage4-bow-representatives/mhdb-loaded-cache
 const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
 const names=['A <装備>', 'B ロングビルド名'.repeat(6),'C'];
 
-test('saved skill comparison shares the editor UI, remains isolated, and scrolls only its own row',async t=>{
+test('saved skill comparison shares the editor UI, remains isolated, and fits all three columns at phone widths',async t=>{
  const browser=await chromium.launch({headless:true});
  t.after(()=>browser.close());
  for(const [width,height] of [[320,693],[390,844],[852,393],[1024,768],[1440,900]]){
@@ -69,15 +69,13 @@ test('saved skill comparison shares the editor UI, remains isolated, and scrolls
     visible:e.clientWidth,content:e.scrollWidth,doc:document.documentElement.scrollWidth,
     offenders:[...document.querySelectorAll('main *')].filter(n=>!n.closest('.compare-skill-scroll')&&n.getBoundingClientRect().right>nominal+1).slice(0,20).map(n=>[n.nodeName,n.id,n.className,n.getBoundingClientRect().right]),
     spilling:[...document.querySelectorAll('#compareOut *')].filter(n=>!n.closest('.compare-skill-scroll')&&n.scrollWidth>n.clientWidth+8&&n.getBoundingClientRect().height>0).slice(0,20).map(n=>[n.nodeName,n.id,n.className,n.clientWidth,n.scrollWidth,n.textContent.slice(0,36)]),
+    cardSpill:[...e.querySelectorAll('.skill-game,.skill-info-toggle,.skill-bucket-title,.skill-info-body')].filter(n=>n.scrollWidth>n.clientWidth+1).map(n=>[n.className,n.clientWidth,n.scrollWidth]),
     row:[...e.querySelectorAll('[data-saved-skill-column]')].map(x=>{const r=x.getBoundingClientRect();return [r.left,r.top,r.right];}),
    }),width);
    assert.ok(g.doc<=width+1,JSON.stringify({width,docBefore,g}));
    assert.ok(g.row.every((r,i)=>r[1]===g.row[0][1]&&(!i||r[0]>=g.row[i-1][2])));
-   if(width<=390){
-    assert.ok(g.content>g.visible,'narrow view scrolls locally');
-    const end=await p.locator('.compare-skill-scroll').evaluate(e=>{e.scrollLeft=e.scrollWidth;return {local:e.scrollLeft,page:scrollX};});
-    assert.ok(end.local>0);assert.equal(end.page,0);
-   }else assert.equal(g.content,g.visible,'wider view fits without a scrollbar');
+   assert.ok(g.content<=g.visible+1,JSON.stringify({width,docBefore,g}));
+   assert.deepEqual(g.cardSpill,[],JSON.stringify({width,cardSpill:g.cardSpill}));
    assert.deepEqual(await p.locator('#compareOut .compare-table thead th:not(:first-child)').allTextContents(),names);
    assert.doesNotMatch(await p.evaluate(()=>JSON.stringify(createBuildComparisonReport())),/compare-skill-panel|skill-info-toggle/,'display markup does not enter the report');
    await options[2].uncheck();
